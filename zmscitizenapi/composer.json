@@ -34,8 +34,21 @@
         "eappointment/zmsentities": "@dev"
     },
     "scripts": {
+        "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
+        "command": "bin/configure",
+        "wget-files": [
+            "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
+            "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
+            "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
+            "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui.css -O public/_test/assets/swagger-ui.css",
+            "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js",
+            "sha256sum --status -c checksums.txt"
+        ],
         "post-install-cmd": [
-            "@php -r \"file_exists('config.php') || copy('config.example.php', 'config.php');\""
+            "@wget-files"
+        ],
+        "post-update-cmd": [
+            "@wget-files"
         ]
     },
     "bin": [],

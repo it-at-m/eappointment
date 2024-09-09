@@ -1,0 +1,4173 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "ZMS (human waiting queue management) API",
+    "x-logo": {
+      "url": "./logo.png"
+    },
+    "description": "The ZMS system is intended to manage human waiting queues. It has the following features:\n\n * make appointments via a calender and initiate a process to manage an appointment\n * import requests (services) and providers (locations) from external sources\n * manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope\n * manage opening hours including closed days\n * login-system with different access levels\n * pickup for documents\n * ticketprinter support for customers without appointments (authenticated, lockable, timeable)\n * calldisplay support\n * collecting statistics like waiting time or served clients per day\n * emergency call for employees\n\n This documentation covers the API-level access to these features.\n\n ## Common parameters for requests\n\n ### Header X-JsonCompressLevel\n\n Setting the header \"X-JsonCompressLevel\" with a value of 1 or higher enables a json schema based compression. On a value of 1 and higher, default value for properties are omitted. To have a combine the default values in the entity schema with the response. With a value of 2 and higher (not implemented yet), repeating values are referenced inline with a \"$ref\" property. A JSON-Schema dereferencing is required.\n\n This header is useful on results with a lot of items.\n\n ### Parameter resolveReferences\n\n Most calls support the parameter \"resolveReferences\". Usually by fetching an entity, it includes an amount of sub entities. For example, a department has a list of scopes. Fetching a department usually does not include the scopes. If you need the scopes of the department, use the parameter \"resolveReferences\" with a value of 1. This resolves one level of sub entities. If you need for example the availabilities (opening hours) of the scopes, use a value of 2 to fetch two sublevels of entities. Beware, that a high value results in a lot of data which might be redundant.\n\n Why using a parameter like this and not different api calls? The overhead for an api call is usually on around 20ms. Fetching a list for different entities can easily result in 20 additional requests to fetch the required data. So using this parameter might result having a 10 times higher performance compared to mulitple calls.\n\n ### Experimental GraphQL parameter\n\n There is an experimental \"gql\" parameter to reduce the download size of fetched data. Sometimes only a part of the data is required for the desired operation. This parameter supports a simplified GraphQL query. It is experimental in a sense, that the amount of the supported GraphQL features might change.\n\n Currently only the selection of desired fields are supported. To get a scope with only the ID and the name, a query like this accomplishes this.\n\n `/api/2/scope/141/?gql={id+contact{name}}`\n\n As difference to the GraphQL implementation, a whole sub section might be retrieved by not adding details. But beware of using this, for a stricter GraphQL implementation in the future might break this behavior. To get all contents of `scope.contact` a query like this currently solves this.\n\n `/api/2/scope/141/?gql={id+contact}`\n\n The API is currently not GraphQL compatible. A request does not get faster on the server for requesting not every property. But there might be a performance increase on the client side for there is less data to download and decode.\n \n",
+    "termsOfService": "http://service.berlin.de/terminvereinbarung/",
+    "contact": {
+      "name": "Mathias Fischer",
+      "email": "mathias.fischer@berlinonline.de",
+      "url": "http://www.berlinonline.net/unternehmen/team/"
+    },
+    "license": {
+      "name": "Commercial",
+      "url": "http://www.berlinonline.net"
+    },
+    "version": "2.25.00-muc11-196-g298ff3727"
+  },
+  "basePath": "/terminvereinbarung/api/2",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "httpauth": {
+      "type": "basic",
+      "description": "The API uses two variants of authentication. An application can use basic authentication via HTTP for identification. As an alternative, there is a header with the name \"X-Authkey\". This key can be optained by accessing \"/workstation/login/\".\n\nAccording to the application settings, there might be different rights to use API methods. Further rights depend on the settings for the authorized useraccount.\n"
+    }
+  },
+  "security": [
+    {
+      "httpauth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "apikey",
+      "description": "Über einen \"apikey\" erhält man Zugriff zu der Terminbuchung. Die Eigenschaft \"key\" wird für die meisten HTTP-Requests als Header `X-Auth-Key` benötigt.\n\nEine Verifikation für einen apikey ist notwendig. Dies erfolgt in der Regel über ein Captcha. Über ein \"clientkey\" kann man aber auch erweiterte Berechtigungen erhalten, wie zum Beispiel Zugriff auf begrenzte Terminkontingente oder einen Verzicht auf das Captcha. Der \"clientkey\" wird vom Betreiber des Systems mitgeteilt. Ohne einen solchen \"clientkey\" werden Standard-Einstellungen verwendet.\n\nWeiterhin gehört zu einem apikey ein Quota für unterschiedliche Requests. Um Missbrauch der Schnittstelle zu vermeiden werden in unterschiedlichen Zeiteinheiten nur eine begrenzte Zahl von Requests zugelassen. Eine Information wieviele Requests noch frei sind, erhält man über den apikey.\n"
+    },
+    {
+      "name": "calendar",
+      "description": "Ein \"calendar\" repräsentiert eine Kalender-Ansicht. Diese beinhaltet zum einen die Details der Abfrage, wie für welchen Zeitraum der Kalender gilt und welche Leistungen and welchen Standorten buchbar sind. Als Antwort auf eine Anfrage enthält der Kalender Einträge zu Tagen, an denen Termine buchbar sind.\n\nWichtig: Der \"calendar\" repräsentiert keinen Kalender eines Standortes oder ähnliches. Es handelt sich um ein temporäres Suchobjekt mit Suchergebnissen.\n"
+    },
+    {
+      "name": "process",
+      "description": "Unter \"process\" wird ein Vorgang im System verstanden. Ein solcher Vorgang enthält in der Regel einen Termin sowie Kontaktdaten zum Kunden und Details zum Standort des Termins.\n\nEin \"process\" kann auch einen freien Termin repräsentieren. Dies lässt sich über die Eigenschaft `status` erkennen. Ein Status \"free\" bedeutet, dass es sich um einen freien Termin handelt, ein \"reserved\" kennzeichnet eine flüchtige Reservierung und ein Vorgang im Status \"confirmed\" entspricht einem gültigen Termin.\n"
+    },
+    {
+      "name": "provider",
+      "description": "Ein \"provider\" entspricht einem physischen Standort mit Ortsdaten wie Straße und Hausnummer und häufig Angaben, wo im entsprechenden Gebäude dieser Dienstleister zu finden ist. Der \"provider\" legt fest, welche Leistungen (\"request\") an einem \"scope\" verfügbar sind. Ein \"provider\" kann mehrere zugehörige \"scope\"-Objekte haben.\n"
+    },
+    {
+      "name": "scope",
+      "description": "Neben dem \"provider\" gibt es einen \"scope\". Dieser \"scope\" umfasst vor allem einem Terminkalender und daneben einen Warteraum (oder auch Aufrufanlage, \"calldisplay\") und Arbeitsplätze (\"workstation\"). Wenn mehrere \"scope\"-Objekte sich einen Warteraum (\"calldisplay\") und Arbeitsplätze (\"workstation\") teilen, können diese von einem \"cluster\" zusammengefasst werden. Dabei müssen die \"scope\" im Falle eines \"cluster\" nicht zum selben \"provider\" gehören.\n"
+    }
+  ],
+  "paths": {},
+  "definitions": {
+    "apikey": {
+      "type": "object",
+      "description": "Representation of an Apikey. It usually stores temporary api quota data while appointment scheduling in service app",
+      "example": {
+        "key": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
+        "apiclient": {
+          "accesslevel": "public",
+          "clientKey": "hDUWCqKHuVbV2Yj9Dgc8hYwfAgJs3aTM"
+        },
+        "captcha": {
+          "mime": "image/jpeg;base64",
+          "content": "R0lGODdhEAAQAMwAAPj7+FmhUYjNfGuxYYDJdYTIeanOpT+DOTuANXi/bGOrWj6CONzv2sPjv2CmV1unU4zPgISg6DJnJ3ImTh8Mtbs00aNP1CZSGy0YqLEn47RgXW8amasW7XWsmmvX2iuXiwAAAAAEAAQAAAFVyAgjmRpnihqGCkpDQPbGkNUOFk6DZqgHCNGg2T4QAQBoIiRSAwBE4VA4FACKgkB5NGReASFZEmxsQ0whPDi9BiACYQAInXhwOUtgCUQoORFCGt/g4QAIQA7",
+          "base64": true
+        },
+        "quota": [
+          {
+            "route": "/calendar/",
+            "period": "hour",
+            "requests": 99,
+            "ts": 1459512840
+          }
+        ],
+        "createIP": "127.0.0.1",
+        "ts": 1459512840
+      },
+      "required": [
+        "key"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "temporary random api key string"
+        },
+        "apiclient": {
+          "$ref": "#/definitions/apiclient"
+        },
+        "captcha": {
+          "$ref": "#/definitions/mimepart"
+        },
+        "quota": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "route": {
+                "type": "string",
+                "description": "path of an URL for which the quota is valid"
+              },
+              "period": {
+                "type": "string",
+                "description": "Period of time for this quota",
+                "enum": [
+                  "minute",
+                  "hour",
+                  "day",
+                  "week",
+                  "month"
+                ]
+              },
+              "requests": {
+                "type": "number",
+                "description": "Number of requests left",
+                "example": 99
+              },
+              "ts": {
+                "type": "number",
+                "description": "unix timestamp representing the creating time of quota",
+                "example": 1459512840
+              }
+            }
+          }
+        },
+        "createIP": {
+          "type": "string",
+          "description": "IP Address of the creator"
+        },
+        "ts": {
+          "type": "number",
+          "description": "unix timestamp representing the creating time of quota",
+          "example": 1459512840
+        }
+      }
+    },
+    "apiclient": {
+      "type": "object",
+      "description": "An apiclient is required on requesting an apikey.",
+      "example": {
+        "clientKey": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
+        "shortname": "example",
+        "accesslevel": "public",
+        "lastChange": 1459512840
+      },
+      "required": [
+        "clientKey"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "apiClientID": {
+          "type": "number",
+          "description": "internal ID for the API client"
+        },
+        "clientKey": {
+          "type": "string",
+          "description": "temporary random api key string"
+        },
+        "shortname": {
+          "type": "string",
+          "description": "a string describing the client"
+        },
+        "accesslevel": {
+          "type": "string",
+          "description": "access level of the api key",
+          "enum": [
+            "public",
+            "callcenter",
+            "intern",
+            "blocked"
+          ]
+        },
+        "lastChange": {
+          "type": "number",
+          "description": "unix timestamp representing the creating time of quota",
+          "example": 1459512840
+        }
+      }
+    },
+    "appointment": {
+      "type": "object",
+      "description": "An appointment represents a given time on a scope for defining appointments in a calendar.",
+      "example": {
+        "date": 1447869172,
+        "scope": {
+          "id": 123
+        },
+        "slotCount": 2
+      },
+      "required": [
+        "date",
+        "slotCount",
+        "scope"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "availability": {
+          "$ref": "#/definitions/availability"
+        },
+        "date": {
+          "type": "number",
+          "description": "unix timestamp representing the date and time of the appointment"
+        },
+        "scope": {
+          "$ref": "#/definitions/scope"
+        },
+        "slotCount": {
+          "type": "number",
+          "description": "number of time slots used"
+        }
+      }
+    },
+    "availability": {
+      "type": "object",
+      "description": "An Availability is a representation of opening hours for a scope. It defines the time a scope offers appointments and a ticket printer is able to serve process numbers.",
+      "example": {
+        "bookable": {
+          "startInDays": 2,
+          "endInDays": 60
+        },
+        "description": "Sonderöffnungszeit",
+        "endDate": 1447919116,
+        "endTime": "15:30",
+        "id": 1234,
+        "multipleSlotsAllowed": true,
+        "type": "appointment",
+        "repeat": {
+          "afterWeeks": 0
+        },
+        "scope": {
+          "id": 141
+        },
+        "slotTimeInMinutes": 12,
+        "startDate": 1447919543,
+        "startTime": "10:00",
+        "weekday": {
+          "thursday": true
+        },
+        "workstationCount": {
+          "callcenter": 8,
+          "intern": 10,
+          "public": 3
+        }
+      },
+      "required": [
+        "startDate",
+        "endDate",
+        "scope",
+        "type",
+        "weekday"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "bookable": {
+          "type": "object",
+          "properties": {
+            "startInDays": {
+              "type": "number",
+              "default": 1,
+              "description": "number of days relative to today to start offering appointments"
+            },
+            "endInDays": {
+              "type": "number",
+              "default": 60,
+              "description": "maximum number of days in the future to offer appointments"
+            }
+          }
+        },
+        "description": {
+          "type": "string",
+          "description": "short note for internal usage"
+        },
+        "endDate": {
+          "type": "number",
+          "description": "unix timestamp of a day until this availability is valid"
+        },
+        "endTime": {
+          "type": "string",
+          "default": "23:59",
+          "description": "format '0:00' or '16:30'"
+        },
+        "id": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ],
+          "description": "ID for the availability. A NULL or zero means, that the availability is new."
+        },
+        "lastChange": {
+          "type": "number",
+          "description": "unix timestamp of the last change on this availability"
+        },
+        "multipleSlotsAllowed": {
+          "type": [
+            "boolean",
+            "number"
+          ],
+          "default": true,
+          "description": "an appointment is allowed to take more than one time slot"
+        },
+        "processingNote": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Non persistent note usable for processing or logging calculation results, usually used for debugging"
+          }
+        },
+        "repeat": {
+          "type": "object",
+          "properties": {
+            "afterWeeks": {
+              "type": "number",
+              "description": "number of weeks for repeating the times, usually 1, 2 or 3"
+            },
+            "weekOfMonth": {
+              "type": "number",
+              "description": "number of week in month, on a value of 5 the last week of the month, even it is the 4th"
+            }
+          }
+        },
+        "scope": {
+          "$ref": "#/definitions/scope"
+        },
+        "slotTimeInMinutes": {
+          "type": "number",
+          "default": 10,
+          "description": "Multiplicated with a slotCount from an appointment this gives the duration in minutes for a appointment/process."
+        },
+        "startDate": {
+          "type": "number",
+          "description": "unix timestamp of a day to start offering appointments"
+        },
+        "startTime": {
+          "type": "string",
+          "description": "format '0:00' or '17:30'"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "appointment",
+            "openinghours",
+            "break"
+          ],
+          "description": "The following type are available\n* appointment - defines times for appointments\n* openinghours - defines times where a scope is opened\n* break - defines times for a break (not implemented yet)\n"
+        },
+        "weekday": {
+          "type": "object",
+          "properties": {
+            "monday": {
+              "default": false,
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "tuesday": {
+              "default": false,
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "wednesday": {
+              "default": false,
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "thursday": {
+              "default": false,
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "friday": {
+              "default": false,
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "saturday": {
+              "default": false,
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "sunday": {
+              "default": false,
+              "type": [
+                "boolean",
+                "number"
+              ]
+            }
+          }
+        },
+        "workstationCount": {
+          "type": "object",
+          "properties": {
+            "callcenter": {
+              "type": "number",
+              "default": 0,
+              "description": "number of workstations to handle appointments if handed out to the client by a callcenter"
+            },
+            "intern": {
+              "type": "number",
+              "default": 0,
+              "description": "maximum of workstations expected to handle appointments"
+            },
+            "public": {
+              "type": "number",
+              "default": 0,
+              "description": "number of workstations to offer appointments for booking using a public website"
+            }
+          }
+        }
+      }
+    },
+    "calendar": {
+      "type": "object",
+      "description": "Represents a calendar showing free days for appointments using a list of clusters, providers and scopes. Usually the list of clusters, providers are converted to a list of scopes. If all these lists are empty, the list of scopes is generated by available scopes for the given requests.",
+      "example": {
+        "days": [
+          {
+            "year": 2015,
+            "month": 11,
+            "day": 19,
+            "freeAppointments": {
+              "callcenter": 0,
+              "intern": 3,
+              "public": 2,
+              "type": "free"
+            },
+            "allAppointments": {
+              "callcenter": 0,
+              "intern": 9,
+              "public": 6,
+              "type": "sum"
+            },
+            "firstAppointmentTimestamp": {
+              "intern": 1447919770000
+            },
+            "lastAppointmentTimestamp": {
+              "intern": 1447919788000
+            }
+          }
+        ],
+        "firstDay": {
+          "year": 2015,
+          "month": 11,
+          "day": 19,
+          "freeAppointments": {
+            "callcenter": 0,
+            "intern": 3,
+            "public": 0
+          },
+          "firstAppointmentTimestamp": {
+            "intern": 1447919770000
+          },
+          "lastAppointmentTimestamp": {
+            "intern": 1447919788000
+          }
+        },
+        "lastDay": {
+          "year": 2015,
+          "month": 11,
+          "day": 19,
+          "freeAppointments": {
+            "callcenter": 0,
+            "intern": 3,
+            "public": 0
+          },
+          "firstAppointmentTimestamp": {
+            "intern": 1447919770000
+          },
+          "lastAppointmentTimestamp": {
+            "intern": 1447919788000
+          }
+        },
+        "requests": [
+          {
+            "id": "120703",
+            "name": "Personalausweis beantragen",
+            "source": "dldb"
+          }
+        ],
+        "providers": [
+          {
+            "id": 122217,
+            "source": "dldb"
+          }
+        ],
+        "clusters": [
+          {
+            "id": 109
+          }
+        ],
+        "scopes": [
+          {
+            "id": 141
+          }
+        ],
+        "freeProcesses": [
+          {
+            "id": 123
+          }
+        ]
+      },
+      "required": [
+        "firstDay",
+        "lastDay"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "bookableEnd": {
+          "type": "number",
+          "description": "unix timestamp of a day representing the end of the bookable time. Paging after thise date should reveal no new appointments."
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cluster"
+          }
+        },
+        "days": {
+          "type": "array",
+          "description": "list of days containing appointments",
+          "items": {
+            "$ref": "#/definitions/day"
+          }
+        },
+        "firstDay": {
+          "$ref": "#/definitions/day"
+        },
+        "lastDay": {
+          "$ref": "#/definitions/day"
+        },
+        "providers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/provider"
+          }
+        },
+        "requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/request"
+          }
+        },
+        "freeProcesses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/process"
+          }
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/scope"
+          }
+        }
+      }
+    },
+    "calldisplay": {
+      "type": "object",
+      "description": "A calldisplay is a device to call people in a waiting room to a workstation. Usually it is a display on wall showing process ids together with a room number.\nThe clusters are resolved to fill the list of scopes. The text displayed on the calldisplay depends on the given scopes. If only one scope is present, a text can be displayed on the display. On multiple scopes, no text and no image is displayed.",
+      "example": {
+        "scopes": [
+          {
+            "id": 141
+          }
+        ],
+        "organisation": {
+          "id": 123
+        },
+        "contact": {
+          "name": "Bürgeramt"
+        }
+      },
+      "required": [
+        "serverTime",
+        "organisation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "image": {
+          "type": "object",
+          "description": "A symbolic image for the scope",
+          "properties": {
+            "data": {
+              "type": "string",
+              "description": "contains base64 encoded image data"
+            },
+            "name": {
+              "type": "string",
+              "description": "filename of the image"
+            },
+            "mime": {
+              "type": "string",
+              "description": "mime type of the base64 encoded image"
+            }
+          }
+        },
+        "serverTime": {
+          "type": "number",
+          "description": "unix timestamp of the server time to adjust the clock on the call display"
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cluster"
+          }
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/scope"
+          }
+        },
+        "organisation": {
+          "$ref": "#/definitions/organisation"
+        },
+        "contact": {
+          "$ref": "#/definitions/contact"
+        }
+      }
+    },
+    "client": {
+      "type": "object",
+      "description": "A client is usually a customer in a scope who intends to get his request solved. Usually the client has an appointment, if not he got a process number from a ticket printer and his familyName is set to 'Spontankunde'.",
+      "example": {
+        "familyName": "Max Mustermann",
+        "email": "max@service.berlin.de",
+        "emailSendCount": 0,
+        "notificationsSendCount": 0,
+        "surveyAccepted": false,
+        "telephone": "030 115"
+      },
+      "additionalProperties": false,
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "mail address"
+        },
+        "emailSendCount": {
+          "type": "number",
+          "description": "number of reminder mails send"
+        },
+        "familyName": {
+          "type": "string",
+          "default": "Spontankunde",
+          "description": "name of the client"
+        },
+        "notificationsSendCount": {
+          "type": "number",
+          "description": "number of reminder sms send"
+        },
+        "surveyAccepted": {
+          "type": "boolean",
+          "description": "true if clients allows survey requests"
+        },
+        "telephone": {
+          "type": "string",
+          "description": "telephone number"
+        }
+      }
+    },
+    "cluster": {
+      "type": "object",
+      "description": "A cluster is a way to group different scopes.",
+      "example": {
+        "callDisplayText": "Herzlich Willkommen,\nDie aufgerufenen Plätze finden Sie den im Gang rechts.",
+        "hint": "Warteraum in der 3. Etage",
+        "id": 123,
+        "name": "Bürger- und Standesamt",
+        "scopes": [
+          {
+            "id": 1234
+          },
+          {
+            "id": 5678
+          }
+        ],
+        "shortNameEnabled": true
+      },
+      "additionalProperties": false,
+      "properties": {
+        "callDisplayText": {
+          "type": "string",
+          "description": "text for the call display if only the cluster is selected"
+        },
+        "hint": {
+          "type": "string",
+          "description": "information for the client like the address to a cluster location"
+        },
+        "id": {
+          "type": "number",
+          "description": "auto increment"
+        },
+        "name": {
+          "type": "string",
+          "description": "name for internal usage"
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/scope"
+          }
+        },
+        "shortNameEnabled": {
+          "type": [
+            "number",
+            "boolean"
+          ],
+          "description": "true if the scope short name should be display next to the workstation name"
+        }
+      }
+    },
+    "config": {
+      "type": "object",
+      "description": "main config data",
+      "example": {
+        "appointments": {
+          "urlChange": "https://service.berlin.de/terminvereinbarung/termin/manage/",
+          "urlAppointments": "https://service.berlin.de/terminvereinbarung/"
+        }
+      },
+      "properties": {
+        "appointments": {
+          "type": "object",
+          "properties": {
+            "urlAppointments": {
+              "type": "string"
+            },
+            "urlChange": {
+              "type": "string"
+            }
+          }
+        },
+        "emergency": {
+          "type": "object",
+          "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
+          "properties": {
+            "refreshInterval": {
+              "type": "number",
+              "description": "default time in seconds for next check if an emergency occurred",
+              "default": 5
+            }
+          }
+        },
+        "notifications": {
+          "type": "object",
+          "properties": {
+            "absage": {
+              "type": [
+                "boolean",
+                "number"
+              ],
+              "description": ""
+            },
+            "benachrichtigungsfrist": {
+              "type": "number",
+              "description": ""
+            },
+            "confirmationContent": {
+              "type": "string",
+              "description": "message for confirmation notification"
+            },
+            "costs": {
+              "type": "string",
+              "description": "calculated cost of one notification"
+            },
+            "eMailkonfigurierbar": {
+              "type": [
+                "boolean",
+                "number"
+              ],
+              "description": ""
+            },
+            "erinnerungsvorlauf": {
+              "type": "number",
+              "description": ""
+            },
+            "gateway": {
+              "type": "string",
+              "description": ""
+            },
+            "gatewayUrl": {
+              "type": "string",
+              "description": ""
+            },
+            "headsUpContent": {
+              "type": "string",
+              "description": "message for heads-up notification"
+            },
+            "kommandoAbfrage": {
+              "type": "string",
+              "description": ""
+            },
+            "kommandoAbsage": {
+              "type": "string",
+              "description": ""
+            },
+            "number": {
+              "type": "string",
+              "description": "default telephone number for notifications"
+            }
+          }
+        },
+        "ticketprinter": {
+          "type": "object",
+          "properties": {
+            "baseUrl": {
+              "type": "string",
+              "description": "base uri too ticketprinter frontend"
+            }
+          }
+        }
+      }
+    },
+    "contact": {
+      "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
+      "type": "object",
+      "example": {
+        "city": "Schönefeld",
+        "country": "Germany",
+        "lat": 52.345,
+        "lon": 13.456,
+        "name": "Flughafen Schönefeld, Landebahn",
+        "postalCode": "15831",
+        "region": "Brandenburg",
+        "street": "Zaunstraße",
+        "streetNumber": "1"
+      },
+      "additionalProperties": false,
+      "properties": {
+        "city": {
+          "default": "",
+          "type": "string"
+        },
+        "country": {
+          "default": "",
+          "description": "Name of the country or the ISO 3166-1 country code like 'de'.",
+          "type": "string"
+        },
+        "lat": {
+          "default": "",
+          "description": "Latitute of a geo coordinate as wgs84 or etrs89",
+          "type": "number"
+        },
+        "lon": {
+          "default": "",
+          "description": "Longitude of a geo coordinate as wgs84 or etrs89",
+          "type": "number"
+        },
+        "name": {
+          "default": "",
+          "type": "string"
+        },
+        "postalCode": {
+          "default": "",
+          "type": "string"
+        },
+        "region": {
+          "default": "",
+          "type": "string"
+        },
+        "street": {
+          "default": "",
+          "type": "string"
+        },
+        "streetNumber": {
+          "default": "",
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "default": "",
+          "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+          "x-locale": {
+            "de_DE": {
+              "pointer": "Kontakt E-Mail",
+              "messages": {
+                "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+              }
+            }
+          }
+        },
+        "telephone": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "day": {
+      "type": "object",
+      "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
+      "example": {
+        "year": 2015,
+        "month": 11,
+        "day": 19,
+        "freeAppointments": {
+          "callcenter": 0,
+          "intern": 3,
+          "public": 0,
+          "type": "sum"
+        },
+        "allAppointments": {
+          "callcenter": 0,
+          "intern": 3,
+          "public": 3,
+          "type": "sum"
+        },
+        "status": "bookable",
+        "firstAppointmentTimestamp": {
+          "intern": 1447919770000,
+          "type": "timestamp"
+        },
+        "lastAppointmentTimestamp": {
+          "intern": 1447919788000,
+          "type": "timestamp"
+        }
+      },
+      "required": [
+        "year",
+        "month",
+        "day"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "year": {
+          "type": "number"
+        },
+        "month": {
+          "type": "number"
+        },
+        "day": {
+          "type": "number"
+        },
+        "freeAppointments": {
+          "$ref": "#/definitions/slot"
+        },
+        "allAppointments": {
+          "$ref": "#/definitions/slot"
+        },
+        "firstAppointmentTimestamp": {
+          "$ref": "#/definitions/slot"
+        },
+        "lastAppointmentTimestamp": {
+          "$ref": "#/definitions/slot"
+        },
+        "processList": {
+          "type": "array",
+          "description": "list of processes, only available if status is detail",
+          "items": {
+            "$ref": "#/definitions/process"
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "bookable",
+            "notBookable",
+            "restricted",
+            "full",
+            "detail"
+          ],
+          "description": "Status of day. The following values are possible:\n  * bookable: day has free appointments\n  * notBookable: day is not bookable because of missing availabilities\n  * restricted: not bookable because of dayoff times\n  * full: not bookable because missing free appointments\n  * detail: non calculated status, every process for the day is available unter processList (very expansive in resources, use with caution)\n"
+        }
+      }
+    },
+    "department": {
+      "type": "object",
+      "description": "A department is a subunit in an organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\".",
+      "example": {
+        "id": 123,
+        "contact": {
+          "country": "Germany",
+          "name": "Flughafen Schönefeld, Landebahn",
+          "postalCode": "15831",
+          "region": "Brandenburg",
+          "street": "Zaunstraße",
+          "streetNumber": "1"
+        },
+        "dayoff": [
+          {
+            "date": 1447921381000,
+            "name": "Betriebsfeier"
+          },
+          {
+            "date": 1447922381000,
+            "name": "Silvester"
+          }
+        ],
+        "email": "terminvereinbarung@mitte.berlin.de",
+        "links": [
+          {
+            "name": "Zuständigkeitsverzeichnis",
+            "url": "http://www.berlin.de/ba-mitte/zustaendigkeiten/",
+            "target": true
+          }
+        ],
+        "preferences": {
+          "notifications": {
+            "enabled": true,
+            "identification": "terminvereinbarung@mitte.berlin.de",
+            "sendConfirmationEnabled": true,
+            "sendReminderEnabled": true
+          }
+        },
+        "scopes": [
+          {
+            "id": 123
+          }
+        ],
+        "clusters": [
+          {
+            "id": 45
+          }
+        ]
+      },
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "contact": {
+          "$ref": "#/definitions/contact"
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cluster"
+          }
+        },
+        "dayoff": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dayoff"
+          }
+        },
+        "email": {
+          "type": "string",
+          "description": "sender address for reminder mails to the clients",
+          "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+          "x-locale": {
+            "de_DE": {
+              "pointer": "E-Mail",
+              "messages": {
+                "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+              }
+            }
+          }
+        },
+        "sendEmailReminderEnabled": {
+          "type": "boolean",
+          "description": "activation of sending e-mail reminder"
+        },
+        "sendEmailReminderMinutesBefore": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "default": null,
+          "description": "number of minutes before appointment when reminder e-mail is sent"
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/link"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "preferences": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "notifications": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if sms are allowed"
+                },
+                "identification": {
+                  "type": [
+                    "string"
+                  ],
+                  "description": "usually an email address"
+                },
+                "sendConfirmationEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if confirmation sms are enabled"
+                },
+                "sendReminderEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if reminder sms are enabled"
+                }
+              }
+            }
+          }
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/scope"
+          }
+        }
+      }
+    },
+    "dayoff": {
+      "type": "object",
+      "description": "A dayoff is a free day where a department and its scopes are closed. Beware, if an availability is valid only for one day, it overrules a dayoff, so you can administrate exceptions on a particular scope.",
+      "example": {
+        "id": 1234,
+        "date": 1447924981,
+        "name": "Betriebsfeier"
+      },
+      "required": [
+        "date",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "date": {
+          "type": "number",
+          "description": "unix timestamp"
+        },
+        "lastChange": {
+          "type": "number",
+          "description": "unix timestamp of the last change on this dayoff"
+        },
+        "name": {
+          "type": "string",
+          "description": "e.g. \"Weihnachten\", \"Betriebsfeier\""
+        }
+      }
+    },
+    "exchange": {
+      "type": "object",
+      "description": "Represents an exchanged set of data usuable for statistics. It can include information how the data is changed.",
+      "example": {
+        "period": "day",
+        "firstDay": {
+          "year": 2015,
+          "month": 11,
+          "day": 12
+        },
+        "lastDay": {
+          "year": 2015,
+          "month": 11,
+          "day": 19
+        },
+        "dictionary": [
+          {
+            "position": 0,
+            "variable": "id",
+            "description": "ID for set",
+            "reference": "process.id"
+          },
+          {
+            "position": 1,
+            "variable": "name"
+          },
+          {
+            "position": 2,
+            "variable": "date"
+          }
+        ],
+        "data": [
+          [
+            "1",
+            "test",
+            "2015-11-19"
+          ],
+          [
+            "2",
+            "test2",
+            "2015-11-18"
+          ]
+        ]
+      },
+      "required": [
+        "dictionary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "firstDay": {
+          "$ref": "#/definitions/day"
+        },
+        "lastDay": {
+          "$ref": "#/definitions/day"
+        },
+        "period": {
+          "type": "string",
+          "description": "Type of periodic granularity of data.",
+          "enum": [
+            "minute",
+            "hour",
+            "day",
+            "month",
+            "year"
+          ]
+        },
+        "dictionary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "position": {
+                "type": "integer",
+                "description": "Each row of data is a list of values. The position indicated whicht element in the list is refered by this dictionary entry. Counting begins with zero.",
+                "example": 0
+              },
+              "variable": {
+                "type": "string",
+                "description": "Name of the variable for the given position",
+                "example": "var01"
+              },
+              "description": {
+                "type": "string",
+                "description": "A detailed description explaining the variable and contraints on interpreting the variable."
+              },
+              "type": {
+                "type": "string",
+                "description": "Type of values",
+                "enum": [
+                  "string",
+                  "number",
+                  "date"
+                ]
+              },
+              "reference": {
+                "type": "string",
+                "description": "A reference to another entity to obtain more informations."
+              }
+            }
+          }
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": [
+                "string",
+                "number"
+              ],
+              "description": "For a description on the values, see the 'dictionary'. Non existing "
+            }
+          }
+        },
+        "title": {
+          "type": "string",
+          "description": "Title for the data, might include hints for the data"
+        },
+        "visualization": {
+          "type": "object",
+          "description": "Hints for visualization of the data",
+          "properties": {
+            "xlabel": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "ylabel": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "link": {
+      "type": "object",
+      "description": "Representation of a link.",
+      "example": {
+        "id": 1234,
+        "name": "Zuständigkeitsverzeichnis",
+        "url": "http://www.berlin.de/ba-mitte/zustaendigkeiten/",
+        "target": true,
+        "public": false,
+        "organisation": 0
+      },
+      "required": [
+        "url",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "number",
+          "default": 0
+        },
+        "name": {
+          "type": "string",
+          "default": ""
+        },
+        "url": {
+          "type": "string",
+          "default": ""
+        },
+        "target": {
+          "type": [
+            "number",
+            "boolean"
+          ],
+          "description": "true if url should open in a new window",
+          "default": 0
+        },
+        "public": {
+          "type": [
+            "number",
+            "boolean"
+          ],
+          "description": "true if url should displayed as public link",
+          "default": 0
+        },
+        "organisation": {
+          "type": "number",
+          "default": 0,
+          "description": "greater than 0 if link is available for given organisation"
+        }
+      }
+    },
+    "log": {
+      "type": "object",
+      "description": "A log entry.",
+      "example": {
+        "type": "buerger",
+        "reference": "12345",
+        "ts": "12345678",
+        "message": "A simple log entry",
+        "scope_id": "50"
+      },
+      "required": [
+        "type",
+        "message"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of log entry to group different entries. According to the type of the log entry, the field reference might have a different meaning"
+        },
+        "reference": {
+          "type": "string",
+          "description": "Usually an ID according to the type field"
+        },
+        "ts": {
+          "type": "number",
+          "description": "Unix timestamp marking the time the log entry was written into the database"
+        },
+        "message": {
+          "type": "string",
+          "description": "Descriptive log entry"
+        },
+        "scope_id": {
+          "type": "number",
+          "description": "Scope for which is log created"
+        }
+      }
+    },
+    "mail": {
+      "type": "object",
+      "description": "A mail represents a message to be send to a client and may have different content-types like in a multipart email.",
+      "example": {
+        "id": 1234,
+        "createIP": "145.15.3.10",
+        "createTimestamp": 1447931596000,
+        "department": {
+          "id": 123,
+          "preferences": {
+            "notifications": {
+              "enabled": true,
+              "identification": "terminvereinbarung@mitte.berlin.de",
+              "sendConfirmationEnabled": true,
+              "sendReminderEnabled": true
+            }
+          }
+        },
+        "multipart": [
+          {
+            "queueId": "1234",
+            "mime": "text/html",
+            "content": "<h1>Title</h1><p>Message</p>",
+            "base64": false
+          },
+          {
+            "queueId": "1234",
+            "mime": "text/plain",
+            "content": "Title\nMessage",
+            "base64": false
+          },
+          {
+            "queueId": "1234",
+            "mime": "text/calendar",
+            "content": "QkVHSU46VkNBTEVOREFSDQpYLUxPVFVTLUNIQVJTRVQ6VVRGLTgNClZFUlNJT046Mi4wDQpQUk9ESUQ6Wk1TLUJlcmxpbg0KQkVHSU46VlRJTUVaT05FDQpUWklEOkV1cm9wZS9CZXJsaW4NClgtTElDLUxPQ0FUSU9OOkV1cm9wZS9CZXJsaW4NCkJFR0lOOkRBWUxJR0hUDQpUWk9GRlNFVEZST006KzAxMDANClRaT0ZGU0VUVE86KzAyMDANClRaTkFNRTpDRVNUDQpEVFNUQVJUOjE5NzAwMzI5VDAyMDAwMA0KUlJVTEU6RlJFUT1ZRUFSTFk7SU5URVJWQUw9MTtCWURBWT0tMVNVO0JZTU9OVEg9Mw0KRU5EOkRBWUxJR0hUDQpCRUdJTjpTVEFOREFSRA0KVFpPRkZTRVRGUk9NOiswMjAwDQpUWk9GRlNFVFRPOiswMTAwDQpUWk5BTUU6Q0VUDQpEVFNUQVJUOjE5NzAxMDI1VDAzMDAwMA0KUlJVTEU6RlJFUT1ZRUFSTFk7SU5URVJWQUw9MTtCWURBWT0tMVNVO0JZTU9OVEg9MTANCkVORDpTVEFOREFSRA0KRU5EOlZUSU1FWk9ORQ0KTUVUSE9EOlBVQkxJU0gNCkJFR0lOOlZFVkVOVA0KVUlEOjIwMTYwNDA4LTE2OTUzMA0KRFRTVEFSVDtUWklEPUV1cm9wZS9CZXJsaW46MjAxNjA0MDhUMDkxMDAwDQpEVEVORDtUWklEPUV1cm9wZS9CZXJsaW46MjAxNjA0MDhUMDkyMDAwDQpEVFNUQU1QOjIwMTYwNTEyVDE2MDgwOVoNCkxPQ0FUSU9OOkLDvHJnZXJhbXQgUmF0aGF1cyBUaWVyZ2FydGVuIE1hdGhpbGRlLUphY29iLVBsYXR6LCAxMDU1MSBCZXJsaW4NClNVTU1BUlk6QmVybGluLVRlcm1pbjogMTY5NTMwDQpERVNDUklQVElPTjogU2VociBnZWVocnRlL3IgRnJhdSBvZGVyIEhlcnIgWjY1NjM1IFxuXG4gaGllcm1pdCBiZXN0w6R0aWdlbiB3aXIgSWhuZW4gSWhyZW4gZ2VidWNodGVuIFRlcm1pbiBhbSBGci4gMDguIEFwcmlsIDIwMTYgdW0gMDk6MTAgVWhyXG5cbiBPcnQ6IELDvHJnZXJhbXQgUmF0aGF1cyBUaWVyZ2FydGVuIE1hdGhpbGRlLUphY29iLVBsYXR6LCAxMDU1MSBCZXJsaW5cbiBcblxuIElocmUgVm9yZ2FuZ3NudW1tZXIgaXN0IGRpZSAiMTY5NTMwIlxuIElociBDb2RlIHp1ciBUZXJtaW5hYnNhZ2Ugb2RlciAtw6RuZGVydW5nIGxhdXRldCAiYjNiMCJcblxuIFphaGx1bmdzaGlud2VpczogQW0gU3RhbmRvcnQga2FubiBudXIgbWl0IGdpcm9jYXJkIChtaXQgUElOKSBiZXphaGx0IHdlcmRlbi5cblxuIFNpZSBoYWJlbiBmb2xnZW5kZSBEaWVuc3RsZWlzdHVuZyBhdXNnZXfDpGhsdDogXG4gXG5Bbm1lbGR1bmcgZWluZXIgV29obnVuZ1xuICBcblZvcmF1c3NldHp1bmdlblxuICBcbi0gIHBlcnPDtm5saWNoZSBWb3JzcHJhY2hlIG9kZXIgVmVydHJldHVuZyBkdXJjaCBlaW5lIGFuZGVyZSBQZXJzb24gICBJaHJlIHBlcnPDtm5saWNoZSBWb3JzcHJhY2hlIGlzdCBlcmZvcmRlcmxpY2ggb2RlciBzaWUgd2VyZGVuIGR1cmNoIGVpbmUgYW5kZXJlIFBlcnNvbiB2ZXJ0cmV0ZW4uXG4gQmVpIGRlciBBYmdhYmUgZGVzIEFubWVsZGVmb3JtdWxhcnMgdW5kIGRlciDDvGJyaWdlbiBlcmZvcmRlcmxpY2hlbiBVbnRlcmxhZ2VuIGvDtm5uZW4gU2llIHNpY2ggZHVyY2ggZWluZSBnZWVpZ25ldGUgUGVyc29uIHZlcnRyZXRlbiBsYXNzZW4uIERpZSB2b24gSWhuZW4gYmVhdWZ0cmFndGUgUGVyc29uIG11c3MgaW4gZGVyIExhZ2Ugc2VpbiwgZGllIHp1ciBvcmRudW5nc2dlbcOkw59lbiBGw7xocnVuZyBkZXMgTWVsZGVyZWdpc3RlcnMgZXJmb3JkZXJsaWNoZW4gQXVza8O8bmZ0ZSB6dSBlcnRlaWxlbi4gRGFzIEFubWVsZGVmb3JtdWxhciBtw7xzc2VuIFNpZSBlaWdlbmjDpG5kaWcgdW50ZXJzY2hyZWliZW4uICAgICAgXG5FcmZvcmRlcmxpY2hlIFVudGVybGFnZW5cbiAgXG4tICBJZGVudGl0w6R0c25hY2h3ZWlzICAgUGVyc29uYWxhdXN3ZWlzLCBSZWlzZXBhc3MsIEtpbmRlcnJlaXNlcGFzcyBmw7xyIGRldXRzY2hlIFN0YWF0c2FuZ2Vow7ZyaWdlIG9kZXIgTmF0aW9uYWxwYXNzIG9kZXIgUGFzc2Vyc2F0enBhcGllcmUgZsO8ciBhdXNsw6RuZGlzY2hlIFN0YWF0c2FuZ2Vow7ZyaWdlLlxuIEJpdHRlIGJyaW5nZW4gU2llIGFsbGUgZ2VuYW5udGVuIHVuZCBJaG5lbiB2b3JsaWVnZW5kZW4gRG9rdW1lbnRlIGbDvHIgYWxsZSB1bXppZWhlbmRlbiBQZXJzb25lbiBtaXQuICAgXG4tICBCZWlibGF0dCB6dXIgQW5tZWxkdW5nIChiZWkgbWVocmVyZW4gV29obnVuZ2VuKSAgIE51ciB3ZW5uIFNpZSBJaHJlIGJpc2hlcmlnZSBXb2hudW5nIGluIERldXRzY2hsYW5kIG5pY2h0IGF1ZmdlYmVuIHVuZCBkaWUgbmV1ZSBXb2hudW5nIHp1c8OkdHpsaWNoIGFubWVsZGVuIHdvbGxlbiwgbXVzcyBmw7xyIFNpZSB1bmQgSWhyZSBnZ2YuIG1pdHppZWhlbmRlbiBGYW1pbGllbm1pdGdsaWVkZXIgZWluZSBXb2hudW5nIGFscyBIYXVwdHdvaG51bmcgYmVzdGltbXQgd2VyZGVuLiBCaXR0ZSBsZXNlbiBTaWUgc2ljaCBpbiBkaWVzZW0gRmFsbGUgZGllIEhpbndlaXNlIGF1ZiBkZW0gRm9ybXVsYXIgZHVyY2guICAgXG4tICBBbm1lbGRlZm9ybXVsYXIgICBQZXJzb25lbiBlaW5lciBGYW1pbGllLCBkaWUgYXVzIGRlciBiaXNoZXJpZ2VuIFdvaG51bmcgenVzYW1tZW4gaW4gZGllIG5ldWUgV29obnVuZyB6aWVoZW4sIGvDtm5uZW4gZ2VtZWluc2FtIGVpbiBBbm1lbGRlZm9ybXVsYXIgYmVudXR6ZW4uXG4gQmVpIG1laHIgYWxzIDIgYW56dW1lbGRlbmRlbiBQZXJzb25lbiBiaXR0ZSB3ZWl0ZXJlbiBNZWxkZXNjaGVpbiBiZW51dHplbi5cbiBCaXR0ZSBiZWFjaHRlbiBTaWUgaW0gQmVyZWljaCAiV2VpdGVyZsO8aHJlbmRlIEluZm9ybWF0aW9uZW4iIGRpZSAiV2VpdGVyZsO8aHJlbmRlbiBIaW53ZWlzZSB6dSBBbm1lbGR1bmdlbiIgLiAgIFxuLSAgUGVyc29uZW5zdGFuZHN1cmt1bmRlICAgTnVyIGbDvHIgSWhyZSBlcnN0ZSBBbm1lbGR1bmcgaW4gQmVybGluIGlzdCBlcyB6d2Vja2RpZW5saWNoLCB3ZW5uIFNpZSBlaW5lIFBlcnNvbmVuc3RhbmRzdXJrdW5kZSB6dXIgQW5tZWxkdW5nIG1pdGJyaW5nZW4gdW5kIHZvcmxlZ2VuICh6LkIuIEhlaXJhdHN1cmt1bmRlLCBHZWJ1cnRzdXJrdW5kZSkuICAgXG4tICBFaW56dWdzYmVzdMOkdGlndW5nIGRlcyBXb2hudW5nc2dlYmVycyAoVmVybWlldGVyKSAgIFNlaXQgZGVtIDEuIE5vdmVtYmVyIDIwMTUgaXN0IGRlciBXb2hudW5nc2dlYmVyIHZlcnBmbGljaHRldCwgZGVtIE1lbGRlcGZsaWNodGlnZW4gZGVuIEVpbnp1ZyBpbm5lcmhhbGIgdm9uIHp3ZWkgV29jaGVuIG5hY2ggZGVtIEVpbnp1ZyBzY2hyaWZ0bGljaCBtaXQgVW50ZXJzY2hyaWZ0IHp1IGJlc3TDpHRpZ2VuLiBEaWUgQmVzdMOkdGlndW5nIG11c3MgZm9sZ2VuZGUgRGF0ZW4gZW50aGFsdGVuOiBOYW1lIHVuZCBBbnNjaHJpZnQgZGVzIFdvaG51bmdzZ2ViZXJzLCBFaW56dWdzZGF0dW0sIEFuc2NocmlmdCBkZXIgV29obnVuZyB1bmQgTmFtZW4gZGVyIG1lbGRlcGZsaWNodGlnZW4gUGVyc29uZW4uIERpZSBWb3JsYWdlIGVpbmVzIE1pZXR2ZXJ0cmFnZXMgZXJzZXR6dCBuaWNodCBkaWUgRWluenVnc2Jlc3TDpHRpZ3VuZy5cbiBFaW4gTXVzdGVyIGbDvHIgZGllIEVpbnp1Z3NiZXN0w6R0aWd1bmcgZGVzIFdvaG51bmdzZ2ViZXJzIHN0ZWh0IElobmVuIHVudGVyICJGb3JtdWxhcmUiIHp1ciBWZXJmw7xndW5nLiAgICAgIFxuR2Viw7xocmVuXG4gZ2Viw7xocmVuZnJlaTsgZGFzIGdpbHQgYXVjaCBmw7xyIGRpZSBNZWxkZWJlc3TDpHRpZ3VuZy4gXG4gU29sbHRlbiBTaWUgZGVuIFRlcm1pbiBuaWNodCB3YWhybmVobWVuIGvDtm5uZW4sIHNhZ2VuIFNpZSBpaG4gYml0dGUgYWIuIFxuXG4gRGllcyBrw7ZubmVuIFNpZSDDvGJlciB1bnNlcmUgSW50ZXJuZXRidWNodW5nc3NlaXRlIGh0dHBzOi8vc2VydmljZS1iZXJsaW4vdGVybWludmVyZWluYmFydW5nL3Rlcm1pbi9tYW5hZ2UvMTY5NTMwLyB1bnRlciBBbmdhYmUgSWhyZXIgVm9yZ2FuZ3NudW1tZXIgIjE2OTUzMCIgdW5kIElocmVzIHBlcnPDtm5saWNoZW4gQWJzYWdlLUNvZGVzICJiM2IwIiBlcmxlZGlnZW4uXG5cbiBcbiBNaXQgZnJldW5kbGljaGVtIEdydcOfXG4gSWhyZSBUZXJtaW52ZXJ3YWx0dW5nIGRlcyBMYW5kZXMgQmVybGluIFxuXG4gaHR0cHM6Ly9zZXJ2aWNlLWJlcmxpbi90ZXJtaW52ZXJlaW5iYXJ1bmcvIA0KQkVHSU46VkFMQVJNDQpBQ1RJT046RElTUExBWQ0KVFJJR0dFUjotUDFEDQpERVNDUklQVElPTjpFcmlubmVydW5nDQpFTkQ6VkFMQVJNDQpFTkQ6VkVWRU5UDQpFTkQ6VkNBTEVOREFS",
+            "base64": true
+          }
+        ],
+        "process": {
+          "clients": [
+            {
+              "familyName": "Max Mustermann",
+              "email": "max@service.berlin.de",
+              "telephone": "030 115"
+            }
+          ],
+          "id": 123456,
+          "authKey": "1234",
+          "reminderTimestamp": 1447931730000,
+          "scope": {
+            "id": 151,
+            "preferences": {
+              "appointment": {
+                "deallocationDuration": "5",
+                "endInDaysDefault": "60",
+                "multipleSlotsEnabled": "1",
+                "reservationDuration": "5",
+                "startInDaysDefault": "0"
+              },
+              "client": {
+                "alternateAppointmentUrl": "",
+                "appointmentsPerMail": "",
+                "slotsPerAppointment": "",
+                "whitelistedMails": "",
+                "amendmentActivated": "0",
+                "amendmentLabel": "",
+                "customTextActivated": "0",
+                "customTextfieldLabel": "",
+                "emailRequired": "1",
+                "emailConfirmationActivated": "1",
+                "adminMailOnAppointment": "0",
+                "adminMailOnDeleted": "0",
+                "adminMailOnUpdated": "0",
+                "telephoneActivated": "1",
+                "telephoneRequired": "1"
+              },
+              "notifications": {
+                "confirmationContent": "",
+                "enabled": "1",
+                "headsUpContent": "",
+                "headsUpTime": "0"
+              },
+              "pickup": {
+                "alternateName": "Ausgabe",
+                "isDefault": "0"
+              },
+              "queue": {
+                "callCountMax": "0",
+                "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
+                "firstNumber": "1000",
+                "lastNumber": "1999",
+                "processingTimeAverage": "00:15:00",
+                "publishWaitingTimeEnabled": "1",
+                "statisticsEnabled": "1"
+              },
+              "survey": {
+                "emailContent": "",
+                "enabled": "0",
+                "label": ""
+              },
+              "ticketprinter": {
+                "confirmationEnabled": "0",
+                "deactivatedText": "",
+                "notificationsAmendmentEnabled": "0",
+                "notificationsDelay": "0"
+              },
+              "workstation": {
+                "emergencyEnabled": "0"
+              }
+            }
+          },
+          "status": "confirmed"
+        },
+        "subject": "Example Mail",
+        "client": {
+          "familyName": "Max Mustermann",
+          "email": "max@service.berlin.de"
+        }
+      },
+      "required": [
+        "department",
+        "multipart",
+        "process",
+        "subject",
+        "client"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "createIP": {
+          "type": "string",
+          "description": "IP Address of the creator"
+        },
+        "createTimestamp": {
+          "type": "number",
+          "description": "unix timestamp representing creation of the notification"
+        },
+        "department": {
+          "$ref": "#/definitions/department"
+        },
+        "multipart": {
+          "type": "array",
+          "description": "message parts to send",
+          "items": {
+            "$ref": "#/definitions/mimepart"
+          }
+        },
+        "process": {
+          "$ref": "#/definitions/process"
+        },
+        "subject": {
+          "type": "string",
+          "description": "Subject part for the mail"
+        },
+        "client": {
+          "$ref": "#/definitions/client"
+        }
+      }
+    },
+    "mimepart": {
+      "type": "object",
+      "description": "A message part to send. For images an other binary files, the content can be encoded as base64.",
+      "example": {
+        "queueId": 1234,
+        "mime": "text/html",
+        "content": "<h1>Title</h1><p>Message</p>",
+        "base64": false
+      },
+      "required": [
+        "mime",
+        "content"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "queueId": {
+          "type": "number",
+          "description": "optional ID of queued message item, this part belongs to"
+        },
+        "mime": {
+          "type": "string",
+          "description": "The mime type used in 'Content-Type', should include charset if necessary. If no charset is given, utf-8 is expected."
+        },
+        "content": {
+          "type": "string",
+          "description": "content to transfer"
+        },
+        "base64": {
+          "type": "boolean",
+          "default": false,
+          "description": "True if the content is encoded as base64."
+        }
+      }
+    },
+    "metaresult": {
+      "type": "object",
+      "description": "The meta result is used in HTTP-API-requests and has only debugging purposes.",
+      "example": {
+        "error": false,
+        "generated": "2015-11-20T18:01:04+01:00",
+        "length": 1,
+        "server": "prod-zmsapi-01"
+      },
+      "properties": {
+        "error": {
+          "type": "boolean",
+          "description": "true if request was not successful"
+        },
+        "generated": {
+          "type": "string",
+          "description": "iso8601 date time string of generation on the server",
+          "example": "2015-11-20T18:01:04+01:00"
+        },
+        "length": {
+          "type": "number",
+          "description": "number of items in the data block"
+        },
+        "message": {
+          "type": "string",
+          "description": "contains additional information if property error is true"
+        },
+        "retryAfter": {
+          "type": "string",
+          "description": "contains retry after information on status code 429"
+        },
+        "status": {
+          "type": "string",
+          "description": "current status code"
+        },
+        "route": {
+          "type": "string",
+          "description": "current route"
+        },
+        "reducedData": {
+          "type": "boolean",
+          "description": "has reduced data, do not use for saving data"
+        },
+        "server": {
+          "type": "string",
+          "description": "identifier for the responding server"
+        },
+        "exception": {
+          "type": "string",
+          "description": "name of thrown exception"
+        }
+      }
+    },
+    "notification": {
+      "type": "object",
+      "description": "A notification is a message to send to a client. Compared to a mail, it is a short text message, usually a SMS.",
+      "example": {
+        "id": 1234,
+        "createIP": "145.15.3.10",
+        "createTimestamp": 1447931596,
+        "department": {
+          "id": 74,
+          "preferences": {
+            "notifications": {
+              "enabled": true,
+              "identification": "terminvereinbarung@mitte.berlin.de",
+              "sendConfirmationEnabled": true,
+              "sendReminderEnabled": true
+            }
+          },
+          "email": "terminvereinbarung@mitte.berlin.de"
+        },
+        "message": "Denken Sie an ihren Termin mit der Nummer 123456",
+        "process": {
+          "clients": [
+            {
+              "familyName": "Max Mustermann",
+              "email": "max@service.berlin.de",
+              "telephone": "030 115"
+            }
+          ],
+          "id": 123456,
+          "authKey": "abcd",
+          "reminderTimestamp": 1447931730000,
+          "scope": {
+            "id": 123
+          },
+          "status": "confirmed"
+        },
+        "client": [
+          {
+            "familyName": "Max Mustermann",
+            "telephone": "030 115"
+          }
+        ]
+      },
+      "required": [
+        "department",
+        "message",
+        "process",
+        "client"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "createIP": {
+          "type": "string",
+          "description": "IP Address of the creator"
+        },
+        "createTimestamp": {
+          "type": "number",
+          "description": "unix timestamp representing creation of the notification"
+        },
+        "department": {
+          "$ref": "#/definitions/department"
+        },
+        "message": {
+          "type": "string",
+          "description": "Short message to send. Beware, on using SMS, long messages might generate multiple SMS messages."
+        },
+        "process": {
+          "$ref": "#/definitions/process"
+        },
+        "client": {
+          "$ref": "#/definitions/client"
+        }
+      }
+    },
+    "organisation": {
+      "type": "object",
+      "description": "An organisation is the top unit to group departments with their scopes.",
+      "example": {
+        "contact": {
+          "city": "Schönefeld",
+          "country": "Germany",
+          "lat": 52.345,
+          "lon": 13.456,
+          "name": "Flughafen Schönefeld, Landebahn",
+          "postalCode": "15831",
+          "region": "Brandenburg",
+          "street": "Zaunstraße",
+          "streetNumber": "1"
+        },
+        "departments": [
+          {
+            "id": 123
+          }
+        ],
+        "id": 456,
+        "name": "Flughafen",
+        "preferences": {
+          "ticketPrinterProtectionEnabled": false
+        },
+        "ticketprinters": [
+          {
+            "enabled": true,
+            "hash": "e744a234c1",
+            "id": 1234,
+            "lastUpdate": 1447925326000,
+            "name": "Eingangsbereich links"
+          }
+        ]
+      },
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "contact": {
+          "$ref": "#/definitions/contact"
+        },
+        "departments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/department"
+          }
+        },
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "preferences": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ticketPrinterProtectionEnabled": {
+              "type": [
+                "boolean",
+                "number"
+              ],
+              "description": "true if protection for ticket printer is enabled"
+            }
+          }
+        },
+        "ticketprinters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ticketprinter"
+          }
+        }
+      }
+    },
+    "owner": {
+      "type": "object",
+      "description": "An owner is usually a contract partner using the ZMS. The base scopes of the ZMS are organised in an hierarchy, with the Owner on top. The hierarchy looks like this:\n1. owner\n2. organisation (by law or area)\n3. department (by solving different requests)\n4. scope (by building or location)\n5. workstation (by person or room)\n",
+      "example": {
+        "contact": {
+          "city": "Schönefeld",
+          "country": "Germany",
+          "lat": 52.345,
+          "lon": 13.456,
+          "name": "Flughafen Schönefeld, Landebahn",
+          "postalCode": "15831",
+          "region": "Brandenburg",
+          "street": "Zaunstraße",
+          "streetNumber": "1"
+        },
+        "id": 7,
+        "name": "Berlin-Brandenburg",
+        "url": "http://service.berlin.de",
+        "organisations": [
+          {
+            "id": 456
+          }
+        ]
+      },
+      "additionalProperties": false,
+      "properties": {
+        "contact": {
+          "$ref": "#/definitions/contact"
+        },
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "organisations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/organisation"
+          }
+        }
+      }
+    },
+    "process": {
+      "type": "object",
+      "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
+      "example": {
+        "appointments": [
+          {
+            "date": 1447869171,
+            "scope": {
+              "id": 123
+            },
+            "slotCount": 2
+          }
+        ],
+        "authKey": "abcd",
+        "clients": [
+          {
+            "familyName": "Max Mustermann",
+            "email": "max@service.berlin.de",
+            "telephone": "030 115"
+          }
+        ],
+        "createIP": "145.15.3.10",
+        "createTimestamp": 1447931596,
+        "lastChange": 1447931596,
+        "id": 123456,
+        "queue": {
+          "arrivalTime": 1447922893,
+          "callCount": 1,
+          "callTime": 1447922938,
+          "lastCallTime": 1447922938,
+          "number": "123",
+          "waitingTime": 2,
+          "wayTime": 2,
+          "withAppointment": 1,
+          "status": "queued"
+        },
+        "reminderTimestamp": 1447931730,
+        "requests": [
+          {
+            "id": "120335",
+            "link": "http://service.berlin.de/dienstleistung/120335/",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb",
+            "group": "Meldewesen und Ordnung",
+            "data": {
+              "authorities": [
+                {
+                  "id": "12676",
+                  "name": "Bezirksamt Steglitz-Zehlendorf",
+                  "webinfo": "http://www.berlin.de/ba-steglitz-zehlendorf/"
+                },
+                {
+                  "id": "12677",
+                  "name": "Bezirksamt Tempelhof-Schöneberg",
+                  "webinfo": "http://www.berlin.de/ba-tempelhof-schoeneberg/"
+                },
+                {
+                  "id": "12678",
+                  "name": "Bezirksamt Treptow-Köpenick",
+                  "webinfo": "http://www.berlin.de/ba-treptow-koepenick/"
+                }
+              ],
+              "locations": [
+                {
+                  "location": "325341",
+                  "appointment": {
+                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=325341&anliegen[]=120335",
+                    "slots": "0",
+                    "external": false,
+                    "multiple": "0",
+                    "allowed": true
+                  },
+                  "hint": ""
+                },
+                {
+                  "location": "324434",
+                  "appointment": {
+                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=324434&anliegen[]=120335",
+                    "slots": "0",
+                    "external": false,
+                    "multiple": "0",
+                    "allowed": true
+                  },
+                  "hint": ""
+                },
+                {
+                  "location": "325657",
+                  "appointment": {
+                    "link": "",
+                    "slots": "0",
+                    "external": false,
+                    "multiple": "0",
+                    "allowed": false
+                  },
+                  "hint": ""
+                }
+              ],
+              "meta": {
+                "lastupdate": "2016-02-04T09:45:44+01:00",
+                "locale": "de",
+                "keywords": "Abmeldung, Wohnungsabmeldung, Wegzug, abmelden, Wohnsitz, Wohnung abmelden, Wohnungswechsel, Umzug, Adressänderung, ummelden"
+              },
+              "process_time": "Bei persönlicher Vorsprache in einem Bürgeramt wird die Abmeldung abschließend bearbeitet.",
+              "requirements": [
+                {
+                  "description": "Die Abmeldung kann auch auf dem Postweg erfolgen.<br />\nBitte benutzen Sie dazu aber das angebotene Formular.<br />\nBei mehr als 3 abzumeldenden Personen benutzen Sie bitte weitere Meldescheine.",
+                  "name": "Abmeldung bei der Meldebehörde",
+                  "link": ""
+                },
+                {
+                  "description": "Seit dem 1. November 2015 ist der Wohnungsgeber verpflichtet, dem Meldepflichtigen den Auszug bis zu 7 Tage vor oder nach dem Auszug schriftlich mit Unterschrift zu bestätigen. Die Bestätigung muss folgende Daten enthalten: Name und Anschrift des Wohnungsgebers, Auszugsdatum, Anschrift der Wohnung und Namen der meldepflichtigen Personen.<br />\nEin Muster für die Auszugsbestätigung des Wohnungsgebers steht Ihnen unter &quot;Formulare&quot; zur Verfügung.",
+                  "name": "Auszugsbestätigung des Wohnungsgebers (Vermieter)",
+                  "link": ""
+                }
+              ],
+              "responsibility": "Diese Dienstleistung erhalten Sie in allen Berliner Bürgerämtern.",
+              "forms": [
+                {
+                  "description": false,
+                  "name": "Abmeldung bei der Meldebehörde",
+                  "link": "http://www.berlin.de/formularserver/formular.php?402609"
+                },
+                {
+                  "description": false,
+                  "name": "Muster: Auszugsbestätigung des Wohnungsgebers (Vermieter)",
+                  "link": "http://www.berlin.de/formularserver/formular.php?402544"
+                }
+              ],
+              "fees": "gebührenfrei; dies gilt auch für die Abmeldebestätigung.",
+              "prerequisites": [
+                {
+                  "description": false,
+                  "name": "keine",
+                  "link": ""
+                }
+              ],
+              "id": "120335",
+              "description": "<ul class=\"list\"><li>Sie geben eine Berliner Wohnung auf, weil Sie in das Ausland verziehen</li><br />\n</ul><strong>oder</strong><br />\n<ul class=\"list\"><li>Sie geben eine von mehreren Wohnungen in Deutschland auf, für die Sie angemeldet sind <strong>und</strong> die Berliner Wohnung bleibt bestehen</li></ul><strong>oder</strong><br />\n<ul class=\"list\"><li>Sie geben eine von mehreren Berliner Wohnungen auf, für die Sie angemeldet sind</li><br />\n</ul>Sie müssen sich bei der Meldebehörde in Berlin nur bei einem Wegzug ins Ausland abmelden oder bei der Aufgabe einer Haupt- oder Nebenwohnung, ohne dass Sie in eine andere Wohnung im Inland einziehen.<br />\nBeim Wegzug in das Ausland gilt, dass Sie aus dieser Wohnung ausziehen und dort zukünftig nicht wieder wohnen werden - befristete Auslandsaufenthalte, z.B. zu Studienzwecken bedingen keine Abmeldung.<br />\n<br />\n<br />\nDie Abmeldung kann im Zeitraum von 7 Tagen vor, muss aber bis 14 Tage nach dem Auszug vorgenommen werden.<br />\nSie erhalten eine Abmeldebestätigung.<br />\n<br />\nHinweis:<br />\nWenn Sie jedoch innerhalb Deutschlands nur umziehen wollen, brauchen Sie sich lediglich bei der Meldebehörde Ihrer neuen Wohnung anmelden.",
+              "leika": "99115005070000",
+              "links": [
+                {
+                  "description": false,
+                  "name": "Informationen zum Bundesmeldegesetz",
+                  "link": "http://www.bmi.bund.de/DE/Themen/Moderne-Verwaltung/Verwaltungsrecht/Meldewesen/Bundesmeldegesetz/bundesmeldegesetz_node.html"
+                }
+              ],
+              "responsibility_all": true,
+              "name": "Abmeldung einer Wohnung",
+              "onlineprocessing": {
+                "description": false,
+                "link": ""
+              },
+              "legal": [
+                {
+                  "description": false,
+                  "name": "Ab dem 1. November 2015: Bundesmeldegesetz",
+                  "link": "http://www.gesetze-im-internet.de/bmg/"
+                }
+              ],
+              "relation": {
+                "root_topic": "324835"
+              },
+              "appointment": {
+                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&anliegen[]=120335&dienstleisterlist=327316,327312,327314,327346,122238,327348,122252,327338,122260,327340,122262,122254,327278,327274,327276,327294,327290,327292,122291,327270,122285,327266,122286,327264,122296,327268,150230,327282,327286,327284,122312,122314,122304,327330,122311,327334,122309,327332,317869,324433,325341,324434,327352,122283,327354,122276,327324,122274,327326,122267,327328,327318,327320,327322,122208,327298,122226,327300&herkunft="
+              }
+            }
+          }
+        ],
+        "scope": {
+          "id": 123,
+          "contact": {
+            "city": "Schönefeld",
+            "country": "Germany",
+            "lat": 52.345,
+            "lon": 13.456,
+            "name": "Flughafen Schönefeld, Landebahn",
+            "postalCode": "15831",
+            "region": "Brandenburg",
+            "street": "Zaunstraße",
+            "streetNumber": "1"
+          },
+          "hint": "Standort aus Beispiel-Termin",
+          "provider": {
+            "id": 123,
+            "source": "dldb",
+            "name": "Bürgeramt 1",
+            "displayName": "001",
+            "contact": {
+              "name": "Bürgeramt 1",
+              "street": "Unter den Linden",
+              "streetNumber": "1",
+              "postalCode": "12345",
+              "city": "Berlin"
+            }
+          },
+          "preferences": {
+            "appointment": {
+              "deallocationDuration": 10,
+              "endInDaysDefault": 60,
+              "multipleSlotsEnabled": true,
+              "notificationConfirmationEnabled": true,
+              "notificationHeadsUpEnabled": true,
+              "reservationDuration": 5,
+              "startInDaysDefault": 2
+            },
+            "client": {
+              "alternateAppointmentUrl": "https://service.berlin.de",
+              "appointmentsPerMail": "",
+              "slotsPerAppointment": "",
+              "whitelistedMails": "",
+              "amendmentLabel": "Zusatzinformationen zum Anliegen",
+              "customTextfieldLabel": "Zusatzfeld zum Anliegen",
+              "emailRequired": false,
+              "emailConfirmationActivated": true,
+              "adminMailOnAppointment": false,
+              "adminMailOnDeleted": false,
+              "adminMailOnUpdated": false,
+              "telephoneActivated": true,
+              "telephoneRequired": false
+            },
+            "notifications": {
+              "confirmationContent": "Ihr Termin wurde erfolgreich gebucht mit der Nummer: ",
+              "headsUpTime": 15,
+              "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
+            },
+            "pickup": {
+              "alternateName": "Ausgabe von Dokumenten",
+              "isDefault": false
+            },
+            "queue": {
+              "callCountMax": 3,
+              "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
+              "firstNumber": 300,
+              "lastNumber": 500,
+              "publishWaitingTimeEnabled": true,
+              "processingTimeAverage": 12,
+              "statisticsEnabled": true
+            },
+            "survey": {
+              "emailContent": "###SALUTATION###, <br /><br />wir würden uns sehr freuen, wenn Sie an der Umfrage teilnehmen würden: <a href=\"http://in.berlin.de/umfrage/?token=###TOKEN###\">Zur Umfrage</a>. <br /><br /><strong>Standort</strong>: ###PROVIDERNAME### (###SCOPE###/###PROVIDERID###)<br/><strong>Termin</strong>: ###DATE### ###TIME### <br /><strong>gebucht am</strong>: ###RESERVETIME### <br /><strong>Dienstleistungen</strong/>: ###REQUESTCSV###.",
+              "enabled": true,
+              "label": "Teilnahme an der Kundenzufriedensheits-Umfrage"
+            },
+            "ticketprinter": {
+              "buttonName": "Bürgeramt",
+              "confirmationEnabled": true,
+              "deactivatedText": "Dies Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis.",
+              "notificationsAmendmentEnabled": true,
+              "notificationsEnabled": true,
+              "notificationsDelay": 30
+            },
+            "workstation": {
+              "emergencyEnabled": false,
+              "emergencyRefreshInterval": 10
+            }
+          }
+        },
+        "status": "confirmed"
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "amendment": {
+          "type": [
+            "string"
+          ],
+          "description": "additional information for this process from the client",
+          "default": ""
+        },
+        "customTextfield": {
+          "type": [
+            "string"
+          ],
+          "description": "additional textfield for this process from the client",
+          "default": ""
+        },
+        "apiclient": {
+          "$ref": "#/definitions/apiclient"
+        },
+        "appointments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/appointment"
+          }
+        },
+        "archiveId": {
+          "type": "number",
+          "description": "Number is used to identify a process in an archive (for statistical purposes)\n"
+        },
+        "authKey": {
+          "type": "string",
+          "description": "key for client to delete or change process"
+        },
+        "clients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/client"
+          }
+        },
+        "createIP": {
+          "type": "string",
+          "description": "IP Address of the creator"
+        },
+        "createTimestamp": {
+          "type": "number",
+          "description": "unix timestamp representing creation of the process"
+        },
+        "id": {
+          "type": "number",
+          "description": "Number is used to identify appointments like on call displays\n",
+          "minimum": 1000
+        },
+        "lastChange": {
+          "type": "number",
+          "description": "unix timestamp of the last change on this process"
+        },
+        "showUpTime": {
+          "type": "string",
+          "description": "unix timestamp of showing up after call"
+        },
+        "processingTime": {
+          "type": "string",
+          "description": "unix timestamp that cumulates time each time a processes is called"
+        },
+        "timeoutTime": {
+          "type": "string",
+          "description": "unix timestamp of after a call is entered or re-entered into the queue"
+        },
+        "finishTime": {
+          "type": "string",
+          "description": "unix timestamp og time when process has been finished"
+        },
+        "queue": {
+          "$ref": "#/definitions/queue"
+        },
+        "reminderTimestamp": {
+          "type": "number",
+          "description": "timestamp of last reminder message"
+        },
+        "requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/request"
+          }
+        },
+        "scope": {
+          "$ref": "#/definitions/scope"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "free",
+            "reserved",
+            "preconfirmed",
+            "confirmed",
+            "queued",
+            "called",
+            "processing",
+            "pending",
+            "pickup",
+            "finished",
+            "missed",
+            "parked",
+            "archived",
+            "deleted",
+            "anonymized",
+            "blocked",
+            "conflict"
+          ],
+          "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return to fetch papers\n  * pickup: client is called to fetch papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n  * deleted: blocking appointment time\n  * anonymized: for statistically purposes only\n  * blocked: to avoid the reuse of IDs on the same day\n  * conflict: mark process as conflict for check functions\n"
+        }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "description": "A provider usually represents an organisational entity offering services to clients. In most cases, it is a building or a special location hosting an organisation which provides the services. A service is represented by a request in the ZMS.",
+      "example": {
+        "contact": {
+          "city": "Schönefeld",
+          "country": "Germany",
+          "lat": 52.345,
+          "lon": 13.456,
+          "name": "Flughafen Schönefeld, Landebahn",
+          "postalCode": "15831",
+          "region": "Brandenburg",
+          "street": "Zaunstraße",
+          "streetNumber": "1"
+        },
+        "id": 21334,
+        "name": "Bürgeramt Mitte",
+        "source": "dldb",
+        "link": "https://service.berlin.de/standort/122280/",
+        "displayName": "001"
+      },
+      "required": [
+        "id",
+        "source",
+        "name"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "contact": {
+          "$ref": "#/definitions/contact"
+        },
+        "id": {
+          "default": "",
+          "type": "number",
+          "description": "reference to an id"
+        },
+        "link": {
+          "default": "",
+          "type": "string",
+          "description": "URI with detailed information for the provider"
+        },
+        "data": {
+          "type": [
+            "object",
+            "array"
+          ],
+          "description": "source dependant additional properties",
+          "additionalProperties": true
+        },
+        "name": {
+          "default": "",
+          "type": "string",
+          "description": "name of the referenced service (explicit redundant)"
+        },
+        "source": {
+          "default": "",
+          "type": "string",
+          "description": "source of provider to resolve reference id"
+        },
+        "displayName": {
+          "default": "",
+          "type": "string",
+          "description": "provider display name"
+        }
+      }
+    },
+    "queue": {
+      "type": "object",
+      "description": "A queue represents a waiting queue for processes/clients.",
+      "example": {
+        "arrivalTime": 1447922893,
+        "callCount": 1,
+        "callTime": 1447922938,
+        "lastCallTime": 0,
+        "number": "123",
+        "waitingTime": 2,
+        "wayTime": 2,
+        "withAppointment": false,
+        "status": "confirmed"
+      },
+      "required": [
+        "arrivalTime",
+        "number"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "arrivalTime": {
+          "type": "number",
+          "description": "unix timestamp when client was added to the queue or appointment time"
+        },
+        "callCount": {
+          "type": "number",
+          "description": "number of calls for the client to appear at the workstation"
+        },
+        "callTime": {
+          "type": "number",
+          "description": "unix timestamp of last call"
+        },
+        "destination": {
+          "type": "string",
+          "description": "Text to display on calling the queued item, usually a room number."
+        },
+        "destinationHint": {
+          "type": "string",
+          "description": "Small hint to display on calling the queued item."
+        },
+        "lastCallTime": {
+          "type": "number",
+          "description": "unix timestamp of last call while client not appeared and process was not stopped"
+        },
+        "number": {
+          "type": [
+            "string",
+            "number"
+          ],
+          "description": "number to display on a call display"
+        },
+        "waitingTime": {
+          "type": "number",
+          "description": "minutes since arrival of client"
+        },
+        "wayTime": {
+          "type": "number",
+          "description": "minutes since arrival of client"
+        },
+        "waitingTimeEstimate": {
+          "type": "number",
+          "description": "estimated time in minutes to wait for a call"
+        },
+        "waitingTimeOptimistic": {
+          "type": "number",
+          "description": "estimated time in minutes to wait for a call (optimistic value for views with timespan)"
+        },
+        "withAppointment": {
+          "type": "boolean",
+          "description": "true if corresponding process has an appointment",
+          "default": false
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "confirmed",
+            "preconfirmed",
+            "queued",
+            "called",
+            "deleted",
+            "processing",
+            "pending",
+            "pickup",
+            "finished",
+            "fake",
+            "missed",
+            "parked"
+          ],
+          "description": "Status of the process. The following values are possible:\n  * confirmed: confirmed appointment but not in queue\n * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * deleted: client is deleted\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * pickup: show pending on call display\n  * reserved: appointment is reserved\n  * finished: successfully processed\n  * fake: dummy entry for getting infos about queue\n  * missed: no client appeared\n"
+        }
+      }
+    },
+    "request": {
+      "type": "object",
+      "description": "A request is usually a representation of a service offered by a provider.",
+      "example": {
+        "id": "120335",
+        "link": "http://service.berlin.de/dienstleistung/120335/",
+        "name": "Abmeldung einer Wohnung",
+        "source": "dldb",
+        "group": "Meldewesen und Ordnung",
+        "data": {
+          "authorities": [
+            {
+              "id": "12676",
+              "name": "Bezirksamt Steglitz-Zehlendorf",
+              "webinfo": "http://www.berlin.de/ba-steglitz-zehlendorf/"
+            },
+            {
+              "id": "12677",
+              "name": "Bezirksamt Tempelhof-Schöneberg",
+              "webinfo": "http://www.berlin.de/ba-tempelhof-schoeneberg/"
+            },
+            {
+              "id": "12678",
+              "name": "Bezirksamt Treptow-Köpenick",
+              "webinfo": "http://www.berlin.de/ba-treptow-koepenick/"
+            }
+          ],
+          "locations": [
+            {
+              "location": "325341",
+              "appointment": {
+                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=325341&anliegen[]=120335",
+                "slots": "0",
+                "external": false,
+                "multiple": "0",
+                "allowed": true
+              },
+              "hint": ""
+            },
+            {
+              "location": "324434",
+              "appointment": {
+                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=324434&anliegen[]=120335",
+                "slots": "0",
+                "external": false,
+                "multiple": "0",
+                "allowed": true
+              },
+              "hint": ""
+            },
+            {
+              "location": "325657",
+              "appointment": {
+                "link": "",
+                "slots": "0",
+                "external": false,
+                "multiple": "0",
+                "allowed": false
+              },
+              "hint": ""
+            }
+          ],
+          "meta": {
+            "lastupdate": "2016-02-04T09:45:44+01:00",
+            "locale": "de",
+            "keywords": "Abmeldung, Wohnungsabmeldung, Wegzug, abmelden, Wohnsitz, Wohnung abmelden, Wohnungswechsel, Umzug, Adressänderung, ummelden"
+          },
+          "process_time": "Bei persönlicher Vorsprache in einem Bürgeramt wird die Abmeldung abschließend bearbeitet.",
+          "requirements": [
+            {
+              "description": "Die Abmeldung kann auch auf dem Postweg erfolgen.<br />\nBitte benutzen Sie dazu aber das angebotene Formular.<br />\nBei mehr als 3 abzumeldenden Personen benutzen Sie bitte weitere Meldescheine.",
+              "name": "Abmeldung bei der Meldebehörde",
+              "link": ""
+            },
+            {
+              "description": "Seit dem 1. November 2015 ist der Wohnungsgeber verpflichtet, dem Meldepflichtigen den Auszug bis zu 7 Tage vor oder nach dem Auszug schriftlich mit Unterschrift zu bestätigen. Die Bestätigung muss folgende Daten enthalten: Name und Anschrift des Wohnungsgebers, Auszugsdatum, Anschrift der Wohnung und Namen der meldepflichtigen Personen.<br />\nEin Muster für die Auszugsbestätigung des Wohnungsgebers steht Ihnen unter &quot;Formulare&quot; zur Verfügung.",
+              "name": "Auszugsbestätigung des Wohnungsgebers (Vermieter)",
+              "link": ""
+            }
+          ],
+          "responsibility": "Diese Dienstleistung erhalten Sie in allen Berliner Bürgerämtern.",
+          "forms": [
+            {
+              "description": false,
+              "name": "Abmeldung bei der Meldebehörde",
+              "link": "http://www.berlin.de/formularserver/formular.php?402609"
+            },
+            {
+              "description": false,
+              "name": "Muster: Auszugsbestätigung des Wohnungsgebers (Vermieter)",
+              "link": "http://www.berlin.de/formularserver/formular.php?402544"
+            }
+          ],
+          "fees": "gebührenfrei; dies gilt auch für die Abmeldebestätigung.",
+          "prerequisites": [
+            {
+              "description": false,
+              "name": "keine",
+              "link": ""
+            }
+          ],
+          "id": "120335",
+          "description": "<ul class=\"list\"><li>Sie geben eine Berliner Wohnung auf, weil Sie in das Ausland verziehen</li><br />\n</ul><strong>oder</strong><br />\n<ul class=\"list\"><li>Sie geben eine von mehreren Wohnungen in Deutschland auf, für die Sie angemeldet sind <strong>und</strong> die Berliner Wohnung bleibt bestehen</li></ul><strong>oder</strong><br />\n<ul class=\"list\"><li>Sie geben eine von mehreren Berliner Wohnungen auf, für die Sie angemeldet sind</li><br />\n</ul>Sie müssen sich bei der Meldebehörde in Berlin nur bei einem Wegzug ins Ausland abmelden oder bei der Aufgabe einer Haupt- oder Nebenwohnung, ohne dass Sie in eine andere Wohnung im Inland einziehen.<br />\nBeim Wegzug in das Ausland gilt, dass Sie aus dieser Wohnung ausziehen und dort zukünftig nicht wieder wohnen werden - befristete Auslandsaufenthalte, z.B. zu Studienzwecken bedingen keine Abmeldung.<br />\n<br />\n<br />\nDie Abmeldung kann im Zeitraum von 7 Tagen vor, muss aber bis 14 Tage nach dem Auszug vorgenommen werden.<br />\nSie erhalten eine Abmeldebestätigung.<br />\n<br />\nHinweis:<br />\nWenn Sie jedoch innerhalb Deutschlands nur umziehen wollen, brauchen Sie sich lediglich bei der Meldebehörde Ihrer neuen Wohnung anmelden.",
+          "leika": "99115005070000",
+          "links": [
+            {
+              "description": false,
+              "name": "Informationen zum Bundesmeldegesetz",
+              "link": "http://www.bmi.bund.de/DE/Themen/Moderne-Verwaltung/Verwaltungsrecht/Meldewesen/Bundesmeldegesetz/bundesmeldegesetz_node.html"
+            }
+          ],
+          "responsibility_all": true,
+          "name": "Abmeldung einer Wohnung",
+          "onlineprocessing": {
+            "description": false,
+            "link": ""
+          },
+          "legal": [
+            {
+              "description": false,
+              "name": "Ab dem 1. November 2015: Bundesmeldegesetz",
+              "link": "http://www.gesetze-im-internet.de/bmg/"
+            }
+          ],
+          "relation": {
+            "root_topic": "324835"
+          },
+          "appointment": {
+            "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&anliegen[]=120335&dienstleisterlist=327316,327312,327314,327346,122238,327348,122252,327338,122260,327340,122262,122254,327278,327274,327276,327294,327290,327292,122291,327270,122285,327266,122286,327264,122296,327268,150230,327282,327286,327284,122312,122314,122304,327330,122311,327334,122309,327332,317869,324433,325341,324434,327352,122283,327354,122276,327324,122274,327326,122267,327328,327318,327320,327322,122208,327298,122226,327300&herkunft="
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "source"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "reference to a service",
+          "default": ""
+        },
+        "link": {
+          "type": "string",
+          "description": "URI with detailed information for the request",
+          "default": ""
+        },
+        "data": {
+          "type": [
+            "object",
+            "array"
+          ],
+          "description": "source dependant additional properties",
+          "additionalProperties": true
+        },
+        "group": {
+          "type": "string",
+          "description": "name of a group for grouping requests",
+          "default": ""
+        },
+        "name": {
+          "type": "string",
+          "description": "name of the referenced service (explicit redundant)",
+          "default": ""
+        },
+        "source": {
+          "type": "string",
+          "description": "source of the service to resolve reference id",
+          "default": ""
+        },
+        "timeSlotCount": {
+          "type": "number",
+          "description": "number of time slots assumend for the request",
+          "default": 1
+        }
+      }
+    },
+    "requestrelation": {
+      "type": "object",
+      "description": "information of a request relation to a provider",
+      "example": {
+        "provider": {
+          "id": 21334,
+          "name": "Bürgeramt Mitte",
+          "source": "dldb",
+          "displayName": "001"
+        },
+        "request": {
+          "id": "120335",
+          "link": "http://service.berlin.de/dienstleistung/120335/",
+          "name": "Abmeldung einer Wohnung",
+          "source": "dldb",
+          "group": "Meldewesen und Ordnung"
+        },
+        "slots": 2,
+        "source": "dldb"
+      },
+      "additionalProperties": false,
+      "properties": {
+        "request": {
+          "$ref": "#/definitions/request"
+        },
+        "provider": {
+          "$ref": "#/definitions/provider"
+        },
+        "slots": {
+          "type": "number",
+          "description": "Number of slots required to fullfill request on provider",
+          "default": 1
+        },
+        "source": {
+          "type": "string",
+          "description": "source of the requestrelation",
+          "default": ""
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "description": "A scope is the central unit for processing requests for clients. It is usally a building or a special location offering workstations to serve the clients. According to the availabilities a scope has, appointments are possible. With a calldisplay and a ticketprinter it can serve clients without an appointment.",
+      "example": {
+        "contact": {
+          "city": "Schönefeld",
+          "country": "Germany",
+          "lat": 52.345,
+          "lon": 13.456,
+          "name": "Flughafen Schönefeld, Landebahn",
+          "postalCode": "15831",
+          "region": "Brandenburg",
+          "street": "Zaunstraße",
+          "streetNumber": "1"
+        },
+        "hint": "dritte Tür rechts",
+        "id": 123,
+        "source": "dldb",
+        "preferences": {
+          "appointment": {
+            "deallocationDuration": 10,
+            "endInDaysDefault": 60,
+            "multipleSlotsEnabled": true,
+            "notificationConfirmationEnabled": true,
+            "notificationHeadsUpEnabled": true,
+            "reservationDuration": 5,
+            "activationDuration": 15,
+            "startInDaysDefault": 2
+          },
+          "client": {
+            "alternateAppointmentUrl": "https://service.berlin.de",
+            "appointmentsPerMail": "",
+            "slotsPerAppointment": "",
+            "whitelistedMails": "",
+            "amendmentLabel": "Zusatzinformationen zum Anliegen",
+            "customTextfieldLabel": "Zusatzfeld zum Anliegen",
+            "emailRequired": false,
+            "emailConfirmationActivated": true,
+            "adminMailOnAppointment": false,
+            "adminMailOnDeleted": false,
+            "adminMailOnUpdated": false,
+            "telephoneActivated": true,
+            "telephoneRequired": false
+          },
+          "notifications": {
+            "confirmationContent": "Ihr Termin wurde erfolgreich gebucht mit der Nummer: ",
+            "headsUpTime": 15,
+            "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
+          },
+          "pickup": {
+            "alternateName": "Ausgabe von Dokumenten",
+            "isDefault": false
+          },
+          "queue": {
+            "callCountMax": 3,
+            "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
+            "firstNumber": 300,
+            "lastNumber": 500,
+            "publishWaitingTimeEnabled": true,
+            "processingTimeAverage": 12,
+            "statisticsEnabled": true
+          },
+          "survey": {
+            "emailContent": "###SALUTATION###. Wir würden uns sehr freuen, wenn Sie an der Umfrage teilnehmen würden: <a href=\"http://in.berlin.de/umfrage/?token=###TOKEN###\">Zur Umfrage</a>. Standort ###PROVIDERNAME### (###SCOPE###/###PROVIDERID###), Termin ###DATE### ###TIME### gebucht ###RESERVETIME### mit Dienstleistungen ###REQUESTCSV###.",
+            "enabled": true,
+            "label": "Teilnahme an der Kundenzufriedensheits-Umfrage"
+          },
+          "ticketprinter": {
+            "buttonName": "Bürgeramt",
+            "confirmationEnabled": true,
+            "deactivatedText": "Dies Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis.",
+            "notificationsAmendmentEnabled": true,
+            "notificationsEnabled": true,
+            "notificationsDelay": 30
+          },
+          "workstation": {
+            "emergencyEnabled": false,
+            "emergencyRefreshInterval": 10
+          }
+        },
+        "provider": {
+          "contact": {
+            "city": "Schönefeld",
+            "country": "Germany",
+            "lat": 52.345,
+            "lon": 13.456,
+            "name": "Flughafen Schönefeld, Landebahn",
+            "postalCode": "15831",
+            "region": "Brandenburg",
+            "street": "Zaunstraße",
+            "streetNumber": "1"
+          },
+          "id": 123456,
+          "name": "Flughafen Schönefeld, Aufsicht",
+          "source": "dldb",
+          "displayName": "001"
+        },
+        "shortName": "Zentrale",
+        "status": {
+          "emergency": {
+            "activated": false
+          },
+          "queue": {
+            "givenNumberCount": 23,
+            "ghostWorkstationCount": "-1",
+            "workstationCount": 1,
+            "lastGivenNumber": 322,
+            "lastGivenNumberTimestamp": 1447925159
+          },
+          "ticketprinter": {
+            "deactivated": false
+          },
+          "availability": {
+            "isOpened": false
+          }
+        }
+      },
+      "required": [
+        "provider",
+        "shortName"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "contact": {
+          "$ref": "#/definitions/contact"
+        },
+        "dayoff": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dayoff"
+          }
+        },
+        "hint": {
+          "type": "string",
+          "description": "hint for the client like a description where to find the scope",
+          "default": ""
+        },
+        "id": {
+          "type": "number",
+          "description": "auto increment"
+        },
+        "source": {
+          "type": "string",
+          "description": "source of provider to resolve reference id"
+        },
+        "lastChange": {
+          "type": "number",
+          "description": "unix timestamp of the last change on this scope"
+        },
+        "preferences": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "appointment": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "deallocationDuration": {
+                  "type": "number",
+                  "description": "minutes before an deleted appointment is free for booking again to prevent appointment trading",
+                  "default": 30
+                },
+                "multipleSlotsEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if more than one timeslot per appointment is allowed",
+                  "default": true
+                },
+                "notificationConfirmationEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if client should get a notification to confirm that notifications are enabled for him/her (Convienient preferences, see department for origin)",
+                  "default": false
+                },
+                "notificationHeadsUpEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if client should get a notification as reminder (Convienient preferences, see department for origin)",
+                  "default": false
+                },
+                "reservationDuration": {
+                  "type": "number",
+                  "description": "minutes an appointment can have the status reserved",
+                  "default": 30
+                },
+                "activationDuration": {
+                  "type": "number",
+                  "description": "minutes an appointment can have the status preconfirmed",
+                  "default": 60,
+                  "minimum": 15
+                },
+                "startInDaysDefault": {
+                  "type": "number",
+                  "description": "number of days relative to today to start offering appointments",
+                  "default": 1
+                },
+                "endInDaysDefault": {
+                  "type": "number",
+                  "description": "maximum number of days in the future to offer appointments",
+                  "default": 60
+                }
+              }
+            },
+            "client": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "alternateAppointmentUrl": {
+                  "type": "string",
+                  "description": "redirect url if client should book appointments over a specialised application",
+                  "default": ""
+                },
+                "appointmentsPerMail": {
+                  "type": "string",
+                  "description": "allowed appointments per e-mail address",
+                  "default": ""
+                },
+                "slotsPerAppointment": {
+                  "type": "string",
+                  "description": "allowed slots per appointment",
+                  "default": ""
+                },
+                "whitelistedMails": {
+                  "type": "string",
+                  "description": "e-mail addresses that have no limitation on appointments count",
+                  "default": ""
+                },
+                "amendmentLabel": {
+                  "type": "string",
+                  "description": "label for the form field to enter additional informations to a process",
+                  "default": ""
+                },
+                "amendmentActivated": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if an amendment is activated",
+                  "default": false
+                },
+                "customTextfieldLabel": {
+                  "type": "string",
+                  "description": "label for the form field to enter additional informations to a process",
+                  "default": ""
+                },
+                "customTextfieldActivated": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if an  custom text field is activated",
+                  "default": false
+                },
+                "customTextfieldRequired": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if client is required to enter a custom text field address",
+                  "default": false
+                },
+                "captchaActivatedRequired": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if client is required to pass a captcha in the citizen frontend",
+                  "default": false
+                },
+                "emailFrom": {
+                  "type": "string",
+                  "description": "Mail address for sending mails to clients",
+                  "default": "",
+                  "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+                  "x-locale": {
+                    "de_DE": {
+                      "pointer": "Absender E-Mail",
+                      "messages": {
+                        "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                      }
+                    }
+                  }
+                },
+                "emailRequired": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if client is required to enter an email address",
+                  "default": false
+                },
+                "emailConfirmationActivated": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if email confirmation is activated",
+                  "default": true
+                },
+                "telephoneActivated": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if client is allowed to enter a telephone number",
+                  "default": false
+                },
+                "telephoneRequired": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if client is required to enter a telephone number",
+                  "default": false
+                },
+                "adminMailOnAppointment": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "confirmation mail is sent to scope admin",
+                  "default": false
+                },
+                "adminMailOnUpdated": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "updated mail is sent to scope admin",
+                  "default": false
+                },
+                "adminMailOnDeleted": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "deleted mail is sent to admin",
+                  "default": false
+                },
+                "adminMailOnMailSent": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "mail is sent to admin when client receives a mail",
+                  "default": false
+                }
+              }
+            },
+            "notifications": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "confirmationContent": {
+                  "type": "string",
+                  "description": "text to send to client to confirm the appointment",
+                  "default": ""
+                },
+                "headsUpTime": {
+                  "type": "number",
+                  "description": "minutes before call to send a sms to the client",
+                  "default": 15
+                },
+                "headsUpContent": {
+                  "type": "string",
+                  "description": "text to send a short time before a call",
+                  "default": ""
+                }
+              }
+            },
+            "pickup": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "alternateName": {
+                  "type": "string",
+                  "description": "alternate text to display on call display if pickup of documents is required",
+                  "default": ""
+                },
+                "isDefault": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "a pickup of documents is default, this scope is preselected for pickup",
+                  "default": false
+                }
+              }
+            },
+            "queue": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "callCountMax": {
+                  "type": "number",
+                  "description": "number of calls before a process is removed from the queue",
+                  "default": 3
+                },
+                "callDisplayText": {
+                  "type": "string",
+                  "description": "text displayed at the right side on the call display",
+                  "default": ""
+                },
+                "firstNumber": {
+                  "type": "number",
+                  "description": "fist possible waiting number for ticket printer",
+                  "default": 1
+                },
+                "lastNumber": {
+                  "type": "number",
+                  "description": "last possible waiting number for ticket printer",
+                  "default": 999
+                },
+                "maxNumberContingent": {
+                  "type": "number",
+                  "description": "contingent of given waiting numbers for ticket printer per day",
+                  "maximum": 999,
+                  "default": 999
+                },
+                "publishWaitingTimeEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if waiting times are allowed to be published for public use",
+                  "default": true
+                },
+                "processingTimeAverage": {
+                  "type": "number",
+                  "description": "minutes average for completing a process, used to estimate waiting time",
+                  "default": 15
+                },
+                "statisticsEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if statistics are enabled",
+                  "default": true
+                }
+              }
+            },
+            "survey": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "emailContent": {
+                  "type": "string",
+                  "description": "content of an email to send to a client if he accepted to participate in a survey",
+                  "default": ""
+                },
+                "enabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if clients should be asked to participate in a survey",
+                  "default": false
+                },
+                "label": {
+                  "type": "string",
+                  "description": "text to display next to the checkbox asking the client to participate in the survey",
+                  "default": ""
+                }
+              }
+            },
+            "ticketprinter": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "buttonName": {
+                  "type": "string",
+                  "description": "name/value of button in ticketprinter",
+                  "default": ""
+                },
+                "confirmationEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if client should get a notification to confirm that notifications are enabled for him/her",
+                  "default": false
+                },
+                "deactivatedText": {
+                  "type": "string",
+                  "description": "text to display on the ticket printer, if all ticket printers are disabled",
+                  "default": ""
+                },
+                "notificationsAmendmentEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if a client is allowed to enter a notfication address after getting his waiting number",
+                  "default": false
+                },
+                "notificationsEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if notifications for calling up clients are enabled. A client is allowed to enter a telephone number if waitingtime is greater than notificationDelay.",
+                  "default": false
+                },
+                "notificationsDelay": {
+                  "type": "number",
+                  "description": "minutes of calculated waiting time before a client is able to enter a notification address",
+                  "default": 20
+                }
+              }
+            },
+            "workstation": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "emergencyEnabled": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if an emergency button should be displayed on workstation screens",
+                  "default": false
+                },
+                "emergencyRefreshInterval": {
+                  "type": "number",
+                  "description": "number of seconds until next emergency testing",
+                  "default": 5
+                }
+              }
+            }
+          }
+        },
+        "provider": {
+          "$ref": "#/definitions/provider"
+        },
+        "shortName": {
+          "type": "string",
+          "description": "short identifier to differentiate between nearly identical scopes",
+          "default": ""
+        },
+        "status": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "emergency": {
+              "type": "object",
+              "description": "If activated, a workstation has an emergency-button to call for help",
+              "properties": {
+                "acceptedByWorkstation": {
+                  "type": [
+                    "string"
+                  ],
+                  "description": "name of workstation which accepted the emergency call",
+                  "default": ""
+                },
+                "activated": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true in case of emergency",
+                  "default": false
+                },
+                "calledByWorkstation": {
+                  "type": [
+                    "string"
+                  ],
+                  "description": "name of workstation where the emergency occured",
+                  "default": ""
+                }
+              }
+            },
+            "queue": {
+              "type": "object",
+              "properties": {
+                "givenNumberCount": {
+                  "type": "number",
+                  "description": "counter for given waiting numbers for the current day",
+                  "default": 0
+                },
+                "ghostWorkstationCount": {
+                  "type": "number",
+                  "description": "a fictive number of workstations",
+                  "default": 0
+                },
+                "workstationCount": {
+                  "type": "number",
+                  "description": "a calculated number of workstations to calculate waiting times, if ghostWorkstationCount < 1, real logged in workstations are used",
+                  "default": 0
+                },
+                "lastGivenNumber": {
+                  "type": "number",
+                  "description": "last given waiting number",
+                  "default": 0
+                },
+                "lastGivenNumberTimestamp": {
+                  "type": "number",
+                  "description": "unix timestamp of the last given waiting number",
+                  "default": 0
+                }
+              }
+            },
+            "ticketprinter": {
+              "type": "object",
+              "properties": {
+                "deactivated": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if all ticket printers are disabled",
+                  "default": false
+                }
+              }
+            },
+            "availability": {
+              "type": "object",
+              "properties": {
+                "isOpened": {
+                  "type": [
+                    "boolean",
+                    "number"
+                  ],
+                  "description": "true if scope is opened",
+                  "default": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "session": {
+      "type": "object",
+      "description": "Representation of a session. It usually stores temporary appointment data before a free appointment is found.",
+      "example": {
+        "name": "Zmsappointment",
+        "id": "7b89b1c1fd6c7a52fa748ff663babd0c",
+        "content": {
+          "basket": {
+            "requests": "120703",
+            "providers": "122217",
+            "scope": "123",
+            "process": "1234567",
+            "date": "1456310041",
+            "familyName": "Max Mustermann",
+            "clientEmail": "max@zms-bo.de",
+            "clientTelephone": "03023232323",
+            "clientAmendment": "Notiz zum Termin",
+            "authKey": "1234",
+            "notificationConfirmation": false
+          },
+          "human": {
+            "captcha_text": "kck6Qz",
+            "client": 0,
+            "ts": 0,
+            "origin": "captcha",
+            "remoteAddress": "127.0.0.1",
+            "referer": "dayselect",
+            "step": {
+              "dayselect": 1
+            }
+          },
+          "entry": {
+            "source": "specific",
+            "providers": "122217",
+            "requests": "120703",
+            "scope": 123
+          },
+          "source": "dldb",
+          "status": "start",
+          "X-Authkey": "abc12345678def",
+          "error": ""
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "name of session"
+        },
+        "id": {
+          "type": "string",
+          "description": "id of session"
+        },
+        "content": {
+          "type": "object",
+          "properties": {
+            "basket": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": [
+                    "number",
+                    "string"
+                  ]
+                },
+                "providers": {
+                  "type": [
+                    "number",
+                    "string"
+                  ]
+                },
+                "scope": {
+                  "type": [
+                    "number"
+                  ]
+                },
+                "process": {
+                  "type": [
+                    "number"
+                  ]
+                },
+                "date": {
+                  "type": [
+                    "number"
+                  ]
+                },
+                "firstDay": {
+                  "type": [
+                    "string"
+                  ]
+                },
+                "lastDay": {
+                  "type": [
+                    "string"
+                  ]
+                },
+                "familyName": {
+                  "type": "string"
+                },
+                "clientEmail": {
+                  "type": "string"
+                },
+                "clientTelephone": {
+                  "type": "number"
+                },
+                "clientAmendment": {
+                  "type": "string"
+                },
+                "clientCustomTextfield": {
+                  "type": "string"
+                },
+                "authKey": {
+                  "type": "string"
+                },
+                "notificationConfirmation": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "human": {
+              "type": "object",
+              "properties": {
+                "captcha_text": {
+                  "type": "string"
+                },
+                "client": {
+                  "type": "number"
+                },
+                "ts": {
+                  "type": "number"
+                },
+                "origin": {
+                  "type": "string"
+                },
+                "remoteAddress": {
+                  "type": "string"
+                },
+                "referrer": {
+                  "type": "string"
+                },
+                "step": {
+                  "type": "object",
+                  "properties": {
+                    "dayselect": {
+                      "type": "number"
+                    },
+                    "timeselect": {
+                      "type": "number"
+                    },
+                    "register": {
+                      "type": "number"
+                    },
+                    "summary": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            },
+            "source": {
+              "type": "string",
+              "description": "source for multi-client capability"
+            },
+            "entry": {
+              "type": "object",
+              "description": "Save request IDs and provider IDs from entry query",
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "providers": {
+                  "type": [
+                    "number",
+                    "string"
+                  ]
+                },
+                "requests": {
+                  "type": [
+                    "number",
+                    "string"
+                  ]
+                },
+                "scope": {
+                  "type": [
+                    "number"
+                  ]
+                }
+              }
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "start",
+                "reserved",
+                "confirmed",
+                "finished",
+                "inChange",
+                "changedProcess",
+                "stalled",
+                "inProgress"
+              ],
+              "description": "Status of the session. The following values are possible:\n* start: new session started\n* reserved: set if a process has been reserved\n* confirmed: set if a process has been confirmed\n* finished: set if a process has been finished\n* inChange: current process is in change mode\n* changedProcess: current process has been changed\n* stalled: set if session has a problem, fore example if second tab is in use \n* inProgress: if session not stalled anymore\n"
+            },
+            "X-Authkey": {
+              "type": "string"
+            },
+            "error": {
+              "type": "string",
+              "description": "error or notice from errorhandler to show specific template message block"
+            }
+          }
+        }
+      }
+    },
+    "slot": {
+      "type": "object",
+      "description": "This entity represents a calculated number for available appointments. Attention: Be aware that the different types of appointments are not exclusive, the total amount of appointments are not equal to the sum of appointments from the different types.",
+      "example": {
+        "public": 3,
+        "intern": 10,
+        "callcenter": 8,
+        "type": "sum",
+        "time": "11:50"
+      },
+      "additionalProperties": false,
+      "properties": {
+        "callcenter": {
+          "type": "number",
+          "default": 0,
+          "description": "Appointments of this type are usually only available via human agents, usually by phone"
+        },
+        "intern": {
+          "type": "number",
+          "default": 0,
+          "description": "Appointments of this type are usually only available for authenticated workstations"
+        },
+        "public": {
+          "type": "number",
+          "default": 0,
+          "description": "Appointments of this type are available for everyone"
+        },
+        "slotnumber": {
+          "type": "number",
+          "description": "This field is set, if the slot is part of a incrementing list of slots"
+        },
+        "time": {
+          "type": "string",
+          "description": "Format is 12:34 with HH:mm without seconds. This field is set, if the slot represents a time of a day"
+        },
+        "type": {
+          "type": "string",
+          "default": "free",
+          "enum": [
+            "free",
+            "timeslice",
+            "sum",
+            "reduced",
+            "timestamp"
+          ],
+          "description": "Type of the process. The following values are possible:\n  * free: the values represent possible free appointments without confirmed appointments\n  * timeslice: the values represent free appointments for a given day. Confirmed and reserved appointments on processes are substracted.\n  * sum: like timeslice, but for more than one scope\n  * reduced: like timeslice, but numbers were reduced due to required slots on a given request\n  * timestamp: the values represent a unix timestamp to when there are free processes\n"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "description": "An source represents an import from a data source providing data for providers and requests as well as their relations.\n",
+      "example": {
+        "contact": {
+          "name": "M. Muster",
+          "email": "m.muster@verwalt-berlin.de"
+        },
+        "editable": false,
+        "source": "dldb",
+        "label": "Dienstleistungsdatenbank",
+        "lastChange": 1234556789,
+        "providers": [
+          {
+            "id": 21334,
+            "name": "Bürgeramt Mitte",
+            "source": "dldb"
+          }
+        ],
+        "requests": [
+          {
+            "id": "120335",
+            "link": "http://service.berlin.de/dienstleistung/120335/",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb",
+            "group": "Meldewesen und Ordnung"
+          }
+        ],
+        "requestrelation": [
+          {
+            "provider": {
+              "id": 21334,
+              "name": "Bürgeramt Mitte",
+              "source": "dldb",
+              "displayName": "001"
+            },
+            "request": {
+              "id": "120335",
+              "link": "http://service.berlin.de/dienstleistung/120335/",
+              "name": "Abmeldung einer Wohnung",
+              "source": "dldb",
+              "group": "Meldewesen und Ordnung"
+            },
+            "slots": 2,
+            "source": "dldb"
+          }
+        ]
+      },
+      "additionalProperties": false,
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "contact": {
+          "$ref": "#/definitions/contact"
+        },
+        "source": {
+          "type": "string",
+          "default": ""
+        },
+        "editable": {
+          "description": "if this is true, a user might upload an update of the source, on false, this source is updated via automated scripts",
+          "type": "boolean",
+          "default": true
+        },
+        "label": {
+          "type": "string",
+          "default": ""
+        },
+        "lastChange": {
+          "type": "number",
+          "description": "unix timestamp of the last import",
+          "default": 0
+        },
+        "providers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/provider"
+          }
+        },
+        "requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/request"
+          }
+        },
+        "requestrelation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requestrelation"
+          }
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/scope"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "object",
+      "description": "A list of status informations for the API and the application.",
+      "example": {
+        "generated": "2015-11-20T18:01:04+01:00",
+        "version": {
+          "major": 2,
+          "minor": 34,
+          "patch": 56
+        },
+        "server": "prod-zmsapi-01"
+      },
+      "properties": {
+        "generated": {
+          "type": "string",
+          "description": "iso8601 date time string of generation on the server",
+          "example": "2015-11-20T18:01:04+01:00"
+        },
+        "server": {
+          "type": "string",
+          "description": "identifier for the responding server"
+        },
+        "processes": {
+          "type": "object",
+          "properties": {
+            "blocked": {
+              "type": "number",
+              "description": "Number of temporary blocked appointment IDs in the database."
+            },
+            "confirmed": {
+              "type": "number",
+              "description": "Number of valid appointments in the database. Every process counts for the clients involved."
+            },
+            "deleted": {
+              "type": "number",
+              "description": "Number of deleted appointments in the database blocking free appointment times."
+            },
+            "lastCalculate": {
+              "type": "string",
+              "description": "Timestamp of last calculation for slots"
+            },
+            "lastInsert": {
+              "type": "number",
+              "description": "Timestamp of last inserted process"
+            },
+            "missed": {
+              "type": "number",
+              "description": "Number of missed appointments in the database. Zeroed on daily basis in the night."
+            },
+            "parked": {
+              "type": "number",
+              "description": "Number of parked appointments in the database. Zeroed on daily basis in the night."
+            },
+            "outdated": {
+              "type": "number",
+              "description": "Number of slots, which might change on recalculation due to changed availabilities"
+            },
+            "outdatedOldest": {
+              "type": "string",
+              "description": "Timestamp of oldest slot for recalculation."
+            },
+            "reserved": {
+              "type": "number",
+              "description": "Number of reserved appointments in the database."
+            }
+          }
+        },
+        "sources": {
+          "type": "object",
+          "properties": {
+            "dldb": {
+              "type": "object",
+              "properties": {
+                "last": {
+                  "type": "string",
+                  "description": "Last date(c) of dldb import in database."
+                }
+              }
+            }
+          }
+        },
+        "mail": {
+          "type": "object",
+          "properties": {
+            "queueCount": {
+              "type": "number",
+              "description": "Number of unsend items in the queue"
+            },
+            "oldestSeconds": {
+              "type": "number",
+              "description": "Unix timestamp of oldest unsend item in queue"
+            },
+            "newestSeconds": {
+              "type": "number",
+              "description": "Unix timestamp of newest unsend item in queue"
+            }
+          }
+        },
+        "notification": {
+          "type": "object",
+          "properties": {
+            "queueCount": {
+              "type": "number",
+              "description": "Number of unsend items in the queue"
+            },
+            "oldestSeconds": {
+              "type": "number",
+              "description": "Unix timestamp of oldest unsend item in queue"
+            },
+            "newestSeconds": {
+              "type": "number",
+              "description": "Unix timestamp of newest unsend item in queue"
+            }
+          }
+        },
+        "database": {
+          "type": "object",
+          "properties": {
+            "clusterStatus": {
+              "type": "string",
+              "description": "Status of database cluster health"
+            },
+            "locks": {
+              "type": "number",
+              "description": "Number of locks for transactions on requested node."
+            },
+            "logbin": {
+              "type": "string",
+              "description": "Status of database replication"
+            },
+            "nodeConnections": {
+              "type": "number",
+              "description": "Percentage of used connections on requested node."
+            },
+            "problems": {
+              "type": "string",
+              "description": "List of configuration problems on requested node.."
+            },
+            "threads": {
+              "type": "number",
+              "description": "Number of connected threads on requested node."
+            }
+          }
+        },
+        "version": {
+          "type": "object",
+          "properties": {
+            "major": {
+              "type": "number",
+              "description": "major version, this value increments on breaking changes"
+            },
+            "minor": {
+              "type": "number",
+              "description": "minor version, this value increments on adding features"
+            },
+            "patch": {
+              "type": "number",
+              "description": "patch level, this value increments with bugfixes"
+            }
+          }
+        }
+      }
+    },
+    "ticketprinter": {
+      "description": "A ticketprinter is a system to print waiting numbers for clients. Usually it has a touch screen and a printing device.",
+      "type": "object",
+      "example": {
+        "buttonlist": "s123,l[http://www.berlin.de/|Portal+Berlin.de]",
+        "enabled": true,
+        "hash": "e744a234c1",
+        "id": 1234,
+        "lastUpdate": 1447925326000,
+        "name": "Eingangsbereich links",
+        "reload": 30,
+        "contact": {
+          "name": "Bürgeramt"
+        }
+      },
+      "required": [
+        "hash"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "buttons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the Button, shown value"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "cluster",
+                  "link",
+                  "scope",
+                  "request"
+                ],
+                "description": "Type of the button, for complement links"
+              },
+              "enabled": {
+                "type": "boolean",
+                "description": "To enable or disable button usage"
+              },
+              "url": {
+                "type": "string",
+                "description": "url to scope, cluster or external target"
+              },
+              "scope": {
+                "$ref": "#/definitions/scope"
+              },
+              "cluster": {
+                "$ref": "#/definitions/cluster"
+              }
+            }
+          },
+          "description": "List of buttons"
+        },
+        "buttonlist": {
+          "type": "string",
+          "description": "comma separated list of scope, cluster, links (s = scope, c = cluster, l = link), max of 6 buttons"
+        },
+        "enabled": {
+          "type": [
+            "boolean",
+            "number"
+          ],
+          "description": "true if browser is allowed to hand out waiting numbers to the client"
+        },
+        "hash": {
+          "type": "string",
+          "description": "identifier for a browser (usually cookie content)"
+        },
+        "id": {
+          "type": "number"
+        },
+        "lastUpdate": {
+          "type": "number",
+          "description": "unix timestamp of last status change"
+        },
+        "name": {
+          "type": "string",
+          "description": "only for internal identification"
+        },
+        "home": {
+          "type": "string",
+          "description": "url for homepage redirecting"
+        },
+        "reload": {
+          "type": "number",
+          "description": "time to redirect to homepage in seconds"
+        },
+        "contact": {
+          "$ref": "#/definitions/contact"
+        }
+      }
+    },
+    "useraccount": {
+      "description": "An useraccount represents an user for the ZMS. It contains the rights the user has for processing data with the ZMS. Usually a user creates a workstation entity if he/she begins with the work.",
+      "type": "object",
+      "example": {
+        "lastLogin": 1447926465,
+        "id": "johndoe",
+        "email": "johndoe@berlinonline.de",
+        "password": "secret",
+        "rights": {
+          "scope": true,
+          "ticketprinter": true
+        },
+        "departments": [
+          {
+            "id": 72
+          }
+        ]
+      },
+      "required": [
+        "id",
+        "rights"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "lastLogin": {
+          "type": "number",
+          "description": "unix timestamp"
+        },
+        "id": {
+          "type": "string",
+          "description": "loginname, the unique identifier. Used as id to enable fetching",
+          "minLength": 4,
+          "maxLength": 40,
+          "x-locale": {
+            "de_DE": {
+              "pointer": "Benutzername",
+              "messages": {
+                "minLength": "Es muss ein aussagekräftiger Nutzername eingegeben werden; mindestens 4 Buchstaben.",
+                "maxLength": "Der Nutzername sollte 40 Zeichen nicht überschreiten"
+              }
+            }
+          }
+        },
+        "email": {
+          "type": "string",
+          "default": "",
+          "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+          "minLength": 0,
+          "x-locale": {
+            "de_DE": {
+              "pointer": "Nutzer E-Mail",
+              "messages": {
+                "minLength": "Es kann eine E-Mail-Adresse angegeben werden.",
+                "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein."
+              }
+            }
+          }
+        },
+        "password": {
+          "type": "string",
+          "description": "this field is only used on changing the password and login",
+          "minLength": 6,
+          "maxLength": 60,
+          "x-locale": {
+            "de_DE": {
+              "pointer": "Passwort",
+              "messages": {
+                "minLength": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen.",
+                "maxLength": "Die Länge des Passwortes darf maximal 60 Zeichen betragen."
+              }
+            }
+          }
+        },
+        "changePassword": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 40,
+            "x-locale": {
+              "de_DE": {
+                "pointer": "Passwortwiederholung",
+                "messages": {
+                  "minLength": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen.",
+                  "maxLength": "Die Länge des Passwortes darf maximal 40 Zeichen betragen."
+                }
+              }
+            }
+          },
+          "description": "this field is only used on changing the password",
+          "format": "sameValues",
+          "maxItems": 2,
+          "minItems": 2,
+          "x-locale": {
+            "de_DE": {
+              "pointer": "Passwortwiederholung",
+              "messages": {
+                "format": "Die Passwortwiederholung muss identisch zum Passwort sein."
+              }
+            }
+          }
+        },
+        "rights": {
+          "type": "object",
+          "properties": {
+            "availability": {
+              "description": "Allow editing availability with opening hours",
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "basic": {
+              "description": "Allow login and basic usage",
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "cluster": {
+              "description": "Allow editing clusters",
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "department": {
+              "description": "Allow editing departments",
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "organisation": {
+              "description": "Allow editing organisations",
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "scope": {
+              "description": "Allow editing scopes",
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "sms": {
+              "description": "Allow sending SMS",
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "superuser": {
+              "description": "Special rights for administrators, especially for maintenance",
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "ticketprinter": {
+              "description": "Manage ticketprinter",
+              "type": [
+                "boolean",
+                "number"
+              ]
+            },
+            "useraccount": {
+              "description": "Allow create, edit and delete user accounts",
+              "type": [
+                "boolean",
+                "number"
+              ]
+            }
+          }
+        },
+        "departments": {
+          "type": "array",
+          "description": "list of assigned departments",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/department"
+          },
+          "x-locale": {
+            "de_DE": {
+              "pointer": "Behördenauswahl",
+              "messages": {
+                "minItems": "Wählen Sie mindestens eine Behörde aus."
+              }
+            }
+          }
+        }
+      }
+    },
+    "workstation": {
+      "type": "object",
+      "description": "A workstation is an input device in a room or place to process requests for the clients. A workstation calls clients and changes the status of a process.",
+      "example": {
+        "hint": "Ausgabeschalter 3",
+        "id": 123,
+        "name": "3",
+        "process": {
+          "id": false
+        },
+        "queue": {
+          "appointmentsOnly": false,
+          "clusterEnabled": false
+        },
+        "scope": {
+          "id": 141
+        },
+        "useraccount": {
+          "lastLogin": 1447926465,
+          "id": "johndoe",
+          "rights": {
+            "scope": true,
+            "ticketprinter": true
+          },
+          "departments": [
+            {
+              "id": 123
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "useraccount"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "authkey": {
+          "type": "string",
+          "description": "authentication key, usually only in a login response once"
+        },
+        "hint": {
+          "type": "string",
+          "description": "used for displaying in the calldisplay"
+        },
+        "id": {
+          "type": "number",
+          "description": "id of the workstation"
+        },
+        "emergency": {
+          "type": "object",
+          "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
+          "properties": {
+            "refreshInterval": {
+              "type": "number",
+              "description": "time in seconds for next check if an emergency occurred",
+              "default": 5
+            }
+          }
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 8,
+          "description": "usually number of place or room where the workstation is located"
+        },
+        "process": {
+          "$ref": "#/definitions/process"
+        },
+        "queue": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "appointmentsOnly": {
+              "type": [
+                "boolean",
+                "number"
+              ],
+              "description": "true if only appointments should be shown in queue"
+            },
+            "clusterEnabled": {
+              "type": [
+                "boolean",
+                "number"
+              ],
+              "description": "true if the complete cluster should be shown in queue"
+            }
+          }
+        },
+        "scope": {
+          "$ref": "#/definitions/scope"
+        },
+        "useraccount": {
+          "$ref": "#/definitions/useraccount"
+        },
+        "linkList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/link"
+          }
+        },
+        "support": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "telephone": {
+              "type": "string",
+              "description": "telephone number of support"
+            },
+            "eMail": {
+              "type": "string",
+              "description": "email of support"
+            }
+          }
+        }
+      }
+    }
+  }
+}
