@@ -1,5 +1,5 @@
 {
-  "name": "zmsapi",
+  "name": "zmscitizenapi",
   "version": "1.0.0",
   "description": "This application offers a REST-like interface for ZMS functions and database access.",
   "main": "index.js",

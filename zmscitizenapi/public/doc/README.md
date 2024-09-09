@@ -7,13 +7,13 @@ npm i
 npm run build
 npm run doc
 swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
-python3 -m http.server 8001
+python3 -m http.server 8000
 ```
 
 Reachable at:
 ```
-http://[::]:8001/public/doc/
-https://zms.ddev.site/terminvereinbarung/api/2/doc/index.html
+http://[::]:8000/public/doc/
+https://zms.ddev.site/terminvereinbarung/api/citizen/doc/index.html
 ```
 
 
