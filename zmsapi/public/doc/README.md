@@ -6,6 +6,9 @@ bin/configure
 npm i
 npm run build
 npm run doc
+swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
+python3 -m http.server 8000
+http://[::]:8000/public/doc/
 ```
 
 
