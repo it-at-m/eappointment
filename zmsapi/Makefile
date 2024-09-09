@@ -13,10 +13,10 @@ dev: # init development system
 live: # init live system, delete unnecessary libs
 	composer install --no-dev --prefer-dist
 	bin/configure
-	npm i
+	npm install
 	npm run build
 	npm run doc
-	swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
+	npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
 
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
