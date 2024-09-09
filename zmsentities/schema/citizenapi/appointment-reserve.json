@@ -1,0 +1,10 @@
+{
+    "type": "object",
+    "description": "Includes a message confirming that an appointment has been successfully reserved.",
+    "properties": {
+      "message": {
+        "type": "string"
+      }
+    },
+    "required": ["message"]
+}
