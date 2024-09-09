@@ -7,7 +7,8 @@
   "scripts": {
     "preinstall": "npm i --location=global @apidevtools/swagger-cli",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./bin/build_swagger.js"
+    "build": "node ./bin/build_swagger.js",
+    "doc": "npm run build && swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml"
   },
   "keywords": [
     "eappointment"
