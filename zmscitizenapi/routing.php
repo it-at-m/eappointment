@@ -276,12 +276,12 @@ use \Psr\Http\Message\ResponseInterface;
  *       - appointments
  *     parameters:
  *       - name: processId
- *         description: Process ID
+ *         description: The unique identifier for the process. Must be an integer starting with 10 or 11, e.g., 100348.
  *         in: query
  *         required: true
  *         type: integer
  *       - name: authKey
- *         description: Authentication key
+ *         description: The authentication key consisting of 4 to 5 alphanumeric characters, e.g., 42a3.
  *         in: query
  *         required: true
  *         type: string
