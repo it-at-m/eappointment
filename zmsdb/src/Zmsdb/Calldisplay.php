@@ -94,12 +94,21 @@ class Calldisplay extends Base
     public function readContactData(Entity $entity)
     {
         $contact = new \BO\Zmsentities\Contact();
-        if ($entity->hasClusterList() && 1 == $entity->getClusterList()->count()) {
-            $contact->name = $entity->getClusterList()->getFirst()->name;
-        } elseif ($entity->hasScopeList() && 1 == $entity->getScopeList()->count()) {
-            $department = (new Department())->readByScopeId($entity->getScopeList()->getFirst()->id);
-            $contact->name = $department->name;
+        $contactNames = [];
+        if ($entity->hasClusterList()) {
+            foreach ($entity->getClusterList() as $cluster) {
+                $contactNames[] = $cluster->name;
+            }
+        } elseif ($entity->hasScopeList()) {
+            foreach ($entity->getScopeList() as $scope) {
+                $department = (new Department())->readByScopeId($scope->id);
+                $contactNames[] = $department->name;
+            }
         }
+
+        $contactNames = array_unique($contactNames);
+        $contact->name = count($contactNames) > 1 ? '' : $contactNames[0];
+
         return $contact;
     }
 }

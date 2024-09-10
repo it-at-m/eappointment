@@ -23,6 +23,9 @@ class WorkstationProcessProcessingTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/82252/12a2/',
+                    'parameters' => [
+                        'initiator' => 'admin'
+                    ],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ]
             ]

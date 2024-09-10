@@ -54,7 +54,7 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         line-height: 37px;
     }
     .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
-        width:61.5%;
+        width: 100%;
     }
     .aufrufanzeige table.aufrufanzeige_aufruf {
         width:376px;
@@ -137,7 +137,7 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         line-height: 54px;
     }
     .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
-        width:61.5%;
+        width: 100%;
     }
     .aufrufanzeige table.einspaltig {
         width:530px;
@@ -206,8 +206,8 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         width:400px;
     }
     .aufrufanzeige .aufrufanzeige_main {
-        left:10%;
-        width: 80%;
+        left:25px;
+        width: 100%;
         top:162px;
     }
     span.terminkundennummer, span.wartenummer {
