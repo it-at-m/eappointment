@@ -1,5 +1,5 @@
-# Simple workflow for deploying static content to Pages
-name: Deploy static content to Pages
+# Workflow for deploying zmsapi PHP and Node.js static content to Pages
+name: Deploy zmsapi static content to Pages
 
 on:
   # Runs on pushes targeting the default branch (main)
@@ -21,22 +21,64 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
+
+      # Step 2: Set up PHP environment
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'  # Specify PHP version as per your requirement
+          extensions: mbstring, json
+          tools: composer
+
+      # Step 3: Install PHP dependencies for zmsapi
+      - name: Install PHP dependencies
+        run: |
+          composer install --working-dir=zmsapi
+
+      # Step 4: Run PHP post-install scripts for zmsapi
+      - name: Run PHP post-install scripts
+        run: |
+          cd zmsapi && composer run-script post-install-cmd && cd ..
+
+      # Step 5: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Specify Node.js version as needed
+
+      # Step 6: Install Node.js dependencies for zmsapi
+      - name: Install Node.js dependencies for zmsapi
+        run: |
+          cd zmsapi
+          npm install
+
+      # Step 7: Build and generate Swagger documentation for zmsapi
+      - name: Build and document zmsapi
+        run: |
+          cd zmsapi
+          npm run doc
+
+      # Step 8: Set up GitHub Pages for deployment
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
+      # Step 9: Upload the static content to GitHub Pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: '.'  # Upload the entire repository, including the generated docs
+
+      # Step 10: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
