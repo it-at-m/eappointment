@@ -1,0 +1,216 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2019-02-08T14:45:15+01:00",
+    "server": "Zmsapi-ENV (v2.19.02-38-g0ba2cba)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/source.json",
+    "source": "unittest",
+    "contact": {
+      "name": "BerlinOnline Stadtportal GmbH",
+      "email": "test@example.com"
+    },
+    "providers": [
+      {
+        "id": "9999998",
+        "link": "https://www.berlinonline.de",
+        "name": "Unittest Source Dienstleister",
+        "source": "unittest",
+        "data": {
+          "json": "data"
+        },
+        "contact": {
+          "city": "Berlin",
+          "country": "Germany",
+          "name": "Unittest Source Dienstleister",
+          "postalCode": "10178",
+          "region": "Berlin",
+          "street": "Alte Jakobstraße",
+          "streetNumber": "105"
+        }
+      },
+      {
+        "id": "9999999",
+        "link": "https://www.berlinonline.de",
+        "name": "Unittest Source Dienstleister 2",
+        "source": "unittest",
+        "data": {
+          "json": "data",
+          "key": "value"
+        },
+        "contact": {
+          "city": "Berlin",
+          "country": "Germany",
+          "name": "Unittest Source Dienstleister 2",
+          "postalCode": "10178",
+          "region": "Berlin",
+          "street": "Alte Jakobstraße",
+          "streetNumber": "106"
+        }
+      }
+    ],
+    "requests": [
+      {
+        "id": "1",
+        "link": "https://www.berlinonline.de",
+        "name": "Unittest Source Dienstleistung",
+        "group": "Unittests",
+        "source": "unittest",
+        "data": {
+          "json": "data"
+        }
+      },
+      {
+        "id": "2",
+        "link": "https://www.berlinonline.de",
+        "name": "Unittest Source Dienstleistung 2",
+        "group": "Unittests",
+        "source": "unittest",
+        "data": {
+          "json": "data",
+          "key": "value",
+          "combinable": ["1", "2"]
+        }
+      }
+    ],
+    "scopes": [
+      {
+        "id": "1",
+        "provider": {
+          "id": "9999998",
+          "source": "unittest"
+        },
+        "shortName": "Scope 1",
+        "preferences": {
+          "client": {
+            "telephoneActivated": "1",
+            "telephoneRequired": "0",
+            "customTextfieldActivated": "1",
+            "customTextfieldRequired": "0",
+            "customTextfieldLabel": "Custom Label",
+            "captchaActivatedRequired": "1"
+          }
+        }
+      },
+      {
+        "id": "2",
+        "provider": {
+          "id": "9999999",
+          "source": "unittest"
+        },
+        "shortName": "Scope 2",
+        "preferences": {
+          "client": {
+            "telephoneActivated": "0",
+            "telephoneRequired": "1",
+            "customTextfieldActivated": "0",
+            "customTextfieldRequired": "1",
+            "customTextfieldLabel": "",
+            "captchaActivatedRequired": "0"
+          }
+        }
+      }
+    ],
+    "days": [
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+        "year": "2024",
+        "month": "08",
+        "day": "21",
+        "status": "bookable",
+        "freeAppointments": {
+          "public": 10,
+          "intern": 5,
+          "callcenter": 0,
+          "type": "sum"
+        }
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+        "year": "2024",
+        "month": "08",
+        "day": "22",
+        "status": "bookable",
+        "freeAppointments": {
+          "public": 15,
+          "intern": 10,
+          "callcenter": 0,
+          "type": "sum"
+        }
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+        "year": "2024",
+        "month": "08",
+        "day": "23",
+        "status": "bookable",
+        "freeAppointments": {
+          "public": 12,
+          "intern": 7,
+          "callcenter": 0,
+          "type": "sum"
+        }
+      }
+    ],
+    "firstDay": {
+      "year": "2024",
+      "month": "08",
+      "day": "21"
+    },
+    "lastDay": {
+      "year": "2024",
+      "month": "08",
+      "day": "23"
+    },
+    "processing": {
+      "slotinfo": {
+        "9999998": 3
+      }
+    },
+    "freeProcesses": [],
+    "label": "Unittest Source",
+    "editable": "1",
+    "lastChange": 1549546997,
+    "requestrelation": [
+      {
+        "provider": {
+          "id": "9999998",
+          "source": "unittest"
+        },
+        "request": {
+          "id": "1",
+          "$ref": "/request/unittest/1/"
+        },
+        "source": "unittest",
+        "slots": "2"
+      },
+      {
+        "provider": {
+          "id": "9999999",
+          "source": "unittest"
+        },
+        "request": {
+          "id": "1",
+          "$ref": "/request/unittest/1/"
+        },
+        "source": "unittest",
+        "slots": "1"
+      },
+      {
+        "provider": {
+          "id": "9999999",
+          "source": "unittest"
+        },
+        "request": {
+          "id": "2",
+          "$ref": "/request/unittest/2/"
+        },
+        "source": "unittest",
+        "slots": "1"
+      }
+    ]
+  }
+}

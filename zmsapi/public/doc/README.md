@@ -1,6 +1,22 @@
 ## How does the Open Api definition work
 ## Version 2.0
 
+```
+bin/configure
+npm i
+npm run build
+npm run doc
+swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
+python3 -m http.server 8001
+```
+
+Reachable at:
+```
+http://[::]:8001/public/doc/
+https://zms.ddev.site/terminvereinbarung/api/2/doc/index.html
+```
+
+
 * Under /public/doc are the schema from zmsentities. A symbolic link points to the corresponding folder under vendor/eappointment/zmsentities/schema.
 
 * Under /bin there is a build_swagger.js file. This is executed via ``npm run doc`` and validates the existing swagger.yaml file. If valid, the open api annotations are read from routing.php and the remaining information such as info, definitions, version and tags are compiled from the yaml files under ./partials into a complete swagger.yaml. 

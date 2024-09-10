@@ -1,0 +1,26 @@
+{
+  "name": "zmscitizenapi",
+  "version": "1.0.0",
+  "description": "This application offers a REST-like interface for ZMS functions and database access.",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "preinstall": "",
+    "build": "node ./bin/build_swagger.js",
+    "doc": "npm run build && npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml"
+  },
+  "keywords": [
+    "eappointment"
+  ],
+  "author": "BerlinOnline GmbH & Co. KG",
+  "license": "SEE LICENSE IN LICENSE FILE",
+  "dependencies": {
+    "@apidevtools/swagger-cli": "^4.0.4"
+  },
+  "devDependencies": {
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-parser": "^10.0.0",
+    "openapi-types": "^10.0.0",
+    "js-yaml": "^4.1.0"
+  }
+}
