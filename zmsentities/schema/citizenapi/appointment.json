@@ -1,10 +1,505 @@
 {
-    "type": "object",
-    "description": "Includes a message that indicates the result or status of an appointment-related operation.",
-    "properties": {
-      "message": {
-        "type": "string"
-      }
+  "type": "object",
+  "description": "Includes a message that indicates the result or status of an appointment-related operation.",
+  "properties": {
+    "processId": {
+      "type": "string"
     },
-    "required": ["message"]
+    "timestamp": {
+      "type": "number"
+    },
+    "authKey": {
+      "type": "string"
+    },
+    "familyName": {
+      "type": "string"
+    },
+    "customTextfield": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "telephone": {
+      "type": "string"
+    },
+    "officeName": {
+      "type": "string"
+    },
+    "officeId": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "street": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "street",
+            "email",
+            "country"
+          ]
+        },
+        "provider": {
+          "type": "object",
+          "properties": {
+            "contact": {
+              "type": "object",
+              "properties": {
+                "city": {
+                  "type": "string"
+                },
+                "country": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "postalCode": {
+                  "type": "string"
+                },
+                "region": {
+                  "type": "string"
+                },
+                "street": {
+                  "type": "string"
+                },
+                "streetNumber": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "city",
+                "country",
+                "name",
+                "postalCode",
+                "region",
+                "street",
+                "streetNumber"
+              ]
+            },
+            "id": {
+              "type": "string"
+            },
+            "link": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "contact",
+            "id",
+            "link",
+            "name",
+            "displayName",
+            "source"
+          ]
+        },
+        "hint": {
+          "type": "string"
+        },
+        "lastChange": {
+          "type": "number"
+        },
+        "preferences": {
+          "type": "object",
+          "properties": {
+            "appointment": {
+              "type": "object",
+              "properties": {
+                "deallocationDuration": {
+                  "type": "string"
+                },
+                "infoForAppointment": {
+                  "type": "string"
+                },
+                "endInDaysDefault": {
+                  "type": "string"
+                },
+                "multipleSlotsEnabled": {
+                  "type": "string"
+                },
+                "reservationDuration": {
+                  "type": "string"
+                },
+                "activationDuration": {
+                  "type": "string"
+                },
+                "startInDaysDefault": {
+                  "type": "string"
+                },
+                "notificationConfirmationEnabled": {
+                  "type": "string"
+                },
+                "notificationHeadsUpEnabled": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "deallocationDuration",
+                "infoForAppointment",
+                "endInDaysDefault",
+                "multipleSlotsEnabled",
+                "reservationDuration",
+                "activationDuration",
+                "startInDaysDefault",
+                "notificationConfirmationEnabled",
+                "notificationHeadsUpEnabled"
+              ]
+            },
+            "client": {
+              "type": "object",
+              "properties": {
+                "alternateAppointmentUrl": {
+                  "type": "string"
+                },
+                "amendmentActivated": {
+                  "type": "string"
+                },
+                "amendmentLabel": {
+                  "type": "string"
+                },
+                "emailFrom": {
+                  "type": "string"
+                },
+                "emailRequired": {
+                  "type": "string"
+                },
+                "emailConfirmationActivated": {
+                  "type": "string"
+                },
+                "telephoneActivated": {
+                  "type": "string"
+                },
+                "telephoneRequired": {
+                  "type": "number"
+                },
+                "appointmentsPerMail": {
+                  "type": "string"
+                },
+                "slotsPerAppointment": {
+                  "type": "string"
+                },
+                "customTextfieldActivated": {
+                  "type": "string"
+                },
+                "customTextfieldRequired": {
+                  "type": "string"
+                },
+                "customTextfieldLabel": {
+                  "type": "string"
+                },
+                "captchaActivatedRequired": {
+                  "type": "string"
+                },
+                "adminMailOnAppointment": {
+                  "type": "number"
+                },
+                "adminMailOnDeleted": {
+                  "type": "number"
+                },
+                "adminMailOnUpdated": {
+                  "type": "number"
+                },
+                "adminMailOnMailSent": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "alternateAppointmentUrl",
+                "amendmentActivated",
+                "amendmentLabel",
+                "emailFrom",
+                "emailRequired",
+                "emailConfirmationActivated",
+                "telephoneActivated",
+                "telephoneRequired",
+                "appointmentsPerMail",
+                "slotsPerAppointment",
+                "customTextfieldActivated",
+                "customTextfieldRequired",
+                "customTextfieldLabel",
+                "captchaActivatedRequired",
+                "adminMailOnAppointment",
+                "adminMailOnDeleted",
+                "adminMailOnUpdated",
+                "adminMailOnMailSent"
+              ]
+            },
+            "notifications": {
+              "type": "object",
+              "properties": {
+                "confirmationContent": {
+                  "type": "string"
+                },
+                "headsUpContent": {
+                  "type": "string"
+                },
+                "headsUpTime": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "confirmationContent",
+                "headsUpContent",
+                "headsUpTime"
+              ]
+            },
+            "pickup": {
+              "type": "object",
+              "properties": {
+                "alternateName": {
+                  "type": "string"
+                },
+                "isDefault": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "alternateName",
+                "isDefault"
+              ]
+            },
+            "queue": {
+              "type": "object",
+              "properties": {
+                "callCountMax": {
+                  "type": "string"
+                },
+                "callDisplayText": {
+                  "type": "string"
+                },
+                "firstNumber": {
+                  "type": "string"
+                },
+                "lastNumber": {
+                  "type": "string"
+                },
+                "maxNumberContingent": {
+                  "type": "string"
+                },
+                "processingTimeAverage": {
+                  "type": "string"
+                },
+                "publishWaitingTimeEnabled": {
+                  "type": "string"
+                },
+                "statisticsEnabled": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "callCountMax",
+                "callDisplayText",
+                "firstNumber",
+                "lastNumber",
+                "maxNumberContingent",
+                "processingTimeAverage",
+                "publishWaitingTimeEnabled",
+                "statisticsEnabled"
+              ]
+            },
+            "survey": {
+              "type": "object",
+              "properties": {
+                "emailContent": {
+                  "type": "string"
+                },
+                "enabled": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "emailContent",
+                "enabled",
+                "label"
+              ]
+            },
+            "ticketprinter": {
+              "type": "object",
+              "properties": {
+                "buttonName": {
+                  "type": "string"
+                },
+                "confirmationEnabled": {
+                  "type": "string"
+                },
+                "deactivatedText": {
+                  "type": "string"
+                },
+                "notificationsAmendmentEnabled": {
+                  "type": "string"
+                },
+                "notificationsEnabled": {
+                  "type": "string"
+                },
+                "notificationsDelay": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "buttonName",
+                "confirmationEnabled",
+                "deactivatedText",
+                "notificationsAmendmentEnabled",
+                "notificationsEnabled",
+                "notificationsDelay"
+              ]
+            },
+            "workstation": {
+              "type": "object",
+              "properties": {
+                "emergencyEnabled": {
+                  "type": "string"
+                },
+                "emergencyRefreshInterval": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "emergencyEnabled",
+                "emergencyRefreshInterval"
+              ]
+            }
+          },
+          "required": [
+            "appointment",
+            "client",
+            "notifications",
+            "pickup",
+            "queue",
+            "survey",
+            "ticketprinter",
+            "workstation"
+          ]
+        },
+        "shortName": {
+          "type": "string"
+        },
+        "status": {
+          "type": "object",
+          "properties": {
+            "emergency": {
+              "type": "object",
+              "properties": {
+                "activated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "activated"
+              ]
+            },
+            "queue": {
+              "type": "object",
+              "properties": {
+                "ghostWorkstationCount": {
+                  "type": "string"
+                },
+                "givenNumberCount": {
+                  "type": "string"
+                },
+                "lastGivenNumber": {
+                  "type": "string"
+                },
+                "lastGivenNumberTimestamp": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "ghostWorkstationCount",
+                "givenNumberCount",
+                "lastGivenNumber",
+                "lastGivenNumberTimestamp"
+              ]
+            },
+            "ticketprinter": {
+              "type": "object",
+              "properties": {
+                "deactivated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "deactivated"
+              ]
+            }
+          },
+          "required": [
+            "emergency",
+            "queue",
+            "ticketprinter"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "contact",
+        "provider",
+        "hint",
+        "lastChange",
+        "preferences",
+        "shortName",
+        "status"
+      ]
+    },
+    "subRequestCounts": {
+      "type": "array",
+      "items": {}
+    },
+    "serviceId": {
+      "type": "string"
+    },
+    "serviceCount": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "processId",
+    "timestamp",
+    "authKey",
+    "familyName",
+    "customTextfield",
+    "email",
+    "telephone",
+    "officeName",
+    "officeId",
+    "scope",
+    "subRequestCounts",
+    "serviceId",
+    "serviceCount"
+  ]
 }
