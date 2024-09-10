@@ -24,10 +24,10 @@ class ProcessDeleteQuick extends ProcessDelete
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 1))->checkRights('basic');
+        $workstation = (new Helper\User($request, 2))->checkRights('basic');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
-       
+
         $this->testProcess($workstation, $process);
 
         $process->status = 'blocked';
@@ -49,7 +49,11 @@ class ProcessDeleteQuick extends ProcessDelete
         if (!$process->hasId()) {
             throw new Exception\Process\ProcessNotFound();
         }
-        if ($process->getCurrentScope()->getId() != $workstation->getScope()->getId()) {
+
+        if (! in_array(
+            $process->getCurrentScope()->getId(),
+            $workstation->getScopeListFromAssignedDepartments()->getIds())
+        ) {
             throw new Exception\Process\ProcessNoAccess();
         }
 

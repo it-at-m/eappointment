@@ -24,10 +24,28 @@ class MailList extends BaseController
         (new Helper\User($request))->checkRights('superuser');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $limit = Validator::param('limit')->isNumber()->setDefault(300)->getValue();
-        $mailList = (new Query())->readList($resolveReferences, $limit);
+        $onlyIds = Validator::param('onlyIds')->isBool()->setDefault(false)->getValue();
+        $ids = Validator::param('ids')->isString()->setDefault('')->getValue();
+        $query = new Query();
+        
+        if ($onlyIds) {
+            if (!empty($ids)) {
+                $itemIds = array_map('intval', explode(',', $ids));
+                $result = $query->readEntitiesIds($itemIds, $resolveReferences,  $limit, 'ASC');
+            } else {
+                $result = $query->readListIds($resolveReferences, $limit, 'ASC');
+            }
+        } else {
+            if (!empty($ids)) {
+                $itemIds = array_map('intval', explode(',', $ids));
+                $result = $query->readEntities($itemIds, $resolveReferences, $limit, 'ASC');
+            } else {
+                $result = $query->readList($resolveReferences, $limit, 'ASC');
+            }
+        }
 
         $message = Response\Message::create($request);
-        $message->data = $mailList;
+        $message->data = $result;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);

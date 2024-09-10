@@ -84,4 +84,6 @@ class Application
     public static $smtp_skip_tls_verify = false;
 
     public static $verify_dns_enabled = false;
+
+    public static $smtp_debug = false;
 }

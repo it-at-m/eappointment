@@ -25,7 +25,7 @@ class Warehouse extends Base
         ],
         [
             'subject' => 'waitingowner',
-            'description' => 'Wartestatistik Berlin',
+            'description' => 'Wartestatistik München',
             'right' => 'superuser'
         ],
         [
@@ -45,7 +45,7 @@ class Warehouse extends Base
         ],
         [
             'subject' => 'clientowner',
-            'description' => 'Kundenstatistik Berlin',
+            'description' => 'Kundenstatistik München',
             'right' => 'superuser'
         ],
         [
@@ -65,7 +65,7 @@ class Warehouse extends Base
         ],
         [
             'subject' => 'notificationowner',
-            'description' => 'SMS-Statistik Berlin',
+            'description' => 'SMS-Statistik München',
             'right' => 'superuser'
         ],
         [
@@ -85,7 +85,7 @@ class Warehouse extends Base
         ],
         [
             'subject' => 'requestowner',
-            'description' => 'Dienstleistungsstatistik Berlin',
+            'description' => 'Dienstleistungsstatistik München',
             'right' => 'superuser'
         ],
         [

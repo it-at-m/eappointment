@@ -207,7 +207,11 @@ class Workstation extends Base
         $query->addValues(['NutzerID' => $workstation->id]);
         $this->writeItem($query);
         $checksum = sha1($process->id . '-' . $workstation->getUseraccount()->id);
-        Log::writeLogEntry("UPDATE (Workstation::writeAssignedProcess) $checksum ", $process->id);
+        Log::writeLogEntry("UPDATE (Workstation::writeAssignedProcess) $checksum ",
+            $process->id,
+            Log::PROCESS,
+            $process->scope->id
+        );
         return $process;
     }
 
@@ -230,10 +234,15 @@ class Workstation extends Base
                 'aufrufzeit' => 0,
                 'NutzerID' => 0,
                 'AnzahlAufrufe' => $process->queue['callCount'],
-                'nicht_erschienen' => ('missed' == $process->status) ? 1 : 0
+                'nicht_erschienen' => ('missed' == $process->status) ? 1 : 0,
+                'parked' => ('parked' == $process->status) ? 1 : 0
             ]
         );
-        Log::writeLogEntry("UPDATE (Workstation::writeRemovedProcess)", $process->id);
+        Log::writeLogEntry("UPDATE (Workstation::writeRemovedProcess)",
+            $process->id,
+            Log::PROCESS,
+            $process->getScopeId()
+        );
         return $this->writeItem($query);
     }
 
