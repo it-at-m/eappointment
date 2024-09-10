@@ -28,7 +28,7 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 
 ## Contact
 [Overview](https://opensource.muenchen.de/software/zeitmanagementsystem.html)
-BerlinOnline Stadtportal GmbH & Co KG Contact: Mathias Fischer mathias.fischer@berlinonline.de License: [Commercial](https://www.berlinonline.net/)
+BerlinOnline Stadtportal GmbH & Co KG Contact: 
 
 Munich Contact: it@M - opensource@muenchen.de
 
@@ -74,7 +74,7 @@ Das ZMS-System dient zur Verwaltung von Warteschlangen für Menschen. Es bietet 
 [ZMSCITIZENAPI-Dokumentation](https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html)
 
 ## Kontakt
-BerlinOnline Stadtportal GmbH & Co KG Kontakt: Mathias Fischer mathias.fischer@berlinonline.de Lizenz: [Kommerziell](https://www.berlinonline.net/)
+BerlinOnline Stadtportal GmbH & Co KG Kontakt: 
 
 Munich Kontakt: it@M - opensource@muenchen.de
 
