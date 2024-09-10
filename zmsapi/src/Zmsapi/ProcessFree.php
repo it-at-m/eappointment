@@ -38,6 +38,7 @@ class ProcessFree extends BaseController
             ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired, $groupData ? true: false)
             ->withLessData($keepLessData)
         ;
+
         if ($groupData && count($processList) >= $groupData) {
             $processList = $processList->withUniqueScope(true);
         } elseif ($groupData) {
