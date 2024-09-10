@@ -1,6 +1,0 @@
-tags:
-  - name: zmscitizenapi
-    description: |
-      The zmscitizenapi is a streamlined API designed specifically for the citizen-facing frontend application "Bürgeransicht." It acts as an intermediary between the Bürgeransicht frontend and various backend services, including the broader zmsapi system. The zmscitizenapi consolidates and simplifies endpoints from zmsapi and other integrated services to provide a cohesive experience for users, enabling actions such as appointment booking, service requests, and other interactions with municipal services. Its purpose is to enhance the usability of the citizen interface by providing a lightweight and efficient layer on top of the complex zmsapi structure.
-
-
