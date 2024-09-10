@@ -48,7 +48,7 @@ jobs:
       # Step 4: Run PHP post-install scripts for zmsapi
       - name: Run PHP post-install scripts
         run: |
-          cd zmsapi && composer run-script post-install-cmd && cd ..
+          cd zmsapi && bin/configure && composer run-script post-install-cmd && cd ..
 
       # Step 5: Set up Node.js environment
       - name: Set up Node.js
@@ -62,23 +62,30 @@ jobs:
           cd zmsapi
           npm install
 
-      # Step 7: Build and generate Swagger documentation for zmsapi
-      - name: Build and document zmsapi
+      # Step 7: Build the project for zmsapi
+      - name: Build zmsapi
+        run: |
+          cd zmsapi
+          npm run build
+
+      # Step 8: Generate Swagger documentation for zmsapi
+      - name: Generate Swagger documentation
         run: |
           cd zmsapi
           npm run doc
+          npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
 
-      # Step 8: Set up GitHub Pages for deployment
+      # Step 9: Set up GitHub Pages for deployment
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Step 9: Upload the static content to GitHub Pages
+      # Step 10: Upload the static content to GitHub Pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'  # Upload the entire repository, including the generated docs
 
-      # Step 10: Deploy to GitHub Pages
+      # Step 11: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
