@@ -234,9 +234,9 @@
 			{% set successTitle = "Termin erfolgreich eingetragen" %}
 			{{ block('success_start') }}
 				<dl>
-					{% if selectedprocess.queue.number < 10000 %}<dt>Die Wartenummer {% else %}<dt>Die Vorgangsnummer {% endif %}{% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|raw }}"{% endif %} lautet: {{ selectedprocess.queue.number }}</dt>
-					<dt>Standort: {{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
-					{% if selectedprocess.scope.hint %}<dt>Info: {{ selectedprocess.scope.hint }}</dt>{% endif %}
+					{% if selectedprocess.queue.number < 10000 %}<dt>Die Wartenummer {% else %}<dt>Die Vorgangsnummer {% endif %}{% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|raw }}"{% endif %} lautet: {{ selectedprocess.queue.number }}&nbsp;</dt>
+					<dt>Standort: {{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}&nbsp;</dt>
+					{% if selectedprocess.scope.hint %}<dt>Info: {{ selectedprocess.scope.hint }}&nbsp;</dt>{% endif %}
 				</dl>
 				<div class="form-actions">
 					<div class="right">
@@ -292,9 +292,9 @@
 			{% set successTitle = "Wartenummer wurde hinzugefügt" %}
 			{{ block('success_start') }}
 				<dl>
-					<dt>Die Wartenummer {% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|raw }}"{% endif %} lautet: {{ selectedprocess.queue.number }}</dt>
-					<dt>Standort: {{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
-					{% if selectedprocess.scope.hint %}<dt>Info: {{ selectedprocess.scope.hint }}</dt>{% endif %}
+					<dt>Die Wartenummer {% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|raw }}"{% endif %} lautet: {{ selectedprocess.queue.number }}&nbsp;</dt>
+					<dt>Standort: {{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}&nbsp;</dt>
+					{% if selectedprocess.scope.hint %}<dt>Info: {{ selectedprocess.scope.hint }}&nbsp;</dt>{% endif %}
 				</dl>
 				<div class="form-actions">
 		            <div class="right">

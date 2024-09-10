@@ -32,6 +32,7 @@
             "lastCallTime": 1447922938,
             "number": "123",
             "waitingTime": 2,
+            "wayTime": 2,
             "withAppointment": 1,
             "status": "queued"
         },
@@ -230,6 +231,10 @@
             "type": "string",
             "description": "unix timestamp of showing up after call"
         },
+        "processingTime": {
+            "type": "string",
+            "description": "unix timestamp that cumulates time each time a processes is called"
+          },
         "timeoutTime": {
             "type": "string",
             "description": "unix timestamp of after a call is entered or re-entered into the queue"
@@ -248,6 +253,7 @@
                 "lastCallTime": 0,
                 "number": "123",
                 "waitingTime": 2,
+                "wayTime": 2,
                 "withAppointment": false,
                 "status": "confirmed"
             },
@@ -292,6 +298,10 @@
                     "type": "number",
                     "description": "minutes since arrival of client"
                 },
+                "wayTime": {
+                    "type": "number",
+                    "description": "minutes since arrival of client"
+                },
                 "waitingTimeEstimate": {
                     "type": "number",
                     "description": "estimated time in minutes to wait for a call"
@@ -318,7 +328,8 @@
                         "pickup",
                         "finished",
                         "fake",
-                        "missed"
+                        "missed",
+                        "parked"
                     ],
                     "description": "Status of the process. The following values are possible:\n  * confirmed: confirmed appointment but not in queue\n * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * deleted: client is deleted\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * pickup: show pending on call display\n  * reserved: appointment is reserved\n  * finished: successfully processed\n  * fake: dummy entry for getting infos about queue\n  * missed: no client appeared\n"
                 }
@@ -538,10 +549,12 @@
                     "client": {
                         "alternateAppointmentUrl": "https:\/\/service.berlin.de",
                         "appointmentsPerMail": "",
+                        "slotsPerAppointment": "",
                         "whitelistedMails": "",
                         "amendmentLabel": "Zusatzinformationen zum Anliegen",
                         "customTextfieldLabel": "Zusatzfeld zum Anliegen",
                         "emailRequired": false,
+                        "emailConfirmationActivated": true,
                         "adminMailOnAppointment": false,
                         "adminMailOnDeleted": false,
                         "adminMailOnUpdated": false,
@@ -721,6 +734,11 @@
                                     "description": "allowed appointments per e-mail address",
                                     "default": ""
                                 },
+                                "slotsPerAppointment": {
+                                    "type": "string",
+                                    "description": "allowed slots per appointment",
+                                    "default": ""
+                                },
                                 "whitelistedMails": {
                                     "type": "string",
                                     "description": "e-mail addresses that have no limitation on appointments count",
@@ -773,6 +791,14 @@
                                     ],
                                     "description": "true if client is required to enter an email address",
                                     "default": false
+                                },
+                                "emailConfirmationActivated": {
+                                    "type": [
+                                        "boolean",
+                                        "number"
+                                    ],
+                                    "description": "true if email confirmation is activated",
+                                    "default": true
                                 },
                                 "telephoneActivated": {
                                     "type": [
@@ -1112,6 +1138,7 @@
                 "pickup",
                 "finished",
                 "missed",
+                "parked",
                 "archived",
                 "deleted",
                 "anonymized",

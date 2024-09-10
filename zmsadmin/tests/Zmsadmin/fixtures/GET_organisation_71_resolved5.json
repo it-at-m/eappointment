@@ -25,6 +25,7 @@
                         "preferences": {
                             "appointment": {
                                 "deallocationDuration": "60",
+                                "infoForAppointment": "",
                                 "endInDaysDefault": "60",
                                 "multipleSlotsEnabled": "0",
                                 "reservationDuration": "60",
@@ -134,6 +135,7 @@
                         "preferences": {
                             "appointment": {
                                 "deallocationDuration": "10",
+                                "infoForAppointment": "",
                                 "endInDaysDefault": "60",
                                 "multipleSlotsEnabled": "0",
                                 "reservationDuration": "20",
@@ -267,6 +269,7 @@
                                 "preferences": {
                                     "appointment": {
                                         "deallocationDuration": "10",
+                                        "infoForAppointment": "",
                                         "endInDaysDefault": "60",
                                         "multipleSlotsEnabled": "0",
                                         "reservationDuration": "20",
@@ -364,6 +367,7 @@
                                 "preferences": {
                                     "appointment": {
                                         "deallocationDuration": "10",
+                                        "infoForAppointment": "",
                                         "endInDaysDefault": "60",
                                         "multipleSlotsEnabled": "0",
                                         "reservationDuration": "20",
@@ -461,6 +465,7 @@
                                 "preferences": {
                                     "appointment": {
                                         "deallocationDuration": "10",
+                                        "infoForAppointment": "",
                                         "endInDaysDefault": "60",
                                         "multipleSlotsEnabled": "0",
                                         "reservationDuration": "20",
@@ -570,6 +575,7 @@
                                 "preferences": {
                                     "appointment": {
                                         "deallocationDuration": "30",
+                                        "infoForAppointment": "",
                                         "endInDaysDefault": "21",
                                         "multipleSlotsEnabled": "0",
                                         "reservationDuration": "20",
@@ -668,7 +674,7 @@
             {
                 "enabled": "1",
                 "reload": 30,
-                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+                "hash": "71abcdefghijklmnopqrstuvwxyz",
                 "id": "1",
                 "lastUpdate": "1477661416",
                 "name": "Test Ticketprinter"

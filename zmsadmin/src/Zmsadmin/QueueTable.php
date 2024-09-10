@@ -51,6 +51,7 @@ class QueueTable extends BaseController
         $queueList = $processList->toQueueList(\App::$now);
         $queueListVisible = $queueList->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
         $queueListMissed = $queueList->withStatus(['missed']);
+        $queueListParked = $queueList->withStatus(['parked']);
         $queueListFinished = $queueList->withStatus(['finished']);
 
         // rendering
@@ -66,6 +67,7 @@ class QueueTable extends BaseController
                 'clusterEnabled' => $workstation->isClusterEnabled(),
                 'processList' => $queueListVisible->toProcessList(),
                 'processListMissed' => $queueListMissed->toProcessList(),
+                'processListParked' => $queueListParked->toProcessList(),
                 'processListFinished' => $queueListFinished->toProcessList(),
                 'changedProcess' => $changedProcess,
                 'success' => $success,

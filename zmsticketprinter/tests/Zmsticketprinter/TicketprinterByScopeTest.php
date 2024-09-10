@@ -21,7 +21,7 @@ class TicketprinterByScopeTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
+                'url' => '/ticketprinter/78abcdefghijklmnopqrstuvwxyz/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
             ],
             [
@@ -55,10 +55,10 @@ class TicketprinterByScopeTest extends Base
             'scopeId' => 312
         ], [
             '__cookie' => [
-                'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
+                'Ticketprinter' => '78abcdefghijklmnopqrstuvwxyz',
             ]
         ], [ ]);
-        $this->assertStringContainsString('Wartenummer für', (string) $response->getBody());
+        $this->assertStringContainsString('Apparat-Id: 71abcdefghijklmnopqrstuvwxyz', (string) $response->getBody());
         $this->assertStringContainsString('Köpenick', (string) $response->getBody());
         $this->assertStringNotContainsString('Handynummer nachträglich eintragen', (string) $response->getBody());
     }

@@ -21,6 +21,8 @@ class QueueListHelper
 
     protected static $missedStatus = ['missed'];
 
+    protected static $parkedStatus = ['parked'];
+
     public function __construct(ClusterHelper $clusterHelper, $selectedDate)
     {
         $dateTime = (new \DateTimeImmutable($selectedDate))->modify(\App::$now->format('H:i:s'));
