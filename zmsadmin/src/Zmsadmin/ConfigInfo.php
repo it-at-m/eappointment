@@ -22,6 +22,8 @@ class ConfigInfo extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
+        $mailtemplates = \App::$http->readGetResult('/mailtemplates/')->getCollection();
+
         $mainProcessExample = ((new \BO\Zmsentities\Process)->getExample());
         $mainProcessExample->id = 987654;
         $dateTime = new \DateTimeImmutable("2015-10-23 08:00:00", new \DateTimeZone('Europe/Berlin'));
@@ -70,6 +72,7 @@ class ConfigInfo extends BaseController
                 'title' => 'Konfiguration System',
                 'workstation' => $workstation,
                 'config' => $config,
+                'mailtemplates' => $mailtemplates,
                 'processExample' => $mainProcessExample,
                 'processListExample' => $processListExample,
                 'menuActive' => 'configinfo',

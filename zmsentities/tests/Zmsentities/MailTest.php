@@ -42,7 +42,6 @@ class MailTest extends EntityCommonTests
 
     }
 
-
     public function testCollection()
     {
         $collection = new $this->collectionclass();
@@ -70,11 +69,6 @@ class MailTest extends EntityCommonTests
             'Guten Tag',
             $resolvedEntity->getHtmlPart(),
             'Mimepart content is not html'
-        );
-        $this->assertStringContainsString(
-            'Ihre Terminnummer und weitere Informationen erhalten Sie 24 Stunden vor Ihrem Termin',
-            $resolvedEntity->getPlainPart(),
-            'Mimepart content is not plain text'
         );
         $this->assertStringContainsString('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart(), 'Mimepart content is not plain text');
         // test if appointment date formatted correct

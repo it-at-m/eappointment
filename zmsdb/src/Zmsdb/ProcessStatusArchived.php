@@ -51,6 +51,17 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
+    public function readListByScopesAndDates($scopeIds, $dateTimes, $resolveReferences = 0)
+    {
+        $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionScopeIds($scopeIds)
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionTimes($dateTimes);
+
+        return $this->readResolvedList($query, $resolveReferences);
+    }
+
     public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, $limit = 500, $resolveReferences = 0)
     {
         $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
@@ -162,18 +173,14 @@ class ProcessStatusArchived extends Process
         $query->addValuesNewArchive($process, $now);
         $this->writeItem($query);
         $archiveId = $this->getWriter()->lastInsertId();
-        Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ", $process->id);
+        Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ",
+            $process->id,
+            Log::PROCESS,
+            $process->getScopeId()
+        );
 
         if ($calculateStatistic) {
-            (new ExchangeWaitingscope())->writeWaitingTime($process, $now);
-
-            if ($process->isWithAppointment()) {
-                (new ExchangeWaitingscope())->writeWaitingTimeCalculated(
-                    $process->scope,
-                    $now,
-                    true
-                );
-            }
+            (new ExchangeWaitingscope())->updateWaitingStatistics($process, $now);
         }
         
         return $this->readArchivedEntity($archiveId, $resolveReferences);

@@ -24,6 +24,7 @@ class Process extends Schema\Entity
     public const STATUS_PICKUP     = 'pickup';
     public const STATUS_FINISHED   = 'finished';
     public const STATUS_MISSED     = 'missed';
+    public const STATUS_PARKED     = 'parked';
     public const STATUS_ARCHIVED   = 'archived';
     public const STATUS_DELETED    = 'deleted';
     public const STATUS_ANONYMIZED = 'anonymized';
@@ -159,6 +160,11 @@ class Process extends Schema\Entity
     public function sendAdminMailOnUpdated()
     {
         return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnUpdated->get());
+    }
+
+    public function shouldSendAdminMailOnClerkMail()
+    {
+        return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnMailSent->get());
     }
 
     public function withUpdatedData($requestData, \DateTimeInterface $dateTime, $scope = null, $notice = '')
@@ -332,9 +338,30 @@ class Process extends Schema\Entity
         return $this->toProperty()->amendment->get();
     }
 
-    public function getShowUpTime()
+    /*public function getShowUpTime()
     {
         return $this->toProperty()->showUpTime->get();
+    }*/
+
+    public function getShowUpTime($default = 'now', $timezone = null)
+    {
+        $showUpTime = $this->toProperty()->showUpTime->get();
+        $showDateTime = Helper\DateTime::create($default, $timezone);
+        if ($showUpTime) {
+            list($hours, $minutes, $seconds) = explode(':', $showUpTime);
+            $showDateTime = $showDateTime->setTime(intval($hours), intval($minutes), intval($seconds));
+        }
+        return $showDateTime;
+    }
+
+    public function getWaitingTime()
+    {
+        return $this->toProperty()->queue->waitingTime->get();
+    }
+
+    public function getProcessingTime()
+    {
+        return $this->toProperty()->processingTime->get();
     }
 
     public function getFinishTime()
@@ -422,6 +449,8 @@ class Process extends Schema\Entity
         $scope = new Scope($this->scope);
         if ('called' == $this->status && $this->queue['callCount'] > $scope->getPreference('queue', 'callCountMax')) {
             $this->status = 'missed';
+        } elseif ('parked' == $this->status) {
+            $this->status = 'parked';
         } elseif ('pickup' == $this->status) {
             $this->status = 'queued';
         } else {
@@ -537,6 +566,7 @@ class Process extends Schema\Entity
         $queue = new Queue($this->queue);
         $queue->withAppointment = ($this->getFirstAppointment()->hasTime()) ? true : false;
         $queue->waitingTime = ($queue->waitingTime) ? $queue->waitingTime : 0;
+        $queue->wayTime = ($queue->wayTime) ? $queue->wayTime : 0;
         if ($queue->withAppointment) {
             $queue->number = $this->id;
         } else {
@@ -582,7 +612,17 @@ class Process extends Schema\Entity
 
     public function getWaitedMinutes($defaultTime = 'now')
     {
-        return round($this->getWaitedSeconds($defaultTime) / 60, 0);
+        return $this->getWaitedSeconds($defaultTime) / 60;
+    }
+
+    public function getWaySeconds($defaultTime = 'now')
+    {
+        return $this->getShowUpTime($defaultTime)->getTimestamp() - $this->getCallTime($defaultTime)->getTimestamp();
+    }
+
+    public function getWayMinutes($defaultTime = 'now')
+    {
+        return $this->getWaySeconds($defaultTime) / 60;
     }
 
     public function toDerefencedAmendment()

@@ -276,6 +276,7 @@
                         "lastCallTime": 1447922938,
                         "number": "123",
                         "waitingTime": 2,
+                        "wayTime": 2,                        
                         "withAppointment": 1,
                         "status": "queued"
                     },
@@ -290,6 +291,10 @@
                     "showUpTime": {
                         "type": "string",
                         "description": "unix timestamp of showing up after call"
+                    },
+                    "processingTime": {
+                        "type": "string",
+                        "description": "unix timestamp that cumulates time each time a processes is called"
                     },
                     "timeoutTime": {
                         "type": "string",
@@ -404,6 +409,7 @@
                             "pickup",
                             "finished",
                             "missed",
+                            "parked",
                             "archived",
                             "deleted",
                             "anonymized",

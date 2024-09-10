@@ -1,2 +1,4 @@
 .idea/
 .ddev/.env
+/local/
+.DS_Store

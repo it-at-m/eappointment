@@ -5,6 +5,7 @@ import AvailabilityForm from '../form'
 import FooterButtons from '../form/footerButtons'
 import {accordionTitle} from '../helpers'
 import Board from './board'
+import { hasSlotCountError } from '../form/validate';
 moment.locale('de')
 
 class Accordion extends Component 
@@ -152,6 +153,7 @@ class Accordion extends Component
                 body={renderAccordionBody()}
                 footer={<FooterButtons 
                     hasConflicts={Object.keys(this.props.conflictList.itemList).length || Object.keys(this.props.errorList).length ? true : false}
+                    hasSlotCountError={hasSlotCountError(this.props)}
                     stateChanged={this.props.stateChanged} 
                     data={this.props.data} 
                     {...{onNew, onPublish, onAbort }} 

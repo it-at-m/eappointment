@@ -24,6 +24,7 @@ class AppointmentDeleteByCron
         "queued",
         "called",
         "missed",
+        'parked',
         "processing",
     ];
 
@@ -32,6 +33,7 @@ class AppointmentDeleteByCron
         "queued",
         "called",
         "missed",
+        'parked',
         "processing",
         "pending"
     ];

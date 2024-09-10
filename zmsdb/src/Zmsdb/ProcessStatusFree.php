@@ -21,18 +21,30 @@ class ProcessStatusFree extends Process
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
         $selectedDate = $calendar->getFirstDay();
         $processList = new Collection();
+        $days = [$selectedDate];
+        $scopeList = [];
+
+        if ($calendar->getLastDay(false)) {
+            $days = [];
+            while ($selectedDate <= $calendar->getLastDay(false)) {
+                $days[] = $selectedDate;
+                $selectedDate = $selectedDate->modify('+1 day');
+            }
+        }
+
         $processData = $this->fetchHandle(
-            Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAY
+            sprintf(
+                Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS,
+                Query\ProcessStatusFree::buildDaysCondition($days)
+            )
             . ($groupData ? Query\ProcessStatusFree::GROUPBY_SELECT_PROCESSLIST_DAY : ''),
             [
-                'year' => $selectedDate->format('Y'),
-                'month' => $selectedDate->format('m'),
-                'day' => $selectedDate->format('d'),
                 'slotType' => $slotType,
                 'forceRequiredSlots' =>
                     ($slotsRequired === null || $slotsRequired < 1) ? 1 : intval($slotsRequired),
             ]
         );
+
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $process = new \BO\Zmsentities\Process($item);
             $process->requests = $calendar->requests;
@@ -40,7 +52,12 @@ class ProcessStatusFree extends Process
                 $process->appointments->getFirst()->date,
                 'Y-m-d H:i:s'
             );
-            $process->scope = $calendar->scopes->getEntity($process->scope->id);
+
+            if (! isset($scopeList[$process->scope->id])) {
+                $scopeList[$process->scope->id] = $calendar->scopes->getEntity($process->scope->id);
+            }
+
+            $process->scope = $scopeList[$process->scope->id];
             $process->queue['withAppointment'] = 1;
             $process->appointments->getFirst()->scope = $process->scope;
             $processList->addEntity($process);
