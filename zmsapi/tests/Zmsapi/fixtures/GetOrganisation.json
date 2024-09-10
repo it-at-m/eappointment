@@ -27,7 +27,7 @@
     "ticketprinters": [
         {
             "enabled": "1",
-            "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+            "hash": "54abcdefghijklmnopqrstuvwxyz",
             "id": "1",
             "lastUpdate": "1477661416",
             "name": "Test Ticketprinter"
