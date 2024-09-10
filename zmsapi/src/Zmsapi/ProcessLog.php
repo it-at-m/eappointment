@@ -21,7 +21,7 @@ class ProcessLog extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkRights('audit');
         $logList = (new Query())->readByProcessId($args['id']);
 
         $message = Response\Message::create($request);

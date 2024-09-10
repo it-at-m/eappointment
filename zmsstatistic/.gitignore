@@ -11,6 +11,8 @@ vendor.old
 vendor.update
 VERSION
 public/_tests
+public/_js/
+public/_libs/
 composer.*.lock
 .cache
 .phpunit.result.cache

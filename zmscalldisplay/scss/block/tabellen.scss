@@ -19,10 +19,9 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
 
 .aufrufanzeige .aufrufanzeige_main
 {
-    left: 15%;
     position: absolute;
     top: 135px;
-    width: 70%;
+    width: 100%;
 }
 
 .aufrufanzeige table.aufrufanzeige_aufruf
@@ -42,7 +41,7 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
     font-family: Roboto Condensed, Arial, sans-serif;
     font-weight: bold;
     line-height: 45px;
-    text-align:center;
+    text-align: left;
 }
 .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
     width:50%;
@@ -68,19 +67,18 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
 }
 
 .description_de {
-  font-size: 18px;
+  font-size: 32px;
   font-weight: bold;
   text-align: left;
   line-height: 18px;
-  padding: 8px 8px 4px 16px;
+  padding: 8px 16px;
 }
 
 .description_eng {
-  font-size: 18px;
+  font-size: 28px;
   font-weight: normal;
   text-align: left;
   line-height: 18px;
-  padding: 4px 8px 8px 16px;
 }
 
 .aufrufanzeige table.aufrufanzeige_aufruf td div.highlight {
