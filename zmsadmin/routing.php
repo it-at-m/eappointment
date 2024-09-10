@@ -55,6 +55,22 @@ use Slim\Routing\RouteCollectorProxy;
  \App::$slim->map(['GET','POST'], '/config/', \BO\Zmsadmin\ConfigInfo::class)
      ->setName("configinfo");
 
+     
+ \App::$slim->get('/mailtemplates/', \BO\Zmsadmin\MailTemplates::class)
+     ->setName("mailtemplates");
+
+    
+ \App::$slim->post('/mailtemplates/', \BO\Zmsadmin\Helper\MailTemplateHandler::class)
+     ->setName("MailTemplateHandler");
+     
+ \App::$slim->post('/mailtemplates/deleteCustomization/', \BO\Zmsadmin\Helper\MailTemplateDeleteCustomization::class)
+     ->setName("MailTemplateDeleteCustomization");
+
+ \App::$slim->post('/mailtemplates/createCustomization/', \BO\Zmsadmin\Helper\MailTemplateCreateCustomization::class)
+     ->setName("MailTemplateCreateCustomization");
+
+     
+
  /*
   * ---------------------------------------------------------------------------
   * Counter
@@ -380,6 +396,9 @@ use Slim\Routing\RouteCollectorProxy;
 
 \App::$slim->get('/workstation/call/{id:\d+}/', \BO\Zmsadmin\WorkstationProcessCall::class)
     ->setName("workstationProcessCall");
+
+\App::$slim->get('/workstation/process/parked/', \BO\Zmsadmin\WorkstationProcessParked::class)
+    ->setName("workstationProcessParked");
 
 \App::$slim->get('/workstation/process/cancel/', \BO\Zmsadmin\WorkstationProcessCancel::class)
     ->setName("workstationProcessCancel");

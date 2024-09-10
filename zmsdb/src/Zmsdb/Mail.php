@@ -31,28 +31,81 @@ class Mail extends Base
         }
         return $mail;
     }
+    
+    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC')
+    {
+        $mailList = new Collection();
+        $query = new Query\MailQueue(Query\Base::SELECT);
+        $query->addEntityMapping()
+              ->addResolvedReferences($resolveReferences)
+              ->addWhereIn('id', $itemIds)
+              ->addOrderBy('createTimestamp', 'ASC')
+              ->addLimit($limit);
+        $result = $this->fetchList($query, new Entity());
+
+        foreach ($result as $item) {
+            $entity = new Entity($item);
+            $entity = $this->readResolvedReferences($entity, $resolveReferences);
+            if ($entity instanceof Entity) {
+                $mailList->addEntity($entity);
+            }
+        }
+        
+        return $mailList;
+    }    
+    
+    
+    public function readEntitiesIds(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC')
+    {
+
+        $query = new Query\MailQueue(Query\Base::SELECT);
+        $query->selectFields(['id', 'createTimestamp'])
+              ->addEntityMapping()
+              ->addResolvedReferences($resolveReferences)
+              ->addWhereIn('id', $itemIds)
+              ->addOrderBy('createTimestamp', $order)
+              ->addLimit($limit);
+
+        return $this->fetchList($query, new Entity());
+
+    } 
 
     public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC')
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addOrderBy('createTimestamp', $order)
-            ->addLimit($limit);
+        $query->addEntityMapping()
+              ->addResolvedReferences($resolveReferences)
+              ->addOrderBy('createTimestamp', $order)
+              ->addLimit($limit);
         $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $item) {
-                $entity = new Entity($item);
-                $entity = $this->readResolvedReferences($entity, $resolveReferences);
-                if ($entity instanceof Entity) {
-                    $mailList->addEntity($entity);
-                }
+        
+        foreach ($result as $item) {
+            $entity = new Entity($item);
+            $entity = $this->readResolvedReferences($entity, $resolveReferences);
+            if ($entity instanceof Entity) {
+                $mailList->addEntity($entity);
             }
         }
+        
         return $mailList;
     }
+
+
+    public function readListIds($resolveReferences = 1, $limit = 300, $order = 'ASC')
+    {
+        $query = new Query\MailQueue(Query\Base::SELECT);
+        $query->selectFields(['id', 'createTimestamp'])
+              ->addEntityMapping()
+              ->addResolvedReferences($resolveReferences)
+              ->addOrderBy('createTimestamp', $order)
+              ->addLimit($limit);
+
+        return $this->fetchList($query, new Entity());
+
+    }
+
+
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $mail, $resolveReferences)
     {
@@ -178,6 +231,14 @@ class Mail extends Base
         $query = Query\MailQueue::QUERY_DELETE;
         $status = $this->perform($query, [$itemId]);
         return $status;
+    }
+
+    public function deleteEntities(array $itemIds)
+    {
+        $query = Query\MailQueue::QUERY_MULTI_DELETE;
+        $placeholders = implode(',', array_fill(0, count($itemIds), '?'));
+        $query = str_replace('?', $placeholders, $query);
+        return $this->perform($query, $itemIds);
     }
 
     public function readReminderLastRun($now)
