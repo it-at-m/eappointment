@@ -58,7 +58,7 @@ class LoginForm
         if (! Validator::param('workstation')->isDeclared()->hasFailed()) {
             $collection['workstation'] = Validator::param('workstation')
                  ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus')
-                 ->isSmallerThan(5, "Die Arbeitsplatz-Bezeichnung sollte 5 Zeichen nicht überschreiten");
+                 ->isSmallerThan(8, "Die Arbeitsplatz-Bezeichnung sollte 8 Zeichen nicht überschreiten");
         }
         // hint
         if (! Validator::param('hint')->isDeclared()->hasFailed()) {

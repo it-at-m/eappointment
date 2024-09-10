@@ -47,6 +47,17 @@ class WorkstationProcessPreCall extends BaseController
             );
         }
 
+        // Get waiting time for precall twig since no query is performed
+        $currentTime = new \DateTime();
+        $arrivalTime = new \DateTime();
+        $timestamp = (int) $process->queue->arrivalTime;
+        $arrivalTime->setTimestamp($timestamp);
+        $differenceInSeconds = $currentTime->getTimestamp() - $arrivalTime->getTimestamp();
+        $hours = intdiv($differenceInSeconds, 3600);
+        $minutes = intdiv($differenceInSeconds % 3600, 60);
+        $seconds = $differenceInSeconds % 60;
+        $waitingTime = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/process/precall.twig',
@@ -55,6 +66,7 @@ class WorkstationProcessPreCall extends BaseController
                 'workstation' => $workstation,
                 'menuActive' => 'workstation',
                 'process' => $process,
+                'timeDifference' => $waitingTime, // Pass this to Twig
                 'exclude' => join(',', $exclude),
                 'error' => $error
             )

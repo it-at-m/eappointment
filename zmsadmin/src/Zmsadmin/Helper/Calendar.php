@@ -11,6 +11,7 @@ use \BO\Zmsentities\Calendar as Entity;
 use \BO\Zmsentities\Day;
 use \BO\Zmsentities\Collection\DayList;
 use \BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Scope;
 
 class Calendar
 {
@@ -27,6 +28,8 @@ class Calendar
         }
 
         $this->calendar = new Entity();
+        $this->calendar->firstDay = new Day();
+        $this->calendar->lastDay = new Day();
     }
 
     public function getDateTime()
@@ -61,11 +64,21 @@ class Calendar
     public function readAvailableSlotsFromDayAndScopeList(
         \BO\Zmsentities\Collection\ScopeList $scopeList,
         $slotType = 'intern',
-        $slotsRequired = 0
+        $slotsRequired = 0,
+        $forWeek = false
     ) {
         $this->calendar->scopes = $scopeList;
+
         $this->calendar->firstDay->setDateTime($this->dateTime);
         $this->calendar->lastDay->setDateTime($this->dateTime);
+
+        if ($forWeek) {
+            $startDate = clone $this->dateTime->modify('Monday this week');
+            $endDate = clone $this->dateTime->modify('Sunday this week');
+            $this->calendar->firstDay->setDateTime($startDate);
+            $this->calendar->lastDay->setDateTime($endDate);
+        }
+
         try {
             $slots = \App::$http->readPostResult(
                 '/process/status/free/',
@@ -84,35 +97,63 @@ class Calendar
         return $slots;
     }
 
-    public function readWeekDayListWithProcessList(\BO\Zmsentities\Collection\ScopeList $scopeList)
-    {
+    public function readWeekDayListWithProcessList(
+        ?\BO\Zmsentities\Cluster $cluster,
+        \BO\Zmsentities\Workstation $workstation
+    ) {
+        $showAllInCluster = $cluster && 1 == $workstation->queue['clusterEnabled'];
+        $scopeList = $workstation->getScopeList($cluster);
+        $scope = $scopeList->getFirst();
+
         $dayList = new \BO\Zmsentities\Collection\DayList();
+
+        if ($showAllInCluster) {
+            $bookedProcessList = \App::$http
+                ->readGetResult('/cluster/'. $cluster->id .'/process/'. $this->dateTime->format('Y-m-d') . '/', ['showWeek' => 1])
+                ->getCollection();
+        } else {
+            $bookedProcessList = \App::$http
+                ->readGetResult('/scope/'. $scope->id .'/process/'. $this->dateTime->format('Y-m-d') . '/', ['showWeek' => 1])
+                ->getCollection();
+        }
+
+        /** @var ProcessList $bookedProcessList */
+        $processListByDate = $this->splitByDate($bookedProcessList);
+
         $startDate = clone $this->dateTime->modify('Monday this week');
         $endDate = clone $this->dateTime->modify('Sunday this week');
         $currentDate = $startDate;
+
+        /** @var ProcessList $freeProcessList */
+        $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList(
+            $scopeList,
+            'intern',
+            0,
+            true
+        );
+        $freeProcessListByDate = $freeProcessList ? $this->splitByDate($freeProcessList) : [];
+
         while ($currentDate <= $endDate) {
             $day = (new Day)->setDateTime($currentDate);
             $day->status = Day::DETAIL;
             $processList = new \BO\Zmsentities\Collection\ProcessList();
-            foreach ($scopeList as $scope) {
-                $this->dateTime = $currentDate;
-                if ($currentDate->format('Y-m-d') >= \App::$now->format('Y-m-d')) {
-                    $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList($scopeList);
-                    $bookedProcessList = \App::$http
-                        ->readGetResult('/scope/'. $scope->id .'/process/'. $currentDate->format('Y-m-d') .'/')
-                        ->getCollection();
-                    if ($bookedProcessList) {
-                        $processList->addList($bookedProcessList);
-                    }
-                    if ($freeProcessList) {
-                        $processList->addList($freeProcessList);
-                    }
+
+            $this->dateTime = $currentDate;
+            if ($currentDate->format('Y-m-d') >= \App::$now->format('Y-m-d')) {
+                if (isset($freeProcessListByDate[$currentDate->format('Y-m-d')])) {
+                    $processList->addList($freeProcessListByDate[$currentDate->format('Y-m-d')]);
+                }
+
+                if (isset($processListByDate[$currentDate->format('Y-m-d')])) {
+                    $processList->addList($processListByDate[$currentDate->format('Y-m-d')]);
                 }
             }
+
             $day['processList'] = $this->toProcessListByHour($processList);
             $dayList->addEntity($day);
             $currentDate = $currentDate->modify('+1 day');
         }
+
         return $this->toDayListByHour($dayList);
     }
 
@@ -125,7 +166,7 @@ class Calendar
     public function toProcessListByHour(ProcessList $processList)
     {
         $list = array();
-        $oldList = clone $processList;
+        $oldList = $processList;
         $oldList->sortByArrivalTime();
         foreach ($oldList as $process) {
             if (in_array($process->status, [ 'confirmed', 'free'])) {
@@ -137,10 +178,13 @@ class Calendar
                 if (!isset($list[$hour][intval($appointment['date'])])) {
                     $list[$hour][intval($appointment['date'])] = new ProcessList();
                 }
-                $list[$hour][intval($appointment['date'])]->addEntity(clone $process);
+                $list[$hour][intval($appointment['date'])]->addEntity($process);
+
+                unset($process);
                 ksort($list[$hour]);
             }
         }
+        
         ksort($list);
         return $list;
     }
@@ -170,6 +214,22 @@ class Calendar
 
         if (is_array($list['hours'])) {
             ksort($list['hours']);
+        }
+
+        return $list;
+    }
+
+    private function splitByDate(ProcessList $processList)
+    {
+        $list = [];
+
+        foreach ($processList as $process) {
+            $dayKey = $process->getFirstAppointment()->toDateTime()->format("Y-m-d");
+            if (! isset($list[$dayKey])) {
+                $list[$dayKey] = new \BO\Zmsentities\Collection\ProcessList();;
+            }
+
+            $list[$dayKey]->addEntity($process);
         }
 
         return $list;

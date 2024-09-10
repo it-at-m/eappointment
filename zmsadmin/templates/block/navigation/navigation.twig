@@ -2,146 +2,161 @@
     {% set rights = workstation.useraccount.rights %}
 
     <ul class="nav__list">
-    {% if workstation %}
-        <li class="nav__block">
-            <h3 class="nav__heading">
-                <span class="heading__label">Arbeitsansichten</span>
-                <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Arbeitsansichten</span>
-            </h3>
-            <ul class="nav__list">
-            {% if not workstation.scope.id %}
-                <li class="nav__link{{ menuActive == 'select'? ' active' }}">
-                        <a href="{{ urlGet('workstationSelect', {}, {}) }}"{{ menuActive == 'select'? ' aria-current="page"' }}>Standort auswählen</a>
-                </li>
-            {% endif %}
-            {% if workstation.scope.id %}
-                <li class="nav__link{{ menuActive == 'counter'? ' active' }}">
-                        <a title="{% trans %}Termine vereinbaren, ändern & löschen und die Warteschlange verwalten{% endtrans %}" href="{{ urlGet('counter', {}, {}) }}" {{ menuActive == 'counter'? ' aria-current="page"'}}>Tresen</a>
-            </li>
-            {% endif %}
-            {% if workstation.scope.id and workstation.name %}
-                    <li class="nav__link{{ menuActive == 'workstation'? ' active' }}">
-                        <a title="{% trans %}Die Oberfläche für den Sachberarbeiter mit der Möglichkeit, Kunden aufzurufen{% endtrans %}" href="{{ urlGet('workstation', {}, {}) }}" {{ menuActive == 'workstation'? ' aria-current="page"' }}>Sach&shy;bearbeiter&shy;platz</a>
-                </li>
-                    <li class="nav__link{{ menuActive == 'pickup'? ' active' }}">
-                        <a title="{% trans %}Hier verwalten Sie die Abholer{% endtrans %}" href="{{ urlGet('pickup', {'id':1}, {}) }}" {{ menuActive == 'pickup'? ' aria-current="page"' }}>Abholer verwalten</a>
-                </li>
-            {% endif %}
-            {% if rights.ticketprinter and workstation.scope.id %}
-                    <li class="nav__link{{ menuActive == 'calldisplay'? ' active' }}">
-                        <a title="{% trans %}Standortauswahlseite der Aufrufanlage{% endtrans %}" href="{{ urlGet('calldisplay', {}, {}) }}" {{ menuActive == 'calldisplay'? ' aria-current="page"' }}>Anzeige Aufrufsystem</a>
-                </li>
-                    <li class="nav__link{{ menuActive == 'ticketprinter'? ' active' }}">
-                        <a title="{% trans %}Standortauswahlseite der Wartenummernausgabe{% endtrans %}" href="{{ urlGet('ticketprinter', {}, {}) }}" {{ menuActive == 'ticketprinter'? ' aria-current="page"' }}>Wartenummern</a>
-                </li>
-            {% endif %}
-        </ul>
-    </li>
-    {% else %}
-        <li class="nav__block">
-            <h3 class="nav__heading">
-                <span class="heading__label">Arbeitsansichten</span>
-                <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Arbeitsansichten</span>
-            </h3>
-            <ul class="nav__list">
-                <li class="nav__link">
-                    <a href="{{ urlGet('index', {'id':1}, {}) }}">Login</a>
-                </li>
-            </ul>
-        </li>
-        <li class="nav__block">
-            <h3 class="nav__heading">
-                <span class="heading__label">Weiterführende Links</span>
-                <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Weiterführende Links</span>
-            </h3>
-             <ul class="nav__list">
-                <li class="nav__link">
-                    <a class="extern" title="{% trans %}Zu Statistiken / Auswertungen{% endtrans %}" href="{{ includeUrl() }}/../statistic/" target="_blank">Statistiken/Auswertungen</a>
-                </li>
-            </ul>
-        </li>
-    {% endif %}
-
-    {% if workstation.linkList|length > 0 %}
-        <li class="nav__block">
-            <h3 class="nav__heading">
-                <span class="heading__label">Favoriten</span>
-                <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Favoriten</span>
-            </h3>
-            <ul class="nav__list">
-            {% for link in workstation.linkList %}
-                <li class="nav__link">
-                    <a class="{% if link.target %}extern{% endif %} {% if link.public %}public{% endif %}" href="{{link.url}}" {% if link.target %}target="_blank"{% endif %}>
-                    {{link.name}}
-                    </a>
-                </li>
-            {% endfor %}
-            </ul>
-        </li>
-    {% endif %}
-
-    {% if workstation %}
-        <li class="nav__block">
-            <h3 class="nav__heading">
-                <span class="heading__label">Administration</span>
-                <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Administration</span>
-            </h3>
-            <ul class="nav__list">
-            {% if workstation.id > 0 %}
-                <li class="nav__link{{ menuActive == 'profile'? ' active' }}">
-                    <a title="{% trans %}Hier können Sie Ihre eigenen Anmeldedaten einsehen und sich ein neues Passwort geben{% endtrans %}" {{ menuActive == 'profile'? ' aria-current="page"' }} href="{{ urlGet('profile', {}, {}) }}">Mein Profil</a>
-                </li>
-            {% endif %}
-            {% if workstation.scope.id and rights.ticketprinter %}
-                <li class="nav__link{{ menuActive == 'ticketprinterStatus'? ' active' }}">
-                    <a {{ menuActive == 'ticketprinterStatus'? ' aria-current="page"' }} href="{{ urlGet('ticketprinterStatusByScope', {'id': workstation.scope.id}, {}) }}">
-                        Wartenummern&shy;ausgabe am Kiosk ({% if workstation.scope.status.ticketprinter.deactivated %}
-                        <span title="{% trans %}Hier können Sie die Wartenummernausgabe aktivieren{% endtrans %}" class="color-red"> <i class="fas fa-exclamation-circle" aria-hidden="true" title="{{ ('Die Wartenummerausgabe am Kiosk ist aktuell gesperrt')|trans }}"></i><span class="sr-only">Die Wartenummerausgabe am Kiosk ist aktuell</span> gesperrt</span>
-                    {% else %}
-                        <span title="{% trans %}Hier können Sie die Wartenummernausgabe deaktivieren{% endtrans %}" class="color-green"> <i class="fas fa-check-circle" aria-hidden="true" title="{{ ('Die Wartenummerausgabe am Kiosk ist aktuell in Betrieb')|trans }}"></i><span class="sr-only">Die Wartenummerausgabe am Kiosk ist aktuell</span> in Betrieb</span>
-                    {% endif %})
-                    </a>                   
-                </li>
-            {% endif %}
-            {% if rights.scope or rights.department or rights.organisation or rights.availability %}
-                <li class="nav__link{{ menuActive == 'owner'? ' active' }}">
-                    <a title="{% trans %}Hier erhalten Sie eine Übersicht über Ihre Administrationsoptionen{% endtrans %}" {{ menuActive == 'menuActive'? ' aria-current="page"' }} href="{{ urlGet('owner_overview', {}, {}) }}">Behörden und Standorte</a>
-                </li>
-            {% endif %}
-            {% if rights.useraccount %}
-                <li class="nav__link{{ menuActive == 'useraccount'? ' active' }}">
-                    <a title="{% trans %}Hier können Sie neue Nutzer des Systems hinzufügen und die Eigenschaften bestehender Nutzer ändern{% endtrans %}" {{ menuActive == 'useraccount'? ' aria-current="page"' }} href="{{ urlGet('useraccount', {}, {}) }}">Nutzer</a>
-                </li>
-            {% endif %}
-            {% if workstation.useraccount.rights.superuser == "1" %}
-                <li class="nav__link{{ menuActive == 'dayoff'? ' active' }}">
-                    <a title="{% trans %}Hier können Sie die freien Tage (z.B. Feiertage) Spalte einfügen, ändern und löschen{% endtrans %}" {{ menuActive == 'dayoff'? ' aria-current="page"' }} href="{{ urlGet('dayoff', {}, {}) }}">Freie Tage</a>
-                </li>
-            {% endif %}
-            {% if workstation.useraccount.rights.superuser == "1" %}
-                <li class="nav__link{{ menuActive == 'source'? ' active' }}">
-                    <a title="{% trans %}Hier können neue Mandanten hinzugefügt und bestehende geändert oder gelöscht werden{% endtrans %}" {{ menuActive == 'source'? ' aria-current="page"' }} href="{{ urlGet('sourceindex', {}, {}) }}">Mandanten</a>
-                </li>
-            {% endif %}
-            {% if workstation.useraccount.rights.superuser == "1" %}
-                <li class="nav__link{{ menuActive == 'configinfo'? ' active' }}">
-                    <a {{ menuActive == 'configinfo'? ' aria-current="page"' }} href="{{ urlGet('configinfo', {}, {}) }}">System&shy;konfiguration</a>
-                </li>
-            {% endif %}
+        {% if workstation %}
             <li class="nav__block">
                 <h3 class="nav__heading">
-                    <span class="heading__label">Weiterführende Links</span>
+                    <span class="heading__label" id="work-view-title">Arbeitsansichten</span>
+                    <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Arbeitsansichten</span>
+                </h3>
+                <nav role="navigation" aria-labelledby="work-view-title">
+                    <ul class="nav__list">
+                        {% if not workstation.scope.id %}
+                            <li class="nav__link{{ menuActive == 'select'? ' active' }}">
+                                <a href="{{ urlGet('workstationSelect', {}, {}) }}"{{ menuActive == 'select'? ' aria-current="page"' }}>Standort auswählen</a>
+                            </li>
+                        {% endif %}
+                        {% if workstation.scope.id %}
+                            <li class="nav__link{{ menuActive == 'counter'? ' active' }}">
+                                <a title="{% trans %}Termine vereinbaren, ändern & löschen und die Warteschlange verwalten{% endtrans %}" href="{{ urlGet('counter', {}, {}) }}" {{ menuActive == 'counter'? ' aria-current="page"'}}>Tresen</a>
+                            </li>
+                        {% endif %}
+                        {% if workstation.scope.id and workstation.name %}
+                            <li class="nav__link{{ menuActive == 'workstation'? ' active' }}">
+                                <a title="{% trans %}Die Oberfläche für den Sachberarbeiter mit der Möglichkeit, Kunden aufzurufen{% endtrans %}" href="{{ urlGet('workstation', {}, {}) }}" {{ menuActive == 'workstation'? ' aria-current="page"' }}>Sach&shy;bearbeiter&shy;platz</a>
+                            </li>
+                            <li class="nav__link{{ menuActive == 'pickup'? ' active' }}">
+                                <a title="{% trans %}Hier verwalten Sie die Abholer{% endtrans %}" href="{{ urlGet('pickup', {'id':1}, {}) }}" {{ menuActive == 'pickup'? ' aria-current="page"' }}>Abholer verwalten</a>
+                            </li>
+                        {% endif %}
+                        {% if rights.ticketprinter and workstation.scope.id %}
+                            <li class="nav__link{{ menuActive == 'calldisplay'? ' active' }}">
+                                <a title="{% trans %}Standortauswahlseite der Aufrufanlage{% endtrans %}" href="{{ urlGet('calldisplay', {}, {}) }}" {{ menuActive == 'calldisplay'? ' aria-current="page"' }}>Anzeige Aufrufsystem</a>
+                            </li>
+                            <li class="nav__link{{ menuActive == 'ticketprinter'? ' active' }}">
+                                <a title="{% trans %}Standortauswahlseite der Wartenummernausgabe{% endtrans %}" href="{{ urlGet('ticketprinter', {}, {}) }}" {{ menuActive == 'ticketprinter'? ' aria-current="page"' }}>Wartenummern</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </li>
+        {% else %}
+            <li class="nav__block">
+                <h3 class="nav__heading">
+                    <span id="work-view-title" class="heading__label">Arbeitsansichten</span>
+                    <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Arbeitsansichten</span>
+                </h3>
+                <nav role="navigation" aria-labelledby="work-view-title">
+                    <ul class="nav__list">
+                        <li class="nav__link">
+                            <a href="{{ urlGet('index', {'id':1}, {}) }}">Login</a>
+                        </li>
+                    </ul>
+                </nav>
+            </li>
+            <li class="nav__block">
+                <h3 class="nav__heading">
+                    <span id="links-title" class="heading__label">Weiterführende Links</span>
                     <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Weiterführende Links</span>
                 </h3>
-                <ul class="nav__list">
-                    <li class="nav__link">
-                        <a class="extern" title="{% trans %}Zu Statistiken / Auswertungen{% endtrans %}" href="{{ includeUrl() }}/../statistic/" target="_blank">Statistiken/Auswertungen</a>
-                    </li>
-                </ul>
-            </li>    
-        </ul>
-    </li>
-    {% endif %}
+                <nav role="navigation" aria-labelledby="links-title">
+                    <ul class="nav__list">
+                        <li class="nav__link">
+                            <a class="extern" title="{% trans %}Zu Statistiken / Auswertungen{% endtrans %}" href="{{ includeUrl() }}/../statistic/" target="_blank">Statistiken/Auswertungen</a>
+                        </li>
+                    </ul>
+                </nav>
+            </li>
+        {% endif %}
+
+        {% if workstation.linkList|length > 0 %}
+            <li class="nav__block">
+                <h3 class="nav__heading">
+                    <span id="favorites-title" class="heading__label">Favoriten</span>
+                    <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Favoriten</span>
+                </h3>
+                <nav role="navigation" aria-labelledby="favorites-title">
+                    <ul class="nav__list">
+                        {% for link in workstation.linkList %}
+                            <li class="nav__link">
+                                <a class="{% if link.target %}extern{% endif %} {% if link.public %}public{% endif %}" href="{{link.url}}" {% if link.target %}target="_blank"{% endif %}>
+                                    {{link.name}}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+            </li>
+        {% endif %}
+
+        {% if workstation %}
+            <li class="nav__block">
+                <h3 class="nav__heading">
+                    <span id="admin-title" class="heading__label">Administration</span>
+                    <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Administration</span>
+                </h3>
+                <nav role="navigation" aria-labelledby="admin-title">
+                    <ul class="nav__list">
+                        {% if workstation.id > 0 %}
+                            <li class="nav__link{{ menuActive == 'profile'? ' active' }}">
+                                <a title="{% trans %}Hier können Sie Ihre eigenen Anmeldedaten einsehen und sich ein neues Passwort geben{% endtrans %}" {{ menuActive == 'profile'? ' aria-current="page"' }} href="{{ urlGet('profile', {}, {}) }}">Mein Profil</a>
+                            </li>
+                        {% endif %}
+                        {% if workstation.scope.id and rights.ticketprinter %}
+                            <li class="nav__link{{ menuActive == 'ticketprinterStatus'? ' active' }}">
+                                <a {{ menuActive == 'ticketprinterStatus'? ' aria-current="page"' }} href="{{ urlGet('ticketprinterStatusByScope', {'id': workstation.scope.id}, {}) }}">
+                                    Wartenummern&shy;ausgabe am Kiosk ({% if workstation.scope.status.ticketprinter.deactivated %}
+                                    <span title="{% trans %}Hier können Sie die Wartenummernausgabe aktivieren{% endtrans %}" class="color-red"> <i class="fas fa-exclamation-circle" aria-hidden="true" title="{{ ('Die Wartenummerausgabe am Kiosk ist aktuell gesperrt')|trans }}"></i><span class="sr-only">Die Wartenummerausgabe am Kiosk ist aktuell</span> gesperrt</span>
+                                {% else %}
+                                    <span title="{% trans %}Hier können Sie die Wartenummernausgabe deaktivieren{% endtrans %}" class="color-green"> <i class="fas fa-check-circle" aria-hidden="true" title="{{ ('Die Wartenummerausgabe am Kiosk ist aktuell in Betrieb')|trans }}"></i><span class="sr-only">Die Wartenummerausgabe am Kiosk ist aktuell</span> in Betrieb</span>
+                                    {% endif %})
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if rights.scope or rights.department or rights.organisation or rights.availability %}
+                            <li class="nav__link{{ menuActive == 'owner'? ' active' }}">
+                                <a title="{% trans %}Hier erhalten Sie eine Übersicht über Ihre Administrationsoptionen{% endtrans %}" {{ menuActive == 'menuActive'? ' aria-current="page"' }} href="{{ urlGet('owner_overview', {}, {}) }}">Behörden und Standorte</a>
+                            </li>
+                        {% endif %}
+                        {% if rights.useraccount %}
+                            <li class="nav__link{{ menuActive == 'useraccount'? ' active' }}">
+                                <a title="{% trans %}Hier können Sie neue Nutzer des Systems hinzufügen und die Eigenschaften bestehender Nutzer ändern{% endtrans %}" {{ menuActive == 'useraccount'? ' aria-current="page"' }} href="{{ urlGet('useraccount', {}, {}) }}">Nutzer</a>
+                            </li>
+                        {% endif %}
+                        {% if workstation.useraccount.rights.superuser == "1" %}
+                            <li class="nav__link{{ menuActive == 'dayoff'? ' active' }}">
+                                <a title="{% trans %}Hier können Sie die freien Tage (z.B. Feiertage) Spalte einfügen, ändern und löschen{% endtrans %}" {{ menuActive == 'dayoff'? ' aria-current="page"' }} href="{{ urlGet('dayoff', {}, {}) }}">Freie Tage</a>
+                            </li>
+                        {% endif %}
+                        {% if workstation.useraccount.rights.superuser == "1" %}
+                            <li class="nav__link{{ menuActive == 'source'? ' active' }}">
+                                <a title="{% trans %}Hier können neue Mandanten hinzugefügt und bestehende geändert oder gelöscht werden{% endtrans %}" {{ menuActive == 'source'? ' aria-current="page"' }} href="{{ urlGet('sourceindex', {}, {}) }}">Mandanten</a>
+                            </li>
+                        {% endif %}
+                        {% if workstation.useraccount.rights.superuser == "1" %}
+                            <li class="nav__link{{ menuActive == 'mailtemplates'? ' active' }}">
+                                <a {{ menuActive == 'mailtemplates'? ' aria-current="page"' }} href="{{ urlGet('mailtemplates', {}, {}) }}">Mail Templates</a>
+                            </li>
+                        {% endif %}
+                        {% if workstation.useraccount.rights.superuser == "1" %}
+                            <li class="nav__link{{ menuActive == 'configinfo'? ' active' }}">
+                                <a {{ menuActive == 'configinfo'? ' aria-current="page"' }} href="{{ urlGet('configinfo', {}, {}) }}">System&shy;konfiguration</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav__block">
+                            <h3 class="nav__heading">
+                                <span class="heading__label">Weiterführende Links</span>
+                                <span class="heading__button js-nav-heading" role="button" aria-expanded="false">Weiterführende Links</span>
+                            </h3>
+                            <ul class="nav__list">
+                                <li class="nav__link">
+                                    <a class="extern" title="{% trans %}Zu Statistiken / Auswertungen{% endtrans %}" href="{{ includeUrl() }}/../statistic/" target="_blank">Statistiken/Auswertungen</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </li>
+        {% endif %}
     </ul><!-- /nav__list -->
 
 

@@ -123,7 +123,8 @@ class WorkstationProcessPreCallTest extends Base
         );
         $response = $this->render(['id' => 100044], [], []);
         $this->assertStringContainsString('Dieser Arbeitsplatz hat schon einen Vorgang aufgerufen.', (string)$response->getBody());
-        $this->assertStringContainsString('Kundeninformationen', (string)$response->getBody());
+        $this->assertStringContainsString('<span class="color-blue"><i class="fas fa-info-circle" aria-hidden="true"></i></span> 
+ Kundeninformationen', (string)$response->getBody());
         $this->assertStringContainsString('client-precall_button-success', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
