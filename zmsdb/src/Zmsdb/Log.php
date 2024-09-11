@@ -84,6 +84,15 @@ class Log extends Base
         return $logList;
     }
 
+    public function delete($processId)
+    {
+        $query = new Query\Log(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionProcessId($processId);
+        $logList = new \BO\Zmsentities\Collection\LogList($this->fetchList($query, new Entity()));
+        return $logList;
+    }
+
     protected static function backtraceLogEntry()
     {
         $trace = debug_backtrace();
@@ -97,5 +106,18 @@ class Log extends Base
             }
         }
         return $short;
+    }
+
+    public function clearDataOlderThan(int $olderThan)
+    {
+        $olderThanDate = (new \DateTime())->modify('-' . $olderThan . ' days');
+
+        $query = new Query\Log(Query\Base::UPDATE);
+        $query->addConditionOlderThan($olderThanDate);
+        $query->addValues([
+            'data' => null
+        ]);
+
+        $this->writeItem($query);
     }
 }
