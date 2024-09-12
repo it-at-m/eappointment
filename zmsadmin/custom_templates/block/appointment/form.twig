@@ -56,8 +56,8 @@
                         {% if scope.preferences.appointment.multipleSlotsEnabled or selectedProcess.scope.preferences.appointment.multipleSlotsEnabled %}
                             {% set slotCountOptions = [] %}
                             {# loop from 1 to 20(default) only when scope.preferences.client.slotsPerAppointment(maximal buchbaren Slots pro Termin) is not defined #}
-                            {% set maxSlots = scope.preferences.client.slotsPerAppointment|default(20) %}
-                            {% for slotCount in 1..maxSlots %}
+{#                            {% set maxSlots = scope.preferences.client.slotsPerAppointment|default(20) %}#}
+                            {% for slotCount in 1..20 %}
                                 {% if selectedProcess.appointments|first.slotCount == slotCount %}
                                     {% set selected = "selected" %}
                                 {% else %}
@@ -393,7 +393,7 @@
             </div>
         </form>
         {#warningText if the number of slots is exceeded#}
-        <section id="exceeded-slot-count" style="margin-top: 10px; position: relative; border-color:#cccccc;" class="dialog message" role="alert">
+        <section id="exceeded-slot-count" style="margin-top: 20px; position: relative; border-color:#cccccc;" class="dialog message" role="alert">
             <!-- Icon in a green square box, adjusting its positioning -->
             <div style="position: absolute; top: -15px; left: 7px; background-color: #fcaa67; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center;">
                 <i class="fas fa-exclamation-circle" title="Wichtiger Hinweis" aria-hidden="true" style="color: white;"></i>
