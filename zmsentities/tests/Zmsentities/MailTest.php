@@ -42,7 +42,6 @@ class MailTest extends EntityCommonTests
 
     }
 
-
     public function testCollection()
     {
         $collection = new $this->collectionclass();
