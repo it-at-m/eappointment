@@ -175,7 +175,6 @@
             templateObjects.forEach((templateObject) => {
                 templateObject.templateContent = getContentOfEditor(templateObject.elementId)
             });
-            console.log(templateObjects);
             
             const url = '{{ includeUrl() }}/mailtemplates/previewEmail/'+mailStatus+'/';
             const data = {
@@ -192,7 +191,6 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Preview Result:', data);
                 if (data.error) {
                     document.getElementById('preview-container').innerHTML='<div style="margin:10px;font-size:20px;color:red;">Beim Rendern des Mail-Templates ist ein Fehler aufgetreten!</div>';
                     console.error(data.error);
