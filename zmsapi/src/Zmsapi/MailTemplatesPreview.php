@@ -25,10 +25,6 @@ class MailTemplatesPreview extends BaseController
         array $args
     ) {
         //(new Helper\User($request))->checkRights('superuser');
-
-        //$providerId = $args['providerId'];
-        
-        //$config = (new MailTemplatesQuery())->readListByProvider($providerId);
         
         $mailStatus = $args['mailStatus'];
         $providerId = $args['providerId'];
@@ -40,7 +36,6 @@ class MailTemplatesPreview extends BaseController
         $mainProcessExample->getFirstAppointment()->setDateTime($dateTime);
         $mainProcessExample->requests[] = (new \BO\Zmsentities\Request())->getExample();
 
-        // Folgendes stammt aus zmsapi/ProcessConfirm.php
         $config = (new Config())->readEntity();
         $mail = (new \BO\Zmsentities\Mail())
             ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($mainProcessExample))
