@@ -20,10 +20,6 @@
     ) {
 
         $mailStatus = $args['mailStatus'];
-        //$workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        //$providerId = $workstation->scope['provider']['id'];
-        //$result = \App::$http->readGetResult("/preview-mailtemplates/$mailStatus/$providerId/", ['resolveReferences' => 0]);
-        //$data = json_decode($result->getResponse()->getBody()->getContents())->data;
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->getValue();
         
@@ -61,8 +57,6 @@
         return \BO\Slim\Render::withJson(
             $response,
             array(
-                //'5'=>'hallo',
-                //'input'=>$input,
                 'previewHtml'=>$mail->getHtmlPart(),
                 'previewPlain'=>$mail->getPlainPart()
             )
