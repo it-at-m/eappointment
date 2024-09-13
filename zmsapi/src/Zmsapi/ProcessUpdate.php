@@ -64,6 +64,11 @@ class ProcessUpdate extends BaseController
        
         if ($initiator && $process->hasScopeAdmin() && $process->sendAdminMailOnUpdated()) {
             $config = (new Config())->readEntity();
+
+
+            error_log("here");
+
+
             $mail = (new \BO\Zmsentities\Mail())
                     ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
                     ->toResolvedEntity($process, $config, 'updated', $initiator);
