@@ -128,6 +128,7 @@ class Mail extends Base
 
     public function writeInQueueWithAdmin(Entity $mail)
     {
+        error_log(json_encode($mail->multipart[2]));
         $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
         $department = (new Department())->readByScopeId($process->getScopeId(), 0);

@@ -313,9 +313,15 @@ class Messaging
         $ics = new \BO\Zmsentities\Ics();
         $template = self::getTemplate('ics', $status);
         $message = self::getMailContent($process, $config, $initiator, $status, $templateProvider);
+        error_log("******");
+        error_log(json_encode($message));
+        error_log("******");
         $plainContent = self::getPlainText($message, "\\n");
         $appointment = $process->getFirstAppointment();
         $currentYear = $appointment->getStartTime()->format('Y');
+        error_log("---------------");
+        error_log(json_encode($template));
+        error_log("---------------");
         $icsString = self::twigView()->render(
             'messaging/' . $template,
             array(
@@ -331,10 +337,51 @@ class Messaging
                 'message' => $plainContent
             )
         );
-        $icsString = html_entity_decode($icsString);
-        $ics->content = self::getTextWithFoldedLines($icsString);
+
+        $ics->content = self::generateIcsContent($process, $config, $status, $now, $templateProvider);
+
         return $ics;
+        }
+        protected static function generateIcsContent(
+            Process $process,
+            Config $config,
+            $status = 'appointment',
+            $now = false,
+            $templateProvider = false
+        ) {
+            // Get the ICS template for the process status dynamically
+            $template = self::getTemplate('ics', $status, $process);
+            if (!$template) {
+                throw new \Exception("ICS template for status $status not found");
+            }
+        
+            // Extract the first appointment details
+            $appointment = $process->getFirstAppointment();
+            $currentYear = $appointment->getStartTime()->format('Y');
+        
+            // Prepare parameters for ICS rendering
+            $parameters = [
+                'date' => $appointment->toDateTime()->format('U'),
+                'startTime' => $appointment->getStartTime()->format('U'),
+                'endTime' => $appointment->getEndTime()->format('U'),
+                'startSummerTime' => \BO\Zmsentities\Helper\DateTime::getSummerTimeStartDateTime($currentYear)->format('U'),
+                'endSummerTime' => \BO\Zmsentities\Helper\DateTime::getSummerTimeEndDateTime($currentYear)->format('U'),
+                'process' => $process,
+                'timestamp' => (!$now) ? time() : $now
+            ];
+        
+            // Render the ICS content using Twig and the fetched template
+            if ($templateProvider) {
+                $icsString = self::dbTwigView($templateProvider)->render($template, $parameters);
+            } else {
+                $icsString = self::twigView()->render('messaging/' . $template, $parameters);
+            }
+        
+            // Decode HTML entities to plain text and ensure lines follow ICS standards
+            $icsString = html_entity_decode($icsString);
+            return self::getTextWithFoldedLines($icsString);
     }
+        
 
     public static function getPlainText($content, $lineBreak = "\n")
     {
