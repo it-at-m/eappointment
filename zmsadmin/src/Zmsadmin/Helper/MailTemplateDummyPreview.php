@@ -21,11 +21,6 @@
         $result = \App::$http->readGetResult("/preview-mailtemplates/$mailStatus/$providerId/", ['resolveReferences' => 0]);
         $data = json_decode($result->getResponse()->getBody()->getContents())->data;
         
-        //print_r($result->getResponse()->getBody()->getContents());
-        //print_r($data);
-        //print_r($data->previewHtml);
-        //die('123410549261');
-        
         try {
             // Twig-Template rendern
             return \BO\Slim\Render::withHtml(
@@ -38,7 +33,6 @@
                 )
             );
         } catch (LoaderError | RuntimeError | SyntaxError $e) {
-            // Wenn ein Twig-Fehler auftritt, fangen Sie ihn und geben eine benutzerdefinierte Fehlermeldung aus
             return \BO\Slim\Render::withHtml(
                 $response,
                 'block/page/dummypreviewerror.twig',
