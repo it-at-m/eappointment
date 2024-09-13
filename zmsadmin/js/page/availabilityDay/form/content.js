@@ -50,7 +50,7 @@ const FormContent = (props) => {
                             <Controls>
                                 <Inputs.Select name="type"
                                     attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType" }}
-                                    value={data.type ? data.type : 0} {...{ onChange }}
+                                    value={data.type ? data.type : "appointment"} {...{ onChange }}
                                     options={availabilityTypes} />
                                     <Description attributes={{ "id": "help_AvDayTypDescription" }}>Typ der Öffnungszeit.
                                 </Description>
