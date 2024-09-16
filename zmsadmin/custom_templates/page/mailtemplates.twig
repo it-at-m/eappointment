@@ -2,10 +2,16 @@
 {% from 'element/helper/snippets.twig' import headline1 %}
 {% block headline %}
     {{ headline1("Mail Templates") }}
+    <button class="button button-submit" onclick="previewEmail('appointment')">Confirmation</button>
+    <button class="button button-submit" onclick="previewEmail('deleted')">Delete</button>
+    <button class="button button-submit" onclick="previewEmail('preconfirmed')">Preconfirmed</button>
+    <button class="button button-submit" onclick="previewEmail('reminder')">Reminder</button>
+    <div id="preview-container">
+
+    </div>
 {% endblock %}
 
 {% block content %}
-
     {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless config-view', 'data': {'includeurl':includeUrl() }} %}
 
         {% block board_title %}
@@ -20,16 +26,16 @@
                 (customized)
             {% endif %}
 
-            <div id="save-indicator-editor-{{ loop.index }}" class="save-indicator" style="display: none; color: red; margin-left: 10px; inline;"></div>
+            <div id="save-indicator-{{ settings.id }}" class="save-indicator" style="display: none; color: red; margin-left: 10px; inline;"></div>
             <div style="width: 100%; margin-bottom: 24px; padding: 24px; padding-bottom: 0px; box-sizing: border-box; border: 1px solid #ccc;">
-                <div id="editor-{{ loop.index }}" style="width: 100%; height: 352px;"></div>
+                <div id="{{ settings.id }}" style="width: 100%; height: 352px;"></div>
                 <div style="display: flex; justify-content: flex-end; margin-top: 12px; gap:12px">
                     {% if settings.isCustom %}
-                        <button class="button button--destructive" onclick="deleteCustomization('{{ settings.id }}', 'editor-{{ loop.index }}')">Delete Customization</button>
+                        <button class="button button--destructive" onclick="deleteCustomization('{{ settings.id }}', '{{ settings.id }}')">Delete Customization</button>
                     {% else %}
-                        <button class="button button--positive" onclick="createCustomization('{{ settings.name }}', 'editor-{{ loop.index }}')">Create Customization</button>
+                        <button class="button button--positive" onclick="createCustomization('{{ settings.name }}', '{{ settings.id }}')">Create Customization</button>
                     {% endif %}
-                    <button class="button button-submit" onclick="saveMailTemplate('{{ settings.id }}', 'editor-{{ loop.index }}')">Save</button>
+                    <button class="button button-submit" onclick="saveMailTemplate('{{ settings.id }}', '{{ settings.id }}')">Save</button>
                 </div>
             </div>
         {% endfor %}
@@ -43,7 +49,8 @@
     <!-- Load Require.js from CDN -->
     <script src="{{ includeUrl() }}/_libs/requirejs/require.js"></script>
     <script>
-        var editors = {};
+        let editors = {};
+        let templateObjects = [];
 
         require.config({
             paths: {
@@ -51,7 +58,7 @@
             }
         });
 
-        function initializeEditor(elementId, defaultCode) {
+        function initializeEditor(elementId, defaultCode, templateName) {
             require(['vs/editor/editor.main'], function() {
                 // Create the editor instance and store it in the global 'editors' object
                 editors[elementId] = monaco.editor.create(document.getElementById(elementId), {
@@ -67,6 +74,12 @@
                         saveIndicator.style.display = 'inline'; // Show the save indicator when content is changed
                         saveIndicator.textContent = 'Unsaved changes';
                     }
+                });
+
+                templateObjects.push({
+                    elementId: elementId,
+                    templateName: templateName,
+                    templateContent: 'empty'
                 });
             });
         }
@@ -84,7 +97,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             {% for settings in mailtemplates %}
-                initializeEditor('editor-{{ loop.index }}', '{{ settings.value | escape('js') }}');
+                initializeEditor('{{ settings.id }}', '{{ settings.value | escape('js') }}', '{{ settings.name }}');
             {% endfor %}
         });        
 
@@ -155,6 +168,40 @@
                 location.reload(); // Reload the page to refresh the templates
             })
             .catch((error) => console.error('Error:', error));
+        }
+
+        function previewEmail(mailStatus) {
+
+            templateObjects.forEach((templateObject) => {
+                templateObject.templateContent = getContentOfEditor(templateObject.elementId)
+            });
+            
+            const url = '{{ includeUrl() }}/mailtemplates/previewEmail/'+mailStatus+'/';
+            const data = {
+                hallo: 5,
+                templates: templateObjects
+            };
+
+            fetch(url, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), 
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('preview-container').innerHTML='<div style="margin:10px;font-size:20px;color:red;">Beim Rendern des Mail-Templates ist ein Fehler aufgetreten!</div>';
+                    console.error(data.error);
+                } else {
+                    document.getElementById('preview-container').innerHTML=data.previewHtml;
+                }
+            })
+            .catch((error) => {
+                document.getElementById('preview-container').innerHTML='<div style="margin:10px;font-size:20px;color:red;">Beim Aufruf der Preview ist ein Fehler aufgetreten!</div>';
+                console.error('Error:', error)
+            });
         }
 
     </script>
