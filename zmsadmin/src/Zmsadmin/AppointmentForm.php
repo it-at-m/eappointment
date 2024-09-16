@@ -42,7 +42,6 @@ class AppointmentForm extends BaseController
         
         $selectedScope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation, $selectedProcess, 2);
 
-        //Liste der Diensleistungen
         $requestList = ($selectedScope && $selectedScope->hasId())
             ? Helper\AppointmentFormHelper::readRequestList($request, $workstation, $selectedScope)
             : null;
