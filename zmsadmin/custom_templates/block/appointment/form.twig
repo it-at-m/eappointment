@@ -55,8 +55,6 @@
                     <div class="grid__item one-half SLOTCNT">
                         {% if scope.preferences.appointment.multipleSlotsEnabled or selectedProcess.scope.preferences.appointment.multipleSlotsEnabled %}
                             {% set slotCountOptions = [] %}
-                            {# loop from 1 to 20(default) only when scope.preferences.client.slotsPerAppointment(maximal buchbaren Slots pro Termin) is not defined #}
-{#                            {% set maxSlots = scope.preferences.client.slotsPerAppointment|default(20) %}#}
                             {% for slotCount in 1..20 %}
                                 {% if selectedProcess.appointments|first.slotCount == slotCount %}
                                     {% set selected = "selected" %}
