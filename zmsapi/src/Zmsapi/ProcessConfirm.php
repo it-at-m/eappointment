@@ -68,6 +68,7 @@ class ProcessConfirm extends BaseController
             $mail = (new \BO\Zmsentities\Mail())
             ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
             ->toResolvedEntity($process, $config, 'appointment', $initiator);
+            error_log("here 3");
             (new Mail())->writeInQueueWithAdmin($mail, \App::$now);
         }
     }
