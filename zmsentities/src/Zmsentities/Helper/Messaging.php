@@ -313,9 +313,21 @@ class Messaging
         $ics = new \BO\Zmsentities\Ics();
         $template = self::getTemplate('ics', $status);
         $message = self::getMailContent($process, $config, $initiator, $status, $templateProvider);
+
+        error_log("+++++++");
+        error_log(json_encode($message));
+        error_log("+++++++");
+
+
+        error_log("******");
+        error_log(json_encode($message));
+        error_log("******");
         $plainContent = self::getPlainText($message, "\\n");
         $appointment = $process->getFirstAppointment();
         $currentYear = $appointment->getStartTime()->format('Y');
+        error_log("---------------");
+        error_log(json_encode($template));
+        error_log("---------------");
         $icsString = self::twigView()->render(
             'messaging/' . $template,
             array(
@@ -331,10 +343,83 @@ class Messaging
                 'message' => $plainContent
             )
         );
-        $icsString = html_entity_decode($icsString);
-        $ics->content = self::getTextWithFoldedLines($icsString);
+
+        $ics->content = self::generateIcsContent($process, $config, $status, $now, $templateProvider, $message);
+
         return $ics;
     }
+
+    protected static function generateIcsContent(
+        Process $process,
+        Config $config,
+        $status = 'appointment',
+        $now = false,
+        $templateProvider = false,
+        $message = '' // Pass $message from getMailIcs, or query if not set
+    ) {
+        // If $message is not provided, retrieve it from the getMailContent query
+        if (empty($message)) {
+            $message = self::getMailContent($process, $config, null, $status, $templateProvider);
+        }
+    
+        // Convert the email message to plain text for the ICS description
+        $plainTextDescription = self::getPlainText($message);
+    
+        // Log the description to make sure it's being generated
+        error_log("################## Plain Text Description ##################");
+        error_log(json_encode($plainTextDescription));
+        error_log("############################################################");
+    
+        // Get the ICS template for the process status dynamically
+        $template = self::getTemplate('ics', $status, $process);
+        if (!$template) {
+            throw new \Exception("ICS template for status $status not found");
+        }
+    
+        // Extract the first appointment details
+        $appointment = $process->getFirstAppointment();
+        $currentYear = $appointment->getStartTime()->format('Y');
+    
+        // Prepare parameters for ICS rendering, including the plain text description
+        $parameters = [
+            'date' => $appointment->toDateTime()->format('U'),
+            'startTime' => $appointment->getStartTime()->format('U'),
+            'endTime' => $appointment->getEndTime()->format('U'),
+            'startSummerTime' => \BO\Zmsentities\Helper\DateTime::getSummerTimeStartDateTime($currentYear)->format('U'),
+            'endSummerTime' => \BO\Zmsentities\Helper\DateTime::getSummerTimeEndDateTime($currentYear)->format('U'),
+            'process' => $process,
+            'timestamp' => (!$now) ? time() : $now,
+            'message' => $plainTextDescription // Pass the plain text email content to the ICS template
+        ];
+    
+        // Log the parameters to ensure the description is in the parameters being passed to the template
+        error_log("################## PARAMETERS ##################");
+        error_log(json_encode($parameters));
+        error_log("################################################");
+    
+        // Render the ICS content using Twig and the fetched template
+        if ($templateProvider) {
+            $icsString = self::dbTwigView($templateProvider)->render($template, $parameters);
+        } else {
+            $icsString = self::twigView()->render('messaging/' . $template, $parameters);
+        }
+    
+        // Log the final output
+        error_log("################## FINAL ICS STRING ##################");
+        error_log($icsString);
+        error_log("######################################################");
+    
+        // Decode HTML entities to plain text and ensure lines follow ICS standards
+        $icsString = html_entity_decode($icsString);
+        return self::getTextWithFoldedLines($icsString);
+    }
+    
+    
+    
+    
+    
+    
+        
 
     public static function getPlainText($content, $lineBreak = "\n")
     {
