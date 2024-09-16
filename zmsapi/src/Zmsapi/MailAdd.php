@@ -34,7 +34,6 @@ class MailAdd extends BaseController
         $message->data = $mail;
 
         if ($process->shouldSendAdminMailOnClerkMail()) {
-            error_log("here 2");
             (new \BO\Zmsdb\Mail())->writeInQueueWithAdmin($entity);
         }
 

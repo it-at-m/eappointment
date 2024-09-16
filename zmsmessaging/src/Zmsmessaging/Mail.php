@@ -141,10 +141,6 @@ class Mail extends BaseController
             try {
                 $result = $this->sendMailer($entity, $mailer, $action);
                 if ($result instanceof PHPMailer) {
-
-                    $attachments = $result->getAttachments();
-                    print_r($attachments);
-
                     $results[] = [
                         'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
                         'recipients' => $result->getAllRecipientAddresses(),
