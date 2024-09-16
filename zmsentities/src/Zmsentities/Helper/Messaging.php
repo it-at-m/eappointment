@@ -331,10 +331,68 @@ class Messaging
                 'message' => $plainContent
             )
         );
-        $icsString = html_entity_decode($icsString);
-        $ics->content = self::getTextWithFoldedLines($icsString);
+
+        $ics->content = self::generateIcsContent($process, $config, $status, $now, $templateProvider, $message);
+
         return $ics;
     }
+
+    protected static function generateIcsContent(
+        Process $process,
+        Config $config,
+        $status = 'appointment',
+        $now = false,
+        $templateProvider = false,
+        $message = '' // Pass $message from getMailIcs, or query if not set
+    ) {
+        // If $message is not provided, retrieve it from the getMailContent query
+        if (empty($message)) {
+            $message = self::getMailContent($process, $config, null, $status, $templateProvider);
+        }
+    
+        // Convert the email message to plain text for the ICS description
+        $plainTextDescription = self::getPlainText($message);
+    
+        // Get the ICS template for the process status dynamically
+        $template = self::getTemplate('ics', $status, $process);
+        if (!$template) {
+            throw new \Exception("ICS template for status $status not found");
+        }
+    
+        // Extract the first appointment details
+        $appointment = $process->getFirstAppointment();
+        $currentYear = $appointment->getStartTime()->format('Y');
+    
+        // Prepare parameters for ICS rendering, including the plain text description
+        $parameters = [
+            'date' => $appointment->toDateTime()->format('U'),
+            'startTime' => $appointment->getStartTime()->format('U'),
+            'endTime' => $appointment->getEndTime()->format('U'),
+            'startSummerTime' => \BO\Zmsentities\Helper\DateTime::getSummerTimeStartDateTime($currentYear)->format('U'),
+            'endSummerTime' => \BO\Zmsentities\Helper\DateTime::getSummerTimeEndDateTime($currentYear)->format('U'),
+            'process' => $process,
+            'timestamp' => (!$now) ? time() : $now,
+            'message' => $plainTextDescription // Pass the plain text email content to the ICS template
+        ];
+    
+        // Render the ICS content using Twig and the fetched template
+        if ($templateProvider) {
+            $icsString = self::dbTwigView($templateProvider)->render($template, $parameters);
+        } else {
+            $icsString = self::twigView()->render('messaging/' . $template, $parameters);
+        }
+    
+        // Decode HTML entities to plain text and ensure lines follow ICS standards
+        $icsString = html_entity_decode($icsString);
+        return self::getTextWithFoldedLines($icsString);
+    }
+    
+    
+    
+    
+    
+    
+        
 
     public static function getPlainText($content, $lineBreak = "\n")
     {
