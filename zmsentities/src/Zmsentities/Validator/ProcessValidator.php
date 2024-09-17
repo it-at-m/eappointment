@@ -171,7 +171,7 @@ class ProcessValidator
         $valid = $unvalid->isString();
         $length = strlen($valid->getUnvalidated());
         if ($length) {
-            $valid->isSmallerThan(300, "Die Anmerkung sollte 300 Zeichen nicht überschreiten");
+            $valid->isSmallerThan(500, "Die Anmerkung sollte 500 Zeichen nicht überschreiten");
             $this->getCollection()->validatedAction($valid, $setter);
         } else {
             $this->getCollection()->addValid($valid);

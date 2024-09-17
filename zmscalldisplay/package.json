@@ -19,6 +19,7 @@
     "csswatch": "parcel watch scss/calldisplay.scss --log-level verbose  --target css",
     "jswatch": "parcel watch js/index.js --log-level verbose --no-hmr --target js",
     "watch": "npm run jswatch & npm run csswatch &",
+    "build": "npm run js && npm run css",
     "help": "parcel help",
     "version": "parcel --version"
   },
