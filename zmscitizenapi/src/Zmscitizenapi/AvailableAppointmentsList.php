@@ -61,8 +61,8 @@ class AvailableAppointmentsList extends BaseController
     
         try {
             $calendar = new CalendarEntity();
-            $calendar->firstDay = $this->convertDateToDayMonthYear($date);
-            $calendar->lastDay = $this->convertDateToDayMonthYear($date);
+            $calendar->firstDay = $this->getInternalDateFromISO($date);
+            $calendar->lastDay = $this->getInternalDateFromISO($date);
             $calendar->providers = [['id' => $officeId, 'source' => 'dldb']];
     
             $calendar->requests = [];

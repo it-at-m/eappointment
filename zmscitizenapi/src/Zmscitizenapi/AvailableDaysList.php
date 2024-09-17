@@ -66,8 +66,8 @@ class AvailableDaysList extends BaseController
 
         if (empty($errors)) {
             try {
-                $firstDay = $this->convertDateToDayMonthYear($startDate);
-                $lastDay = $this->convertDateToDayMonthYear($endDate);
+                $firstDay = $this->getInternalDateFromISO($startDate);
+                $lastDay = $this->getInternalDateFromISO($endDate);
 
                 $calendar = new CalendarEntity();
                 $calendar->firstDay = $firstDay;
