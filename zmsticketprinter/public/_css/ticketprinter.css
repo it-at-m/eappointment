@@ -85,15 +85,15 @@
 
 @media screen {
   #main {
+    max-width: auto;
     background-color: #fff;
-    max-width: 1024px;
     margin: 0 auto auto;
     padding: 0;
   }
 
   html {
     color: #494c4a;
-    background: #c8d5e6 url("background_eingabe.55072685.png") 0 0 no-repeat;
+    background-color: #c8d5e6;
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
@@ -104,8 +104,10 @@
   }
 
   body {
-    width: 1024px;
-    height: 768px;
+    -webkit-user-select: none;
+    user-select: none;
+    width: auto;
+    height: auto;
     margin: 0;
     padding: 0;
     overflow: hidden;
@@ -113,13 +115,19 @@
 
   #main-header {
     color: #fff;
+    background-color: #004376;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 65px;
+    padding: 16px 36px;
     font-size: 14px;
     line-height: 18px;
+    display: flex;
+    position: relative;
   }
 
   #main-header .adressangabe {
     color: #fff;
-    margin: 16px 0 0 36px;
     font-size: 22px;
     line-height: 23px;
   }
@@ -147,27 +155,24 @@
   }
 
   .textile {
-    width: 800px;
+    width: auto;
     font-size: 14px;
     line-height: 18px;
   }
 
   .digitaluhr {
     color: #fff;
-    text-align: left;
+    text-align: right;
+    align-self: flex-end;
     font-size: 20px;
     font-weight: normal;
-    position: absolute;
-    top: 56px;
-    left: 922px;
   }
 
   .content {
-    width: 800px;
-    height: 600px;
-    margin: 110px 0 0 160px;
-    padding: 0;
-    overflow-y: auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    display: flex;
   }
 
   .content p {
@@ -179,17 +184,19 @@
   }
 
   div.wartebuttonbereich_einzeilig {
-    width: 875px;
+    width: auto;
     position: absolute;
     top: 295px;
-    left: 160px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   div.wartebuttonbereich_zweizeilig {
-    width: 1005px;
+    width: 1010px;
     position: absolute;
     top: 180px;
-    left: 35px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   div.wartebuttonbereich_zweizeilig_tief {
@@ -215,6 +222,7 @@
 
   div.variablerwarteschlangebutton {
     float: left;
+    margin-left: 25px;
     margin-right: 25px;
   }
 
@@ -275,11 +283,14 @@
     color: #fff;
     background: url("ja_nein.489dd3d5.png") 0 5px no-repeat;
     border: 0;
+    justify-content: center;
+    align-items: center;
     width: 314px;
     height: 141px;
     font-family: Arial, sans-serif;
     font-size: 42px;
     font-weight: bold;
+    display: flex;
   }
 
   .smsbuttons {
@@ -378,8 +389,7 @@
   }
 
   .wartenummern {
-    width: 1014px;
-    height: 758px;
+    margin: 20px;
   }
 
   .hiddencursor, button, input, select {
