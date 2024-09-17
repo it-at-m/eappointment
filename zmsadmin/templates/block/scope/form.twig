@@ -1,20 +1,20 @@
 {% set dataLabels = { 
-    "sources": "%s"|format("Quelle der Standortdaten")|trans, 
-    "providers": "%s"|format("Standortdaten")|trans, 
-    "name": "%s"|format("Name")|trans, 
+    "sources": "%s"|format("Quelle der Standortdaten")|trans,
+    "providers": "%s"|format("Standortdaten")|trans,
+    "name": "%s"|format("Name")|trans,
     "address": "%s"|format("Anschrift")|trans,
     "selectPlease": "%s"|format("Bitte wählen Sie aus")|trans,
     "notAssigned": "%s"|format("Keinem Standort zugewiesen")|trans,
     "assigned": "%s"|format("Bereits einem Standort zugewiesen")|trans,
     "notDeclared": "%s"|format("- Nicht angegeben - ")|trans
-} 
+}
 %}
 
 {% set scopeState = {
-"scope": scope, 
+"scope": scope,
 "provider": provider,
-"sourcelist": sourceList, 
-"source": source, 
+"sourcelist": sourceList,
+"source": source,
 "providerList": providerList
 } %}
 
@@ -55,7 +55,7 @@
                                     <fieldset>
                                         <div class="panel--heavy">
                                             {{ inputfield({ "name": "id", "type":"hidden", "value":scope.id }) }}
-                    
+
                                             {% set sourceOptions = [{ "value": "0", "name": "bitte wählen Sie aus", "selected": 0 }]  %}
                                             {% for source in sourceList %}
                                                 {% if source.source == scope.source %}
@@ -65,7 +65,7 @@
                                                 {% endif %}
                                                 {% set sourceOptions = sourceOptions|merge([{ "value": source.source, "name": source.label|default("- Keinen Namen angegeben -")|trans, "selected": selected }]) %}
                                             {% endfor %}
-                    
+
                                             {{ formgroup(
                                                 {"label": "Quelle der Standortdaten:"},
                                                 [{
@@ -77,7 +77,7 @@
                                                     }
                                                 }]
                                             ) }}
-                    
+
                                             {% set providerOptionsGroup = [{'name': "Nicht zugeordnet", 'options': [{ "value": "", "name": "bitte wählen Sie aus", "selected": 0}] }] %}
                                             {% for type, optGroup in providerList %}
                                                 {% set providerOptions = [] %}
@@ -97,7 +97,7 @@
                                                 {% endif %}
                                                 {% set providerOptionsGroup = providerOptionsGroup|merge([{ 'name' : isAssigned , 'options' : providerOptions }]) %}
                                             {% endfor %}
-                    
+
                                             {{ formgroup(
                                                 {"label": "Standortdaten:"},
                                                 [{
@@ -109,9 +109,9 @@
                                                     }
                                                 }]
                                             ) }}
-                    
+
                                             {% set readOnly = 1 %}
-                    
+
                                             {{ formgroup(
                                                 {"label": "Name:"},
                                                 [{
@@ -124,9 +124,9 @@
                                                     }
                                                 }]
                                             ) }}
-                    
+
                                             {{ inputfield({ "name": "provider[name]", "type":"hidden", "value":scope.provider.name }) }}
-                    
+
                                             {{ formgroup(
                                                 {"label": "Anschrift:"},
                                                 [{
@@ -188,7 +188,7 @@
 
                 {{ formgroup(
                     {
-                        
+
                         "groupTag": "fieldset"
                     },
                     [{
@@ -678,7 +678,7 @@
 
                     {{ formgroup(
                     {
-                        "legend": "SMS-Eintrag:", 
+                        "legend": "SMS-Eintrag:",
                         "groupTag": "fieldset",
                         "description": "Eine Mobilfunknummereingabe beim Ziehen einer Nummer am Kiosk erlauben."
                     },
@@ -695,8 +695,8 @@
 
                     {{ formgroup(
                     {
-                        "legend": "SMS-Nachtrag:", 
-                        "groupTag": "fieldset", 
+                        "legend": "SMS-Nachtrag:",
+                        "groupTag": "fieldset",
                         "description": "Eine nachträglicher Mobilfunknummereingabe am Kiosk erlauben."
                     },
                     [{
@@ -712,8 +712,8 @@
 
                     {{ formgroup(
                     {
-                        "legend": "SMS-Bestätigung:", 
-                        "groupTag": "fieldset", 
+                        "legend": "SMS-Bestätigung:",
+                        "groupTag": "fieldset",
                         "description": "Der Kunde erhält eine SMS zur Bestätigung, dass er in die Warteschlange aufgenommen wurde."
                     },
                     [{
@@ -729,7 +729,7 @@
 
                     {{ formgroup(
                     {
-                        "label": "SMS-Angebotsfrist:", 
+                        "label": "SMS-Angebotsfrist:",
                         "description": "In Minuten errechnete Wartezeit. Wartezeit, ab der am Kiosk die SMS-Option angeboten wird, bei 0 wird der Systemdefaultwert verwendet."
                     },
                     [{
@@ -773,8 +773,8 @@
                 {% endif %}
                 {{ formgroup(
                     {
-                        "legend": "Ohne Statistik:", 
-                        "groupTag": "fieldset", 
+                        "legend": "Ohne Statistik:",
+                        "groupTag": "fieldset",
                         "description": ""
                     },
                     [{
@@ -864,8 +864,8 @@
 
                 {{ formgroup(
                     {
-                        "legend": "Wartezeit publizieren:", 
-                        "groupTag": "fieldset", 
+                        "legend": "Wartezeit publizieren:",
+                        "groupTag": "fieldset",
                         "description": "(via Webservice)"
                     },
                     [{
@@ -911,8 +911,8 @@
                         ) }}
                     {{ formgroup(
                         {
-                            "label": "Bild auswählen", 
-                            "labelClass": "aural", 
+                            "label": "Bild auswählen",
+                            "labelClass": "aural",
                             "description": "Zulässig sind nur SVG-, JPG-, PNG oder GIF-Bilder bis 48 KB Größe. Das Bild wird in einer Breite von 200 Pixel erscheinen."
                         },
                         [
