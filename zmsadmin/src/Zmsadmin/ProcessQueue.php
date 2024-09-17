@@ -10,6 +10,8 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Condition;
 use BO\Slim\Render;
+use BO\Zmsentities\Client;
+use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Config;
 use BO\Zmsentities\Helper\Messaging;
 use BO\Zmsentities\Validator\ProcessValidator;
@@ -26,7 +28,6 @@ class ProcessQueue extends BaseController
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
      */
     public function readResponse(
         RequestInterface $request,
@@ -45,7 +46,8 @@ class ProcessQueue extends BaseController
                 return $this->printProcessResponse(
                     $response,
                     $process,
-                    $validator->getParameter('printType')->isString()->getValue()
+                    $validator->getParameter('printType')->isString()->getValue(),
+                    $workstation->scope['provider']['id']
                 );
             }
         }
@@ -169,11 +171,21 @@ class ProcessQueue extends BaseController
     private function printProcessResponse(
         ResponseInterface $response,
         Entity $process,
-        ?string $printType = null
+        ?string $printType = null,
+        ?int $providerId = null
     ): ResponseInterface
     {
         if ($printType === 'mail') {
-            $content = Messaging::getMailContent($process, new Config(), null, 'appointment', null);
+            $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/')
+                ->getCollection();
+
+            foreach ($mergedMailTemplates as $template) {
+                if ($template->name === 'mail_confirmation.twig') {
+                    $confirmationTemplate = $template->value;
+                }
+            }
+
+            $content = Messaging::getMailContentPreview($confirmationTemplate, $process);
 
             return \BO\Slim\Render::withHtml(
                 $response,
