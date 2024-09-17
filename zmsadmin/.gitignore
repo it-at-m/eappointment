@@ -13,6 +13,7 @@ vendor.update
 VERSION
 public/_tests
 public/_js/
+!public/_js/.gitkeep
 public/_libs/
 .cache
 .phpunit.*
