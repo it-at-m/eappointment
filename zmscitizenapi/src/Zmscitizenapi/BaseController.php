@@ -29,7 +29,7 @@ abstract class BaseController extends \BO\Slim\Controller
 
     // ----------------- Helpers ---------------------
 
-    protected function convertDateToDayMonthYear($dateString)
+    protected function getInternalDateFromISO($dateString)
     {
         $date = new \DateTime($dateString);
         return [
@@ -37,6 +37,21 @@ abstract class BaseController extends \BO\Slim\Controller
             'month' => (int) $date->format('m'),
             'year' => (int) $date->format('Y'),
         ];
+    }
+
+    protected function getInternalDateFromTimestamp(int $timestamp)
+    {
+        $date = (new \DateTime())->setTimestamp($timestamp);
+        return [
+            'day' => (int) $date->format('d'),
+            'month' => (int) $date->format('m'),
+            'year' => (int) $date->format('Y')
+        ];
+    }
+
+    protected function onlyUniqueAppointments($value, $index, $self)
+    {
+        return array_search($value, $self) === $index;
     }
 
     protected function getThinnedProcessData($myProcess)
@@ -51,10 +66,8 @@ abstract class BaseController extends \BO\Slim\Controller
 
         if (isset($myProcess->requests)) {
             $requests = is_array($myProcess->requests) ? $myProcess->requests : iterator_to_array($myProcess->requests);
-
             if (count($requests) > 0) {
                 $mainServiceId = $requests[0]->id;
-
                 foreach ($requests as $request) {
                     if ($request->id === $mainServiceId) {
                         $mainServiceCount++;
@@ -88,6 +101,10 @@ abstract class BaseController extends \BO\Slim\Controller
         ];
     }
 
+    protected function uniqueElementsFilter($value, $index, $self)
+    {
+        return array_search($value, $self) === $index;
+    }
 
 
     // ----------------- ZmsApiClient ---------------------
