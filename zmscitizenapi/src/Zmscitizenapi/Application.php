@@ -12,14 +12,9 @@ class Application extends \BO\Slim\Application
     const IDENTIFIER = 'Zmscitizenapi';
 
     /**
-     * HTTP url for api
+     * HTTP url for API
      */
     const ZMS_API_URL = 'http://user:pass@host.tdl';
-
-    /**
-     * Flag for enabling maintenance mode
-     */
-    const MAINTENANCE_MODE_ENABLED = false;
 
     /**
      * Name of the source which should be used for the API
@@ -34,4 +29,33 @@ class Application extends \BO\Slim\Application
     public static $http = null;
 
     public static $http_curl_config = [];
+
+    /**
+     * Maintenance mode flag, initialized dynamically
+     */
+    public static bool $MAINTENANCE_MODE_ENABLED;
+
+    /**
+     * CAPTCHA-related settings, initialized dynamically
+     */
+    public static bool $CAPTCHA_ENABLED;
+    public static string $FRIENDLYCAPTCHA_SECRET;
+    public static string $FRIENDLYCAPTCHA_SITEKEY;
+    public static string $FRIENDLYCAPTCHA_ENDPOINT;
+    public static string $FRIENDLYCAPTCHA_ENDPOINT_PUZZLE;
+
+    /**
+     * Static initializer to set dynamic settings
+     */
+    public static function initialize()
+    {
+        self::$MAINTENANCE_MODE_ENABLED = getenv('MAINTENANCE_ENABLED') === "0";
+        self::$CAPTCHA_ENABLED = getenv('CAPTCHA_ENABLED') === "1";
+        self::$FRIENDLYCAPTCHA_SECRET = getenv('FRIENDLYCAPTCHA_SECRET') ?: "xxxxxxxxx";
+        self::$FRIENDLYCAPTCHA_SITEKEY = getenv('FRIENDLYCAPTCHA_SITEKEY') ?: "xxxxxxxxx";
+        self::$FRIENDLYCAPTCHA_ENDPOINT = getenv('FRIENDLYCAPTCHA_ENDPOINT') ?: "https://api.friendlycaptcha.com/api/v1/siteverify";
+        self::$FRIENDLYCAPTCHA_ENDPOINT_PUZZLE = getenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE') ?: "https://api.friendlycaptcha.com/api/v1/puzzle";
+    }
 }
+
+Application::initialize();

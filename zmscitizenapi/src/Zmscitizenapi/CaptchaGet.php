@@ -10,12 +10,12 @@ class CaptchaGet extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        // Retrieve captcha details from environment variables
+        // Retrieve captcha details from the Application class
         $captchaDetails = [
-            'siteKey' => getenv('FRIENDLYCAPTCHA_SITEKEY'),
-            'captchaEndpoint' => getenv('FRIENDLYCAPTCHA_ENDPOINT'),
-            'puzzle' => getenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE'),
-            'captchaEnabled' => getenv('CAPTCHA_ENABLED') === "1"
+            'siteKey' => Application::$FRIENDLYCAPTCHA_SITEKEY,
+            'captchaEndpoint' => Application::$FRIENDLYCAPTCHA_ENDPOINT,
+            'puzzle' => Application::$FRIENDLYCAPTCHA_ENDPOINT_PUZZLE,
+            'captchaEnabled' => Application::$CAPTCHA_ENABLED
         ];
 
         // Return the captcha details as JSON
