@@ -27,7 +27,8 @@ jobs:
         run: |
           tag="${{ github.ref_name }}"
           if [ "${{ github.ref_type }}" = "branch" ]; then
-            tag="branch-$tag"
+            # Sanitize the tag by replacing invalid characters with a hyphen
+            tag="branch-$(echo "$tag" | sed 's/[\/:]/-/g')"
           fi
           docker build . \
             --file ".resources/Containerfile" \
