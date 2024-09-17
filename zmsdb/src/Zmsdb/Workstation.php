@@ -207,7 +207,11 @@ class Workstation extends Base
         $query->addValues(['NutzerID' => $workstation->id]);
         $this->writeItem($query);
         $checksum = sha1($process->id . '-' . $workstation->getUseraccount()->id);
-        Log::writeLogEntry("UPDATE (Workstation::writeAssignedProcess) $checksum ", $process->id);
+        Log::writeLogEntry("UPDATE (Workstation::writeAssignedProcess) $checksum ",
+            $process->id,
+            Log::PROCESS,
+            $process->scope->id
+        );
         return $process;
     }
 
@@ -234,7 +238,11 @@ class Workstation extends Base
                 'parked' => ('parked' == $process->status) ? 1 : 0
             ]
         );
-        Log::writeLogEntry("UPDATE (Workstation::writeRemovedProcess)", $process->id);
+        Log::writeLogEntry("UPDATE (Workstation::writeRemovedProcess)",
+            $process->id,
+            Log::PROCESS,
+            $process->getScopeId()
+        );
         return $this->writeItem($query);
     }
 

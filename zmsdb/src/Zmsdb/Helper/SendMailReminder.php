@@ -132,7 +132,11 @@ class SendMailReminder
             );
             if ($commit) {
                 $entity = (new MailRepository)->writeInQueue($entity, $this->dateTime);
-                Log::writeLogEntry("Write Reminder (Mail::writeInQueue) $entity ", $process->getId());
+                Log::writeLogEntry("Write Reminder (Mail::writeInQueue) $entity ",
+                    $process->getId(),
+                    Log::PROCESS,
+                    $process->getScopeId()
+                );
                 $this->log("INFO: Mail has been written in queue successfully with ID ". $entity->getId());
             }
         }
