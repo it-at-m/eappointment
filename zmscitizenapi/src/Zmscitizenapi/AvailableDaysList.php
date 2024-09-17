@@ -131,16 +131,6 @@ class AvailableDaysList extends BaseController
         }
     }
 
-    private function convertDateToDayMonthYear($dateString)
-    {
-        $date = new \DateTime($dateString);
-        return [
-            'day' => (int) $date->format('d'),
-            'month' => (int) $date->format('m'),
-            'year' => (int) $date->format('Y'),
-        ];
-    }
-
     private function createJsonResponse(ResponseInterface $response, array $content, int $statusCode): ResponseInterface
     {
         $response = $response->withStatus($statusCode)

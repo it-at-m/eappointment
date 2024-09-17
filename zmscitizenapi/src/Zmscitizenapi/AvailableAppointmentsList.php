@@ -146,17 +146,6 @@ class AvailableAppointmentsList extends BaseController
             return $this->createJsonResponse($response, $responseContent, 500);
         }
     }
-    
-
-    private function convertDateToDayMonthYear($dateString)
-    {
-        $date = new \DateTime($dateString);
-        return [
-            'day' => (int) $date->format('d'),
-            'month' => (int) $date->format('m'),
-            'year' => (int) $date->format('Y'),
-        ];
-    }
 
     private function createJsonResponse(ResponseInterface $response, array $content, int $statusCode): ResponseInterface
     {

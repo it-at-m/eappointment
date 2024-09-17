@@ -2,6 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
+use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\CaptchaGet;
 
 class CaptchaGetTest extends Base
@@ -16,6 +17,8 @@ class CaptchaGetTest extends Base
         putenv('FRIENDLYCAPTCHA_ENDPOINT=https://api.friendlycaptcha.com/api/v1/siteverify');
         putenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE=https://api.friendlycaptcha.com/api/v1/puzzle');
         putenv('CAPTCHA_ENABLED=1');
+
+        Application::initialize();
     }
 
     public function tearDown(): void
