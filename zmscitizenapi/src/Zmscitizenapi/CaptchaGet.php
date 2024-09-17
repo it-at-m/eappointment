@@ -10,7 +10,6 @@ class CaptchaGet extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        // Retrieve captcha details from the Application class
         $captchaDetails = [
             'siteKey' => Application::$FRIENDLYCAPTCHA_SITEKEY,
             'captchaEndpoint' => Application::$FRIENDLYCAPTCHA_ENDPOINT,
@@ -18,7 +17,6 @@ class CaptchaGet extends BaseController
             'captchaEnabled' => Application::$CAPTCHA_ENABLED
         ];
 
-        // Return the captcha details as JSON
         return Render::withJson($response, $captchaDetails);
     }
 }
