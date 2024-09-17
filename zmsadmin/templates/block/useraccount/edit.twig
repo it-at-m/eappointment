@@ -196,6 +196,16 @@
                             "checked" : userAccount.rights.scope,
                         "id": "check_rights_5"
                     }
+                },
+                {
+                    "type":"checkbox",
+                    "parameter": {
+                    "label": "Innenrevision",
+                    "name": "rights[audit]",
+                    "value": 1,
+                    "checked" : userAccount.rights.audit,
+                    "id": "check_rights_15"
+                }
                 }
             ]) %}
         {% endif %}

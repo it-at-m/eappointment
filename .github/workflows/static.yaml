@@ -1,0 +1,91 @@
+# Workflow for deploying zmsapi PHP and Node.js static content to Pages
+name: Deploy zmsapi static content to Pages
+
+on:
+  # Runs on pushes targeting the default branch (main)
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Step 2: Set up PHP environment
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'  # Specify PHP version as per your requirement
+          extensions: mbstring, json
+          tools: composer
+
+      # Step 3: Install PHP dependencies for zmsapi
+      - name: Install PHP dependencies
+        run: |
+          composer install --working-dir=zmsapi
+
+      # Step 4: Run PHP post-install scripts for zmsapi
+      - name: Run PHP post-install scripts
+        run: |
+          cd zmsapi && bin/configure && composer run-script post-install-cmd && cd ..
+
+      # Step 5: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Specify Node.js version as needed
+
+      # Step 6: Install Node.js dependencies for zmsapi
+      - name: Install Node.js dependencies for zmsapi
+        run: |
+          cd zmsapi
+          npm install
+
+      # Step 7: Build the project for zmsapi
+      - name: Build zmsapi
+        run: |
+          cd zmsapi
+          npm run build
+
+      # Step 8: Generate Swagger documentation for zmsapi
+      - name: Generate Swagger documentation
+        run: |
+          cd zmsapi
+          npm run doc
+          npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
+
+      # Step 9: Set up GitHub Pages for deployment
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Step 10: Upload the static content to GitHub Pages
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'  # Upload the entire repository, including the generated docs
+
+      # Step 11: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

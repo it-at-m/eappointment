@@ -9,9 +9,12 @@ $black:                         #000000;
 $baseTextColor:                 #494C4A;
 
 // Dimensions
-$pageMaxWidth:                  1024px;
-$pageMaxHeight:					768px;
-$contentMaxWidth:               800px;
+//$pageMaxWidth:                  1024px;
+//$pageMaxHeight:					768px;
+//$contentMaxWidth:               800px;
+$pageMaxWidth:                  auto;
+$pageMaxHeight:					auto;
+$contentMaxWidth:               auto;
 
 // Fonts
 $base-font-family:				Arial, sans-serif;
