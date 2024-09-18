@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Tests;
 class ServicesByOfficeListTest extends Base
 {
 
-    protected $classname = "ServicesByOfficeList";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\ServicesByOfficeList";
 
     public function testRendering()
     {
@@ -85,6 +85,7 @@ class ServicesByOfficeListTest extends Base
         ], []);
     
         $expectedResponse = [
+            'status' => 404,
             'services' => [],
             'error' => 'Service(s) not found for the provided officeId(s)'
         ];
@@ -96,6 +97,7 @@ class ServicesByOfficeListTest extends Base
     {
         $response = $this->render([], [], []);
         $expectedResponse = [
+            'status' => 400,
             'services' => [],
             'error' => 'Invalid officeId(s)'
         ];

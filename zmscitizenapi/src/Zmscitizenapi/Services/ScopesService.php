@@ -1,34 +1,52 @@
 <?php
 
-namespace BO\Zmscitizenapi;
+namespace BO\Zmscitizenapi\Services;
 
-use BO\Slim\Render;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-
-class ScopeByIdGet extends BaseController
+class ScopesService
 {
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function getScopes()
     {
-        $scopeIds = explode(',', $request->getQueryParams()['scopeId'] ?? '');
+        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+            'resolveReferences' => 2,
+        ])->getEntity();
+
+        $scopeList = $sources->getScopeList() ?? [];
+        $scopesProjectionList = [];
+
+        foreach ($scopeList as $scope) {
+            $scopesProjectionList[] = [
+                "id" => $scope->id,
+                "provider" => $scope->provider,
+                "shortName" => $scope->shortName,
+                "telephoneActivated" => $scope->getTelephoneActivated(),
+                "telephoneRequired" => $scope->getTelephoneRequired(),
+                "customTextfieldActivated" => $scope->getCustomTextfieldActivated(),
+                "customTextfieldRequired" => $scope->getCustomTextfieldRequired(),
+                "customTextfieldLabel" => $scope->getCustomTextfieldLabel(),
+                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired()
+            ];
+        }
+
+        return $scopesProjectionList;
+    }
+
+    public function getScopeByIds(array $scopeIds)
+    {
         $scopeIds = array_unique($scopeIds);
 
         if (empty($scopeIds) || $scopeIds == ['']) {
-            $responseContent = [
+            return [
                 'scopes' => [],
                 'error' => 'Invalid scopeId(s)',
+                'status' => 400
             ];
-            $response = $response->withStatus(400)
-                                 ->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode($responseContent));
-            return $response;
         }
 
         $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
             'resolveReferences' => 2,
         ])->getEntity();
-        $scopeList = $sources->getScopeList();
 
+        $scopeList = $sources->getScopeList();
         $scopes = [];
         $notFoundIds = [];
 
@@ -48,26 +66,24 @@ class ScopeByIdGet extends BaseController
                         "customTextfieldActivated" => $scopeItem->getCustomTextfieldActivated(),
                         "customTextfieldRequired" => $scopeItem->getCustomTextfieldRequired(),
                         "customTextfieldLabel" => $scopeItem->getCustomTextfieldLabel(),
-                        "captchaActivatedRequired" => $scopeItem->getCaptchaActivatedRequired(),
+                        "captchaActivatedRequired" => $scopeItem->getCaptchaActivatedRequired()
                     ];
                     $found = true;
                     break;
                 }
             }
+
             if (!$found) {
                 $notFoundIds[] = $scopeId;
             }
         }
 
         if (empty($scopes)) {
-            $responseContent = [
+            return [
                 'scopes' => [],
                 'error' => 'Scope(s) not found',
+                'status' => 404
             ];
-            $response = $response->withStatus(404)
-                                 ->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode($responseContent));
-            return $response;
         }
 
         $responseContent = ['scopes' => $scopes];
@@ -75,9 +91,9 @@ class ScopeByIdGet extends BaseController
             $responseContent['warning'] = 'The following scopeId(s) were not found: ' . implode(', ', $notFoundIds);
         }
 
-        $response = $response->withStatus(200)
-                             ->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode($responseContent));
-        return $response;
+        return [
+            'scopes' => $responseContent,
+            'status' => 200
+        ];
     }
 }

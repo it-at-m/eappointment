@@ -1,22 +1,28 @@
 <?php
 
-namespace BO\Zmscitizenapi;
+namespace BO\Zmscitizenapi\Services;
 
-use BO\Slim\Render;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-
-class OfficesServicesRelations extends BaseController
+class OfficesServicesRelationsService
 {
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function getOfficesServicesRelations($sources)
     {
-        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-            'resolveReferences' => 2,
-        ])->getEntity();
-
         $providerList = $sources->getProviderList() ?? [];
         $requestList = $sources->getRequestList() ?? [];
         $relationList = $sources->getRequestRelationList() ?? [];
+
+        $offices = $this->mapOfficesWithScope($sources, $providerList);
+        $services = $this->mapServicesWithCombinations($requestList, $relationList);
+        $relations = $this->mapRelations($relationList);
+
+        return [
+            'offices' => $offices,
+            'services' => $services,
+            'relations' => $relations,
+        ];
+    }
+
+    private function mapOfficesWithScope($sources, $providerList)
+    {
         $offices = [];
         foreach ($providerList as $provider) {
             $officeData = [
@@ -30,20 +36,7 @@ class OfficesServicesRelations extends BaseController
 
             $offices[] = $officeData;
         }
-        $services = $this->mapServicesWithCombinations($requestList, $relationList);
-        $relations = [];
-        foreach ($relationList as $relation) {
-            $relations[] = [
-                "officeId" => $relation->provider->id,
-                "serviceId" => $relation->request->id,
-                "slots" => intval($relation->slots)
-            ];
-        }
-        return Render::withJson($response, [
-            "offices" => $offices,
-            "services" => $services,
-            "relations" => $relations,
-        ]);
+        return $offices;
     }
 
     private function mapServicesWithCombinations($requestList, $relationList)
@@ -55,6 +48,7 @@ class OfficesServicesRelations extends BaseController
             }
             $servicesProviderIds[$relation->request->id][] = $relation->provider->id;
         }
+
         $services = [];
         foreach ($requestList as $service) {
             $serviceCombinations = [];
@@ -63,26 +57,37 @@ class OfficesServicesRelations extends BaseController
                 "name" => $service->getName(),
                 "maxQuantity" => $service->getAdditionalData()['maxQuantity'] ?? 1,
             ];
+
             if (isset($service->getAdditionalData()['combinable'])) {
                 foreach ($service->getAdditionalData()['combinable'] as $combinationServiceId) {
                     $commonProviders = array_intersect(
                         $servicesProviderIds[$service->getId()] ?? [],
                         $servicesProviderIds[$combinationServiceId] ?? []
                     );
-                    if (!empty($commonProviders)) {
-                        $serviceCombinations[$combinationServiceId] = array_values($commonProviders);
-                    } else {
-                        $serviceCombinations[$combinationServiceId] = [];
-                    }
+                    $serviceCombinations[$combinationServiceId] = !empty($commonProviders) ? array_values($commonProviders) : [];
                 }
                 $mappedService['combinable'] = $serviceCombinations;
-            }    
+            }
+
             $services[] = $mappedService;
         }
-    
+
         return $services;
     }
-    
+
+    private function mapRelations($relationList)
+    {
+        $relations = [];
+        foreach ($relationList as $relation) {
+            $relations[] = [
+                "officeId" => $relation->provider->id,
+                "serviceId" => $relation->request->id,
+                "slots" => intval($relation->slots)
+            ];
+        }
+        return $relations;
+    }
+
     private function getScopeForProvider($sources, $providerId)
     {
         $scopeList = $sources->getScopeList();
@@ -98,6 +103,7 @@ class OfficesServicesRelations extends BaseController
                     "customTextfieldRequired" => $scope->getCustomTextfieldRequired(),
                     "customTextfieldLabel" => $scope->getCustomTextfieldLabel(),
                     "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired(),
+                    "displayInfo" => $scope->getDisplayInfo()
                 ];
             }
         }

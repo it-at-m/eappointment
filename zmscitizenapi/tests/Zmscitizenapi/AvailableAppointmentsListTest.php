@@ -4,7 +4,7 @@ namespace BO\Zmscitizenapi\Tests;
 
 class AvailableAppointmentsListTest extends Base
 {
-    protected $classname = "AvailableAppointmentsList";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\AvailableAppointmentsList";
 
     public function testRendering()
     {

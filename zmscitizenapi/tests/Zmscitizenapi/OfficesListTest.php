@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Tests;
 class OfficesListTest extends Base
 {
 
-    protected $classname = "OfficesList";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\OfficesList";
 
     public function testRendering() {
         $this->setApiCalls([
@@ -37,7 +37,8 @@ class OfficesListTest extends Base
                         "customTextfieldActivated" => "1",
                         "customTextfieldRequired" => "0",
                         "customTextfieldLabel" => "Custom Label",
-                        "captchaActivatedRequired" => "1"
+                        "captchaActivatedRequired" => "1",
+                        "displayInfo" => null
                     ]
                 ],
                 [
@@ -56,7 +57,8 @@ class OfficesListTest extends Base
                         "customTextfieldActivated" => "0",
                         "customTextfieldRequired" => "1",
                         "customTextfieldLabel" => "",
-                        "captchaActivatedRequired" => "0"
+                        "captchaActivatedRequired" => "0",
+                        "displayInfo" => null
                     ]
                 ]
             ]
