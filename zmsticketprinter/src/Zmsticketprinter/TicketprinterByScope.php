@@ -42,11 +42,21 @@ class TicketprinterByScope extends BaseController
         
         $template = (new TemplateFinder($defaultTemplate))->setCustomizedTemplate($ticketprinter, $organisation);
 
+        $hasDisabledButton = false;
+        foreach ($ticketprinter->buttons as $button) {
+            if (!isset($button['enabled']) || $button['enabled'] != 1) {
+                $hasDisabledButton = true;
+                break;
+            }
+        }
+        
         return Render::withHtml(
             $response,
             $template->getTemplate(),
             array(
                 'debug' => \App::DEBUG,
+                'enabled' => $ticketprinter->isEnabled()
+                    || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
@@ -57,7 +67,8 @@ class TicketprinterByScope extends BaseController
                 'waitingTimeOptimistic' => $queueListHelper->getOptimisticWaitingTime(),
                 'waitingClients' => $queueListHelper->getClientsBefore(),
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
-                'config' => $config
+                'config' => $config,
+                'hasDisabledButton' => $hasDisabledButton
             )
         );
     }
