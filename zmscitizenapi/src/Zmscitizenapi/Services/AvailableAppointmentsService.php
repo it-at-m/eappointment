@@ -57,7 +57,46 @@ class AvailableAppointmentsService
         }
     }
 
+    public function getFreeAppointments(array $params)
+    {
+        $office = [
+            'id' => $params['officeId'],
+            'source' => 'dldb'
+        ];
 
+        $requests = [];
+
+        // Loop through service IDs and service counts
+        foreach ($params['serviceIds'] as $index => $serviceId) {
+            $service = [
+                'id' => $serviceId,
+                'source' => 'dldb',
+                'slotCount' => $params['serviceCounts'][$index]
+            ];
+            $requests = array_merge($requests, array_fill(0, $service['slotCount'], $service));
+        }
+
+        try {
+            // Fetch available timeslots
+            $freeSlots = $this->getFreeTimeslots(
+                [$office],
+                $requests,
+                $params['date'],
+                $params['date']
+            );
+
+            return $this->processFreeSlots($freeSlots);
+
+        } catch (\Exception $e) {
+            error_log('Error in AvailableAppointmentsService: ' . $e->getMessage());
+            return [
+                'appointmentTimestamps' => [],
+                'errorCode' => 'internalError',
+                'errorMessage' => 'An error occurred while fetching available appointments',
+                'status' => 500,
+            ];
+        }
+    }
 
     private function validateQueryParams($date, $officeId, $serviceIds, $serviceCounts)
     {
