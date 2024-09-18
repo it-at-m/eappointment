@@ -28,12 +28,5 @@ class AppointmentGet extends BaseController
 
         return $this->createJsonResponse($response, $result['data'] ?? $result, $result['status']);
     }
-
-    private function createJsonResponse(ResponseInterface $response, array $content, int $statusCode): ResponseInterface
-    {
-        $response = $response->withStatus($statusCode)
-                             ->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode($content));
-        return $response;
-    }
+    
 }

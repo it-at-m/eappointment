@@ -29,11 +29,4 @@ class ServicesByOfficeList extends BaseController
         return $this->createJsonResponse($response, $result['services'], $result['status']);
     }
 
-    private function createJsonResponse(ResponseInterface $response, array $content, int $statusCode): ResponseInterface
-    {
-        $response = $response->withStatus($statusCode)
-                             ->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode($content));
-        return $response;
-    }
 }

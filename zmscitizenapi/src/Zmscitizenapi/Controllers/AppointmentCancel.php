@@ -13,4 +13,5 @@ class AppointmentCancel extends BaseController
     {
         return Render::withJson($response, []);
     }
+    
 }
