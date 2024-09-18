@@ -17,3 +17,4 @@ composer.*.lock
 .cache
 .phpunit.result.cache
 .idea
+.parcel-cache
