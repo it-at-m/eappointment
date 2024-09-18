@@ -96,4 +96,27 @@ class ScopesService
             'status' => 200
         ];
     }
+
+    public function getScopeByOfficeId($officeId)
+    {
+        try {
+            $scopes = $this->getScopes();
+            
+            foreach ($scopes as $scope) {
+                if (isset($scope['provider']) && $scope['provider']->id == $officeId) {
+                    return $scope;
+                }
+            }
+
+            return [
+                'error' => 'Scope not found for the provided office ID',
+                'status' => 404
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => 'Error fetching scope by office ID: ' . $e->getMessage(),
+                'status' => 500
+            ];
+        }
+    }
 }
