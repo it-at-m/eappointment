@@ -109,4 +109,57 @@ class OfficesServicesRelationsService
         }
         return null;
     }
+
+
+    public function validateServiceLocationCombination($officeId, array $serviceIds)
+    {
+        // Fetch all available services for the given officeId
+        $availableServices = $this->getServicesProvidedAtOffice($officeId);
+        $availableServiceIds = array_map(function ($service) {
+            return $service['id'];
+        }, $availableServices);
+
+        // Check if there are any invalid service IDs
+        $invalidServiceIds = array_filter($serviceIds, function ($serviceId) use ($availableServiceIds) {
+            return !in_array($serviceId, $availableServiceIds);
+        });
+
+        if (!empty($invalidServiceIds)) {
+            return [
+                'status' => 400,
+                'errorCode' => 'invalidLocationAndServiceCombination',
+                'errorMessage' => 'The provided service(s) do not exist at the given location.',
+                'invalidServiceIds' => $invalidServiceIds,
+                'locationId' => $officeId,
+                'lastModified' => time() * 1000,
+            ];
+        }
+
+        return [
+            'status' => 200,
+            'message' => 'Valid service-location combination.',
+        ];
+    }
+
+    public function getServicesProvidedAtOffice($officeId)
+    {
+        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+            'resolveReferences' => 2,
+        ])->getEntity();
+
+        $requestList = $sources->getRequestList() ?? [];
+        $requestRelationList = $sources->getRequestRelationList() ?? [];
+
+        $serviceIds = array_filter($requestRelationList, function ($relation) use ($officeId) {
+            return $relation->provider->id === $officeId;
+        });
+
+        $serviceIds = array_map(function ($relation) {
+            return $relation->request->id;
+        }, $serviceIds);
+
+        return array_filter($requestList, function ($request) use ($serviceIds) {
+            return in_array($request->id, $serviceIds);
+        });
+    }
 }

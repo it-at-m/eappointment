@@ -20,9 +20,11 @@ class AvailableAppointmentsService
         }
 
         try {
+            $utilityHelper = new \BO\Zmscitizenapi\Helper\UtilityHelper();
+
             $calendar = new CalendarEntity();
-            $calendar->firstDay = $this->getInternalDateFromISO($date);
-            $calendar->lastDay = $this->getInternalDateFromISO($date);
+            $calendar->firstDay = $utilityHelper->getInternalDateFromISO($date);
+            $calendar->lastDay = $utilityHelper->getInternalDateFromISO($date);
             $calendar->providers = [['id' => $officeId, 'source' => 'dldb']];
 
             $calendar->requests = [];
@@ -54,6 +56,8 @@ class AvailableAppointmentsService
             ];
         }
     }
+
+
 
     private function validateQueryParams($date, $officeId, $serviceIds, $serviceCounts)
     {
@@ -140,13 +144,4 @@ class AvailableAppointmentsService
         ];
     }
 
-    private function getInternalDateFromISO($dateString)
-    {
-        $date = new \DateTime($dateString);
-        return [
-            'day' => (int) $date->format('d'),
-            'month' => (int) $date->format('m'),
-            'year' => (int) $date->format('Y'),
-        ];
-    }
 }

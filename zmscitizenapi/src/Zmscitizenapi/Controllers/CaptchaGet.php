@@ -14,7 +14,6 @@ class CaptchaGet extends BaseController
 
     public function __construct()
     {
-        // Initialize the CaptchaService
         $this->captchaService = new CaptchaService();
     }
 

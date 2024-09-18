@@ -21,8 +21,10 @@ class AvailableDaysService
         }
 
         try {
-            $firstDay = $this->getInternalDateFromISO($startDate);
-            $lastDay = $this->getInternalDateFromISO($endDate);
+            $utilityHelper = new \BO\Zmscitizenapi\Helper\UtilityHelper();
+
+            $firstDay = $utilityHelper->getInternalDateFromISO($startDate);
+            $lastDay = $utilityHelper->getInternalDateFromISO($endDate);            
 
             $calendar = new CalendarEntity();
             $calendar->firstDay = $firstDay;
@@ -94,13 +96,4 @@ class AvailableDaysService
         return $errors;
     }
 
-    private function getInternalDateFromISO($dateString)
-    {
-        $date = new \DateTime($dateString);
-        return [
-            'day' => (int) $date->format('d'),
-            'month' => (int) $date->format('m'),
-            'year' => (int) $date->format('Y'),
-        ];
-    }
 }
