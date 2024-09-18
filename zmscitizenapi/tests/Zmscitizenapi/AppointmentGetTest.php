@@ -6,7 +6,7 @@ use BO\Zmscitizenapi\AppointmentGet;
 
 class AppointmentGetTest extends Base
 {
-    protected $classname = "AppointmentGet";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\AppointmentGet";
 
     public function testRendering()
     {

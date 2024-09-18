@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Tests;
 class OfficesServicesRelationsTest extends Base
 {
 
-    protected $classname = "OfficesServicesRelations";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\OfficesServicesRelations";
 
     public function testRendering()
     {
@@ -38,7 +38,8 @@ class OfficesServicesRelationsTest extends Base
                         "customTextfieldActivated" => "1",
                         "customTextfieldRequired" => "0",
                         "customTextfieldLabel" => "Custom Label",
-                        "captchaActivatedRequired" => "1"
+                        "captchaActivatedRequired" => "1",
+                        "displayInfo" => null
                     ]
                 ],
                 [
@@ -57,7 +58,8 @@ class OfficesServicesRelationsTest extends Base
                         "customTextfieldActivated" => "0",
                         "customTextfieldRequired" => "1",
                         "customTextfieldLabel" => "",
-                        "captchaActivatedRequired" => "0"
+                        "captchaActivatedRequired" => "0",
+                        "displayInfo" => null
                     ]
                 ]
             ],

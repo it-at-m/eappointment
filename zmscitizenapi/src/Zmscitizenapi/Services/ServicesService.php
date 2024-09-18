@@ -1,32 +1,46 @@
 <?php
 
-namespace BO\Zmscitizenapi;
+namespace BO\Zmscitizenapi\Services;
 
-use BO\Slim\Render;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-
-class ServicesByOfficeList extends BaseController
+class ServicesService
 {
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function getServices()
     {
-        $officeIds = explode(',', $request->getQueryParams()['officeId'] ?? '');
+        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+            'resolveReferences' => 2,
+        ])->getEntity();
+
+        $requestList = $sources->getRequestList() ?? [];
+        $servicesProjectionList = [];
+
+        foreach ($requestList as $request) {
+            $additionalData = $request->getAdditionalData();
+            $servicesProjectionList[] = [
+                "id" => $request->getId(),
+                "name" => $request->getName(),
+                "maxQuantity" => $additionalData['maxQuantity'] ?? 1,
+            ];
+        }
+
+        return $servicesProjectionList;
+    }
+
+    public function getServicesByOfficeIds(array $officeIds)
+    {
         $officeIds = array_unique($officeIds);
 
         if (empty($officeIds) || $officeIds == ['']) {
-            $responseContent = [
+            return [
                 'services' => [],
                 'error' => 'Invalid officeId(s)',
+                'status' => 400,
             ];
-            $response = $response->withStatus(400)
-                                 ->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode($responseContent));
-            return $response;
         }
 
         $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
             'resolveReferences' => 2,
         ])->getEntity();
+
         $requestList = $sources->getRequestList();
         $requestRelationList = $sources->getRequestRelationList();
 
@@ -57,14 +71,11 @@ class ServicesByOfficeList extends BaseController
         }
 
         if (empty($services)) {
-            $responseContent = [
+            return [
                 'services' => [],
                 'error' => 'Service(s) not found for the provided officeId(s)',
+                'status' => 404,
             ];
-            $response = $response->withStatus(404)
-                                 ->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode($responseContent));
-            return $response;
         }
 
         $responseContent = ['services' => $services];
@@ -72,9 +83,9 @@ class ServicesByOfficeList extends BaseController
             $responseContent['warning'] = 'The following officeId(s) were not found: ' . implode(', ', $notFoundIds);
         }
 
-        $response = $response->withStatus(200)
-                             ->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode($responseContent));
-        return $response;
+        return [
+            'services' => $responseContent,
+            'status' => 200,
+        ];
     }
 }

@@ -7,7 +7,7 @@ use BO\Slim\Render;
 class ScopeByIdGetTest extends Base
 {
 
-    protected $classname = "ScopeByIdGet";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\ScopeByIdGet";
 
     public function testRendering()
     {
@@ -113,6 +113,7 @@ class ScopeByIdGetTest extends Base
         ], []);
     
         $expectedResponse = [
+            'status' => 404,
             'scopes' => [],
             'error' => 'Scope(s) not found'
         ];
@@ -124,6 +125,7 @@ class ScopeByIdGetTest extends Base
     {
         $response = $this->render([], [], []);
         $expectedResponse = [
+            'status' => 400,
             'scopes' => [],
             'error' => 'Invalid scopeId(s)'
         ];
