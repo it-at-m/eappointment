@@ -23,6 +23,14 @@ abstract class BaseController extends \BO\Slim\Controller
         return parent::__invoke($request, $response, $args);
     }
 
+    protected function createJsonResponse(ResponseInterface $response, array $content, int $statusCode): ResponseInterface
+    {
+        $response = $response->withStatus($statusCode)
+                             ->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode($content));
+        return $response;
+    }
+
     // ----------------- Helpers ---------------------
 
     protected function getInternalDateFromISO($dateString)
