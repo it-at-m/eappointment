@@ -129,6 +129,13 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return ($slotsPerAppointment) ? $slotsPerAppointment : null;
     }
 
+    public function getDeleteLogsOlderThanDays()
+    {
+        $deleteSlotsOlderThanDay = $this->toProperty()->preferences->logs->deleteSlotsOlderThanDay->get();
+
+        return ($deleteSlotsOlderThanDay) ? $deleteSlotsOlderThanDay : 90;
+    }
+
     public function getWhitelistedMails()
     {
         $emails = $this->toProperty()->preferences->client->whitelistedMails->get();

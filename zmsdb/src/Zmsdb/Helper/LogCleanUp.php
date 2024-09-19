@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace BO\Zmsdb\Helper;
 
-use BO\Zmsdb\Config as ConfigRepository;
 use BO\Zmsdb\Log;
+use BO\Zmsdb\Scope;
 
 class LogCleanUp
 {
@@ -31,12 +31,15 @@ class LogCleanUp
 
     public static function startProcessing($commit = false)
     {
-        $config = (new ConfigRepository())->readEntity();
-        $olderThan = $config->getPreference('log', 'deleteOlderThanDays') ?? 90;
+        $scopes = (new Scope())->readList();
 
-        $logRepo  = new Log();
-        if ($commit) {
-            $logRepo->clearDataOlderThan((int) $olderThan);
+        if (! $commit) {
+            return;
+        }
+
+        foreach ($scopes as $scope) {
+            $olderThanDay = $scope->getPreference('logs', 'deleteLogsOlderThanDays') ?? 90;
+            (new Log())->clearOldDataForScope($scope->id, (int) $olderThanDay);
         }
     }
 }

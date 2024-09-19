@@ -664,6 +664,25 @@
 			</fieldset>
 
 			<fieldset>
+				<legend>Log Einstellungen</legend>
+				<div class="panel--heavy">
+					{{ formgroup(
+						{
+							"label": "Anzahl der Tage, nach denen personenbezogene Daten gelöscht werden:"
+						},
+						[{
+							"type":"input",
+							"parameter": {
+								"name": "preferences[logs][deleteLogsOlderThanDays]",
+								"value": scope.preferences.logs.deleteLogsOlderThanDays,
+								"maxlength": 2
+							}
+						}]
+					) }}
+				</div>
+			</fieldset>
+
+			<fieldset>
 				<legend>Wartenummern-Kiosk</legend>
 				<div class="panel--heavy">
 					{{ formgroup(
