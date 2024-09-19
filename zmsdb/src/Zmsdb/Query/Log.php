@@ -52,4 +52,9 @@ class Log extends Base
     {
         $this->query->where('log.ts', '<', $olderThanDate->format('Y-m-d H:i:s'));
     }
+
+    public function addConditionScopeId(string $scopeId)
+    {
+        $this->query->where('log.scope_id', '=', $scopeId);
+    }
 }

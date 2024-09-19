@@ -219,6 +219,9 @@
             "telephoneActivated": true,
             "telephoneRequired": false
         },
+        "logs": {
+          "deleteLogsOlderThanDays": 90
+        },
         "notifications": {
             "confirmationContent": "Ihr Termin wurde erfolgreich gebucht mit der Nummer: ",
             "headsUpTime": 15,

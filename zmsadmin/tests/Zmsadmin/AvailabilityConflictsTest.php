@@ -100,6 +100,17 @@ class AvailabilityConflictsTest extends Base
                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                     "headsUpTime": "30"
                                 },
+                                "logs": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "deleteLogsOlderThanDays": {
+                                            "type": "string",
+                                            "description": "Number of days after which is log deleted",
+                                            "default": ""
+                                        }
+                                    }
+                                },
                                 "pickup": {
                                     "alternateName": "Ausgabe",
                                     "isDefault": "0"
@@ -562,6 +573,17 @@ class AvailabilityConflictsTest extends Base
                                     "confirmationContent": "",
                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                     "headsUpTime": "30"
+                                },
+                                "logs": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "deleteLogsOlderThanDays": {
+                                            "type": "string",
+                                            "description": "Number of days after which is log deleted",
+                                            "default": ""
+                                        }
+                                    }
                                 },
                                 "pickup": {
                                     "alternateName": "Ausgabe",
@@ -1027,6 +1049,17 @@ class AvailabilityConflictsTest extends Base
                                     "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
                                     "headsUpTime": "30"
                                 },
+                                "logs": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "deleteLogsOlderThanDays": {
+                                            "type": "string",
+                                            "description": "Number of days after which is log deleted",
+                                            "default": ""
+                                        }
+                                    }
+                                },
                                 "pickup": {
                                     "alternateName": "Ausgabe",
                                     "isDefault": "0"
@@ -1487,6 +1520,17 @@ class AvailabilityConflictsTest extends Base
                                 "emailRequired": "0",
                                 "telephoneActivated": "0",
                                 "telephoneRequired": 0
+                            },
+                            "logs": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "deleteLogsOlderThanDays": {
+                                        "type": "string",
+                                        "description": "Number of days after which is log deleted",
+                                        "default": ""
+                                    }
+                                }
                             },
                             "notifications": {
                                 "confirmationContent": "",
