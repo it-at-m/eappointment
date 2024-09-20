@@ -51,10 +51,10 @@ class Log extends Base
         ?\BO\Zmsentities\Process $process,
         ?\BO\Zmsentities\Useraccount $userAccount = null
     ) {
-        if (empty($process)) {
+        if (empty($process) || empty($userAccount)) {
             return;
         }
-        
+
         $requests = new RequestList();
         if (! empty($process->getRequestIds())) {
             $requests = (new Request)->readRequestsByIds($process->getRequestIds());
