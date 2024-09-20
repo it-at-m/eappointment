@@ -39,7 +39,7 @@ class ProcessUpdate extends BaseController
         $this->testProcessData($entity, ! $initiator);
 
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-        $workstation = (new Helper\User($request))->checkRights();
+        $workstation = (new Helper\User($request));
 
         if ($slotType || $slotsRequired) {
             $process = Process::init()->updateEntityWithSlots(

@@ -26,7 +26,7 @@ class ProcessDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request))->checkRights('basic');
+        $workstation = (new Helper\User($request));
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
         $this->testProcessData($process, $args['authKey']);
