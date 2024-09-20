@@ -39,6 +39,7 @@ class ProcessDelete extends BaseController
             $processDeleted = (new Process)->writeCanceledEntity(
                 $args['id'],
                 $args['authKey'],
+                null,
                 $workstation->getUseraccount()
             );
             if (! $processDeleted || ! $processDeleted->hasId()) {
