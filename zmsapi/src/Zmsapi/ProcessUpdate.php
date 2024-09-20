@@ -62,7 +62,7 @@ class ProcessUpdate extends BaseController
                 \App::$now,
                 $resolveReferences,
                 null,
-                $workstation->getUseraccount()
+                $workstation->getUseraccount() ?? null
             );
         } else {
             $process = (new Process)->updateEntity(
@@ -70,7 +70,7 @@ class ProcessUpdate extends BaseController
                 \App::$now,
                 $resolveReferences,
                 null,
-                $workstation->getUseraccount()
+                $workstation->getUseraccount() ?? null
             );
         }
        
