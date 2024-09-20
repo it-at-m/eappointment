@@ -75,6 +75,7 @@ class View extends RequestView {
                     this.bindEvents();
                     this.$main.find('select#process_time').trigger('change');
                     this.loadDatePicker();
+                    this.calculateSlotCount();
                 });
             });
     }
