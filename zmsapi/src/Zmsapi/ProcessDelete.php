@@ -26,12 +26,12 @@ class ProcessDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request));
+        $workstation = (new Helper\User($request))->readWorkstation();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
         $this->testProcessData($process, $args['authKey']);
         if ('reserved' == $process->status) {
-            if (!(new Process)->writeBlockedEntity($process, false, $workstation->getUseraccount() ?? null)) {
+            if (!(new Process)->writeBlockedEntity($process, false, $workstation->getUseraccount())) {
                 throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
             }
             $processDeleted = $process;
@@ -39,7 +39,7 @@ class ProcessDelete extends BaseController
             $processDeleted = (new Process)->writeCanceledEntity(
                 $args['id'],
                 $args['authKey'],
-                $workstation->getUseraccount() ?? null
+                $workstation->getUseraccount()
             );
             if (! $processDeleted || ! $processDeleted->hasId()) {
                 throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore

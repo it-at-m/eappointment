@@ -39,7 +39,7 @@ class ProcessUpdate extends BaseController
         $this->testProcessData($entity, ! $initiator);
 
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-        $workstation = (new Helper\User($request));
+        $workstation = (new Helper\User($request))->readWorkstation();
 
         if ($slotType || $slotsRequired) {
             $process = Process::init()->updateEntityWithSlots(
@@ -62,7 +62,7 @@ class ProcessUpdate extends BaseController
                 \App::$now,
                 $resolveReferences,
                 null,
-                $workstation->getUseraccount() ?? null
+                $workstation->getUseraccount()
             );
         } else {
             $process = (new Process)->updateEntity(
@@ -70,7 +70,7 @@ class ProcessUpdate extends BaseController
                 \App::$now,
                 $resolveReferences,
                 null,
-                $workstation->getUseraccount() ?? null
+                $workstation->getUseraccount()
             );
         }
        
