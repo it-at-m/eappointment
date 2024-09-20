@@ -1,3 +1,98 @@
+## Release Muc-13
+                            
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1646'>ZMS-1646</a>] -         Spaltenbreite für Jahr und Monat sind unterschiedlich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1821'>ZMS-1821</a>] -         Bürgerfrontend: Falscher Button am Ende der Umbuchung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2338'>ZMS-2338</a>] -         Terminerinnerung Satzanpassung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2735'>ZMS-2735</a>] -         Spontankunde löschen_ Ist diese Nachricht  &quot;per SMS benachrichtigt..&quot;  korrekt? 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2755'>ZMS-2755</a>] -         [PROD] Starker und zeitlich langer Touch-Druckpunkt bei Auswahl DL führt zu Fehlermeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2756'>ZMS-2756</a>] -         [PROD] Beim verrutschen des Fingers während des Drucks ist die Bedienbarkeit nicht mehr möglich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2757'>ZMS-2757</a>] -         [PROD] E-Kiosk fährt trotz Freischaltung zum Beginn von Parteiverkehr nicht hoch
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2775'>ZMS-2775</a>] -         [PROD] E-Mail Templates - Terminabsage + Terminerinnerung wird nach Anpassung nicht korrekt angezeigt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3002'>ZMS-3002</a>] -         Vergangene Time Slots werden ZMS Admin zur Auswahl  ohne Öffnungszeiten angezeigt 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3035'>ZMS-3035</a>] -         Fehler bei Ausnahme für vorletzten Tag einer Öffnungszeit
+</li>
+</ul>
+    
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2971'>ZMS-2971</a>] -         E-Kiosk &quot;Apparat ID&quot; entfernen
+</li>
+</ul>
+                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1765'>ZMS-1765</a>] -         Styleguide_Termin absagen oder stornieren? Termin umbuchen oder ändern?
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1836'>ZMS-1836</a>] -         Auswahl &quot;Mehrfachtermine&quot; unter Terminbuchung als ausgewählt vorbelegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1848'>ZMS-1848</a>] -         Feld &quot;Anmerkung&quot; von 300 auf 500 Zeichen erweitern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1964'>ZMS-1964</a>] -         Wegezeit in Statistik integrieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2693'>ZMS-2693</a>] -         ZMS-Admin: Optimierung Usability &quot;Termin drucken&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2699'>ZMS-2699</a>] -         Info zu Terminbuchung im Bürgerfrontend
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2745'>ZMS-2745</a>] -         Standortauswahl im Bürgerfrontend ermöglichen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2848'>ZMS-2848</a>] -         Wochenkalender mit Clusteransicht ermöglichen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2915'>ZMS-2915</a>] -         E-Kiosk Sperrbildschirm 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2933'>ZMS-2933</a>] -         Vorbelegung von &quot;Mit E-Mail Bestätigung&quot; ist konfigurierbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2961'>ZMS-2961</a>] -         Userrolle für Innenrevision
+</li>
+</ul>
+                                                    
+
+## Release Muc-12
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1150'>ZMS-1150</a>] -         Wert der &quot;Aktivierungsdauer&quot; für den Standort in Aktivierungsmail nicht korrekt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1957'>ZMS-1957</a>] -         Ausgabe im Screenreader stimmt nicht mit aktuellem Zustand der Checkbox überein (Datenschutz)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2198'>ZMS-2198</a>] -         Die Seitenregionen sind nicht aufeinander abgestimmt 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2363'>ZMS-2363</a>] -         E-Mails nach extern kommen sehr spät oder gar nicht an
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2596'>ZMS-2596</a>] -         Zurückbutton enthält ein Pfeil &quot;vorwärts&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2614'>ZMS-2614</a>] -         Terminlöschung Cluster
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2667'>ZMS-2667</a>] -         Passworthash vom Sachbearbeiter ist Sichtbar
+</li>
+</ul>
+                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1837'>ZMS-1837</a>] -         Löschen von Behörden und Standorte mit Bestätigung hinterlegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2423'>ZMS-2423</a>] -         Erweiterung E-Mail-Standortadmin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2532'>ZMS-2532</a>] -         Zusätzliche Layouts für Aufrufanlage
+</li>
+</ul>
+
+
 ## Release Muc-11
 
 <h2>        Aufgabe
