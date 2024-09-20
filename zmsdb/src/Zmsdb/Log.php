@@ -1,6 +1,7 @@
 <?php
 namespace BO\Zmsdb;
 
+use BO\Zmsentities\Collection\RequestList;
 use \BO\Zmsentities\Log as Entity;
 
 /**
@@ -47,10 +48,14 @@ class Log extends Base
 
     public static function writeProcessLog(
         string $method,
-        \BO\Zmsentities\Process $process,
+        ?\BO\Zmsentities\Process $process,
         ?\BO\Zmsentities\Useraccount $userAccount = null
     ) {
-        $requests = [];
+        if (empty($process)) {
+            return;
+        }
+        
+        $requests = new RequestList();
         if (! empty($process->getRequestIds())) {
             $requests = (new Request)->readRequestsByIds($process->getRequestIds());
         }
