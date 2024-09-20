@@ -56,7 +56,7 @@ class Log extends Base
         }
 
         $data = json_encode(array_filter([
-            "Nutzer" => $userAccount->getId(),
+            "Nutzer" => $userAccount ? $userAccount->getId() : '',
             "Terminnummer" => $process->getId(),
             "Datum" => $process->getFirstAppointment()->toDateTime()->format('d.m.Y. H:i:s'),
             "Name" => $process->getFirstClient()->familyName,
