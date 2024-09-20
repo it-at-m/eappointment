@@ -51,7 +51,7 @@ class Log extends Base
         ?\BO\Zmsentities\Process $process,
         ?\BO\Zmsentities\Useraccount $userAccount = null
     ) {
-        if (empty($process) || empty($userAccount)) {
+        if (empty($process) || empty($process->getId()) || empty($userAccount)) {
             return;
         }
 
