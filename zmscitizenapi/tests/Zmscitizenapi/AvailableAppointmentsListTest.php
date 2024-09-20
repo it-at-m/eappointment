@@ -68,7 +68,7 @@ class AvailableAppointmentsListTest extends Base
         $this->assertEquals('appointmentNotAvailable', $responseBody['errorCode']);
 
         $this->assertArrayHasKey('errorMessage', $responseBody);
-        $this->assertEquals('Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar', $responseBody['errorMessage']);
+        $this->assertEquals('Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.', $responseBody['errorMessage']);
 
         $this->assertArrayHasKey('appointmentTimestamps', $responseBody);
         $this->assertEmpty($responseBody['appointmentTimestamps']);

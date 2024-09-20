@@ -77,15 +77,16 @@ class AvailableAppointmentsService
         }
 
         try {
-            // Fetch available timeslots
-            $freeSlots = $this->getFreeTimeslots(
+            $processService = new ProcessService(\App::$http);
+
+            $freeSlots = $processService->getFreeTimeslots(
                 [$office],
                 $requests,
                 $params['date'],
                 $params['date']
             );
 
-            return $this->processFreeSlots($freeSlots);
+            return $freeSlots['data'];
 
         } catch (\Exception $e) {
             error_log('Error in AvailableAppointmentsService: ' . $e->getMessage());
@@ -144,43 +145,63 @@ class AvailableAppointmentsService
 
     private function processFreeSlots($freeSlots)
     {
-        if (empty($freeSlots)) {
+        // Check if $freeSlots is iterable (array or object that can be traversed)
+        if (empty($freeSlots) || !is_iterable($freeSlots)) {
             return [
                 'appointmentTimestamps' => [],
                 'errorCode' => 'appointmentNotAvailable',
-                'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar',
+                'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.',
                 'status' => 404,
             ];
         }
-
+    
         $currentTimestamp = time();
         $appointmentTimestamps = [];
-
+    
+        // Iterate over the slots and process appointments
         foreach ($freeSlots as $slot) {
+            //error_log("Processing slot: " . json_encode($slot)); // Debugging
+    
+            // Check if the slot has an appointments array and it is iterable
+            if (!isset($slot->appointments) || !is_iterable($slot->appointments)) {
+                continue;
+            }
+    
+            // Iterate over appointments and extract the timestamp
             foreach ($slot->appointments as $appointment) {
-                $timestamp = (int)$appointment->date;
-                if (!in_array($timestamp, $appointmentTimestamps) && $timestamp > $currentTimestamp) {
-                    $appointmentTimestamps[] = $timestamp;
+                //error_log("Processing appointment: " . json_encode($appointment)); // Debugging
+    
+                if (isset($appointment->date)) {
+                    $timestamp = (int)$appointment->date;
+    
+                    // Ensure we only add future timestamps and avoid duplicates
+                    if (!in_array($timestamp, $appointmentTimestamps) && $timestamp > $currentTimestamp) {
+                        $appointmentTimestamps[] = $timestamp;
+                    }
                 }
             }
         }
-
+    
         if (empty($appointmentTimestamps)) {
             return [
                 'appointmentTimestamps' => [],
                 'errorCode' => 'appointmentNotAvailable',
-                'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar',
+                'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.',
                 'status' => 404,
             ];
         }
-
+    
+        // Sort the timestamps and return the response
         sort($appointmentTimestamps);
-
+    
         return [
             'appointmentTimestamps' => $appointmentTimestamps,
             'lastModified' => round(microtime(true) * 1000),
             'status' => 200,
         ];
     }
+    
+    
+    
 
 }

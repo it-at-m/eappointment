@@ -73,7 +73,7 @@ class AppointmentService
         return $errors;
     }
 
-    private function getThinnedProcessData($myProcess)
+    public function getThinnedProcessData($myProcess)
     {
         if (!$myProcess || !isset($myProcess->id)) {
             return [];

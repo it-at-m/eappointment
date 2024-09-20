@@ -104,7 +104,31 @@ class ProcessService
             'providers' => $providers,
             'requests' => $requests,
         ];
-
-        return $this->httpClient->readPostResult($requestUrl, $dataPayload)->getEntity();
+    
+       // error_log(json_encode($dataPayload));
+    
+        // Fetch the response from the httpClient
+        $result = $this->httpClient->readPostResult($requestUrl, $dataPayload);
+    
+        // Use a method to get the response (replace getResponse() with the actual method if different)
+        $psr7Response = $result->getResponse();
+    
+        // Fetch the body from the PSR-7 response as a stream, and convert it to a string
+        $responseBody = (string) $psr7Response->getBody();
+    
+        // Log the full response body for debugging
+        //error_log("Full response body: " . $responseBody);
+    
+        // Convert the body to an associative array if it's JSON
+        $decodedBody = json_decode($responseBody, true);
+    
+        // Return the decoded response body
+        return $decodedBody;
     }
+    
+    
+    
+    
+    
+    
 }

@@ -113,13 +113,13 @@ class OfficesServicesRelationsService
 
     public function validateServiceLocationCombination($officeId, array $serviceIds)
     {
-        // Fetch all available services for the given officeId
+
+
         $availableServices = $this->getServicesProvidedAtOffice($officeId);
         $availableServiceIds = array_map(function ($service) {
             return $service['id'];
         }, $availableServices);
 
-        // Check if there are any invalid service IDs
         $invalidServiceIds = array_filter($serviceIds, function ($serviceId) use ($availableServiceIds) {
             return !in_array($serviceId, $availableServiceIds);
         });
@@ -143,23 +143,41 @@ class OfficesServicesRelationsService
 
     public function getServicesProvidedAtOffice($officeId)
     {
+        // Fetch the request relation list (assuming it's of type RequestRelationList)
         $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
             'resolveReferences' => 2,
         ])->getEntity();
-
-        $requestList = $sources->getRequestList() ?? [];
-        $requestRelationList = $sources->getRequestRelationList() ?? [];
-
-        $serviceIds = array_filter($requestRelationList, function ($relation) use ($officeId) {
+        
+        $requestRelationList = $sources->getRequestRelationList();
+        
+        // Manually iterate over the RequestRelationList to convert it to an array
+        $requestRelationArray = [];
+        foreach ($requestRelationList as $relation) {
+            $requestRelationArray[] = $relation;
+        }
+        
+        // Now apply array_filter to the array we built
+        $serviceIds = array_filter($requestRelationArray, function ($relation) use ($officeId) {
             return $relation->provider->id === $officeId;
         });
-
+        
         $serviceIds = array_map(function ($relation) {
             return $relation->request->id;
         }, $serviceIds);
-
-        return array_filter($requestList, function ($request) use ($serviceIds) {
+        
+        // Manually iterate over the RequestList to convert it to an array
+        $requestList = $sources->getRequestList();
+        $requestArray = [];
+        foreach ($requestList as $request) {
+            $requestArray[] = $request;
+        }
+        
+        // Return the filtered request array
+        return array_filter($requestArray, function ($request) use ($serviceIds) {
             return in_array($request->id, $serviceIds);
         });
     }
+    
+    
+
 }
