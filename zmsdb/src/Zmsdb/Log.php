@@ -50,7 +50,10 @@ class Log extends Base
         \BO\Zmsentities\Process $process,
         ?\BO\Zmsentities\Useraccount $userAccount = null
     ) {
-        $requests = (new Request)->readRequestsByIds($process->getRequestIds());
+        $requests = [];
+        if (! empty($process->getRequestIds())) {
+            $requests = (new Request)->readRequestsByIds($process->getRequestIds());
+        }
 
         $data = json_encode(array_filter([
             "Nutzer" => $userAccount->getId(),
