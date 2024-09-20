@@ -61,6 +61,7 @@ class Accordion extends Component
                     availability.tempId = `spontaneous_ID_${index}`
                 }
                 let eventId = availability.id ? availability.id : availability.tempId;
+                let accordionExpanded = availability.tempId || (availability.id && availability.id === this.isExpanded);
             
                 const onToggle = ev => {
                     ev.preventDefault();
@@ -121,11 +122,11 @@ class Accordion extends Component
                 return (
                     <section key={index} className="accordion-section" style={hasConflict(eventId) || hasError(eventId) ? { border: "1px solid #9B0000"} : null}>
                         <h3 className="accordion__heading" role="heading" title={title}>
-                            <button eventkey={eventId} onClick={onToggle} className="accordion__trigger" aria-expanded={eventId == this.isExpanded}>
+                            <button eventkey={eventId} onClick={onToggle} className="accordion__trigger" aria-expanded={accordionExpanded}>
                                 <span className="accordion__title">{title}</span>
                             </button>
                         </h3>
-                        <div className={eventId == this.isExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={eventId == this.isExpanded ? "" : "hidden"}>
+                        <div className={accordionExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={accordionExpanded ? "" : "hidden"}>
                             <AvailabilityForm 
                                 data={availability}
                                 selectedAvailability={this.props.data}

@@ -318,7 +318,7 @@ class AvailabilityPage extends Component {
         
 
         let futureAvailability = originAvailability;
-        if (parseInt(tomorrow.unix(), 10) < availability.endDate) {
+        if (parseInt(tomorrow.unix(), 10) <= availability.endDate) {
             futureAvailability = this.editExclusionAvailability(
                 Object.assign({}, availability),
                 parseInt(tomorrow.unix(), 10),
@@ -389,6 +389,7 @@ class AvailabilityPage extends Component {
     onNewAvailability() {
         let state = {};
         const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
+        newAvailability.type = "appointment"
         state = Object.assign(
             state, 
             updateAvailabilityInState(this.state, newAvailability), 

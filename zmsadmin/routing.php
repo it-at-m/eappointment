@@ -69,6 +69,11 @@ use Slim\Routing\RouteCollectorProxy;
  \App::$slim->post('/mailtemplates/createCustomization/', \BO\Zmsadmin\Helper\MailTemplateCreateCustomization::class)
      ->setName("MailTemplateCreateCustomization");
 
+ \App::$slim->get('/mailtemplates/dummyPreview/{mailStatus}/', \BO\Zmsadmin\Helper\MailTemplateDummyPreview::class)
+     ->setName("MailTemplateDummyPreview");
+
+ \App::$slim->post('/mailtemplates/previewEmail/{mailStatus}/', \BO\Zmsadmin\Helper\MailTemplatePreviewMail::class)
+     ->setName("MailTemplatePreviewMail");
      
 
  /*
