@@ -33,10 +33,10 @@ class MailMergedTemplatesGet extends BaseController
 
         $providerId = $args['providerId'];
         
-        $config = (new MailTemplatesQuery())->readCustomizedListForProvider($providerId);
+        $mailtemplates = (new MailTemplatesQuery())->readCustomizedListForProvider($providerId);
         
         $message = Response\Message::create($request);
-        $message->data = $config;
+        $message->data = $mailtemplates;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());
