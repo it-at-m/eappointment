@@ -17,28 +17,30 @@ class AvailableAppointmentsListTest extends Base
                 ]
             ]
         );
-
+    
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'officeId' => '10546',
             'serviceId' => '1063423',
             'serviceCount' => '1',
         ];
-
+    
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertArrayHasKey('appointmentTimestamps', $responseBody);
-        $this->assertNotEmpty($responseBody['appointmentTimestamps']);
-        $this->assertTrue(is_array($responseBody['appointmentTimestamps']));
-        $this->assertTrue(count($responseBody['appointmentTimestamps']) > 0);
-        $this->assertTrue(is_numeric($responseBody['appointmentTimestamps'][0]));
-
-        $this->assertArrayHasKey('lastModified', $responseBody);
-        $this->assertTrue(is_numeric($responseBody['lastModified']));
+    
+        $this->assertEquals(200, $response->getStatusCode(), 'Expected a 200 OK response.');
+    
+        $this->assertArrayHasKey('appointmentTimestamps', $responseBody, 'Expected appointmentTimestamps in response.');
+        $this->assertNotEmpty($responseBody['appointmentTimestamps'], 'Expected non-empty appointmentTimestamps.');
+        $this->assertTrue(is_array($responseBody['appointmentTimestamps']), 'Expected appointmentTimestamps to be an array.');
+        
+        $this->assertTrue(count($responseBody['appointmentTimestamps']) > 0, 'Expected more than 0 timestamps.');
+        $this->assertTrue(is_numeric($responseBody['appointmentTimestamps'][0]), 'Expected numeric timestamps.');
+    
+        $this->assertArrayHasKey('lastModified', $responseBody, 'Expected lastModified in response.');
+        $this->assertTrue(is_numeric($responseBody['lastModified']), 'Expected lastModified to be a numeric timestamp.');
     }
+    
 
     public function testEmptyAppointments()
     {
@@ -53,7 +55,7 @@ class AvailableAppointmentsListTest extends Base
         );
 
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'officeId' => '10546',
             'serviceId' => '1063423',
             'serviceCount' => '1',
@@ -96,7 +98,7 @@ class AvailableAppointmentsListTest extends Base
     public function testOfficeIdMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'serviceId' => '1063423',
             'serviceCount' => '1',
         ];
@@ -115,7 +117,7 @@ class AvailableAppointmentsListTest extends Base
     public function testServiceIdMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'officeId' => '10546',
             'serviceCount' => '1',
         ];
@@ -134,7 +136,7 @@ class AvailableAppointmentsListTest extends Base
     public function testServiceCountMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'officeId' => '10546',
             'serviceId' => '1063423',
         ];
@@ -219,7 +221,7 @@ class AvailableAppointmentsListTest extends Base
     public function testOfficeIdAndServiceIdMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'serviceCount' => '1',
         ];
 
@@ -241,7 +243,7 @@ class AvailableAppointmentsListTest extends Base
     public function testOfficeIdAndServiceCountMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'serviceId' => '1063423',
         ];
 
@@ -263,7 +265,7 @@ class AvailableAppointmentsListTest extends Base
     public function testServiceIdAndServiceCountMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'officeId' => '10546',
         ];
 
