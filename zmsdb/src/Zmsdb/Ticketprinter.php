@@ -121,17 +121,6 @@ class Ticketprinter extends Base
         if ($scope && ! $query->readIsGivenNumberInContingent($scope['id'])) {
             throw new Exception\Scope\GivenNumberCountExceeded();
         }
-        if ($scope && $scope->getStatus('ticketprinter', 'deactivated')) {
-            error_log(json_encode($ticketprinter));
-            throw new Exception\Ticketprinter\DisabledByScope(
-                $scope->getPreference('ticketprinter', 'deactivatedText')
-            );
-        }
-        if ($scope && ! $ticketprinter->buttons[0]['enabled']) {
-            throw new Exception\Ticketprinter\DisabledByScope(
-                $scope->getPreference('ticketprinter', 'deactivatedText')
-            );
-        }
     }
 
     protected function readWithContactData(Entity $entity)
