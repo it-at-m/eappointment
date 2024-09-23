@@ -13,10 +13,11 @@ html {
     font-size:			$base-font-size;
     font-weight:		bold;
     display:			block;
-    background: 		url(img/background_eingabe.png) top left no-repeat #C8D5E6;
+    //background: 		url(img/background_eingabe.png) top left no-repeat #C8D5E6;
     color:				$baseTextColor;
     margin:				0;
     padding:			0;
+    background-color:   #c8d5e6;
 }
 
 body {

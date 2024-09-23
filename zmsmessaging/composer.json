@@ -27,7 +27,11 @@
         "eappointment/zmsentities": "@dev",
         "eappointment/zmsslim": "@dev",
         "roave/security-advisories": "dev-master",
-        "giggsey/libphonenumber-for-php": "^8.8.4"
+        "giggsey/libphonenumber-for-php": "^8.8.4",
+        "react/event-loop": "^1.5",
+        "react/promise": "^3.2",
+        "react/http": "^1.10",
+        "react/socket": "^1.15"
     },
     "autoload": {
         "psr-4": {

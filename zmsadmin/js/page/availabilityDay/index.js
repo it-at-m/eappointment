@@ -389,6 +389,7 @@ class AvailabilityPage extends Component {
     onNewAvailability() {
         let state = {};
         const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
+        newAvailability.type = "appointment"
         state = Object.assign(
             state, 
             updateAvailabilityInState(this.state, newAvailability), 
