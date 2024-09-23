@@ -15,7 +15,7 @@ public/_tests
 public/_js/
 !public/_js/.gitkeep
 public/_libs/
-public/_css/admin.css
-public/_css/admin.css.map
+#public/_css/admin.css
+#public/_css/admin.css.map
 .cache
 .phpunit.*
