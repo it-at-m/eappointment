@@ -42,7 +42,7 @@ class MailTemplatesPreview extends BaseController
             ->toResolvedEntity($mainProcessExample, $config, $mailStatus);
 
         $message = Response\Message::create($request);
-        $message->data = array('xy'=>'hallo','previewHtml'=>$mail->getHtmlPart(),'previewPlain'=>$mail->getPlainPart());
+        $message->data = array('xy'=>'Missing dummy template.','previewHtml'=>$mail->getHtmlPart(),'previewPlain'=>$mail->getPlainPart());
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());
