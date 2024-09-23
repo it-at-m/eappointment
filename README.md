@@ -105,3 +105,12 @@ e.g.
 - `ddev exec ./cli modules check-upgrade 8.1`
 - `ddev exec ./cli modules check-upgrade 8.2`
 - `ddev exec ./cli modules check-upgrade 8.3`
+
+## Unit Testing
+To run unit tests locally refer to the Github Workflows: https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml and in your local docker container run:
+
+- `ddev ssh`
+- `cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}`
+- `./vendor/bin/phpunit`
+
+For zmsapi and zmsdb you must first import the test data which unfortunately overwrites your local database. For zmsclient you need the php base image.
