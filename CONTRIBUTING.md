@@ -17,8 +17,7 @@ please also start the frontend and make sure everything works as intended.
 
 ### Do not make large changes before discussing them first
 
-If you either want to add a new feature or do some refactoring, please contact us via Mail.
-[Thomas](mailto:thomas.fink@muenchen.de) or [Clemens](mailto:ex.schuetze@muenchen.de)
+If you either want to add a new feature or do some refactoring, please open an issue.
 
 ## Style Guidelines
 
@@ -49,8 +48,7 @@ dann sollte alles zusammen gestartet werden, um sicherzustellen, dass alles so f
 
 ### Keine großen Änderungen ohne Absprache
 
-Wenn du beabsichtigst ein neues größeres Feature oder ein Refactoring zu machen, dann kontaktiere uns bitte zuerst.
-Am besten geht dies über Mail: [Thomas](mailto:thomas.fink@muenchen.de) oder [Clemens](mailto:ex.schuetze@muenchen.de)
+Wenn du beabsichtigst ein neues größeres Feature oder ein Refactoring zu machen, dann eröffnen Sie bitte einen Issue.
 
 ## Style Richtlinien
 
