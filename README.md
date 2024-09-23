@@ -1,5 +1,5 @@
 # E-Appointment
-<!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> --!>
+<!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> -->
 
 This monorepo contains the Munich-specific adjustments to the original Berlin version. You can explore the original project here: https://gitlab.com/eappointment/eappointment
 
@@ -41,11 +41,11 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
     <td><img src="https://muenchen.digital/.resources/lhm-ms-templates-digitalradar/resources/img/logo-lhm.svg" height="30" align="center"></td>
     <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
   </tr>
-</table> --!>
+</table> -->
 
 ---
 
-<!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> --!>
+<!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> -->
 
 Dieses Monorepo enthält die München-spezifischen Anpassungen der ursprünglichen Berliner Version. Das ursprüngliche Projekt kannst du hier erkunden: https://gitlab.com/eappointment/eappointment
 
@@ -87,7 +87,7 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
     <td><img src="https://muenchen.digital/.resources/lhm-ms-templates-digitalradar/resources/img/logo-lhm.svg" height="30" align="center"></td>
     <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
   </tr>
-</table> --!>
+</table> -->
 
 ----
 
