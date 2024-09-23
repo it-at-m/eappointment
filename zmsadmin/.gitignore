@@ -13,7 +13,7 @@ vendor.update
 VERSION
 public/_tests
 #public/_js/
-#public/_libs/
+public/_libs/
 #public/_css/admin.css
 #public/_css/admin.css.map
 .cache
