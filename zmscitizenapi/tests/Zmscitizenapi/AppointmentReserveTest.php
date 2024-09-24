@@ -18,7 +18,7 @@ class AppointmentReserveTest extends Base
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("POST_SourceGet_dldb.json"),
+                    'response' => $this->readFixture("GET_reserve_SourceGet_dldb.json"),
                 ],
                 [
                     'function' => 'readPostResult',
