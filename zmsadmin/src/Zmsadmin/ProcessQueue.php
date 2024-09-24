@@ -10,6 +10,7 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Condition;
 use BO\Slim\Render;
+use BO\Zmsadmin\Helper\MailTemplateArrayProvider;
 use BO\Zmsentities\Client;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Config;
@@ -179,19 +180,26 @@ class ProcessQueue extends BaseController
             $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/')
                 ->getCollection();
 
-            foreach ($mergedMailTemplates as $template) {
-                if ($template->name === 'mail_confirmation.twig') {
-                    $confirmationTemplate = $template->value;
-                }
-            }
+            $templates = [];
 
-            $content = Messaging::getMailContentPreview($confirmationTemplate, $process);
+            foreach ($mergedMailTemplates as $template) {
+                $templates[$template->name] = $template->value;
+            };
+
+            $templateProvider = new MailTemplateArrayProvider();
+            $templateProvider->setTemplates($templates);
+
+            $config = new \BO\Zmsentities\Config();
+
+            $mail = (new \BO\Zmsentities\Mail())
+                ->setTemplateProvider($templateProvider)
+                ->toResolvedEntity($process, $config, 'appointment');
 
             return \BO\Slim\Render::withHtml(
                 $response,
                 'page/printAppointmentMail.twig',
                 [
-                    'render' => $content
+                    'render' => $mail->getHtmlPart()
                 ]
             );
         }
