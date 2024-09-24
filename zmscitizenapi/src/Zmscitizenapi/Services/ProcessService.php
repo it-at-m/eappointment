@@ -2,6 +2,9 @@
 
 namespace BO\Zmscitizenapi\Services;
 
+use BO\Zmsentities\Calendar as CalendarEntity;
+use BO\Zmsentities\Process as ProcessEntity;
+
 class ProcessService
 {
     protected $httpClient;
@@ -24,7 +27,7 @@ class ProcessService
     public function reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts)
     {
         $requests = [];
-
+    
         foreach ($serviceIds as $index => $serviceId) {
             $count = intval($serviceCounts[$index]);
             for ($i = 0; $i < $count; $i++) {
@@ -35,10 +38,29 @@ class ProcessService
             }
         }
 
-        $appointmentProcess['requests'] = $requests;
+        $processEntity = new ProcessEntity();
+    
+        $processEntity->appointments = $appointmentProcess['appointments'] ?? [];
+        $processEntity->authKey = $appointmentProcess['authKey'] ?? null;
+        $processEntity->clients = $appointmentProcess['clients'] ?? [];
+    
+        $processEntity->scope = $appointmentProcess['scope'] ?? null;
+        $processEntity->requests = $requests;
+        $processEntity->lastChange = $appointmentProcess['lastChange'] ?? time();
+    
 
-        return $this->httpClient->readPostResult('/process/status/reserved/', $appointmentProcess)->getEntity();
+        $processEntity->createIP = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $processEntity->createTimestamp = time();
+    
+        if (isset($appointmentProcess['queue'])) {
+            $processEntity->queue = $appointmentProcess['queue'];
+        }
+    
+        $result = $this->httpClient->readPostResult('/process/status/reserved/', $processEntity);
+    
+        return $result->getEntity();
     }
+    
 
     public function submitClientData($process)
     {
@@ -104,31 +126,27 @@ class ProcessService
             'providers' => $providers,
             'requests' => $requests,
         ];
-    
-       // error_log(json_encode($dataPayload));
-    
-        // Fetch the response from the httpClient
-        $result = $this->httpClient->readPostResult($requestUrl, $dataPayload);
-    
-        // Use a method to get the response (replace getResponse() with the actual method if different)
+
+        $calendar = new CalendarEntity();
+        $calendar->firstDay = $firstDay;
+        $calendar->lastDay = $lastDay;
+        $calendar->providers = $providers;
+        $calendar->requests = $requests;
+
+
+        $result = \App::$http->readPostResult('/process/status/free/', $calendar);
+        if (!$result || !method_exists($result, 'getCollection')) {
+            throw new \Exception('Invalid response from API');
+        }
+
         $psr7Response = $result->getResponse();
-    
-        // Fetch the body from the PSR-7 response as a stream, and convert it to a string
-        $responseBody = (string) $psr7Response->getBody();
-    
-        // Log the full response body for debugging
-        //error_log("Full response body: " . $responseBody);
-    
-        // Convert the body to an associative array if it's JSON
-        $decodedBody = json_decode($responseBody, true);
-    
-        // Return the decoded response body
-        return $decodedBody;
+        $responseBody = (string) $psr7Response->getBody();        
+
+        return json_decode($responseBody, true);
     }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
 }

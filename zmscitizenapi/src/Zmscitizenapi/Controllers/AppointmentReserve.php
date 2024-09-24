@@ -49,7 +49,6 @@ class AppointmentReserve extends BaseController
             ], 400);
         }
 
-        // Get the body input
         $body = $request->getParsedBody();
         if (is_null($body)) {
             return $this->createJsonResponse($response, [
@@ -73,7 +72,7 @@ class AppointmentReserve extends BaseController
 
         try {
             // Step 1: Validate the scope for the office and check if captcha is required
-            $providerScope = $this->scopesService->getScopeByOfficeId($officeId);
+            $providerScope = $this->scopesService->getScopeByOfficeId($officeId); // we need to mock the scope
             $captchaRequired = Application::$CAPTCHA_ENABLED === "1" && $providerScope['captchaActivatedRequired'] === "1";
 
             // Step 2: If captcha is required, verify it
@@ -94,6 +93,7 @@ class AppointmentReserve extends BaseController
                 return $this->createJsonResponse($response, $serviceValidationResult, 400);
             }
 
+
             // Step 4: Get available timeslots using the AvailableAppointmentsService
             $freeAppointments = $this->availableAppointmentsService->getFreeAppointments([
                 'officeId' => $officeId,
@@ -101,9 +101,6 @@ class AppointmentReserve extends BaseController
                 'serviceCounts' => $serviceCounts,
                 'date' => $this->utilityHelper->getInternalDateFromTimestamp($timestamp)
             ]);
-
-            //error_log(json_encode($freeAppointments));
-
 
             // **Step 5: Find the matching time slot based on the requested timestamp**
             $selectedProcess = array_filter($freeAppointments, function ($process) use ($timestamp) {
@@ -127,7 +124,7 @@ class AppointmentReserve extends BaseController
             $selectedProcess = array_values($selectedProcess)[0];
             $selectedProcess['clients'] = [
                 [
-                    'email' => 'test@muenchen.de'  // Use actual client data here
+                    'email' => 'test@muenchen.de'
                 ]
             ];
 

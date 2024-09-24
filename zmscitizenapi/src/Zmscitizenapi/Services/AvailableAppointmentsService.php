@@ -158,12 +158,12 @@ class AvailableAppointmentsService
         $appointmentTimestamps = [];
     
         foreach ($freeSlots as $slot) {
-
             if (!isset($slot->appointments) || !is_iterable($slot->appointments)) {
                 continue;
             }
     
             foreach ($slot->appointments as $appointment) {
+    
                 if (isset($appointment->date)) {
                     $timestamp = (int)$appointment->date;
     
@@ -173,6 +173,7 @@ class AvailableAppointmentsService
                 }
             }
         }
+    
         if (empty($appointmentTimestamps)) {
             return [
                 'appointmentTimestamps' => [],
@@ -182,7 +183,6 @@ class AvailableAppointmentsService
             ];
         }
     
-        // Sort the timestamps and return the response
         sort($appointmentTimestamps);
     
         return [
