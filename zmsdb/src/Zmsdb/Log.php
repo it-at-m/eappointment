@@ -61,15 +61,15 @@ class Log extends Base
         }
 
         $data = json_encode(array_filter([
-            "Nutzer" => $userAccount ? $userAccount->getId() : '',
+            "Sachbearbeiter*in" => $userAccount ? $userAccount->getId() : '',
             "Terminnummer" => $process->getId(),
-            "Datum" => $process->getFirstAppointment()->toDateTime()->format('d.m.Y. H:i:s'),
-            "Name" => $process->getFirstClient()->familyName,
-            "Dienstleistungen" => implode(', ', array_map(function ($request) {
+            "Terminzeit" => $process->getFirstAppointment()->toDateTime()->format('d.m.Y H:i:s'),
+            "Bürger*in" => $process->getFirstClient()->familyName,
+            "Dienstleistung/en" => implode(', ', array_map(function ($request) {
                 return $request->getName();
             }, $requests->getAsArray())),
-            "Anmerkungsfeld" => $process->getAmendment(),
-            "E-mail" => $process->getFirstClient()->email,
+            "Anmerkung" => $process->getAmendment(),
+            "E-Mail" => $process->getFirstClient()->email,
             "Telefon" => $process->getFirstClient()->telephone,
         ]));
 
