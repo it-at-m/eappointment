@@ -98,6 +98,15 @@ class AppointmentReserve extends BaseController
             ];
         }
 
+        if (!is_array($serviceCounts) || array_filter($serviceCounts, fn($count) => !is_numeric($count) || $count < 0)) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'Invalid serviceCount format. It should be an array of non-negative numeric values.',
+                'path' => 'serviceCount',
+                'location' => 'body'
+            ];
+        }        
+
         if (!empty($errors)) {
             return $this->createJsonResponse($response, [
                 'errors' => $errors,

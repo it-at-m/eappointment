@@ -294,5 +294,46 @@ class AppointmentReserveTest extends Base
         $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
         $this->assertEquals('Invalid timestamp format. It should be a positive numeric value.', $responseBody['errors'][0]['msg'], 'Expected error message for invalid timestamp format.');
     }
+    public function testEmptyServiceIdArray()
+    {
+        $this->setApiCalls([]);
+    
+        $parameters = [
+            'officeId' => '10546',
+            'serviceId' => [],
+            'serviceCount' => [0],
+            'timestamp' => "32526616522",
+            'captchaSolution' => null
+        ];
+    
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+    
+        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
+        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
+        $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
+        $this->assertEquals('Missing serviceId.', $responseBody['errors'][0]['msg'], 'Expected error message for empty serviceId array.');
+    }
+    
+    public function testInvalidServiceCount()
+    {
+        $this->setApiCalls([]);
+    
+        $parameters = [
+            'officeId' => '10546',
+            'serviceId' => ['1063423'],
+            'serviceCount' => ['invalid'],
+            'timestamp' => "32526616522",
+            'captchaSolution' => null
+        ];
+    
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+    
+        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
+        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
+        $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
+        $this->assertEquals('Invalid serviceCount format. It should be an array of non-negative numeric values.', $responseBody['errors'][0]['msg'], 'Expected error message for invalid serviceCount.');
+    }
 
 }
