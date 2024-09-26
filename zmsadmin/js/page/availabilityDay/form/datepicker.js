@@ -156,6 +156,11 @@ class AvailabilityDatePicker extends Component
     }
 
     handleChange(name, date) {
+        if (!date) {
+            console.warn(`No date provided for ${name}`);
+            this.closeDatePicker();
+            return;
+        }
         if ('startDate' == name) {
             if (this.state.availability.startDate != moment(date).startOf('day').unix()) {
                 this.props.onChange("startDate", moment(date).unix());
