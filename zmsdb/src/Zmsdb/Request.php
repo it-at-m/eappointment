@@ -191,8 +191,4 @@ class Request extends Base
             throw new Exception\Source\UnknownDataSource();
         }
     }
-
-    public function readByIds($requestId)
-    {
-    }
 }
