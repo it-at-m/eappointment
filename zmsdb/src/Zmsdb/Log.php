@@ -14,6 +14,20 @@ class Log extends Base
     const MIGRATION = 'migration';
     const ERROR = 'error';
 
+    const ACTION_MAIL_SUCCESS = 'E-Mail-Versand erfolgreich';
+    const ACTION_MAIL_FAIL = 'E-Mail-Versand ist fehlgeschlagen';
+    const ACTION_STATUS_CHANGE = 'Terminstatus wurde geändert';
+    const ACTION_SEND_REMINDER = 'Erinnerungsmail wurde gesendet';
+    const ACTION_REMOVED = 'Termin aus der Warteschlange entfernt';
+    const ACTION_CALLED = 'Termin wurde aufgerufen';
+    const ACTION_ARCHIVED = 'Termin wurde archiviert';
+    const ACTION_EDITED = 'Termin wurde geändert';
+    const ACTION_NEW_PICKUP = 'Abholtermin wurde erstellt';
+    const ACTION_REDIRECTED = 'Termin wurde weitergeleitet';
+    const ACTION_NEW = 'Neuer Termin wurde erstellt';
+    const ACTION_DELETED = 'Termin wurde gelöscht';
+    const ACTION_CANCELED = 'Termin wurde abgesagt';
+
     public static $operator = 'lib';
 
     public static function writeLogEntry(
@@ -48,6 +62,7 @@ class Log extends Base
 
     public static function writeProcessLog(
         string $method,
+        string $action,
         ?\BO\Zmsentities\Process $process,
         ?\BO\Zmsentities\Useraccount $userAccount = null
     ) {
@@ -61,6 +76,7 @@ class Log extends Base
         }
 
         $data = json_encode(array_filter([
+            'Aktion' => $action,
             "Sachbearbeiter*in" => $userAccount ? $userAccount->getId() : '',
             "Terminnummer" => $process->getId(),
             "Terminzeit" => $process->getFirstAppointment()->toDateTime()->format('d.m.Y H:i:s'),

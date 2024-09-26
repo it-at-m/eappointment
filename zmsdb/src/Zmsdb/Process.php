@@ -88,6 +88,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         ]);
         Log::writeProcessLog(
             "UPDATE (Process::updateEntity) $process ",
+            Log::ACTION_EDITED,
             $processEntity,
             $useraccount
         );
@@ -140,10 +141,13 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $appointment->addSlotCount($slotList->count());
-        Log::writeProcessLog("CREATE (Process::updateEntityWithSlots) $process ",
+        Log::writeProcessLog(
+            "CREATE (Process::updateEntityWithSlots) $process ",
+            Log::ACTION_EDITED,
             $process,
             $userAccount
         );
+
         return $this->updateEntity(
             $process,
             $now,
@@ -167,6 +171,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
         $process->addQueue($newQueueNumber, $dateTime);
         Log::writeProcessLog("CREATE (Process::writeNewPickup) $process ",
+            Log::ACTION_NEW_PICKUP,
             $process,
             $useraccount
         );
@@ -195,6 +200,7 @@ class Process extends Base implements Interfaces\ResolveReferences
 
         Log::writeProcessLog(
             "CREATE (Process::redirectToScope) $process ",
+            Log::ACTION_REDIRECTED,
             $process,
             $useraccount
         );
@@ -262,6 +268,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         (new Slot())->writeSlotProcessMappingFor($processNew->getId());
         Log::writeProcessLog(
             "UPDATE (Process::writeEntityWithNewAppointment) $process ",
+            Log::ACTION_EDITED,
             $process
         );
         
@@ -348,16 +355,13 @@ class Process extends Base implements Interfaces\ResolveReferences
         (new Slot())->writeSlotProcessMappingFor($process->id);
 
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
-        Log::writeProcessLog("CREATE (Process::writeNewProcess) $process $checksum ",
+        Log::writeProcessLog(
+            "CREATE (Process::writeNewProcess) $process $checksum ",
+            Log::ACTION_NEW,
             $process,
             $userAccount
         );
 
-        Log::writeProcessLog(
-            "CREATE (Process::writeNewProcess) $process $checksum ",
-            $process,
-            $userAccount
-        );
         if (!$process->toQueue($dateTime)->withAppointment) {
             (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime, false);
         }
@@ -717,6 +721,7 @@ class Process extends Base implements Interfaces\ResolveReferences
                     (new Slot())->deleteSlotProcessMappingFor($entityId);
                     Log::writeProcessLog(
                         "DELETE (Process::writeDeletedEntity) $entityId ",
+                        Log::ACTION_DELETED,
                         $entity
                     );
                 }
@@ -764,6 +769,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $process = $this->readEntity($processId, new Helper\NoAuth(), 0);
         Log::writeProcessLog(
             "DELETE (Process::writeCanceledEntity) $processId ",
+            Log::ACTION_CANCELED,
             $process,
             $useraccount
         );
@@ -810,6 +816,7 @@ class Process extends Base implements Interfaces\ResolveReferences
                     }
                     Log::writeProcessLog(
                         "DELETE (Process::writeBlockedEntity) $entityId ",
+                        Log::ACTION_DELETED,
                         $process,
                         $useraccount
                     );
