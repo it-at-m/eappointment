@@ -1,27 +1,27 @@
 <?php
 
-namespace BO\Zmscitizenapi\Controllers;
+namespace BO\Zmscitizenapi;
 
 use BO\Zmscitizenapi\BaseController;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmscitizenapi\Services\AvailableAppointmentsService;
+use BO\Zmscitizenapi\Services\AvailableDaysService;
 
-class AvailableAppointmentsList extends BaseController
+class AvailableDaysList extends BaseController
 {
-    protected $availableAppointmentsService;
+    protected $availableDaysService;
 
     public function __construct()
     {
-        $this->availableAppointmentsService = new AvailableAppointmentsService();
+        $this->availableDaysService = new AvailableDaysService();
     }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $queryParams = $request->getQueryParams();
 
-        $result = $this->availableAppointmentsService->getAvailableAppointments($queryParams);
-
+        $result = $this->availableDaysService->getAvailableDays($queryParams);
+        
         return $this->createJsonResponse($response, $result, $result['status']);
     }
 

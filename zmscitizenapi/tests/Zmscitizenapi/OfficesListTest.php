@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Tests;
 class OfficesListTest extends Base
 {
 
-    protected $classname = "\BO\Zmscitizenapi\Controllers\OfficesList";
+    protected $classname = "OfficesList";
 
     public function testRendering() {
         $this->setApiCalls([

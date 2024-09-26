@@ -7,7 +7,7 @@ use BO\Zmscitizenapi\CaptchaGet;
 
 class CaptchaGetTest extends Base
 {
-    protected $classname = "\BO\Zmscitizenapi\Controllers\CaptchaGet";
+    protected $classname = "CaptchaGet";
 
     public function setUp(): void
     {

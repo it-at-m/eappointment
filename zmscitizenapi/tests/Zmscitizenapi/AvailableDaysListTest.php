@@ -4,7 +4,7 @@ namespace BO\Zmscitizenapi\Tests;
 
 class AvailableDaysListTest extends Base
 {
-    protected $classname = "\BO\Zmscitizenapi\Controllers\AvailableDaysList";
+    protected $classname = "AvailableDaysList";
 
     public function testRendering()
     {
