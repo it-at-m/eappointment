@@ -36,10 +36,8 @@ class AppointmentReserve extends BaseController
         $this->utilityHelper = new UtilityHelper();
     }
 
-    // This method signature matches the BaseController's method signature
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        // Cast RequestInterface to ServerRequestInterface
         $request = $request instanceof ServerRequestInterface ? $request : null;
 
         if (!$request) {
@@ -71,11 +69,9 @@ class AppointmentReserve extends BaseController
         }
 
         try {
-            // Step 1: Validate the scope for the office and check if captcha is required
-            $providerScope = $this->scopesService->getScopeByOfficeId($officeId); // we need to mock the scope
+            $providerScope = $this->scopesService->getScopeByOfficeId($officeId);
             $captchaRequired = Application::$CAPTCHA_ENABLED === "1" && $providerScope['captchaActivatedRequired'] === "1";
 
-            // Step 2: If captcha is required, verify it
             if ($captchaRequired) {
                 $captchaVerificationResult = $this->captchaService->verifyCaptcha($captchaSolution);
                 if (!$captchaVerificationResult['success']) {
@@ -87,14 +83,11 @@ class AppointmentReserve extends BaseController
                 }
             }
 
-            // Step 3: Validate the service-location combination
             $serviceValidationResult = $this->officesServicesRelationsService->validateServiceLocationCombination($officeId, $serviceIds);
             if ($serviceValidationResult['status'] !== 200) {
                 return $this->createJsonResponse($response, $serviceValidationResult, 400);
             }
 
-
-            // Step 4: Get available timeslots using the AvailableAppointmentsService
             $freeAppointments = $this->availableAppointmentsService->getFreeAppointments([
                 'officeId' => $officeId,
                 'serviceIds' => $serviceIds,
@@ -102,13 +95,10 @@ class AppointmentReserve extends BaseController
                 'date' => $this->utilityHelper->getInternalDateFromTimestamp($timestamp)
             ]);
 
-            // **Step 5: Find the matching time slot based on the requested timestamp**
             $selectedProcess = array_filter($freeAppointments, function ($process) use ($timestamp) {
-                // Ensure 'appointments' is set and is an array before accessing it
                 if (!isset($process['appointments']) || !is_array($process['appointments'])) {
                     return false;
                 }
-                // Find the appointment slot with the exact matching timestamp
                 return in_array($timestamp, array_column($process['appointments'], 'date'));
             });
 
@@ -120,7 +110,6 @@ class AppointmentReserve extends BaseController
                 ], 404);
             }
 
-            // Step 6: Prepare the process for reservation
             $selectedProcess = array_values($selectedProcess)[0];
             $selectedProcess['clients'] = [
                 [
@@ -128,17 +117,21 @@ class AppointmentReserve extends BaseController
                 ]
             ];
 
-            // Step 7: Reserve the appointment using the ProcessService
             $reservedProcess = $this->processService->reserveTimeslot($selectedProcess, $serviceIds, $serviceCounts);
 
-            // Step 8: Use the AppointmentService's getThinnedProcessData method
+            if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {
+                $scopeIds = [$reservedProcess->scope->id];
+                $scopesData = $this->scopesService->getScopeByIds($scopeIds);
+            
+                if ($scopesData['status'] === 200 && isset($scopesData['scopes']['scopes']) && !empty($scopesData['scopes']['scopes'])) {
+                    $reservedProcess->scope = $this->scopesService->mapScope($scopesData['scopes']['scopes'][0]);
+                }
+            }            
+            
             $thinnedProcessData = $this->appointmentService->getThinnedProcessData($reservedProcess);
-
-            // Step 9: Return the thinned process data
-            return $this->createJsonResponse($response, [
-                'reservedProcess' => $thinnedProcessData,
-                'officeId' => $officeId
-            ], 200);
+            $thinnedProcessData = array_merge($thinnedProcessData, ['officeId' => $officeId]);
+            
+            return $this->createJsonResponse($response, $thinnedProcessData, 200);
 
         } catch (\Exception $e) {
             error_log('Unexpected error: ' . $e->getMessage());

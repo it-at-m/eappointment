@@ -34,7 +34,8 @@ class ScopesListTest extends Base
                     "customTextfieldActivated" => "1",
                     "customTextfieldRequired" => "0",
                     "customTextfieldLabel" => "Custom Label",
-                    "captchaActivatedRequired" => "1"
+                    "captchaActivatedRequired" => "1",
+                    "displayInfo" => null
                 ],
                 [
                     "id" => "2",
@@ -49,7 +50,8 @@ class ScopesListTest extends Base
                     "customTextfieldActivated" => "0",
                     "customTextfieldRequired" => "1",
                     "customTextfieldLabel" => "",
-                    "captchaActivatedRequired" => "0"
+                    "captchaActivatedRequired" => "0",
+                    "displayInfo" => null
                 ]
             ]
         ];

@@ -57,6 +57,7 @@
             "shortname": "default"
         },
         "authKey": "b93e",
+        "displayInfo": "Infos zum Standort.",
         "clients": [
             {
                 "familyName": "",
@@ -70,6 +71,7 @@
         "createIP": "",
         "createTimestamp": 1727189317,
         "id": "101142",
+        "serviceCount": 1,
         "archiveId": 0,
         "queue": {
             "$schema": "https:\/\/schema.berlin.de\/queuemanagement\/queue.json",

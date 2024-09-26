@@ -23,7 +23,8 @@ class ScopesService
                 "customTextfieldActivated" => $scope->getCustomTextfieldActivated(),
                 "customTextfieldRequired" => $scope->getCustomTextfieldRequired(),
                 "customTextfieldLabel" => $scope->getCustomTextfieldLabel(),
-                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired()
+                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired(),
+                "displayInfo" => $scope->getDisplayInfo()
             ];
         }
 
@@ -66,7 +67,8 @@ class ScopesService
                         "customTextfieldActivated" => $scopeItem->getCustomTextfieldActivated(),
                         "customTextfieldRequired" => $scopeItem->getCustomTextfieldRequired(),
                         "customTextfieldLabel" => $scopeItem->getCustomTextfieldLabel(),
-                        "captchaActivatedRequired" => $scopeItem->getCaptchaActivatedRequired()
+                        "captchaActivatedRequired" => $scopeItem->getCaptchaActivatedRequired(),
+                        "displayInfo" => $scopeItem->getDisplayInfo()
                     ];
                     $found = true;
                     break;
@@ -118,5 +120,24 @@ class ScopesService
                 'status' => 500
             ];
         }
+    }
+
+    public function mapScope($scope)
+    {
+        return [
+            'id' => $scope['id'] ?? null,
+            'provider' => [
+                'id' => $scope['provider']['id'] ?? null,
+                'source' => $scope['provider']['source'] ?? null,
+            ],
+            'shortName' => $scope['shortName'] ?? null,
+            'telephoneActivated' => $scope['telephoneActivated'] ?? null,
+            'telephoneRequired' => $scope['telephoneRequired'] ?? null,
+            'customTextfieldActivated' => $scope['customTextfieldActivated'] ?? null,
+            'customTextfieldRequired' => $scope['customTextfieldRequired'] ?? null,
+            'customTextfieldLabel' => $scope['customTextfieldLabel'] ?? null,
+            'captchaActivatedRequired' => $scope['captchaActivatedRequired'] ?? null,
+            'displayInfo' => $scope['displayInfo'] ?? null,
+        ];
     }
 }

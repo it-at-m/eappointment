@@ -57,6 +57,7 @@
         "hint": "",
         "lastChange": 1724192287,
         "shortName": "Gewerbemeldungen",
+        "displayInfo": "Infos zum Standort.",
         "preferences": {
           "client": {
             "telephoneActivated": "0",

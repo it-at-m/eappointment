@@ -39,6 +39,7 @@ class ScopeByIdGetTest extends Base
                     'customTextfieldRequired' => '0',
                     'customTextfieldLabel' => 'Custom Label',
                     'captchaActivatedRequired' => '1',
+                    'displayInfo' => null
                 ]
             ]
         ];
@@ -75,6 +76,7 @@ class ScopeByIdGetTest extends Base
                     'customTextfieldRequired' => '0',
                     'customTextfieldLabel' => 'Custom Label',
                     'captchaActivatedRequired' => '1',
+                    'displayInfo' => null
                 ],
                 [
                     'id' => '2',
@@ -89,6 +91,7 @@ class ScopeByIdGetTest extends Base
                     'customTextfieldRequired' => '1',
                     'customTextfieldLabel' => '',
                     'captchaActivatedRequired' => '0',
+                    'displayInfo' => null
                 ],
             ]
         ];
@@ -133,7 +136,6 @@ class ScopeByIdGetTest extends Base
         $this->assertEquals(400, $response->getStatusCode());
     }
     
-
     public function testPartialResultsWithWarning()
     {
         $this->setApiCalls([
@@ -164,6 +166,7 @@ class ScopeByIdGetTest extends Base
                     'customTextfieldRequired' => '0',
                     'customTextfieldLabel' => 'Custom Label',
                     'captchaActivatedRequired' => '1',
+                    'displayInfo' => null
                 ]
             ],
             'warning' => 'The following scopeId(s) were not found: 99'
@@ -171,7 +174,7 @@ class ScopeByIdGetTest extends Base
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
         $this->assertEquals(200, $response->getStatusCode());
     }
-
+    
     public function testDuplicateScopeIds()
     {
         $this->setApiCalls([
@@ -204,6 +207,7 @@ class ScopeByIdGetTest extends Base
                     'customTextfieldRequired' => '0',
                     'customTextfieldLabel' => 'Custom Label',
                     'captchaActivatedRequired' => '1',
+                    'displayInfo' => null
                 ]
             ]
         ];
