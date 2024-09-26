@@ -40,20 +40,7 @@ class AppointmentReserve extends BaseController
     {
         $request = $request instanceof ServerRequestInterface ? $request : null;
 
-        if (!$request) {
-            return $this->createJsonResponse($response, [
-                'error' => 'Invalid request object',
-                'status' => 400
-            ], 400);
-        }
-
         $body = $request->getParsedBody();
-        if (is_null($body)) {
-            return $this->createJsonResponse($response, [
-                'error' => 'Invalid or missing request body',
-                'status' => 400
-            ], 400);
-        }
 
         $officeId = $body['officeId'] ?? null;
         $serviceIds = $body['serviceId'] ?? [];
@@ -61,9 +48,59 @@ class AppointmentReserve extends BaseController
         $captchaSolution = $body['captchaSolution'] ?? null;
         $timestamp = $body['timestamp'] ?? null;
 
-        if (!$officeId || empty($serviceIds) || !$timestamp) {
+        $errors = [];
+
+        if (!$officeId) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'Missing officeId.',
+                'path' => 'officeId',
+                'location' => 'body'
+            ];
+        } elseif (!is_numeric($officeId)) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'Invalid officeId format. It should be a numeric value.',
+                'path' => 'officeId',
+                'location' => 'body'
+            ];
+        }
+
+        if (empty($serviceIds)) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'Missing serviceId.',
+                'path' => 'serviceId',
+                'location' => 'body'
+            ];
+        } elseif (!is_array($serviceIds) || array_filter($serviceIds, fn($id) => !is_numeric($id))) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'Invalid serviceId format. It should be an array of numeric values.',
+                'path' => 'serviceId',
+                'location' => 'body'
+            ];
+        }
+
+        if (!$timestamp) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'Missing timestamp.',
+                'path' => 'timestamp',
+                'location' => 'body'
+            ];
+        } elseif (!is_numeric($timestamp) || $timestamp < 0) {
+            $errors[] = [
+                'type' => 'field',
+                'msg' => 'Invalid timestamp format. It should be a positive numeric value.',
+                'path' => 'timestamp',
+                'location' => 'body'
+            ];
+        }
+
+        if (!empty($errors)) {
             return $this->createJsonResponse($response, [
-                'error' => 'Missing required fields',
+                'errors' => $errors,
                 'status' => 400
             ], 400);
         }
@@ -86,6 +123,16 @@ class AppointmentReserve extends BaseController
             $serviceValidationResult = $this->officesServicesRelationsService->validateServiceLocationCombination($officeId, $serviceIds);
             if ($serviceValidationResult['status'] !== 200) {
                 return $this->createJsonResponse($response, $serviceValidationResult, 400);
+            }
+
+            try {
+                $internalDate = $this->utilityHelper->getInternalDateFromTimestamp($timestamp);
+            } catch (\Exception $e) {
+                return $this->createJsonResponse($response, [
+                    'errorCode' => 'invalidTimestamp',
+                    'errorMessage' => 'The provided timestamp is invalid.',
+                    'lastModified' => round(microtime(true) * 1000)
+                ], 400);
             }
 
             $freeAppointments = $this->availableAppointmentsService->getFreeAppointments([
@@ -122,15 +169,15 @@ class AppointmentReserve extends BaseController
             if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {
                 $scopeIds = [$reservedProcess->scope->id];
                 $scopesData = $this->scopesService->getScopeByIds($scopeIds);
-            
+
                 if ($scopesData['status'] === 200 && isset($scopesData['scopes']['scopes']) && !empty($scopesData['scopes']['scopes'])) {
                     $reservedProcess->scope = $this->scopesService->mapScope($scopesData['scopes']['scopes'][0]);
                 }
-            }            
-            
+            }
+
             $thinnedProcessData = $this->appointmentService->getThinnedProcessData($reservedProcess);
             $thinnedProcessData = array_merge($thinnedProcessData, ['officeId' => $officeId]);
-            
+
             return $this->createJsonResponse($response, $thinnedProcessData, 200);
 
         } catch (\Exception $e) {
