@@ -157,7 +157,6 @@ class AvailabilityDatePicker extends Component
 
     handleChange(name, date) {
         if (!date) {
-            console.warn(`No date provided for ${name}`);
             this.closeDatePicker();
             return;
         }
