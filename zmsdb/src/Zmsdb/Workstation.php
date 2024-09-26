@@ -214,7 +214,11 @@ class Workstation extends Base
         $query->addValues(['NutzerID' => $workstation->id]);
         $this->writeItem($query);
         $checksum = sha1($process->id . '-' . $workstation->getUseraccount()->id);
-        Log::writeProcessLog("UPDATE (Workstation::writeAssignedProcess) $checksum ", $processEntity);
+        Log::writeProcessLog(
+            "UPDATE (Workstation::writeAssignedProcess) $checksum ",
+            Log::ACTION_CALLED,
+            $processEntity
+        );
 
         return $process;
     }
@@ -244,6 +248,7 @@ class Workstation extends Base
         );
         Log::writeProcessLog(
             "UPDATE (Workstation::writeRemovedProcess)",
+            Log::ACTION_REMOVED,
             $process,
             $workstation->getUseraccount()
         );
