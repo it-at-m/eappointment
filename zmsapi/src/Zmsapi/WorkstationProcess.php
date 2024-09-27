@@ -51,13 +51,6 @@ class WorkstationProcess extends BaseController
             $workstation->getUseraccount()
         );
 
-        Log::writeProcessLog(
-            "UPDATE (Process::updateEntity) $process ",
-            Log::ACTION_CALLED,
-            $process,
-            $workstation->getUseraccount()
-        );
-
         $process = new \BO\Zmsentities\Process($input);
         $this->testProcess($process, $workstation, $allowClusterWideCall);
         $process->setCallTime(\App::$now);

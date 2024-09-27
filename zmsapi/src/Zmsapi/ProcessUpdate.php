@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Zmsdb\Config;
+use BO\Zmsdb\Log;
 use \BO\Zmsdb\Mail;
 use BO\Mellon\Validator;
 use \BO\Zmsdb\Process;
@@ -62,6 +63,13 @@ class ProcessUpdate extends BaseController
                 \App::$now,
                 $resolveReferences,
                 null,
+                $workstation->getUseraccount()
+            );
+
+            Log::writeProcessLog(
+                "UPDATE (Process::updateEntity) $process ",
+                Log::ACTION_CALLED,
+                $process,
                 $workstation->getUseraccount()
             );
         } else {
