@@ -22,7 +22,6 @@ modules = [
   "zmsadmin",
   "zmsapi",
   "zmscalldisplay",
-  "zmscitizenapi",
   "zmsclient",
   "zmsdb",
   "zmsdldb",
