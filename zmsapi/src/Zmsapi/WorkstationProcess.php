@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
+use BO\Zmsdb\Log;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\Process;
 use \BO\Zmsdb\Process as Query;
@@ -47,6 +48,13 @@ class WorkstationProcess extends BaseController
             \App::$now,
             0,
             $previousStatus,
+            $workstation->getUseraccount()
+        );
+
+        Log::writeProcessLog(
+            "UPDATE (Process::updateEntity) $process ",
+            Log::ACTION_CALLED,
+            $process,
             $workstation->getUseraccount()
         );
 
