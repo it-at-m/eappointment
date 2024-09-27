@@ -65,19 +65,19 @@ class ProcessUpdate extends BaseController
                 null,
                 $workstation->getUseraccount()
             );
-
-            Log::writeProcessLog(
-                "UPDATE (Process::updateEntity) $process ",
-                Log::ACTION_CALLED,
-                $process,
-                $workstation->getUseraccount()
-            );
         } else {
             $process = (new Process)->updateEntity(
                 $entity,
                 \App::$now,
                 $resolveReferences,
                 null,
+                $workstation->getUseraccount()
+            );
+
+            Log::writeProcessLog(
+                "UPDATE (Process::updateEntity) $process ",
+                Log::ACTION_CALLED,
+                $process,
                 $workstation->getUseraccount()
             );
         }
