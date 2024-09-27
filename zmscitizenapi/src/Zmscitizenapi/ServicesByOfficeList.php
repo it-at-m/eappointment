@@ -1,28 +1,22 @@
 <?php
 
-namespace BO\Zmscitizenapi\Controllers;
+namespace BO\Zmscitizenapi;
 
 use BO\Zmscitizenapi\BaseController;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmscitizenapi\Services\ServicesService;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
 class ServicesByOfficeList extends BaseController
 {
-    protected $servicesService;
-
-    public function __construct()
-    {
-        $this->servicesService = new ServicesService();
-    }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $officeIds = explode(',', $request->getQueryParams()['officeId'] ?? '');
 
-        $result = $this->servicesService->getServicesByOfficeIds($officeIds);
+        $result = ZmsApiFacadeService::getServicesByOfficeIds($officeIds);
 
-        if (isset($result['error'])) {
+        if (isset($result['errors'])) {
             return $this->createJsonResponse($response, $result, $result['status']);
         }
     

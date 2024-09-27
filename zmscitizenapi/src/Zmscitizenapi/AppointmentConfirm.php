@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmscitizenapi\Controllers;
+namespace BO\Zmscitizenapi;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Slim\Render;
