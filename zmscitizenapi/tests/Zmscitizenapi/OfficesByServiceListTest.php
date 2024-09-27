@@ -30,6 +30,7 @@ class OfficesByServiceListTest extends Base
                 ]
             ]
         ];
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
 
@@ -60,6 +61,7 @@ class OfficesByServiceListTest extends Base
                 ]
             ]
         ];
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
 
@@ -90,6 +92,7 @@ class OfficesByServiceListTest extends Base
                 ]
             ]
         ];
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
     
@@ -109,26 +112,39 @@ class OfficesByServiceListTest extends Base
         $response = $this->render([], [
             'serviceId' => '99999999'
         ], []);
-    
+
         $expectedResponse = [
-            'status' => 404,
-            'offices' => [],
-            'error' => 'Office(s) not found for the provided serviceId(s)'
+            'errors' => [
+                [
+                    'errorCode' => 'officesNotFound',
+                    'errorMessage' => 'Office(s) not found for the provided serviceId(s).',                
+                    'status' => 404,
+                ]
+            ],
+            'status' => 404
         ];
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
         $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+
     }
 
     public function testNoServiceIdProvided()
     {
         $response = $this->render([], [], []);
+
         $expectedResponse = [
-            'status' => 400,
-            'offices' => [],
-            'error' => 'Invalid serviceId(s)'
+            'errors' => [
+                [
+                    'offices' => [],
+                    'errorMessage' => 'Invalid serviceId(s).',
+                    'status' => 400
+                ]
+            ],
+            'status' => 400
         ];
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
         $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+    
     }
 
     public function testPartialResultsWithWarning()
@@ -155,8 +171,9 @@ class OfficesByServiceListTest extends Base
             ],
             'warning' => 'The following serviceId(s) were not found: 99999999'
         ];
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        
     }
 
     public function testPartialResultsWithWarningRequestRelation()
@@ -187,8 +204,9 @@ class OfficesByServiceListTest extends Base
             ],
             'warning' => 'The following serviceId(s) were not found: 99999999'
         ];
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        
     }
 
     public function testDuplicateServiceIds()
@@ -214,6 +232,7 @@ class OfficesByServiceListTest extends Base
                 ]
             ]
         ];
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
 
@@ -244,6 +263,8 @@ class OfficesByServiceListTest extends Base
                 ]
             ]
         ];
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        
     }
 }

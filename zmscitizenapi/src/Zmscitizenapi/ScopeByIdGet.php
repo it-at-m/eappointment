@@ -15,9 +15,9 @@ class ScopeByIdGet extends BaseController
     
         $result = ZmsApiFacadeService::getScopeByIds($scopeIds);
     
-        if (isset($result['error'])) {
+        if (isset($result['errors'])) {
             return $this->createJsonResponse($response, $result, $result['status']);
-        }        
+        }
 
         return $this->createJsonResponse($response, $result['scopes'], $result['status']);
     }

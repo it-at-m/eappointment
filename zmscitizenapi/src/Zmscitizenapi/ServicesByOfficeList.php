@@ -16,7 +16,7 @@ class ServicesByOfficeList extends BaseController
 
         $result = ZmsApiFacadeService::getServicesByOfficeIds($officeIds);
 
-        if (isset($result['error'])) {
+        if (isset($result['errors'])) {
             return $this->createJsonResponse($response, $result, $result['status']);
         }
     

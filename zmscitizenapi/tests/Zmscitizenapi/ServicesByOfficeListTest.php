@@ -31,6 +31,7 @@ class ServicesByOfficeListTest extends Base
                 ]
             ]
         ];
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
 
@@ -63,6 +64,7 @@ class ServicesByOfficeListTest extends Base
                 ]
             ]
         ];
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
     
@@ -83,26 +85,40 @@ class ServicesByOfficeListTest extends Base
         $response = $this->render([], [
             'officeId' => '99999999'
         ], []);
-    
+
         $expectedResponse = [
-            'status' => 404,
-            'services' => [],
-            'error' => 'Service(s) not found for the provided officeId(s)'
+            'errors' => [
+                [
+                    'errorCode' => 'servicesNotFound',
+                    'errorMessage' => 'Service(s) not found for the provided officeId(s).',
+                    'status' => 404
+                ]
+            ],
+            'status' => 404
         ];
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+
         $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+   
     }
 
     public function testNoOfficeIdProvided()
     {
         $response = $this->render([], [], []);
         $expectedResponse = [
-            'status' => 400,
-            'services' => [],
-            'error' => 'Invalid officeId(s)'
+            'errors' => [
+                [
+                    'services' => [],
+                    'errorMessage' => 'Invalid officeId(s)',
+                    'status' => 400
+                ]
+            ],
+            'status' => 400
         ];
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        
         $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        
     }
 
     public function testPartialResultsWithWarning()
@@ -129,9 +145,11 @@ class ServicesByOfficeListTest extends Base
                 ]
             ],
             'warning' => 'The following officeId(s) were not found: 99999999'
-        ];    
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        ];
+
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        
     }
 
     public function testDuplicateOfficeIds()
@@ -158,6 +176,8 @@ class ServicesByOfficeListTest extends Base
                 ]
             ]
         ];
+
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
 }

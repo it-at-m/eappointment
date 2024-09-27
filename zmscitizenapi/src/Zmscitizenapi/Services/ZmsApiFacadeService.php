@@ -11,7 +11,7 @@ class ZmsApiFacadeService
     {
         $scopeList = ZmsApiClientService::getScopes() ?? [];
         $providerProjectionList = [];
-
+    
         foreach (ZmsApiClientService::getOffices() as $provider) {
             $matchingScope = null;
             foreach ($scopeList as $scope) {
@@ -20,12 +20,12 @@ class ZmsApiFacadeService
                     break;
                 }
             }
-
+    
             $providerData = [
                 "id" => $provider->id,
                 "name" => $provider->displayName ?? $provider->name,
             ];
-
+    
             if ($matchingScope) {
                 $providerData["scope"] = [
                     "id" => $matchingScope->id,
@@ -40,12 +40,16 @@ class ZmsApiFacadeService
                     "displayInfo" => $matchingScope->getDisplayInfo()
                 ];
             }
-
+    
             $providerProjectionList[] = $providerData;
         }
-
-        return $providerProjectionList;
+    
+        return [
+            "offices" => $providerProjectionList,
+            "status" => 200
+        ];
     }
+    
 
     public static function getScopes()
     {
@@ -67,7 +71,10 @@ class ZmsApiFacadeService
             ];
         }
 
-        return $scopesProjectionList;
+        return [
+            "scopes" => $scopesProjectionList,
+            "status" => 200
+        ];
     }
 
     public static function getServices()
@@ -85,7 +92,10 @@ class ZmsApiFacadeService
             ];
         }
 
-        return $servicesProjectionList;
+        return [
+            "services" => $servicesProjectionList,
+            "status" => 200
+        ];
     }
 
     public static function getScopeForProvider($providerId)
@@ -121,9 +131,10 @@ class ZmsApiFacadeService
         $relations = MapperService::mapRelations($relationList);
 
         return [
-            'offices' => $offices,
-            'services' => $services,
-            'relations' => $relations,
+            "offices" => $offices,
+            "services" => $services,
+            "relations" => $relations,
+            "status" => 200
         ];
     }
 
@@ -168,12 +179,9 @@ class ZmsApiFacadeService
     {
         $serviceIds = array_unique($serviceIds);
 
-        if (empty($serviceIds) || $serviceIds == ['']) {
-            return [
-                'offices' => [],
-                'error' => 'Invalid serviceId(s)',
-                'status' => 400
-            ];
+        $errors = ValidationService::validateGetOfficesByServiceIds($serviceIds);
+        if (!empty($errors['errors'])) {
+            return $errors;
         }
 
         $providerList = ZmsApiClientService::getOffices();
@@ -209,12 +217,9 @@ class ZmsApiFacadeService
             }
         }
 
-        if (empty($offices)) {
-            return [
-                'offices' => [],
-                'error' => 'Office(s) not found for the provided serviceId(s)',
-                'status' => 404
-            ];
+        $errors = ValidationService::validateOfficesNotFound($offices);
+        if (!empty($errors['errors'])) {
+            return $errors;
         }
 
         $responseContent = ['offices' => $offices];
@@ -232,12 +237,9 @@ class ZmsApiFacadeService
     {
         $scopeIds = array_unique($scopeIds);
 
-        if (empty($scopeIds) || $scopeIds == ['']) {
-            return [
-                'scopes' => [],
-                'error' => 'Invalid scopeId(s)',
-                'status' => 400
-            ];
+        $errors = ValidationService::validateGetScopeByIds($scopeIds);
+        if (!empty($errors['errors'])) {
+            return $errors;
         }
 
         $scopeList = ZmsApiClientService::getScopes() ?? [];
@@ -273,12 +275,9 @@ class ZmsApiFacadeService
             }
         }
 
-        if (empty($scopes)) {
-            return [
-                'scopes' => [],
-                'error' => 'Scope(s) not found',
-                'status' => 404
-            ];
+        $errors = ValidationService::validateScopesNotFound($scopes);
+        if (!empty($errors['errors'])) {
+            return $errors;
         }
 
         $responseContent = ['scopes' => $scopes];
@@ -296,12 +295,9 @@ class ZmsApiFacadeService
     {
         $officeIds = array_unique($officeIds);
 
-        if (empty($officeIds) || $officeIds == ['']) {
-            return [
-                'services' => [],
-                'error' => 'Invalid officeId(s)',
-                'status' => 400,
-            ];
+        $errors = ValidationService::validateGetServicesByOfficeIds($officeIds);
+        if (!empty($errors['errors'])) {
+            return $errors;
         }
 
         $requestList = ZmsApiClientService::getServices() ?? [];
@@ -333,12 +329,9 @@ class ZmsApiFacadeService
             }
         }
 
-        if (empty($services)) {
-            return [
-                'services' => [],
-                'error' => 'Service(s) not found for the provided officeId(s)',
-                'status' => 404,
-            ];
+        $errors = ValidationService::validateServicesNotFound($services);
+        if (!empty($errors['errors'])) {
+            return $errors;
         }
 
         $responseContent = ['services' => $services];
@@ -396,10 +389,9 @@ class ZmsApiFacadeService
         $startDate = $queryParams['startDate'] ?? null;
         $endDate = $queryParams['endDate'] ?? null;
 
-        $errors = ValidationService::validateBookableFreeDays($officeId, $serviceId, $startDate, $endDate, $serviceCounts);
-
-        if (!empty($errors)) {
-            return ['errors' => $errors, 'status' => 400];
+        $errors = ValidationService::validateGetBookableFreeDays($officeId, $serviceId, $startDate, $endDate, $serviceCounts);
+        if (!empty($errors['errors'])) {
+            return $errors;
         }
 
         try {
@@ -414,10 +406,10 @@ class ZmsApiFacadeService
                         'source' => 'dldb',
                         'slotCount' => $serviceCounts,
                     ]
-                    ],
+                ],
                 $firstDay,
                 $lastDay,
-                );
+            );
 
             $daysCollection = $freeDays->days;
             $formattedDays = [];
@@ -426,34 +418,21 @@ class ZmsApiFacadeService
                 $formattedDays[] = sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day);
             }
 
-            if (empty($formattedDays)) {
-                return [
-                    'availableDays' => [],
-                    'errorCode' => 'noAppointmentForThisScope',
-                    'errorMessage' => 'No available days found for the given criteria',
-                    'status' => 404,
-                ];
+            $errors = ValidationService::validateAppointmentDaysNotFound($formattedDays);
+            if (!empty($errors['errors'])) {
+                return $errors;
             }
 
             return [
                 'availableDays' => $formattedDays,
-                'lastModified' => round(microtime(true) * 1000),
                 'status' => 200,
             ];
 
         } catch (\Exception $e) {
-            error_log('Error in AvailableDaysService: ' . $e->getMessage());
-            return [
-                'availableDays' => [],
-                'errorCode' => 'internalError',
-                'errorMessage' => 'An diesem Standort gibt es aktuell leider keine freien Termine',
-                'lastModified' => round(microtime(true) * 1000),
-                'status' => 500,
-            ];
+            //error_log('Error in AvailableDaysService: ' . $e->getMessage());
+            return ExceptionService::exceptionNoAppointmentsAtLocation();
         }
     }
-
-
     public static function getFreeAppointments(array $params)
     {
         $office = [
@@ -482,14 +461,14 @@ class ZmsApiFacadeService
             );
 
             $psr7Response = $freeSlots->getResponse();
-            $responseBody = (string) $psr7Response->getBody(); 
-            
+            $responseBody = (string) $psr7Response->getBody();
+
             $responseBody = json_decode($responseBody, true);
 
             return $responseBody['data'];
 
         } catch (\Exception $e) {
-            error_log('Error in AvailableAppointmentsService: ' . $e->getMessage());
+            //error_log('Error in AvailableAppointmentsService: ' . $e->getMessage());
             return [
                 'appointmentTimestamps' => [],
                 'errorCode' => 'internalError',
@@ -507,9 +486,8 @@ class ZmsApiFacadeService
         $serviceCounts = isset($queryParams['serviceCount']) ? explode(',', $queryParams['serviceCount']) : [];
 
         $errors = ValidationService::validateGetAvailableAppointments($date, $officeId, $serviceIds, $serviceCounts);
-
-        if (!empty($errors)) {
-            return ['errors' => $errors, 'status' => 400];
+        if (!empty($errors['errors'])) {
+            return $errors;
         }
 
         try {
@@ -530,7 +508,7 @@ class ZmsApiFacadeService
                 $requests,
                 UtilityHelper::getInternalDateFromISO($date),
                 UtilityHelper::getInternalDateFromISO($date)
-            );            
+            );
 
             if (!$freeSlots || !method_exists($freeSlots, 'getCollection')) {
                 throw new \Exception('Invalid response from API');
@@ -539,7 +517,6 @@ class ZmsApiFacadeService
             return self::processFreeSlots($freeSlots->getCollection());
 
         } catch (\Exception $e) {
-            error_log('Error in AvailableAppointmentsService: ' . $e->getMessage());
             return [
                 'appointmentTimestamps' => [],
                 'errorCode' => 'internalError',
@@ -551,13 +528,10 @@ class ZmsApiFacadeService
 
     private static function processFreeSlots($freeSlots)
     {
-        if (empty($freeSlots) || !is_iterable($freeSlots)) {
-            return [
-                'appointmentTimestamps' => [],
-                'errorCode' => 'appointmentNotAvailable',
-                'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.',
-                'status' => 404,
-            ];
+        
+        $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
+        if (!empty($errors['errors'])) {
+            return $errors;
         }
 
         $currentTimestamp = time();
@@ -580,63 +554,59 @@ class ZmsApiFacadeService
             }
         }
 
-        if (empty($appointmentTimestamps)) {
-            return [
-                'appointmentTimestamps' => [],
-                'errorCode' => 'appointmentNotAvailable',
-                'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.',
-                'status' => 404,
-            ];
+        $errors = ValidationService::validateGetProcessByIdTimestamps($appointmentTimestamps);
+        if (!empty($errors['errors'])) {
+            return $errors;
         }
 
         sort($appointmentTimestamps);
 
         return [
             'appointmentTimestamps' => $appointmentTimestamps,
-            'lastModified' => round(microtime(true) * 1000),
             'status' => 200,
         ];
     }
 
     public static function reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts)
     {
-       return ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts);
+        return ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts);
     }
 
-     public static function getProcessById($processId, $authKey)
-     {
-         $errors = ValidationService::validateGetAppointment($processId, $authKey);
-         if (!empty($errors)) {
-             return ['errors' => $errors, 'status' => 400];
-         }
- 
-         try {
-             $process = ZmsApiClientService::getProcessById($processId, $authKey);
-             
-             if (!$process) {
-                 return [
-                     'errorMessage' => 'Termin wurde nicht gefunden',
-                     'status' => 404,
-                 ];
-             }
- 
-             $responseData = UtilityHelper::getThinnedProcessData($process);
-             return ['data' => $responseData, 'status' => 200];
- 
-         } catch (\Exception $e) {
-             if (strpos($e->getMessage(), 'kein Termin gefunden') !== false) {
-                 return [
-                     'errorMessage' => 'Termin wurde nicht gefunden',
-                     'status' => 404,
-                 ];
-             } else {
-                 return [
-                     'error' => 'Unexpected error: ' . $e->getMessage(),
-                     'status' => 500,
-                 ];
-             }
-         }
-     }
+    public static function getProcessById($processId, $authKey)
+    {
+        $errors = ValidationService::validateGetProcessById($processId, $authKey);
+        if (!empty($errors['errors'])) {
+            return $errors;
+        }
+
+        try {
+            $process = ZmsApiClientService::getProcessById($processId, $authKey);
+
+
+            $errors = ValidationService::validateGetProcessNotFound($process);
+            if (!empty($errors['errors'])) {
+                return $errors;
+            }
+
+            $responseData = UtilityHelper::getThinnedProcessData($process);
+            return ['data' => $responseData, 'status' => 200];
+
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'kein Termin gefunden') !== false) {
+                return [
+                    'errorCode' => 'appointmentNotFound',
+                    'errorMessage' => 'Termin wurde nicht gefunden.',
+                    'status' => 404,
+                ];
+            } else {
+                return [
+                    'errorCode' => 'unexpectedError',
+                    'errorMessage' => 'Unexpected error: ' . $e->getMessage(),
+                    'status' => 500,
+                ];
+            }
+        }
+    }
 
 
     /* Todo add method

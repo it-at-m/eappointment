@@ -15,7 +15,8 @@ class CaptchaService
             'siteKey' => Application::$FRIENDLYCAPTCHA_SITEKEY,
             'captchaEndpoint' => Application::$FRIENDLYCAPTCHA_ENDPOINT,
             'puzzle' => Application::$FRIENDLYCAPTCHA_ENDPOINT_PUZZLE,
-            'captchaEnabled' => Application::$CAPTCHA_ENABLED
+            'captchaEnabled' => Application::$CAPTCHA_ENABLED,
+            'status' => 200
         ];
     }
 
@@ -35,7 +36,7 @@ class CaptchaService
         } catch (RequestException $e) {
             $errorMessage = $e->hasResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
             //error_log('Error verifying captcha: ' . $errorMessage);
-            throw new Exception('Captcha verification failed');
+            throw new Exception('Captcha verification failed.');
         }
     }
 }

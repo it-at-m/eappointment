@@ -7,7 +7,8 @@ class OfficesListTest extends Base
 
     protected $classname = "OfficesList";
 
-    public function testRendering() {
+    public function testRendering()
+    {
         $this->setApiCalls([
             [
                 'function' => 'readGetResult',
@@ -15,11 +16,13 @@ class OfficesListTest extends Base
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_SourceGet_dldb.json"),
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ]
         ]);
-        $responseData = $this->renderJson();
-        $this->assertEqualsCanonicalizing([
+
+        $response = $this->render();
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
             "offices" => [
                 [
                     "id" => "9999998",
@@ -61,7 +64,11 @@ class OfficesListTest extends Base
                         "displayInfo" => null
                     ]
                 ]
-            ]
-        ], $responseData);
+            ],
+            "status" => 200
+        ];
+        
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 }

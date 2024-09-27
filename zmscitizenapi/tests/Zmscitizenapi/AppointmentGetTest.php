@@ -30,45 +30,132 @@ class AppointmentGetTest extends Base
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'processId' => '101002',
+            'timestamp' => 1724907600,
+            'authKey' => 'fb43',
+            'familyName' => 'Doe',
+            'customTextfield' => '',
+            'email' => 'johndoe@example.com',
+            'telephone' => '0123456789',
+            'officeName' => 'Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)',
+            'officeId' => '102522',
+            'scope' => [
+                '$schema' => 'https://schema.berlin.de/queuemanagement/scope.json',
+                'id' => '64',
+                'source' => 'dldb',
+                'contact' => [
+                    'name' => 'Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)',
+                    'street' => 'Orleansstraße 50',
+                    'email' => '',
+                    'country' => 'Germany'
+                ],
+                'provider' => [
+                    'contact' => [
+                        'city' => 'Muenchen',
+                        'country' => 'Germany',
+                        'name' => 'Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)',
+                        'postalCode' => '81667',
+                        'region' => 'Muenchen',
+                        'street' => 'Orleansstraße',
+                        'streetNumber' => '50'
+                    ],
+                    'id' => '102522',
+                    'link' => 'https://service.berlin.de/standort/102522/',
+                    'name' => 'Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)',
+                    'displayName' => 'Bürgerbüro Orleansplatz DEV',
+                    'source' => 'dldb'
+                ],
+                'hint' => '',
+                'lastChange' => 1724192287,
+                'preferences' => [
+                    'appointment' => [
+                        'deallocationDuration' => '15',
+                        'endInDaysDefault' => '60',
+                        'multipleSlotsEnabled' => '0',
+                        'reservationDuration' => '15',
+                        'activationDuration' => '15',
+                        'startInDaysDefault' => '2',
+                        'notificationConfirmationEnabled' => '0',
+                        'notificationHeadsUpEnabled' => '0'
+                    ],
+                    'client' => [
+                        'alternateAppointmentUrl' => '',
+                        'amendmentActivated' => '0',
+                        'amendmentLabel' => '',
+                        'emailFrom' => 'terminvereinbarung@muenchen.de',
+                        'emailRequired' => '0',
+                        'telephoneActivated' => '1',
+                        'telephoneRequired' => '1',
+                        'appointmentsPerMail' => '1',
+                        'customTextfieldActivated' => '1',
+                        'customTextfieldRequired' => '1',
+                        'customTextfieldLabel' => 'Nachname des Kindes',
+                        'captchaActivatedRequired' => '0',
+                        'adminMailOnAppointment' => 0,
+                        'adminMailOnDeleted' => 0,
+                        'adminMailOnUpdated' => 0,
+                        'adminMailOnMailSent' => 0
+                    ],
+                    'notifications' => [
+                        'confirmationContent' => '',
+                        'headsUpContent' => '',
+                        'headsUpTime' => '10'
+                    ],
+                    'pickup' => [
+                        'alternateName' => 'Ausgabe',
+                        'isDefault' => '0'
+                    ],
+                    'queue' => [
+                        'callCountMax' => '1',
+                        'callDisplayText' => 'Herzlich Willkommen',
+                        'firstNumber' => '1',
+                        'lastNumber' => '999',
+                        'maxNumberContingent' => '999',
+                        'processingTimeAverage' => '12',
+                        'publishWaitingTimeEnabled' => '0',
+                        'statisticsEnabled' => '0'
+                    ],
+                    'survey' => [
+                        'emailContent' => '',
+                        'enabled' => '0',
+                        'label' => ''
+                    ],
+                    'ticketprinter' => [
+                        'buttonName' => 'Bürgerbüro Orleansplatz (KVR-II/231)',
+                        'confirmationEnabled' => '0',
+                        'deactivatedText' => 'dasdsa',
+                        'notificationsAmendmentEnabled' => '0',
+                        'notificationsEnabled' => '0',
+                        'notificationsDelay' => '0'
+                    ],
+                    'workstation' => [
+                        'emergencyEnabled' => '0',
+                        'emergencyRefreshInterval' => '5'
+                    ]
+                ],
+                'shortName' => 'DEVV',
+                'status' => [
+                    'emergency' => [
+                        'activated' => '0'
+                    ],
+                    'queue' => [
+                        'ghostWorkstationCount' => '-1',
+                        'givenNumberCount' => '4',
+                        'lastGivenNumber' => '4',
+                        'lastGivenNumberTimestamp' => 1715292000
+                    ],
+                    'ticketprinter' => [
+                        'deactivated' => '0'
+                    ]
+                ]
+            ],
+            'subRequestCounts' => [],
+            'serviceId' => '1063424',
+            'serviceCount' => 1
+        ];
         $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertArrayHasKey('processId', $responseBody);
-        $this->assertEquals('101002', $responseBody['processId']);
-
-        $this->assertArrayHasKey('timestamp', $responseBody);
-        $this->assertEquals(1724907600, $responseBody['timestamp']);
-
-        $this->assertArrayHasKey('authKey', $responseBody);
-        $this->assertEquals('fb43', $responseBody['authKey']);
-
-        $this->assertArrayHasKey('familyName', $responseBody);
-        $this->assertEquals('Doe', $responseBody['familyName']);
-
-        $this->assertArrayHasKey('email', $responseBody);
-        $this->assertEquals('johndoe@example.com', $responseBody['email']);
-
-        $this->assertArrayHasKey('telephone', $responseBody);
-        $this->assertEquals('0123456789', $responseBody['telephone']);
-
-        $this->assertArrayHasKey('officeName', $responseBody);
-        $this->assertEquals('Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)', $responseBody['officeName']);
-
-        $this->assertArrayHasKey('officeId', $responseBody);
-        $this->assertEquals('102522', $responseBody['officeId']);
-
-        $this->assertArrayHasKey('scope', $responseBody);
-        $this->assertArrayHasKey('id', $responseBody['scope']);
-        $this->assertEquals('64', $responseBody['scope']['id']);
-
-        $this->assertArrayHasKey('serviceId', $responseBody);
-        $this->assertEquals('1063424', $responseBody['serviceId']);
-
-        $this->assertArrayHasKey('serviceCount', $responseBody);
-        $this->assertEquals(1, $responseBody['serviceCount']);
-
-        $this->assertArrayHasKey('subRequestCounts', $responseBody);
-        $this->assertEmpty($responseBody['subRequestCounts']);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testMissingProcessId()
@@ -79,10 +166,17 @@ class AppointmentGetTest extends Base
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'processId should be a 32-bit integer.'
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertEquals('processId should be a 32-bit integer', $responseBody['errors'][0]['msg']);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testMissingAuthKey()
@@ -93,10 +187,17 @@ class AppointmentGetTest extends Base
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'authKey should be a string.'
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertEquals('authKey should be a string', $responseBody['errors'][0]['msg']);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testInvalidProcessId()
@@ -108,10 +209,17 @@ class AppointmentGetTest extends Base
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'processId should be a 32-bit integer.'
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertEquals('processId should be a 32-bit integer', $responseBody['errors'][0]['msg']);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testInvalidAuthKey()
@@ -123,10 +231,17 @@ class AppointmentGetTest extends Base
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'authKey should be a string.'
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertEquals('authKey should be a string', $responseBody['errors'][0]['msg']);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testBothParametersMissing()
@@ -135,32 +250,22 @@ class AppointmentGetTest extends Base
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'processId should be a 32-bit integer.',
+                ],
+                [
+                    'status' => 400,
+                    'errorMessage' => 'authKey should be a string.',
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $errors = $responseBody['errors'];
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
 
-        $this->assertCount(2, $errors);
-
-        $this->assertContains(
-            [
-                'type' => 'field',
-                'msg' => 'processId should be a 32-bit integer',
-                'path' => 'processId',
-                'location' => 'query'
-            ],
-            $errors
-        );
-
-        $this->assertContains(
-            [
-                'type' => 'field',
-                'msg' => 'authKey should be a string',
-                'path' => 'authKey',
-                'location' => 'query'
-            ],
-            $errors
-        );
     }
 
     public function testAppointmentNotFound()
@@ -177,18 +282,21 @@ class AppointmentGetTest extends Base
                 ]
             ]
         );
-
+    
         $parameters = [
             'processId' => '101002',
             'authKey' => 'fb43',
         ];
-
+    
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
-
+        $responseBody = json_decode((string)$response->getBody(), true);   
+        $expectedResponse = [
+            'errorCode' => 'appointmentNotFound',
+            'errorMessage' => 'Termin wurde nicht gefunden.',
+            'status' => 404,
+        ];
         $this->assertEquals(404, $response->getStatusCode());
-
-        $this->assertArrayHasKey('errorMessage', $responseBody);
-        $this->assertEquals('Termin wurde nicht gefunden', $responseBody['errorMessage']);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
+    
 }

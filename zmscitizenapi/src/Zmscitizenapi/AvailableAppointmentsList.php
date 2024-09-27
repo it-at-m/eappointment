@@ -15,7 +15,7 @@ class AvailableAppointmentsList extends BaseController
 
         $result = ZmsApiFacadeService::getAvailableAppointments($queryParams);
 
-        return $this->createJsonResponse($response, $result, $result['status']);
+        return $this->createJsonResponse($response, $result, statusCode: $result['status']);
     }
 
 }

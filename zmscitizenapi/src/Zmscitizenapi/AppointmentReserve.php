@@ -29,70 +29,11 @@ class AppointmentReserve extends BaseController
         $captchaSolution = $body['captchaSolution'] ?? null;
         $timestamp = $body['timestamp'] ?? null;
 
-        $errors = [];
 
-        if (!$officeId) {
-            $errors[] = [
-                'type' => 'field',
-                'msg' => 'Missing officeId.',
-                'path' => 'officeId',
-                'location' => 'body'
-            ];
-        } elseif (!is_numeric($officeId)) {
-            $errors[] = [
-                'type' => 'field',
-                'msg' => 'Invalid officeId format. It should be a numeric value.',
-                'path' => 'officeId',
-                'location' => 'body'
-            ];
-        }
-
-        if (empty($serviceIds)) {
-            $errors[] = [
-                'type' => 'field',
-                'msg' => 'Missing serviceId.',
-                'path' => 'serviceId',
-                'location' => 'body'
-            ];
-        } elseif (!is_array($serviceIds) || array_filter($serviceIds, fn($id) => !is_numeric($id))) {
-            $errors[] = [
-                'type' => 'field',
-                'msg' => 'Invalid serviceId format. It should be an array of numeric values.',
-                'path' => 'serviceId',
-                'location' => 'body'
-            ];
-        }
-
-        if (!$timestamp) {
-            $errors[] = [
-                'type' => 'field',
-                'msg' => 'Missing timestamp.',
-                'path' => 'timestamp',
-                'location' => 'body'
-            ];
-        } elseif (!is_numeric($timestamp) || $timestamp < 0) {
-            $errors[] = [
-                'type' => 'field',
-                'msg' => 'Invalid timestamp format. It should be a positive numeric value.',
-                'path' => 'timestamp',
-                'location' => 'body'
-            ];
-        }
-
-        if (!is_array($serviceCounts) || array_filter($serviceCounts, fn($count) => !is_numeric($count) || $count < 0)) {
-            $errors[] = [
-                'type' => 'field',
-                'msg' => 'Invalid serviceCount format. It should be an array of non-negative numeric values.',
-                'path' => 'serviceCount',
-                'location' => 'body'
-            ];
-        }        
-
-        if (!empty($errors)) {
-            return $this->createJsonResponse($response, [
-                'errors' => $errors,
-                'status' => 400
-            ], 400);
+        $errors = ValidationService::validatePostAppointmentReserve($officeId, $serviceIds, $serviceCounts, $captchaSolution, $timestamp);
+        if (!empty($errors['errors'])) {
+            return $this->createJsonResponse($response, 
+            $errors, 400);
         }
 
         try {
@@ -104,8 +45,7 @@ class AppointmentReserve extends BaseController
                 if (!$captchaVerificationResult['success']) {
                     return $this->createJsonResponse($response, [
                         'errorCode' => 'captchaVerificationFailed',
-                        'errorMessage' => 'Captcha verification failed',
-                        'lastModified' => round(microtime(true) * 1000)
+                        'errorMessage' => 'Captcha verification failed'
                     ], 400);
                 }
             }
@@ -113,16 +53,6 @@ class AppointmentReserve extends BaseController
             $serviceValidationResult = ValidationService::validateServiceLocationCombination($officeId, $serviceIds);
             if ($serviceValidationResult['status'] !== 200) {
                 return $this->createJsonResponse($response, $serviceValidationResult, 400);
-            }
-
-            try {
-                $internalDate = UtilityHelper::getInternalDateFromTimestamp($timestamp);
-            } catch (\Exception $e) {
-                return $this->createJsonResponse($response, [
-                    'errorCode' => 'invalidTimestamp',
-                    'errorMessage' => 'The provided timestamp is invalid.',
-                    'lastModified' => round(microtime(true) * 1000)
-                ], 400);
             }
 
             $freeAppointments = ZmsApiFacadeService::getFreeAppointments([
@@ -139,12 +69,10 @@ class AppointmentReserve extends BaseController
                 return in_array($timestamp, array_column($process['appointments'], 'date'));
             });
 
-            if (empty($selectedProcess)) {
-                return $this->createJsonResponse($response, [
-                    'errorCode' => 'appointmentNotAvailable',
-                    'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.',
-                    'lastModified' => round(microtime(true) * 1000)
-                ], 404);
+            $errors = ValidationService::validateGetProcessNotFound($selectedProcess);
+            if (!empty($errors['errors'])) {
+                return $this->createJsonResponse($response, 
+                $errors, 404);
             }
 
             $selectedProcess = array_values($selectedProcess)[0];
@@ -171,11 +99,11 @@ class AppointmentReserve extends BaseController
             return $this->createJsonResponse($response, $thinnedProcessData, 200);
 
         } catch (\Exception $e) {
-            error_log('Unexpected error: ' . $e->getMessage());
-            return $this->createJsonResponse($response, [
-                'error' => 'Unexpected error',
-                'message' => $e->getMessage()
-            ], 500);
+            return [
+                'errorCode' => 'unexpectedError',
+                'errorMessage' => 'Unexpected error: ' . $e->getMessage(),
+                'status' => 500,
+            ];
         }
     }
 

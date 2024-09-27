@@ -43,19 +43,37 @@ class AppointmentReserveTest extends Base
 
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-        $this->assertEquals(200, $response->getStatusCode(), 'Expected a 200 OK response.');
-        $this->assertArrayHasKey('processId', $responseBody, 'Expected processId in response.');
-        $this->assertArrayHasKey('email', $responseBody, 'Expected email in response.');
-        $this->assertEquals('test@muenchen.de', $responseBody['email'], 'Expected test@muenchen.de email.');
-        $this->assertArrayHasKey('authKey', $responseBody, 'Expected authKey in response.');
-        $this->assertEquals('b93e', $responseBody['authKey'], 'Expected correct authKey.');
-        $this->assertArrayHasKey('timestamp', $responseBody, 'Expected timestamp in response.');
-        $this->assertEquals('32526616522', $responseBody['timestamp'], 'Expected correct timestamp.');
-        $this->assertArrayHasKey('scope', $responseBody, 'Expected scope in response.');
-        $this->assertEquals('58', $responseBody['scope']['id'], 'Expected correct scope id.');
-        $this->assertEquals('dldb', $responseBody['scope']['provider']['source'], 'Expected correct provider source.');
-        $this->assertArrayHasKey('serviceCount', $responseBody, 'Expected serviceCount in response.');
-        $this->assertEquals(0, $responseBody['serviceCount'], 'Expected serviceCount to be 0.');
+        $expectedResponse = [
+            'processId' => '101142',
+            'timestamp' => 32526616522,
+            'authKey' => 'b93e',
+            'familyName' => '',
+            'customTextfield' => '',
+            'email' => 'test@muenchen.de',
+            'telephone' => '',
+            'officeName' => null,
+            'officeId' => '10546',
+            'scope' => [
+                'id' => '58',
+                'provider' => [
+                    'id' => '10546',
+                    'source' => 'dldb'
+                ],
+                'shortName' => 'Gewerbemeldungen',
+                'telephoneActivated' => '0',
+                'telephoneRequired' => '1',
+                'customTextfieldActivated' => '0',
+                'customTextfieldRequired' => '1',
+                'customTextfieldLabel' => '',
+                'captchaActivatedRequired' => '0',
+                'displayInfo' => null
+            ],
+            'subRequestCounts' => [],
+            'serviceId' => null,
+            'serviceCount' => 0
+        ];
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testAppointmentNotAvailable()
@@ -77,7 +95,7 @@ class AppointmentReserveTest extends Base
                 ]
             ]
         );
-
+    
         $parameters = [
             'officeId' => '10546',
             'serviceId' => ['1063423'],
@@ -85,14 +103,21 @@ class AppointmentReserveTest extends Base
             'timestamp' => "32526616300",
             'captchaSolution' => null
         ];
-
+    
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(404, $response->getStatusCode(), 'Expected a 404 Not Found response.');
-        $this->assertArrayHasKey('errorCode', $responseBody, 'Expected errorCode in response.');
-        $this->assertEquals('appointmentNotAvailable', $responseBody['errorCode'], 'Expected errorCode to be appointmentNotAvailable.');
-        $this->assertArrayHasKey('errorMessage', $responseBody, 'Expected errorMessage in response.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorCode' => 'appointmentNotAvailable',
+                    'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.',                
+                    'status' => 404,
+                ]
+            ],
+            'status' => 404
+        ];
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testMissingOfficeId()
@@ -107,12 +132,18 @@ class AppointmentReserveTest extends Base
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
-        $this->assertEquals('Missing officeId.', $responseBody['errors'][0]['msg'], 'Expected error message for missing officeId.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing officeId.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testMissingServiceId()
@@ -127,12 +158,18 @@ class AppointmentReserveTest extends Base
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
-        $this->assertEquals('Missing serviceId.', $responseBody['errors'][0]['msg'], 'Expected error message for missing serviceId.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing serviceId.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testMissingTimestamp()
@@ -147,12 +184,18 @@ class AppointmentReserveTest extends Base
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
-        $this->assertEquals('Missing timestamp.', $responseBody['errors'][0]['msg'], 'Expected error message for missing timestamp.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing timestamp.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testMissingOfficeIdAndServiceId()
@@ -166,13 +209,22 @@ class AppointmentReserveTest extends Base
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(2, $responseBody['errors'], 'Expected two errors in response.');
-        $this->assertEquals('Missing officeId.', $responseBody['errors'][0]['msg'], 'Expected error message for missing officeId.');
-        $this->assertEquals('Missing serviceId.', $responseBody['errors'][1]['msg'], 'Expected error message for missing serviceId.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing officeId.',
+                ],
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing serviceId.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testMissingOfficeIdAndTimestamp()
@@ -186,13 +238,22 @@ class AppointmentReserveTest extends Base
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(2, $responseBody['errors'], 'Expected two errors in response.');
-        $this->assertEquals('Missing officeId.', $responseBody['errors'][0]['msg'], 'Expected error message for missing officeId.');
-        $this->assertEquals('Missing timestamp.', $responseBody['errors'][1]['msg'], 'Expected error message for missing timestamp.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing officeId.',
+                ],
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing timestamp.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testMissingServiceIdAndTimestamp()
@@ -206,13 +267,22 @@ class AppointmentReserveTest extends Base
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(2, $responseBody['errors'], 'Expected two errors in response.');
-        $this->assertEquals('Missing serviceId.', $responseBody['errors'][0]['msg'], 'Expected error message for missing serviceId.');
-        $this->assertEquals('Missing timestamp.', $responseBody['errors'][1]['msg'], 'Expected error message for missing timestamp.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing serviceId.',
+                ],
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing timestamp.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testMissingAllFields()
@@ -222,14 +292,26 @@ class AppointmentReserveTest extends Base
         $parameters = [];
 
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(3, $responseBody['errors'], 'Expected three errors in response.');
-        $this->assertEquals('Missing officeId.', $responseBody['errors'][0]['msg'], 'Expected error message for missing officeId.');
-        $this->assertEquals('Missing serviceId.', $responseBody['errors'][1]['msg'], 'Expected error message for missing serviceId.');
-        $this->assertEquals('Missing timestamp.', $responseBody['errors'][2]['msg'], 'Expected error message for missing timestamp.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing officeId.',
+                ],
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing serviceId.',
+                ],
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing timestamp.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testInvalidOfficeIdFormat()
@@ -245,12 +327,18 @@ class AppointmentReserveTest extends Base
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-    
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
-        $this->assertEquals('Invalid officeId format. It should be a numeric value.', $responseBody['errors'][0]['msg'], 'Expected error message for invalid officeId format.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Invalid officeId format. It should be a numeric value.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
     
     public function testInvalidServiceIdFormat()
@@ -266,12 +354,18 @@ class AppointmentReserveTest extends Base
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-    
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
-        $this->assertEquals('Invalid serviceId format. It should be an array of numeric values.', $responseBody['errors'][0]['msg'], 'Expected error message for invalid serviceId format.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Invalid serviceId format. It should be an array of numeric values.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
     
     public function testInvalidTimestampFormat()
@@ -287,12 +381,18 @@ class AppointmentReserveTest extends Base
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-    
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
-        $this->assertEquals('Invalid timestamp format. It should be a positive numeric value.', $responseBody['errors'][0]['msg'], 'Expected error message for invalid timestamp format.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Invalid timestamp format. It should be a positive numeric value.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
     public function testEmptyServiceIdArray()
     {
@@ -307,12 +407,18 @@ class AppointmentReserveTest extends Base
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-    
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
-        $this->assertEquals('Missing serviceId.', $responseBody['errors'][0]['msg'], 'Expected error message for empty serviceId array.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Missing serviceId.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
     
     public function testInvalidServiceCount()
@@ -328,12 +434,18 @@ class AppointmentReserveTest extends Base
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-    
-        $this->assertEquals(400, $response->getStatusCode(), 'Expected a 400 Bad Request response.');
-        $this->assertArrayHasKey('errors', $responseBody, 'Expected errors in response.');
-        $this->assertCount(1, $responseBody['errors'], 'Expected one error in response.');
-        $this->assertEquals('Invalid serviceCount format. It should be an array of non-negative numeric values.', $responseBody['errors'][0]['msg'], 'Expected error message for invalid serviceCount.');
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'status' => 400,
+                    'errorMessage' => 'Invalid serviceCount format. It should be an array of non-negative numeric values.',
+                ]
+            ],
+            'status' => 400
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
 }

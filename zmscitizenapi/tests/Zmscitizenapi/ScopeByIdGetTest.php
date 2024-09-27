@@ -43,6 +43,7 @@ class ScopeByIdGetTest extends Base
                 ]
             ]
         ];
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
   
@@ -95,6 +96,7 @@ class ScopeByIdGetTest extends Base
                 ],
             ]
         ];
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
 
@@ -114,26 +116,39 @@ class ScopeByIdGetTest extends Base
         $response = $this->render([], [
             'scopeId' => '99'
         ], []);
-    
+
         $expectedResponse = [
-            'status' => 404,
-            'scopes' => [],
-            'error' => 'Scope(s) not found'
+            'errors' => [
+                [
+                    'errorCode' => "scopesNotFound",
+                    'errorMessage' => 'Scope(s) not found.',
+                    'status' => 404
+                ]
+            ],
+            'status' => 404
         ];
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+
         $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        
     }
     
     public function testNoScopeIdProvided()
     {
         $response = $this->render([], [], []);
         $expectedResponse = [
-            'status' => 400,
-            'scopes' => [],
-            'error' => 'Invalid scopeId(s)'
+            'errors' => [
+                [
+                    'services' => [],
+                    'errorMessage' => 'Invalid scopeId(s).',
+                    'status' => 400
+                ]
+            ],
+            'status' => 400
         ];
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
         $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+
     }
     
     public function testPartialResultsWithWarning()
@@ -170,9 +185,10 @@ class ScopeByIdGetTest extends Base
                 ]
             ],
             'warning' => 'The following scopeId(s) were not found: 99'
-        ];    
+        ];
+        $this->assertEquals(200, $response->getStatusCode());  
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
-        $this->assertEquals(200, $response->getStatusCode());
+        
     }
     
     public function testDuplicateScopeIds()
@@ -211,9 +227,9 @@ class ScopeByIdGetTest extends Base
                 ]
             ]
         ];
-    
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+
     }
     
 }

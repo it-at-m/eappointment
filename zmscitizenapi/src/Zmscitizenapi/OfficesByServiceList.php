@@ -3,7 +3,6 @@
 namespace BO\Zmscitizenapi;
 
 use BO\Zmscitizenapi\BaseController;
-use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
@@ -17,7 +16,7 @@ class OfficesByServiceList extends BaseController
 
         $result = ZmsApiFacadeService::getOfficesByServiceIds($serviceIds);
 
-        if (isset($result['error'])) {
+        if (isset($result['errors'])) {
             return $this->createJsonResponse($response, $result, $result['status']);
         }
 
