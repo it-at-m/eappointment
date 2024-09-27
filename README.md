@@ -114,3 +114,39 @@ To run unit tests locally refer to the Github Workflows: https://github.com/it-a
 - `./vendor/bin/phpunit`
 
 For zmsapi and zmsdb you must first import the test data which unfortunately overwrites your local database. For zmsclient you need the php base image.
+
+
+## Branch Naming Convention
+To keep our branch names organized and easily understandable, we follow a specific naming convention for all branches created in this repository. Please adhere to this convention when creating new branches:
+
+1. **type**: The type of work the branch represents. This should be one of the following:
+   - `feature`: For new features or enhancements.
+   - `bugfix`: For bug fixes.
+   - `hotfix`: For urgent fixes that need to be applied quickly.
+   - `cleanup`: For code refactoring, documentation updates, or other maintenance work.
+
+2. **project**: The project identifier. This should be:
+   - `zms` for the ZMS project.
+   - `mpdzbs` for the MPDZBS project.
+
+3. **issue number**: The ticket or issue number related to this branch (use digits only). This helps track the branch to a specific issue in the project management system.
+
+4. **description**: A brief, lowercase description of the branch's purpose, using only lowercase letters, numbers, and hyphens (`-`).
+
+- Always use lowercase letters and hyphens for the description.
+- The issue number should be a numeric ID corresponding to the relevant ticket or task.
+- Descriptions should be concise and informative, summarizing the branch's purpose.
+
+#### Examples
+
+- **Feature Branch**: `feature-zms-12345-this-is-a-feature-in-the-zms-project`
+- **Bugfix Branch**: `bugfix-mpdzbs-67890-fix-crash-on-startup`
+- **Hotfix Branch**: `hotfix-zms-98765-critical-fix-for-login`
+- **Cleanup Branch**: `cleanup-mpdzbs-11111-remove-unused-code`
+
+#### Regular Expression
+
+The branch name must match the following regular expression:
+`^(feature|hotfix|bugfix|cleanup)-(zms|mpdzbs)-[0-9]+-[a-z0-9-]+$`
+
+**For further commit rules please refer to https://www.conventionalcommits.org/en/v1.0.0-beta.4/**
