@@ -113,11 +113,11 @@
                             {% for hour in 6..21 %}
                                 <tr>
                                     <th>                               
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Maxima{% endtrans %} {{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Anzahl der Wartenden:{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}gemessene Zeit in Min.:{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}berechnete Zeit in Min.:{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}gemessene Wegezeit in Min.:{% endtrans %}</p>
+                                        <p style="white-space: nowrap; margin: 0px 0px;">{{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %}</p>
+                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Anzahl der Wartenden{% endtrans %}</p>
+                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}gemessene Zeit in Min. (&#8960;){% endtrans %}</p>
+                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}berechnete Zeit in Min. {% endtrans %}</p>
+                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}gemessene Wegezeit in Min. (&#8960;){% endtrans %}</p>
                                     </th>
                                     <td class="statistik report-board--summary{% if not exchangeWaiting.data.max.max %} ausgegraut{% endif %}" style="text-align: right;">
                                         <br />
@@ -236,11 +236,11 @@
                             {% for hour in 6..21 %}
                                 <tr>
                                     <th>                               
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Maxima{% endtrans %} {{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Anzahl der Wartenden:{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}gemessene Zeit in Min.:{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}berechnete Zeit in Min.:{% endtrans %}</p>
-                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}gemessene Wegezeit in Min.:{% endtrans %}</p>
+                                        <p style="white-space: nowrap; margin: 0px 0px;">{{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %}</p>
+                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Anzahl der Wartenden{% endtrans %}</p>
+                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}gemessene Zeit in Min. (&#8960;){% endtrans %}</p>
+                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}berechnete Zeit in Min.{% endtrans %}</p>
+                                        <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}gemessene Wegezeit in Min. (&#8960;){% endtrans %}</p>
                                     </th>
                                     <td class="statistik report-board--summary{% if not exchangeWaiting.data.max.max %} ausgegraut{% endif %}" style="text-align: right;">
                                         <br />

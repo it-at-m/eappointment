@@ -27,8 +27,6 @@ jobs:
             php_version: "8.0"
           - module: zmscalldisplay
             php_version: "8.0"
-          - module: zmscitizenapi
-            php_version: "8.0"
           - module: zmsdldb
             php_version: "8.0"
           - module: zmsentities
@@ -166,6 +164,11 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
 
       - name: Install Docker Compose
         run: |

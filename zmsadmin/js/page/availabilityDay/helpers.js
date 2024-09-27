@@ -128,7 +128,6 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
 }
 
 export const availabilityTypes = [
-    { value: "0", name: "--Bitte wählen--" },
     { value: "openinghours", name: "Spontankunden" },
     { value: "appointment", name: "Terminkunden" },
 ]

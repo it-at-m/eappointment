@@ -25,41 +25,6 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->toProperty()->source->get();
     }
 
-    public function getTelephoneActivated()
-    {
-        return $this->getPreference('client', 'telephoneActivated', null);
-    }
-
-    public function getTelephoneRequired()
-    {
-        return $this->getPreference('client', 'telephoneRequired', null);
-    }
-
-    public function getCustomTextfieldActivated()
-    {
-        return $this->getPreference('client', 'customTextfieldActivated', null);
-    }
-
-    public function getCustomTextfieldRequired()
-    {
-        return $this->getPreference('client', 'customTextfieldRequired', null);
-    }
-
-    public function getCustomTextfieldLabel()
-    {
-        return $this->getPreference('client', 'customTextfieldLabel', '');
-    }
-
-    public function getCaptchaActivatedRequired()
-    {
-        return $this->getPreference('client', 'captchaActivatedRequired', null);
-    }
-
-    public function getDisplayInfo()
-    {
-        return $this->getPreference('appointment', 'infoForAppointment', null);
-    }
-
     public function getProvider()
     {
         if (!$this->provider instanceof Provider) {

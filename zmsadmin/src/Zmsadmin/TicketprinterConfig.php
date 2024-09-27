@@ -59,7 +59,6 @@ class TicketprinterConfig extends BaseController
             }
             $departments->addEntity($department);
         }
-
         return \BO\Slim\Render::withHtml(
             $response,
             'page/ticketprinterConfig.twig',

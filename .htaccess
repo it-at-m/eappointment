@@ -39,14 +39,6 @@ RewriteRule ^terminvereinbarung/calldisplay(.*) /var/www/html/zmscalldisplay/pub
 RewriteRule ^terminvereinbarung/calldisplay/+_(.*) /var/www/html/zmscalldisplay/public/_$1 [QSA]
 
 
-# zmscitizenapi
-SetEnvIf Request_URI ^/zmscitizenapi ZMS_MODULE_BASEPATH=/terminvereinbarung/api/citizen
-RewriteCond %{REQUEST_URI} !^/terminvereinbarung/api/citizen/+(_|doc)
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^terminvereinbarung/api/citizen(.*) /var/www/html/zmscitizenapi/public/index.php?$1 [QSA]
-RewriteRule ^terminvereinbarung/api/citizen/+(doc|_)(.*) /var/www/html/zmscitizenapi/public/$1$2 [QSA]
-
-
 # zmsstatistic
 SetEnvIf Request_URI ^/zmsstatistic ZMS_MODULE_BASEPATH=/terminvereinbarung/statistic
 RewriteCond %{REQUEST_URI} !^/terminvereinbarung/[^/]+/+_

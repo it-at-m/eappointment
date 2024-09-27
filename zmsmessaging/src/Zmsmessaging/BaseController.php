@@ -1,9 +1,9 @@
 <?php
 /**
  *
-* @package Zmsmessaging
-*
-*/
+ * @package Zmsmessaging
+ *
+ */
 namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Mail;
@@ -24,19 +24,6 @@ class BaseController
         $this->verbose = $verbose;
         $this->startTime = microtime(true);
         $this->maxRunTime = $maxRunTime;
-    }
-
-    public function log($message)
-    {
-        $time = $this->getSpendTime();
-        $memory = memory_get_usage()/(1024*1024);
-        $text = sprintf("[Init Messaging log %07.3fs %07.1fmb] %s", "$time", $memory, $message);
-        static::$logList[] = $text;
-        if ($this->verbose) {
-            error_log('verbose is: '. $this->verbose);
-            error_log($text);
-        }
-        return $this;
     }
 
     public static function getLogList()
@@ -64,12 +51,9 @@ class BaseController
             throw new Exception\SendingFailed();
         }
         // @codeCoverageIgnoreEnd
-        $this->log("Send Mailer: sending succeeded - ". \App::$now->format('c'));
         $log = new Mimepart(['mime' => 'text/plain']);
         $log->content = ($entity instanceof Mail) ? $entity->subject : $entity->message;
-        $this->log("Send Mailer: log readPostResult start - ". \App::$now->format('c'));
         \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log);
-        $this->log("Send Mailer: log readPostResult finished - ". \App::$now->format('c'));
         return $mailer;
     }
 
@@ -121,8 +105,7 @@ class BaseController
         }
         if (! $entity->hasContent()) {
             throw new \BO\Zmsmessaging\Exception\MailWithoutContent();
-        }
-
+        }        
         if ($entity instanceof Mail) {
             $isMail = Validator::value($entity->getRecipient())->isMail()->getValue();
             if (!$isMail) {
@@ -136,4 +119,69 @@ class BaseController
             }
         }
     }
+
+    protected function monitorProcesses($processHandles)
+    {
+        $running = true;
+        while ($running) {
+            $running = false;
+            foreach ($processHandles as &$handle) {
+                if (is_resource($handle['process'])) {
+                    $status = proc_get_status($handle['process']);
+                    if ($status['running']) {
+                        $running = true;
+                    } else {
+                        $output = stream_get_contents($handle['pipes'][1]);  // stdout
+                        $errorOutput = stream_get_contents($handle['pipes'][2]);  // stderr   
+                        fclose($handle['pipes'][1]);
+                        fclose($handle['pipes'][2]);
+                        if (trim($output)) { 
+                            $this->log("\nProcess stdout: " . trim($output) . "\n");
+                        }
+                        if (trim($errorOutput)) {
+                            $this->log("\nProcess stderr: " . trim($errorOutput) . "\n");
+                        }
+    
+                        proc_close($handle['process']);
+                        $handle['process'] = null;
+                    }
+                }
+            }
+            usleep(500000);
+        }
+    }
+    
+    
+    
+
+    public function log($message)
+    {
+        if (is_array($message)) {
+            $message = print_r($message, true);
+        }
+    
+        $time = $this->getSpendTime();
+        $memory = memory_get_usage() / (1024 * 1024);
+        $text = sprintf("[MailProcessor log %07.3fs %07.1fmb] %s", $time, $memory, $message);
+    
+        if ($this->verbose) {
+            //error_log($text);
+        }
+    
+        // Explicitly flush the output buffer
+        echo $text . "\n";
+        flush();
+    }    
+
+    protected function convertCollectionToArray($collection)
+    {
+        $this->log("Converting collection to array");
+        $array = [];
+        foreach ($collection as $item) {
+            $array[] = $item;
+        }
+        $this->log("Conversion complete, array size: " . count($array));
+        return $array;
+    }
+
 }
