@@ -87,11 +87,11 @@ class Process extends Base implements Interfaces\ResolveReferences
             'processID' => $process->getId(),
         ]);
 
-        $isCalled = $process->status === 'processing' && $processEntity->status != 'called';
+        $isJustCalled = $process->status === 'processing' && $processEntity->status != 'processing';
 
         Log::writeProcessLog(
             "UPDATE (Process::updateEntity) $process ",
-            $isCalled ? Log::ACTION_CALLED : Log::ACTION_EDITED,
+            $isJustCalled ? Log::ACTION_CALLED : Log::ACTION_EDITED,
             $processEntity,
             $useraccount
         );
