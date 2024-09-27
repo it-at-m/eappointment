@@ -86,6 +86,8 @@ class Process extends Base implements Interfaces\ResolveReferences
             'reserved' => ($process->status == 'reserved') ? 1 : 0,
             'processID' => $process->getId(),
         ]);
+
+        $processEntity->status = $process->status;
         Log::writeProcessLog(
             "UPDATE (Process::updateEntity) $process ",
             $processEntity->status === 'processing' ? Log::ACTION_CALLED : Log::ACTION_EDITED,
