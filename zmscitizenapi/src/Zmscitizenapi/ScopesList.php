@@ -6,20 +6,13 @@ use BO\Zmscitizenapi\BaseController;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmscitizenapi\Services\ScopesService;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
 class ScopesList extends BaseController
 {
-    protected $scopesService;
-
-    public function __construct()
-    {
-        $this->scopesService = new ScopesService();
-    }
-
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        $scopes = $this->scopesService->getScopes();
+        $scopes = ZmsApiFacadeService::getScopes();
         return Render::withJson($response, ["scopes" => $scopes]);
     }
 }

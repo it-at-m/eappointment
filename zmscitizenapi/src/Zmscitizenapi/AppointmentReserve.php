@@ -4,37 +4,18 @@ namespace BO\Zmscitizenapi;
 
 use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\BaseController;
-use BO\Zmscitizenapi\Services\CaptchaService;
-use BO\Zmscitizenapi\Services\ScopesService;
-use BO\Zmscitizenapi\Services\OfficesServicesRelationsService;
-use BO\Zmscitizenapi\Services\AvailableAppointmentsService;
-use BO\Zmscitizenapi\Services\AppointmentService;
-use BO\Zmscitizenapi\Services\ProcessService;
 use BO\Zmscitizenapi\Helper\UtilityHelper;
+use BO\Zmscitizenapi\Services\CaptchaService;
+use BO\Zmscitizenapi\Services\MapperService;
+use BO\Zmscitizenapi\Services\ValidationService;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class AppointmentReserve extends BaseController
 {
-    protected $captchaService;
-    protected $scopesService;
-    protected $officesServicesRelationsService;
-    protected $availableAppointmentsService;
-    protected $appointmentService;
-    protected $utilityHelper;
-    protected $processService;
 
-    public function __construct()
-    {
-        $this->captchaService = new CaptchaService();
-        $this->scopesService = new ScopesService();
-        $this->officesServicesRelationsService = new OfficesServicesRelationsService();
-        $this->availableAppointmentsService = new AvailableAppointmentsService();
-        $this->processService = new ProcessService(\App::$http);
-        $this->appointmentService = new AppointmentService($this->processService);
-        $this->utilityHelper = new UtilityHelper();
-    }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
@@ -115,11 +96,11 @@ class AppointmentReserve extends BaseController
         }
 
         try {
-            $providerScope = $this->scopesService->getScopeByOfficeId($officeId);
+            $providerScope = ZmsApiFacadeService::getScopeByOfficeId($officeId);
             $captchaRequired = Application::$CAPTCHA_ENABLED === "1" && $providerScope['captchaActivatedRequired'] === "1";
 
             if ($captchaRequired) {
-                $captchaVerificationResult = $this->captchaService->verifyCaptcha($captchaSolution);
+                $captchaVerificationResult = CaptchaService::verifyCaptcha($captchaSolution);
                 if (!$captchaVerificationResult['success']) {
                     return $this->createJsonResponse($response, [
                         'errorCode' => 'captchaVerificationFailed',
@@ -129,13 +110,13 @@ class AppointmentReserve extends BaseController
                 }
             }
 
-            $serviceValidationResult = $this->officesServicesRelationsService->validateServiceLocationCombination($officeId, $serviceIds);
+            $serviceValidationResult = ValidationService::validateServiceLocationCombination($officeId, $serviceIds);
             if ($serviceValidationResult['status'] !== 200) {
                 return $this->createJsonResponse($response, $serviceValidationResult, 400);
             }
 
             try {
-                $internalDate = $this->utilityHelper->getInternalDateFromTimestamp($timestamp);
+                $internalDate = UtilityHelper::getInternalDateFromTimestamp($timestamp);
             } catch (\Exception $e) {
                 return $this->createJsonResponse($response, [
                     'errorCode' => 'invalidTimestamp',
@@ -144,11 +125,11 @@ class AppointmentReserve extends BaseController
                 ], 400);
             }
 
-            $freeAppointments = $this->availableAppointmentsService->getFreeAppointments([
+            $freeAppointments = ZmsApiFacadeService::getFreeAppointments([
                 'officeId' => $officeId,
                 'serviceIds' => $serviceIds,
                 'serviceCounts' => $serviceCounts,
-                'date' => $this->utilityHelper->getInternalDateFromTimestamp($timestamp)
+                'date' => UtilityHelper::getInternalDateFromTimestamp($timestamp)
             ]);
 
             $selectedProcess = array_filter($freeAppointments, function ($process) use ($timestamp) {
@@ -173,18 +154,18 @@ class AppointmentReserve extends BaseController
                 ]
             ];
 
-            $reservedProcess = $this->processService->reserveTimeslot($selectedProcess, $serviceIds, $serviceCounts);
+            $reservedProcess = ZmsApiFacadeService::reserveTimeslot($selectedProcess, $serviceIds, $serviceCounts);
 
             if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {
                 $scopeIds = [$reservedProcess->scope->id];
-                $scopesData = $this->scopesService->getScopeByIds($scopeIds);
+                $scopesData = ZmsApiFacadeService::getScopeByIds($scopeIds);
 
                 if ($scopesData['status'] === 200 && isset($scopesData['scopes']['scopes']) && !empty($scopesData['scopes']['scopes'])) {
-                    $reservedProcess->scope = $this->scopesService->mapScope($scopesData['scopes']['scopes'][0]);
+                    $reservedProcess->scope = MapperService::mapScope($scopesData['scopes']['scopes'][0]);
                 }
             }
 
-            $thinnedProcessData = $this->appointmentService->getThinnedProcessData($reservedProcess);
+            $thinnedProcessData = UtilityHelper::getThinnedProcessData($reservedProcess);
             $thinnedProcessData = array_merge($thinnedProcessData, ['officeId' => $officeId]);
 
             return $this->createJsonResponse($response, $thinnedProcessData, 200);

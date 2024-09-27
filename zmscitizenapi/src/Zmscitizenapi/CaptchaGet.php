@@ -10,16 +10,10 @@ use BO\Zmscitizenapi\Services\CaptchaService;
 
 class CaptchaGet extends BaseController
 {
-    protected $captchaService;
-
-    public function __construct()
-    {
-        $this->captchaService = new CaptchaService();
-    }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        $captchaDetails = $this->captchaService->getCaptchaDetails();
+        $captchaDetails = CaptchaService::getCaptchaDetails();
 
         return Render::withJson($response, $captchaDetails);
     }

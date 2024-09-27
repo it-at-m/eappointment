@@ -6,20 +6,13 @@ use BO\Zmscitizenapi\BaseController;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmscitizenapi\Services\ServicesService;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
 class ServicesList extends BaseController
 {
-    protected $servicesService;
-
-    public function __construct()
-    {
-        $this->servicesService = new ServicesService();
-    }
-
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        $services = $this->servicesService->getServices();
+        $services = ZmsApiFacadeService::getServices();
         return Render::withJson($response, ["services" => $services]);
     }
 }

@@ -8,7 +8,8 @@ use Exception;
 
 class CaptchaService
 {
-    public function getCaptchaDetails()
+
+    public static function getCaptchaDetails()
     {
         return [
             'siteKey' => Application::$FRIENDLYCAPTCHA_SITEKEY,
@@ -18,10 +19,10 @@ class CaptchaService
         ];
     }
 
-    public function verifyCaptcha($solution)
+    public static function verifyCaptcha($solution)
     {
         try {
-            $response = $this->httpClient->post(Application::$FRIENDLYCAPTCHA_ENDPOINT, [
+            $response = \App::$http->post(Application::$FRIENDLYCAPTCHA_ENDPOINT, [
                 'form_params' => [
                     'secret' => Application::$FRIENDLYCAPTCHA_SECRET,
                     'solution' => $solution
@@ -33,8 +34,9 @@ class CaptchaService
             return $responseBody;
         } catch (RequestException $e) {
             $errorMessage = $e->hasResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
-            error_log('Error verifying captcha: ' . $errorMessage);
+            //error_log('Error verifying captcha: ' . $errorMessage);
             throw new Exception('Captcha verification failed');
         }
     }
 }
+
