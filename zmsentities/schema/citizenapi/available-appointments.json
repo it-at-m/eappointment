@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "description": "Lists available appointment timestamps and the last modification time for the appointment data.",
+  "properties": {
+    "appointmentTimestamps": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "lastModified": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "appointmentTimestamps",
+    "lastModified"
+  ]
+}

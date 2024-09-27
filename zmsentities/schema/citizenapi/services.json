@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "description": "Lists all services and includes details, including their IDs, names, and maximum quantities.",
+  "properties": {
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "maxQuantity": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "maxQuantity"
+        ]
+      }
+    }
+  },
+  "required": [
+    "services"
+  ]
+}

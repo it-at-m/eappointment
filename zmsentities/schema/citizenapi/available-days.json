@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "description": "Contains available days for scheduling appointments and the last modification time for this data.",
+  "properties": {
+    "availableDays": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lastModified": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "availableDays",
+    "lastModified"
+  ]
+}
