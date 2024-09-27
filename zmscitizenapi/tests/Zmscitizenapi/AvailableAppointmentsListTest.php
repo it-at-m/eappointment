@@ -4,7 +4,7 @@ namespace BO\Zmscitizenapi\Tests;
 
 class AvailableAppointmentsListTest extends Base
 {
-    protected $classname = "\BO\Zmscitizenapi\Controllers\AvailableAppointmentsList";
+    protected $classname = "AvailableAppointmentsList";
 
     public function testRendering()
     {
@@ -17,28 +17,24 @@ class AvailableAppointmentsListTest extends Base
                 ]
             ]
         );
-
+    
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'officeId' => '10546',
             'serviceId' => '1063423',
             'serviceCount' => '1',
         ];
-
+    
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'appointmentTimestamps' => [32526616522],
+            'status' => 200,
+        ];
         $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertArrayHasKey('appointmentTimestamps', $responseBody);
-        $this->assertNotEmpty($responseBody['appointmentTimestamps']);
-        $this->assertTrue(is_array($responseBody['appointmentTimestamps']));
-        $this->assertTrue(count($responseBody['appointmentTimestamps']) > 0);
-        $this->assertTrue(is_numeric($responseBody['appointmentTimestamps'][0]));
-
-        $this->assertArrayHasKey('lastModified', $responseBody);
-        $this->assertTrue(is_numeric($responseBody['lastModified']));
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
+    
 
     public function testEmptyAppointments()
     {
@@ -53,25 +49,26 @@ class AvailableAppointmentsListTest extends Base
         );
 
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'officeId' => '10546',
             'serviceId' => '1063423',
             'serviceCount' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'appointmentTimestamps' => [],
+                    'errorCode' => "appointmentNotAvailable",
+                    'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.',                
+                    'status' => 404,
+                ]
+            ],
+            'status' => 404
+        ];
         $this->assertEquals(404, $response->getStatusCode());
-
-        $this->assertArrayHasKey('errorCode', $responseBody);
-        $this->assertEquals('appointmentNotAvailable', $responseBody['errorCode']);
-
-        $this->assertArrayHasKey('errorMessage', $responseBody);
-        $this->assertEquals('Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar', $responseBody['errorMessage']);
-
-        $this->assertArrayHasKey('appointmentTimestamps', $responseBody);
-        $this->assertEmpty($responseBody['appointmentTimestamps']);
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
 
     public function testDateMissing()
@@ -84,70 +81,86 @@ class AvailableAppointmentsListTest extends Base
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorMessage' => 'date is required and must be a valid date.',                
+                    'status' => 400,
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'date is required and must be a valid date', 'path' => 'date', 'location' => 'body'],
-            $responseBody['errors']
-        );
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testOfficeIdMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'serviceId' => '1063423',
             'serviceCount' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorMessage' => 'officeId should be a 32-bit integer.',                
+                    'status' => 400,
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'officeId should be a 32-bit integer', 'path' => 'officeId', 'location' => 'body'],
-            $responseBody['errors']
-        );
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testServiceIdMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'officeId' => '10546',
             'serviceCount' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorMessage' => 'serviceId should be a comma-separated string of integers.',                
+                    'status' => 400,
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'serviceId should be a comma-separated string of integers', 'path' => 'serviceId', 'location' => 'body'],
-            $responseBody['errors']
-        );
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testServiceCountMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'officeId' => '10546',
             'serviceId' => '1063423',
         ];
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
+                    'status' => 400,
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'serviceCount should be a comma-separated string of integers', 'path' => 'serviceCount', 'location' => 'body'],
-            $responseBody['errors']
-        );
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testDateAndOfficeIdMissing()
@@ -159,17 +172,21 @@ class AvailableAppointmentsListTest extends Base
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorMessage' => 'date is required and must be a valid date.',                
+                    'status' => 400,
+                ],
+                [
+                    'errorMessage' => 'officeId should be a 32-bit integer.',                
+                    'status' => 400,
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'date is required and must be a valid date', 'path' => 'date', 'location' => 'body'],
-            $responseBody['errors']
-        );
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'officeId should be a 32-bit integer', 'path' => 'officeId', 'location' => 'body'],
-            $responseBody['errors']
-        );
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testDateAndServiceIdMissing()
@@ -181,17 +198,21 @@ class AvailableAppointmentsListTest extends Base
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorMessage' => 'date is required and must be a valid date.',                
+                    'status' => 400,
+                ],
+                [
+                    'errorMessage' => 'serviceId should be a comma-separated string of integers.',                
+                    'status' => 400,
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'date is required and must be a valid date', 'path' => 'date', 'location' => 'body'],
-            $responseBody['errors']
-        );
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'serviceId should be a comma-separated string of integers', 'path' => 'serviceId', 'location' => 'body'],
-            $responseBody['errors']
-        );
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testDateAndServiceCountMissing()
@@ -203,82 +224,98 @@ class AvailableAppointmentsListTest extends Base
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorMessage' => 'date is required and must be a valid date.',                
+                    'status' => 400,
+                ],
+                [
+                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
+                    'status' => 400,
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'date is required and must be a valid date', 'path' => 'date', 'location' => 'body'],
-            $responseBody['errors']
-        );
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'serviceCount should be a comma-separated string of integers', 'path' => 'serviceCount', 'location' => 'body'],
-            $responseBody['errors']
-        );
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testOfficeIdAndServiceIdMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'serviceCount' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorMessage' => 'officeId should be a 32-bit integer.',                
+                    'status' => 400,
+                ],
+                [
+                    'errorMessage' => 'serviceId should be a comma-separated string of integers.',                
+                    'status' => 400,
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'officeId should be a 32-bit integer', 'path' => 'officeId', 'location' => 'body'],
-            $responseBody['errors']
-        );
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'serviceId should be a comma-separated string of integers', 'path' => 'serviceId', 'location' => 'body'],
-            $responseBody['errors']
-        );
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testOfficeIdAndServiceCountMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'serviceId' => '1063423',
         ];
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorMessage' => 'officeId should be a 32-bit integer.',                
+                    'status' => 400,
+                ],
+                [
+                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
+                    'status' => 400,
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'officeId should be a 32-bit integer', 'path' => 'officeId', 'location' => 'body'],
-            $responseBody['errors']
-        );
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'serviceCount should be a comma-separated string of integers', 'path' => 'serviceCount', 'location' => 'body'],
-            $responseBody['errors']
-        );
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 
     public function testServiceIdAndServiceCountMissing()
     {
         $parameters = [
-            'date' => '2024-09-21',
+            'date' => '3000-09-21',
             'officeId' => '10546',
         ];
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorMessage' => 'serviceId should be a comma-separated string of integers.',                
+                    'status' => 400,
+                ],
+                [
+                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
+                    'status' => 400,
+                ]
+            ],
+            'status' => 400
+        ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $responseBody);
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'serviceId should be a comma-separated string of integers', 'path' => 'serviceId', 'location' => 'body'],
-            $responseBody['errors']
-        );
-        $this->assertContains(
-            ['type' => 'field', 'msg' => 'serviceCount should be a comma-separated string of integers', 'path' => 'serviceCount', 'location' => 'body'],
-            $responseBody['errors']
-        );
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
     }
 }

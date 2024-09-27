@@ -7,7 +7,7 @@ use BO\Zmscitizenapi\CaptchaGet;
 
 class CaptchaGetTest extends Base
 {
-    protected $classname = "\BO\Zmscitizenapi\Controllers\CaptchaGet";
+    protected $classname = "CaptchaGet";
 
     public function setUp(): void
     {
@@ -36,15 +36,15 @@ class CaptchaGetTest extends Base
         $parameters = [];
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
-
-        $expectedDetails = [
+        $expectedResponse = [
             'siteKey' => 'FAKE_SITE_KEY',
             'captchaEndpoint' => 'https://api.friendlycaptcha.com/api/v1/siteverify',
             'puzzle' => 'https://api.friendlycaptcha.com/api/v1/puzzle',
-            'captchaEnabled' => true
+            'captchaEnabled' => true,
+            'status' => 200
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($expectedDetails, $responseBody);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 }

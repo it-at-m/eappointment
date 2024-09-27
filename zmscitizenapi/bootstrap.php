@@ -22,6 +22,8 @@ require(APP_PATH . '/config.php');
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
 
+\App::$slim->addBodyParsingMiddleware();
+
 \App::$http = new \BO\Zmsclient\Http(\App::ZMS_API_URL);
 //\BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 

@@ -4,7 +4,7 @@ namespace BO\Zmscitizenapi\Tests;
 
 class AppointmentConfirmTest extends Base
 {
-    protected $classname = "\BO\Zmscitizenapi\Controllers\AppointmentConfirm";
+    protected $classname = "AppointmentConfirm";
 
     public function testRendering() {
         $responseData = $this->renderJson(method: 'POST');

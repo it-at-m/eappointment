@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Tests;
 class OfficesServicesRelationsTest extends Base
 {
 
-    protected $classname = "\BO\Zmscitizenapi\Controllers\OfficesServicesRelations";
+    protected $classname = "OfficesServicesRelations";
 
     public function testRendering()
     {
@@ -16,10 +16,12 @@ class OfficesServicesRelationsTest extends Base
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_SourceGet_dldb.json"),
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ]
         ]);
-        $responseData = $this->renderJson();
+
+        $response = $this->render();
+        $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             "offices" => [
                 [
@@ -95,8 +97,11 @@ class OfficesServicesRelationsTest extends Base
                     "serviceId" => "2",
                     "slots" => 1
                 ]
-            ]
+            ],
+            "status" => 200
         ];
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseData);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 }

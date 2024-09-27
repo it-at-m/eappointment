@@ -5,9 +5,10 @@ namespace BO\Zmscitizenapi\Tests;
 class ScopesListTest extends Base
 {
 
-    protected $classname = "\BO\Zmscitizenapi\Controllers\ScopesList";
+    protected $classname = "ScopesList";
 
-    public function testRendering() {
+    public function testRendering()
+    {
         $this->setApiCalls([
             [
                 'function' => 'readGetResult',
@@ -15,10 +16,12 @@ class ScopesListTest extends Base
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_SourceGet_dldb.json"), // Use the same fixture as before
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ]
         ]);
-        $responseData = $this->renderJson();
+
+        $response = $this->render();
+        $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             "scopes" => [
                 [
@@ -34,7 +37,8 @@ class ScopesListTest extends Base
                     "customTextfieldActivated" => "1",
                     "customTextfieldRequired" => "0",
                     "customTextfieldLabel" => "Custom Label",
-                    "captchaActivatedRequired" => "1"
+                    "captchaActivatedRequired" => "1",
+                    "displayInfo" => null
                 ],
                 [
                     "id" => "2",
@@ -49,11 +53,14 @@ class ScopesListTest extends Base
                     "customTextfieldActivated" => "0",
                     "customTextfieldRequired" => "1",
                     "customTextfieldLabel" => "",
-                    "captchaActivatedRequired" => "0"
+                    "captchaActivatedRequired" => "0",
+                    "displayInfo" => null
                 ]
-            ]
+            ],
+            "status" => 200,
         ];
 
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseData);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 }
