@@ -65,7 +65,6 @@ class BaseController
             $log->content = 'Zmsmessaging Failure: Queue entry older than 1 hour has been removed';
             \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);
             \App::$log->warning($log->content);
-            $this->log("Delete Entity: removeEntityOlderThanOneHour finished - ". \App::$now->format('c'));
             return false;
         }
     }
