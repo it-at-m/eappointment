@@ -21,6 +21,20 @@ class MailTemplates extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $providerId = $workstation->scope['provider']['id'];
+
+        $scopeName = $workstation->scope['contact']['name'];
+        $scopeId = $workstation->scope['id'];
+
+        if (isset($args['scopeId']) && !empty($args['scopeId'])) {
+            $scope = \App::$http
+                ->readGetResult('/scope/'. $args['scopeId'] .'/', ['resolveReferences' => 1])
+                ->getEntity();
+
+            $scopeName = $scope->contact->name;
+            $scopeId = $scope->id;
+            $providerId = $scope->provider->id;
+        }
+
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
         $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/'.$providerId.'/')->getCollection();
@@ -61,9 +75,11 @@ class MailTemplates extends BaseController
             'page/mailtemplates.twig',
             array(
                 'title' => 'Konfiguration System',
+                'pageTitle' => 'Mail Templates für ' . $scopeName,
                 'providerId' => $providerId,
                 'workstation' => $workstation,
                 'config' => $config,
+                'scopeId' => $scopeId,
                 'mailtemplates' => $mergedMailTemplates,
                 'processExample' => $mainProcessExample,
                 'processListExample' => $processListExample,
