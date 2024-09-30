@@ -42,8 +42,8 @@ class Mail extends BaseController
                 return $resultList;
             }
             $this->log("Messages queue count - " . count($this->messagesQueue));
-            if (count($this->messagesQueue) <= 100) {
-                $this->log("Less than or equal to 100 items, sending immediately.");
+            if (count($this->messagesQueue) <= 50) {
+                $this->log("Less than or equal to 50 items, sending immediately.");
     
                 $itemIds = [];
                 foreach ($this->messagesQueue as $item) {
@@ -68,7 +68,7 @@ class Mail extends BaseController
                 }
             } else {
                 $batchSize = min(count($this->messagesQueue), max(1, ceil(count($this->messagesQueue) / 12)));
-                $this->log("More than 100 items, processing in batches of $batchSize.");
+                $this->log("More than 50 items, processing in batches of $batchSize.");
                 $batches = array_chunk(iterator_to_array($this->messagesQueue), $batchSize);
                 $this->log("Messages divided into " . count($batches) . " batches.");
     
@@ -206,9 +206,7 @@ class Mail extends BaseController
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
             $this->log("Build Mailer Exception log message: ". $message);
-            $this->log("Build Mailer Exception log readPostResult start - ". \App::$now->format('c'));
             \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);
-            $this->log("Build Mailer Exception log readPostResult finished - ". \App::$now->format('c'));
             return false;
         }
 

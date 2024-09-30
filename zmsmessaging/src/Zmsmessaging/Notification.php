@@ -119,21 +119,16 @@ class Notification extends BaseController
     protected function readMailer(\BO\Zmsentities\Notification $entity)
     {
         $config = \App::$http->readGetResult('/config/')->getEntity();
-
-        $this->log("Build Mailer: testEntity() - ". \App::$now->format('c'));
         $this->testEntity($entity);
         $sender = $entity->getIdentification();
         $from = $sender ? $sender : $entity['department']['email'];
-        $this->log("Build Mailer: new PHPMailer() - ". \App::$now->format('c'));
         $mailer = new Mailer(true);
         $message = trim($entity->getMessage());
         $mailer->CharSet = 'UTF-8';
         $mailer->Encoding = 'base64';
         $mailer->SetLanguage('de');
         $mailer->SetFrom($from, $sender);
-        $this->log("Build Mailer: addAddress() - ". \App::$now->format('c'));
         $mailer->AddAddress($entity->getRecipient($config->getPreference('notifications', 'smsGatewayUrl')));
-        
         $mailer->Subject = $message;
         $mailer->Body = '';
         $mailer->AllowEmpty = true;
