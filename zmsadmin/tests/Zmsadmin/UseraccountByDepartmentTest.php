@@ -41,9 +41,9 @@ class UseraccountByDepartmentTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/owner/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_ownerlist.json")
+                    'url' => '/scope/',
+                    'parameters' => ['resolveReferences' => 0],
+                    'response' => $this->readFixture("GET_scope_list.json")
                 ]
             ]
         );
