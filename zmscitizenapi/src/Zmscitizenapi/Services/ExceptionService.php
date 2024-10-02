@@ -17,4 +17,16 @@ class ExceptionService
 
     }
 
+    public static function exceptionAppointmentNotFound(){
+
+        $errors[] = [
+            'errorCode' => 'appointmentNotFound',
+            'errorMessage' => 'Termin wurde nicht gefunden.',
+            'status' => 404,
+        ];
+
+        return ['errors' => $errors, 'status' => 404];
+
+    }
+
 }

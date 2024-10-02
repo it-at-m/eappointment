@@ -133,7 +133,6 @@ class ZmsApiClientService
 
     public static function submitClientData($process)
     {
-
         $processEntity = new ProcessEntity();
         $processEntity->id = $process['data']['processId'] ?? null;
         $processEntity->authKey = $process['data']['authKey'] ?? null;
@@ -158,14 +157,11 @@ class ZmsApiClientService
         } catch (\Exception $e) {
             $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
             if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
-                $error = [
-                    'error' => 'tooManyAppointmentsWithSameMail'
+                $exception = [
+                    'exception' => 'tooManyAppointmentsWithSameMail'
                 ];
-                return $error;
+                return $exception;
             }
-        } catch (\Exception $e) {
-            error_log('An error occurred: ' . $e->getMessage());
-            throw $e;
         }
     }
 
