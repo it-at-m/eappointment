@@ -609,12 +609,17 @@ class ZmsApiFacadeService
     }
 
 
-    /* Todo add method
-     * updateClientData
-     * 
-     * 
-     * 
-     */
+    public static function updateClientData($reservedProcess)
+    {
+        $clientUpdateResult = ZmsApiClientService::submitClientData($reservedProcess);
+        
+        if (!isset($clientUpdateResult['error'])) {
+            return $clientUpdateResult;
+        }
+    
+        return $clientUpdateResult;
+    }
+    
 
     /* Todo add method
      * preconfirmAppointment
@@ -639,3 +644,5 @@ class ZmsApiFacadeService
      */
 
 }
+
+

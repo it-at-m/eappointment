@@ -310,4 +310,59 @@ class ValidationService
 
     }
 
+    public static function validateUpdateAppointmentInputs($processId, $authKey, $familyName, $email, $telephone, $customTextfield)
+    {
+        $errors = [];
+    
+        if (!$processId || !is_numeric($processId) || intval($processId) <= 0) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'processId should be a positive 32-bit integer.',
+            ];
+        }
+    
+        if (!$authKey || !is_string($authKey)) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'authKey should be a non-empty string.',
+            ];
+        }
+
+        if (!$familyName || !is_string($familyName)) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'familyName should be a non-empty string.',
+            ];
+        }
+    
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'email should be a valid email address.',
+            ];
+        }
+    
+        if (!$telephone || !preg_match('/^\d{7,15}$/', $telephone)) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.',
+            ];
+        }
+    
+        if ($customTextfield !== null && !is_string($customTextfield)) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'customTextfield should be a string.',
+            ];
+        }
+    
+        if (!empty($errors)) {
+            return ['errors' => $errors, 'status' => 400];
+        }
+    
+        return ['status' => 200, 'message' => 'Valid input for updating appointment.'];
+    }
+    
+
 }
+
