@@ -70,7 +70,7 @@ class Index extends BaseController
             $template->getTemplate(),
             array(
                 'debug' => \App::DEBUG,
-                'refresh' => true,
+                'refreshInSeconds' => 30,
                 'enabled' => $ticketprinter->isEnabled()
                     || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
                 'title' => 'Wartennumer ziehen',
