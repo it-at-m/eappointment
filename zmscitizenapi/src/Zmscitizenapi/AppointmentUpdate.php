@@ -6,6 +6,7 @@ use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\ValidationService;
 use BO\Zmscitizenapi\Helper\UtilityHelper;
+use BO\Zmsentities\Process as ProcessEntity;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -31,10 +32,10 @@ class AppointmentUpdate extends BaseController
         if (!empty($errors['errors'])) {
             return $this->createJsonResponse($response, $errors, 400);
         }
-
         
 
         try {
+            
             // Fetch the reserved process by ID and authKey
             $reservedProcess = ZmsApiFacadeService::getProcessById($processId, $authKey);
 
