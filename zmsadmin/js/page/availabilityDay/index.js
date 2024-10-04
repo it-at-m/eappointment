@@ -308,7 +308,7 @@ class AvailabilityPage extends Component {
         let name = availability.description;
         name = name.replaceAll('Ausnahme zu Terminserie ', '');
         name = name.replaceAll('Fortführung der Terminserie ', '');
-        if (originAvailability.startDate < selectedDay.unix()) {
+        if (originAvailability.startDate <= selectedDay.unix()) {
             exclusionAvailability = this.editExclusionAvailability(
                 Object.assign({}, availability),
                 parseInt(selectedDay.unix(), 10), 
