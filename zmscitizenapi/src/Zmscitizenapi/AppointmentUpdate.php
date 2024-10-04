@@ -33,9 +33,8 @@ class AppointmentUpdate extends BaseController
         try {
             
             $reservedProcess = ZmsApiFacadeService::getProcessById($processId, $authKey);
-
-            if (!$reservedProcess) {
-                return $this->createJsonResponse($response, ExceptionService::exceptionAppointmentNotFound(), 404);
+            if (!empty($reservedProcess['errors'])) {
+                return $this->createJsonResponse($response, $reservedProcess, 404);
             }
 
             $reservedProcess['clients'][0]['familyName'] = $familyName;
@@ -46,11 +45,7 @@ class AppointmentUpdate extends BaseController
             $updatedProcess = ZmsApiFacadeService::updateClientData($reservedProcess);
 
             if (isset($updatedProcess['exception']) && $updatedProcess['exception'] === 'tooManyAppointmentsWithSameMail') {
-                return $this->createJsonResponse($response, [
-                    'errorCode' => 'tooManyAppointmentsWithSameMail',
-                    'errorMessage' => 'Zu viele Termine mit gleicher E-Mail- Adresse.',
-                    'lastModified' => time()
-                ], 406);
+                return $this->createJsonResponse($response, ExceptionService::tooManyAppointmentsWithSameMail(), 406);
             }
 
             $thinnedProcessData = UtilityHelper::getThinnedProcessData($updatedProcess);

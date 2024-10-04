@@ -63,6 +63,96 @@ class AppointmentUpdateTest extends Base
 
     }
 
+    public function testTooManyEmailsAtLocation()
+    {
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail';
+    
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_process.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/101002/fb43/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+    
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'Smith',
+            'email' => "test@muenchen.de",
+            'telephone' => '123456789',
+            'customTextfield' => "Some custom text",
+        ];
+    
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);      
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorCode' => 'tooManyAppointmentsWithSameMail',
+                    'errorMessage' => 'Zu viele Termine mit gleicher E-Mail- Adresse.',
+                    'status' => 406,
+                ]
+            ],
+            'status' => 406
+        ];
+    
+        $this->assertEquals(406, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+    
+    public function testAppointmentNotFound()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101003/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'exception' => new \Exception('API-Error: Zu den angegebenen Daten konnte kein Termin gefunden werden.')
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101003',
+            'authKey' => 'fb43',
+            'familyName' => 'Smith',
+            'email' => "test@muenchen.de",
+            'telephone' => '123456789',
+            'customTextfield' => "Some custom text",
+        ];
+
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'errorCode' => 'appointmentNotFound',
+                    'errorMessage' => 'Termin wurde nicht gefunden.',
+                    'status' => 404,
+                ]
+            ],
+            'status' => 404
+        ];
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
     public function testInvalidProcessid_InvalidAuthkey_InvalidFamilyname_InvalidEmail_InvalidTelephone_InvalidCustomtextfield()
     {
         $parameters = [

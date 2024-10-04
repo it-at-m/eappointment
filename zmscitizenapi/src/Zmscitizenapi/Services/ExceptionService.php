@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Services;
 class ExceptionService
 {
 
-    public static function exceptionNoAppointmentsAtLocation(){
+    public static function noAppointmentsAtLocation(){
 
         $errors[] = [
             'errorCode' => 'noAppointmentForThisOffice',
@@ -17,7 +17,7 @@ class ExceptionService
 
     }
 
-    public static function exceptionAppointmentNotFound(){
+    public static function appointmentNotFound(){
 
         $errors[] = [
             'errorCode' => 'appointmentNotFound',
@@ -26,6 +26,17 @@ class ExceptionService
         ];
 
         return ['errors' => $errors, 'status' => 404];
+
+    }
+
+    public static function tooManyAppointmentsWithSameMail(){
+        $errors[] = [ 
+            'errorCode' => 'tooManyAppointmentsWithSameMail',
+            'errorMessage' => 'Zu viele Termine mit gleicher E-Mail- Adresse.',
+            'status' => 406,
+        ];
+
+        return ['errors' => $errors, 'status' => 406];
 
     }
 

@@ -429,7 +429,7 @@ class ZmsApiFacadeService
             ];
 
         } catch (\Exception $e) {
-            return ExceptionService::exceptionNoAppointmentsAtLocation();
+            return ExceptionService::noAppointmentsAtLocation();
         }
     }
     public static function getFreeAppointments(array $params)
@@ -590,7 +590,7 @@ class ZmsApiFacadeService
 
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'kein Termin gefunden') !== false) {
-                return ExceptionService::exceptionAppointmentNotFound();
+                return ExceptionService::appointmentNotFound();
             } else {
                 return [
                     'errorCode' => 'unexpectedError',
@@ -603,6 +603,7 @@ class ZmsApiFacadeService
 
     public static function updateClientData($reservedProcess)
     {
+        
         $clientUpdateResult = ZmsApiClientService::submitClientData($reservedProcess);
 
         if (!isset($clientUpdateResult['error'])) {
