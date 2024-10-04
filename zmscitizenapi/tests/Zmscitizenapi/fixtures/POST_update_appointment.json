@@ -1,0 +1,166 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2024-09-24T16:48:37+02:00",
+        "server": "Zmsapi-ENV ()"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "customTextfield": "Some custom text",
+        "appointments": [
+            {
+                "date": 1727865900,
+                "scope": {
+                    "id": "228",
+                    "source": "dldb"
+                },
+                "availability": {
+                    "id": "6712",
+                    "weekday": {
+                        "sunday": "0",
+                        "monday": "0",
+                        "tuesday": "0",
+                        "wednesday": "8",
+                        "thursday": "0",
+                        "friday": "0",
+                        "saturday": "0"
+                    },
+                    "repeat": {
+                        "afterWeeks": "1",
+                        "weekOfMonth": "0"
+                    },
+                    "bookable": {
+                        "startInDays": "0",
+                        "endInDays": "30"
+                    },
+                    "workstationCount": {
+                        "public": "1",
+                        "callcenter": "0",
+                        "intern": "1"
+                    },
+                    "lastChange": 1727247741,
+                    "multipleSlotsAllowed": "1",
+                    "slotTimeInMinutes": "5",
+                    "startDate": 1727820000,
+                    "endDate": 1735599600,
+                    "startTime": "07:30:00",
+                    "endTime": "12:50:00",
+                    "type": "appointment",
+                    "scope": {
+                        "id": "228"
+                    },
+                    "description": "Terminserie-Pass Mittwoch"
+                },
+                "slotCount": "1"
+            }
+        ],
+        "apiclient": {
+            "shortname": "default"
+        },
+        "authKey": "fb43",
+        "clients": [
+            {
+                "familyName": "Smith",
+                "email": "test@muenchen.de",
+                "emailSendCount": "0",
+                "notificationsSendCount": "0",
+                "surveyAccepted": "0",
+                "telephone": "123456789"
+            }
+        ],
+        "createIP": "172.19.0.1",
+        "createTimestamp": "1727853590",
+        "id": "101002",
+        "archiveId": 0,
+        "queue": {
+            "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+            "arrivalTime": 1727865900,
+            "callCount": "0",
+            "callTime": 0,
+            "number": "101002",
+            "waitingTimeEstimate": 0,
+            "waitingTimeOptimistic": 0,
+            "waitingTime": null,
+            "wayTime": null,
+            "status": "confirmed",
+            "lastCallTime": 0,
+            "destination": null,
+            "destinationHint": null,
+            "withAppointment": "1"
+        },
+        "reminderTimestamp": "0",
+        "requests": [
+            {
+                "id": "10242339",
+                "link": "https://service.berlin.de/dienstleistung/10242339/",
+                "name": "Adressänderung Personalausweis, Reisepass, eAT",
+                "group": "Sonstiges",
+                "source": "dldb",
+                "data": {
+                    "authorities": [
+                        {
+                            "id": "1",
+                            "name": "X",
+                            "webinfo": "https://www.berlin.de/sen/finanzen/"
+                        }
+                    ],
+                    "locations": [
+                        {
+                            "location": "102522",
+                            "authority": {
+                                "id": "1",
+                                "name": "X",
+                                "webinfo": "https://www.berlin.de/sen/finanzen/"
+                            },
+                            "url": "https://zms-demo.muenchen.de/buergeransicht/#/services/10242339/locations/102522",
+                            "appointment": {
+                                "link": "https://zms-demo.muenchen.de/buergeransicht/#/services/10242339/locations/102522",
+                                "slots": "0",
+                                "external": false,
+                                "multiple": "1",
+                                "allowed": true
+                            },
+                            "hint": false
+                        }
+                    ],
+                    "meta": {
+                        "lastupdate": "2024-09-25T10:02:05",
+                        "url": "https://zms-demo.muenchen.de/buergeransicht/#/services/10242339",
+                        "locale": "de",
+                        "keywords": "",
+                        "translated": true,
+                        "hash": "",
+                        "id": "10242339"
+                    },
+                    "id": "10242339",
+                    "description": "<p>Es empfiehlt sich, die Adresse in sämtlichen Ausweisdokumenten gleichzeitig mit der Anmeldung zu ändern.</p>",
+                    "links": [
+                        {
+                            "name": "Datenschutzgrundverordnung",
+                            "link": "https://stadt.muenchen.de/infos/dsgvo-datenschutzgrundverordnung.html",
+                            "description": false
+                        }
+                    ],
+                    "forms": [
+                        {
+                            "name": "Datenschutzgrundverordnung",
+                            "link": "https://stadt.muenchen.de/infos/dsgvo-datenschutzgrundverordnung.html",
+                            "description": false
+                        }
+                    ],
+                    "name": "Adressänderung Personalausweis, Reisepass, eAT",
+                    "appointment": {
+                        "link": "https://zms-demo.muenchen.de/buergeransicht/#/services/10242339"
+                    },
+                    "maxQuantity": 5,
+                    "public": true,
+                    "fees": "gebührenfrei",
+                    "duration": 5
+                }
+            }
+        ]
+    }
+}

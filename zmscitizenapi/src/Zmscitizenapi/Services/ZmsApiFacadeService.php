@@ -11,7 +11,7 @@ class ZmsApiFacadeService
     {
         $scopeList = ZmsApiClientService::getScopes() ?? [];
         $providerProjectionList = [];
-    
+
         foreach (ZmsApiClientService::getOffices() as $provider) {
             $matchingScope = null;
             foreach ($scopeList as $scope) {
@@ -20,12 +20,12 @@ class ZmsApiFacadeService
                     break;
                 }
             }
-    
+
             $providerData = [
                 "id" => $provider->id,
                 "name" => $provider->displayName ?? $provider->name,
             ];
-    
+
             if ($matchingScope) {
                 $providerData["scope"] = [
                     "id" => $matchingScope->id,
@@ -40,16 +40,16 @@ class ZmsApiFacadeService
                     "displayInfo" => $matchingScope->getDisplayInfo()
                 ];
             }
-    
+
             $providerProjectionList[] = $providerData;
         }
-    
+
         return [
             "offices" => $providerProjectionList,
             "status" => 200
         ];
     }
-    
+
 
     public static function getScopes()
     {
@@ -429,8 +429,7 @@ class ZmsApiFacadeService
             ];
 
         } catch (\Exception $e) {
-            //error_log('Error in AvailableDaysService: ' . $e->getMessage());
-            return ExceptionService::exceptionNoAppointmentsAtLocation();
+            return ExceptionService::noAppointmentsAtLocation();
         }
     }
     public static function getFreeAppointments(array $params)
@@ -462,13 +461,11 @@ class ZmsApiFacadeService
 
             $psr7Response = $freeSlots->getResponse();
             $responseBody = (string) $psr7Response->getBody();
-
             $responseBody = json_decode($responseBody, true);
 
             return $responseBody['data'];
 
         } catch (\Exception $e) {
-            //error_log('Error in AvailableAppointmentsService: ' . $e->getMessage());
             return [
                 'appointmentTimestamps' => [],
                 'errorCode' => 'internalError',
@@ -528,7 +525,7 @@ class ZmsApiFacadeService
 
     private static function processFreeSlots($freeSlots)
     {
-        
+
         $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
         if (!empty($errors['errors'])) {
             return $errors;
@@ -593,11 +590,7 @@ class ZmsApiFacadeService
 
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'kein Termin gefunden') !== false) {
-                return [
-                    'errorCode' => 'appointmentNotFound',
-                    'errorMessage' => 'Termin wurde nicht gefunden.',
-                    'status' => 404,
-                ];
+                return ExceptionService::appointmentNotFound();
             } else {
                 return [
                     'errorCode' => 'unexpectedError',
@@ -608,13 +601,18 @@ class ZmsApiFacadeService
         }
     }
 
+    public static function updateClientData($reservedProcess)
+    {
+        
+        $clientUpdateResult = ZmsApiClientService::submitClientData($reservedProcess);
 
-    /* Todo add method
-     * updateClientData
-     * 
-     * 
-     * 
-     */
+        if (!isset($clientUpdateResult['error'])) {
+            return $clientUpdateResult;
+        }
+
+        return $clientUpdateResult;
+    }
+
 
     /* Todo add method
      * preconfirmAppointment
@@ -639,3 +637,5 @@ class ZmsApiFacadeService
      */
 
 }
+
+
