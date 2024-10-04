@@ -17,7 +17,7 @@ class AppointmentGetTest extends Base
                     'url' => '/process/101002/fb43/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                    ],                    
+                    ],
                     'response' => $this->readFixture("GET_process.json")
                 ]
             ]
@@ -29,7 +29,7 @@ class AppointmentGetTest extends Base
         ];
 
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'processId' => '101002',
             'timestamp' => 1724907600,
@@ -165,7 +165,7 @@ class AppointmentGetTest extends Base
         ];
 
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 [
@@ -186,7 +186,7 @@ class AppointmentGetTest extends Base
         ];
 
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 [
@@ -208,7 +208,7 @@ class AppointmentGetTest extends Base
         ];
 
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 [
@@ -230,7 +230,7 @@ class AppointmentGetTest extends Base
         ];
 
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 [
@@ -249,7 +249,7 @@ class AppointmentGetTest extends Base
         $parameters = [];
 
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 [
@@ -277,26 +277,31 @@ class AppointmentGetTest extends Base
                     'url' => '/process/101002/fb43/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                    ],                    
+                    ],
                     'exception' => new \Exception('API-Error: Zu den angegebenen Daten konnte kein Termin gefunden werden.')
                 ]
             ]
         );
-    
+
         $parameters = [
             'processId' => '101002',
             'authKey' => 'fb43',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);   
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
-            'errorCode' => 'appointmentNotFound',
-            'errorMessage' => 'Termin wurde nicht gefunden.',
-            'status' => 404,
+            'errors' => [
+                [
+                    'errorCode' => 'appointmentNotFound',
+                    'errorMessage' => 'Termin wurde nicht gefunden.',
+                    'status' => 404,
+                ]
+            ],
+            'status' => 404
         ];
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
-    
+
 }

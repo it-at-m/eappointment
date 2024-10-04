@@ -83,28 +83,28 @@ class ValidationService
                 'errorMessage' => 'date is required and must be a valid date.',
             ];
         }
-    
+
         if (!$officeId || !is_numeric($officeId)) {
             $errors[] = [
                 'status' => 400,
                 'errorMessage' => 'officeId should be a 32-bit integer.',
             ];
         }
-    
+
         if (empty($serviceIds[0]) || !preg_match('/^\d+(,\d+)*$/', implode(',', $serviceIds))) {
             $errors[] = [
                 'status' => 400,
                 'errorMessage' => 'serviceId should be a comma-separated string of integers.',
             ];
         }
-    
+
         if (empty($serviceCounts[0]) || !preg_match('/^\d+(,\d+)*$/', implode(',', $serviceCounts))) {
             $errors[] = [
                 'status' => 400,
                 'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
             ];
         }
-    
+
         return ['errors' => $errors, 'status' => 400];
     }
     public static function validatePostAppointmentReserve($officeId, $serviceIds, $serviceCounts, $captchaSolution, $timestamp)
@@ -184,7 +184,8 @@ class ValidationService
         return ['errors' => $errors, 'status' => 400];
     }
 
-    public static function validateGetServicesByOfficeIds($officeIds){
+    public static function validateGetServicesByOfficeIds($officeIds)
+    {
 
         $errors = [];
         if (empty($officeIds) || $officeIds == ['']) {
@@ -234,7 +235,7 @@ class ValidationService
         if (!$process) {
             $errors[] = [
                 'errorCode' => 'appointmentNotAvailable',
-                'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.',                
+                'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.',
                 'status' => 404,
             ];
         }
@@ -248,7 +249,7 @@ class ValidationService
         if (empty($scopes)) {
             $errors[] = [
                 'errorCode' => 'scopesNotFound',
-                'errorMessage' => 'Scope(s) not found.',                
+                'errorMessage' => 'Scope(s) not found.',
                 'status' => 404,
             ];
         }
@@ -262,7 +263,7 @@ class ValidationService
         if (empty($services)) {
             $errors[] = [
                 'errorCode' => 'servicesNotFound',
-                'errorMessage' => 'Service(s) not found for the provided officeId(s).',                
+                'errorMessage' => 'Service(s) not found for the provided officeId(s).',
                 'status' => 404,
             ];
         }
@@ -276,7 +277,7 @@ class ValidationService
         if (empty($offices)) {
             $errors[] = [
                 'errorCode' => 'officesNotFound',
-                'errorMessage' => 'Office(s) not found for the provided serviceId(s).',                
+                'errorMessage' => 'Office(s) not found for the provided serviceId(s).',
                 'status' => 404,
             ];
         }
@@ -298,7 +299,8 @@ class ValidationService
         return ['errors' => $errors, 'status' => 404];
     }
 
-    public static function validateNoAppointmentsAtLocation(){
+    public static function validateNoAppointmentsAtLocation()
+    {
 
         $errors[] = [
             'errorCode' => 'noAppointmentForThisScope',
@@ -310,4 +312,59 @@ class ValidationService
 
     }
 
+    public static function validateUpdateAppointmentInputs($processId, $authKey, $familyName, $email, $telephone, $customTextfield)
+    {
+        $errors = [];
+
+        if (!$processId || !is_numeric($processId) || intval($processId) <= 0) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'processId should be a positive 32-bit integer.',
+            ];
+        }
+
+        if (!$authKey || !is_string($authKey)) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'authKey should be a non-empty string.',
+            ];
+        }
+
+        if (!$familyName || !is_string($familyName)) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'familyName should be a non-empty string.',
+            ];
+        }
+
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'email should be a valid email address.',
+            ];
+        }
+
+        if ($telephone !== null && !$telephone || !preg_match('/^\d{7,15}$/', $telephone)) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.',
+            ];
+        }
+
+        if ($customTextfield !== null && !is_string($customTextfield)) {
+            $errors[] = [
+                'status' => 400,
+                'errorMessage' => 'customTextfield should be a string.',
+            ];
+        }
+
+        if (!empty($errors)) {
+            return ['errors' => $errors, 'status' => 400];
+        }
+
+        return ['status' => 200, 'message' => 'Valid input for updating appointment.'];
+    }
+
+
 }
+

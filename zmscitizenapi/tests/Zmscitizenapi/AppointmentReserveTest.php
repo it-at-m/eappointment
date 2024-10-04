@@ -28,7 +28,7 @@ class AppointmentReserveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
-                    'response' => $this->readFixture("POST_reserve_timeslot.json")
+                    'response' => $this->readFixture("POST_reserve_appointment.json")
                 ]
             ]
         );
@@ -44,13 +44,13 @@ class AppointmentReserveTest extends Base
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
-            'processId' => '101142',
+            'processId' => '101002',
             'timestamp' => 32526616522,
-            'authKey' => 'b93e',
-            'familyName' => '',
+            'authKey' => 'fb43',
+            'familyName' => 'Smith',
             'customTextfield' => '',
             'email' => 'test@muenchen.de',
-            'telephone' => '',
+            'telephone' => '123456789',
             'officeName' => null,
             'officeId' => '10546',
             'scope' => [

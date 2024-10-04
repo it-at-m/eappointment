@@ -44,7 +44,8 @@ class ZmsApiClientService
 
     }
 
-    public static function getRequestRelationList(){
+    public static function getRequestRelationList()
+    {
 
         $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
             'resolveReferences' => 2,
@@ -89,15 +90,14 @@ class ZmsApiClientService
         }
 
         $psr7Response = $result->getResponse();
-        $responseBody = (string) $psr7Response->getBody();    
-        
+
         return $result;
     }
 
     public static function reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts)
     {
         $requests = [];
-    
+
         foreach ($serviceIds as $index => $serviceId) {
             $count = intval($serviceCounts[$index]);
             for ($i = 0; $i < $count; $i++) {
@@ -109,32 +109,61 @@ class ZmsApiClientService
         }
 
         $processEntity = new ProcessEntity();
-    
+
         $processEntity->appointments = $appointmentProcess['appointments'] ?? [];
         $processEntity->authKey = $appointmentProcess['authKey'] ?? null;
         $processEntity->clients = $appointmentProcess['clients'] ?? [];
-    
+
         $processEntity->scope = $appointmentProcess['scope'] ?? null;
         $processEntity->requests = $requests;
         $processEntity->lastChange = $appointmentProcess['lastChange'] ?? time();
-    
+
 
         $processEntity->createIP = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
         $processEntity->createTimestamp = time();
-    
+
         if (isset($appointmentProcess['queue'])) {
             $processEntity->queue = $appointmentProcess['queue'];
         }
-    
+
         $result = \App::$http->readPostResult('/process/status/reserved/', $processEntity);
-    
+
         return $result->getEntity();
     }
 
-    public function submitClientData($process)
+    public static function submitClientData($process)
     {
-        $url = "/process/{$process['id']}/{$process['authKey']}/";
-        return \App::$http->readPostResult($url, $process)->getEntity();
+        $processEntity = new ProcessEntity();
+        $processEntity->id = $process['data']['processId'] ?? null;
+        $processEntity->authKey = $process['data']['authKey'] ?? null;
+        $processEntity->appointments = $process['appointments'] ?? [];
+        $processEntity->clients = $process['clients'] ?? [];
+        $processEntity->scope = $process['data']['scope'] ?? null;
+        $processEntity->customTextfield = $process['customTextfield'] ?? null;
+        $processEntity->lastChange = $process['lastChange'] ?? time();
+
+        if (isset($process['queue'])) {
+            $processEntity->queue = $process['queue'];
+        }
+
+        $processEntity->createIP = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $processEntity->createTimestamp = time();
+
+        $url = "/process/{$processEntity->id}/{$processEntity->authKey}/";
+
+        try {
+            $result = \App::$http->readPostResult($url, $processEntity);
+            return $result->getEntity();
+        } catch (\Exception $e) {
+            $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
+            if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
+                $exception = [
+                    'exception' => 'tooManyAppointmentsWithSameMail'
+                ];
+                return $exception;
+            }
+        }
+
     }
 
     public function preconfirmProcess($process)
