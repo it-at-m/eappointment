@@ -68,7 +68,7 @@ class AppointmentUpdateTest extends Base
 
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail';
-    
+
         $this->setApiCalls(
             [
                 [
@@ -86,7 +86,7 @@ class AppointmentUpdateTest extends Base
                 ]
             ]
         );
-    
+
         $parameters = [
             'processId' => '101002',
             'authKey' => 'fb43',
@@ -95,9 +95,9 @@ class AppointmentUpdateTest extends Base
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
         ];
-    
+
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);      
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 [
@@ -108,11 +108,11 @@ class AppointmentUpdateTest extends Base
             ],
             'status' => 406
         ];
-    
+
         $this->assertEquals(406, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
-    
+
     public function testAppointmentNotFound()
     {
         $this->setApiCalls(

@@ -155,18 +155,15 @@ class ZmsApiClientService
             $result = \App::$http->readPostResult($url, $processEntity);
             return $result->getEntity();
         } catch (\Exception $e) {
-            error_log('Caught Exception: ' . $e->getMessage());
             $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
-            error_log('Exception Name: ' . $exceptionName);
             if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
-                error_log("here");
                 $exception = [
                     'exception' => 'tooManyAppointmentsWithSameMail'
                 ];
                 return $exception;
             }
         }
-        
+
     }
 
     public function preconfirmProcess($process)

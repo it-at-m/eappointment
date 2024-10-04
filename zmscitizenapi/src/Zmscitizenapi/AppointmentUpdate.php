@@ -31,7 +31,7 @@ class AppointmentUpdate extends BaseController
         }
 
         try {
-            
+
             $reservedProcess = ZmsApiFacadeService::getProcessById($processId, $authKey);
             if (!empty($reservedProcess['errors'])) {
                 return $this->createJsonResponse($response, $reservedProcess, 404);
