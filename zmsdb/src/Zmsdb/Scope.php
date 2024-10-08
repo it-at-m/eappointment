@@ -99,7 +99,7 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
-                        $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                        $entity = $this->readResolvedReferences($entity, $resolveReferences - 1);
                         $scopeList->addEntity($entity);
                     }
                 }
