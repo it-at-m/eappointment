@@ -33,7 +33,7 @@ class Info extends BaseController
 
         $lastClient = $filteredQueue->getLast();
         $waitingTimeFull = $lastClient ? $lastClient->waitingTimeEstimate : 0;
-        $waitingTimeOptim = $lastClient ? $lastClient->waitingTimeOptimistic : 0;
+        $waitingTimeOptimistic = $lastClient ? $lastClient->waitingTimeOptimistic : 0;
 
         return Render::withHtml(
             $response,
@@ -42,7 +42,7 @@ class Info extends BaseController
                 'calldisplay' => $calldisplay,
                 'waitingClients' => $filteredQueue->count(),
                 'waitingTime' => $waitingTimeFull,
-                'waitingTimeOptimistic' => $waitingTimeOptim
+                'waitingTimeOptimistic' => $waitingTimeOptimistic
             )
         );
     }
