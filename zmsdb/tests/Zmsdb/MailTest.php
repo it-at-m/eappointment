@@ -187,9 +187,6 @@ class MailTest extends Base
                             "telephoneActivated" => "1",
                             "telephoneRequired" => "1"
                         ],
-                        "logs" => [
-                            "deleteLogsOlderThanDays" => 90
-                        ],
                         "notifications" => [
                             "confirmationContent" => "",
                             "enabled" => "1",

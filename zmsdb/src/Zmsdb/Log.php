@@ -132,12 +132,11 @@ class Log extends Base
         return $short;
     }
 
-    public function clearOldDataForScope(string $scopeId, int $olderThan)
+    public function clearDataOlderThan(int $olderThan)
     {
         $olderThanDate = (new \DateTime())->modify('-' . $olderThan . ' days');
 
         $query = new Query\Log(Query\Base::UPDATE);
-        $query->addConditionScopeId($scopeId);
         $query->addConditionOlderThan($olderThanDate);
         $query->addValues([
             'data' => null

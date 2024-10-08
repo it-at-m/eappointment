@@ -162,7 +162,6 @@ class Scope extends Base implements MappingInterface
             'preferences__client__telephoneRequired' => 'scope.telefonPflichtfeld',
             'preferences__client__appointmentsPerMail' => 'scope.appointments_per_mail',
             'preferences__client__slotsPerAppointment' => 'scope.slots_per_appointment',
-            'preferences__logs__deleteLogsOlderThanDays' => 'scope.delete_logs_older_than_days',
             'preferences__client__whitelistedMails' => 'scope.whitelisted_mails',
             'preferences__client__customTextfieldActivated' => 'scope.custom_text_field_active',
             'preferences__client__customTextfieldRequired' => 'scope.custom_text_field_required',
@@ -311,7 +310,6 @@ class Scope extends Base implements MappingInterface
         $data['captcha_activated_required'] = $entity->getPreference('client', 'captchaActivatedRequired');
         $data['appointments_per_mail'] = (int) $entity->getPreference('client', 'appointmentsPerMail');
         $data['slots_per_appointment'] = (int) $entity->getPreference('client', 'slotsPerAppointment');
-        $data['delete_logs_older_than_days'] = (int) $entity->getPreference('logs', 'deleteLogsOlderThanDays');
         $data['info_for_appointment'] = $entity->getPreference('appointment', 'infoForAppointment');
         $data['whitelisted_mails'] = $entity->getPreference('client', 'whitelistedMails');
         $data['admin_mail_on_appointment'] = $entity->getPreference('client', 'adminMailOnAppointment', true);
@@ -402,9 +400,6 @@ class Scope extends Base implements MappingInterface
         }
         if (!$data[$this->getPrefixed('preferences__client__slotsPerAppointment')]) {
             $data[$this->getPrefixed("preferences__client__slotsPerAppointment")] = null;
-        }
-        if (!$data[$this->getPrefixed('preferences__logs__deleteLogsOlderThanDays')]) {
-            $data[$this->getPrefixed("preferences__logs__deleteLogsOlderThanDays")] = 90;
         }
         if (!$data[$this->getPrefixed('preferences__client__whitelistedMails')]) {
             $data[$this->getPrefixed("preferences__client__whitelistedMails")] = null;
