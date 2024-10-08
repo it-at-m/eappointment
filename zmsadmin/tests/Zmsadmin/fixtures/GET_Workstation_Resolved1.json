@@ -67,17 +67,6 @@
             "telephoneActivated": "0",
             "telephoneRequired": 0
           },
-          "logs": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "deleteLogsOlderThanDays": {
-                "type": "string",
-                "description": "Number of days after which is log deleted",
-                "default": ""
-              }
-            }
-          },
           "notifications": {
             "confirmationContent": "",
             "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",

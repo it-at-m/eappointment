@@ -304,9 +304,6 @@
                         "telephoneActivated": true,
                         "telephoneRequired": false
                     },
-                    "logs": {
-                        "deleteLogsOlderThanDays": 90
-                    },
                     "notifications": {
                         "confirmationContent": "Ihr Termin wurde erfolgreich gebucht mit der Nummer: ",
                         "headsUpTime": 15,
@@ -585,17 +582,6 @@
                                     ],
                                     "description": "deleted mail is sent to admin",
                                     "default": false
-                                }
-                            }
-                        },
-                        "logs": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                                "deleteLogsOlderThanDays": {
-                                    "type": "string",
-                                    "description": "Number of days after which is log deleted",
-                                    "default": ""
                                 }
                             }
                         },
