@@ -47,6 +47,7 @@
                                         {% endif %}
                                         {% if rights.availability or rights.superuser %}
                                             <a  class="float-right button-edit-availabilty" href="{{ urlGet('scopeAvailabilityMonth', {'id':clusterScope.id}, {}) }}" title="Öffnungszeiten">Öffnungszeiten</a>
+                                            <span class="float-right"><a href="{{ urlGet('mailtemplatesScope', {'scopeId': clusterScope.id}, {}) }}" title="E-Mail Templates">E-Mail Templates</a>&nbsp;</span>
                                         {% endif %}
                                     </li>
                                 {% endfor %}
@@ -64,6 +65,7 @@
                                     {% endif %}
                                     {% if rights.availability or rights.superuser %}
                                         <a class="float-right button-edit-availabilty" href="{{ urlGet('scopeAvailabilityMonth', {'id':scope.id}, {}) }}" title="Öffnungszeiten">Öffnungszeiten</a>
+                                        <span class="float-right"><a href="{{ urlGet('mailtemplatesScope', {'scopeId': scope.id}, {}) }}" title="E-Mail Templates">E-Mail Templates</a>&nbsp;</span>
                                     {% endif %}
                                 </li>
                             {% endfor %}
