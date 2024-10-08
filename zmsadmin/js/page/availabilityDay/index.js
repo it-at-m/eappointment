@@ -68,6 +68,8 @@ class AvailabilityPage extends Component {
     }
 
     onPublishAvailability() {
+        this.getValidationList();
+        this.getConflictList();
         let state = {};
         state = { selectedAvailability: null }
         this.setState(state, () => {
@@ -413,17 +415,22 @@ class AvailabilityPage extends Component {
     hasErrors(availability) {
         let hasError = false;
         let hasConflict = false;
-        Object.values(this.state.errorList).forEach(errorItem => {
-            if (availability.id === errorItem.id)
-                hasError = true;
-        })
 
-        Object.values(this.state.conflictList.conflictIdList).forEach(id => {
-            if (availability.id === id)
-                hasConflict = true;
-        })
-        
-        return (hasError || hasConflict);
+        if (this.state.errorList) {
+            Object.values(this.state.errorList).forEach(errorItem => {
+                if (availability.id === errorItem.id)
+                    hasError = true;
+            });
+        }
+
+        if (this.state.conflictList && this.state.conflictList.conflictIdList) {
+            this.state.conflictList.conflictIdList.forEach(id => {
+                if (availability.id === id)
+                    hasConflict = true;
+            });
+        }
+
+        return hasError || hasConflict;
     }
 
     getValidationList(list = []) {
