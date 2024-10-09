@@ -30,7 +30,7 @@ class UseraccountByDepartment extends BaseController
         $department = App::$http->readGetResult("/department/$departmentId/")->getEntity();
         $useraccountList = App::$http->readGetResult(
             "/department/$departmentId/useraccount/",
-            ['resolveReferences' => 0]
+            ['resolveReferences' => 1]
         )->getCollection();
         $workstationList = App::$http->readGetResult(
             "/department/$departmentId/workstation/",
@@ -40,10 +40,9 @@ class UseraccountByDepartment extends BaseController
 
         /** @var Workstation $workstationItem */
         foreach ($workstationList as $workstationItem) {
-            if ($scopeId = $workstationItem->getScope()->getId()) {
-                $workstationItem->scope = $scopeList->getEntity($scopeId);
-            }
+            $workstationItem->scope = $scopeList->getEntity($workstationItem->getScope()->getId());
         }
+
         $ownerList = App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
         return Render::withHtml(
