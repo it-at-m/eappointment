@@ -30,7 +30,7 @@ class UseraccountByDepartmentTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/department/74/useraccount/',
-                    'parameters' => ['resolveReferences' => 0],
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_useraccountlist_department_74.json")
                 ],
                 [
