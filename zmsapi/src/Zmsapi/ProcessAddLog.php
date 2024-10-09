@@ -36,13 +36,13 @@ class ProcessAddLog extends BaseController
         if ($isError) {
             Query::writeProcessLog(
                 "MTA failed, message=" . $mimepart->content,
-                Query::ACTION_MAIL_SUCCESS,
+                Query::ACTION_MAIL_FAIL,
                 $process
             );
         } else {
             Query::writeProcessLog(
                 "MTA successful, subject=" . $mimepart->content,
-                Query::ACTION_MAIL_FAIL,
+                Query::ACTION_MAIL_SUCCESS,
                 $process
             );
         }
