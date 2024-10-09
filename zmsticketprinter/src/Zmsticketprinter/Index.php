@@ -64,11 +64,13 @@ class Index extends BaseController
         }
         $template = (new Helper\TemplateFinder($defaultTemplate->getValue()))
             ->setCustomizedTemplate($ticketprinter, $organisation);
+
         return Render::withHtml(
             $response,
             $template->getTemplate(),
             array(
                 'debug' => \App::DEBUG,
+                'refreshInSeconds' => 30,
                 'enabled' => $ticketprinter->isEnabled()
                     || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
                 'title' => 'Wartennumer ziehen',
