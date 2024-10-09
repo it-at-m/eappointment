@@ -34,7 +34,13 @@ class WorkstationProcessParked extends BaseController
         $previousStatus = $process->status;
         $workstation->process->setStatus("parked");
         $workstation->process->setStatusBySettings();
-        $process = (new Query())->updateEntity($process, \App::$now, 0, $process->status, $previousStatus);
+        $process = (new Query())->updateEntity(
+            $process,
+            \App::$now,
+            0,
+            $previousStatus,
+            $workstation->getUseraccount()
+        );
         (new Workstation)->writeRemovedProcess($workstation);
         unset($workstation->process);
 
