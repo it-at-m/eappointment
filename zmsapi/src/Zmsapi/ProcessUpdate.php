@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Zmsdb\Config;
+use BO\Zmsdb\Log;
 use \BO\Zmsdb\Mail;
 use BO\Mellon\Validator;
 use \BO\Zmsdb\Process;
@@ -39,9 +40,9 @@ class ProcessUpdate extends BaseController
         $this->testProcessData($entity, ! $initiator);
 
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
+        $workstation = (new Helper\User($request))->readWorkstation();
 
         if ($slotType || $slotsRequired) {
-            $workstation = (new Helper\User($request))->checkRights();
             $process = Process::init()->updateEntityWithSlots(
                 $entity,
                 \App::$now,
@@ -57,9 +58,28 @@ class ProcessUpdate extends BaseController
                 throw new Exception\Process\ApiclientInvalid();
             }
             $entity->apiclient = $apiClient;
-            $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
+            $process = (new Process)->updateEntity(
+                $entity,
+                \App::$now,
+                $resolveReferences,
+                null,
+                $workstation->getUseraccount()
+            );
         } else {
-            $process = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
+            $process = (new Process)->updateEntity(
+                $entity,
+                \App::$now,
+                $resolveReferences,
+                null,
+                $workstation->getUseraccount()
+            );
+
+            Log::writeProcessLog(
+                "UPDATE (Process::updateEntity) $process ",
+                Log::ACTION_CALLED,
+                $process,
+                $workstation->getUseraccount()
+            );
         }
        
         if ($initiator && $process->hasScopeAdmin() && $process->sendAdminMailOnUpdated()) {

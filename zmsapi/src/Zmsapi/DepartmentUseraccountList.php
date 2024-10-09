@@ -10,29 +10,35 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Useraccount as Query;
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Zmsentities\Useraccount;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class DepartmentUseraccountList extends BaseController
 {
-    /**
-     * @SuppressWarnings(Param)
-     * @return String
-     */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
-    ) {
-        $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
+    ): ResponseInterface
+    {
+        $workstation = (new Helper\User($request, 1))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = Helper\User::checkDepartment($args['id']);
-        
-        $useraccountList = (new Query)->readCollectionByDepartmentId($department->id, $resolveReferences);
-        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+
+        /** @var Useraccount $userAccount */
+        $userAccountList = (new Query)->readCollectionByDepartmentId($department->id, $resolveReferences);
+        foreach ($userAccountList as $userAccount) {
+            if ($resolveReferences < 1 && !$userAccount->getDepartmentById($department->id)) {
+                $userAccount->getDepartmentList()->addEntity($department);
+            }
+        }
+
         $message = Response\Message::create($request);
-        $message->data = $useraccountList;
+        $message->data = $userAccountList;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message, 200);
-        return $response;
+
+        return Render::withJson($response, $message, 200);
     }
 }
