@@ -53,4 +53,9 @@ class Request extends Schema\Entity
     {
         return $this->toProperty()->data->get();
     }
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
 }

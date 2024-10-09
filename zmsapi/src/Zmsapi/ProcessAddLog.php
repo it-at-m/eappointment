@@ -34,16 +34,16 @@ class ProcessAddLog extends BaseController
 
         $isError = Validator::param('error')->isNumber()->setDefault(0)->getValue();
         if ($isError) {
-            Query::writeLogEntry("MTA failed, message=". $mimepart->content,
-                $processId,
-                Query::PROCESS,
-                $process->scope->id
+            Query::writeProcessLog(
+                "MTA failed, message=" . $mimepart->content,
+                Query::ACTION_MAIL_FAIL,
+                $process
             );
         } else {
-            Query::writeLogEntry("MTA successful, subject=". $mimepart->content,
-                $processId,
-                Query::PROCESS,
-                $process->scope->id
+            Query::writeProcessLog(
+                "MTA successful, subject=" . $mimepart->content,
+                Query::ACTION_MAIL_SUCCESS,
+                $process
             );
         }
 
