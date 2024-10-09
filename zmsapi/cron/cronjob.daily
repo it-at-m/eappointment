@@ -19,6 +19,7 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         $API config cron deleteBlacklistedMail|grep -q "$ZMS_ENV" && $BIN/deleteBlacklistedMail --commit
         $API config cron deleteOldAvailabilityData|grep -q "$ZMS_ENV" && $BIN/deleteOldAvailabilityData 28 --commit
         $API config cron deleteOldEventLogEntries|grep -q "$ZMS_ENV" && $BIN/deleteOldEventLogEntries --commit
+        $API config cron deleteOldLogs|grep -q "$ZMS_ENV" && $BIN/deleteOldLogs --commit
         $API config cron sendProcessListToScopeAdmin|grep -q "$ZMS_ENV" && $BIN/sendProcessListToScopeAdmin --commit 141
         $API config cron calculateSlots|grep -q "$ZMS_ENV" && $BIN/calculateSlots --commit --delete
     fi

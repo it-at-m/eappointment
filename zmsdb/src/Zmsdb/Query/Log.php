@@ -27,6 +27,8 @@ class Log extends Base
             'type' => 'log.type',
             'reference' => 'log.reference_id',
             'scope_id' => 'log.scope_id',
+            'user_id' => 'log.user_id',
+            'data' => 'log.data',
             'message' => 'log.message',
             'ts' => 'log.ts'
         ];
@@ -44,5 +46,10 @@ class Log extends Base
     {
         $data[$this->getPrefixed('ts')] = strtotime($data[$this->getPrefixed('ts')]);
         return $data;
+    }
+
+    public function addConditionOlderThan(\DateTime $olderThanDate)
+    {
+        $this->query->where('log.ts', '<', $olderThanDate->format('Y-m-d H:i:s'));
     }
 }
