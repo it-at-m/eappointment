@@ -153,6 +153,7 @@ class AvailabilityPage extends Component {
 
 
     onRevertUpdates() {
+        this.isCreatingExclusion = false
         this.setState(Object.assign({}, getInitialState(this.props), {
             selectedTab: this.state.selectedTab
         }), () => {
