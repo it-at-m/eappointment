@@ -42,6 +42,7 @@ class AvailabilityPage extends Component {
         this.waitintervall = 1000;
         this.errorElement = null;
         this.successElement = null;
+        this.isCreatingExclusion = false
         this.setErrorRef = element => {
             this.errorElement = element
         };
@@ -292,9 +293,15 @@ class AvailabilityPage extends Component {
         const yesterday = selectedDay.clone().subtract(1, 'days')
         const tomorrow = selectedDay.clone().add(1, 'days')
 
+        this.isCreatingExclusion = true;
+
         let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ? 
             parseInt(selectedDay.unix(), 10) : 
             parseInt(yesterday.unix(), 10);
+
+        let name = availability.description;
+        name = name.replaceAll('Ausnahme zu Terminserie ', '');
+        name = name.replaceAll('Fortführung der Terminserie ', '');
 
         const originAvailability = this.editExclusionAvailability(
             Object.assign({}, availability),
@@ -304,11 +311,12 @@ class AvailabilityPage extends Component {
             'origin'
         )
 
+        if (availability.startDate === selectedDay.unix()) {
+            originAvailability.description = `Ausnahme zu Terminserie ` + name;
+        }
+
         let exclusionAvailability = originAvailability;
-        let name = availability.description;
-        name = name.replaceAll('Ausnahme zu Terminserie ', '');
-        name = name.replaceAll('Fortführung der Terminserie ', '');
-        if (originAvailability.startDate <= selectedDay.unix()) {
+        if (originAvailability.startDate < selectedDay.unix()) {
             exclusionAvailability = this.editExclusionAvailability(
                 Object.assign({}, availability),
                 parseInt(selectedDay.unix(), 10), 
@@ -317,7 +325,6 @@ class AvailabilityPage extends Component {
                 'exclusion'
             )
         }
-        
 
         let futureAvailability = originAvailability;
         if (parseInt(tomorrow.unix(), 10) <= availability.endDate) {
@@ -725,6 +732,7 @@ class AvailabilityPage extends Component {
                 this.state.conflictList : 
                 {itemList: {}, conflictIdList: {}}
             }
+            isCreatingExclusion={this.isCreatingExclusion}
         />
     }
 
