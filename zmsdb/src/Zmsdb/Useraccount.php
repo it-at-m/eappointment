@@ -66,6 +66,18 @@ class Useraccount extends Base
         return $collection;
     }
 
+    protected function readList_search($statement, $resolveReferences)
+    {
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $userAccountList = new Collection();
+        while ($userAccountData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $entity = new Entity($query->postProcessJoins($userAccountData));
+            $entity = $this->readResolvedReferences($entity, $resolveReferences);
+            $userAccountList->addEntity($entity);
+        }
+        return $userAccountList;
+    }
+
     /**
      * read list assigned departments
      *
@@ -216,5 +228,40 @@ class Useraccount extends Base
         $query = Query\Useraccount::QUERY_DELETE_ASSIGNED_DEPARTMENTS;
         $userId = $this->readEntityIdByLoginName($loginName);
         return $this->perform($query, [$userId]);
+    }
+
+    public function readSearch(array $parameter, $resolveReferences = 0, $limit = 100)
+    {
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query
+            ->addResolvedReferences($resolveReferences)
+            ->addEntityMapping()
+            ->addLimit($limit);
+
+        if (isset($parameter['query'])) {
+            if (preg_match('#^\d+$#', $parameter['query'])) {
+                $query->addConditionUserId($parameter['query']);
+                $query->addConditionSearch($parameter['query'], true);
+            } else {
+                $query->addConditionSearch($parameter['query']);
+            }
+            unset($parameter['query']);
+        }
+        if (count($parameter)) {
+            $query = $this->addSearchConditions($query, $parameter); //Doesn't do anything
+        }
+
+        $statement = $this->fetchStatement($query);
+        return $this->readList_search($statement, $resolveReferences);
+    }
+
+    protected function addSearchConditions(Query\Useraccount $query, $parameter)
+    {
+        if (isset($parameter['name']) && $parameter['name']) {
+            $exact = (isset($parameter['exact'])) ? $parameter['exact'] : false;
+            $query->addConditionLoginName($parameter['name'], $exact);
+        }
+
+        return $query;
     }
 }

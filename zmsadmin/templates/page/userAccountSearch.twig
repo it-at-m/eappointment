@@ -1,0 +1,14 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+ 
+{% block headline %}
+    {{ headline1("Suche") }}
+{% endblock %}
+
+{% block content %}
+
+    {#% include "block/search/mask.twig" %#}
+    
+    {% include "block/search/userAccountSearchResults.twig" %}
+
+{% endblock %}

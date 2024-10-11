@@ -86,8 +86,6 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-
-
     public function addConditionPassword($password)
     {
         $this->query->where('useraccount.Passworthash', '=', $password);
@@ -109,6 +107,22 @@ class Useraccount extends Base implements MappingInterface
             'useraccount_department.nutzerid'
         );
         $this->query->where('useraccount_department.behoerdenid', '=', $departmentId);
+        return $this;
+    }
+
+    public function addConditionSearch($queryString, $orWhere = false)
+    {
+        $condition = function (\Solution10\SQL\ConditionBuilder $query) use ($queryString) {
+            $queryString = trim($queryString);
+            $query->orWith('useraccount.NutzerID', 'LIKE', "%$queryString%");
+            $query->orWith('useraccount.Name', 'LIKE', "%$queryString%");
+            $query->orWith('useraccount.email', 'LIKE', "%$queryString%");
+        };
+        if ($orWhere) {
+            $this->query->orWhere($condition);
+        } else {
+            $this->query->where($condition);
+        }
         return $this;
     }
 

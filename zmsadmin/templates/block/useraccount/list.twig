@@ -6,7 +6,7 @@
     {% endblock %}
 
     {% block board_body %}
-        <div class="table-responsive-wrapper"> 
+        <div class="table-responsive-wrapper">
             <fieldset>
             {% if useraccountList|length == 0 %}
                 <div class="message message--info" role="alert">
@@ -25,6 +25,7 @@
                         <tr>
                             <th>Loginname</th>
                             <th>Letzter Login</th>
+                            <th>Email-Addresse</th>
                             <th>Aktion</th>
                         </tr>
                     </thead>
@@ -33,6 +34,7 @@
                         <tr>
                             <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
                             <td>{% if useraccount.lastLogin %}{{ useraccount.lastLogin|date("Y-m-d") }}{% endif %}</td>
+                            <td>{% if useraccount.email %}{{ useraccount.email }}{% endif %}</td>
                             <td>
                                 {{ custombutton({ "type":"edit", "class":"link" ,"target": urlGet('useraccountEdit', {'loginname':useraccount.id}, {}), "label":'<i class="fas fa-user-edit" aria-hidden="true"></i> bearbeiten' }) }}
                             </td>

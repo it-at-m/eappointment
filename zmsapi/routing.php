@@ -1586,6 +1586,91 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("DepartmentUseraccountList");
 
+
+
+/**
+ *  @swagger
+ *  "/useraccount/search/":
+ *      get:
+ *          summary: Get a list of search results for user accounts
+ *          x-since: 2.11
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id" <- ###########################################
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of user accounts
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ */
+\App::$slim->get(
+    '/useraccount/search/',
+    '\BO\Zmsapi\UseraccountSearch'
+)
+    ->setName("UseraccountSearch");
+
+
+/**
+ *  @swagger
+ *  "/department/{id}/useraccount/search/":
+ *      get:
+ *          summary: Get a list of search results for user accounts by department
+ *          x-since: 2.11
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id" <- ###########################################
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of user accounts
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ */
+\App::$slim->get(
+    '/department/{id:\d{1,11}}/useraccount/search/',
+    '\BO\Zmsapi\UseraccountSearch'
+)
+    ->setName("UseraccountSearch");
+
 /**
  *  @swagger
  *  "/department/{id}/workstation/":
