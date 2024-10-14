@@ -47,7 +47,7 @@
         "bin/deleteDayoffData",
         "bin/deleteOldAvailabilityData",
         "bin/deleteOldEventLogEntries",
-        "bin/deleteOldLogs,
+        "bin/deleteOldLogs",
         "bin/deleteReservedData",
         "bin/deleteSessionData",
         "bin/deleteTicketprinterData",
