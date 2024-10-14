@@ -92,6 +92,9 @@ class Search extends BaseController
         $list = new LogList();
 
         foreach ($logList as $log) {
+            $data = isset($log->data) ? json_decode($log->data, true) : null;
+            $log->data = $data;
+
             if (isset($log->scope_id) && in_array($log->scope_id, $scopeIds)) {
                 $list->addEntity(clone $log);
             }

@@ -1,7 +1,7 @@
 {% extends "layout/main.twig" %}
 {% from 'element/helper/snippets.twig' import headline1 %}
 {% block headline %}
-    {{ headline1("Mail Templates") }}
+    {{ headline1(pageTitle) }}
     <button class="button button-submit" onclick="previewEmail('appointment')">Confirmation</button>
     <button class="button button-submit" onclick="previewEmail('deleted')">Delete</button>
     <button class="button button-submit" onclick="previewEmail('preconfirmed')">Preconfirmed</button>
@@ -103,7 +103,7 @@
 
 
         function saveMailTemplate(templateId, editorId) {
-            const url = '{{ includeUrl() }}/mailtemplates/';
+            const url = '{{ includeUrl() }}/mailtemplates/{{ scopeId }}/';
             const data = {
                 templateId: templateId,
                 templateContent: getContentOfEditor(editorId)
@@ -128,7 +128,7 @@
         }
 
         function deleteCustomization(templateId, editorId) {
-            const url = '{{ includeUrl() }}/mailtemplates/deleteCustomization/';
+            const url = '{{ includeUrl() }}/mailtemplates/deleteCustomization/{{ scopeId }}/';
             const data = {
                 templateId: templateId
             };
@@ -149,7 +149,7 @@
         }
 
         function createCustomization(templateName, editorId) {
-            const url = '{{ includeUrl() }}/mailtemplates/createCustomization/';
+            const url = '{{ includeUrl() }}/mailtemplates/createCustomization/{{ scopeId }}/';
             const data = {
                 templateName: templateName,
                 templateContent: getContentOfEditor(editorId)
@@ -175,18 +175,18 @@
             templateObjects.forEach((templateObject) => {
                 templateObject.templateContent = getContentOfEditor(templateObject.elementId)
             });
-            
-            const url = '{{ includeUrl() }}/mailtemplates/previewEmail/'+mailStatus+'/';
+
+            const url = '{{ includeUrl() }}/mailtemplates/previewEmail/'+mailStatus+'/{{ scopeId }}/';
             const data = {
                 templates: templateObjects
             };
 
             fetch(url, {
-                method: 'POST', 
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data), 
+                body: JSON.stringify(data),
             })
             .then(response => response.json())
             .then(data => {
