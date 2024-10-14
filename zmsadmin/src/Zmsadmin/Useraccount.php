@@ -31,11 +31,11 @@ class Useraccount extends BaseController
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
             $collection = new \BO\Zmsentities\Collection\UseraccountList();
             foreach ($departmentList as $accountDepartment) {
-                $accountUserList = \App::$http
+                $useraccountList = \App::$http
                     ->readGetResult("/department/$accountDepartment->id/useraccount/")
                     ->getCollection();
-                if ($accountUserList) {
-                    $collection = $collection->addList($accountUserList)->withoutDublicates();
+                if ($useraccountList) {
+                    $collection = $collection->addList($useraccountList)->withoutDublicates();
                 }
             }
         }

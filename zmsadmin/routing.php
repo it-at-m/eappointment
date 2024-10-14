@@ -132,9 +132,6 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/useraccount/search/', \BO\Zmsadmin\UseraccountSearch::class)
     ->setName("useraccountSearch");
 
-\App::$slim->get('/department/{id:\d+}/useraccount/search/', \BO\Zmsadmin\UseraccountSearch::class)
-    ->setName("useraccountSearchDepartment");
-
 \App::$slim->post('/department/{id:\d+}/useraccount/logout/', \BO\Zmsadmin\LogoutBySuperuser::class)
     ->setName("logoutBySuperuser");
 

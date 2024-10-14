@@ -9,12 +9,8 @@
 <!-- page useraccountSearch -->
 <div class="grid">
 	<div class="grid__item four-sixths">
-        {% include "block/search/useraccountSearchForm.twig" %}
-		{% if workstationList %}
-		    {% include "block/useraccount/listByDepartment.twig" %}
-		{% else %}
+			{% include "block/search/useraccountSearchForm.twig" %}
 		    {% include "block/search/useraccountSearchResults.twig" %}
-		{% endif %}
 	</div>
 	<div class="grid__item two-sixths">
 		{% include "block/useraccount/departmentlist.twig" %}
