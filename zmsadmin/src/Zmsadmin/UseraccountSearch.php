@@ -21,6 +21,7 @@ class UseraccountSearch extends BaseController
     ) {
         $departmentId = $args['id'] ?? null;
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
         $validator = $request->getAttribute('validator');
         $queryString = $validator->getParameter('query')
             ->isString()
@@ -44,12 +45,13 @@ class UseraccountSearch extends BaseController
         
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/userAccountSearch.twig',
+            'page/useraccountSearch.twig',
             array(
                 'title' => 'User Search',
                 'workstation' => $workstation,
-                'userAccountList' => $userAccountList,
+                'useraccountList' => $userAccountList,
                 'searchUserQuery' => $queryString,
+                'ownerlist' => $ownerList,
                 'menuActive' => 'search'
             )
         );

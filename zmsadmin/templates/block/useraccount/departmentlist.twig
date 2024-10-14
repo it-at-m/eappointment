@@ -1,10 +1,8 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'useraccount-departmentlist', 'messages': 'hide'} %}
 
-
         {% block board_title %}
             Behörde wählen
         {% endblock %}
-
 
         {% block board_body %}
             {% if workstation.useraccount.rights.superuser %}

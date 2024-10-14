@@ -1,62 +1,24 @@
 {% extends "layout/main.twig" %}
 {% from 'element/helper/snippets.twig' import headline1 %}
 {% from 'element/helper/form.twig' import formgroup, formbutton, checkboxfield, selectfield, inputfield %}
-
 {% block headline %}
-    {{ headline1("Nutzer") }}
+{{ headline1("Nutzer") }}
 {% endblock %}
-
 {% block content %}
-    {{ parent() }}
-    <!-- page useraccount -->
-    <div class="grid">
-        <div class="grid__item four-sixths">
-            {% if workstationList %}
-            <h3 class="aural">Nutzersuche</h3>
-            <form method="GET" action="{{ urlGet('useraccountSearchDepartment', {'id': department.id}, {}) }}" class="form--base">
-                {{ formgroup(
-                    {
-                        "label":"Nutzersuche"
-                    },
-                    [{
-                        "type":"input",
-                        "parameter":{
-                            "name":"query",
-                            "value": searchUserQuery
-                        }
-                    }]
-                ) }}
-                <div class="form-actions">
-                    <button class="button button-submit right">Suche</button>
-                </div>
-            </form>
-                {% include "block/useraccount/listByDepartment.twig" %}
-
-            {% else %}
-            <h3 class="aural">Nutzersuche</h3>
-            <form method="GET" action="{{ urlGet('useraccountSearch', {}, {}) }}" class="form--base">
-                {{ formgroup(
-                    {
-                        "label":"Nutzersuche"
-                    },
-                    [{
-                        "type":"input",
-                        "parameter":{
-                            "name":"query",
-                            "value": searchUserQuery
-                        }
-                    }]
-                ) }}
-                <div class="form-actions">
-                    <button class="button button-submit right">Suche</button>
-                </div>
-            </form>
-                {% include "block/useraccount/list.twig" %}
-            {% endif %}
-        </div>
-        <div class="grid__item two-sixths">
-            {% include "block/useraccount/departmentlist.twig" %}
-        </div>
-    </div>
-    <!-- /page useraccount -->
+{{ parent() }}
+<!-- page useraccount -->
+<div class="grid">
+	<div class="grid__item four-sixths">
+        {% include "block/search/useraccountSearchForm.twig" %}
+		{% if workstationList %}
+		    {% include "block/useraccount/listByDepartment.twig" %}
+		{% else %}
+		    {% include "block/useraccount/list.twig" %}
+		{% endif %}
+	</div>
+	<div class="grid__item two-sixths">
+		{% include "block/useraccount/departmentlist.twig" %}
+	</div>
+</div>
+<!-- /page useraccount -->
 {% endblock %}

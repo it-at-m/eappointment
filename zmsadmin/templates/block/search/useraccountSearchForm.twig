@@ -1,0 +1,48 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'useraccount-list board--spaceless', 'messages': 'hide'} %}
+{% from 'element/helper/form.twig' import formgroup, formbutton, checkboxfield, selectfield, inputfield %}
+
+    {% block board_title %}
+    Nutzersuche
+    {% endblock %}
+    
+    {% block board_body %}
+    {% if workstationList %}
+    <form method="GET" action="{{ urlGet('useraccountSearchDepartment', {'id': department.id}, {}) }}" class="form--base">
+        {{ formgroup(
+        {},
+        [{
+        "type":"input",
+        "parameter":{
+        "name":"query",
+        "value": searchUserQuery
+        }
+        }]
+        ) }}
+        <div class="form-actions">
+            <button class="button button-submit right">Suche</button>
+        </div>
+    </form>
+    {% include "block/useraccount/listByDepartment.twig" %}
+    {% else %}
+    <form method="GET" action="{{ urlGet('useraccountSearch', {}, {}) }}" class="form--base">
+        {{ formgroup(
+        {},
+        [{
+        "type":"input",
+        "parameter":{
+        "name":"query",
+        "value": searchUserQuery
+        }
+        }]
+        ) }}
+        <div class="form-actions">
+            <button class="button button-submit right">Suche</button>
+        </div>
+    </form>
+    {% endif %}
+    {% endblock %}
+
+    {% block board_footer %}{% endblock %}
+
+{% endembed %}
+
