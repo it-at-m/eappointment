@@ -201,17 +201,25 @@ class Workstation extends Base
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $dateTime
     ) {
-        $process = (new Process)->updateEntity($process, $dateTime);
+        $processEntity = $process;
+        $process = (new Process)->updateEntity(
+            $process,
+            $dateTime,
+            0,
+            null,
+            $workstation->getUseraccount()
+        );
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process->id);
         $query->addValues(['NutzerID' => $workstation->id]);
         $this->writeItem($query);
         $checksum = sha1($process->id . '-' . $workstation->getUseraccount()->id);
-        Log::writeLogEntry("UPDATE (Workstation::writeAssignedProcess) $checksum ",
-            $process->id,
-            Log::PROCESS,
-            $process->scope->id
+        Log::writeProcessLog(
+            "UPDATE (Workstation::writeAssignedProcess) $checksum ",
+            Log::ACTION_CALLED,
+            $processEntity
         );
+
         return $process;
     }
 
@@ -238,10 +246,11 @@ class Workstation extends Base
                 'parked' => ('parked' == $process->status) ? 1 : 0
             ]
         );
-        Log::writeLogEntry("UPDATE (Workstation::writeRemovedProcess)",
-            $process->id,
-            Log::PROCESS,
-            $process->getScopeId()
+        Log::writeProcessLog(
+            "UPDATE (Workstation::writeRemovedProcess)",
+            Log::ACTION_REMOVED,
+            $process,
+            $workstation->getUseraccount()
         );
         return $this->writeItem($query);
     }

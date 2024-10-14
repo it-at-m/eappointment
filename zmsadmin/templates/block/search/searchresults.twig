@@ -62,10 +62,18 @@
                         <th colspan="7">Log-Ergebnisse:</th>
                     </tr>
                 {% for log in logList %}
+                    {% set data = log.data %}
                     <tr>
                         <td>{{ log.reference }}</td>
                         <td>{{log.ts|date('d.m.Y, H:i:s')}}&nbsp;Uhr</td>
-                        <td colspan="7">{{ log.message }}</td>
+                        <td colspan="7">
+                            {{ log.message }}
+                            {% if data is defined %}
+                            {% for key, value in data %}
+                                <b>{{ key }}</b>: {{ value }}<br/>
+                            {% endfor %}
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
                 {% endif %}
