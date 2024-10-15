@@ -71,9 +71,6 @@
                                     {% if rights.superuser %}
                                         <span class="float-right"><a href="{{ urlGet('mailtemplatesScope', {'scopeId': scope.id}, {}) }}" title="E-Mail Templates">E-Mail Templates</a>&nbsp;</span>
                                     {% endif %}
-                                    {% if rights.superuser %}
-                                        <span class="float-right"><a href="{{ urlGet('mailtemplatesScope', {'scopeId': scope.id}, {}) }}" title="E-Mail Templates">E-Mail Templates</a>&nbsp;</span>
-                                    {% endif %}
                                 </li>
                             {% endfor %}
                         </ul>
