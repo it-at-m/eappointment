@@ -1,6 +1,10 @@
 <template>
-  <h2 tabindex="0">{{ t('service') }}</h2>
-  <div v-if="!service" class="m-component" style="background-color: var(--color-neutrals-blue-xlight)">
+  <h2 tabindex="0">{{ t("service") }}</h2>
+  <div
+    v-if="!service"
+    class="m-component"
+    style="background-color: var(--color-neutrals-blue-xlight)"
+  >
     <div class="container">
       <form class="m-form m-form--default">
         <MucSelect
@@ -11,7 +15,7 @@
           :no-item-found-message="t('noServiceFound')"
         />
       </form>
-      <p>{{ t('oftenSearchedService') }}</p>
+      <p>{{ t("oftenSearchedService") }}</p>
     </div>
   </div>
   <div v-else>
@@ -20,14 +24,17 @@
         v-model="countOfService"
         :label="service.name"
         :max="maxValueOfService"
-        min=1
+        min="1"
       />
     </div>
     <div v-if="service.subServices">
-      <h3 tabindex="0">{{ t('combinableServices') }}</h3>
+      <h3 tabindex="0">{{ t("combinableServices") }}</h3>
       <div class="m-listing">
         <ul class="m-listing__list">
-          <template v-for="(subService) in service.subServices" :key="subService.id">
+          <template
+            v-for="subService in service.subServices"
+            :key="subService.id"
+          >
             <SubserviceListItem
               :sub-service="subService"
               :current-slots="currentSlots"
@@ -39,43 +46,45 @@
       </div>
     </div>
     <div class="wrapper">
-      <ClockSvg/>
+      <ClockSvg />
       <div>
-        <b >{{ t('estimatedDuration') }}</b>
-        <br>
-        {{ t('minutes') }}
+        <b>{{ t("estimatedDuration") }}</b>
+        <br />
+        {{ t("minutes") }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { MucSelect, MucCounter } from "@muenchen/muc-patternlab-vue";
-import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
+import { MucCounter, MucSelect } from "@muenchen/muc-patternlab-vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
+
+import { Office } from "@/api/models/Office";
+import { Relation } from "@/api/models/Relation";
+import { Service } from "@/api/models/Service";
 import ClockSvg from "@/components/Appointment/ClockSvg.vue";
-import {Service} from "@/api/models/Service";
-import {Relation} from "@/api/models/Relation";
-import {computed, inject, onMounted, ref, watch} from "vue";
-import {ServiceImpl} from "@/types/ServiceImpl";
-import {Office} from "@/api/models/Office";
-import {OfficeImpl} from "@/types/OfficeImpl";
-import {SelectedServiceProvider} from "@/types/ServiceTypes";
-import {MAX_SLOTS} from "@/utils/Constants";
+import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
+import { OfficeImpl } from "@/types/OfficeImpl";
+import { ServiceImpl } from "@/types/ServiceImpl";
+import { SelectedServiceProvider } from "@/types/ServiceTypes";
+import { MAX_SLOTS } from "@/utils/Constants";
 
 const props = defineProps<{
-  services: Service[],
-  relations: Relation[],
-  offices: Office[],
-  preselectedServiceId: string | undefined,
-  preselectedOffiveId: string | undefined,
-  t:any
+  services: Service[];
+  relations: Relation[];
+  offices: Office[];
+  preselectedServiceId: string | undefined;
+  preselectedOffiveId: string | undefined;
+  t: any;
 }>();
 
 const emit = defineEmits<{
   (e: "setService"): void;
 }>();
 
-const { selectedService, updateSelectedService } = inject<SelectedServiceProvider>('selectedServiceProvider');
+const { selectedService, updateSelectedService } =
+  inject<SelectedServiceProvider>("selectedServiceProvider");
 const service = ref<ServiceImpl>(selectedService);
 const maxSlotsPerAppointment = ref<number>(25);
 const currentSlots = ref<number>(0);
@@ -106,56 +115,68 @@ const setServiceData = (selectedService: ServiceImpl) => {
   if (selectedService.combinable) {
     let combinable = selectedService.combinable;
     if (typeof combinable[parseInt(selectedService.id)] !== "undefined") {
-      delete combinable[parseInt(selectedService.id)]
+      delete combinable[parseInt(selectedService.id)];
     }
 
-    service.value.subServices = Object.entries(combinable).map(([subServiceId, providers]) => {
-      const subService = props.services.filter(subService => parseInt(subService.id) === parseInt(subServiceId));
-      if (subService && subService.length === 1) {
-        return {
-          id: parseInt(subServiceId),
-          name: subService[0].name,
-          maxQuantity: subService[0].maxQuantity,
-          providers: getProviders(subServiceId, providers),
-          count: 0
+    service.value.subServices = Object.entries(combinable)
+      .map(([subServiceId, providers]) => {
+        const subService = props.services.filter(
+          (subService) => parseInt(subService.id) === parseInt(subServiceId)
+        );
+        if (subService && subService.length === 1) {
+          return {
+            id: parseInt(subServiceId),
+            name: subService[0].name,
+            maxQuantity: subService[0].maxQuantity,
+            providers: getProviders(subServiceId, providers),
+            count: 0,
+          };
         }
-      }
-    }).filter(subService => {
-      if (subService === undefined) return false;
-      if (props.preselectedOffiveId) {
-        return subService.providers.some(provider => provider.id === props.preselectedOffiveId);
-      }
-      return true;
-    });
+      })
+      .filter((subService) => {
+        if (subService === undefined) return false;
+        if (props.preselectedOffiveId) {
+          return subService.providers.some(
+            (provider) => provider.id === props.preselectedOffiveId
+          );
+        }
+        return true;
+      });
   }
 
-  const maxSlotsOfProvider = getMaxSlotsPerAppointementOfProvider(service.value.providers);
-  maxSlotsPerAppointment.value = maxSlotsOfProvider > 0 ? Math.min(maxSlotsOfProvider, MAX_SLOTS) : MAX_SLOTS;
+  const maxSlotsOfProvider = getMaxSlotsPerAppointementOfProvider(
+    service.value.providers
+  );
+  maxSlotsPerAppointment.value =
+    maxSlotsOfProvider > 0
+      ? Math.min(maxSlotsOfProvider, MAX_SLOTS)
+      : MAX_SLOTS;
 
   emit("setService");
-
-}
+};
 
 const getProviders = (serviceId: string, providers: Array<string> | null) => {
-  const officesAtService = new Array<OfficeImpl>;
-  props.relations.forEach(relation => {
+  const officesAtService = new Array<OfficeImpl>();
+  props.relations.forEach((relation) => {
     if (relation.serviceId === serviceId) {
-      const foundOffice: OfficeImpl = props.offices.filter(office => {
+      const foundOffice: OfficeImpl = props.offices.filter((office) => {
         return office.id === relation.officeId;
       })[0];
 
       if (!providers || providers.includes(foundOffice.id.toString())) {
-        foundOffice.slots = relation.slots
+        foundOffice.slots = relation.slots;
         officesAtService.push(foundOffice);
       }
     }
   });
 
   return officesAtService;
-}
+};
 
 const changeAppointmentCountOfSubservice = (id: string, count: number) => {
-  const subservice = service.value.subServices?.find(subService => subService.id == id);
+  const subservice = service.value.subServices?.find(
+    (subService) => subService.id == id
+  );
 
   if (subservice != undefined) {
     if (subservice.count < count) {
@@ -165,43 +186,51 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
     }
     subservice.count = count;
   }
-}
+};
 
-const maxValueOfService = computed(
-  () => {
-    return checkPlusEndabled.value ? service.value.maxQuantity : service.value.count ;
-  }
-)
+const maxValueOfService = computed(() => {
+  return checkPlusEndabled.value
+    ? service.value.maxQuantity
+    : service.value.count;
+});
 
-const checkPlusEndabled = computed (() => (currentSlots.value + getMinSlotOfProvider(service.value.providers)) <= maxSlotsPerAppointment.value)
+const checkPlusEndabled = computed(
+  () =>
+    currentSlots.value + getMinSlotOfProvider(service.value.providers) <=
+    maxSlotsPerAppointment.value
+);
 
 const getMinSlotOfProvider = (provider: Array<OfficeImpl>) => {
   let minSlot = MAX_SLOTS;
-  provider.forEach(provider => {
+  provider.forEach((provider) => {
     if (provider.slots) {
       minSlot = Math.min(minSlot, provider.slots);
     }
   });
   return minSlot;
-}
+};
 
 const getMaxSlotsPerAppointementOfProvider = (provider: Array<OfficeImpl>) => {
   let maxSlot = 0;
-  provider.forEach(provider => {
-    if (provider.maxSlotsPerAppointment && parseInt(provider.maxSlotsPerAppointment) > 0) {
+  provider.forEach((provider) => {
+    if (
+      provider.maxSlotsPerAppointment &&
+      parseInt(provider.maxSlotsPerAppointment) > 0
+    ) {
       maxSlot = Math.max(maxSlot, parseInt(provider.maxSlotsPerAppointment));
     }
   });
   return maxSlot;
-}
+};
 
 onMounted(() => {
   if (props.preselectedServiceId) {
-    const preselectedService = props.services.find(service => service.id === props.preselectedServiceId);
+    const preselectedService = props.services.find(
+      (service) => service.id === props.preselectedServiceId
+    );
     if (preselectedService) setServiceData(preselectedService);
   }
-})
-
+});
 </script>
 
 <style scoped>

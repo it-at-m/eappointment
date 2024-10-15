@@ -1,4 +1,4 @@
-import {Provider} from "@/api/models/Provider";
+import { Provider } from "@/api/models/Provider";
 
 /**
  *

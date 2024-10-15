@@ -3,18 +3,19 @@
 </template>
 
 <script setup lang="ts">
-import { provide } from 'vue'
-import {createI18n, I18nInjectionKey} from 'vue-i18n'
-import deDE from './utils/de-DE.json'
-import enUS from './utils/en-US.json'
+import { provide } from "vue";
+import { createI18n, I18nInjectionKey } from "vue-i18n";
+
+import deDE from "./utils/de-DE.json";
+import enUS from "./utils/en-US.json";
 
 const i18n = createI18n({
   legacy: false,
-  locale: 'de-DE',
+  locale: "de-DE",
   messages: {
-    'de-DE': deDE,
-    'en-US': enUS
-  }
+    "de-DE": deDE,
+    "en-US": enUS,
+  },
 });
 
 /**

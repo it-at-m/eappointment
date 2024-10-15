@@ -12,14 +12,18 @@
 </template>
 
 <script setup lang="ts">
-
 import { MucCounter } from "@muenchen/muc-patternlab-vue";
-import {SubService} from "@/types/SubService";
-import {watch, ref, computed} from "vue";
-import {OfficeImpl} from "@/types/OfficeImpl";
-import {MAX_SLOTS} from "@/utils/Constants";
+import { computed, ref, watch } from "vue";
 
-const props = defineProps<{subService: SubService, currentSlots: number, maxSlotsPerAppointment: number}>();
+import { OfficeImpl } from "@/types/OfficeImpl";
+import { SubService } from "@/types/SubService";
+import { MAX_SLOTS } from "@/utils/Constants";
+
+const props = defineProps<{
+  subService: SubService;
+  currentSlots: number;
+  maxSlotsPerAppointment: number;
+}>();
 
 const emit = defineEmits<{
   (e: "change", id: string, count: number): void;
@@ -28,35 +32,32 @@ const emit = defineEmits<{
 const count = ref<number>(0);
 
 watch(count, (newCount) => {
-
   emit("change", props.subService.id, newCount);
-
 });
 
-const maxValue = computed(
-  () => {
-    return checkPlusEndabled.value ? props.subService.maxQuantity : count.value ;
-  }
-)
+const maxValue = computed(() => {
+  return checkPlusEndabled.value ? props.subService.maxQuantity : count.value;
+});
 
-const disabled = computed(
-  () => {
-    return !checkPlusEndabled.value && count.value === 0 ;
-  }
-)
+const disabled = computed(() => {
+  return !checkPlusEndabled.value && count.value === 0;
+});
 
-const checkPlusEndabled = computed (() => (props.currentSlots + getMinSlotOfProvider(props.subService.providers)) <= props.maxSlotsPerAppointment)
+const checkPlusEndabled = computed(
+  () =>
+    props.currentSlots + getMinSlotOfProvider(props.subService.providers) <=
+    props.maxSlotsPerAppointment
+);
 
 const getMinSlotOfProvider = (provider: Array<OfficeImpl>) => {
   let minSlot = MAX_SLOTS;
-  provider.forEach(provider => {
+  provider.forEach((provider) => {
     if (provider.slots) {
       minSlot = Math.min(minSlot, provider.slots);
     }
   });
   return minSlot;
-}
-
+};
 </script>
 
 <style scoped>

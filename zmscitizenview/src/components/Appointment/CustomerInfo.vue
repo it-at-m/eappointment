@@ -13,11 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import {MucInput} from "@muenchen/muc-patternlab-vue";
-import {MucTextArea} from "@muenchen/muc-patternlab-vue";
-
+import { MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
