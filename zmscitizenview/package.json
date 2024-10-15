@@ -1,0 +1,43 @@
+{
+  "name": "@muenchen/zms-appointment-webcomponent",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "build": "vite build --mode production && npm run post-build",
+    "post-build": "node ./processes/post-build.js",
+    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
+    "lint": "eslint . --fix --ignore-path .gitignore",
+    "format": "prettier --write src/",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@muenchen/muc-patternlab-vue": "1.14.0-beta.1",
+    "@unplugin-vue-ce/sub-style": "^1.0.0-beta.16",
+    "vite-plugin-css-injected-by-js": "^3.0.0",
+    "vue": "^3.3.7",
+    "vue-i18n": "^9.14.0",
+    "webfontloader": "^1.0.0"
+  },
+  "devDependencies": {
+    "@muenchen/prettier-codeformat": "^1.0.2",
+    "@babel/types": "^7.21.4",
+    "@types/node": "^20.0.0",
+    "@types/webfontloader": "^1.6.35",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "@vue/eslint-config-typescript": "^13.0.0",
+    "@vue/test-utils": "^2.4.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-vue": "^9.22.0",
+    "typescript": "^5.4.2",
+    "vite": "^5.0.12",
+    "vitest": "^2.0.0",
+    "vue-tsc": "^2.0.0"
+  },
+  "overrides": {
+    "vite-plugin-vuetify": {
+      "make-dir": "5.0.0"
+    }
+  }
+}
