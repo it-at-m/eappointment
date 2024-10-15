@@ -1,8 +1,7 @@
-import {Scope} from "@/api/models/Scope";
-import {Office} from "@/api/models/Office";
+import { Office } from "@/api/models/Office";
+import { Scope } from "@/api/models/Scope";
 
-export class OfficeImpl implements Office{
-
+export class OfficeImpl implements Office {
   id: string;
 
   name: string;

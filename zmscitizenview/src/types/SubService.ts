@@ -1,7 +1,6 @@
-import {OfficeImpl} from "@/types/OfficeImpl";
+import { OfficeImpl } from "@/types/OfficeImpl";
 
 export class SubService {
-
   id: string;
 
   name: string;

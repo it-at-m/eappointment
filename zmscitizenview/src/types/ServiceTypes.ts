@@ -1,5 +1,6 @@
-import {Ref} from "vue";
-import {ServiceImpl} from "@/types/ServiceImpl";
+import { Ref } from "vue";
+
+import { ServiceImpl } from "@/types/ServiceImpl";
 
 export interface SelectedServiceProvider {
   selectedService: Ref<ServiceImpl | undefined>;

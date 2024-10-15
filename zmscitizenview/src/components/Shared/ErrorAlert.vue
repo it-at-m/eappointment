@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import {MucBanner} from "@muenchen/muc-patternlab-vue";
+import { MucBanner } from "@muenchen/muc-patternlab-vue";
 
-defineProps<{message: string}>()
+defineProps<{ message: string }>();
 </script>
 
 <template>
@@ -9,4 +9,3 @@ defineProps<{message: string}>()
     <p v-html="message"></p>
   </muc-banner>
 </template>
-

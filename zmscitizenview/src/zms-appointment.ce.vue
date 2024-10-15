@@ -16,36 +16,36 @@
 </template>
 
 <script lang="ts" setup>
-import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/temporary/muc-icons.svg?raw";
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/temporary/custom-icons.svg?raw";
+import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/temporary/muc-icons.svg?raw";
+import { useI18n } from "vue-i18n";
+
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
-import { useI18n} from "vue-i18n";
 
 defineProps({
   baseUrl: {
     type: String,
-    required: true
+    required: true,
   },
   serviceId: {
     type: String,
-    required: false
+    required: false,
   },
   locationId: {
     type: String,
-    required: false
+    required: false,
   },
   appointmentHash: {
     type: String,
-    required: false
+    required: false,
   },
   confirmAppointmentHash: {
     type: String,
-    required: false
-  }
+    required: false,
+  },
 });
 
 const { t } = useI18n();
-
 </script>
 
 <style>
@@ -54,7 +54,9 @@ const { t } = useI18n();
 @import "@muenchen/muc-patternlab-vue/style.css";
 
 :host {
-  font-family: Open Sans, sans-serif;
+  font-family:
+    Open Sans,
+    sans-serif;
 }
 
 main {

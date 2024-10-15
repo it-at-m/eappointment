@@ -1,9 +1,8 @@
-import {Service} from "@/api/models/Service"
-import {SubService} from "@/types/SubService";
-import {OfficeImpl} from "@/types/OfficeImpl";
+import { Service } from "@/api/models/Service";
+import { OfficeImpl } from "@/types/OfficeImpl";
+import { SubService } from "@/types/SubService";
 
 export class ServiceImpl implements Service {
-
   id: string;
 
   name: string;
@@ -26,7 +25,7 @@ export class ServiceImpl implements Service {
     providers: Array<OfficeImpl> | undefined,
     subServices: Array<SubService> | undefined,
     count: number | undefined
-    ) {
+  ) {
     this.id = id;
     this.name = name;
     this.maxQuantity = maxQuantity;

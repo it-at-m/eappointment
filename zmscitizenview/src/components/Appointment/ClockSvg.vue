@@ -15,7 +15,7 @@
     />
     <mask
       id="mask0_248_9491"
-      style="mask-type:alpha"
+      style="mask-type: alpha"
       maskUnits="userSpaceOnUse"
       x="0"
       y="0"
@@ -78,4 +78,3 @@
     />
   </svg>
 </template>
-

@@ -1,6 +1,6 @@
-import {Office} from "@/api/models/Office";
-import {Service} from "@/api/models/Service";
-import {Relation} from "@/api/models/Relation";
+import { Office } from "@/api/models/Office";
+import { Relation } from "@/api/models/Relation";
+import { Service } from "@/api/models/Service";
 
 /**
  *
