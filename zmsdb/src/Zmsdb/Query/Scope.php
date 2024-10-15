@@ -142,6 +142,7 @@ class Scope extends Base implements MappingInterface
             'contact__country' => self::expression('"Germany"'),
             'lastChange' => 'scope.updateTimestamp',
             'preferences__appointment__deallocationDuration' => 'scope.loeschdauer',
+            'preferences__appointment__infoForAppointment' => 'scope.info_for_appointment',
             'preferences__appointment__endInDaysDefault' => 'scope.Termine_bis',
             'preferences__appointment__multipleSlotsEnabled' => 'scope.mehrfachtermine',
             'preferences__appointment__reservationDuration' => 'scope.reservierungsdauer',
@@ -156,6 +157,7 @@ class Scope extends Base implements MappingInterface
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
             'preferences__client__emailFrom' => 'scopemail.absenderadresse',
             'preferences__client__emailRequired' => 'scope.emailPflichtfeld',
+            'preferences__client__emailConfirmationActivated' => 'scope.email_confirmation_activated',
             'preferences__client__telephoneActivated' => 'scope.telefonaktiviert',
             'preferences__client__telephoneRequired' => 'scope.telefonPflichtfeld',
             'preferences__client__appointmentsPerMail' => 'scope.appointments_per_mail',
@@ -288,6 +290,7 @@ class Scope extends Base implements MappingInterface
         $data['standortkuerzel'] = $entity->shortName;
         $data['Adresse'] = (isset($entity->contact['street'])) ? $entity->contact['street'] : '';
         $data['loeschdauer'] = $entity->getPreference('appointment', 'deallocationDuration');
+        $data['info_for_appointment'] = $entity->getPreference('appointment', 'infoForAppointment');
         $data['Termine_bis'] = $entity->getPreference('appointment', 'endInDaysDefault');
         $data['Termine_ab'] = $entity->getPreference('appointment', 'startInDaysDefault');
         $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled', true);
@@ -298,6 +301,7 @@ class Scope extends Base implements MappingInterface
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
         $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel');
         $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired', true);
+        $data['email_confirmation_activated'] = $entity->getPreference('client', 'emailConfirmationActivated', true);
         $data['telefonaktiviert'] = $entity->getPreference('client', 'telephoneActivated', true);
         $data['telefonPflichtfeld'] = $entity->getPreference('client', 'telephoneRequired', true);
         $data['custom_text_field_active'] = $entity->getPreference('client', 'customTextfieldActivated', true);
@@ -306,6 +310,7 @@ class Scope extends Base implements MappingInterface
         $data['captcha_activated_required'] = $entity->getPreference('client', 'captchaActivatedRequired');
         $data['appointments_per_mail'] = (int) $entity->getPreference('client', 'appointmentsPerMail');
         $data['slots_per_appointment'] = (int) $entity->getPreference('client', 'slotsPerAppointment');
+        $data['info_for_appointment'] = $entity->getPreference('appointment', 'infoForAppointment');
         $data['whitelisted_mails'] = $entity->getPreference('client', 'whitelistedMails');
         $data['admin_mail_on_appointment'] = $entity->getPreference('client', 'adminMailOnAppointment', true);
         $data['admin_mail_on_deleted'] = $entity->getPreference('client', 'adminMailOnDeleted');
@@ -352,9 +357,9 @@ class Scope extends Base implements MappingInterface
 
     public function setEmergencyEntityMapping(\BO\Zmsentities\Scope $entity)
     {
-        $data['notrufantwort'] = intval($entity->toProperty()->status->emergency->acceptedByWorkstation->get(-1));
+        $data['notrufantwort'] = ($entity->toProperty()->status->emergency->acceptedByWorkstation->get(-1));
         $data['notrufausgeloest'] = intval($entity->toProperty()->status->emergency->activated->get(0));
-        $data['notrufinitiierung'] = intval($entity->toProperty()->status->emergency->calledByWorkstation->get(-1));
+        $data['notrufinitiierung'] = ($entity->toProperty()->status->emergency->calledByWorkstation->get(-1));
         return $data;
     }
 
@@ -377,6 +382,9 @@ class Scope extends Base implements MappingInterface
         }
         if (!$data[$this->getPrefixed('preferences__client__telephoneActivated')]) {
             $data[$this->getPrefixed("preferences__client__telephoneRequired")] = 0;
+        }
+        if (!$data[$this->getPrefixed('preferences__client__emailConfirmationActivated')]) {
+            $data[$this->getPrefixed("preferences__client__emailConfirmationActivated")] = 0;
         }
         if (!$data[$this->getPrefixed('contact__email')]) {
             $data[$this->getPrefixed("preferences__client__adminMailOnAppointment")] = 0;

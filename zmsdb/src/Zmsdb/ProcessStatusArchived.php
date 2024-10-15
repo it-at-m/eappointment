@@ -51,6 +51,17 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
+    public function readListByScopesAndDates($scopeIds, $dateTimes, $resolveReferences = 0)
+    {
+        $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionScopeIds($scopeIds)
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionTimes($dateTimes);
+
+        return $this->readResolvedList($query, $resolveReferences);
+    }
+
     public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, $limit = 500, $resolveReferences = 0)
     {
         $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
@@ -101,9 +112,16 @@ class ProcessStatusArchived extends Process
     public function writeEntityFinished(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        bool $calculateStatistic = false
+        bool $calculateStatistic = false,
+        ?\BO\Zmsentities\Useraccount $useraccount = null
     ) {
-        $process = $this->updateEntity($process, $now, 1);
+        $process = $this->updateEntity(
+            $process,
+            $now,
+            1,
+            null,
+            $useraccount
+        );
         $archived = null;
         if ($this->writeBlockedEntity($process)) {
             $archived = $this->writeNewArchivedProcess($process, $now, 0, $calculateStatistic);
@@ -162,18 +180,14 @@ class ProcessStatusArchived extends Process
         $query->addValuesNewArchive($process, $now);
         $this->writeItem($query);
         $archiveId = $this->getWriter()->lastInsertId();
-        Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ", $process->id);
+        Log::writeProcessLog(
+            "ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ",
+            Log::ACTION_ARCHIVED,
+            $process
+        );
 
         if ($calculateStatistic) {
-            (new ExchangeWaitingscope())->writeWaitingTime($process, $now);
-
-            if ($process->isWithAppointment()) {
-                (new ExchangeWaitingscope())->writeWaitingTimeCalculated(
-                    $process->scope,
-                    $now,
-                    true
-                );
-            }
+            (new ExchangeWaitingscope())->updateWaitingStatistics($process, $now);
         }
         
         return $this->readArchivedEntity($archiveId, $resolveReferences);
