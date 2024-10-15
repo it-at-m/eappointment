@@ -8,7 +8,7 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
-class UseraccountByDepartment extends BaseController
+class UseraccountByRole extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -19,11 +19,14 @@ class UseraccountByDepartment extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $departmentId = $args['id'];
+        $roleLevel = $args['id'];
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $department = \App::$http->readGetResult("/department/$departmentId/")->getEntity();
-        $useraccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
-        $workstationList = \App::$http->readGetResult("/department/$departmentId/workstation/")->getCollection();
+
+        if ($workstation->hasSuperUseraccount()) {
+            $useraccountList = \App::$http->readGetResult("/role/$roleLevel/useraccount/")->getCollection();
+        } else {
+            $useraccountList = [];
+        }
 
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
@@ -32,11 +35,10 @@ class UseraccountByDepartment extends BaseController
             'page/useraccount.twig',
             array(
                 'title' => 'Nutzer',
+                'roleLevel' => $roleLevel,
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
-                'department' => $department,
-                'workstationList' => $workstationList,
-                'useraccountListByDepartment' => ($useraccountList) ?
+                'useraccountListByRole' => ($useraccountList) ?
                     $useraccountList->sortByCustomStringKey('id') :
                     new Collection(),
                 'ownerlist' => $ownerList,

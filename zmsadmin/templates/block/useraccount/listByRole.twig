@@ -1,14 +1,28 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless useraccount-list'} %}
     {% from 'element/helper/form.twig' import custombutton, inputfield %}
 
+    {% set roleTitles = {
+        90: 'Technische Administration Superuser',
+        70: 'Referat übergreifende Administration',
+        50: 'Behörden übergreifende Administration',
+        40: 'Fachliche Administration',
+        30: 'Terminadministration',
+        5: 'Innenrevision',
+        0: 'Sachbearbeiter*innen'
+    } %}
+    
     {% block board_title %}
-        Nutzerliste: {{ department.name }}
-    {% endblock %}
+        {% if roleTitles[roleLevel] is defined %}
+            Nutzerliste: {{ roleTitles[roleLevel] }} (Rolle: {{ roleLevel }})
+        {% else %}
+            Nutzerliste: Unbekannte Rolle ({{ roleLevel }})
+        {% endif %}
+    {% endblock %}    
 
     {% block board_body %}
         <div class="table-responsive-wrapper"> 
              <fieldset>
-                {% if useraccountListByDepartment|length == 0 %}
+                {% if useraccountListByRole|length == 0 %}
                 <div class="message message--info" role="alert">
                     <p>Dieser Behörde ist bisher noch kein Nutzer zugeordnet.</p>
                 </div>
@@ -26,7 +40,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for useraccount in useraccountListByDepartment %}
+                    {% for useraccount in useraccountListByRole %}
                         <tr>
                             <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
                             <td>{% if useraccount.email %}{{ useraccount.email }}{% endif %}</td>

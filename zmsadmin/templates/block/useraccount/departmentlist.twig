@@ -5,18 +5,29 @@
         {% endblock %}
 
         {% block board_body %}
-            <h3>Behördenunabhängig</h3>
+        <h3>Gesamtnutzerliste für Ihren Bereich</h3>
+        <ul>
+            <li><a href="{{ urlGet('useraccount', {}, {}) }}">Gesamtnutzerliste</a></li>
+        </ul>        
+            <h3>Suche</h3>
             <ul>
                 <li><a href="{{ urlGet('useraccountSearch', {}, {}) }}">Nutzersuche</a></li>
-                {% if workstation.useraccount.rights.superuser %}
-                    <li><a href="{{ urlGet('useraccount', {}, {}) }}">Gesamtnutzerliste</a></li>
-                    <li><a href="{{ urlGet('useraccount', {}, {}) }}">Systemweite Nutzer</a></li>
-                {% else %}
-                    <li><a href="{{ urlGet('useraccount', {}, {}) }}">Gesamtnutzerliste für Ihre Bereiche</a></li>
-                {% endif %}
             </ul>
+            {% if workstation.useraccount.rights.superuser %}
+                <h3>Nach Nutzerzuordnung</h3>
+                <ul>
+                        <li><a href="{{ urlGet('useraccountByRole', {id: '90'}, {}) }}">Technische Administration Superuser (Rolle 90)</a></li>
+                        <li><a href="{{ urlGet('useraccountByRole', {id: '70'}, {}) }}">Referat übergreifende Administration (Rolle 70)</a></li>
+                        <li><a href="{{ urlGet('useraccountByRole', {id: '50'}, {}) }}">Behörden übergreifende Administration (Rolle 50)</a></li>
+                        <li><a href="{{ urlGet('useraccountByRole', {id: '40'}, {}) }}">Fachliche Administration (Rolle 40)</a></li>
+                        <li><a href="{{ urlGet('useraccountByRole', {id: '30'}, {}) }}">Terminadministration (Rolle 30)</a></li>
+                        <li><a href="{{ urlGet('useraccountByRole', {id: '5'}, {}) }}">Innenrevision (Rolle 5)</a></li>
+                        <li><a href="{{ urlGet('useraccountByRole', {id: '0'}, {}) }}">Sachbearbeiter*innen (Rolle 0)</a></li>
+                        <li><a href="{{ urlGet('useraccount', {}, {}) }}">Nicht Zugeordnete Nutzer</a></li>       
+                </ul>
+            {% endif %}
             {% for owner in ownerlist %}
-            <h3>{{owner.name}}</h3>
+            <h3>Nach Behörde ({{owner.name}})</h3>
             <ul>
                 {% for organisation in owner.organisations %}
                 <li>

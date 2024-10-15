@@ -129,6 +129,9 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/department/{id:\d+}/useraccount/', \BO\Zmsadmin\UseraccountByDepartment::class)
     ->setName("useraccountByDepartment");
 
+\App::$slim->get('/role/{id:\d+}/useraccount/', \BO\Zmsadmin\UseraccountByRole::class)
+    ->setName("useraccountByRole");
+
 \App::$slim->get('/useraccount/search/', \BO\Zmsadmin\UseraccountSearch::class)
     ->setName("useraccountSearch");
 

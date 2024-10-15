@@ -48,23 +48,6 @@ class UseraccountSearch extends BaseController
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-        /*if (!$workstation->hasSuperUseraccount()) {
-            $useraccountList = $this->filteruseraccountListForUserRights($useraccountList, $privilegedScopeIds);
-        }*/
-
-
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountSearch.twig',
@@ -74,64 +57,9 @@ class UseraccountSearch extends BaseController
                 'useraccountList' => $collection,
                 'searchUserQuery' => $queryString,
                 'ownerlist' => $ownerList,
-                'menuActive' => 'search'
+                'menuActive' => 'useraccount'
             )
         );
     }
-
-    /**
-     * Filter user accounts based on user rights
-     *
-     * @param useraccountList|null $useraccountList
-     * @param array $privilegedScopeIds
-     * @return useraccountList
-     */
-    private function filteruseraccountListForUserRights(?useraccountList $useraccountList, array $privilegedScopeIds)
-    {
-        if (empty($useraccountList)) {
-            return new useraccountList();
-        }
-
-        $filteredList = new useraccountList();
-
-        foreach ($useraccountList as $useraccount) {
-            if (isset($useraccount->rights['superuser']) && $useraccount->rights['superuser'] === "1") {
-                continue;
-            }
-
-            if (isset($useraccount->departments) && (is_array($useraccount->departments) || is_object($useraccount->departments))) {
-                foreach ($useraccount->departments as $department) {
-                    if (isset($department->clusters) && (is_array($department->clusters) || is_object($department->clusters))) {
-                        foreach ($department->clusters as $cluster) {
-                            if (isset($cluster->scopes) && (is_array($cluster->scopes) || is_object($cluster->scopes))) {
-                                foreach ($cluster->scopes as $scope) {
-                                    if (in_array($scope->id, $privilegedScopeIds)) {
-                                        $filteredList->addEntity(clone $useraccount);
-                                        break 3;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (isset($department->scopes) && (is_array($department->scopes) || is_object($department->scopes))) {
-                        foreach ($department->scopes as $scope) {
-                            if (in_array($scope->id, $privilegedScopeIds)) {
-                                $filteredList->addEntity(clone $useraccount);
-                                break 2;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return $filteredList;
-    }
-
-
-
-
-
 
 }
