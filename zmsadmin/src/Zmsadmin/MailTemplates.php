@@ -21,16 +21,37 @@ class MailTemplates extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $providerId = $workstation->scope['provider']['id'];
+
+        $scopeName = $workstation->scope['contact']['name'];
+        $scopeId = $workstation->scope['id'];
+
+        if (isset($args['scopeId']) && !empty($args['scopeId'])) {
+            $scope = \App::$http
+                ->readGetResult('/scope/'. $args['scopeId'] .'/', ['resolveReferences' => 1])
+                ->getEntity();
+
+            $scopeName = $scope->contact->name;
+            $scopeId = $scope->id;
+            $providerId = $scope->provider->id;
+        }
+
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
-        $mailtemplates = \App::$http->readGetResult('/mailtemplates/')->getCollection();
-        $customMailtemplates = \App::$http->readGetResult('/custom-mailtemplates/'.$providerId.'/')->getCollection();
         $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/'.$providerId.'/')->getCollection();
         forEach($mergedMailTemplates as $template) {
             if ($template['provider']) {
                 $template->isCustom = true;
             }
         }
+
+        $priorityNames = [
+            'mail_preconfirmed.twig',
+            'mail_confirmation.twig',
+            'mail_reminder.twig',
+            'mail_delete.twig'
+        ];
+
+        $mergedMailTemplates->prioritizeByName($priorityNames);
 
         $mainProcessExample = ((new \BO\Zmsentities\Process)->getExample());
         $mainProcessExample->id = 987654;
@@ -49,38 +70,16 @@ class MailTemplates extends BaseController
         $processListExample->addEntity($processExample2);
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
-        if ($request->getMethod() === 'POST') {
-            $input = $request->getParsedBody();
-            $entity = clone $config;
-            $entity->setPreference($input['key'], $input['property'], $input['value']);
-            $entity = \App::$http->readPostResult(
-                '/config/',
-                $entity
-            )->getEntity();
-            return \BO\Slim\Render::redirect(
-                'configinfo',
-                array(
-                    'title' => 'Konfiguration System',
-                    'workstation' => $workstation,
-                    'config' => $config,
-                    'processExample' => $mainProcessExample,
-                    'processListExample' => $processListExample,
-                    'menuActive' => 'configinfo'
-                ),
-                array(
-                    'success' => 'config_saved'
-                )
-            );
-        }
-
         return \BO\Slim\Render::withHtml(
             $response,
             'page/mailtemplates.twig',
             array(
                 'title' => 'Konfiguration System',
+                'pageTitle' => 'Mail Templates für ' . $scopeName,
                 'providerId' => $providerId,
                 'workstation' => $workstation,
                 'config' => $config,
+                'scopeId' => $scopeId,
                 'mailtemplates' => $mergedMailTemplates,
                 'processExample' => $mainProcessExample,
                 'processListExample' => $processListExample,
@@ -89,31 +88,4 @@ class MailTemplates extends BaseController
             )
         );
     }
-
-
-    function mergeMailTemplates($generalTemplates, $customTemplates) {
-        $customTemplatesByName = [];
-
-        if ($customTemplates) {
-            foreach ($customTemplates as $template) {
-                $template['isCustom'] = true; // Add isCustom property to custom templates
-                $customTemplatesByName[$template['name']] = $template;
-            }
-        }
-
-        $mergedTemplates = [];
-
-        if ($generalTemplates) {
-            foreach ($generalTemplates as $template) {
-                if (isset($customTemplatesByName[$template['name']])) {
-                    $mergedTemplates[] = $customTemplatesByName[$template['name']];
-                } else {
-                    $mergedTemplates[] = $template;
-                }
-            }
-        }
-
-        return $mergedTemplates;
-    }
-
 }

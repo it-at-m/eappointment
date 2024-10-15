@@ -319,10 +319,12 @@ EOS;
         waitingTimeEstimate,
         waitingTimeOptimistic,
         waitingTime,
+        wayTime,
         callCount
     }
     processingTime
     waitingTime
+    wayTime
     services
     name
     withAppointment

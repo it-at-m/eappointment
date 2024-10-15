@@ -89,6 +89,16 @@ class Workstation extends Schema\Entity
         return $isSuperuser;
     }
 
+    public function hasAuditAccount()
+    {
+        $userRights = $this->getUseraccountRights();
+        if (isset($userRights['audit']) && $userRights['audit']) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function getAuthKey()
     {
         return bin2hex(openssl_random_pseudo_bytes(16));

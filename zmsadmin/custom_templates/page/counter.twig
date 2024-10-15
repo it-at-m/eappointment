@@ -6,13 +6,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="counter-view" 
+<div class="counter-view"
     data-includeurl="{{ includeUrl() }}"
     data-selected-date="{{ selectedDate }}"
     data-selected-time="{{ selectedTime }}"
     data-selected-process="{{ selectedProcess }}"
     data-cluster-enabled="{{ workstation.queue.clusterEnabled }}"
-    data-selected-scope="{% if workstation.queue.clusterEnabled == 0 %}{{ workstation.scope.id }}{% else %}{{ selectedScope }}{% endif %}"
+     data-email-confirmation-activated="{{ workstation.scope.preferences.client.emailConfirmationActivated }}"
+     data-selected-scope="{% if workstation.queue.clusterEnabled == 0 %}{{ workstation.scope.id }}{% else %}{{ selectedScope }}{% endif %}"
     data-called-process="{{ calledProcess }}"
     >
     <div class="grid" style="min-height: 850px;">

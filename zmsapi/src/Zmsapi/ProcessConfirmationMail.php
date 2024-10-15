@@ -53,7 +53,7 @@ class ProcessConfirmationMail extends BaseController
 
         $status = ($process->isWithAppointment())? 'appointment': 'queued';
         $mail = (new \BO\Zmsentities\Mail)
-            ->setTemplateProvider(new \BO\Zmsapi\Helper\MailTemplateProvider($process))
+            ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
             ->toResolvedEntity($collection, $config, $status)
             ->withDepartment($department);
         $mail->testValid();

@@ -27,7 +27,7 @@ class ProcessIcs extends BaseController
         $process = (new Process)->readEntity($args['id'], $args['authKey'], 2);
 
         $config = (new Config())->readEntity();
-        $templateProvider = new \BO\Zmsapi\Helper\MailTemplateProvider($process);
+        $templateProvider = new \BO\Zmsdb\Helper\MailTemplateProvider($process);
         $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, $status, null, null, $templateProvider);
 
         $message = Response\Message::create($request);

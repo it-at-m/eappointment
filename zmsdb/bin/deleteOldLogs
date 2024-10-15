@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+require_once(__DIR__."/script_bootstrap.php");
+
+$usage = <<<EOS
+
+Usage: {$argv[0]} --commit
+        ATTENTION! This application removes log entries. USE WITH CAUTION!
+        --commit        no dry run, delete database entries
+
+        !!!!!!!!!!!!!!!!!!!!!!!
+        !! DATA LOSS WARNING !!
+        !!!!!!!!!!!!!!!!!!!!!!!
+EOS;
+
+$verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
+$commit = preg_grep('#^--commit$#', $argv);
+$job = new \BO\Zmsdb\Helper\LogCleanUp($verbose);
+$job->startProcessing($commit);
+
+if (!$commit) {
+    error_log("Use with --commit to delete entries.");
+}

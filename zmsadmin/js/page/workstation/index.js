@@ -22,6 +22,7 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedProcess = options['selected-process'];
         this.clusterEnabled = options['cluster-enabled'] || false;
+        this.emailConfirmationActivated = options['email-confirmation-activated'] || 0;
         this.selectedScope = options['selected-scope'] || 0;
         this.calledProcess = options['called-process'];
         this.slotType = 'intern';
@@ -425,10 +426,31 @@ class View extends BaseView {
     onPrintProcessMail(event) {
         stopEvent(event);
         this.selectedProcess = $(event.currentTarget).data('id');
-        $(event.currentTarget).closest('.message').fadeOut().remove();
-        window.open(`${this.includeUrl}/process/queue/?print=1&printType=mail&selectedprocess=${this.selectedProcess}`)
-        this.selectedProcess = null;
-        this.loadAppointmentForm();
+    
+        // URL for mail_confirmation.twig
+        const url = `${this.includeUrl}/process/queue/?print=1&printType=mail&selectedprocess=${this.selectedProcess}`;
+        
+        // Ajax request to get content from mail_confirmation.twig
+        $.ajax({
+            url: url,
+            success(data) {
+                // Creating new window
+                const printWindow = window.open('', '', 'height=800,width=1000');
+                printWindow.document.write(data);
+                printWindow.document.write(`
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.close();
+                        }
+                    <\/script>`
+                );
+                printWindow.document.close();
+            },
+            error() {
+                alert('Der Inhalt konnte nicht geladen werden.');
+            }
+        });
     }
 
     onSendCustomMail($container, event) {
@@ -557,6 +579,7 @@ class View extends BaseView {
             selectedProcess: this.selectedProcess,
             selectedScope: this.selectedScope,
             clusterEnabled: this.clusterEnabled,
+            emailConfirmationActivated: this.emailConfirmationActivated,
             includeUrl: this.includeUrl,
             slotsRequired: this.slotsRequired || 1,
             slotType: this.slotType,
