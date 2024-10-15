@@ -11,7 +11,7 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Useraccount as Query;
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
-class DepartmentUseraccountList extends BaseController
+class UseraccountByDepartmentList extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -25,7 +25,7 @@ class DepartmentUseraccountList extends BaseController
         $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = Helper\User::checkDepartment($args['id']);
-        
+
         $useraccountList = (new Query)->readCollectionByDepartmentId($department->id, $resolveReferences);
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
         $message = Response\Message::create($request);

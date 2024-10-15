@@ -12,14 +12,14 @@ class Useraccount extends Base implements MappingInterface
 
     const QUERY_READ_ID_BY_USERNAME = '
         SELECT user.`NutzerID` AS id
-        FROM '. self::TABLE .' user
+        FROM ' . self::TABLE . ' user
         WHERE
             user.`Name`=?
     ';
 
     const QUERY_WRITE_ASSIGNED_DEPARTMENTS = '
         REPLACE INTO
-            '. self::TABLE_ASSIGNMENT .'
+            ' . self::TABLE_ASSIGNMENT . '
         SET
             nutzerid=?,
             behoerdenid=?
@@ -27,7 +27,7 @@ class Useraccount extends Base implements MappingInterface
 
     const QUERY_DELETE_ASSIGNED_DEPARTMENTS = '
         DELETE FROM
-            '. self::TABLE_ASSIGNMENT .'
+            ' . self::TABLE_ASSIGNMENT . '
         WHERE
             nutzerid=?
         ORDER BY behoerdenid
@@ -36,18 +36,18 @@ class Useraccount extends Base implements MappingInterface
     const QUERY_READ_SUPERUSER_DEPARTMENTS = '
         SELECT behoerde.`BehoerdenID` AS id,
             organisation.Organisationsname as organisation__name
-        FROM '. Department::TABLE .'
-        LEFT JOIN '. Organisation::TABLE .' USING(OrganisationsID)
+        FROM ' . Department::TABLE . '
+        LEFT JOIN ' . Organisation::TABLE . ' USING(OrganisationsID)
         ORDER BY organisation.Organisationsname, behoerde.Name
     ';
 
     const QUERY_READ_ASSIGNED_DEPARTMENTS = '
         SELECT userAssignment.`behoerdenid` AS id,
             organisation.Organisationsname as organisation__name
-        FROM '. self::TABLE_ASSIGNMENT .' userAssignment
-        LEFT JOIN '. self::TABLE .' useraccount ON useraccount.Name = :useraccountName
-        LEFT JOIN '. Department::TABLE .' ON userAssignment.behoerdenid = behoerde.BehoerdenID
-        LEFT JOIN '. Organisation::TABLE .' USING(OrganisationsID)
+        FROM ' . self::TABLE_ASSIGNMENT . ' userAssignment
+        LEFT JOIN ' . self::TABLE . ' useraccount ON useraccount.Name = :useraccountName
+        LEFT JOIN ' . Department::TABLE . ' ON userAssignment.behoerdenid = behoerde.BehoerdenID
+        LEFT JOIN ' . Organisation::TABLE . ' USING(OrganisationsID)
         WHERE
             useraccount.`NutzerID` = userAssignment.`nutzerid`
         ORDER BY organisation.Organisationsname, behoerde.Name
@@ -98,6 +98,41 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionDepartmentAndSearch($departmentId, $queryString = null, $orWhere = false)
+    {
+
+        $this->leftJoin(
+            new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
+            'useraccount.NutzerID',
+            '=',
+            'useraccount_department.nutzerid'
+        );
+
+        $this->query->where('useraccount_department.behoerdenid', '=', $departmentId);
+
+        if ($queryString) {
+            $condition = function (\Solution10\SQL\ConditionBuilder $query) use ($queryString) {
+                $queryString = trim($queryString);
+                $query->orWith('useraccount.NutzerID', 'LIKE', "%$queryString%");
+                $query->orWith('useraccount.Name', 'LIKE', "%$queryString%");
+                $query->orWith('useraccount.email', 'LIKE', "%$queryString%");
+            };
+
+            if ($orWhere) {
+                $this->query->orWhere($condition);
+            } else {
+                $this->query->where($condition);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addConditionRoleLevel($roleLevel){
+        $this->query->where('useraccount.Berechtigung', '=', $roleLevel);
+        return $this;
+    }
+
     public function addConditionDepartmentId($departmentId)
     {
         $this->leftJoin(
@@ -134,7 +169,7 @@ class Useraccount extends Base implements MappingInterface
         $data['Passworthash'] = (isset($entity->password)) ? $entity->password : null;
         $data['Berechtigung'] = $entity->getRightsLevel();
         $data['BehoerdenID'] = 0;
-        if (! $entity->isSuperUser() && isset($entity->departments) && 0 < $entity->departments->count()) {
+        if (!$entity->isSuperUser() && isset($entity->departments) && 0 < $entity->departments->count()) {
             $data['BehoerdenID'] = $entity->departments->getFirst()->id;
         }
         //default values because of strict mode

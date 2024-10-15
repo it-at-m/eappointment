@@ -1582,11 +1582,58 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/department/{id:\d{1,11}}/useraccount/',
-    '\BO\Zmsapi\DepartmentUseraccountList'
+    '\BO\Zmsapi\UseraccountByDepartmentList'
 )
-    ->setName("DepartmentUseraccountList");
+    ->setName("UseraccountByDepartmentList");
 
-
+/**
+ *  @swagger
+ *  "/role/{id}/useraccount/":
+ *      get:
+ *          summary: Get a list of useraccounts for a role
+ *          x-since: 2.10
+ *          tags:
+ *              - role
+ *              - useraccount
+ *          parameters:
+ *              -   name: id
+ *                  description: role number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "role is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "role does not exist"
+ */
+\App::$slim->get(
+    '/role/{id:\d{1,11}}/useraccount/',
+    '\BO\Zmsapi\UseraccountByRoleList'
+)
+    ->setName("UseraccountByRoleList");
 
 /**
  *  @swagger
@@ -1667,9 +1714,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/department/{id:\d{1,11}}/useraccount/search/',
-    '\BO\Zmsapi\UseraccountSearch'
+    '\BO\Zmsapi\UseraccountSearchByDepartment'
 )
-    ->setName("UseraccountSearch");
+    ->setName("UseraccountSearchByDepartment");
 
 /**
  *  @swagger

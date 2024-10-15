@@ -7,9 +7,8 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process;
 use \BO\Zmsdb\Useraccount;
+use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
 class UseraccountSearch extends BaseController
 {
@@ -22,27 +21,36 @@ class UseraccountSearch extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request, 2))->checkRights();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $lessResolvedData = Validator::param('lessResolvedData')->isNumber()->setDefault(0)->getValue();
-        $limit = Validator::param('limit')->isNumber()->setDefault(100)->getValue();
-
+        $validator = $request->getAttribute('validator');
+        (new Helper\User($request, 2))->checkRights('useraccount');
+        $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $parameters = $request->getParams();
-        unset($parameters['resolveReferences']);
-        unset($parameters['lessResolvedData']);
-        unset($parameters['limit']);
-        $userAccountList = (new Useraccount)->readSearch($parameters, $resolveReferences, $limit);
 
-        if ($lessResolvedData) {
-            $userAccountList = $userAccountList->withLessData();
-        }   
-       
+        $useraccountList = (new Useraccount)->readSearch($parameters, $resolveReferences);
+
         $message = Response\Message::create($request);
-        $message->data = $userAccountList;
+        $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
 
         return $response;
+    }
+
+    protected function getUseraccountListWithAccess($useraccountList)
+    {
+        $collection = new Collection();
+        foreach ($useraccountList as $useraccount) {
+            if ($useraccount->isSuperUser() || $this->hasSystemWideAccess($useraccount)) {
+                $collection->addEntity(clone $useraccount);
+            }
+        }
+        return $collection;
+    }
+
+    protected function hasSystemWideAccess($useraccount)
+    {
+        $assignedDepartments = (new Useraccount())->readAssignedDepartmentList($useraccount);
+        return (0 === $assignedDepartments->count());
     }
 }

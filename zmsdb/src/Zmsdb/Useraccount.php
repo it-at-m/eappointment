@@ -66,16 +66,16 @@ class Useraccount extends Base
         return $collection;
     }
 
-    protected function readList_search($statement, $resolveReferences)
+    protected function readListStatement($statement, $resolveReferences)
     {
         $query = new Query\Useraccount(Query\Base::SELECT);
-        $userAccountList = new Collection();
+        $collection = new Collection();
         while ($userAccountData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcessJoins($userAccountData));
             $entity = $this->readResolvedReferences($entity, $resolveReferences);
-            $userAccountList->addEntity($entity);
+            $collection->addEntity($entity);
         }
-        return $userAccountList;
+        return $collection;
     }
 
     /**
@@ -99,7 +99,7 @@ class Useraccount extends Base
         foreach ($departmentIds as $item) {
             $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
             if ($department instanceof \BO\Zmsentities\Department) {
-                $department->name = $item['organisation__name'] .' -> '. $department->name;
+                $department->name = $item['organisation__name'] . ' -> ' . $department->name;
                 $departmentList->addEntity($department);
             }
         }
@@ -201,7 +201,7 @@ class Useraccount extends Base
     protected function updateAssignedDepartments($entity)
     {
         $loginName = $entity->id;
-        if (! $entity->isSuperUser()) {
+        if (!$entity->isSuperUser()) {
             $this->deleteAssignedDepartments($loginName);
             $userId = $this->readEntityIdByLoginName($loginName);
             foreach ($entity->departments as $department) {
@@ -230,13 +230,12 @@ class Useraccount extends Base
         return $this->perform($query, [$userId]);
     }
 
-    public function readSearch(array $parameter, $resolveReferences = 0, $limit = 100)
+    public function readSearch(array $parameter, $resolveReferences = 0)
     {
         $query = new Query\Useraccount(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
-            ->addEntityMapping()
-            ->addLimit($limit);
+            ->addEntityMapping();
 
         if (isset($parameter['query'])) {
             if (preg_match('#^\d+$#', $parameter['query'])) {
@@ -247,21 +246,45 @@ class Useraccount extends Base
             }
             unset($parameter['query']);
         }
-        if (count($parameter)) {
-            $query = $this->addSearchConditions($query, $parameter); //Doesn't do anything
+
+        $statement = $this->fetchStatement($query);
+        return $this->readListStatement($statement, $resolveReferences);
+    }
+
+    public function readSearchByDepartmentId($departmentId, array $parameter, $resolveReferences = 0)
+    {
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
+            ->addEntityMapping();
+
+        if (isset($parameter['query'])) {
+            if (preg_match('#^\d+$#', $parameter['query'])) {
+                $query->addConditionUserId($parameter['query']);
+                $query->addConditionDepartmentAndSearch($departmentId, $parameter['query'], true);
+            } else {
+                $query->addConditionDepartmentAndSearch($departmentId, $parameter['query']);
+            }
+            unset($parameter['query']);
+        } else {
+            $query->addConditionDepartmentId($departmentId);
         }
 
         $statement = $this->fetchStatement($query);
-        return $this->readList_search($statement, $resolveReferences);
+        return $this->readListStatement($statement, $resolveReferences);
     }
 
-    protected function addSearchConditions(Query\Useraccount $query, $parameter)
+    public function readListRole($roleLevel, $resolveReferences = 0)
     {
-        if (isset($parameter['name']) && $parameter['name']) {
-            $exact = (isset($parameter['exact'])) ? $parameter['exact'] : false;
-            $query->addConditionLoginName($parameter['name'], $exact);
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
+            ->addEntityMapping();
+
+        if (isset($roleLevel)) {
+            $query->addConditionRoleLevel($roleLevel);
         }
 
-        return $query;
+        $statement = $this->fetchStatement($query);
+        return $this->readListStatement($statement, $resolveReferences);
     }
+
 }
