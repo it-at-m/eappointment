@@ -11,7 +11,7 @@ use \BO\Slim\Render;
 use \BO\Zmsdb\Useraccount;
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
-class UseraccountSearch extends BaseController
+class UseraccountByRoleAndDepartmentList extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -22,12 +22,18 @@ class UseraccountSearch extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request, 2))->checkRights('useraccount');
+        $roleLevel = $args['level'];
+        $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $parameters = $request->getParams();
+        $department = Helper\User::checkDepartment($args['id']);
 
         $useraccountList = new Collection();
-        $useraccountList = (new Useraccount)->readSearch($parameters, $resolveReferences)->withLessData();
+        $useraccountList = (new Useraccount)->readListByRoleAndDepartment($roleLevel, $department->id, $resolveReferences)->withLessData();
+        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+        
+        if (! $useraccountList or count($useraccountList) === 0) {
+            throw new \BO\Zmsapi\Exception\Useraccount\UserRoleNotFoundAtDepartment();
+        }
 
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
@@ -39,30 +45,14 @@ class UseraccountSearch extends BaseController
             }
         }
         $useraccountList = $validUserAccounts;
-
+        
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message, 200);
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
 
         return $response;
     }
 
-    protected function getUseraccountListWithAccess($useraccountList)
-    {
-        $collection = new Collection();
-        foreach ($useraccountList as $useraccount) {
-            if ($useraccount->isSuperUser() || $this->hasSystemWideAccess($useraccount)) {
-                $collection->addEntity(clone $useraccount);
-            }
-        }
-        return $collection;
-    }
-
-    protected function hasSystemWideAccess($useraccount)
-    {
-        $assignedDepartments = (new Useraccount())->readAssignedDepartmentList($useraccount);
-        return (0 === $assignedDepartments->count());
-    }
 }

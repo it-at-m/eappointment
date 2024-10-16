@@ -4,62 +4,70 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
- namespace BO\Zmsadmin;
+namespace BO\Zmsadmin;
 
- use \BO\Zmsentities\Collection\UseraccountList as Collection;
- 
- class UseraccountByRole extends BaseController
- {
-     /**
-      * @SuppressWarnings(Param)
-      * @return String
-      */
-     public function readResponse(
-         \Psr\Http\Message\RequestInterface $request,
-         \Psr\Http\Message\ResponseInterface $response,
-         array $args
-     ) {
-         $roleLevel = $args['id'];
-         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
- 
-         if ($workstation->hasSuperUseraccount()) {
-             $useraccountList = \App::$http->readGetResult("/role/$roleLevel/useraccount/")->getCollection();
-         } else {
-             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-             $ownersDepartmentIds = $workstation->getUseraccount()->getDepartmentList()->getIds();
-             $collection = \App::$http->readGetResult("/role/$roleLevel/useraccount/")->getCollection();
+use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
-             $useraccountList = [];
-             foreach ($collection as $useraccount) {
-                 if (isset($useraccount->rights['superuser']) && $useraccount->rights['superuser'] === "1") {
-                     continue;
-                 }
-                 if (isset($useraccount->departments)) {
-                     foreach ($useraccount->departments as $department) {
-                         if (in_array($department->id, $ownersDepartmentIds)) {
-                             $useraccountList[] = $useraccount;
-                             break;
-                         }
-                     }
-                 }
-             }
-         }
- 
-         return \BO\Slim\Render::withHtml(
-             $response,
-             'page/useraccount.twig',
-             array(
-                 'title' => 'Nutzer',
-                 'roleLevel' => $roleLevel,
-                 'menuActive' => 'useraccount',
-                 'workstation' => $workstation,
-                 'useraccountListByRole' => ($useraccountList) ?
-                 $useraccountList :
-                 new Collection(),
-                 'ownerlist' => $ownerList,
-             )
-         );
-     }
- }
- 
+class UseraccountByRole extends BaseController
+{
+    /**
+     * @SuppressWarnings(Param)
+     * @return String
+     */
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $roleLevel = $args['level'];
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
+        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
+
+        $useraccountList = new \BO\Zmsentities\Collection\UseraccountList();
+        if ($workstation->hasSuperUseraccount()) {
+
+            try {
+                $useraccountList = \App::$http->readGetResult("/role/$roleLevel/useraccount/")->getCollection();
+            } catch (\Exception $e) {
+                false;
+            }
+
+        } else {
+            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+            $departmentList = $workstation->getUseraccount()->getDepartmentList();
+
+            foreach ($departmentList as $accountDepartment) {
+
+                try {
+                    $departmentUseraccountList = \App::$http
+                        ->readGetResult("/role/$roleLevel/department/$accountDepartment->id/useraccount/")
+                        ->getCollection();
+                } catch (\Exception $e) {
+                    continue;
+                }
+
+                if ($departmentUseraccountList) {
+                    $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
+                }
+            }
+        }
+
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/useraccount.twig',
+            array(
+                'title' => 'Nutzer',
+                'roleLevel' => $roleLevel,
+                'menuActive' => 'useraccount',
+                'workstation' => $workstation,
+                'useraccountListByRole' => ($useraccountList) ?
+                    $useraccountList->sortByCustomStringKey('id') :
+                    new Collection(),
+                'ownerlist' => $ownerList,
+                'success' => $success,
+            )
+        );
+    }
+}
+

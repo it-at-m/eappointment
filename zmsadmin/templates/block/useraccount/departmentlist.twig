@@ -15,14 +15,13 @@
             </ul>
                 <h3>Nach Nutzerrolle</h3>
                 <ul>
-                    {% if workstation.useraccount.rights.superuser %}<li><a href="{{ urlGet('useraccountByRole', {id: '90'}, {}) }}">Technische Administration Superuser (Rolle 90)</a></li>{% endif %}
-                        <li><a href="{{ urlGet('useraccountByRole', {id: '70'}, {}) }}">Referat übergreifende Administration (Rolle 70)</a></li>
-                        <li><a href="{{ urlGet('useraccountByRole', {id: '50'}, {}) }}">Behörden übergreifende Administration (Rolle 50)</a></li>
-                        <li><a href="{{ urlGet('useraccountByRole', {id: '40'}, {}) }}">Fachliche Administration (Rolle 40)</a></li>
-                        <li><a href="{{ urlGet('useraccountByRole', {id: '30'}, {}) }}">Terminadministration (Rolle 30)</a></li>
-                        <li><a href="{{ urlGet('useraccountByRole', {id: '5'}, {}) }}">Innenrevision (Rolle 5)</a></li>
-                        <li><a href="{{ urlGet('useraccountByRole', {id: '0'}, {}) }}">Alle Sachbearbeiter*innen (Rolle 0)</a></li>
-                        <li><a href="{{ urlGet('useraccount', {}, {}) }}">Nicht Zugeordnete Nutzer</a></li>       
+                    {% if workstation.useraccount.rights.superuser %}<li><a href="{{ urlGet('useraccountByRole', {level: '90'}, {}) }}">Technische Administration Superuser (Rolle 90)</a></li>{% endif %}
+                    <li><a href="{{ urlGet('useraccountByRole', {level: '70'}, {}) }}">Referat übergreifende Administration (Rolle 70)</a></li>
+                    <li><a href="{{ urlGet('useraccountByRole', {level: '50'}, {}) }}">Behörden übergreifende Administration (Rolle 50)</a></li>
+                    <li><a href="{{ urlGet('useraccountByRole', {level: '40'}, {}) }}">Fachliche Administration (Rolle 40)</a></li>
+                    <li><a href="{{ urlGet('useraccountByRole', {level: '30'}, {}) }}">Terminadministration (Rolle 30)</a></li>
+                    <li><a href="{{ urlGet('useraccountByRole', {level: '5'}, {}) }}">Innenrevision (Rolle 5)</a></li>
+                    <li><a href="{{ urlGet('useraccountByRole', {level: '0'}, {}) }}">Alle Sachbearbeiter*innen (Rolle 0)</a></li>     
                 </ul>
             {% for owner in ownerlist %}
             <h3>Nach Behörde ({{owner.name}})</h3>

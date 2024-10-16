@@ -6,8 +6,8 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
 use \BO\Mellon\Validator;
+use \BO\Slim\Render;
 use \BO\Zmsdb\Useraccount;
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
@@ -23,12 +23,26 @@ class UseraccountSearchByDepartment extends BaseController
         array $args
     ) {
         $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
+        (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = Helper\User::checkDepartment($args['id']);
         $parameters = $request->getParams();
 
-        $useraccountList = (new Useraccount)->readSearchByDepartmentId($department->id, $parameters, $resolveReferences);
+        $useraccountList = new Collection();
+        $useraccountList = (new Useraccount)->readSearchByDepartmentId($department->id, $parameters, $resolveReferences)->withLessData();
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+        
+        $validUserAccounts = [];
+        foreach ($useraccountList as $useraccount) {
+            try {
+                Helper\User::testWorkstationAccessRights($useraccount);
+                $validUserAccounts[] = $useraccount;
+            } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
+                continue;
+            }
+        }
+        $useraccountList = $validUserAccounts;
+        
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 

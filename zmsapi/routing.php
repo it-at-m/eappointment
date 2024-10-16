@@ -1588,7 +1588,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/role/{id}/useraccount/":
+ *  "/role/{level}/useraccount/":
  *      get:
  *          summary: Get a list of useraccounts for a role
  *          x-since: 2.10
@@ -1596,7 +1596,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - role
  *              - useraccount
  *          parameters:
- *              -   name: id
+ *              -   name: level
  *                  description: role number
  *                  in: path
  *                  required: true
@@ -1630,10 +1630,66 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "role does not exist"
  */
 \App::$slim->get(
-    '/role/{id:\d{1,11}}/useraccount/',
+    '/role/{level:\d{1,11}}/useraccount/',
     '\BO\Zmsapi\UseraccountByRoleList'
 )
     ->setName("UseraccountByRoleList");
+
+
+/**
+ *  @swagger
+ *  "/role/{level}/department/{id}/useraccount/":
+ *      get:
+ *          summary: Get a list of useraccounts for a role and department
+ *          x-since: 2.10
+ *          tags:
+ *              - role
+ *              - department
+ *              - useraccount
+ *          parameters:
+ *              -   name: level
+ *                  description: role number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "role is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "role does not exist"
+ */
+\App::$slim->get(
+    '/role/{level:\d{1,11}}/department/{id:\d{1,11}}/useraccount/',
+    '\BO\Zmsapi\UseraccountByRoleAndDepartmentList'
+)
+    ->setName("UseraccountByRoleAndDepartmentList");
 
 /**
  *  @swagger

@@ -13,9 +13,14 @@
                     <p>Dieser Behörde ist bisher noch kein Nutzer zugeordnet.</p>
                 </div>
                 {% else %}
-                <div class="table-action-link">
-                    {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
-                </div>
+                <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                    </div>
+                    <div>
+                        ({{ useraccountListByDepartment|length }} Nutzer*innen)
+                    </div>
+                </div>             
                 <table class="table--base">
                     <thead>
                         <tr>
@@ -45,9 +50,14 @@
                     </tbody>
                 </table>
                 {% endif %}
-                <div class="table-action-link">
-                    {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
-                </div>
+                <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                    </div>
+                    <div>
+                        ({{ useraccountListByDepartment|length }} Nutzer*innen)
+                    </div>
+                </div>  
              </fieldset>
         </div>
     {% endblock %}

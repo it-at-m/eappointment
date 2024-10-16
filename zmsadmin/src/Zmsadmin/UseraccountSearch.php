@@ -18,15 +18,17 @@ class UseraccountSearch extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
         $validator = $request->getAttribute('validator');
         $queryString = $validator->getParameter('query')
             ->isString()
             ->getValue();
 
+        $useraccountList = new \BO\Zmsentities\Collection\UseraccountList();
         if ($workstation->hasSuperUseraccount()) {
 
-            $collection = \App::$http->readGetResult('/useraccount/search/', [
+            $useraccountList = \App::$http->readGetResult('/useraccount/search/', [
                 'query' => $queryString,
                 'resolveReferences' => 1,
             ])->getCollection();
@@ -34,16 +36,16 @@ class UseraccountSearch extends BaseController
         } else {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
-            $collection = new \BO\Zmsentities\Collection\UseraccountList();
+
             foreach ($departmentList as $accountDepartment) {
-                $useraccountList = \App::$http
+                $departmentUseraccountList = \App::$http
                     ->readGetResult("/department/$accountDepartment->id/useraccount/search/", [
                         'query' => $queryString,
                         'resolveReferences' => 1
                     ])
                     ->getCollection();
-                if ($useraccountList) {
-                    $collection = $collection->addList($useraccountList)->withoutDublicates();
+                if ($departmentUseraccountList) {
+                    $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
                 }
             }
         }
@@ -54,10 +56,13 @@ class UseraccountSearch extends BaseController
             array(
                 'title' => 'User Search',
                 'workstation' => $workstation,
-                'useraccountList' => $collection,
+                'useraccountList' => ($useraccountList) ?
+                    $useraccountList->sortByCustomStringKey('id') :
+                    new Collection(),
                 'searchUserQuery' => $queryString,
                 'ownerlist' => $ownerList,
-                'menuActive' => 'useraccount'
+                'menuActive' => 'useraccount',
+                'success' => $success,
             )
         );
     }

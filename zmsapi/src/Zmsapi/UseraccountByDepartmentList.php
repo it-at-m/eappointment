@@ -6,9 +6,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Useraccount as Query;
+use \BO\Slim\Render;
+use \BO\Zmsdb\Useraccount;
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
 class UseraccountByDepartmentList extends BaseController
@@ -26,8 +26,21 @@ class UseraccountByDepartmentList extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = Helper\User::checkDepartment($args['id']);
 
-        $useraccountList = (new Query)->readCollectionByDepartmentId($department->id, $resolveReferences);
+        $useraccountList = new Collection();
+        $useraccountList = (new Useraccount)->readCollectionByDepartmentId($department->id, $resolveReferences)->withLessData();
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+
+        $validUserAccounts = [];
+        foreach ($useraccountList as $useraccount) {
+            try {
+                Helper\User::testWorkstationAccessRights($useraccount);
+                $validUserAccounts[] = $useraccount;
+            } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
+                continue;
+            }
+        }
+        $useraccountList = $validUserAccounts;
+
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 

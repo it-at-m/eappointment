@@ -22,20 +22,20 @@ class Useraccount extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
-        // API call to ownerlist is already restricted to user rights
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
+        
+        $useraccountList = new \BO\Zmsentities\Collection\UseraccountList();
         if ($workstation->hasSuperUseraccount()) {
-            $collection = \App::$http->readGetResult("/useraccount/", ["resolveReferences" => 0])->getCollection();
+            $useraccountList = \App::$http->readGetResult("/useraccount/", ["resolveReferences" => 0])->getCollection();
         } else {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
-            $collection = new \BO\Zmsentities\Collection\UseraccountList();
             foreach ($departmentList as $accountDepartment) {
-                $useraccountList = \App::$http
+                $departmentUseraccountList = \App::$http
                     ->readGetResult("/department/$accountDepartment->id/useraccount/")
                     ->getCollection();
-                if ($useraccountList) {
-                    $collection = $collection->addList($useraccountList)->withoutDublicates();
+                if ($departmentUseraccountList) {
+                    $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
                 }
             }
         }
@@ -47,7 +47,9 @@ class Useraccount extends BaseController
                 'title' => 'Nutzer',
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
-                'useraccountList' => $collection,
+                'useraccountList' => ($useraccountList) ?
+                $useraccountList->sortByCustomStringKey('id') :
+                new Collection(),
                 'ownerlist' => $ownerList,
                 'success' => $success,
             )

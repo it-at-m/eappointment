@@ -6,8 +6,10 @@
 
 namespace BO\Zmsapi;
 
+use \BO\Mellon\Validator;
 use \BO\Slim\Render;
 use \BO\Zmsdb\Useraccount;
+use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
 class UseraccountByRoleList extends BaseController
 {
@@ -20,16 +22,29 @@ class UseraccountByRoleList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $roleLevel = $args['id'];
-        $validator = $request->getAttribute('validator');
-        (new Helper\User($request, 2))->checkRights('useraccount');
-        $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        
-        $useraccountList = (new Useraccount)->readListRole($roleLevel, $resolveReferences);
-        if (! $useraccountList or count($useraccountList) === 0) {
-            throw new Exception\Useraccount\UserRoleNotFound();
-        }
+        $roleLevel = $args['level'];
+        $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
 
+        $useraccountList = new Collection();
+        $useraccountList = (new Useraccount)->readListRole($roleLevel, $resolveReferences)->withLessData();
+        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+
+        if (! $useraccountList or count($useraccountList) === 0) {
+            throw new \BO\Zmsapi\Exception\Useraccount\UserRoleNotFound();
+        }
+        
+        $validUserAccounts = [];
+        foreach ($useraccountList as $useraccount) {
+            try {
+                Helper\User::testWorkstationAccessRights($useraccount);
+                $validUserAccounts[] = $useraccount;
+            } catch (\BO\Zmsentities\Exception\UserAccountAccessRightsFailed $e) {
+                continue;
+            }
+        }
+        $useraccountList = $validUserAccounts;
+        
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
         
@@ -38,21 +53,4 @@ class UseraccountByRoleList extends BaseController
 
         return $response;
     }
-
-    /*protected function getUseraccountListWithAccess($useraccountList)
-    {
-        $collection = new Collection();
-        foreach ($useraccountList as $useraccount) {
-            if ($useraccount->isSuperUser() || $this->hasSystemWideAccess($useraccount)) {
-                $collection->addEntity(clone $useraccount);
-            }
-        }
-        return $collection;
-    } */
-
-    /*protected function hasSystemWideAccess($useraccount)
-    {
-        $assignedDepartments = (new Useraccount())->readAssignedDepartmentList($useraccount);
-        return (0 === $assignedDepartments->count());
-    }*/
 }

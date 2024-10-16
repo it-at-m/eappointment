@@ -10,16 +10,21 @@
             <fieldset>
             {% if useraccountList|length == 0 %}
                 <div class="message message--info" role="alert">
-                    <p>Dieser Behörde ist bisher noch kein Nutzer zugeordnet.</p>
+                    <p>Keine Ergbnisse.</p>
                 </div>
             {% else %}
-                <div class="table-action-link">
-                {% if department.id %}
-                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
-                {% else %}
-                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
-                {% endif %}
-                </div>
+                <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        {% if department.id %}
+                        {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                    {% else %}
+                        {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                    {% endif %}
+                    </div>
+                    <div>
+                        ({{ useraccountList|length }} Nutzer*innen)
+                    </div>
+                </div>                 
                 <table class="table--base">
                     <thead>
                         <tr>
@@ -43,13 +48,18 @@
                     </tbody>
                 </table>
             {% endif %}
-                <div class="table-action-link">
-                {% if department.id %}
+            <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    {% if department.id %}
                     {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                 {% else %}
                     {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                 {% endif %}
                 </div>
+                <div>
+                    ({{ useraccountList|length }} Nutzer*innen)
+                </div>
+            </div>
             </fieldset>
         </div>
 

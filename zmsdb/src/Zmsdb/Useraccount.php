@@ -287,4 +287,20 @@ class Useraccount extends Base
         return $this->readListStatement($statement, $resolveReferences);
     }
 
+    public function readListByRoleAndDepartment($roleLevel, $departmentId, $resolveReferences = 0)
+    {
+        $collection = new Collection();
+        $query = new Query\Useraccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
+              ->addEntityMapping();
+
+        if (isset($roleLevel) && isset($departmentId)) {
+            $query->addConditionRoleLevel($roleLevel);
+            $query->addConditionDepartmentId($departmentId);
+        }
+
+        $statement = $this->fetchStatement($query);
+        return $this->readListStatement($statement, $resolveReferences);
+    }
+    
 }
