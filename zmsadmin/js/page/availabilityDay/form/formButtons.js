@@ -21,7 +21,7 @@ const FormButtons = (props) => {
                     className="button button--diamond" disabled={disabled || data.startDate == selectedDate}>Ab diesem Tag ändern</button> 
                 <button onClick={onUpdateSingle}
                     title="Öffnungszeit aktualisieren"
-                    className="button button--diamond" disabled={(data && !data.id) || hasConflicts}>Aktualisieren</button> 
+                    className="button button--diamond" disabled={(data && !data.id) || hasConflicts || props.isCreatingExclusion}>Aktualisieren</button>
             </div>
         </div>
     )
@@ -35,7 +35,8 @@ FormButtons.propTypes = {
     onEditInFuture: PropTypes.func,
     onDelete: PropTypes.func,
     onUpdateSingle: PropTypes.func,
-    selectedDate: PropTypes.number
+    selectedDate: PropTypes.number,
+    isCreatingExclusion: PropTypes.bool
 }
 
 export default FormButtons
