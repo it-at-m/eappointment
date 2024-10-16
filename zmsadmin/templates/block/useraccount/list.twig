@@ -26,7 +26,7 @@
                     {% endif %}
                     </div>
                     <div>
-                        ({{ useraccountList|length }} Nutzer*innen)
+                        {% if useraccountList|length == 1 %}({{ useraccountList|length }} Nutzer*in){% else %}({{ useraccountList|length }} Nutzer*innen){% endif %}
                     </div>
                 </div>
                 <table class="table--base">
@@ -61,7 +61,7 @@
                 {% endif %}
                 </div>
                 <div>
-                    ({{ useraccountList|length }} Nutzer*innen)
+                    {% if useraccountList|length == 1 %}({{ useraccountList|length }} Nutzer*in){% else %}({{ useraccountList|length }} Nutzer*innen){% endif %}
                 </div>
             </div>
             </fieldset>

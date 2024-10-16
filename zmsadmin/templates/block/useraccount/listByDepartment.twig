@@ -18,7 +18,7 @@
                         {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                     </div>
                     <div>
-                        ({{ useraccountListByDepartment|length }} Nutzer*innen)
+                        {% if useraccountListByDepartment|length == 1 %}({{ useraccountListByDepartment|length }} Nutzer*in){% else %}({{ useraccountListByDepartment|length }} Nutzer*innen){% endif %}
                     </div>
                 </div>             
                 <table class="table--base">
@@ -55,7 +55,7 @@
                         {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                     </div>
                     <div>
-                        ({{ useraccountListByDepartment|length }} Nutzer*innen)
+                        {% if useraccountListByDepartment|length == 1 %}({{ useraccountListByDepartment|length }} Nutzer*in){% else %}({{ useraccountListByDepartment|length }} Nutzer*innen){% endif %}
                     </div>
                 </div>  
              </fieldset>
