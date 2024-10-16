@@ -142,6 +142,7 @@ class Accordion extends Component
                                 onDelete={onDelete}
                                 errorList={hasError(eventId) ? errorList : {}}
                                 conflictList={hasConflict(eventId) ? Object.assign({}, conflictList): {}}
+                                isCreatingExclusion={this.props.isCreatingExclusion}
                             />
                         </div>
                     </section>
@@ -183,7 +184,8 @@ Accordion.propTypes = {
     onEditInFuture: PropTypes.func,
     setErrorRef: PropTypes.func,
     stateChanged: PropTypes.bool,
-    errorElement: PropTypes.element
+    errorElement: PropTypes.element,
+    isCreatingExclusion: PropTypes.bool
 }
 
 export default Accordion
