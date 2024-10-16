@@ -46,21 +46,5 @@ class UseraccountList extends BaseController
         $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
         return $response;
     }
-
-    protected function getUseraccountListWithAccess($useraccountList)
-    {
-        $collection = new Collection();
-        foreach ($useraccountList as $useraccount) {
-            if ($useraccount->isSuperUser() || $this->hasSystemWideAccess($useraccount)) {
-                $collection->addEntity(clone $useraccount);
-            }
-        }
-        return $collection;
-    }
-
-    protected function hasSystemWideAccess($useraccount)
-    {
-        $assignedDepartments = (new Useraccount())->readAssignedDepartmentList($useraccount);
-        return (0 === $assignedDepartments->count());
-    }
+    
 }
