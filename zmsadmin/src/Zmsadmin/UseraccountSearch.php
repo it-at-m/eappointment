@@ -6,6 +6,8 @@
 
 namespace BO\Zmsadmin;
 
+use \BO\Zmsentities\Collection\UseraccountList as Collection;
+
 class UseraccountSearch extends BaseController
 {
     /**
