@@ -266,10 +266,11 @@
                         ) }}
 
                         {% if scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
+                            {{ selectedProcess.preferences.client.customTextfieldRequired|default(scope.preferences.client.customTextfieldRequired) }}
                             {{ formgroup(
                                 {
                                     "label": scope.preferences.client.customTextfieldLabel,
-                                    "required": selectedProcess.preferences.client.customTextfieldRequired|default(scope.preferences.client.customTextfieldRequired),
+                                    "required": 1,
                                     "errors": formData.customTextfield.messages,
                                     "checked": scope.preferences.client.customTextfieldActivated,
                                 },
