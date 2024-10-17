@@ -36,7 +36,7 @@ class Index extends BaseController
         $languageConfig = str_replace(' ', '+', $validator->getParameter("config")->isString()->getValue());
         $languageConfig = json_decode(base64_decode($languageConfig), true);
         $currentLang = $validator->getParameter("lang")->isString()->getValue();
-        $queryString = $_SERVER['QUERY_STRING'] ? str_replace('/&', '', $_SERVER['QUERY_STRING']) : '';
+        $queryString = isset($_SERVER['QUERY_STRING']) ? str_replace('/&', '', $_SERVER['QUERY_STRING']) : '';
 
         if (! strpos($queryString, 'lang=')) {
             $queryString .= '&lang=de';
