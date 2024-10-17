@@ -42,11 +42,9 @@ class Message implements \JsonSerializable
         $this->setUpdatedMetaData();
     }
 
-
     public static function create(\Psr\Http\Message\RequestInterface $request)
     {
-        $message = new self($request);
-        return $message;
+        return new self($request);
     }
 
     public function hasData()

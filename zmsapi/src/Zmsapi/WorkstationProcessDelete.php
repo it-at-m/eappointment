@@ -28,7 +28,13 @@ class WorkstationProcessDelete extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
-        $process = (new Query())->updateEntity($process, \App::$now, 0, $process->status);
+        $process = (new Query())->updateEntity(
+            $process,
+            \App::$now,
+            0,
+            $process->status,
+            $workstation->getUseraccount()
+        );
         $workstation->process->setStatusBySettings();
         (new Workstation)->writeRemovedProcess($workstation);
         unset($workstation->process);

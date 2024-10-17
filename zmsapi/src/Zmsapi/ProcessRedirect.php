@@ -32,7 +32,7 @@ class ProcessRedirect extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $newProcess = new \BO\Zmsentities\Process($input);
-        $process = $this->readValidProcess($workstation, $entity, $input);
+        $process = $this->readValidProcess($workstation, $entity, $input, $workstation);
         $newProcess->requests = new RequestList();
 
         $this->testProcessAccess($workstation, $process);
@@ -41,11 +41,22 @@ class ProcessRedirect extends BaseController
         $processStatusArchived = new \BO\Zmsdb\ProcessStatusArchived();
 
         $process->status = 'finished';
-        $process = (new Query)->updateEntity($process, \App::$now, 0, 'processing');
+        $process = (new Query)->updateEntity(
+            $process,
+            \App::$now,
+            0,
+            'processing',
+            $workstation->getUseraccount()
+        );
         (new Workstation)->writeRemovedProcess($workstation);
         $processStatusArchived->writeEntityFinished($process, \App::$now, true);
 
-        $newProcess = (new \BO\Zmsdb\Process())->redirectToScope($newProcess, $process->scope, $process->id);
+        $newProcess = (new \BO\Zmsdb\Process())->redirectToScope(
+            $newProcess,
+            $process->scope,
+            $process->id,
+            $workstation->getUseraccount()
+        );
 
         $message = Response\Message::create($request);
         $message->data = $newProcess;
@@ -83,14 +94,25 @@ class ProcessRedirect extends BaseController
         if ($entity->hasProcessCredentials()) {
             $this->testProcessData($entity);
             $entity->addData($input);
-            $process = (new Query())->updateEntity($entity, \App::$now);
+            $process = (new Query())->updateEntity(
+                $entity,
+                \App::$now,
+                0,
+                null,
+                $workstation->getUseraccount()
+            );
         } elseif ($entity->hasQueueNumber()) {
             // Allow waitingnumbers over 1000 with the fourth parameter
             $process = ProcessStatusQueued::init()
                 ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id'], 0, 100000000);
             if (! $process->id) {
                 $workstation = (new \BO\Zmsdb\Workstation)->readResolvedReferences($workstation, 1);
-                $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number']);
+                $process = (new Query())->writeNewPickup(
+                    $workstation->scope,
+                    \App::$now,
+                    $entity['queue']['number'],
+                    $workstation->getUseraccount()
+                );
             }
             $process->testValid();
         } else {
