@@ -5,11 +5,11 @@
         {% endblock %}
 
         {% block board_body %}
-            <h3>Gesamtnutzerliste für Ihren Bereich</h3>
+            <h3>{% if workstation.useraccount.rights.superuser %}Gesamtnutzerliste{% else %}Gesamtnutzerliste für Ihren Bereich{% endif %}</h3>
             <ul>
                 <li><a href="{{ urlGet('useraccount', {}, {}) }}">Gesamtnutzerliste</a></li>
             </ul>        
-            <h3>Suche</h3>
+            <h3>{% if workstation.useraccount.rights.superuser %}Suche{% else %}Suche für Ihren Bereich{% endif %}</h3>
             <ul>
                 <li><a href="{{ urlGet('useraccountSearch', {}, {}) }}">Nutzersuche</a></li>
             </ul>
