@@ -2,11 +2,7 @@
     {% from 'element/helper/form.twig' import custombutton, inputfield %}
 
     {% block board_title %}
-        {% if workstation.useraccount.rights.superuser %}
-            Gesamtnutzerliste
-        {% else %}
-            Gesamtnutzerliste für Ihren Bereich {% if department.name %}: {{ department.name }}{% endif %}
-        {% endif %}
+    <span tabindex="1" id="search-result-title">{% trans %}Suchergebnisse für {% endtrans %} "{{ searchUserQuery }}"</span>
     {% endblock %}
 
     {% block board_body %}
@@ -14,7 +10,7 @@
             <fieldset>
             {% if useraccountList|length == 0 %}
                 <div class="message message--info" role="alert">
-                    <p>Dieser Behörde ist bisher noch kein Nutzer zugeordnet.</p>
+                    <p>Keine Ergbnisse.</p>
                 </div>
             {% else %}
                 <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
@@ -28,7 +24,7 @@
                     <div>
                         {% if useraccountList|length == 1 %}({{ useraccountList|length }} Nutzer*in){% else %}({{ useraccountList|length }} Nutzer*innen){% endif %}
                     </div>
-                </div>
+                </div>                 
                 <table class="table--base">
                     <thead>
                         <tr>
@@ -54,7 +50,7 @@
             {% endif %}
             <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                {% if department.id %}
+                    {% if department.id %}
                     {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                 {% else %}
                     {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}

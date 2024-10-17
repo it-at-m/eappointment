@@ -13,7 +13,7 @@ use \BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class UseraccountList extends BaseController
+class UseraccountSearchByDepartment extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -24,13 +24,17 @@ class UseraccountList extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        $workstation = (new Helper\User($request, 1))->checkRights('useraccount');
         (new Helper\User($request, 1))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $department = Helper\User::checkDepartment($args['id']);
+        $parameters = $request->getParams();
 
         /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
-        $useraccountList = (new Useraccount)->readList($resolveReferences)->withLessData();
-
+        $useraccountList = (new Useraccount)->readSearchByDepartmentId($department->id, $parameters, $resolveReferences)->withLessData();
+        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
+        
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
             try {
@@ -41,12 +45,14 @@ class UseraccountList extends BaseController
             }
         }
         $useraccountList = $validUserAccounts;
-
+        
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
-        return Render::withJson($response, $message, 200);
+        $response = Render::withJson($response, $message, 200);
+
+        return $response;
     }
-    
+
 }

@@ -6,22 +6,15 @@
 {% endblock %}
 {% block content %}
 {{ parent() }}
-<!-- page useraccount -->
+<!-- page useraccountSearch -->
 <div class="grid">
 	<div class="grid__item four-sixths">
-
-		{% if useraccountListByRole %}
-			{% include "block/useraccount/listByRole.twig" %}
-		{% elseif useraccountListByDepartment %}
-		    {% include "block/useraccount/listByDepartment.twig" %}
-		{% else %}
 			{% include "block/search/useraccountSearchForm.twig" %}
-			{% include "block/useraccount/list.twig" %}
-		{% endif %}
+		    {% include "block/search/useraccountSearchResults.twig" %}
 	</div>
 	<div class="grid__item two-sixths">
 		{% include "block/useraccount/departmentlist.twig" %}
 	</div>
 </div>
-<!-- /page useraccount -->
+<!-- /page useraccountSearch -->
 {% endblock %}
