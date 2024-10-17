@@ -266,8 +266,6 @@
                         ) }}
 
                         {% if scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
-                            asdsa
-                            {{ selectedProcess.preferences.client.customTextfieldRequired|default(scope.preferences.client.customTextfieldRequired) == 1 }}
                             {{ formgroup(
                                 {
                                     "label": scope.preferences.client.customTextfieldLabel,
