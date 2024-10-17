@@ -8,6 +8,8 @@
  */
 namespace BO\Zmsadmin;
 
+use \BO\Zmsentities\Collection\UseraccountList as Collection;
+
 class Useraccount extends BaseController
 {
 
