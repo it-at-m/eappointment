@@ -10,6 +10,8 @@ use \BO\Mellon\Validator;
 use \BO\Slim\Render;
 use \BO\Zmsdb\Useraccount;
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class UseraccountByRoleAndDepartmentList extends BaseController
 {
@@ -18,8 +20,8 @@ class UseraccountByRoleAndDepartmentList extends BaseController
      * @return String
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $roleLevel = $args['level'];
@@ -27,6 +29,7 @@ class UseraccountByRoleAndDepartmentList extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = Helper\User::checkDepartment($args['id']);
 
+        /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
         $useraccountList = (new Useraccount)->readListByRoleAndDepartment($roleLevel, $department->id, $resolveReferences)->withLessData();
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
@@ -50,9 +53,7 @@ class UseraccountByRoleAndDepartmentList extends BaseController
         $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
-
-        return $response;
+        return Render::withJson($response, $message, 200);
     }
 
 }

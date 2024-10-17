@@ -53,4 +53,5 @@ class UseraccountByDepartmentList extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);
     }
+    
 }

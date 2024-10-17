@@ -7,16 +7,18 @@
 namespace BO\Zmsadmin;
 
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class UseraccountSearch extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
@@ -27,7 +29,7 @@ class UseraccountSearch extends BaseController
             ->isString()
             ->getValue();
 
-        $useraccountList = new \BO\Zmsentities\Collection\UseraccountList();
+        $useraccountList = new Collection;
         if ($workstation->hasSuperUseraccount()) {
 
             $useraccountList = \App::$http->readGetResult('/useraccount/search/', [

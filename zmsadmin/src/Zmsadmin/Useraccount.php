@@ -9,24 +9,26 @@
 namespace BO\Zmsadmin;
 
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Useraccount extends BaseController
 {
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
         
-        $useraccountList = new \BO\Zmsentities\Collection\UseraccountList();
+        $useraccountList = new Collection();
         if ($workstation->hasSuperUseraccount()) {
             $useraccountList = \App::$http->readGetResult("/useraccount/", ["resolveReferences" => 0])->getCollection();
         } else {
