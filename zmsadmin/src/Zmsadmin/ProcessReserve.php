@@ -123,7 +123,7 @@ class ProcessReserve extends BaseController
         ;
 
         if (isset($process->scope->preferences['client']['customTextfieldRequired'])
-            && $process->scope->preferences['client']['customTextfieldRequired'] === true
+            && $process->scope->preferences['client']['customTextfieldRequired']
         ) {
             $processValidator->validateCustomField(
                 $validator->getParameter('customTextfield'),
