@@ -60,4 +60,10 @@ export interface Scope {
    * @memberof Scope
    */
   captchaActivatedRequired: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Scope
+   */
+  displayInfo?: string
 }
