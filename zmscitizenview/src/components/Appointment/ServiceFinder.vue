@@ -84,7 +84,9 @@ const emit = defineEmits<{
 }>();
 
 const { selectedService, updateSelectedService } =
-  inject<SelectedServiceProvider>("selectedServiceProvider") as SelectedServiceProvider;
+  inject<SelectedServiceProvider>(
+    "selectedServiceProvider"
+  ) as SelectedServiceProvider;
 const service = ref<ServiceImpl>(selectedService.value);
 const maxSlotsPerAppointment = ref<number>(25);
 const currentSlots = ref<number>(0);

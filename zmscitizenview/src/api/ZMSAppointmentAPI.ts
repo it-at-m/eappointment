@@ -4,13 +4,13 @@ import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
+import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
   VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
   VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT,
 } from "@/utils/Constants";
-import {OfficeImpl} from "@/types/OfficeImpl";
 
 export function fetchServicesAndProviders(
   serviceId?: string,
