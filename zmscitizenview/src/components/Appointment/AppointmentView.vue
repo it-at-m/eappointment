@@ -11,7 +11,8 @@
         :preselected-offive-id="locationId"
         :t="t"
       />
-      <CustomerInfo v-if="currentView === 1" />
+      <Calendar v-if="currentView === 1" :t="t"/>
+      <CustomerInfo v-if="currentView === 2" />
       <div class="m-submit-group">
         <MucButton
           v-if="showDecreaseViewButton"
@@ -44,6 +45,7 @@ import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SelectedServiceProvider } from "@/types/ServiceTypes";
+import Calendar from "@/components/Appointment/Calendar.vue";
 
 const props = defineProps<{
   baseUrl: any;
@@ -71,7 +73,7 @@ const updateSelectedService = (newService: ServiceImpl): void => {
 provide<SelectedServiceProvider>("selectedServiceProvider", {
   selectedService,
   updateSelectedService,
-});
+} as SelectedServiceProvider);
 
 onMounted(() => {
   loadData();
