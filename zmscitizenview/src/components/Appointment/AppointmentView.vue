@@ -11,7 +11,10 @@
         :preselected-offive-id="locationId"
         :t="t"
       />
-      <Calendar v-if="currentView === 1" :t="t"/>
+      <Calendar
+        v-if="currentView === 1"
+        :t="t"
+      />
       <CustomerInfo v-if="currentView === 2" />
       <div class="m-submit-group">
         <MucButton
@@ -41,11 +44,11 @@ import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
+import Calendar from "@/components/Appointment/Calendar.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SelectedServiceProvider } from "@/types/ServiceTypes";
-import Calendar from "@/components/Appointment/Calendar.vue";
 
 const props = defineProps<{
   baseUrl: any;

@@ -16,5 +16,4 @@ export interface AvailableDaysDTO {
    * @memberof AvailableDaysDTO
    */
   lastModified: number;
-
 }

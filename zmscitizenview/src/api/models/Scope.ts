@@ -65,5 +65,5 @@ export interface Scope {
    * @type {string}
    * @memberof Scope
    */
-  displayInfo?: string
+  displayInfo?: string;
 }

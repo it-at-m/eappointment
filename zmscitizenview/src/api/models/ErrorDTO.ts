@@ -22,5 +22,4 @@ export interface ErrorDTO {
    * @memberof ErrorDTO
    */
   lastModified: number;
-
 }

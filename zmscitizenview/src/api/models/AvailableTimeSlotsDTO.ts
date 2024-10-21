@@ -16,5 +16,4 @@ export interface AvailableTimeSlotsDTO {
    * @memberof AvailableTimeSlotsDTO
    */
   lastModified: number;
-
 }
