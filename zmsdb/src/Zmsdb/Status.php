@@ -38,13 +38,14 @@ class Status extends Base
         $entity['notification'] = $this->readNotificationStats();
         $entity['sources']['dldb']['last'] = $this->readDdldUpdateStats();
         $entity['processes']['lastCalculate'] = $this->readLastCalculateSlots();
-        
+
         $entity['useraccounts']['activeSessions'] = $this->getTotalActiveSessions();
         $entity['useraccounts']['departments'] = $this->getActiveSessionsByBehoerden();
         $entity['useraccounts']['scopes'] = $this->getActiveSessionsByStandort();
 
         return $entity;
     }
+
 
     /**
      * Get total active sessions where SessionID is not null or empty and not expired
@@ -73,12 +74,14 @@ class Status extends Base
     protected function getActiveSessionsByBehoerden()
     {
         $result = $this->getReader()->fetchAll(
-            'SELECT b.BehoerdenID, b.Name as BehoerdeName, COALESCE(COUNT(n.SessionID), 0) as activeSessions
-             FROM behoerde b
-             LEFT JOIN nutzer n ON b.BehoerdenID = n.BehoerdenID
-             LEFT JOIN sessiondata s ON n.SessionID = s.sessionid
-             AND JSON_UNQUOTE(JSON_EXTRACT(s.sessioncontent, "$.expires")) > UNIX_TIMESTAMP()
-             GROUP BY b.BehoerdenID, b.Name'
+            'SELECT b.BehoerdenID, b.Name as BehoerdeName, 
+                COALESCE(SUM(CASE 
+                    WHEN JSON_UNQUOTE(JSON_EXTRACT(sd.sessioncontent, "$.expires")) > UNIX_TIMESTAMP()
+                    THEN 1 ELSE 0 END), 0) as activeSessions
+         FROM behoerde b
+         LEFT JOIN nutzer n ON b.BehoerdenID = n.BehoerdenID
+         LEFT JOIN sessiondata sd ON n.SessionID = sd.sessionid
+         GROUP BY b.BehoerdenID, b.Name'
         );
 
         $activeSessions = [];
@@ -92,6 +95,7 @@ class Status extends Base
         return $activeSessions;
     }
 
+
     /**
      * Get active sessions grouped by StandortID with names in sub-arrays, excluding expired sessions, including all scopes even with no sessions
      *
@@ -100,11 +104,13 @@ class Status extends Base
     protected function getActiveSessionsByStandort()
     {
         $result = $this->getReader()->fetchAll(
-            'SELECT s.StandortID, s.Bezeichnung as StandortName, COALESCE(COUNT(n.SessionID), 0) as activeSessions
+            'SELECT s.StandortID, s.Bezeichnung as StandortName, 
+                    COALESCE(SUM(CASE 
+                        WHEN JSON_UNQUOTE(JSON_EXTRACT(sd.sessioncontent, "$.expires")) > UNIX_TIMESTAMP()
+                        THEN 1 ELSE 0 END), 0) as activeSessions
              FROM standort s
              LEFT JOIN nutzer n ON s.StandortID = n.StandortID
              LEFT JOIN sessiondata sd ON n.SessionID = sd.sessionid
-             AND JSON_UNQUOTE(JSON_EXTRACT(sd.sessioncontent, "$.expires")) > UNIX_TIMESTAMP()
              GROUP BY s.StandortID, s.Bezeichnung'
         );
 
@@ -118,6 +124,7 @@ class Status extends Base
 
         return $activeSessions;
     }
+
 
     public function getConfigProblems($configVariables)
     {
@@ -256,7 +263,7 @@ class Status extends Base
                 SUM(CASE WHEN vorlaeufigeBuchung = 1 AND b.StandortID != 0 THEN 1 ELSE NULL END) as reserved,
                 SUM(
                     CASE 
-                        WHEN IPTimeStamp > '.intval($midnight).' AND b.StandortID != 0 
+                        WHEN IPTimeStamp > ' . intval($midnight) . ' AND b.StandortID != 0 
                             AND vorlaeufigeBuchung = 0 AND Abholer = 0 
                         THEN 
                             1 
@@ -267,7 +274,7 @@ class Status extends Base
                 SUM(
                     CASE 
                         WHEN 
-                            IPTimeStamp > '.intval($last7days).' AND b.StandortID != 0 
+                            IPTimeStamp > ' . intval($last7days) . ' AND b.StandortID != 0 
                             AND vorlaeufigeBuchung = 0  AND Abholer = 0 
                         THEN 
                             1 
