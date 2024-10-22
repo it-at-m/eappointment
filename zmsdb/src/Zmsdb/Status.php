@@ -38,7 +38,85 @@ class Status extends Base
         $entity['notification'] = $this->readNotificationStats();
         $entity['sources']['dldb']['last'] = $this->readDdldUpdateStats();
         $entity['processes']['lastCalculate'] = $this->readLastCalculateSlots();
+        
+        $entity['useraccounts']['activeSessions'] = $this->getTotalActiveSessions();
+        $entity['useraccounts']['departments'] = $this->getActiveSessionsByBehoerden();
+        $entity['useraccounts']['scopes'] = $this->getActiveSessionsByStandort();
+
         return $entity;
+    }
+
+    /**
+     * Get total active sessions where SessionID is not null or empty and not expired
+     *
+     * @return int
+     */
+    protected function getTotalActiveSessions()
+    {
+        $result = $this->getReader()->fetchOne(
+            'SELECT COUNT(n.SessionID) as totalActiveSessions
+             FROM nutzer n
+             LEFT JOIN sessiondata s ON n.SessionID = s.sessionid
+             WHERE n.SessionID IS NOT NULL
+             AND n.SessionID != ""
+             AND JSON_UNQUOTE(JSON_EXTRACT(s.sessioncontent, "$.expires")) > UNIX_TIMESTAMP()'
+        );
+
+        return (int) $result['totalActiveSessions'];
+    }
+
+    /**
+     * Get active sessions grouped by BehoerdenID with names in sub-arrays, excluding expired sessions, including all departments even with no sessions
+     *
+     * @return array
+     */
+    protected function getActiveSessionsByBehoerden()
+    {
+        $result = $this->getReader()->fetchAll(
+            'SELECT b.BehoerdenID, b.Name as BehoerdeName, COALESCE(COUNT(n.SessionID), 0) as activeSessions
+             FROM behoerde b
+             LEFT JOIN nutzer n ON b.BehoerdenID = n.BehoerdenID
+             LEFT JOIN sessiondata s ON n.SessionID = s.sessionid
+             AND JSON_UNQUOTE(JSON_EXTRACT(s.sessioncontent, "$.expires")) > UNIX_TIMESTAMP()
+             GROUP BY b.BehoerdenID, b.Name'
+        );
+
+        $activeSessions = [];
+        foreach ($result as $row) {
+            $activeSessions[$row['BehoerdenID']] = [
+                'activeSessions' => (int) $row['activeSessions'],
+                'name' => $row['BehoerdeName']
+            ];
+        }
+
+        return $activeSessions;
+    }
+
+    /**
+     * Get active sessions grouped by StandortID with names in sub-arrays, excluding expired sessions, including all scopes even with no sessions
+     *
+     * @return array
+     */
+    protected function getActiveSessionsByStandort()
+    {
+        $result = $this->getReader()->fetchAll(
+            'SELECT s.StandortID, s.Bezeichnung as StandortName, COALESCE(COUNT(n.SessionID), 0) as activeSessions
+             FROM standort s
+             LEFT JOIN nutzer n ON s.StandortID = n.StandortID
+             LEFT JOIN sessiondata sd ON n.SessionID = sd.sessionid
+             AND JSON_UNQUOTE(JSON_EXTRACT(sd.sessioncontent, "$.expires")) > UNIX_TIMESTAMP()
+             GROUP BY s.StandortID, s.Bezeichnung'
+        );
+
+        $activeSessions = [];
+        foreach ($result as $row) {
+            $activeSessions[$row['StandortID']] = [
+                'activeSessions' => (int) $row['activeSessions'],
+                'name' => $row['StandortName']
+            ];
+        }
+
+        return $activeSessions;
     }
 
     public function getConfigProblems($configVariables)
