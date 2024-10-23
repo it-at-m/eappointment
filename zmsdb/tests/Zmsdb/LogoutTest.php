@@ -18,7 +18,7 @@ class LogoutTest extends Base
             'password' => md5(static::$password)
         ));
 
-        $workstation = $query->writeEntityLoginByName($userAccount->id, $userAccount->password, $now, (new \DateTime())->setTimestamp(time() + \BO\Slim\Application::SESSION_DURATION), 2);
+        $workstation = $query->writeEntityLoginByName($userAccount->id, $userAccount->password, $now, (new \DateTime())->setTimestamp(time() + 28800), 2);
         $this->assertEquals(true, $workstation->hasAuthKey());
         $workstation = $query->writeEntityLogoutByName($userAccount->id, 2);
         $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);

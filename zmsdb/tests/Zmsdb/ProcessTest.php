@@ -40,7 +40,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $workstation = (new \BO\Zmsdb\Workstation)
-            ->writeEntityLoginByName('testadmin', md5(static::$password), $now, (new \DateTime())->setTimestamp(time() + \BO\Slim\Application::SESSION_DURATION), 2);
+            ->writeEntityLoginByName('testadmin', md5(static::$password), $now, (new \DateTime())->setTimestamp(time() + 28800), 2);
         $process =(new Query)->readEntity(10029, '1c56');
         $workstation->process = (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation, $process, $now);
         $process = (new Query)->readByWorkstation($workstation, 1);

@@ -41,7 +41,7 @@ class UserAccountTest extends Base
         $userAccount = $query->writeUpdatedEntity($userAccount->id, $userAccount, 2);
 
         $workstation = (new Workstation())
-            ->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, (new \DateTime())->setTimestamp(time() + \BO\Slim\Application::SESSION_DURATION), 2);
+            ->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, (new \DateTime())->setTimestamp(time() + 28800), 2);
         $this->assertEquals(true, $workstation->hasAuthKey());
 
         $userAccount = $query->readEntityByAuthKey($workstation->authkey, 1);
@@ -172,7 +172,7 @@ class UserAccountTest extends Base
     {
         $now = static::$now;
         $this->expectException('\BO\Zmsdb\Exception\Useraccount\InvalidCredentials');
-        (new Workstation())->writeEntityLoginByName('johndoe', 'secret',$now, (new \DateTime())->setTimestamp($now->getTimestamp() + \BO\Slim\Application::SESSION_DURATION));
+        (new Workstation())->writeEntityLoginByName('johndoe', 'secret',$now, (new \DateTime())->setTimestamp($now->getTimestamp() + 28800));
     }
 
     public function testWriteHintByName()
@@ -195,7 +195,7 @@ class UserAccountTest extends Base
         //first write userAccount example in Database
         $userAccount = $query->writeEntity($input);
         //login workstation by useraccount
-        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, (new \DateTime())->setTimestamp(time() + \BO\Slim\Application::SESSION_DURATION));
+        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, (new \DateTime())->setTimestamp(time() + 28800));
         //get example workstation account with scope etc and give id from logged in workstation for update
         $workstationInput = (new WorkstationEntity())->getExample();
         $workstationInput->id = $workstation->id;
