@@ -81,6 +81,7 @@ class WorkstationOAuth extends BaseController
             $useraccount->getId(),
             $entity->password,
             $state,
+            (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION),
             $resolveReferences
         );
         return $workstation;

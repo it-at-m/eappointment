@@ -287,13 +287,14 @@ class Workstation extends Base
      *
      * @return Entity
      */
-    public function updateEntityAuthkey($loginName, $password, $authKey, $resolveReferences)
+    public function updateEntityAuthkey($loginName, $password, $authKey, \DateTimeInterface $sessionExpiry, $resolveReferences)
     {
         $query = Query\Workstation::QUERY_UPDATE_AUTHKEY;
         $result = $this->perform(
             $query,
             array(
                 $authKey,
+                $sessionExpiry->format('Y-m-d H:i:s'),
                 $loginName,
                 $password
             )

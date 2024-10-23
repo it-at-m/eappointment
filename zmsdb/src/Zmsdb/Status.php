@@ -79,7 +79,7 @@ class Status extends Base
 
             if (!isset($activeSessionsByBehoerden[$behoerdenID])) {
                 $activeSessionsByBehoerden[$behoerdenID] = [
-                    'activeSessions' => 0,  // This will be updated as we sum the total sessions
+                    'activeSessions' => 0,
                     'name' => $row['BehoerdeName'],
                     'scopes' => []
                 ];
