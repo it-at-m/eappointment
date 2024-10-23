@@ -17,7 +17,7 @@ class LoginTest extends Base
             'id' => static::$username
         ));
 
-        $workstation = $query->writeEntityLoginByName($userAccount->id, md5(static::$password), $now, (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION));
+        $workstation = $query->writeEntityLoginByName($userAccount->id, md5(static::$password), $now, (new \DateTime())->setTimestamp(time() + \BO\Slim\Application::SESSION_DURATION));
         $this->assertEquals(true, $workstation->hasAuthKey());
 
         $workstation->scope['id'] = 141; //Bürgeramt Heerstraße
