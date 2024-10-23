@@ -60,6 +60,7 @@ class WorkstationOAuth extends BaseController
             $entity->id,
             $request->getHeaderLine('X-Authkey'),
             \App::getNow(),
+            (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION),
             $resolveReferences
         );
         return $workstation;
@@ -73,6 +74,7 @@ class WorkstationOAuth extends BaseController
             $useraccount->getId(),
             $entity->password,
             \App::getNow(),
+            (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION),
             $resolveReferences
         );
         $workstation = $query->updateEntityAuthkey(
