@@ -41,7 +41,7 @@ class UserAccountTest extends Base
         $userAccount = $query->writeUpdatedEntity($userAccount->id, $userAccount, 2);
 
         $workstation = (new Workstation())
-            ->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, 2);
+            ->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION), 2);
         $this->assertEquals(true, $workstation->hasAuthKey());
 
         $userAccount = $query->readEntityByAuthKey($workstation->authkey, 1);
@@ -195,7 +195,7 @@ class UserAccountTest extends Base
         //first write userAccount example in Database
         $userAccount = $query->writeEntity($input);
         //login workstation by useraccount
-        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime);
+        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION));
         //get example workstation account with scope etc and give id from logged in workstation for update
         $workstationInput = (new WorkstationEntity())->getExample();
         $workstationInput->id = $workstation->id;
