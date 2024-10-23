@@ -48,11 +48,12 @@ class Status extends Base
              LEFT JOIN sessiondata s ON n.SessionID = s.sessionid
              WHERE n.SessionID IS NOT NULL
              AND n.SessionID != ""
-             AND JSON_UNQUOTE(JSON_EXTRACT(s.sessioncontent, "$.expires")) > UNIX_TIMESTAMP()'
+             AND (JSON_UNQUOTE(JSON_EXTRACT(s.sessioncontent, "$.expires")) 
+             + JSON_UNQUOTE(JSON_EXTRACT(s.sessioncontent, "$.refresh_expires_in"))) > UNIX_TIMESTAMP()'
         );
-
+    
         return (int) $result['totalActiveSessions'];
-    }
+    }    
 
     /**
      * Get active sessions grouped by BehoerdenID with scopes, excluding expired sessions
@@ -65,7 +66,8 @@ class Status extends Base
             'SELECT b.BehoerdenID, b.Name as BehoerdeName, 
                     s.StandortID, s.Bezeichnung as StandortName,
                     COALESCE(SUM(CASE 
-                        WHEN JSON_UNQUOTE(JSON_EXTRACT(sd.sessioncontent, "$.expires")) > UNIX_TIMESTAMP() 
+                        WHEN (JSON_UNQUOTE(JSON_EXTRACT(sd.sessioncontent, "$.expires")) 
+                        + JSON_UNQUOTE(JSON_EXTRACT(sd.sessioncontent, "$.refresh_expires_in"))) > UNIX_TIMESTAMP() 
                         THEN 1 ELSE 0 END), 0) as activeSessions
              FROM behoerde b
              LEFT JOIN standort s ON b.BehoerdenID = s.BehoerdenID
@@ -73,13 +75,13 @@ class Status extends Base
              LEFT JOIN sessiondata sd ON n.SessionID = sd.sessionid
              GROUP BY b.BehoerdenID, b.Name, s.StandortID, s.Bezeichnung'
         );
-
+    
         $activeSessionsByBehoerden = [];
-
+    
         foreach ($result as $row) {
             $behoerdenID = $row['BehoerdenID'];
             $standortID = $row['StandortID'];
-
+    
             if (!isset($activeSessionsByBehoerden[$behoerdenID])) {
                 $activeSessionsByBehoerden[$behoerdenID] = [
                     'activeSessions' => 0,
@@ -87,17 +89,18 @@ class Status extends Base
                     'scopes' => []
                 ];
             }
-
+    
             $activeSessionsByBehoerden[$behoerdenID]['scopes'][$standortID] = [
                 'activeSessions' => (int) $row['activeSessions'],
                 'name' => $row['StandortName']
             ];
-
+    
             $activeSessionsByBehoerden[$behoerdenID]['activeSessions'] += (int) $row['activeSessions'];
         }
-
+    
         return $activeSessionsByBehoerden;
     }
+    
 
     /**
      * Get the configuration problems
