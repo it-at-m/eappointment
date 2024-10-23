@@ -172,7 +172,7 @@ class UserAccountTest extends Base
     {
         $now = static::$now;
         $this->expectException('\BO\Zmsdb\Exception\Useraccount\InvalidCredentials');
-        (new Workstation())->writeEntityLoginByName('johndoe', 'secret', $now);
+        (new Workstation())->writeEntityLoginByName('johndoe', 'secret',$now, (new \DateTime())->setTimestamp($now->getTimestamp() + \App::SESSION_DURATION));
     }
 
     public function testWriteHintByName()
