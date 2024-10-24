@@ -69,8 +69,9 @@
 				{{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
 				{{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
 				{% set label = buttonLabelPrefix ~ button.name %}
+
 				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
+					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translations[button.requestId] ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
 				</div>
 			</form>
 		{% endif %}

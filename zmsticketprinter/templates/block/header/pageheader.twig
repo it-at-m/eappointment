@@ -3,6 +3,14 @@
 
 <div id="main-header" class="noprint">
 	<span>
+        {% if languages is not empty %}
+        <div class="languages">
+            <div class="lang" data-lang-id="0" data-lang="{{ defaultLanguage }}"><a href="{{ app.request.uri ~ '?' ~ urlQueryString|replace({('lang=' ~ currentLang): 'lang=de'}) }}"><img src="_img/flags/{{ defaultLanguage }}.svg" alt="" /></a></div>
+            {% for lang in languages %}
+                <div class="lang" data-lang-id="{{ loop.index }}" data-lang="{{ lang }}"><a href="{{ app.request.uri ~ '?' ~ urlQueryString|replace({('lang=' ~ currentLang): 'lang=' ~ lang}) }}"><img src="_img/flags/{{ lang }}.svg" alt="" /></a></div>
+            {% endfor %}
+        </div>
+        {% endif %}
     	<div class="adressangabe">
             <div class="adressangabe_behoerde">{{ organisation.name }}</div>
     		<div class="adressangabe_name">{{ department.name }}</div>
