@@ -222,7 +222,7 @@
 									{{ item.process.scope.contact.name }}
 								</td>
 								<td>
-									{{ item.process.requests|map(request => request.name)|join('; ') }}
+									{{ item.process.requests ?? item.process.requests|map(request => request.name)|join('; ') : '' }}
 								</td>
 							</tr>
 						{% endfor %}
