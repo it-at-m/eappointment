@@ -35,7 +35,7 @@ class UserQueue extends BaseController
         $workstation = (new Helper\User($request, 2))->checkRights();
         $queueList = new QueueList();
         foreach ($workstation->getUseraccount()['departments'] as $department) {
-            $queueList->addList((new Department())->readQueueList($department->id, $dateTime));
+            $queueList->addList((new Department())->readQueueList($department->id, $dateTime, 2));
         }
         $queues = $queueList->withSortedWaitingTime();
 
