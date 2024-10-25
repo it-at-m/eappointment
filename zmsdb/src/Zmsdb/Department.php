@@ -381,7 +381,7 @@ class Department extends Base
         $resolveReferences = 0
     ) {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
-        $department = $this->readEntity($departmentId);
+        $department = $this->readEntity($departmentId, 2);
         foreach ($department->scopes as $scope) {
             $scope = (new Scope())->readWithWorkstationCount($scope->id, $dateTime);
             $scopeQueueList = (new Scope())
