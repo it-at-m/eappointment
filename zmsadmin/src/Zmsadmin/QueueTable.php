@@ -53,20 +53,16 @@ class QueueTable extends BaseController
         $queueListMissed = $queueList->withStatus(['missed']);
         $queueListParked = $queueList->withStatus(['parked']);
         $queueListFinished = $queueList->withStatus(['finished']);
-        $clusterQueueList = [];
 
-        if (isset($workstation->scope['cluster'])) {
-            $clusterId = $workstation->scope['cluster']['id'];
-            $clusterQueueList = \App::$http
-                ->readGetResult(
-                    '/cluster/' . $clusterId . '/queue/',
-                    [
-                        'resolveReferences' => 2,
-                        'status' => 'called',
-                    ]
-                )
-                ->getCollection();
-        }
+        $clusterQueueList = \App::$http
+            ->readGetResult(
+                '/useraccount/queue/',
+                [
+                    'resolveReferences' => 2,
+                    'status' => 'called',
+                ]
+            )
+            ->getCollection() ?? [];
 
         return \BO\Slim\Render::withHtml(
             $response,
