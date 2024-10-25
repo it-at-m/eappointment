@@ -22,3 +22,47 @@
     display: block;
     font-size: 18px;
 }
+
+.accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 10px 10px 10px 0;
+    transition: all .4s;
+    margin: 10px 0;
+}
+
+.accordion.active {
+    background-color: #ccc;
+
+    .accordion-icon {
+        .icon-down {
+            display: none;
+        }
+
+        .icon-up {
+            display: block;
+        }
+    }
+}
+
+.accordion-panel {
+    background-color: white;
+    display: none;
+    overflow: hidden;
+}
+
+.accordion-icon {
+    float: right;
+
+    .icon-down {
+        display: block;
+    }
+
+    .icon-up {
+        display: none;
+    }
+}

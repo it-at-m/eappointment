@@ -54,7 +54,17 @@ class QueueTable extends BaseController
         $queueListParked = $queueList->withStatus(['parked']);
         $queueListFinished = $queueList->withStatus(['finished']);
 
-        // rendering
+        $clusterId = $workstation->scope['cluster']['id'];
+        $clusterQueueList = \App::$http
+            ->readGetResult(
+                '/cluster/' . $clusterId . '/queue/',
+                [
+                    'resolveReferences' => 2,
+                    'status' => 'called',
+                ]
+            )
+            ->getCollection();
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/queue/table.twig',
@@ -69,6 +79,7 @@ class QueueTable extends BaseController
                 'processListMissed' => $queueListMissed->toProcessList(),
                 'processListParked' => $queueListParked->toProcessList(),
                 'processListFinished' => $queueListFinished->toProcessList(),
+                'clusterQueueListCalled' => $clusterQueueList,
                 'changedProcess' => $changedProcess,
                 'success' => $success,
                 'debug' => \App::DEBUG,
