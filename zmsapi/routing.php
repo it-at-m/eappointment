@@ -664,6 +664,51 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/useraccount/queue/":
+ *      get:
+ *          summary: Get a waiting queue for a cluster
+ *          tags:
+ *              - cluster
+ *              - queue
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, return empty queueList if no entry was found"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/queue.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get(
+    '/useraccount/queue/',
+    '\BO\Zmsapi\UserQueue'
+)
+    ->setName("UserQueue");
+
+/**
+ *  @swagger
  *  "/cluster/{id}/request/":
  *      get:
  *          summary: Get a list of requests by cluster ID

@@ -374,4 +374,22 @@ class Department extends Base
             )
         );
     }
+
+    public function readQueueList(
+        $departmentId,
+        \DateTimeInterface $dateTime,
+        $resolveReferences = 0
+    ) {
+        $queueList = new \BO\Zmsentities\Collection\QueueList();
+        $department = $this->readEntity($departmentId);
+        foreach ($department->scopes as $scope) {
+            $scope = (new Scope())->readWithWorkstationCount($scope->id, $dateTime);
+            $scopeQueueList = (new Scope())
+                ->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences);
+            if (0 < $scopeQueueList->count()) {
+                $queueList->addList($scopeQueueList);
+            }
+        }
+        return $queueList;
+    }
 }
