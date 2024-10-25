@@ -142,14 +142,14 @@
                                             <span class="counter">{{ item.clients|first.emailSendCount }}</span>
                                         {% endif %}
                                     {% endif %}
-                                </td> 
+                                </td>
 								<td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
 									{{ item.requests|first.name }}
 									{% if item.requests|length > 1 %}
 										+{{ (item.requests|length) - 1 }}
 									{% endif %}
 								</td>
-								{#DL#}                               
+								{#DL#}
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<td>
@@ -177,6 +177,64 @@
 				Keine Einträge gefunden.
 			{% endif %}
 		</div>
+
+		<div class="table-responsive-wrapper">
+			<h2 class="accordion">
+				<span class="color-green">
+					<i class="fas fa-play-circle" aria-hidden="true"></i>
+				</span>
+				Offene Aufrufe ({{ clusterQueueListCalled|length }})
+				<span class="accordion-icon">
+					<i class="fas fa-angle-down icon-down" aria-hidden="true"></i>
+					<i class="fas fa-angle-up icon-up" aria-hidden="true"></i>
+				</span>
+			</h2>
+				<div class="table-responsive-wrapper accordion-panel">
+					{% if clusterQueueListCalled|length %}
+					<table id="table-parked-appointments" class="table--base compact">
+						<thead>
+						<tr>
+							{% if clusterEnabled %}
+								<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+							{% else %}
+								<th title="{% trans %}Reihenfolge der Aufrufe{% endtrans %}">Lfdnr.</th>
+							{% endif %}
+							<th>Terminnummer</th>
+							<th>Zimmernummer</th>
+							<th>Standort</th>
+							<th>DL</th>
+						</tr>
+						</thead>
+						{% set lfdnr = 0 %}
+						{% for item in clusterQueueListCalled %}
+							{% set lfdnr = lfdnr + 1 %}
+							<tr class="parked">
+								<td>
+									{{ lfdnr }}
+								</td>
+								<td>
+									{{ item.number }}
+								</td>
+								<td>
+									{{ item.destination }}
+								</td>
+								<td>
+									{{ item.process.scope.contact.name }}
+								</td>
+								<td>
+									{{ item.process.requests|map(request => request.name)|join('; ') }}
+								</td>
+							</tr>
+						{% endfor %}
+					</table>
+					{% else %}
+						<span>
+							Keine Einträge gefunden.
+						</span>
+					{% endif %}
+				</div>
+		</div>
+
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-blue">
@@ -596,6 +654,23 @@ content.addClass('hidden')
 				{{ dumpHttpLog() }}
 			</div>
 		{% endif %}
+
+		<script>
+			var acc = document.getElementsByClassName("accordion");
+			var i;
+
+			for (i = 0; i < acc.length; i++) {
+				acc[i].addEventListener("click", function () {
+					this.classList.toggle("active");
+					var panel = this.nextElementSibling;
+					if (panel.style.display === "block") {
+						panel.style.display = "none";
+					} else {
+						panel.style.display = "block";
+					}
+				});
+			}
+		</script>
 	{% endblock %}
 	{% block board_footer %}{% endblock %}
 {% endembed %}

@@ -25,6 +25,8 @@ class ClusterQueue extends BaseController
         (new Helper\User($request))->checkRights('basic');
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $statusParameter = Validator::param('status')->isString()->getValue();
+        $statuses = empty($statusParameter) ? [] : explode(',', $statusParameter);
         $selectedDate = Validator::param('date')->isString()->getValue();
         $dateTime = ($selectedDate) ? (new DateTime($selectedDate))->modify(\App::$now->format('H:i')) : \App::$now;
 
@@ -34,7 +36,22 @@ class ClusterQueue extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = $query->readQueueList($cluster->id, $dateTime, $resolveReferences);
+        $queues = $query->readQueueList($cluster->id, $dateTime, $resolveReferences);
+        $message->data = $queues;
+
+        if ($resolveReferences > 1) {
+            $filteredQueues = [];
+            foreach ($queues as $queue) {
+                if (! empty($statuses) && ! in_array($queue->status, $statuses)) {
+                    continue;
+                }
+
+                $queue->process = $queue->getProcess();
+                $filteredQueues[] = $queue;
+            }
+
+            $message->data = $filteredQueues;
+        }
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
