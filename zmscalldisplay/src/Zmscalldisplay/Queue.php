@@ -34,7 +34,7 @@ class Queue extends BaseController
             ->getCollection();
 
         $queueList = ($queueList) ?
-            $queueList->withStatus($calldisplay::getRequestedQueueStatus($request)) :
+            $queueList->withStatus($calldisplay::getRequestedQueueStatus($request))->sortByCallTime('descending') :
             new \BO\Zmsentities\Collection\QueueList();
 
         if ($displayNumber === 1) {
