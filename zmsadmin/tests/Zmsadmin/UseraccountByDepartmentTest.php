@@ -19,7 +19,7 @@ class UseraccountByDepartmentTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -30,13 +30,11 @@ class UseraccountByDepartmentTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/department/74/useraccount/',
-                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_useraccountlist_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/department/74/workstation/',
-                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_workstationlist_department_74.json")
                 ],
                 [
@@ -44,12 +42,6 @@ class UseraccountByDepartmentTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_ownerlist.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/',
-                    'parameters' => ['resolveReferences' => 0],
-                    'response' => $this->readFixture("GET_scope_list.json")
                 ]
             ]
         );
