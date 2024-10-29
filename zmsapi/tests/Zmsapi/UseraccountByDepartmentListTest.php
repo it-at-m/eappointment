@@ -2,9 +2,9 @@
 
 namespace BO\Zmsapi\Tests;
 
-class DepartmentUseraccountListTest extends Base
+class UseraccountByDepartmentListTest extends Base
 {
-    protected $classname = "DepartmentUseraccountList";
+    protected $classname = "UseraccountByDepartmentList";
 
     public function testRendering()
     {
