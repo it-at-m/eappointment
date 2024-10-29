@@ -123,6 +123,14 @@ class ProcessValidator
         return $this;
     }
 
+    public function validateCustomField(Unvalidated $unvalid, callable $setter): self
+    {
+        $valid = $unvalid->isString();
+        $valid->isBiggerThan(1, "Dieses Feld darf nicht leer sein");
+        $this->getCollection()->validatedAction($valid, $setter);
+        return $this;
+    }
+
     public function validateTelephone(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null):self
     {
         $valid = $unvalid->isString();
