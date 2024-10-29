@@ -1,26 +1,40 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless useraccount-list'} %}
     {% from 'element/helper/form.twig' import custombutton, inputfield %}
 
+    {% set roleTitles = {
+        90: 'Technische Administration Superuser',
+        70: 'Referat übergreifende Administration',
+        50: 'Behörden übergreifende Administration',
+        40: 'Fachliche Administration',
+        30: 'Terminadministration',
+        5: 'Innenrevision',
+        0: 'Sachbearbeiter*innen'
+    } %}
+    
     {% block board_title %}
-        Nutzerliste: {{ department.name }}
-    {% endblock %}
+        {% if roleTitles[roleLevel] is defined %}
+            Nutzerliste: {{ roleTitles[roleLevel] }} (Rolle: {{ roleLevel }}) 
+        {% else %}
+            Nutzerliste: Unbekannte Rolle ({{ roleLevel }})
+        {% endif %}
+    {% endblock %}    
 
     {% block board_body %}
         <div class="table-responsive-wrapper"> 
              <fieldset>
-                {% if useraccountListByDepartment|length == 0 %}
+                {% if useraccountListByRole|length == 0 %}
                 <div class="message message--info" role="alert">
-                    <p>Dieser Behörde ist bisher noch kein Nutzer zugeordnet.</p>
+                    <p>In Ihrem Bereich ist dieser Rolle noch kein Benutzer zugewiesen worden.</p>
                 </div>
-                {% else %}
+                {% else %}       
                 <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                     </div>
                     <div>
-                        {% if useraccountListByDepartment|length == 1 %}({{ useraccountListByDepartment|length }} Nutzer*in){% else %}({{ useraccountListByDepartment|length }} Nutzer*innen){% endif %}
+                        {% if useraccountListByRole|length == 1 %}({{ useraccountListByRole|length }} Nutzer*in){% else %}({{ useraccountListByRole|length }} Nutzer*innen){% endif %}
                     </div>
-                </div>             
+                </div>                
                 <table class="table--base">
                     <thead>
                         <tr>
@@ -31,7 +45,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for useraccount in useraccountListByDepartment %}
+                    {% for useraccount in useraccountListByRole %}
                         <tr>
                             <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
                             <td>{% if useraccount.email %}{{ useraccount.email }}{% endif %}</td>
@@ -55,9 +69,9 @@
                         {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
                     </div>
                     <div>
-                        {% if useraccountListByDepartment|length == 1 %}({{ useraccountListByDepartment|length }} Nutzer*in){% else %}({{ useraccountListByDepartment|length }} Nutzer*innen){% endif %}
+                        {% if useraccountListByRole|length == 1 %}({{ useraccountListByRole|length }} Nutzer*in){% else %}({{ useraccountListByRole|length }} Nutzer*innen){% endif %}
                     </div>
-                </div>  
+                </div>   
              </fieldset>
         </div>
     {% endblock %}

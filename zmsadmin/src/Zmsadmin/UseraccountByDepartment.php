@@ -6,8 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-use App;
-use BO\Slim\Render;
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,36 +14,25 @@ class UseraccountByDepartment extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ): ResponseInterface
-    {
+    ) {
         $departmentId = $args['id'];
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
+        $department = \App::$http->readGetResult("/department/$departmentId/")->getEntity();
 
-        $workstation = App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $department = App::$http->readGetResult("/department/$departmentId/")->getEntity();
-        $useraccountList = App::$http->readGetResult(
-            "/department/$departmentId/useraccount/",
-            ['resolveReferences' => 1]
-        )->getCollection();
-        $workstationList = App::$http->readGetResult(
-            "/department/$departmentId/workstation/",
-            ['resolveReferences' => 0]
-        )->getCollection();
-        $scopeList = App::$http->readGetResult('/scope/', ['resolveReferences' => 0])->getCollection();
+        $useraccountList = new Collection;
+        $useraccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
+        $workstationList = \App::$http->readGetResult("/department/$departmentId/workstation/")->getCollection();
 
-        /** @var Workstation $workstationItem */
-        foreach ($workstationList as $workstationItem) {
-            $workstationItem->scope = $scopeList->getEntity($workstationItem->getScope()->getId());
-        }
+        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
-        $ownerList = App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
-
-        return Render::withHtml(
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccount.twig',
             array(
@@ -54,10 +41,11 @@ class UseraccountByDepartment extends BaseController
                 'workstation' => $workstation,
                 'department' => $department,
                 'workstationList' => $workstationList,
-                'useraccountList' => ($useraccountList) ?
+                'useraccountListByDepartment' => ($useraccountList) ?
                     $useraccountList->sortByCustomStringKey('id') :
                     new Collection(),
                 'ownerlist' => $ownerList,
+                'success' => $success,
             )
         );
     }

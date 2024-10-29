@@ -13,7 +13,7 @@ use \BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class UseraccountList extends BaseController
+class UseraccountByRoleList extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -24,13 +24,19 @@ class UseraccountList extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request, 1))->checkRights('useraccount');
+        $roleLevel = $args['level'];
+        $workstation = (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
 
         /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
-        $useraccountList = (new Useraccount)->readList($resolveReferences)->withLessData();
+        $useraccountList = (new Useraccount)->readListRole($roleLevel, $resolveReferences)->withLessData();
+        $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
 
+        if (! $useraccountList or count($useraccountList) === 0) {
+            throw new \BO\Zmsapi\Exception\Useraccount\UserRoleNotFound();
+        }
+        
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
             try {
@@ -41,12 +47,12 @@ class UseraccountList extends BaseController
             }
         }
         $useraccountList = $validUserAccounts;
-
+        
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
-
+        
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);
     }
-    
+
 }
