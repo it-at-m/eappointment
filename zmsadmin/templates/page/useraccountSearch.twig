@@ -1,0 +1,20 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% from 'element/helper/form.twig' import formgroup, formbutton, checkboxfield, selectfield, inputfield %}
+{% block headline %}
+{{ headline1("Nutzer") }}
+{% endblock %}
+{% block content %}
+{{ parent() }}
+<!-- page useraccountSearch -->
+<div class="grid">
+	<div class="grid__item four-sixths">
+			{% include "block/search/useraccountSearchForm.twig" %}
+		    {% include "block/search/useraccountSearchResults.twig" %}
+	</div>
+	<div class="grid__item two-sixths">
+		{% include "block/useraccount/departmentlist.twig" %}
+	</div>
+</div>
+<!-- /page useraccountSearch -->
+{% endblock %}
