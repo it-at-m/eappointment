@@ -1,24 +1,27 @@
 {% extends "layout/main.twig" %}
 {% from 'element/helper/snippets.twig' import headline1 %}
-
+{% from 'element/helper/form.twig' import formgroup, formbutton, checkboxfield, selectfield, inputfield %}
 {% block headline %}
-    {{ headline1("Nutzer") }}
+{{ headline1("Nutzer") }}
 {% endblock %}
-
 {% block content %}
-    {{ parent() }}
-    <!-- page useraccount -->
-    <div class="grid">
-        <div class="grid__item four-sixths">
-            {% if workstationList %}
-                {% include "block/useraccount/listByDepartment.twig" %}
-            {% else %}
-                {% include "block/useraccount/list.twig" %}
-            {% endif %}
-        </div>
-        <div class="grid__item two-sixths">
-            {% include "block/useraccount/departmentlist.twig" %}
-        </div>
-    </div>
-    <!-- /page useraccount -->
+{{ parent() }}
+<!-- page useraccount -->
+<div class="grid">
+	<div class="grid__item four-sixths">
+
+		{% if useraccountListByRole %}
+			{% include "block/useraccount/listByRole.twig" %}
+		{% elseif useraccountListByDepartment %}
+		    {% include "block/useraccount/listByDepartment.twig" %}
+		{% else %}
+			{% include "block/search/useraccountSearchForm.twig" %}
+			{% include "block/useraccount/list.twig" %}
+		{% endif %}
+	</div>
+	<div class="grid__item two-sixths">
+		{% include "block/useraccount/departmentlist.twig" %}
+	</div>
+</div>
+<!-- /page useraccount -->
 {% endblock %}
