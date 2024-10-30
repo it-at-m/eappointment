@@ -34,3 +34,16 @@ $('form').each(function() {
 
 console.log("Welcome to the ZMS Ticketprinter interface...");
 
+$(document).ready(function() {
+    $('.eintragen').on('click', function(event) {
+        event.preventDefault();
+
+        const originalText = $(this).text();
+        $('.eintragen').prop('disabled', true).addClass('disabled');
+
+        setTimeout(() => {
+            $(this).text(originalText);
+            $(this).closest('form').submit();
+        }, 0);
+    });
+});
