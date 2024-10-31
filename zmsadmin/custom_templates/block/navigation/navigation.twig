@@ -119,7 +119,7 @@
                 {% endif %}
                 {% if rights.useraccount %}
                     <li class="nav__link{{ menuActive == 'useraccount'? ' active' }}">
-                        <a title="{% trans %}Hier können Sie neue Nutzer des Systems hinzufügen und die Eigenschaften bestehender Nutzer ändern{% endtrans %}" {{ menuActive == 'useraccount'? ' aria-current="page"' }} href="{{ urlGet('useraccount', {}, {}) }}">Nutzer</a>
+                        <a title="{% trans %}Hier können Sie neue Nutzer des Systems hinzufügen und die Eigenschaften bestehender Nutzer ändern{% endtrans %}" {{ menuActive == 'useraccount'? ' aria-current="page"' }} href="{{ urlGet('useraccount', {}, {}) }}">Nutzer*innen</a>
                     </li>
                 {% endif %}
                 {% if workstation.useraccount.rights.superuser == "1" %}
