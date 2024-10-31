@@ -29,7 +29,7 @@
                 {% else %}       
                 <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                        {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neue*r Nutzer*in' }) }}
                     </div>
                     <div>
                         {% if useraccountListByRole|length == 1 %}({{ useraccountListByRole|length }} Nutzer*in){% else %}({{ useraccountListByRole|length }} Nutzer*innen){% endif %}
@@ -66,7 +66,7 @@
                 {% endif %}
                 <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                        {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neue*r Nutzer*in' }) }}
                     </div>
                     <div>
                         {% if useraccountListByRole|length == 1 %}({{ useraccountListByRole|length }} Nutzer*in){% else %}({{ useraccountListByRole|length }} Nutzer*innen){% endif %}
