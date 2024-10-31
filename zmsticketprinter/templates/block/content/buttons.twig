@@ -10,9 +10,10 @@
             </div>
 		{% else %}
     		<form action="{{ urlGet('Process', {}, {}) }}" method="post">
+				{% set button = ticketprinter.buttons|first %}
                 {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": ticketprinter.buttons|first.cluster.id }) }}
-				{{ hiddenfield({ "name": "requestId", "value": first.request.id }) }}
+				{{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
     			{% set label = buttonLabelPrefix ~ ticketprinter.buttons|first.name %}
                 {% if ticketprinter.buttons|first.type == "link" %}
     			{% set label = "Information" %}
