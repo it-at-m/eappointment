@@ -41,7 +41,7 @@ class Queue extends Process implements MappingInterface
             END'
         );
         return [
-            //'id' => 'process.BuergerID',
+            'id' => 'process.BuergerID',
             'status' => $status_expression,
             'arrivalTime' => self::expression(
                 'CONCAT(
@@ -65,12 +65,7 @@ class Queue extends Process implements MappingInterface
                     `process`.`Timestamp`
                 )'
             ),
-            'number' => self::expression(
-                'IF(`process`.`wartenummer`,
-                    `process`.`wartenummer`,
-                    `process`.`BuergerID`
-)'
-            ),
+            'number' =>  'process.BuergerID',
             'destination' => self::expression(
                 'IF(`process`.`AbholortID`,
                     `processscope`.`ausgabeschaltername`,

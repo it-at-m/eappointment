@@ -1,7 +1,7 @@
 {% block print %}
 <div class="print" media="print">
 	<span class="printausgabe msg_ihre_wartenummer">Ihre Wartenummer:</span>
-    <div class="printausgabe msg_ihre_nummernanzeige nummernanzeige">{{ process.queue.number }}</div>
+    <div class="printausgabe msg_ihre_nummernanzeige nummernanzeige">{{ process.id }}</div>
     <span class="printausgabe msg_stdname">
     	<span class="printausgabe msg_ihre_wartenummer">
     		{{ process.scope.contact.name }}<br>

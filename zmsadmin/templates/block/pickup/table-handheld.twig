@@ -26,7 +26,7 @@
                         <td>
                             <a href="#" data-id="{{ item.id }}" data-name="{{ item.clients|first.familyName }}" class="button button-submit process-pickup" title="aufrufen">aufrufen</a>
                         </td>
-                        <td>{% if item.queue.withAppointment %}{{ item.id }}{% else %}{{ item.queue.number }}{% endif %}</td>
+                        <td>{% if item.queue.withAppointment %}{{ item.id }}{% else %}{{ item.id }}{% endif %}</td>
                         <td>{{ item.clients|first.familyName }}</td>
                     </tr>
                     {% endfor %}

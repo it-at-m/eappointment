@@ -8,10 +8,10 @@
             <p>
             {% if workstation.process.clients|first.familyName %}
                 Ist der Abholer<br />
-                <strong>"{{ workstation.process.clients|first.familyName }} (Wartenummer {{ workstation.process.queue.number }})"</strong><br/>
+                <strong>"{{ workstation.process.clients|first.familyName }} (Wartenummer {{ workstation.process.id }})"</strong><br/>
                 gekommen?
             {% else %}
-                Ist der Abholer mit der Wartenummer <strong>{{ workstation.process.queue.number }}</strong> gekommen?
+                Ist der Abholer mit der Wartenummer <strong>{{ workstation.process.id }}</strong> gekommen?
             {% endif %}
             </p>
             <div class="form-actions left">

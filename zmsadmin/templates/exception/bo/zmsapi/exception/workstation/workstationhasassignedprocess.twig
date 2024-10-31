@@ -17,7 +17,7 @@
         </div>
         {% else %}
         <p>
-            Ist der Kunde{% if workstation.process.clients|first.familyName %} <strong>"{{ workstation.process.clients|first.familyName }}{% endif %} (Wartenr. {{ workstation.process.queue.number }})"</strong> gekommen?
+            Ist der Kunde{% if workstation.process.clients|first.familyName %} <strong>"{{ workstation.process.clients|first.familyName }}{% endif %} (Wartenr. {{ workstation.process.id }})"</strong> gekommen?
         </p>
         <div class="form-actions left">
             <a class="btn" data-callback="onFinishProcess" data-name="{{ workstation.process.clients|first.familyName }}" data-id="{{ workstation.process.id }}">Ja, bitte aus der Liste entfernen ✓</a>

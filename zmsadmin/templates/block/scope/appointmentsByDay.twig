@@ -40,7 +40,7 @@
                     <tr>
                         <td>{{ clusterEnabled ? item.scope.shortName : loop.index }}</td>
                         <td>{{ item.queue.arrivalTime|date('H:i') }}</td>
-                        <td>{{ item.queue.number }}</td>
+                        <td>{{ item.id }}</td>
                         <td>{{ item.clients.0.familyName }}</td>
                         <td>{{ item.clients.0.telephone }}</td>
                         <td>{{ item.clients.0.email }}</td>

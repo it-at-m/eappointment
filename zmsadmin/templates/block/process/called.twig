@@ -11,7 +11,7 @@
                     Name
                 </dt>
                 <dd>
-                    {{ workstation.process.clients|first.familyName }} <br>(Wartenr. {{ workstation.process.queue.number }})
+                    {{ workstation.process.clients|first.familyName }} <br>(Wartenr. {{ workstation.process.id }})
                 </dd>
                 {% if process.requests %}
                 <dt>
@@ -63,7 +63,7 @@
             <h4>{% trans %}Zeit seit Kundenaufruf{% endtrans %}:</h4>
             <span id="clock" role="timer" class="clock" title="verstrichene Zeit seit dem Kundenaufruf" data-callTime={{ workstation.process.queue.callTime }} data-now={{ getNow()|date('U') }}></span>
             <h4>
-            Ist der Kunde "{% if  workstation.process.clients|first.familyName|length > 0 %}{{ workstation.process.clients|first.familyName }} {% endif %}(Wartenr. {{ workstation.process.queue.number }})" gekommen?
+            Ist der Kunde "{% if  workstation.process.clients|first.familyName|length > 0 %}{{ workstation.process.clients|first.familyName }} {% endif %}(Wartenr. {{ workstation.process.id }})" gekommen?
             </h4>
             <button type="button" class="button button--default button--fullwidth client-called_button-success" style="margin: 0.5em 0;">Ja, Kunde erschienen</button>
             <button type="button" class="button button--diamond button--fullwidth client-called_button-skip right" data-exclude="{{ exclude }}" style="margin: 0.5em 0;">Nein, nächster Kunde bitte</button>

@@ -50,7 +50,7 @@
                     </td>
                     {% endif %}
                     <td>{{ item.appointments|first.date|date("d.m.Y") }}</td>
-                    <td>{% if item.queue.withAppointment %}{{ item.id }}{% else %}{{ item.queue.number }}{% endif %}</td>
+                    <td>{% if item.queue.withAppointment %}{{ item.id }}{% else %}{{ item.id }}{% endif %}</td>
                     <td>
                         {{ item.clients|first.familyName }}
                         {% if item.queue.callCount > 0 %}

@@ -64,7 +64,7 @@ class PickupCallTest extends Base
         );
         $response = $this->render(['id' => 6], $this->parameters, []);
         $this->assertStringContainsString('Aufruf eines Abholers', (string)$response->getBody());
-        $this->assertStringContainsString('(Wartenummer 6)', (string)$response->getBody());
+        $this->assertStringContainsString('(Wartenummer 100632)', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -93,7 +93,7 @@ class PickupCallTest extends Base
         $response = $this->render(['id' => 6], $this->parameters, []);
         $this->assertStringContainsString('Aufruf eines Abholers', (string)$response->getBody());
         $this->assertStringContainsString(
-            'Ist der Abholer mit der Wartenummer <strong>1</strong> gekommen?',
+            'Ist der Abholer mit der Wartenummer <strong>100632</strong> gekommen?',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
