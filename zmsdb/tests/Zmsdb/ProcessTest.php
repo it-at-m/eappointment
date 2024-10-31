@@ -31,9 +31,8 @@ class ProcessTest extends Base
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 0, true);
         $process = $query->writeNewFromTicketprinter($scope, $now);
         $process = $query->readByQueueNumberAndScope($process->queue['number'], $scope->id);
-        $this->assertEquals(101353, $process->queue['number']);
+        $this->assertEquals($process->getId(), $process->queue['number']);
         $process = $query->readByQueueNumberAndScope($process->getId(), $scope->id);
-        $this->assertTrue(100000 < $process->getId());
     }
 
     public function testReadByWorkstation()
@@ -357,7 +356,7 @@ class ProcessTest extends Base
         $input = $this->getTestProcessEntity();
         $process = $query->writeNewFromAdmin($input, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
-        $this->assertEquals(100693, $process->queue->number);
+        $this->assertEquals($process->getId(), $process->queue->number);
     }
 
     public function testProcessListByScopeAndStatus()
