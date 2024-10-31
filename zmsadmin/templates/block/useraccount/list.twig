@@ -20,9 +20,9 @@
                 <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                     {% if department.id %}
-                        {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                        {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neue*r Nutzer*in' }) }}
                     {% else %}
-                        {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                        {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neue*r Nutzer*in' }) }}
                     {% endif %}
                     </div>
                     <div>
@@ -55,9 +55,9 @@
             <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                 {% if department.id %}
-                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neue*r Nutzer*in' }) }}
                 {% else %}
-                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
+                    {{ custombutton({ "type":"new","target": urlGet("useraccountAdd", {}, {}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neue*r Nutzer*in' }) }}
                 {% endif %}
                 </div>
                 <div>
