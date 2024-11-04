@@ -365,4 +365,20 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         }
         return $list;
     }
+
+    public function sortByCallTime(string $order)
+    {
+        foreach ($this as $entity) {
+            $queueListArray[] = $entity;
+        }
+        usort($queueListArray, function($a, $b) use ($order) {
+            if ($order === 'ascending') {
+                return $a->callTime <=> $b->callTime;
+            } elseif ($order === 'descending') {
+                return $b->callTime <=> $a->callTime;
+            }
+            throw new InvalidArgumentException("Invalid sort order: $order. Use 'ascending' or 'descending'.");
+        });
+        return new self($queueListArray);
+    }
 }
