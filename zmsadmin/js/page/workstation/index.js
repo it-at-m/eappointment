@@ -121,7 +121,7 @@ class View extends BaseView {
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
-        this.loadAppointmentForm(true, true);
+        this.loadAppointmentForm(true, false);
     }
 
     addFocusTrap(elem) {

@@ -6,7 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsdb\Query\Process;
 use BO\Zmsentities\Collection\LogList;
 use BO\Zmsentities\Collection\ProcessList;
 
@@ -14,7 +13,7 @@ use BO\Zmsentities\Collection\ProcessList;
   * Handle requests concerning services
   *
   */
-class Search extends BaseController
+class ProcessSearch extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -60,7 +59,7 @@ class Search extends BaseController
                 'processList' => $processList,
                 'processListOther' => $processListOther,
                 'logList' => $logList ?? [],
-                'searchQuery' => $queryString,
+                'searchProcessQuery' => $queryString,
                 'menuActive' => 'search'
             )
         );
