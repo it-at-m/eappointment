@@ -256,7 +256,7 @@ class Scope extends Base
             (new Query\Scope(Query\Base::SELECT))->getQueryLastWaitingNumber(),
             ['scope_id' => $scopeId]
         );
-        $entity = $this->readEntity($scopeId)->updateStatusQueue($dateTime);
+        $entity = $this->readEntity($scopeId, 0, true)->updateStatusQueue($dateTime);
         $scope = $this->updateEntity($scopeId, $entity);
         return $scope->getStatus('queue', 'lastGivenNumber');
     }
