@@ -8,8 +8,10 @@ config.php
 bower_components
 tests/*.html
 public/_tests
-#public/_js/
-#public/_libs/
+public/_js/
+public/_libs/
+public/_css/ticketprinter.css
+public/_css/ticketprinter.css.map
 cache
 vendor.old
 vendor.update

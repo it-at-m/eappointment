@@ -85,11 +85,20 @@ def cli_modules_reference_libraries(no_symlink: bool):
 @cli_modules.command("loop")
 @click.argument("commands", required=True, nargs=-1)
 def cli_modules_loop(commands):
-  """loops though all repositories and executes a given command"""
-  for module in modules:
-    print_info(f"Repository: {module}")
-    os.chdir(os.path.join(repo_dir, module))
-    os.system(" ".join(commands))
+    """Loops through repositories and executes a given command. Limits npm commands to specific modules."""
+    specific_modules = ["zmsadmin", "zmscalldisplay", "zmsstatistic", "zmsticketprinter"]
+    
+    is_npm_command = commands[0] == "npm"
+    
+    target_modules = specific_modules if is_npm_command else modules
+
+    for module in target_modules:
+        print_info(f"Repository: {module}")
+        module_dir = os.path.join(repo_dir, module)
+        os.chdir(module_dir)
+        
+        # Execute the command
+        os.system(" ".join(commands))
 
 
 @cli_modules.command("check-upgrade")
@@ -142,6 +151,44 @@ def cli_clean_cache():
   for module in modules:
     os.system(f"rm -rf {module}/cache/*")
   print_info("Cache cleaned")
+  
+
+@cli_modules.command("loop")
+@click.argument("commands", required=True, nargs=-1)
+def cli_modules_loop(commands):
+    """Loops through repositories and executes a given command. Adds --legacy-peer-deps for npm install commands."""
+    specific_modules = ["zmsadmin", "zmscalldisplay", "zmsstatistic", "zmsticketprinter"]
+    
+    # Determine if this is an npm command
+    is_npm_command = commands[0] == "npm"
+    
+    # Define specific build commands for each module
+    build_commands = {
+        "zmsadmin": ["npm run build"],
+        "zmscalldisplay": ["npm run build"],
+        "zmsstatistic": ["npm run build"],
+        "zmsticketprinter": ["npm run build"]
+    }
+    
+    # Select the appropriate list of modules based on command type
+    target_modules = specific_modules if is_npm_command else modules
+
+    for module in target_modules:
+        print_info(f"Repository: {module}")
+        module_dir = os.path.join(repo_dir, module)
+        os.chdir(module_dir)
+        
+        # Append --legacy-peer-deps if running npm install
+        if is_npm_command and commands[1] == "install":
+            modified_commands = list(commands) + [""]
+            os.system(" ".join(modified_commands))
+        elif is_npm_command and len(commands) > 1 and commands[1] == "build":
+            print_info(f"Running custom npm build commands for {module}")
+            for build_command in build_commands.get(module, []):
+                os.system(build_command)
+        else:
+            # Execute the command as is for other cases
+            os.system(" ".join(commands))
 
 
 if __name__ == "__main__":

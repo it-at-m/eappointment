@@ -11,8 +11,10 @@ vendor.old
 vendor.update
 VERSION
 public/_tests
-#public/_js/
-#public/_libs/
+public/_js/
+public/_libs/
+public/_css/statistic.css
+public/_css/statistic.css.map
 composer.*.lock
 .cache
 .phpunit.result.cache
