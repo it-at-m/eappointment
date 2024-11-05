@@ -11,7 +11,8 @@ vendor.old
 vendor.update
 VERSION
 public/_tests
-public/_js/
+public/_js/index.js
+public/_js/index.js.map
 public/_libs/
 public/_css/statistic.css
 public/_css/statistic.css.map
