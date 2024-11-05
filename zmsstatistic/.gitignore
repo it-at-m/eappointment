@@ -17,6 +17,7 @@ public/_libs/
 public/_css/statistic.css
 public/_css/statistic.css.map
 composer.*.lock
+composer.lock
 .cache
 .phpunit.result.cache
 .idea

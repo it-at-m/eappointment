@@ -11,6 +11,7 @@ cache/
 vendor.old
 vendor.update
 composer.*.lock
+composer.lock
 VERSION
 package-lock.json
 public/_tests
