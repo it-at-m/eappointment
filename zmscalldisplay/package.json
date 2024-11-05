@@ -10,9 +10,6 @@
   ],
   "author": "BerlinOnline GmbH & Co. KG",
   "license": "EUPL-1.2",
-  "engines": {
-    "node": ">=18.20.4"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint js/",

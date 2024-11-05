@@ -159,10 +159,8 @@ def cli_modules_loop(commands):
     """Loops through repositories and executes a given command. Adds --legacy-peer-deps for npm install commands."""
     specific_modules = ["zmsadmin", "zmscalldisplay", "zmsstatistic", "zmsticketprinter"]
     
-    # Determine if this is an npm command
     is_npm_command = commands[0] == "npm"
     
-    # Define specific build commands for each module
     build_commands = {
         "zmsadmin": ["npm run build"],
         "zmscalldisplay": ["npm run build"],
@@ -170,7 +168,6 @@ def cli_modules_loop(commands):
         "zmsticketprinter": ["npm run build"]
     }
     
-    # Select the appropriate list of modules based on command type
     target_modules = specific_modules if is_npm_command else modules
 
     for module in target_modules:
@@ -178,16 +175,14 @@ def cli_modules_loop(commands):
         module_dir = os.path.join(repo_dir, module)
         os.chdir(module_dir)
         
-        # Append --legacy-peer-deps if running npm install
         if is_npm_command and commands[1] == "install":
-            modified_commands = list(commands) + [""]
+            modified_commands = list(commands) + ["--legacy-peer-deps"]
             os.system(" ".join(modified_commands))
         elif is_npm_command and len(commands) > 1 and commands[1] == "build":
             print_info(f"Running custom npm build commands for {module}")
             for build_command in build_commands.get(module, []):
                 os.system(build_command)
         else:
-            # Execute the command as is for other cases
             os.system(" ".join(commands))
 
 
