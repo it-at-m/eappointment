@@ -666,16 +666,15 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/useraccount/queue/":
  *      get:
- *          summary: Get a waiting queue for a cluster
+ *          summary: Get a waiting queue for user account
  *          tags:
- *              - cluster
+ *              - useraccount
  *              - queue
  *          parameters:
- *              -   name: id
- *                  description: cluster number
+ *              -   name: status
+ *                  description: comma separated statuses
  *                  in: path
- *                  required: true
- *                  type: integer
+ *                  type: string
  *              -   name: X-Authkey
  *                  required: true
  *                  x-since: 2.12
@@ -698,8 +697,6 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/queue.json"
- *              404:
- *                  description: "cluster id does not exists"
  */
 \App::$slim->get(
     '/useraccount/queue/',
