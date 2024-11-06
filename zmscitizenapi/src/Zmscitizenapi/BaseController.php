@@ -15,8 +15,13 @@ abstract class BaseController extends \BO\Slim\Controller
     }
 
     /**
-     * @codeCoverageIgnore
+     * Hook method for handling responses in child controllers.
+     * Child classes should override this method to implement their specific response logic.
      *
+     * @param RequestInterface $request The HTTP request
+     * @param ResponseInterface $response The HTTP response
+     * @param array $args Route parameters
+     * @return ResponseInterface The modified response
      */
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {

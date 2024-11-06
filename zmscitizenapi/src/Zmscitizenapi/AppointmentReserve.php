@@ -78,7 +78,7 @@ class AppointmentReserve extends BaseController
             $selectedProcess = array_values($selectedProcess)[0];
             $selectedProcess['clients'] = [
                 [
-                    'email' => 'test@muenchen.de'
+                    'email' => 'default@example.com'
                 ]
             ];
 

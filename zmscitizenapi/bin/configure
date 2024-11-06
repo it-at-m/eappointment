@@ -1,28 +1,51 @@
 #!/bin/bash
 
+# Resolve real path for scripts using either realpath or readlink
 REALPATH=$(which realpath || which readlink)
 REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
 DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
 ROOT=$($REALPATH $DIR/..)
 
-#echo "Get DLDB Exports"
-#$ROOT/bin/getDldbExport
-
 echo -n "Configuring application"
-mkdir -p $ROOT/.git/hooks
-ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
-ln -sf $ROOT/bin/configure $ROOT/.git/hooks/post-checkout
-ln -sf $ROOT/bin/configure $ROOT/.git/hooks/post-commit
-ln -sf $ROOT/bin/configure $ROOT/.git/hooks/post-merge
 
-if [ ! -e $ROOT/config.php ]
-then	
-    cp $ROOT/config.example.php $ROOT/config.php
+# Create .git/hooks directory and symlink hook scripts
+mkdir -p "$ROOT/.git/hooks"
+ln -sf "$ROOT/bin/test" "$ROOT/.git/hooks/pre-commit"
+ln -sf "$ROOT/bin/configure" "$ROOT/.git/hooks/post-checkout"
+ln -sf "$ROOT/bin/configure" "$ROOT/.git/hooks/post-commit"
+ln -sf "$ROOT/bin/configure" "$ROOT/.git/hooks/post-merge"
+
+# Initialize configuration file
+if [[ ! -f "$ROOT/config.php" ]]; then
+    # Check if config.example.php exists
+    if [[ ! -f "$ROOT/config.example.php" ]]; then
+        echo "Error: config.example.php not found" >&2
+        exit 1
+    fi
+    # Try to copy config.example.php to config.php
+    if ! cp "$ROOT/config.example.php" "$ROOT/config.php"; then
+        echo "Error: Failed to create config.php" >&2
+        exit 1
+    fi
+    # Set secure permissions on config.php
+    if ! chmod 640 "$ROOT/config.php"; then
+        echo "Warning: Failed to set secure permissions on config.php" >&2
+    fi
 fi
-test -d $ROOT/cache && chmod -fR a+rwX $ROOT/cache || echo "Could not chmod cache files"
 
+# Ensure cache directory exists
+if [[ ! -d "$ROOT/cache" ]]; then
+    echo "Error: Cache directory not found" >&2
+    exit 1
+fi
 
-#VERSION=`git symbolic-ref -q --short HEAD || git describe --tags --exact-match`
-VERSION=`git describe --tags --always`
-echo $VERSION > $ROOT/VERSION
+# Set secure permissions on cache directory
+if ! chmod -R u=rwX,g=rwX,o=rX "$ROOT/cache"; then
+    echo "Error: Failed to set cache directory permissions" >&2
+    exit 1
+fi
+
+# Set and save the application version
+VERSION=$(git describe --tags --always)
+echo "$VERSION" > "$ROOT/VERSION"
 echo " $VERSION"

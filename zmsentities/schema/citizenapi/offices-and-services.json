@@ -44,11 +44,15 @@
               "telephoneActivated": {
                 "type": "string"
               },
-              "telephoneRequired": {},
+              "telephoneRequired": {
+                "type": "number"
+              },
               "customTextfieldActivated": {
                 "type": "string"
               },
-              "customTextfieldRequired": {},
+              "customTextfieldRequired": {
+                "type": "number"
+              },
               "customTextfieldLabel": {
                 "type": "string"
               },
@@ -129,10 +133,12 @@
         "type": "object",
         "properties": {
           "officeId": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[0-9]+$"
           },
           "serviceId": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[0-9]+$"
           },
           "slots": {
             "type": "number"

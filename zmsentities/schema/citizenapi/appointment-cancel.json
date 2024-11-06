@@ -1,10 +1,16 @@
 {
-    "type": "object",
-    "description": "Includes a message indicating the result of a canceled appointment request.",
-    "properties": {
-      "message": {
-        "type": "string"
-      }
-    },
-    "required": ["message"]
+  "type": "object",
+  "description": "Includes a message indicating the result of a canceled appointment request.",
+  "properties": {
+    "message": {
+      "type": "string",
+      "description": "A human-readable message describing the cancellation result",
+      "minLength": 1,
+      "maxLength": 1000,
+      "pattern": "^[\\p{L}\\p{N}\\s.,!?()-]+$"
+    }
+  },
+  "required": [
+    "message"
+  ]
 }

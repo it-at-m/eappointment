@@ -35,11 +35,15 @@
           "telephoneActivated": {
             "type": "string"
           },
-          "telephoneRequired": {},
+          "telephoneRequired": {
+            "type": "number"
+          },
           "customTextfieldActivated": {
             "type": "string"
           },
-          "customTextfieldRequired": {},
+          "customTextfieldRequired": {
+            "type": "number"
+          },
           "customTextfieldLabel": {
             "type": "string"
           },

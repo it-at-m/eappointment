@@ -3,7 +3,10 @@
     "description": "Includes a message confirming that an appointment has been successfully reserved.",
     "properties": {
       "message": {
-        "type": "string"
+        "type": "string",
+        "description": "Confirmation message for the appointment reservation",
+        "minLength": 1,
+        "maxLength": 500
       }
     },
     "required": ["message"]
