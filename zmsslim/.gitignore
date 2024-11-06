@@ -1,9 +1,7 @@
 vendor
 tags
-#composer.*.lock
-.DS_Store
+.DS_*
 .*
 tests/cache/*
-!tests/cache/.gitkeep 
-#composer.lock
+!tests/cache/.gitkeep
 public

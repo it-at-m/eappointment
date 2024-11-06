@@ -33,6 +33,35 @@ class Index extends BaseController
         $defaultTemplate = $validator->getParameter("template")
             ->isPath()
             ->setDefault('default');
+        $languageConfig = str_replace(' ', '+', $validator->getParameter("config")->isString()->getValue());
+        $languageConfig = json_decode(base64_decode($languageConfig), true);
+        $currentLang = $validator->getParameter("lang")->isString()->getValue();
+        $queryString = isset($_SERVER['QUERY_STRING']) ? str_replace('/&', '', $_SERVER['QUERY_STRING']) : '';
+
+        if (! strpos($queryString, 'lang=')) {
+            $queryString .= '&lang=de';
+            $currentLang = 'de';
+        }
+
+        $translations = [];
+        $languages = [];
+        $defaultLanguage = 'de';
+
+        if ($languageConfig) {
+            $defaultLanguage = $languageConfig['defaultLanguage'];
+            foreach ($languageConfig['languages'] as $language) {
+                $languages[] = $language['language'];
+
+                if ($language['language'] !== $currentLang) {
+                    continue;
+                }
+
+                foreach ($language['translations'] as $requestId => $translation) {
+                    $translations[$requestId] = $translation;
+                }
+            }
+        }
+
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $ticketprinter->testValid();
@@ -64,11 +93,15 @@ class Index extends BaseController
         }
         $template = (new Helper\TemplateFinder($defaultTemplate->getValue()))
             ->setCustomizedTemplate($ticketprinter, $organisation);
+
         return Render::withHtml(
             $response,
             $template->getTemplate(),
             array(
                 'debug' => \App::DEBUG,
+                'refreshInSeconds' => 30,
+                'urlQueryString' => $queryString,
+                'currentLang' => $currentLang,
                 'enabled' => $ticketprinter->isEnabled()
                     || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
                 'title' => 'Wartennumer ziehen',
@@ -77,6 +110,9 @@ class Index extends BaseController
                 'department' => $department,
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
                 'config' => $config,
+                'defaultLanguage' => $defaultLanguage,
+                'languages' => $languages,
+                'translations' => $translations,
                 'hasDisabledButton' => $hasDisabledButton
             )
         );

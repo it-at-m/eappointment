@@ -58,13 +58,15 @@ class WorkstationLogin extends BaseController
             $useraccount->id,
             $useraccount->password,
             \App::getNow(),
+            (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION),
             $resolveReferences
         );
 
         \BO\Zmsdb\Log::writeLogEntry("LOGIN (WorkstattionLogin::getLoggedInWorkstation) ".$useraccount->id,
             0,
             Log::PROCESS,
-            $workstation->getScope()->getId()
+            $workstation->getScope()->getId(),
+            $workstation->getUseraccount()->getId()
         );
 
         return $workstation;
