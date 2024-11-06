@@ -4,9 +4,9 @@ namespace BO\Zmscitizenapi\Helper;
 
 class UtilityHelper
 {
-    public static function getInternalDateFromISO($dateString)
+
+    private static function formatDateArray(\DateTime $date): array
     {
-        $date = new \DateTime($dateString);
         return [
             'day' => (int) $date->format('d'),
             'month' => (int) $date->format('m'),
@@ -14,14 +14,27 @@ class UtilityHelper
         ];
     }
 
+    public static function getInternalDateFromISO($dateString)
+    {
+        try {
+            if (!is_string($dateString)) {
+                throw new \InvalidArgumentException('Date string must be a string');
+            }
+            $date = new \DateTime($dateString);
+            return self::formatDateArray($date);
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException('Invalid ISO date format: ' . $e->getMessage());
+        }
+    }
+
     public static function getInternalDateFromTimestamp(int $timestamp)
     {
-        $date = (new \DateTime())->setTimestamp($timestamp);
-        return [
-            'day' => (int) $date->format('d'),
-            'month' => (int) $date->format('m'),
-            'year' => (int) $date->format('Y')
-        ];
+        try {
+            $date = (new \DateTime())->setTimestamp($timestamp);
+            return self::formatDateArray($date);
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException('Invalid timestamp: ' . $e->getMessage());
+        }
     }
 
     public static function uniqueElementsFilter($value, $index, $self)
@@ -29,7 +42,7 @@ class UtilityHelper
         return array_search($value, $self) === $index;
     }
 
-    public static function getThinnedProcessData($myProcess)
+    public static function getThinnedProcessData(?object $myProcess): array
     {
         if (!$myProcess || !isset($myProcess->id)) {
             return [];
@@ -39,8 +52,9 @@ class UtilityHelper
         $mainServiceId = null;
         $mainServiceCount = 0;
 
-        if (isset($myProcess->requests)) {
-            $requests = is_array($myProcess->requests) ? $myProcess->requests : iterator_to_array($myProcess->requests);
+        $requests = $myProcess->requests ?? [];
+        if ($requests) {
+            $requests = is_array($requests) ? $requests : iterator_to_array($requests);
             if (count($requests) > 0) {
                 $mainServiceId = $requests[0]->id;
                 foreach ($requests as $request) {
@@ -75,5 +89,5 @@ class UtilityHelper
             'serviceCount' => $mainServiceCount,
         ];
     }
-    
+
 }

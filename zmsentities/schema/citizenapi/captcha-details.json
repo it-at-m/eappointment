@@ -6,7 +6,10 @@
       "type": "string"
     },
     "captchaEndpoint": {
-      "type": "string"
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://.+",
+      "description": "The CAPTCHA verification endpoint URL (must be HTTP/HTTPS)"
     },
     "puzzle": {
       "type": "boolean"

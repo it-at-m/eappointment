@@ -1,4 +1,4 @@
-.PHONY: help now dev live watch
+.PHONY: help now dev live watch fix openapi coverage paratest
 
 help: # This help
 	@echo "Possible Targets:"

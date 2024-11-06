@@ -8,13 +8,20 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[0-9]+$",
+            "minLength": 1,
+            "maxLength": 50
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
           },
           "maxQuantity": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100
           }
         },
         "required": [

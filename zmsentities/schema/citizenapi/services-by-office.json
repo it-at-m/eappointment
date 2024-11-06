@@ -8,13 +8,20 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "Unique identifier for the service",
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "minLength": 1
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Display name of the service",
+            "minLength": 1
           },
           "maxQuantity": {
-            "type": "number"
+            "type": "number",
+            "description": "Maximum number of appointments that can be booked for this service",
+            "minimum": 1
           }
         },
         "required": [

@@ -12,11 +12,6 @@ class Application extends \BO\Slim\Application
     const IDENTIFIER = 'Zmscitizenapi';
 
     /**
-     * HTTP url for API
-     */
-    const ZMS_API_URL = 'http://user:pass@host.tdl';
-
-    /**
      * Name of the source which should be used for the API
      */
     public static string $source_name = "dldb";
@@ -49,10 +44,10 @@ class Application extends \BO\Slim\Application
      */
     public static function initialize()
     {
-        self::$MAINTENANCE_MODE_ENABLED = getenv('MAINTENANCE_ENABLED') === "0";
+        self::$MAINTENANCE_MODE_ENABLED = getenv('MAINTENANCE_ENABLED') === "1";
         self::$CAPTCHA_ENABLED = getenv('CAPTCHA_ENABLED') === "1";
-        self::$FRIENDLYCAPTCHA_SECRET = getenv('FRIENDLYCAPTCHA_SECRET') ?: "xxxxxxxxx";
-        self::$FRIENDLYCAPTCHA_SITEKEY = getenv('FRIENDLYCAPTCHA_SITEKEY') ?: "xxxxxxxxx";
+        self::$FRIENDLYCAPTCHA_SECRET = getenv('FRIENDLYCAPTCHA_SECRET') ?: "";
+        self::$FRIENDLYCAPTCHA_SITEKEY = getenv('FRIENDLYCAPTCHA_SITEKEY') ?: "";
         self::$FRIENDLYCAPTCHA_ENDPOINT = getenv('FRIENDLYCAPTCHA_ENDPOINT') ?: "https://api.friendlycaptcha.com/api/v1/siteverify";
         self::$FRIENDLYCAPTCHA_ENDPOINT_PUZZLE = getenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE') ?: "https://api.friendlycaptcha.com/api/v1/puzzle";
     }

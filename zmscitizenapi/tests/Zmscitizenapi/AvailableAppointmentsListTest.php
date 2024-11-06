@@ -32,7 +32,7 @@ class AvailableAppointmentsListTest extends Base
             'status' => 200,
         ];
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
     
 
@@ -91,7 +91,7 @@ class AvailableAppointmentsListTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testOfficeIdMissing()
@@ -114,7 +114,7 @@ class AvailableAppointmentsListTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testServiceIdMissing()
@@ -137,7 +137,7 @@ class AvailableAppointmentsListTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testServiceCountMissing()
@@ -160,7 +160,7 @@ class AvailableAppointmentsListTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testDateAndOfficeIdMissing()
@@ -186,7 +186,7 @@ class AvailableAppointmentsListTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testDateAndServiceIdMissing()
@@ -212,7 +212,7 @@ class AvailableAppointmentsListTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testDateAndServiceCountMissing()
@@ -238,7 +238,7 @@ class AvailableAppointmentsListTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testOfficeIdAndServiceIdMissing()
@@ -264,7 +264,7 @@ class AvailableAppointmentsListTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testOfficeIdAndServiceCountMissing()
@@ -290,7 +290,7 @@ class AvailableAppointmentsListTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testServiceIdAndServiceCountMissing()
@@ -316,6 +316,6 @@ class AvailableAppointmentsListTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 }

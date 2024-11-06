@@ -35,7 +35,7 @@ class AvailableDaysListTest extends Base
             'status' => 200,
         ];
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
 
     }
 
@@ -72,7 +72,7 @@ class AvailableDaysListTest extends Base
             'status' => 404,
         ];
         $this->assertEquals(404, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testInvalidDateFormat()
@@ -97,7 +97,7 @@ class AvailableDaysListTest extends Base
             'status' => 404,
         ];
         $this->assertEquals(404, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
 
     }
 
@@ -122,7 +122,7 @@ class AvailableDaysListTest extends Base
             'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
    
     public function testMissingEndDate()

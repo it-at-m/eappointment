@@ -23,10 +23,10 @@ class CaptchaGetTest extends Base
 
     public function tearDown(): void
     {
-        putenv('FRIENDLYCAPTCHA_SITEKEY');
-        putenv('FRIENDLYCAPTCHA_ENDPOINT');
-        putenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE');
-        putenv('CAPTCHA_ENABLED');
+        putenv('FRIENDLYCAPTCHA_SITEKEY=');
+        putenv('FRIENDLYCAPTCHA_ENDPOINT=');
+        putenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE=');
+        putenv('CAPTCHA_ENABLED=');
         
         parent::tearDown();
     }

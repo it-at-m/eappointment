@@ -49,7 +49,7 @@ class AppointmentReserveTest extends Base
             'authKey' => 'fb43',
             'familyName' => 'Smith',
             'customTextfield' => '',
-            'email' => 'test@muenchen.de',
+            'email' => 'default@example.com',
             'telephone' => '123456789',
             'officeName' => null,
             'officeId' => '10546',
@@ -73,7 +73,7 @@ class AppointmentReserveTest extends Base
             'serviceCount' => 0
         ];
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testAppointmentNotAvailable()
@@ -117,7 +117,7 @@ class AppointmentReserveTest extends Base
             'status' => 404
         ];
         $this->assertEquals(404, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testMissingOfficeId()
@@ -143,7 +143,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testMissingServiceId()
@@ -169,7 +169,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testMissingTimestamp()
@@ -195,7 +195,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testMissingOfficeIdAndServiceId()
@@ -224,7 +224,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testMissingOfficeIdAndTimestamp()
@@ -253,7 +253,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testMissingServiceIdAndTimestamp()
@@ -282,7 +282,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testMissingAllFields()
@@ -311,7 +311,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testInvalidOfficeIdFormat()
@@ -338,7 +338,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
     
     public function testInvalidServiceIdFormat()
@@ -365,7 +365,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
     
     public function testInvalidTimestampFormat()
@@ -392,7 +392,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
     public function testEmptyServiceIdArray()
     {
@@ -418,7 +418,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
     
     public function testInvalidServiceCount()
@@ -445,7 +445,7 @@ class AppointmentReserveTest extends Base
             'status' => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody, true);
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
 }
