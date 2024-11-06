@@ -94,6 +94,8 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 ## Getting Started
 - `ddev start`
 - `ddev exec ./cli modules loop composer install`
+- `ddev exec ./cli modules loop npm install`
+- `ddev exec ./cli modules loop npm build`
 
 ## Import Database
 - `ddev import-db --file=.resources/zms.sql`
