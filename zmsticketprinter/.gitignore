@@ -7,7 +7,6 @@ config.php
 .sass-cache
 bower_components
 tests/*.html
-package-lock.json
 public/_tests
 public/_js/index.js
 public/_js/index.js.map

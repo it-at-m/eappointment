@@ -14,5 +14,4 @@ cache
 vendor.old
 vendor.update
 VERSION
-package-lock.json
 .phpunit.result.cache

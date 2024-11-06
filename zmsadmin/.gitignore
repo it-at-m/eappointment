@@ -11,7 +11,6 @@ cache/
 vendor.old
 vendor.update
 VERSION
-package-lock.json
 public/_tests
 public/_js/index.js
 public/_js/index.js.map
