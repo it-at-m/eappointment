@@ -14,11 +14,9 @@ public/_libs/
 public/_css/calldisplay.css
 public/_css/calldisplay.css.map
 cache
-.DS_Store
+.DS_*
 vendor.old
 vendor.update
-composer.*.lock
-composer.lock
 .cache
 .parcel-cache
 .phpunit.result.cache

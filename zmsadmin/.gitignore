@@ -5,13 +5,11 @@ config.php
 **.swp
 .sass-cache
 .parcel-cache
-.DS_Store
+.DS_*
 bower_components
 cache/
 vendor.old
 vendor.update
-composer.*.lock
-composer.lock
 VERSION
 package-lock.json
 public/_tests

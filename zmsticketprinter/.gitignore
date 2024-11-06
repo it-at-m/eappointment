@@ -3,7 +3,7 @@ vendor.zmsbase
 node_modules
 config.php
 **.swp
-.DS_Store
+.DS_*
 .sass-cache
 bower_components
 tests/*.html
@@ -17,8 +17,6 @@ public/_css/ticketprinter.css.map
 cache
 vendor.old
 vendor.update
-composer.*.lock
-composer.lock
 .cache
 .parcel-cache
 .phpunit.result.cache

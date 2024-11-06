@@ -4,7 +4,7 @@ node_modules
 config.php
 **.swp
 .sass-cache
-.DS_Store
+.DS_*
 cache/
 vendor.old
 vendor.update
@@ -16,8 +16,6 @@ public/_js/index.js.map
 public/_libs/
 public/_css/statistic.css
 public/_css/statistic.css.map
-composer.*.lock
-composer.lock
 .cache
 .phpunit.result.cache
 .idea

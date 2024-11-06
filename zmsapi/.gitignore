@@ -3,7 +3,7 @@ vendor
 vendor.zmsbase
 config.php
 tags
-.DS_Store
+.DS_*
 public/_tests
 public/doc/assets/redoc.min.js
 public/doc/swagger.*
@@ -13,7 +13,6 @@ public/_test/assets/swagger-ui-standalone-preset.js
 cache
 vendor.old
 vendor.update
-#composer.lock
 VERSION
 package-lock.json
 .phpunit.result.cache
