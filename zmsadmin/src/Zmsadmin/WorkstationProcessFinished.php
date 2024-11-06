@@ -38,8 +38,13 @@ class WorkstationProcessFinished extends BaseController
             return $this->getFinishedResponse($workstation);
         }
 
+        $scopeId = $workstation->scope['id'];
+        if (! empty($workstation->process)) {
+            $scopeId = $workstation->process->scope->id;
+        }
+
         $requestList = \App::$http
-            ->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')
+            ->readGetResult('/scope/'. $scopeId .'/request/')
             ->getCollection();
         $requestList = $requestList ? $requestList : new RequestList();
 
@@ -48,7 +53,7 @@ class WorkstationProcessFinished extends BaseController
             $process = new ProcessFinishedHelper(clone $workstation->process, $input, $requestList, $source);
             return $this->getFinishedResponse($workstation, $process);
         }
- 
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/workstationProcessFinished.twig',

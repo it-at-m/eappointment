@@ -1,4 +1,9 @@
 .idea/
 .ddev/.env
+.ddev/.env.template
 /local/
 .DS_Store
+.vscode/launch.json
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/terminals.json

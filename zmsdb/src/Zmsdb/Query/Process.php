@@ -989,6 +989,12 @@ class Process extends Base implements MappingInterface
         return $data;
     }
 
+    public function removeDuplicates()
+    {
+        $this->query->groupBy('process.BuergerID');
+        return $this;
+    }
+
     protected function addRequiredJoins()
     {
         $this->leftJoin(

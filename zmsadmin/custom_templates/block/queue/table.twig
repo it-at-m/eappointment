@@ -247,7 +247,7 @@
 										{% endif %}
 									</td>
 									<td>
-										{% if item.queue.status != "reserved" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+										{% if item.queue.status != "reserved" and item.queue.status != "deleted" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
 											<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
 												{{ item.queue.number }}
 											</a>
@@ -258,6 +258,8 @@
 									<td class="callnextclient">
 										{% if item.queue.status == "reserved" %}
 											Reservierung
+										{% elseif item.queue.status == "deleted" %}
+                                                {{ item.clients|first.familyName|decodeEntities|raw }}
 										{% else %}
 											{% set familyName = item.clients|first.familyName|decodeEntities|raw %}
 											{% set currentTime = "now"|date('U') %}
@@ -350,7 +352,7 @@
 											<p class="queue-table-amendment-time">+{{ item.queue.waitingTimeOptimistic }}&#8209;{{ item.queue.waitingTimeEstimate }}&nbsp;Min.</p>
 										{% endif %}
 									</td>
-									{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" %}
+									{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" %}
 										<td class="center">
 											<a data-id="{{ item.id }}" data-name="{{ item.queue.withAppointment ? item.clients|first.familyName|raw : ('Wartenummer ' ~ item.queue.number) }}" href="#" class="icon process-delete" title="Löschen">
 												<i class="far fa-trash-alt" aria-hidden="true"></i>
@@ -599,3 +601,15 @@ content.addClass('hidden')
 	{% endblock %}
 	{% block board_footer %}{% endblock %}
 {% endembed %}
+
+<style>
+    .queue-table tr.deleted {
+        background-color: #ddd !important;
+        opacity: 0.45;
+    }
+    .queue-table tr.deleted a {
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+</style>
+

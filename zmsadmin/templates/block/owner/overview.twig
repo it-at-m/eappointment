@@ -21,7 +21,7 @@
                 {% for department in organisation.departments %}
                     <li>
                         <h4 class="department-title owner-overview_department-list_title">
-                            {{ department.name }}
+                            {% if rights.superuser %}(Id: {{ department.id }}) {% endif %}{{ department.name }}
                             {% if rights.department or rights.superuser %}
                                 <a class="float-right" href="{{ urlGet('department', {'id':department.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
                             {% endif %}
@@ -47,6 +47,8 @@
                                         {% endif %}
                                         {% if rights.availability or rights.superuser %}
                                             <a  class="float-right button-edit-availabilty" href="{{ urlGet('scopeAvailabilityMonth', {'id':clusterScope.id}, {}) }}" title="Öffnungszeiten">Öffnungszeiten</a>
+                                        {% endif %}
+                                        {% if rights.superuser %}
                                             <span class="float-right"><a href="{{ urlGet('mailtemplatesScope', {'scopeId': clusterScope.id}, {}) }}" title="E-Mail Templates">E-Mail Templates</a>&nbsp;</span>
                                         {% endif %}
                                     </li>
@@ -65,6 +67,8 @@
                                     {% endif %}
                                     {% if rights.availability or rights.superuser %}
                                         <a class="float-right button-edit-availabilty" href="{{ urlGet('scopeAvailabilityMonth', {'id':scope.id}, {}) }}" title="Öffnungszeiten">Öffnungszeiten</a>
+                                    {% endif %}
+                                    {% if rights.superuser %}
                                         <span class="float-right"><a href="{{ urlGet('mailtemplatesScope', {'scopeId': scope.id}, {}) }}" title="E-Mail Templates">E-Mail Templates</a>&nbsp;</span>
                                     {% endif %}
                                 </li>

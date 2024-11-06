@@ -1,10 +1,10 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless searchresults'} %}
 
         {% block board_title %}
-            <span tabindex="1" id="search-result-title">{% trans %}Suchergebnisse für {% endtrans %} "{{ searchQuery }}"</span>
+            <span tabindex="1" id="search-result-title">{% trans %}Suchergebnisse für {% endtrans %} "{{ searchProcessQuery }}"</span>
         {% endblock %}
 
-        {% block board_body %}
+    {% block board_body %}
         <script>
             document.getElementById("search-result-title").focus();
         </script>
@@ -12,14 +12,14 @@
         <div tabindex="1" class="table-responsive-wrapper">
             <table class="table--base" data-processList-count="{{ processList.count() }}"  data-processListOther-count="{{ processListOther.count() }}">
                 <thead>
-                    <tr>
-                        <th>Name (Nr.)</th>
-                        <th>Datum</th>
-                        <th>Ort</th>
-                        <th>Telefon</th>
-                        <th>E-Mail</th>
-                        <th>Anmerkung</th>
-                    </tr>
+                <tr>
+                    <th>Name (Nr.)</th>
+                    <th>Datum</th>
+                    <th>Ort</th>
+                    <th>Telefon</th>
+                    <th>E-Mail</th>
+                    <th>Anmerkung</th>
+                </tr>
                 </thead>
                 <tbody>
                 {% for process in processList %}
@@ -45,7 +45,7 @@
                 {% for process in processListOther %}
                     <tr>
                         <td>
-                                {{process.clients.0.familyName}} ({{process.id}})
+                            {{process.clients.0.familyName}} ({{process.id}})
                         </td>
                         <td>{{process.appointments.0.date|date('d.m.Y, H:i')}}&nbsp;Uhr</td>
                         <td>{{process.scope.contact.name}} {{process.scope.shortName}}</td>
@@ -61,18 +61,26 @@
                     <tr>
                         <th colspan="7">Log-Ergebnisse:</th>
                     </tr>
-                {% for log in logList %}
-                    <tr>
-                        <td>{{ log.reference }}</td>
-                        <td>{{log.ts|date('d.m.Y, H:i:s')}}&nbsp;Uhr</td>
-                        <td colspan="7">{{ log.message }}</td>
-                    </tr>
-                {% endfor %}
+                    {% for log in logList %}
+                        {% set data = log.data %}
+                        <tr>
+                            <td>{{ log.reference }}</td>
+                            <td>{{log.ts|date('d.m.Y, H:i:s')}}&nbsp;Uhr</td>
+                            <td colspan="4">
+                                {{ log.message }}<br>
+                                {% if data is defined %}
+                                    {% for key, value in data %}
+                                        <b>{{ key }}</b>: {{ value }}<br/>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
                 {% endif %}
                 </tbody>
             </table>
         </div>
-        {% endblock %}
+    {% endblock %}
 
 
 {% endembed %}

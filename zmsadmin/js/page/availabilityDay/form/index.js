@@ -64,6 +64,7 @@ class AvailabilityForm extends Component {
                     onUpdateSingle={this.props.onUpdateSingle}
                     selectedDate={this.props.selectedDate}
                     hasConflicts={hasConflicts}
+                    isCreatingExclusion={this.props.isCreatingExclusion}
                 />}
             </div>
         )   
@@ -91,7 +92,8 @@ AvailabilityForm.propTypes = {
     onEditInFuture: PropTypes.func,
     setErrorRef: PropTypes.func,
     onDelete: PropTypes.func,
-    onUpdateSingle: PropTypes.func
+    onUpdateSingle: PropTypes.func,
+    isCreatingExclusion: PropTypes.bool
 }
 
 export default AvailabilityForm

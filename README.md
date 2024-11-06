@@ -94,6 +94,8 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 ## Getting Started
 - `ddev start`
 - `ddev exec ./cli modules loop composer install`
+- `ddev exec ./cli modules loop npm install`
+- `ddev exec ./cli modules loop npm build`
 
 ## Import Database
 - `ddev import-db --file=.resources/zms.sql`
@@ -123,7 +125,9 @@ To keep our branch names organized and easily understandable, we follow a specif
    - `feature`: For new features or enhancements.
    - `bugfix`: For bug fixes.
    - `hotfix`: For urgent fixes that need to be applied quickly.
-   - `cleanup`: For code refactoring, documentation updates, or other maintenance work.
+   - `cleanup`: For code refactoring, or documentation updates.
+   - `docs`: For updating documentation such as the README.md CODE_OF_CONDUCT.md LICENSE.md CHANGELOG.md CONTRIBUTING.md. Providing a ticket number or project for docs is optional.
+   - `chore`: For maintaining and updating dependencies, libraries, PHP/Node/Twig Versions, or other maintenance work.
 
 2. **project**: The project identifier. This should be:
    - `zms` for the ZMS project.
@@ -143,10 +147,12 @@ To keep our branch names organized and easily understandable, we follow a specif
 - **Bugfix Branch**: `bugfix-mpdzbs-67890-fix-crash-on-startup`
 - **Hotfix Branch**: `hotfix-zms-98765-critical-fix-for-login`
 - **Cleanup Branch**: `cleanup-mpdzbs-11111-remove-unused-code`
+- **Chore Branch**: `chore-zms-2964-composer-update`
+- **Docs Branch**: `docs-zms-0000-update-readme` `docs-zms-release-40-update-changelog`
 
 #### Regular Expression
 
 The branch name must match the following regular expression:
-`^(feature|hotfix|bugfix|cleanup)-(zms|mpdzbs)-[0-9]+-[a-z0-9-]+$`
+`^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|mpdzbs)-[0-9]+-[a-z0-9-]+$`
 
 **For further commit rules please refer to https://www.conventionalcommits.org/en/v1.0.0-beta.4/**

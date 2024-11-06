@@ -42,6 +42,7 @@ class AvailabilityPage extends Component {
         this.waitintervall = 1000;
         this.errorElement = null;
         this.successElement = null;
+        this.isCreatingExclusion = false
         this.setErrorRef = element => {
             this.errorElement = element
         };
@@ -68,6 +69,8 @@ class AvailabilityPage extends Component {
     }
 
     onPublishAvailability() {
+        this.getValidationList();
+        this.getConflictList();
         let state = {};
         state = { selectedAvailability: null }
         this.setState(state, () => {
@@ -150,6 +153,7 @@ class AvailabilityPage extends Component {
 
 
     onRevertUpdates() {
+        this.isCreatingExclusion = false
         this.setState(Object.assign({}, getInitialState(this.props), {
             selectedTab: this.state.selectedTab
         }), () => {
@@ -290,9 +294,15 @@ class AvailabilityPage extends Component {
         const yesterday = selectedDay.clone().subtract(1, 'days')
         const tomorrow = selectedDay.clone().add(1, 'days')
 
+        this.isCreatingExclusion = true;
+
         let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ? 
             parseInt(selectedDay.unix(), 10) : 
             parseInt(yesterday.unix(), 10);
+
+        let name = availability.description;
+        name = name.replaceAll('Ausnahme zu Terminserie ', '');
+        name = name.replaceAll('Fortführung der Terminserie ', '');
 
         const originAvailability = this.editExclusionAvailability(
             Object.assign({}, availability),
@@ -302,10 +312,11 @@ class AvailabilityPage extends Component {
             'origin'
         )
 
+        if (availability.startDate === selectedDay.unix()) {
+            originAvailability.description = `Ausnahme zu Terminserie ` + name;
+        }
+
         let exclusionAvailability = originAvailability;
-        let name = availability.description;
-        name = name.replaceAll('Ausnahme zu Terminserie ', '');
-        name = name.replaceAll('Fortführung der Terminserie ', '');
         if (originAvailability.startDate < selectedDay.unix()) {
             exclusionAvailability = this.editExclusionAvailability(
                 Object.assign({}, availability),
@@ -315,7 +326,6 @@ class AvailabilityPage extends Component {
                 'exclusion'
             )
         }
-        
 
         let futureAvailability = originAvailability;
         if (parseInt(tomorrow.unix(), 10) <= availability.endDate) {
@@ -413,17 +423,22 @@ class AvailabilityPage extends Component {
     hasErrors(availability) {
         let hasError = false;
         let hasConflict = false;
-        Object.values(this.state.errorList).forEach(errorItem => {
-            if (availability.id === errorItem.id)
-                hasError = true;
-        })
 
-        Object.values(this.state.conflictList.conflictIdList).forEach(id => {
-            if (availability.id === id)
-                hasConflict = true;
-        })
-        
-        return (hasError || hasConflict);
+        if (this.state.errorList) {
+            Object.values(this.state.errorList).forEach(errorItem => {
+                if (availability.id === errorItem.id)
+                    hasError = true;
+            });
+        }
+
+        if (this.state.conflictList && this.state.conflictList.conflictIdList) {
+            this.state.conflictList.conflictIdList.forEach(id => {
+                if (availability.id === id)
+                    hasConflict = true;
+            });
+        }
+
+        return hasError || hasConflict;
     }
 
     getValidationList(list = []) {
@@ -718,6 +733,7 @@ class AvailabilityPage extends Component {
                 this.state.conflictList : 
                 {itemList: {}, conflictIdList: {}}
             }
+            isCreatingExclusion={this.isCreatingExclusion}
         />
     }
 

@@ -91,4 +91,15 @@ class Request extends Base
         }
         return $data;
     }
+
+    public function addConditionIds($ids)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($ids) {
+            foreach ($ids as $id) {
+                $query->orWith('request.id', '=', $id);
+            }
+        });
+
+        return $this;
+    }
 }
