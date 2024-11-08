@@ -166,6 +166,8 @@ The branch name must match the following regular expression:
 
 **For further commit rules please refer to https://www.conventionalcommits.org/en/v1.0.0-beta.4/**
 
+## Screenshot
+![screenshot](https://github.com/user-attachments/assets/54d360e9-c47b-4f3c-b849-5966a8766af9)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
