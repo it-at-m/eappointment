@@ -26,8 +26,21 @@ class Status extends Base
             array_key_exists('wsrep_ready', $statusVariables) ? $statusVariables['wsrep_ready'] : 'OFF';
         $entity['database']['logbin'] =
             array_key_exists('log_bin', $configVariables) ? $configVariables['log_bin'] : 'OFF';
-
         $entity['processes'] = $includeProcessStats ? $this->readProcessStats($now) : [];
+        
+        if ($includeProcessStats) {
+            $entity['processes'] = $this->readProcessStats($now);
+            $outdated = $this->readOutdatedSlots();
+            $entity['processes']['outdated'] = $outdated['cnt'];
+            $entity['processes']['outdatedOldest'] = $outdated['oldest'];
+            $freeSlots = $this->readFreeSlots();
+            $entity['processes']['freeSlots'] = $freeSlots['cnt'];
+        }
+        
+        $entity['mail'] = $this->readMailStats();
+        $entity['notification'] = $this->readNotificationStats();
+        $entity['sources']['dldb']['last'] = $this->readDdldUpdateStats();
+        $entity['processes']['lastCalculate'] = $this->readLastCalculateSlots();        
         $entity['useraccounts']['activeSessions'] = $this->getTotalActiveSessions();
         $entity['useraccounts']['departments'] = $this->getActiveSessionsByBehoerdenWithScopes();
 

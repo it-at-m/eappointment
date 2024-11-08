@@ -1,3 +1,37 @@
+## Release Muc-16
+                        
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2563'>ZMS-2563</a>] -         Performanceoptimierung von ZMS Berlin - Fetching freier Termine
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2778'>ZMS-2778</a>] -         Logged IN Benutzer monitoren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3141'>ZMS-3141</a>] -         Performanceoptimierung von ZMS Berlin - UseraccountByDepartment listing Optimierung
+</li>
+</ul>
+    
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1802'>ZMS-1802</a>] -         umgebuchter Termin kann aufgerufen werden - Fehlermeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2970'>ZMS-2970</a>] -         Die ausgewählte Dienstleistung wird nach Tagänderung nicht mehr angezeigt DEMO VA
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3112'>ZMS-3112</a>] -         Umbuchung von Termin mit Freitextfeld als Pflichtfeld für Bürger nicht möglich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3139'>ZMS-3139</a>] -         Bei der Umbuchung eines Termins wird die vorherige ausgewählte Behörde nicht automatisch ausgewählt
+</li>
+</ul>
+                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2215'>ZMS-2215</a>] -         Benutzersuche
+</li>
+</ul>
+                                                    
+
 ## Release Muc-15
 
                         
