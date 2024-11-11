@@ -3,18 +3,45 @@
   <!--  Add location selection-->
   <h2 tabindex="0">{{ t("time") }}</h2>
   <!--  Add calendar-->
-  <MucCallout type="warning">
-    <template #content>
-      {{ t("noAppointmentsAvailable") }}
-    </template>
 
-    <template #header>{{ t("noAppointmentsAvailableHeader") }}</template>
-  </MucCallout>
-  <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+  <div class="m-component">
+    <form class="m-form m-form--default">
+      <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+      <div style="background-color: var(--color-neutrals-blue-xlight)">
+        <b tabindex="0">{{ formatDay(selectedDay) }}</b>
+      </div>
+      <div v-for="([timeslot, times]) in timeSlotsInHours()" :key="timeslot">
+        <div class="wrapper">
+          <div>
+            <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59 </p>
+          </div>
+          <div v-for="timeslot in times" :key="timeslot.unix" class="timeslot">
+            <MucButton
+              v-on:click="handleTimeSlotSelection(timeslot)"
+              variant="secondary"
+            >
+              <template #default>{{ formatTime(timeslot) }}</template>
+            </MucButton>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div v-if="error" class="m-component">
+    <MucCallout type="warning">
+      <template #content>
+        {{ t("noAppointmentsAvailable") }}
+      </template>
+
+      <template #header>{{ t("noAppointmentsAvailableHeader") }}</template>
+    </MucCallout>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { MucCallout } from "@muenchen/muc-patternlab-vue";
+import moment from "moment";
+import 'moment-timezone';
+import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
 import { inject, onMounted, ref } from "vue";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
@@ -40,9 +67,29 @@ const displayInfo = ref<string>();
 const selectedServices = ref<Map<string, number>>(new Map<string, number>());
 const availableDays = ref<Array<string>>();
 const appointmentTimestamps = ref<Array<number>>();
+const selectedDay = ref<string>();
+const selectedTimeSlot = ref<number>();
+const error = ref<boolean>(false);
+
+const formatDay = (date: string) => moment(date).locale('de').format('dddd, DD.MM.YYYY');
+
+const formatTime = (time: any) => moment.unix(time).tz('Europe/Berlin').format('H:mm');
+
+const timeSlotsInHours = () => {
+  const timesByHours = new Map<string, Array<number>>;
+  appointmentTimestamps.value?.forEach((time) => {
+    const berlinTime = moment.unix(time).tz('Europe/Berlin');
+    if(!timesByHours.has(berlinTime.format('H'))) {
+      timesByHours.set(berlinTime.format('H'), new Array<any>);
+    }
+    timesByHours.get(berlinTime.format('H'))?.push(time);
+  });
+  return timesByHours;
+}
 
 const showSelectionForProvider = (provider: OfficeImpl) => {
   currentProvider.value = provider;
+  error.value = false;
 
   if (
     provider.scope &&
@@ -61,7 +108,10 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
   ).then((data) => {
     if (data as AvailableDaysDTO) {
       availableDays.value = (data as AvailableDaysDTO).availableDays;
+      selectedDay.value = (availableDays.value[0]);
       getAppointmentsOfDay(availableDays.value[0]);
+    } else {
+      error.value = true;
     }
   });
 };
@@ -77,9 +127,16 @@ const getAppointmentsOfDay = (date: string) => {
       appointmentTimestamps.value = (
         data as AvailableTimeSlotsDTO
       ).appointmentTimestamps;
+      timeSlotsInHours();
+    } else {
+      error.value = true;
     }
   });
 };
+
+const handleTimeSlotSelection = (timeSlot: number) => {
+  selectedTimeSlot.value = timeSlot;
+}
 
 onMounted(() => {
   if (selectedService.value) {
@@ -121,4 +178,28 @@ onMounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.wrapper {
+  display: flex;
+  justify-content: left;
+  border-bottom: 1px solid var(--color-neutrals-blue);
+  padding-bottom: 16px;
+  padding-top: 16px;
+}
+
+.wrapper > * {
+  margin: 0 8px;
+}
+
+.timeslot {
+  height: 0.8rem;
+}
+
+.centered-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+</style>
