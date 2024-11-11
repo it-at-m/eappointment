@@ -3,3 +3,4 @@ config.php
 tags
 /vendor/
 Makefile
+.DS_*
