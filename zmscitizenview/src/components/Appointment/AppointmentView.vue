@@ -1,36 +1,36 @@
 <template>
   <div class="m-component">
     <div class="container">
-      <ServiceFinder
+      <service-finder
         v-if="currentView === 0"
-        v-on:setService="setShowIncreaseViewButton"
         :services="services"
         :relations="relations"
         :offices="offices"
         :preselected-service-id="serviceId"
         :preselected-offive-id="locationId"
         :t="t"
+        @set-service="setShowIncreaseViewButton"
       />
-      <Calendar
+      <calendar
         v-if="currentView === 1"
         :t="t"
       />
-      <CustomerInfo v-if="currentView === 2" />
+      <customer-info v-if="currentView === 2" />
       <div class="m-submit-group">
-        <MucButton
+        <muc-button
           v-if="showDecreaseViewButton"
-          v-on:click="decreaseCurrentView"
           :disabled="disableIncreaseViewButton"
           variant="secondary"
+          @click="decreaseCurrentView"
         >
           <template #default>{{ t("back") }}</template>
-        </MucButton>
-        <MucButton
+        </muc-button>
+        <muc-button
           v-if="showIncreaseViewButton"
-          v-on:click="increaseCurrentView"
+          @click="increaseCurrentView"
         >
           <template #default>{{ t("next") }}</template>
-        </MucButton>
+        </muc-button>
       </div>
     </div>
   </div>
@@ -44,7 +44,7 @@ import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import Calendar from "@/components/Appointment/Calendar.vue";
+import Calendar from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import { ServiceImpl } from "@/types/ServiceImpl";

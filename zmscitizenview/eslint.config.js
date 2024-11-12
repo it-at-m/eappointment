@@ -23,6 +23,7 @@ export default [
         "kebab-case",
         { registeredComponentsOnly: false },
       ],
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
 ];

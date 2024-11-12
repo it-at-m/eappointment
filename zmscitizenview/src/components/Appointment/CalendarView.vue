@@ -15,26 +15,26 @@
           <div>
             <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59 </p>
           </div>
-          <div v-for="timeslot in times" :key="timeslot.unix" class="timeslot">
-            <MucButton
-              v-on:click="handleTimeSlotSelection(timeslot)"
+          <div v-for="timeslots in times" :key="timeslots.unix" class="timeslot">
+            <muc-button
               variant="secondary"
+              @click="handleTimeSlotSelection(timeslots)"
             >
-              <template #default>{{ formatTime(timeslot) }}</template>
-            </MucButton>
+              <template #default>{{ formatTime(timeslots) }}</template>
+            </muc-button>
           </div>
         </div>
       </div>
     </form>
   </div>
   <div v-if="error" class="m-component">
-    <MucCallout type="warning">
+    <muc-callout type="warning">
       <template #content>
         {{ t("noAppointmentsAvailable") }}
       </template>
 
       <template #header>{{ t("noAppointmentsAvailableHeader") }}</template>
-    </MucCallout>
+    </muc-callout>
   </div>
 </template>
 
@@ -61,12 +61,12 @@ const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;
 
-const selectableProviders = ref<Array<OfficeImpl>>();
+const selectableProviders = ref<OfficeImpl[]>();
 const currentProvider = ref<OfficeImpl>();
 const displayInfo = ref<string>();
 const selectedServices = ref<Map<string, number>>(new Map<string, number>());
-const availableDays = ref<Array<string>>();
-const appointmentTimestamps = ref<Array<number>>();
+const availableDays = ref<string[]>();
+const appointmentTimestamps = ref<number[]>();
 const selectedDay = ref<string>();
 const selectedTimeSlot = ref<number>();
 const error = ref<boolean>(false);
@@ -76,7 +76,7 @@ const formatDay = (date: string) => moment(date).locale('de').format('dddd, DD.M
 const formatTime = (time: any) => moment.unix(time).tz('Europe/Berlin').format('H:mm');
 
 const timeSlotsInHours = () => {
-  const timesByHours = new Map<string, Array<number>>;
+  const timesByHours = new Map<string, number[]>;
   appointmentTimestamps.value?.forEach((time) => {
     const berlinTime = moment.unix(time).tz('Europe/Berlin');
     if(!timesByHours.has(berlinTime.format('H'))) {
@@ -159,7 +159,7 @@ onMounted(() => {
     }
 
     if (selectedService.value.providers && selectedService.value.subServices) {
-      let choosenSubservices = selectedService.value.subServices.filter(
+      const choosenSubservices = selectedService.value.subServices.filter(
         (subservice) => subservice.count > 0
       );
       selectableProviders.value = selectedService.value.providers.filter(
