@@ -3,29 +3,27 @@
   <!--  Add location selection-->
   <h2 tabindex="0">{{ t("time") }}</h2>
   <!--  Add calendar-->
-
   <div class="m-component">
-    <form class="m-form m-form--default">
-      <h3 tabindex="0">{{ t("availableTimes") }}</h3>
-      <div style="background-color: var(--color-neutrals-blue-xlight)">
-        <b tabindex="0">{{ formatDay(selectedDay) }}</b>
-      </div>
-      <div v-for="([timeslot, times]) in timeSlotsInHours()" :key="timeslot">
-        <div class="wrapper">
-          <div>
-            <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59 </p>
-          </div>
-          <div v-for="timeslots in times" :key="timeslots.unix" class="timeslot">
-            <muc-button
-              variant="secondary"
-              @click="handleTimeSlotSelection(timeslots)"
-            >
-              <template #default>{{ formatTime(timeslots) }}</template>
-            </muc-button>
-          </div>
+    <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+    <div style="background-color: var(--color-neutrals-blue-xlight)">
+      <b tabindex="0">{{ formatDay(selectedDay) }}</b>
+    </div>
+    <div v-for="([timeslot, times]) in timeSlotsInHours()" :key="timeslot">
+      <div class="wrapper">
+        <div>
+          <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59 </p>
+        </div>
+        <div v-for="time in times" :key="time.unix" >
+          <muc-button
+            class="timeslot"
+            variant="secondary"
+            @click="handleTimeSlotSelection(time)"
+          >
+            <template #default>{{ formatTime(time) }}</template>
+          </muc-button>
         </div>
       </div>
-    </form>
+    </div>
   </div>
   <div v-if="error" class="m-component">
     <muc-callout type="warning">
@@ -193,7 +191,7 @@ onMounted(() => {
 }
 
 .timeslot {
-  height: 0.8rem;
+  height: 2rem;
 }
 
 .centered-text {
