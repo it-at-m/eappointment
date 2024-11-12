@@ -7,7 +7,7 @@
   >
     <div class="container">
       <form class="m-form m-form--default">
-        <MucSelect
+        <muc-select
           v-model="service"
           :items="services"
           item-title="name"
@@ -20,7 +20,7 @@
   </div>
   <div v-else>
     <div class="m-component">
-      <MucCounter
+      <muc-counter
         v-model="countOfService"
         :label="service.name"
         :max="maxValueOfService"
@@ -35,18 +35,18 @@
             v-for="subService in service.subServices"
             :key="subService.id"
           >
-            <SubserviceListItem
+            <subservice-list-item
               :sub-service="subService"
               :current-slots="currentSlots"
               :max-slots-per-appointment="maxSlotsPerAppointment"
-              v-on:change="changeAppointmentCountOfSubservice"
+              @change="changeAppointmentCountOfSubservice"
             />
           </template>
         </ul>
       </div>
     </div>
     <div class="wrapper">
-      <ClockSvg />
+      <clock-svg />
       <div>
         <b>{{ t("estimatedDuration") }}</b>
         <br />
@@ -79,9 +79,7 @@ const props = defineProps<{
   t: any;
 }>();
 
-const emit = defineEmits<{
-  (e: "setService"): void;
-}>();
+const emit = defineEmits<(e: "setService") => void>();
 
 const { selectedService, updateSelectedService } =
   inject<SelectedServiceProvider>(
@@ -115,7 +113,7 @@ const setServiceData = (selectedService: ServiceImpl) => {
   currentSlots.value = getMinSlotOfProvider(service.value.providers);
 
   if (selectedService.combinable) {
-    let combinable = selectedService.combinable;
+    const combinable = selectedService.combinable;
     if (typeof combinable[parseInt(selectedService.id)] !== "undefined") {
       delete combinable[parseInt(selectedService.id)];
     }
@@ -157,7 +155,7 @@ const setServiceData = (selectedService: ServiceImpl) => {
   emit("setService");
 };
 
-const getProviders = (serviceId: string, providers: Array<string> | null) => {
+const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
   props.relations.forEach((relation) => {
     if (relation.serviceId === serviceId) {
@@ -202,7 +200,7 @@ const checkPlusEndabled = computed(
     maxSlotsPerAppointment.value
 );
 
-const getMinSlotOfProvider = (provider: Array<OfficeImpl>) => {
+const getMinSlotOfProvider = (provider: OfficeImpl[]) => {
   let minSlot = MAX_SLOTS;
   provider.forEach((provider) => {
     if (provider.slots) {
@@ -212,7 +210,7 @@ const getMinSlotOfProvider = (provider: Array<OfficeImpl>) => {
   return minSlot;
 };
 
-const getMaxSlotsPerAppointementOfProvider = (provider: Array<OfficeImpl>) => {
+const getMaxSlotsPerAppointementOfProvider = (provider: OfficeImpl[]) => {
   let maxSlot = 0;
   provider.forEach((provider) => {
     if (

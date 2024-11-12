@@ -1,7 +1,7 @@
 <template>
   <li class="m-listing__list-item">
     <div class="list-item">
-      <MucCounter
+      <muc-counter
         v-model="count"
         :label="subService.name"
         :max="maxValue"
@@ -25,9 +25,7 @@ const props = defineProps<{
   maxSlotsPerAppointment: number;
 }>();
 
-const emit = defineEmits<{
-  (e: "change", id: string, count: number): void;
-}>();
+const emit = defineEmits<(e: "change", id: string, count: number) => void>();
 
 const count = ref<number>(0);
 
@@ -49,7 +47,7 @@ const checkPlusEndabled = computed(
     props.maxSlotsPerAppointment
 );
 
-const getMinSlotOfProvider = (provider: Array<OfficeImpl>) => {
+const getMinSlotOfProvider = (provider: OfficeImpl[]) => {
   let minSlot = MAX_SLOTS;
   provider.forEach((provider) => {
     if (provider.slots) {
