@@ -20,7 +20,8 @@ use Psr\Http\Message\ResponseInterface;
 
 use BO\Zmsapi\AvailabilitySlotsUpdate;
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
-use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed as UpdateFailedException;
+use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed;
+
 
 /**
  * @SuppressWarnings(Coupling)
@@ -38,42 +39,83 @@ class AvailabilityAdd extends BaseController
     ): ResponseInterface {
         (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        if (! $input || count($input) === 0) {
+        if (!$input || count($input) === 0) {
             throw new BadRequestException();
         }
-        $collection = new Collection();
+    
+        // Initialize an AvailabilityList collection for new entities
+        $newCollection = new Collection();
         DbConnection::getWriteConnection();
+    
+        // Populate the collection with the input data
         foreach ($input as $item) {
             $entity = new Entity($item);
             $entity->testValid();
+            $newCollection->addEntity($entity);
+        }
+    
+        // Extract the scope from the input data
+        $scopeData = $input[0]['scope'];
+        $scope = new \BO\Zmsentities\Scope($scopeData);
+        $scopeId = $scope->id;
+    
+        // Fetch existing availabilities for the given scope using readAvailabilityListByScope()
+        $startDate = new \DateTimeImmutable('now');
+        $endDate = (new \DateTimeImmutable('now'))->modify('+1 month');
+        $availabilityRepo = new AvailabilityRepository();
+        $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1, $startDate, $endDate);
+    
+        // Merge new availabilities into the existing collection
+        $mergedCollection = new Collection();
+        foreach ($existingCollection as $existingAvailability) {
+            $mergedCollection->addEntity($existingAvailability);
+        }
+        foreach ($newCollection as $newAvailability) {
+            $mergedCollection->addEntity($newAvailability);
+        }
+    
+        // Check for conflicts in the merged collection
+        $conflicts = $mergedCollection->getConflicts($startDate, $endDate);
+    
+        if ($conflicts->count() > 0) {
+            // Convert conflicts to an array for better debugging/logging
+            $conflictsArray = json_decode(json_encode($conflicts), true);
+            throw new AvailabilityUpdateFailed();
+        }
+    
+        // Proceed to update if no conflicts are found
+        $updatedCollection = new Collection();
+        foreach ($newCollection as $entity) {
             $updatedEntity = $this->writeEntityUpdate($entity);
             AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
-            $collection->addEntity($updatedEntity);
+            $updatedCollection->addEntity($updatedEntity);
         }
-
+    
+        // Prepare response message
         $message = Response\Message::create($request);
-        $message->data = $collection->getArrayCopy();
-
+        $message->data = $updatedCollection->getArrayCopy();
+    
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-        return $response;
+        return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
+    
+    
 
     protected function writeEntityUpdate($entity): Entity
     {
         $repository = new AvailabilityRepository();
         $updatedEntity = null;
         if ($entity->id) {
-            $oldentity = $repository->readEntity($entity->id);
-            if ($oldentity && $oldentity->hasId()) {
-                $this->writeSpontaneousEntity($oldentity);
+            $oldEntity = $repository->readEntity($entity->id);
+            if ($oldEntity && $oldEntity->hasId()) {
+                $this->writeSpontaneousEntity($oldEntity);
                 $updatedEntity = $repository->updateEntity($entity->id, $entity, 2);
             }
         } else {
             $updatedEntity = $repository->writeEntity($entity, 2);
         }
-        if (! $updatedEntity) {
-            throw new UpdateFailedException();
+        if (!$updatedEntity) {
+            throw new AvailabilityUpdateFailed();
         }
         return $updatedEntity;
     }
