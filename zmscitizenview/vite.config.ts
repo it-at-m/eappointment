@@ -2,19 +2,17 @@
 import vue from '@vitejs/plugin-vue'
 
 // Utilities
-import {defineConfig, PluginOption} from 'vite'
+import {defineConfig} from 'vite'
 import {fileURLToPath, URL} from 'node:url'
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
-import {viteVueCESubStyle} from '@unplugin-vue-ce/sub-style'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue({
-      customElement: true
-    }),
-    viteVueCESubStyle({}) as PluginOption,
-    cssInjectedByJsPlugin()
+      features: {
+        customElement: true
+      }
+    })
   ],
   define: {'process.env': {}},
   resolve: {
