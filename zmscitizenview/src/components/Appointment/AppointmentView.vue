@@ -1,6 +1,11 @@
 <template>
   <div class="m-component">
     <div class="container">
+      <muc-stepper
+        :step-items="STEPPER_ITEMS"
+        :active-item="activeStep"
+        @change-step="changeStep"
+      />
       <service-finder
         v-if="currentView === 0"
         :services="services"
@@ -37,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { MucButton } from "@muenchen/muc-patternlab-vue";
+import { MucButton, MucStepper } from "@muenchen/muc-patternlab-vue";
 import { onMounted, provide, ref, watch } from "vue";
 
 import { Office } from "@/api/models/Office";
@@ -49,6 +54,7 @@ import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SelectedServiceProvider } from "@/types/ServiceTypes";
+import {StepperItem} from "@/types/StepperTypes";
 
 const props = defineProps<{
   baseUrl: any;
@@ -58,6 +64,31 @@ const props = defineProps<{
   confirmAppointmentHash?: any;
   t: any;
 }>();
+
+const STEPPER_ITEMS : StepperItem[] = [
+  {
+    id: "0",
+    label: props.t("service"),
+    icon: "shopping-cart",
+  },
+  {
+    id: "1",
+    label: props.t("appointment"),
+    icon: "calendar",
+  },
+  {
+    id: "2",
+    label: props.t("contact"),
+    icon: "mail",
+  },
+  {
+    id: "3",
+    label: props.t("overview"),
+    icon: "information"
+  },
+];
+
+const activeStep = ref<string>("0");
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
@@ -99,9 +130,16 @@ const decreaseCurrentView = () => currentView.value--;
 
 const setShowIncreaseViewButton = () => (showIncreaseViewButton.value = true);
 
-watch(currentView, (newCurrentView) =>
-  newCurrentView > 0
-    ? (showDecreaseViewButton.value = true)
-    : (showDecreaseViewButton.value = false)
+const changeStep = (step: string) => {
+  if (parseInt(step)< parseInt(activeStep.value)) {
+    currentView.value = parseInt(step);
+  }
+};
+
+watch(currentView, (newCurrentView) => {
+  activeStep.value = newCurrentView.toString();
+  showDecreaseViewButton.value = newCurrentView > 0;
+}
+
 );
 </script>

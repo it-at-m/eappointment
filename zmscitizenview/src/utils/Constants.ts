@@ -22,7 +22,7 @@ export const VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT =
 
 export const MAX_SLOTS = 25;
 
-export function getAPIBaseURL(): String {
+export function getAPIBaseURL(): string {
   console.log("#getAPIBaseURL", import.meta);
   if (import.meta.env.VITE_VUE_APP_API_URL) {
     return import.meta.env.VITE_VUE_APP_API_URL;
