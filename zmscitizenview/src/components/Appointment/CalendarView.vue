@@ -2,6 +2,11 @@
   <h2 tabindex="0">{{ t("location") }}</h2>
   <!--  Add location selection-->
   <h2 tabindex="0">{{ t("time") }}</h2>
+  <muc-calendar
+    v-model="selectedDay"
+    variant="single"
+    :allowed-dates="allowedDates"
+  />
   <!--  Add calendar-->
   <div class="m-component">
     <h3 tabindex="0">{{ t("availableTimes") }}</h3>
@@ -37,10 +42,8 @@
 </template>
 
 <script setup lang="ts">
-import moment from "moment";
-import 'moment-timezone';
-import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
-import { inject, onMounted, ref } from "vue";
+import { MucButton, MucCalendar, MucCallout } from "@muenchen/muc-patternlab-vue";
+import {inject, onMounted, ref, watch} from "vue";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
@@ -65,22 +68,54 @@ const displayInfo = ref<string>();
 const selectedServices = ref<Map<string, number>>(new Map<string, number>());
 const availableDays = ref<string[]>();
 const appointmentTimestamps = ref<number[]>();
-const selectedDay = ref<string>();
+const selectedDay = ref<Date>();
 const selectedTimeSlot = ref<number>();
 const error = ref<boolean>(false);
 
-const formatDay = (date: string) => moment(date).locale('de').format('dddd, DD.MM.YYYY');
+const TODAY = new Date();
+const MAXDATE = new Date(TODAY.getFullYear(), TODAY.getMonth() + 6, TODAY.getDate());
 
-const formatTime = (time: any) => moment.unix(time).tz('Europe/Berlin').format('H:mm');
+const formatDay = (date: Date) => {
+  if (date) {
+    return formatterWeekday.format(date)
+      + ", "
+      + String(date.getDate()).padStart(2, '0')
+      + "."
+      + String(date.getMonth() + 1).padStart(2, '0')
+      + "."
+      + date.getFullYear();
+  }
+}
+
+const formatterWeekday = new Intl.DateTimeFormat(
+  'de-DE',
+  { weekday: 'long' }
+);
+
+const formatterTime = new Intl.DateTimeFormat(
+  'de-DE',
+  {timeZone: 'Europe/Berlin', hour: 'numeric', minute: 'numeric', hour12: false}
+);
+
+const berlinHourFormatter = new Intl.DateTimeFormat(
+  'de-DE',
+  { timeZone: 'Europe/Berlin', hour: 'numeric', hour12: false }
+);
+
+const formatTime = (time: any) => {
+  const date = new Date(time * 1000);
+  return formatterTime.format(date);
+}
 
 const timeSlotsInHours = () => {
   const timesByHours = new Map<string, number[]>;
   appointmentTimestamps.value?.forEach((time) => {
-    const berlinTime = moment.unix(time).tz('Europe/Berlin');
-    if(!timesByHours.has(berlinTime.format('H'))) {
-      timesByHours.set(berlinTime.format('H'), new Array<any>);
+    const berlinDate = new Date(time * 1000);
+    const hour = berlinHourFormatter.format(berlinDate);
+    if (!timesByHours.has(hour)) {
+      timesByHours.set(hour, []);
     }
-    timesByHours.get(berlinTime.format('H'))?.push(time);
+    timesByHours.get(hour)?.push(time);
   });
   return timesByHours;
 }
@@ -106,7 +141,7 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
   ).then((data) => {
     if (data as AvailableDaysDTO) {
       availableDays.value = (data as AvailableDaysDTO).availableDays;
-      selectedDay.value = (availableDays.value[0]);
+      selectedDay.value = (new Date(availableDays.value[0]));
       getAppointmentsOfDay(availableDays.value[0]);
     } else {
       error.value = true;
@@ -131,6 +166,26 @@ const getAppointmentsOfDay = (date: string) => {
     }
   });
 };
+
+const convertDateToString = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+const allowedDates = (date: Date) => {
+  const beforeMaxDate = date.getFullYear() < MAXDATE.getFullYear()
+    || (date.getFullYear() === MAXDATE.getFullYear() && date.getMonth() < MAXDATE.getMonth())
+    || (date.getFullYear() === MAXDATE.getFullYear() && date.getMonth() === MAXDATE.getMonth() && date.getDate() < MAXDATE.getDate());
+  return beforeMaxDate && availableDays.value?.includes(convertDateToString(date));
+}
+
+watch(selectedDay, (newDate) => {
+  if (newDate) {
+    getAppointmentsOfDay(convertDateToString(newDate));
+  }
+});
 
 const handleTimeSlotSelection = (timeSlot: number) => {
   selectedTimeSlot.value = timeSlot;

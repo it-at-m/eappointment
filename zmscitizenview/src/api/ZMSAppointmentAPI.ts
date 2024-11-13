@@ -1,5 +1,3 @@
-import moment from "moment";
-
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
@@ -11,6 +9,9 @@ import {
   VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
   VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT,
 } from "@/utils/Constants";
+
+const TODAY = new Date();
+const MAXDATE = new Date(TODAY.getFullYear(), TODAY.getMonth() + 6, TODAY.getDate());
 
 export function fetchServicesAndProviders(
   serviceId?: string,
@@ -30,13 +31,12 @@ export function fetchServicesAndProviders(
 
 export function fetchAvailableDays(
   provider: OfficeImpl,
-  serviceIds: Array<string>,
-  serviceCounts: Array<number>
+  serviceIds: string[],
+  serviceCounts: number[]
 ): Promise<AvailableDaysDTO | ErrorDTO> {
-  const dateIn6Months = moment().add(6, "M");
   const params: Record<string, any> = {
-    startDate: moment().format("YYYY-MM-DD"),
-    endDate: dateIn6Months.format("YYYY-MM-DD"),
+    startDate: convertDateToString(TODAY),
+    endDate: convertDateToString(MAXDATE),
     officeId: provider.id,
     serviceId: serviceIds,
     serviceCount: serviceCounts,
@@ -55,11 +55,11 @@ export function fetchAvailableDays(
 export function fetchAvailableTimeSlots(
   date: string,
   provider: OfficeImpl,
-  serviceIds: Array<string>,
-  serviceCounts: Array<number>
+  serviceIds: string[],
+  serviceCounts: number[]
 ): Promise<AvailableTimeSlotsDTO | ErrorDTO> {
   const params: Record<string, any> = {
-    date: moment(date).format("YYYY-MM-DD"),
+    date: date,
     officeId: provider.id,
     serviceId: serviceIds,
     serviceCount: serviceCounts,
@@ -73,4 +73,11 @@ export function fetchAvailableTimeSlots(
   ).then((response) => {
     return response.json();
   });
+}
+
+const convertDateToString = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
