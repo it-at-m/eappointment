@@ -54,7 +54,7 @@ import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SelectedServiceProvider } from "@/types/ServiceTypes";
-import {StepperItem} from "@/types/StepperTypes";
+import { StepperItem } from "@/types/StepperTypes";
 
 const props = defineProps<{
   baseUrl: any;
@@ -65,7 +65,7 @@ const props = defineProps<{
   t: any;
 }>();
 
-const STEPPER_ITEMS : StepperItem[] = [
+const STEPPER_ITEMS: StepperItem[] = [
   {
     id: "0",
     label: props.t("service"),
@@ -84,7 +84,7 @@ const STEPPER_ITEMS : StepperItem[] = [
   {
     id: "3",
     label: props.t("overview"),
-    icon: "information"
+    icon: "information",
   },
 ];
 
@@ -131,7 +131,7 @@ const decreaseCurrentView = () => currentView.value--;
 const setShowIncreaseViewButton = () => (showIncreaseViewButton.value = true);
 
 const changeStep = (step: string) => {
-  if (parseInt(step)< parseInt(activeStep.value)) {
+  if (parseInt(step) < parseInt(activeStep.value)) {
     currentView.value = parseInt(step);
   }
 };
@@ -139,7 +139,5 @@ const changeStep = (step: string) => {
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   showDecreaseViewButton.value = newCurrentView > 0;
-}
-
-);
+});
 </script>
