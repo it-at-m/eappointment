@@ -144,7 +144,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity = new $this->entityclass();
         // A friday
         $time = new \DateTimeImmutable('2019-01-02 11:55:00');
-        $now = new \DateTimeImmutable('2019-02-33 11:55:00');
+        $now = new \DateTimeImmutable('2019-02-28 11:55:00');
         $entity['startDate'] = $time->getTimestamp();
         $entity['startTime'] = $time->format('H:i');
         $entity['endDate'] = $time->modify("+12month")
