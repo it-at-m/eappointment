@@ -70,9 +70,9 @@ class AvailabilityAdd extends BaseController
         }
 
         $validation = $mergedCollection->validateInputs($startDate, $endDate);
-
+        error_log(json_encode($validation));
         if (count($validation) > 0) {
-            $endTimeValidationArray = json_decode(json_encode($validation), true);
+            $validation = json_decode(json_encode($validation), true);
             throw new AvailabilityUpdateFailed();
         }        
     
