@@ -26,6 +26,7 @@ class AvailabilityAddTest extends Base
                 }
             ]'
         ], []);
+        error_log(json_encode((string)$response->getBody()));
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }

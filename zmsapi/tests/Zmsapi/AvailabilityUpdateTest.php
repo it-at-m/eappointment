@@ -13,6 +13,7 @@ class AvailabilityUpdateTest extends Base
     public function testRendering()
     {
         $input = (new Entity)->createExample();
+        error_log(json_encode($input));
         $entity = (new Query())->writeEntity($input);
         $this->setWorkstation();
         $response = $this->render(["id"=> $entity->getId()], [
