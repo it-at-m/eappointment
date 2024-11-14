@@ -42,6 +42,9 @@ class AvailabilityAdd extends BaseController
         if (!$input || count($input) === 0) {
             throw new BadRequestException();
         }
+
+        error_log("Raw request body: " . $request->getBody());
+
     
         $newCollection = new Collection();
         DbConnection::getWriteConnection();
@@ -71,7 +74,6 @@ class AvailabilityAdd extends BaseController
 
         $validation = $mergedCollection->validateInputs($startDate, $endDate);
         error_log("AvailabilityAdd");
-        error_log(json_encode($newAvailability));
         error_log("**********");
         error_log(json_encode($validation));
         if (count($validation) > 0) {
