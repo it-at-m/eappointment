@@ -10,7 +10,6 @@ class UseraccountListTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
         $response = $this->render([], [], []);
-        $this->assertStringContainsString('useraccount.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

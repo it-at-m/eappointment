@@ -1,3 +1,86 @@
+## Release Muc-16
+                        
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2563'>ZMS-2563</a>] -         Performanceoptimierung von ZMS Berlin - Fetching freier Termine
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2778'>ZMS-2778</a>] -         Logged IN Benutzer monitoren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3141'>ZMS-3141</a>] -         Performanceoptimierung von ZMS Berlin - UseraccountByDepartment listing Optimierung
+</li>
+</ul>
+    
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1802'>ZMS-1802</a>] -         umgebuchter Termin kann aufgerufen werden - Fehlermeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2970'>ZMS-2970</a>] -         Die ausgewählte Dienstleistung wird nach Tagänderung nicht mehr angezeigt DEMO VA
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3112'>ZMS-3112</a>] -         Umbuchung von Termin mit Freitextfeld als Pflichtfeld für Bürger nicht möglich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3139'>ZMS-3139</a>] -         Bei der Umbuchung eines Termins wird die vorherige ausgewählte Behörde nicht automatisch ausgewählt
+</li>
+</ul>
+                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2215'>ZMS-2215</a>] -         Benutzersuche
+</li>
+</ul>
+                                                    
+
+## Release Muc-15
+
+                        
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2972'>ZMS-2972</a>] -         Browser Tabs wechseln auf dem Ekiosk führt zur Fehlermeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2975'>ZMS-2975</a>] -         Notfallfunktion bleibt stehen bei nicht-integer Platznummer
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3063'>ZMS-3063</a>] -         Bürgerfrontend: Ändern des Termins über Schritt 2-Feld nicht möglich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3073'>ZMS-3073</a>] -         Erstellen einer neuen Öffnungszeit ohne Eingabe von Details führt zu einem endlosen Spinner
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3080'>ZMS-3080</a>] -         Calldisplay greift auf nichtexistierende Properties zu
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3109'>ZMS-3109</a>] -         Öffnungszeit - &quot;Datum von&quot; oder &quot;Datum bis&quot; = leer -&gt; Fehler
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3164'>ZMS-3164</a>] -         Öffnungszeiten - Ausnahme am ersten Tag einer Serie führt zu Fehler
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3166'>ZMS-3166</a>] -         Ekiosk Layout funktioniert auf dem Internet Explorer 11 nicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3170'>ZMS-3170</a>] -         Fehlende Ausnahme im Gewerbeamt Bereich KVR III/21
+</li>
+</ul>
+    
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3140'>ZMS-3140</a>] -         Performanceoptimierung von ZMS Berlin - Optimierungen für DepartmentUseraccountList
+</li>
+</ul>
+                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2534'>ZMS-2534</a>] -         Customized E-Mail Templates sind über eigenen Link neben den Öffnungszeiten aufrufbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2962'>ZMS-2962</a>] -         Logtabelle erweitern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2969'>ZMS-2969</a>] -         E-Mail Template für &quot;Termin Drucken&quot; von Customized Templates nehmen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3088'>ZMS-3088</a>] -         Auswahlwahlfeld ist nicht benannt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3228'>ZMS-3228</a>] -         CLONE - Customized E-Mail Templates sind über eigenen Link neben den Öffnungszeiten aufrufbar
+</li>
+</ul>
+
+
 ## Release Muc-14
 
     
