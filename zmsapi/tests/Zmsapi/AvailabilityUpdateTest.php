@@ -19,10 +19,11 @@ class AvailabilityUpdateTest extends Base
         $input['startDate'] = $currentTimestamp + (2 * 24 * 60 * 60); // Set startDate to 2 days in the future
         $input['endDate'] = $currentTimestamp + (5 * 24 * 60 * 60);   // Set endDate to 5 days in the future
     
-        error_log(json_encode($input)); // Log for debugging
+        
     
         // Write the entity using the modified input
         $entity = (new Query())->writeEntity($input);
+        error_log(json_encode($entity)); // Log for debugging
         $this->setWorkstation();
     
         // Prepare the response and test rendering
