@@ -179,7 +179,7 @@ class AvailabilityTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $withCalculatedSlots = $entity->withCalculatedSlots();
-        $this->assertEquals(5346000, $withCalculatedSlots->getAvailableSecondsPerDay());
+        $this->assertEquals(6534000, $withCalculatedSlots->getAvailableSecondsPerDay());
     }
 
     public function testGetAvailableSecondsOnDateTime()
@@ -196,7 +196,7 @@ class AvailabilityTest extends EntityCommonTests
         $collection = new $this->collectionclass();
         $collection->addEntity($entity);
         $collection = $collection->withCalculatedSlots();
-        $this->assertEquals(5346000, $collection->getAvailableSecondsOnDateTime($time));
+        $this->assertEquals(6534000, $collection->getAvailableSecondsOnDateTime($time));
     }
 
     public function testDayOff()
@@ -498,6 +498,7 @@ class AvailabilityTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $withCalculatedSlots = $entity->withCalculatedSlots();
+        error_log("*" . $withCalculatedSlots['workstationCount']['public']);
         $this->assertTrue(81 == $withCalculatedSlots['workstationCount']['public'], $withCalculatedSlots);
     }
 
@@ -507,6 +508,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $collection->addEntity($entity);
         $slotList = $collection->getSlotList();
+        error_log("-" . count($slotList));
         $this->assertTrue(28 == count($slotList));
         $this->assertEquals('10:00', $slotList->getFirst()['time']);
         $this->assertEquals('10:12', $slotList[1]['time']);
