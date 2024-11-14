@@ -511,7 +511,7 @@ class AvailabilityTest extends EntityCommonTests
         error_log("-" . count($slotList));
         $this->assertTrue(33 == count($slotList));
         $this->assertEquals('10:00', $slotList->getFirst()['time']);
-        $this->assertEquals('10:12', $slotList[1]['time']);
+        $this->assertEquals('10:10', $slotList[1]['time']);
     }
 
     public function testToString()
