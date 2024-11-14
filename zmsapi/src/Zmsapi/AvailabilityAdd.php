@@ -43,29 +43,24 @@ class AvailabilityAdd extends BaseController
             throw new BadRequestException();
         }
     
-        // Initialize an AvailabilityList collection for new entities
         $newCollection = new Collection();
         DbConnection::getWriteConnection();
     
-        // Populate the collection with the input data
         foreach ($input as $item) {
             $entity = new Entity($item);
             $entity->testValid();
             $newCollection->addEntity($entity);
         }
     
-        // Extract the scope from the input data
         $scopeData = $input[0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
         $scopeId = $scope->id;
     
-        // Fetch existing availabilities for the given scope using readAvailabilityListByScope()
         $startDate = new \DateTimeImmutable('now');
         $endDate = (new \DateTimeImmutable('now'))->modify('+1 month');
         $availabilityRepo = new AvailabilityRepository();
         $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1, $startDate, $endDate);
     
-        // Merge new availabilities into the existing collection
         $mergedCollection = new Collection();
         foreach ($existingCollection as $existingAvailability) {
             $mergedCollection->addEntity($existingAvailability);
@@ -73,17 +68,21 @@ class AvailabilityAdd extends BaseController
         foreach ($newCollection as $newAvailability) {
             $mergedCollection->addEntity($newAvailability);
         }
+
+        $validation = $mergedCollection->validateInputs($startDate, $endDate);
+
+        if (count($validation) > 0) {
+            $endTimeValidationArray = json_decode(json_encode($validation), true);
+            throw new AvailabilityUpdateFailed();
+        }        
     
-        // Check for conflicts in the merged collection
         $conflicts = $mergedCollection->getConflicts($startDate, $endDate);
     
         if ($conflicts->count() > 0) {
-            // Convert conflicts to an array for better debugging/logging
             $conflictsArray = json_decode(json_encode($conflicts), true);
             throw new AvailabilityUpdateFailed();
         }
-    
-        // Proceed to update if no conflicts are found
+
         $updatedCollection = new Collection();
         foreach ($newCollection as $entity) {
             $updatedEntity = $this->writeEntityUpdate($entity);
@@ -91,7 +90,6 @@ class AvailabilityAdd extends BaseController
             $updatedCollection->addEntity($updatedEntity);
         }
     
-        // Prepare response message
         $message = Response\Message::create($request);
         $message->data = $updatedCollection->getArrayCopy();
     

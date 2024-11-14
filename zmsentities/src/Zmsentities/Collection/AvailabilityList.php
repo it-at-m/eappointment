@@ -161,6 +161,20 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
+    public function validateInputs($startDate, $endDate){
+
+        $errorList = [];
+        foreach ($this as $availability) {
+            $today = new \DateTime();
+            $yesterday = (clone $today)->modify('-1 day');
+
+            $errorList = $availability->validateAll($today, $yesterday, $startDate);
+
+        }
+        return $errorList;
+
+    }
+
     public function getConflicts($startDate, $endDate)
     {
         $processList = new ProcessList();
