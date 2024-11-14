@@ -576,8 +576,8 @@ class Availability extends Schema\Entity
     {
         $errorList = array_merge(
             $this->validateStartTime($today, $tomorrow, $startDate),
-            $this->validateEndTime($today, $yesterday, selectedDate: $startDate),
-            $this->validateOriginEndTime($today, $yesterday, $startDate),
+            $this->validateEndTime($today, $yesterday, startDate: $startDate),
+            $this->validateOriginEndTime($today, $yesterday, $startDate, $endDate),
             $this->validateType(),
             $this->validateSlotTime()
         );
