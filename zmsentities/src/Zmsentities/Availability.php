@@ -572,22 +572,18 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $selectedDate)
+    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $selectedDate)
     {
         $errorList = array_merge(
-            $this->validateStartTime(
-                $today,
-                ($selectedDate instanceof \DateTimeImmutable) ? $selectedDate->modify('+1 day') : (clone $selectedDate)->modify('+1 day'),
-                $selectedDate
-            ),
-            $this->validateEndTime($today, $yesterday, $selectedDate),
+            $this->validateStartTime($today, $tomorrow, $selectedDate),
+            $this->validateEndTime($today, $yesterday, selectedDate: $selectedDate),
             $this->validateOriginEndTime($today, $yesterday, $selectedDate),
             $this->validateType(),
             $this->validateSlotTime()
         );
     
         return $errorList;
-    }    
+    }
     
     /**
      * Get problems on configuration of this availability
