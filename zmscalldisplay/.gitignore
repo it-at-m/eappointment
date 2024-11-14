@@ -1,4 +1,3 @@
-package-lock.json
 vendor
 vendor.zmsbase
 node_modules
@@ -8,13 +7,15 @@ config.php
 bower_components
 tests/*.html
 public/_tests
-#public/_js/
-#public/_libs/
+public/_js/index.js
+public/_js/index.js.map
+public/_libs/
+public/_css/calldisplay.css
+public/_css/calldisplay.css.map
 cache
-.DS_Store
+.DS_*
 vendor.old
 vendor.update
-#composer.*.lock
 .cache
 .parcel-cache
 .phpunit.result.cache

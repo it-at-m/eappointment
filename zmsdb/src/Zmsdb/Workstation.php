@@ -43,6 +43,7 @@ class Workstation extends Base
                     new ScopeEntity($workstation->scope),
                     $resolveReferences - 1
                 );
+                $workstation->scope->cluster = (new Cluster)->readByScopeId($workstation->scope->id);
                 $department = (new Department())->readByScopeId($workstation->scope['id']);
                 $workstation->linkList = (new Link())->readByDepartmentId($department->getId());
             }
