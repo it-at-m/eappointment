@@ -58,6 +58,7 @@ class WorkstationLogin extends BaseController
             $useraccount->id,
             $useraccount->password,
             \App::getNow(),
+            (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION),
             $resolveReferences
         );
 

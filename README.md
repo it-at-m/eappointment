@@ -1,3 +1,12 @@
+<div id="top"></div>
+
+<!-- PROJECT SHIELDS -->
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+<!-- [![EUPL License][license-shield]][license-url] -->
+
 # E-Appointment
 <!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> -->
 
@@ -123,7 +132,9 @@ To keep our branch names organized and easily understandable, we follow a specif
    - `feature`: For new features or enhancements.
    - `bugfix`: For bug fixes.
    - `hotfix`: For urgent fixes that need to be applied quickly.
-   - `cleanup`: For code refactoring, documentation updates, or other maintenance work.
+   - `cleanup`: For code refactoring, or documentation updates.
+   - `docs`: For updating documentation such as the README.md CODE_OF_CONDUCT.md LICENSE.md CHANGELOG.md CONTRIBUTING.md. Providing a ticket number or project for docs is optional.
+   - `chore`: For maintaining and updating dependencies, libraries, PHP/Node/Twig Versions, or other maintenance work.
 
 2. **project**: The project identifier. This should be:
    - `zms` for the ZMS project.
@@ -143,10 +154,32 @@ To keep our branch names organized and easily understandable, we follow a specif
 - **Bugfix Branch**: `bugfix-mpdzbs-67890-fix-crash-on-startup`
 - **Hotfix Branch**: `hotfix-zms-98765-critical-fix-for-login`
 - **Cleanup Branch**: `cleanup-mpdzbs-11111-remove-unused-code`
+- **Chore Branch**: `chore-zms-2964-composer-update`
+- **Docs Branch**: `docs-zms-0000-update-readme` `docs-zms-release-40-update-changelog`
 
 #### Regular Expression
 
 The branch name must match the following regular expression:
-`^(feature|hotfix|bugfix|cleanup)-(zms|mpdzbs)-[0-9]+-[a-z0-9-]+$`
+`^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|mpdzbs)-[0-9]+-[a-z0-9-]+$`
 
 **For further commit rules please refer to https://www.conventionalcommits.org/en/v1.0.0-beta.4/**
+
+## Screenshot
+![screenshot](https://github.com/user-attachments/assets/54d360e9-c47b-4f3c-b849-5966a8766af9)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/it-at-m/eappointment.svg?style=for-the-badge
+[contributors-url]: https://github.com/it-at-m/eappointment/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/it-at-m/eappointment.svg?style=for-the-badge
+[forks-url]: https://github.com/it-at-m/eappointment/network/members
+[stars-shield]: https://img.shields.io/github/stars/it-at-m/eappointment.svg?style=for-the-badge
+[stars-url]: https://github.com/it-at-m/eappointment/stargazers
+[issues-shield]: https://img.shields.io/github/issues/it-at-m/eappointment.svg?style=for-the-badge
+[issues-url]: https://github.com/it-at-m/eappointment/issues
+[license-shield]: https://img.shields.io/github/license/it-at-m/eappointment.svg?style=for-the-badge
+[license-url]: https://github.com/it-at-m/eappointment/blob/main/LICENSE
+[product-screenshot]: images/screenshot.png
+
