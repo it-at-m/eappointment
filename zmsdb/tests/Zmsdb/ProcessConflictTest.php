@@ -53,8 +53,8 @@ class ProcessConflictTest extends Base
     }
 
     /*
-    * Test a single day availability without repeats but with conflicts out of availability start and enttime
-    */
+     * Test a single day availability without repeats but with conflicts out of availability start and enttime
+     */
 
     public function testSingleDayOutOfAvailability()
     {
@@ -100,7 +100,9 @@ class ProcessConflictTest extends Base
         (new \BO\Zmsdb\Availability())->writeEntity($availabilityCopy);
         $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, null, $now, 0);
         $this->assertEquals(2, $conflictList->count());
-        $this->assertEquals('Zwei Öffnungszeiten sind gleich.', $conflictList->getFirst()->getAmendment());
+        $this->assertEquals("Konflikt: Zwei Öffnungszeiten sind gleich.\n" .
+            "Bestehende Öffnungszeit:&thinsp;&thinsp;[30.01.2016 - 22.05.2016, 08:00 - 13:50]\n" .
+            "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[30.01.2016 - 22.05.2016, 08:00 - 13:50]", $conflictList->getFirst()->getAmendment());
         $this->assertEquals('conflict', $conflictList->getFirst()->getStatus());
     }
 
@@ -115,7 +117,9 @@ class ProcessConflictTest extends Base
         (new \BO\Zmsdb\Availability())->writeEntity($availabilityCopy);
         $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, null, $now, 0);
         $this->assertEquals(2, $conflictList->count());
-        $this->assertEquals('Zwei Öffnungszeiten überschneiden sich.', $conflictList->getFirst()->getAmendment());
+        $this->assertEquals("Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n" .
+            "Bestehende Öffnungszeit:&thinsp;&thinsp;[30.01.2016 - 22.05.2016, 08:00 - 15:50]\n" .
+            "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[30.01.2016 - 22.05.2016, 08:00 - 13:50]", $conflictList->getFirst()->getAmendment());
         $this->assertEquals('conflict', $conflictList->getFirst()->getStatus());
     }
 }
