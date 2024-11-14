@@ -498,7 +498,6 @@ class AvailabilityTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $withCalculatedSlots = $entity->withCalculatedSlots();
-        error_log("*" . $withCalculatedSlots['workstationCount']['public']);
         $this->assertTrue(99 == $withCalculatedSlots['workstationCount']['public'], $withCalculatedSlots);
     }
 
@@ -508,7 +507,6 @@ class AvailabilityTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $collection->addEntity($entity);
         $slotList = $collection->getSlotList();
-        error_log("-" . count($slotList));
         $this->assertTrue(33 == count($slotList));
         $this->assertEquals('10:00', $slotList->getFirst()['time']);
         $this->assertEquals('10:10', $slotList[1]['time']);
