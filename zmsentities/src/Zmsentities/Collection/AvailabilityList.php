@@ -174,6 +174,9 @@ class AvailabilityList extends Base
             error_log("Today: " . $today->format('Y-m-d H:i:s'));
             error_log("Yesterday: " . $yesterday->format('Y-m-d H:i:s'));
             error_log("Tomorrow: " . $tomorrow->format('Y-m-d H:i:s'));
+            error_log("Today: " . $today->format('Y-m-d H:i:s'));
+            error_log("startDate: " . $startDate->format('Y-m-d H:i:s'));
+            error_log("endDate: " . $endDate->format('Y-m-d H:i:s'));
     
             // Pass DateTimeImmutable objects to validateAll()
             $errorList = array_merge(

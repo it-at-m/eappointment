@@ -510,7 +510,6 @@ class Availability extends Schema\Entity
     public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
         $errorList = [];
-        error_log("endTime: " . $endDate->format('Y-m-d H:i:s'));
         $endHour = (int) $endDate->format('H');
         $endMinute = (int) $endDate->format('i');
         $endDateTime = (clone $endDate)->setTime($endHour, $endMinute);
