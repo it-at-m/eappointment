@@ -43,7 +43,7 @@
       "type": "object",
       "properties": {
         "startInDays": {
-          "type": "number",
+          "type": ["string", "number", "null"],
           "default": 1,
           "description": "number of days relative to today to start offering appointments"
         },

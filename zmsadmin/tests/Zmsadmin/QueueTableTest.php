@@ -43,6 +43,15 @@ class QueueTableTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/queue/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'status' => 'called',
+                    ],
+                    'response' => $this->readFixture("GET_queuelist_141.json")
                 ]
             ]
         );
@@ -83,6 +92,15 @@ class QueueTableTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processlist_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/queue/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'status' => 'called',
+                    ],
+                    'response' => $this->readFixture("GET_queuelist_141.json")
                 ]
             ]
         );
@@ -124,6 +142,15 @@ class QueueTableTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_processlist_scope_169.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/queue/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'status' => 'called',
+                    ],
+                    'response' => $this->readFixture("GET_queuelist_141.json")
                 ]
             ]
         );
@@ -135,42 +162,51 @@ class QueueTableTest extends Base
     {
         $this->setApiCalls(
             [
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/workstation/',
-                  'parameters' => [
-                      'resolveReferences' => 1,
-                      'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
                     ],
-                  'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
-              ],
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/scope/141/department/',
-                  'response' => $this->readFixture("GET_department_74.json")
-              ],
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/scope/141/cluster/',
-                  'response' => $this->readFixture("GET_cluster_109.json")
-              ],
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/cluster/109/process/2016-04-01/',
-                  'parameters' => [
-                      'resolveReferences' => 2,
-                      'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/process/2016-04-01/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
-                  'response' => $this->readFixture("GET_processlist_cluster_109.json")
-              ],
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/process/100044/',
-                  'parameters' => [
-                    'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                  ],
-                  'response' => $this->readFixture("GET_process_100044_57c2.json")
-              ]
+                    'response' => $this->readFixture("GET_processlist_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'parameters' => [
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/queue/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'status' => 'called',
+                    ],
+                    'response' => $this->readFixture("GET_queuelist_141.json")
+                ]
             ]
         );
         $response = $this->render([], [
