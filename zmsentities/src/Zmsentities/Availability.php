@@ -452,7 +452,7 @@ class Availability extends Schema\Entity
     }
 
 
-    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $selectedDate)
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate)
     {
         $errorList = [];
     
@@ -464,7 +464,7 @@ class Availability extends Schema\Entity
         $endMinute = (int)$endTime->format('i');
         $isFuture = ($this->type && $this->type === 'future');
     
-        if (!$isFuture && $selectedDate->getTimestamp() > $today->getTimestamp() && $startTime > $selectedDate->setTime(0, 0)) {
+        if (!$isFuture && $startDate->getTimestamp() > $today->getTimestamp() && $startTime > $startDate->setTime(0, 0)) {
             $errorList[] = [
                 'type' => 'startTimeFuture',
                 'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
@@ -481,7 +481,7 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $selectedDate)
+    public function validateEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate)
     {
         $errorList = [];
         $startTime = $this->getStartDateTime();
@@ -511,18 +511,17 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $selectedDate)
+    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
         $errorList = [];
-        $endTime = $this->getEndDateTime();
-        error_log("endTime: " . $endTime->format('Y-m-d H:i:s'));
-        $endHour = (int) $endTime->format('H');
-        $endMinute = (int) $endTime->format('i');
-        $endDateTime = (clone $endTime)->setTime($endHour, $endMinute);
+        error_log("endTime: " . $endDate->format('Y-m-d H:i:s'));
+        $endHour = (int) $endDate->format('H');
+        $endMinute = (int) $endDate->format('i');
+        $endDateTime = (clone $endDate)->setTime($endHour, $endMinute);
         $endTimestamp = $endDateTime->getTimestamp();
         $isOrigin = ($this->type && $this->type === 'origin');
     
-        if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endTime < $selectedDate->setTime(0, 0)) {
+        if (!$isOrigin && $startDate->getTimestamp() > $today->getTimestamp() && $endDate < $startDate->setTime(0, 0)) {
             $errorList[] = [
                 'type' => 'endTimeFuture',
                 'message' => "Das Enddatum der Öffnungszeit muss nach dem " . $yesterday->format('d.m.Y') . " liegen."
@@ -573,12 +572,12 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $selectedDate)
+    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
         $errorList = array_merge(
-            $this->validateStartTime($today, $tomorrow, $selectedDate),
-            $this->validateEndTime($today, $yesterday, selectedDate: $selectedDate),
-            $this->validateOriginEndTime($today, $yesterday, $selectedDate),
+            $this->validateStartTime($today, $tomorrow, $startDate),
+            $this->validateEndTime($today, $yesterday, selectedDate: $startDate),
+            $this->validateOriginEndTime($today, $yesterday, $startDate),
             $this->validateType(),
             $this->validateSlotTime()
         );

@@ -178,7 +178,7 @@ class AvailabilityList extends Base
             // Pass DateTimeImmutable objects to validateAll()
             $errorList = array_merge(
                 $errorList,
-                $availability->validateAll($today, $yesterday, $tomorrow, $startDate)
+                $availability->validateAll($today, $yesterday, $tomorrow, $startDate, $endDate)
             );
         }
         return $errorList;
