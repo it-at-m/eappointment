@@ -11,26 +11,31 @@ const renderConflictList = (conflictList) => {
     let conflictDatesByMessage = [];
     conflictList.map(collection => {
         collection.conflicts.map((conflict) => {
-            if (! conflictDatesByMessage[conflict.message]) {
-                Object.assign({}, conflictDatesByMessage[conflict.message] = []);
+            const existingConflict = conflictDatesByMessage.find(
+                item => item.message === conflict.message
+            );
+
+            if (existingConflict) {
+                existingConflict.dates.push(formatDate(collection.date));
+            } else {
+                conflictDatesByMessage.push({
+                    message: conflict.message,
+                    dates: [formatDate(collection.date)]
+                });
             }
-            conflictDatesByMessage[conflict.message].push(formatDate(collection.date))
-        })
-    })
+        });
+    });
 
     return (
-        Object.keys(conflictDatesByMessage).map((key, index) => {
-            return (
-                <div key={index}>
-                    <div><strong>{ conflictDatesByMessage[key].join(", ")  }</strong></div>
-                    <div key={index}>- {key}</div>
-                </div>
-            )
-        })
-    )
-    
-    
-}
+        conflictDatesByMessage.map((item, index) => (
+            <div key={index} style={{ marginBottom: '1rem' }}>
+                {/* Convert newlines in the message to <br /> tags */}
+                <div dangerouslySetInnerHTML={{ __html: item.message.replace(/\n/g, '<br />') }} />
+            </div>
+        ))
+    );
+};
+
 
 const Conflicts = (props) => {
     const conflicts = Object.keys(props.conflictList).map(key => {
