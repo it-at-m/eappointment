@@ -166,18 +166,17 @@ class AvailabilityList extends Base
         $errorList = [];
         foreach ($this as $availability) {
             // Create DateTimeImmutable objects for today, yesterday, and tomorrow
-            $today =  new \DateTime();
+            $today = new \DateTimeImmutable();
             $yesterday = $today->modify('-1 day');
             $tomorrow = $today->modify('+1 day');
-            $today = $today->modify('+0 day');
-    
+            
+            // Log the dates for debugging
             error_log("Today: " . $today->format('Y-m-d H:i:s'));
             error_log("Yesterday: " . $yesterday->format('Y-m-d H:i:s'));
             error_log("Tomorrow: " . $tomorrow->format('Y-m-d H:i:s'));
-            error_log("Today: " . $today->format('Y-m-d H:i:s'));
             error_log("startDate: " . $startDate->format('Y-m-d H:i:s'));
             error_log("endDate: " . $endDate->format('Y-m-d H:i:s'));
-    
+        
             // Pass DateTimeImmutable objects to validateAll()
             $errorList = array_merge(
                 $errorList,
@@ -186,6 +185,7 @@ class AvailabilityList extends Base
         }
         return $errorList;
     }
+    
     
 
     public function getConflicts($startDate, $endDate)
