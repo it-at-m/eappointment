@@ -144,7 +144,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity = new $this->entityclass();
         // A friday
         $time = new \DateTimeImmutable('2019-01-02 11:55:00');
-        $now = new \DateTimeImmutable('2019-02-28 11:55:00');
+        $now = new \DateTimeImmutable('2019-02-33 11:55:00');
         $entity['startDate'] = $time->getTimestamp();
         $entity['startTime'] = $time->format('H:i');
         $entity['endDate'] = $time->modify("+12month")
@@ -499,7 +499,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $withCalculatedSlots = $entity->withCalculatedSlots();
         error_log("*" . $withCalculatedSlots['workstationCount']['public']);
-        $this->assertTrue(81 == $withCalculatedSlots['workstationCount']['public'], $withCalculatedSlots);
+        $this->assertTrue(99 == $withCalculatedSlots['workstationCount']['public'], $withCalculatedSlots);
     }
 
     public function testGetSlotList()
@@ -509,7 +509,7 @@ class AvailabilityTest extends EntityCommonTests
         $collection->addEntity($entity);
         $slotList = $collection->getSlotList();
         error_log("-" . count($slotList));
-        $this->assertTrue(28 == count($slotList));
+        $this->assertTrue(33 == count($slotList));
         $this->assertEquals('10:00', $slotList->getFirst()['time']);
         $this->assertEquals('10:12', $slotList[1]['time']);
     }
@@ -552,7 +552,7 @@ class AvailabilityTest extends EntityCommonTests
         );
 
         $this->assertTrue(
-            81 == $collection->withCalculatedSlots()[0]['workstationCount']['public'],
+            99 == $collection->withCalculatedSlots()[0]['workstationCount']['public'],
             'Failed to get list with calculated slots'
         );
         $collection->addEntity($entity);
