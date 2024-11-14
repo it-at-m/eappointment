@@ -167,8 +167,9 @@ class AvailabilityList extends Base
         foreach ($this as $availability) {
             $today = new \DateTime();
             $yesterday = (clone $today)->modify('-1 day');
+            $tomorrow = (clone $today)->modify('+1 day');
 
-            $errorList = $availability->validateAll($today, $yesterday, $startDate);
+            $errorList = $availability->validateAll($today, $yesterday, $tomorrow, $startDate);
 
         }
         return $errorList;
