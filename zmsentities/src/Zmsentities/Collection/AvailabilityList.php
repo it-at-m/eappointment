@@ -166,9 +166,10 @@ class AvailabilityList extends Base
         $errorList = [];
         foreach ($this as $availability) {
             // Create DateTimeImmutable objects for today, yesterday, and tomorrow
-            $today = \DateTimeImmutable::createFromMutable($startDate);
+            $today =  new \DateTime();
             $yesterday = $today->modify('-1 day');
             $tomorrow = $today->modify('+1 day');
+            $today = $today->modify('+0 day');
     
             error_log("Today: " . $today->format('Y-m-d H:i:s'));
             error_log("Yesterday: " . $yesterday->format('Y-m-d H:i:s'));
