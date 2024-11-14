@@ -161,20 +161,28 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
-    public function validateInputs($startDate, $endDate){
-
+    public function validateInputs(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate)
+    {
         $errorList = [];
         foreach ($this as $availability) {
-            $today = new \DateTime();
-            $yesterday = (clone $today)->modify('-1 day');
-            $tomorrow = (clone $today)->modify('+1 day');
-
-            $errorList = $availability->validateAll($today, $yesterday, $tomorrow, $startDate);
-
+            // Create DateTimeImmutable objects for today, yesterday, and tomorrow
+            $today = \DateTimeImmutable::createFromMutable($startDate);
+            $yesterday = $today->modify('-1 day');
+            $tomorrow = $today->modify('+1 day');
+    
+            error_log("Today: " . $today->format('Y-m-d H:i:s'));
+            error_log("Yesterday: " . $yesterday->format('Y-m-d H:i:s'));
+            error_log("Tomorrow: " . $tomorrow->format('Y-m-d H:i:s'));
+    
+            // Pass DateTimeImmutable objects to validateAll()
+            $errorList = array_merge(
+                $errorList,
+                $availability->validateAll($today, $yesterday, $tomorrow, $startDate)
+            );
         }
         return $errorList;
-
     }
+    
 
     public function getConflicts($startDate, $endDate)
     {
