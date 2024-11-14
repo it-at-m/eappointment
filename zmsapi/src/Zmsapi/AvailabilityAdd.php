@@ -43,7 +43,7 @@ class AvailabilityAdd extends BaseController
             throw new BadRequestException();
         }
 
-        error_log("Raw request body: " . $request->getBody());
+        error_log("Raw input body: " . json_encode($input));
 
     
         $newCollection = new Collection();
