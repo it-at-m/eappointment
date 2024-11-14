@@ -515,6 +515,7 @@ class Availability extends Schema\Entity
     {
         $errorList = [];
         $endTime = $this->getEndDateTime();
+        error_log("endTime: " . $endTime->format('Y-m-d H:i:s'));
         $endHour = (int) $endTime->format('H');
         $endMinute = (int) $endTime->format('i');
         $endDateTime = (clone $endTime)->setTime($endHour, $endMinute);
