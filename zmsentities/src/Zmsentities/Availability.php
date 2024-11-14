@@ -452,17 +452,17 @@ class Availability extends Schema\Entity
     }
 
 
-    public function validateStartTime(Availability $availability, \DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $selectedDate)
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $selectedDate)
     {
         $errorList = [];
     
-        $startTime = $availability->getStartDateTime();
-        $endTime = $availability->getEndDateTime();
+        $startTime = $this->getStartDateTime();
+        $endTime = $this->getEndDateTime();
         $startHour = (int)$startTime->format('H');
         $endHour = (int)$endTime->format('H');
         $startMinute = (int)$startTime->format('i');
         $endMinute = (int)$endTime->format('i');
-        $isFuture = ($availability->type && $availability->type === 'future');
+        $isFuture = ($this->type && $this->type === 'future');
     
         if (!$isFuture && $selectedDate->getTimestamp() > $today->getTimestamp() && $startTime > $selectedDate->setTime(0, 0)) {
             $errorList[] = [
@@ -481,11 +481,11 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateEndTime(Availability $availability, \DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $selectedDate)
+    public function validateEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $selectedDate)
     {
         $errorList = [];
-        $startTime = $availability->getStartDateTime();
-        $endTime = $availability->getEndDateTime();
+        $startTime = $this->getStartDateTime();
+        $endTime = $this->getEndDateTime();
     
         $startHour = (int)$startTime->format('H');
         $endHour = (int)$endTime->format('H');
@@ -511,15 +511,15 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateOriginEndTime(Availability $availability, \DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $selectedDate)
+    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $selectedDate)
     {
         $errorList = [];
-        $endTime = $availability->getEndDateTime();
+        $endTime = $this->getEndDateTime();
         $endHour = (int) $endTime->format('H');
         $endMinute = (int) $endTime->format('i');
         $endDateTime = (clone $endTime)->setTime($endHour, $endMinute);
         $endTimestamp = $endDateTime->getTimestamp();
-        $isOrigin = ($availability->type && $availability->type === 'origin');
+        $isOrigin = ($this->type && $this->type === 'origin');
     
         if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endTime < $selectedDate->setTime(0, 0)) {
             $errorList[] = [
@@ -540,10 +540,10 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateType(Availability $availability)
+    public function validateType()
     {
         $errorList = [];
-        if (empty($availability->type)) {
+        if (empty($this->type)) {
             $errorList[] = [
                 'type' => 'type',
                 'message' => 'Typ erforderlich'
@@ -552,11 +552,11 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateSlotTime(Availability $availability)
+    public function validateSlotTime()
     {
         $errorList = [];
-        $startTime = $availability->getStartDateTime();
-        $endTime = $availability->getEndDateTime();
+        $startTime = $this->getStartDateTime();
+        $endTime = $this->getEndDateTime();
         $slotTime = $this['slotTimeInMinutes'];
         $startTimestamp = $startTime->getTimestamp();
         $endTimestamp = $endTime->getTimestamp();
@@ -572,14 +572,14 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateAll(Availability $availability, \DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $selectedDate)
+    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $selectedDate)
     {
         $errorList = array_merge(
-            $this->validateStartTime($availability, $today, $tomorrow, $selectedDate),
-            $this->validateEndTime($availability, $today, $yesterday, selectedDate: $selectedDate),
-            $this->validateOriginEndTime($availability, $today, $yesterday, $selectedDate),
-            $this->validateType($availability),
-            $this->validateSlotTime($availability)
+            $this->validateStartTime($today, $tomorrow, $selectedDate),
+            $this->validateEndTime($today, $yesterday, selectedDate: $selectedDate),
+            $this->validateOriginEndTime($today, $yesterday, $selectedDate),
+            $this->validateType(),
+            $this->validateSlotTime()
         );
     
         return $errorList;
@@ -769,16 +769,16 @@ class Availability extends Schema\Entity
             $processTemplate->status = 'conflict';
             $appointment = $processTemplate->getFirstAppointment();
             $appointment->availability = $this;
-            $appointment->date = $availability->getStartDateTime()->getTimestamp();
+            $appointment->date = $this->getStartDateTime()->getTimestamp();
 
-            $existingDateRange = $availability->getStartDateTime()->format('d.m.Y') . ' - ' . $availability->getEndDateTime()->format('d.m.Y');
+            $existingDateRange = $this->getStartDateTime()->format('d.m.Y') . ' - ' . $this->getEndDateTime()->format('d.m.Y');
             $newDateRange = $availability->getStartDateTime()->format('d.m.Y') . ' - ' . $availability->getEndDateTime()->format('d.m.Y');
             
-            $existingTimeRange = $availability->getStartDateTime()->format('H:i') . ' - ' . $availability->getEndDateTime()->format('H:i');
+            $existingTimeRange = $this->getStartDateTime()->format('H:i') . ' - ' . $this->getEndDateTime()->format('H:i');
             $newTimeRange = $availability->getStartDateTime()->format('H:i') . ' - ' . $availability->getEndDateTime()->format('H:i');
 
-            $isEqual = ($availability->getStartDateTime()->getSecondsOfDay() == $availability->getStartDateTime()->getSecondsOfDay() &&
-                        $availability->getEndDateTime()->getSecondsOfDay() == $availability->getEndDateTime()->getSecondsOfDay());
+            $isEqual = ($this->getStartDateTime()->getSecondsOfDay() == $availability->getStartDateTime()->getSecondsOfDay() &&
+                        $this->getEndDateTime()->getSecondsOfDay() == $availability->getEndDateTime()->getSecondsOfDay());
             if ($isEqual) {
                 $process = clone $processTemplate;
                 $process->amendment = "Konflikt: Zwei Öffnungszeiten sind gleich.\n"
@@ -790,8 +790,8 @@ class Availability extends Schema\Entity
                     ->getTimestamp();
                 $processList->addEntity($process);
             }
-            elseif ($availability->getStartDateTime()->getSecondsOfDay() < $availability->getEndDateTime()->getSecondsOfDay() &&
-                    $availability->getStartDateTime()->getSecondsOfDay() < $availability->getEndDateTime()->getSecondsOfDay()) {
+            elseif ($availability->getStartDateTime()->getSecondsOfDay() < $this->getEndDateTime()->getSecondsOfDay() &&
+                    $this->getStartDateTime()->getSecondsOfDay() < $availability->getEndDateTime()->getSecondsOfDay()) {
                 $process = clone $processTemplate;
                 $process->amendment = "Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n"
                                     . "Bestehende Öffnungszeit:&thinsp;&thinsp;[$newDateRange, $newTimeRange]\n"
