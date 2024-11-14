@@ -452,19 +452,17 @@ class Availability extends Schema\Entity
     }
 
 
-    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate)
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
         $errorList = [];
     
-        $startTime = $this->getStartDateTime();
-        $endTime = $this->getEndDateTime();
-        $startHour = (int)$startTime->format('H');
-        $endHour = (int)$endTime->format('H');
-        $startMinute = (int)$startTime->format('i');
-        $endMinute = (int)$endTime->format('i');
+        $startHour = (int)$startDate->format('H');
+        $endHour = (int)$endDate->format('H');
+        $startMinute = (int)$startDate->format('i');
+        $endMinute = (int)$endDate->format('i');
         $isFuture = ($this->type && $this->type === 'future');
     
-        if (!$isFuture && $startDate->getTimestamp() > $today->getTimestamp() && $startTime > $startDate->setTime(0, 0)) {
+        if (!$isFuture && $startDate->getTimestamp() > $today->getTimestamp() && $startDate > $startDate->setTime(0, 0)) {
             $errorList[] = [
                 'type' => 'startTimeFuture',
                 'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
@@ -481,20 +479,18 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate)
+    public function validateEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
         $errorList = [];
-        $startTime = $this->getStartDateTime();
-        $endTime = $this->getEndDateTime();
     
-        $startHour = (int)$startTime->format('H');
-        $endHour = (int)$endTime->format('H');
-        $startMinute = (int)$startTime->format('i');
-        $endMinute = (int)$endTime->format('i');
+        $startHour = (int)$startDate->format('H');
+        $endHour = (int)$endDate->format('H');
+        $startMinute = (int)$startDate->format('i');
+        $endMinute = (int)$endDate->format('i');
         $dayMinutesStart = ($startHour * 60) + $startMinute;
         $dayMinutesEnd = ($endHour * 60) + $endMinute;
-        $startTimestamp = $startTime->getTimestamp();
-        $endTimestamp = $endTime->getTimestamp();
+        $startTimestamp = $startDate->getTimestamp();
+        $endTimestamp = $endDate->getTimestamp();
     
         if ($dayMinutesEnd <= $dayMinutesStart) {
             $errorList[] = [
@@ -552,14 +548,12 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateSlotTime()
+    public function validateSlotTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
         $errorList = [];
-        $startTime = $this->getStartDateTime();
-        $endTime = $this->getEndDateTime();
         $slotTime = $this['slotTimeInMinutes'];
-        $startTimestamp = $startTime->getTimestamp();
-        $endTimestamp = $endTime->getTimestamp();
+        $startTimestamp = $startDate->getTimestamp();
+        $endTimestamp = $endDate->getTimestamp();
     
         $slotAmount = ($endTimestamp - $startTimestamp) / 60 % $slotTime;
         if ($slotAmount > 0) {
@@ -575,11 +569,11 @@ class Availability extends Schema\Entity
     public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
         $errorList = array_merge(
-            $this->validateStartTime($today, $tomorrow, $startDate),
-            $this->validateEndTime($today, $yesterday, startDate: $startDate),
+            $this->validateStartTime($today, $tomorrow, $startDate, $endDate),
+            $this->validateEndTime($today, $yesterday,  $startDate, $endDate),
             $this->validateOriginEndTime($today, $yesterday, $startDate, $endDate),
             $this->validateType(),
-            $this->validateSlotTime()
+            $this->validateSlotTime($startDate, $endDate)
         );
     
         return $errorList;
