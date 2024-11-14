@@ -169,7 +169,7 @@ class AvailabilityList extends Base
             $yesterday = (clone $today)->modify('-1 day');
             $tomorrow = (clone $today)->modify('+1 day');
 
-            $errorList = $availability->validateAll($today, $yesterday, $tomorrow, $startDate);
+            $errorList = $availability->validateAll($availability, $today, $yesterday, $tomorrow, $startDate);
 
         }
         return $errorList;
