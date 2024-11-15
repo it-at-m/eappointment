@@ -13,29 +13,31 @@ class AvailabilityUpdateTest extends Base
     public function testRendering()
     {
         $input = (new Entity)->createExample();
-    
-        // Dynamically adjust the endDate to be in the future
+
         $currentTimestamp = time();
-        $input['startDate'] = $currentTimestamp + (2 * 24 * 60 * 60); // Set startDate to 2 days in the future
-        $input['endDate'] = $currentTimestamp + (5 * 24 * 60 * 60);   // Set endDate to 5 days in the future
-    
-        
-    
-        // Write the entity using the modified input
+        $input['startDate'] = $currentTimestamp + (2 * 24 * 60 * 60); // 2 days in the future
+        $input['endDate'] = $currentTimestamp + (5 * 24 * 60 * 60);   // 5 days in the future
+
         $entity = (new Query())->writeEntity($input);
-        error_log(json_encode($entity)); // Log for debugging
+        error_log(json_encode($entity));
         $this->setWorkstation();
-    
-        // Prepare the response and test rendering
+
+        // Wrap the data inside "availabilityList"
         $response = $this->render([
             "id" => $entity->getId()
         ], [
             '__body' => json_encode([
-                "id" => $entity->getId(),
-                "description" => "",
-                "scope" => ["id" => 312]
+                'availabilityList' => [
+                    [
+                        "id" => $entity->getId(),
+                        "description" => "",
+                        "scope" => ["id" => 312]
+                    ]
+                ],
+                'selectedDate' => date('Y-m-d')
             ])
         ], []);
+
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }

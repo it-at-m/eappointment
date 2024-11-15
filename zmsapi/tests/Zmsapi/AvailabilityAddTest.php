@@ -55,7 +55,6 @@ class AvailabilityAddTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed');
         $this->expectExceptionCode(400);
 
-        // Wrap the data inside "availabilityList"
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
