@@ -22,7 +22,6 @@ class AvailabilityUpdateTest extends Base
         error_log(json_encode($entity));
         $this->setWorkstation();
 
-        // Wrap the data inside "availabilityList"
         $response = $this->render([
             "id" => $entity->getId()
         ], [
@@ -54,18 +53,16 @@ class AvailabilityUpdateTest extends Base
     {
         $this->setWorkstation();
     
-        // Set the expected exception for "not found" scenarios
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
         $this->expectExceptionCode(404);
     
-        // Prepare the request with the required payload structure
         $this->render(
-            ["id" => 1], // Pass the ID that does not exist
+            ["id" => 1],
             [
                 '__body' => json_encode([
                     'availabilityList' => [
                         [
-                            "id" => 1, // Non-existent ID
+                            "id" => 1,
                             "description" => "Test Öffnungszeit not found",
                             "scope" => ["id" => 312]
                         ]
