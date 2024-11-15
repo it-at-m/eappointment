@@ -53,16 +53,28 @@ class AvailabilityUpdateTest extends Base
     public function testNotFound()
     {
         $this->setWorkstation();
+    
+        // Set the expected exception for "not found" scenarios
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
         $this->expectExceptionCode(404);
-        $this->render(["id"=> 1], [
-            '__body' => '{
-                  "id": 1,
-                  "description": "Test Öffnungszeit not found",
-                  "scope": {
-                      "id": 312
-                  }
-              }'
-        ], []);
+    
+        // Prepare the request with the required payload structure
+        $this->render(
+            ["id" => 1], // Pass the ID that does not exist
+            [
+                '__body' => json_encode([
+                    'availabilityList' => [
+                        [
+                            "id" => 1, // Non-existent ID
+                            "description" => "Test Öffnungszeit not found",
+                            "scope" => ["id" => 312]
+                        ]
+                    ],
+                    'selectedDate' => date('Y-m-d')
+                ])
+            ],
+            []
+        );
     }
+    
 }
