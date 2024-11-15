@@ -27,7 +27,6 @@ class AvailabilityConflicts extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
-        error_log('$input :' . json_encode($input));
         $data = static::getAvailabilityData($input);
         return \BO\Slim\Render::withJson(
             $response,
@@ -49,15 +48,7 @@ class AvailabilityConflicts extends BaseController
             $selectedAvailability->getEndDateTime() : $selectedDateTime;
 
         $availabilityList = $availabilityList->sortByCustomStringKey('endTime');
-
-        $selectedAvailability->getEndDateTime();
-
-
-        $startDate = new \DateTimeImmutable('now');
-        $endDate = (new \DateTimeImmutable('now'))->modify('+1 month');
-
-
-        $conflictList = $availabilityList->getConflicts($startDate, $endDate);
+        $conflictList = $availabilityList->getConflicts($startDateTime, $endDateTime);
 
         foreach ($conflictList as $conflict) {
             $availabilityId = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
@@ -67,8 +58,6 @@ class AvailabilityConflicts extends BaseController
                 $conflictedList[] = $availabilityId;
             }
         }
-
-        error_log(json_encode($conflictedList));
 
         return [
             'conflictList' => $conflictList->toConflictListByDay(),
