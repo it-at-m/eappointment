@@ -7,12 +7,11 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Availability;
-
 use BO\Zmsentities\Collection\AvailabilityList;
+use DateTimeImmutable;
 
 /**
  * Check if new Availability is in conflict with existing availability
- *
  */
 class AvailabilityConflicts extends BaseController
 {
@@ -27,6 +26,8 @@ class AvailabilityConflicts extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
+        error_log('$input :' . json_encode($input));
+        
         $data = static::getAvailabilityData($input);
         return \BO\Slim\Render::withJson(
             $response,
@@ -40,31 +41,41 @@ class AvailabilityConflicts extends BaseController
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];
 
-        $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
+        // Extract selected date and selected availability
+        $selectedDate = new DateTimeImmutable($input['selectedDate']);
         $selectedAvailability = new Availability($input['selectedAvailability']);
-        $startDateTime = ($selectedAvailability->getStartDateTime() >= \App::$now) ?
-            $selectedAvailability->getStartDateTime() : $selectedDateTime;
-        $endDateTime = ($input['selectedAvailability']) ?
-            $selectedAvailability->getEndDateTime() : $selectedDateTime;
+        $selectedDateTime = $selectedDate->setTime(0, 0);
 
-        $availabilityList = $availabilityList->sortByCustomStringKey('endTime');
+        // Determine start and end times based on selectedAvailability
+        $startDateTime = $selectedAvailability->getStartDateTime() < $selectedDateTime ? $selectedDateTime : $selectedAvailability->getStartDateTime();
+        $endDateTime = $selectedAvailability->getEndDateTime();
 
+        // Prepare a merged collection with existing and new availabilities
+        $scopeData = $input['availabilityList'][0]['scope'];
+        $scope = new \BO\Zmsentities\Scope($scopeData);
+        $availabilityRepo = new \BO\Zmsdb\Availability();
+        $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
 
-        error_log("" .$selectedAvailability->getEndDateTime());
-        $selectedAvailability->getEndDateTime();
+        $mergedCollection = new AvailabilityList();
+        foreach ($existingCollection as $existingAvailability) {
+            $mergedCollection->addEntity($existingAvailability);
+        }
 
+        // Add the selected availability to the merged collection
+        $mergedCollection->addEntity($selectedAvailability);
 
-        $startDate = new \DateTimeImmutable('now');
-        $endDate = (new \DateTimeImmutable('now'))->modify('+1 month');
+        // Get the earliest and latest dates for the conflict range
+        [$earliestStartDateTime, $latestEndDateTime] = static::getDateTimeRangeFromCollection($mergedCollection, $selectedDateTime);
 
+        // Check for conflicts in the merged collection within the computed range
+        $conflictList = $mergedCollection->getConflicts($earliestStartDateTime, $latestEndDateTime);
 
-        $conflictList = $availabilityList->getConflicts($startDate, $endDate);
-
+        // Extract conflicting IDs
         foreach ($conflictList as $conflict) {
             $availabilityId = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
                 $conflict->getFirstAppointment()->getAvailability()->getId() :
                 $conflict->getFirstAppointment()->getAvailability()->tempId;
-            if (! in_array($availabilityId, $conflictedList)) {
+            if (!in_array($availabilityId, $conflictedList)) {
                 $conflictedList[] = $availabilityId;
             }
         }
@@ -77,26 +88,43 @@ class AvailabilityConflicts extends BaseController
         ];
     }
 
-    /*
-    protected static function getAvailabilityList($scope, $dateTime)
+    /**
+     * Get the earliest startDateTime and latest endDateTime from a Collection
+     * If the start date of any availability is before the selected date, 
+     * use the selected date instead.
+     *
+     * @param AvailabilityList $collection
+     * @param \DateTimeImmutable $selectedDate
+     * @return array
+     */
+    private static function getDateTimeRangeFromCollection(AvailabilityList $collection, DateTimeImmutable $selectedDate): array
     {
-        try {
-            $availabilityList = \App::$http
-                ->readGetResult(
-                    '/scope/' . $scope->getId() . '/availability/',
-                    [
-                        'resolveReferences' => 0,
-                        'startDate' => $dateTime->format('Y-m-d') //for skipping old availabilities
-                    ]
-                )
-                ->getCollection();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
-                throw $exception;
+        $earliestStartDateTime = null;
+        $latestEndDateTime = null;
+
+        foreach ($collection as $availability) {
+            // Convert Unix timestamp to a date string before concatenating with the time
+            $startDate = (new DateTimeImmutable())->setTimestamp($availability->startDate)->format('Y-m-d');
+            $endDate = (new DateTimeImmutable())->setTimestamp($availability->endDate)->format('Y-m-d');
+
+            // Combine date and time for start and end
+            $startDateTime = new DateTimeImmutable("{$startDate} {$availability->startTime}");
+            $endDateTime = new DateTimeImmutable("{$endDate} {$availability->endTime}");
+
+            // If startDate is before the selectedDate, use the selectedDate as the start
+            if ($startDateTime < $selectedDate) {
+                $startDateTime = $selectedDate->setTime(0, 0);
             }
-            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+
+            // Determine the earliest start and latest end times
+            if (is_null($earliestStartDateTime) || $startDateTime < $earliestStartDateTime) {
+                $earliestStartDateTime = $startDateTime;
+            }
+            if (is_null($latestEndDateTime) || $endDateTime > $latestEndDateTime) {
+                $latestEndDateTime = $endDateTime;
+            }
         }
-        return $availabilityList->withScope($scope);
+
+        return [$earliestStartDateTime, $latestEndDateTime];
     }
-    */
 }

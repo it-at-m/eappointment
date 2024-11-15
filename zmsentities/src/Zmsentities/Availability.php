@@ -452,7 +452,7 @@ class Availability extends Schema\Entity
     }
 
 
-    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $type)
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $kind)
     {
         $errorList = [];
         
@@ -461,7 +461,7 @@ class Availability extends Schema\Entity
         $endHour = (int)$endDate->format('H');
         $startMinute = (int)$startDate->format('i');
         $endMinute = (int)$endDate->format('i');
-        $isFuture = ($type && $type === 'future');
+        $isFuture = ($kind && $kind === 'future');
 
         if (
             !$isFuture &&
@@ -515,14 +515,14 @@ class Availability extends Schema\Entity
     }
     
     
-    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $type)
+    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $kind)
     {
         $errorList = [];
         $endHour = (int) $endDate->format('H');
         $endMinute = (int) $endDate->format('i');
         $endDateTime = (clone $endDate)->setTime($endHour, $endMinute);
         $endTimestamp = $endDateTime->getTimestamp();
-        $isOrigin = ($type && $type === 'origin');
+        $isOrigin = ($kind && $kind === 'origin');
     
         // Validate that end date is after the selected date
         if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < $selectedDate->setTime(0, 0)) {
@@ -546,10 +546,10 @@ class Availability extends Schema\Entity
     }
     
     
-    public function validateType(String $type)
+    public function validateType(String $kind)
     {
         $errorList = [];
-        if (empty($type)) {
+        if (empty($kind)) {
             $errorList[] = [
                 'type' => 'type',
                 'message' => 'Typ erforderlich'
@@ -576,13 +576,13 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, $type)
+    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $kind)
     {
         $errorList = array_merge(
-            $this->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $type),
+            $this->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $kind),
             $this->validateEndTime($today, $yesterday, $startDate, $endDate, $selectedDate),
-            $this->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, $type),
-            $this->validateType($type),
+            $this->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, $kind),
+            $this->validateType($kind),
             $this->validateSlotTime($startDate, $endDate)
         );
     
