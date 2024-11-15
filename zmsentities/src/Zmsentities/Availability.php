@@ -452,37 +452,44 @@ class Availability extends Schema\Entity
     }
 
 
-    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $type)
     {
         $errorList = [];
-    
+        
         $startHour = (int)$startDate->format('H');
         $endHour = (int)$endDate->format('H');
         $startMinute = (int)$startDate->format('i');
         $endMinute = (int)$endDate->format('i');
-        $isFuture = ($this->type && $this->type === 'future');
-    
-        if (!$isFuture && $startDate->getTimestamp() > $today->getTimestamp() && $startDate > $startDate->setTime(0, 0)) {
+        $isFuture = ($type && $type === 'future');
+
+        error_log($isFuture);
+        
+        error_log("*" . $selectedDate->getTimestamp()  . "*");
+        error_log("*" . $today->getTimestamp()  . "*");
+        // Validate that the start date is not in the future
+        if (!$isFuture && $selectedDate->getTimestamp() > $today->getTimestamp() && $startDate > $selectedDate->setTime(0, 0)) {
             $errorList[] = [
                 'type' => 'startTimeFuture',
                 'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
             ];
         }
-    
+        
+        // Validate that start or end time is not exactly midnight
         if (($startHour == 0 && $startMinute == 0) || ($endHour == 0 && $endMinute == 0)) {
             $errorList[] = [
                 'type' => 'startOfDay',
                 'message' => 'Die Uhrzeit darf nicht "00:00" sein.'
             ];
         }
-    
+        
         return $errorList;
     }
     
-    public function validateEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    
+    public function validateEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate)
     {
         $errorList = [];
-    
+        
         $startHour = (int)$startDate->format('H');
         $endHour = (int)$endDate->format('H');
         $startMinute = (int)$startDate->format('i');
@@ -492,6 +499,7 @@ class Availability extends Schema\Entity
         $startTimestamp = $startDate->getTimestamp();
         $endTimestamp = $endDate->getTimestamp();
     
+        // Check if end time is before start time
         if ($dayMinutesEnd <= $dayMinutesStart) {
             $errorList[] = [
                 'type' => 'endTime',
@@ -503,26 +511,29 @@ class Availability extends Schema\Entity
                 'message' => 'Das Startdatum muss vor dem Enddatum sein.'
             ];
         }
-    
+        
         return $errorList;
     }
     
-    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    
+    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $type)
     {
         $errorList = [];
         $endHour = (int) $endDate->format('H');
         $endMinute = (int) $endDate->format('i');
         $endDateTime = (clone $endDate)->setTime($endHour, $endMinute);
         $endTimestamp = $endDateTime->getTimestamp();
-        $isOrigin = ($this->type && $this->type === 'origin');
+        $isOrigin = ($type && $type === 'origin');
     
-        if (!$isOrigin && $startDate->getTimestamp() > $today->getTimestamp() && $endDate < $startDate->setTime(0, 0)) {
+        // Validate that end date is after the selected date
+        if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < $selectedDate->setTime(0, 0)) {
             $errorList[] = [
                 'type' => 'endTimeFuture',
                 'message' => "Das Enddatum der Öffnungszeit muss nach dem " . $yesterday->format('d.m.Y') . " liegen."
             ];
         }
     
+        // Validate that end time is not in the past
         if (!$isOrigin && $endTimestamp < $today->getTimestamp()) {
             $errorList[] = [
                 'type' => 'endTimePast',
@@ -535,10 +546,11 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateType()
+    
+    public function validateType(String $type)
     {
         $errorList = [];
-        if (empty($this->type)) {
+        if (empty($type)) {
             $errorList[] = [
                 'type' => 'type',
                 'message' => 'Typ erforderlich'
@@ -565,18 +577,19 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, $type)
     {
         $errorList = array_merge(
-            $this->validateStartTime($today, $tomorrow, $startDate, $endDate),
-            $this->validateEndTime($today, $yesterday,  $startDate, $endDate),
-            $this->validateOriginEndTime($today, $yesterday, $startDate, $endDate),
-            $this->validateType(),
+            $this->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $type),
+            $this->validateEndTime($today, $yesterday, $startDate, $endDate, $selectedDate),
+            $this->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, $type),
+            $this->validateType($type),
             $this->validateSlotTime($startDate, $endDate)
         );
     
         return $errorList;
     }
+    
     
     /**
      * Get problems on configuration of this availability

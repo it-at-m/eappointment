@@ -42,20 +42,24 @@ class AvailabilityAdd extends BaseController
         if (!$input || count($input) === 0) {
             throw new BadRequestException();
         }
-
-        error_log("Raw input body: " . json_encode($input));
-
     
         $newCollection = new Collection();
         DbConnection::getWriteConnection();
+
+        
     
-        foreach ($input as $item) {
+    
+        foreach ($input['availabilityList'] as $item) {
             $entity = new Entity($item);
             $entity->testValid();
+            error_log("here");
             $newCollection->addEntity($entity);
         }
-    
-        $scopeData = $input[0]['scope'];
+
+        
+
+        
+        $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
         $scopeId = $scope->id;
     
@@ -68,13 +72,46 @@ class AvailabilityAdd extends BaseController
         foreach ($existingCollection as $existingAvailability) {
             $mergedCollection->addEntity($existingAvailability);
         }
+
         foreach ($newCollection as $newAvailability) {
+            // Log the original values
+            error_log("Original startDate (timestamp): " . $newAvailability->startDate);
+            error_log("Original endDate (timestamp): " . $newAvailability->endDate);
+            error_log("Original startTime: " . $newAvailability->startTime);
+            error_log("Original endTime: " . $newAvailability->endTime);
+            error_log("SelectedDate: " . $input['selectedDate']);
+
+            error_log(json_encode($newAvailability));
+        
+            // Convert timestamps to DateTimeImmutable objects
+            $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate);
+            $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate);
+            $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
+        
+            // Log the converted dates
+            error_log("Converted startDate: " . $startDate->format('Y-m-d'));
+            error_log("Converted endDate: " . $endDate->format('Y-m-d'));
+            error_log("Converted selectedDate: " . $selectedDate->format('Y-m-d'));
+        
+            // Combine date and time for start and end
+            $startDateTime = new \DateTimeImmutable("{$startDate->format('Y-m-d')} {$newAvailability->startTime}");
+            $endDateTime = new \DateTimeImmutable("{$endDate->format('Y-m-d')} {$newAvailability->endTime}");
+        
+            // Log the combined DateTimeImmutable objects for debugging
+            error_log("Combined startDateTime: " . $startDateTime->format('Y-m-d H:i:s'));
+            error_log("Combined endDateTime: " . $endDateTime->format('Y-m-d H:i:s'));
+        
+            // Pass the combined DateTimeImmutable objects to validateInputs
+            $validation = $mergedCollection->validateInputs($startDateTime, $endDateTime, $selectedDate, $newAvailability->kind);
+            error_log(''. json_encode($validation));
+
+
+            // Add new availability to the merged collection after validation
             $mergedCollection->addEntity($newAvailability);
         }
+        
+        
 
-        $validation = $mergedCollection->validateInputs($startDate, $endDate);
-        error_log("AvailabilityAdd");
-        error_log("**********");
         error_log(json_encode($validation));
         if (count($validation) > 0) {
             $validation = json_decode(json_encode($validation), true);
