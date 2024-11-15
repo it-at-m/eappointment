@@ -32,14 +32,16 @@ class AvailabilityUpdateTest extends Base
             '__body' => json_encode([
                 'availabilityList' => [
                     [
-                        "id" => $entity->getId(),
-                        "description" => "Updated availability",
-                        "startDate" => $input['startDate'],
-                        "endDate" => $input['endDate'],
-                        "startTime" => $input['startTime'],
-                        "endTime" => $input['endTime'],
-                        "kind" => $input['kind'],
-                        "scope" => ["id" => 312]
+                        "id" => 21202,
+                        "description" => "Test Öffnungszeit update",
+                        "startDate" => time() + (2 * 24 * 60 * 60), // 2 days in the future
+                        "endDate" => time() + (5 * 24 * 60 * 60),   // 5 days in the future
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
+                        "kind" => "default",
+                        "scope" => [
+                            "id" => 312
+                        ]
                     ]
                 ],
                 'selectedDate' => date('Y-m-d')
