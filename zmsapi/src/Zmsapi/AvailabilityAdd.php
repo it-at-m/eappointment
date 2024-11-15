@@ -89,7 +89,7 @@ class AvailabilityAdd extends BaseController
             throw new AvailabilityUpdateFailed();
         }        
     
-        [$earliestStartDateTime, $latestEndDateTime] = $this->getDateTimeRangeFromCollection($mergedCollection);
+        [$earliestStartDateTime, $latestEndDateTime] = $this->getDateTimeRangeFromCollection($mergedCollection,  \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00'));
         $conflicts = $mergedCollection->getConflicts($earliestStartDateTime, $latestEndDateTime);
         if ($conflicts->count() > 0) {
             error_log(json_encode($conflicts));
