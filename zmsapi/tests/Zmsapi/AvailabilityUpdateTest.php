@@ -17,6 +17,10 @@ class AvailabilityUpdateTest extends Base
         $currentTimestamp = time();
         $input['startDate'] = $currentTimestamp + (2 * 24 * 60 * 60); // 2 days in the future
         $input['endDate'] = $currentTimestamp + (5 * 24 * 60 * 60);   // 5 days in the future
+        $input['startTime'] = "09:00:00";
+        $input['endTime'] = "17:00:00";
+        $input['scope'] = ["id" => 312];
+        $input['kind'] = "default";
 
         $entity = (new Query())->writeEntity($input);
         error_log(json_encode($entity));
@@ -29,7 +33,12 @@ class AvailabilityUpdateTest extends Base
                 'availabilityList' => [
                     [
                         "id" => $entity->getId(),
-                        "description" => "",
+                        "description" => "Updated availability",
+                        "startDate" => $input['startDate'],
+                        "endDate" => $input['endDate'],
+                        "startTime" => $input['startTime'],
+                        "endTime" => $input['endTime'],
+                        "kind" => $input['kind'],
                         "scope" => ["id" => 312]
                     ]
                 ],
