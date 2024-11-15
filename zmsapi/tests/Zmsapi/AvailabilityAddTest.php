@@ -54,16 +54,19 @@ class AvailabilityAddTest extends Base
         $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed');
         $this->expectExceptionCode(400);
+
+        // Wrap the data inside "availabilityList"
         $this->render([], [
-            '__body' => '[
-                {
-                  "id": 99999,
-                  "description": "Test Öffnungszeit update failed",
-                  "scope": {
-                      "id": 312
-                  }
-                }
-            ]',
+            '__body' => json_encode([
+                'availabilityList' => [
+                    [
+                        "id" => 99999,
+                        "description" => "Test Öffnungszeit update failed",
+                        "scope" => ["id" => 312]
+                    ]
+                ],
+                'selectedDate' => date('Y-m-d')
+            ]),
             'migrationfix' => 0
         ], []);
     }
