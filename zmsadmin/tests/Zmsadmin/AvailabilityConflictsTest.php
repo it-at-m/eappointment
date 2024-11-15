@@ -10,6 +10,21 @@ class AvailabilityConflictsTest extends Base
 
     public function testRendering()
     {
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/availability/',
+                    'parameters' => [
+                        'resolveReferences' => 0,
+                        'startDate' => '2016-04-04'
+                    ],
+                    'response' => $this->readFixture("GET_availability_68985.json")
+                ]
+            ]
+        );
+
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
