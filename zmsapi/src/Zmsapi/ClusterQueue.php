@@ -34,7 +34,8 @@ class ClusterQueue extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = $query->readQueueList($cluster->id, $dateTime, $resolveReferences);
+        $queues = $query->readQueueList($cluster->id, $dateTime, $resolveReferences);
+        $message->data = $queues;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
