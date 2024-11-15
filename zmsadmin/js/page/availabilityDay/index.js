@@ -105,12 +105,8 @@ class AvailabilityPage extends Component {
         if (ok) {
             showSpinner();
     
-            // Format the selected date
             const selectedDate = formatTimestampDate(this.props.timestamp);
-
-            console.log(this.state);
     
-            // Prepare the data to send
             const sendData = this.state.availabilitylist
                 .filter((availability) => {
                     return (
@@ -127,22 +123,18 @@ class AvailabilityPage extends Component {
                     console.log(availability.kind);
                     return {
                         ...sendAvailability,
-                        kind: availability.kind || 'default', // Include the kind attribute
+                        kind: availability.kind || 'default',
                     };
                 })
                 .map(cleanupAvailabilityForSave);
     
-            // Attach the selectedDate to sendData
             const payload = {
                 availabilityList: sendData,
                 selectedDate: selectedDate
             };
 
-            
-    
             console.log('Saving updates', payload);
     
-            // Make the AJAX request with the updated payload
             $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
                 data: JSON.stringify(payload),
@@ -189,47 +181,66 @@ class AvailabilityPage extends Component {
 
     onUpdateSingleAvailability(availability) {
         showSpinner();
-        const ok = confirm('Soll diese Öffnungszeit wirklich aktualisiert werden?')
-        const id = availability.id
+        const ok = confirm('Soll diese Öffnungszeit wirklich aktualisiert werden?');
+        const id = availability.id;
+    
         if (ok) {
-            let list = [availability];
-            const sendData = list.map(availability => {
-                const sendAvailability = Object.assign({}, availability)
-                if (availability.tempId) {
-                    delete sendAvailability.tempId
-                }
-                return sendAvailability;
-            }).map(cleanupAvailabilityForSave)
-
+            // Format the selected date
+            const selectedDate = formatTimestampDate(this.props.timestamp);
+    
+            // Prepare the data to send
+            const sendAvailability = Object.assign({}, availability);
+    
+            // Clean up temporary fields
+            if (sendAvailability.tempId) {
+                delete sendAvailability.tempId;
+            }
+    
+            // Include 'kind' and wrap it in 'availabilityList'
+            const payload = {
+                availabilityList: [
+                    {
+                        ...cleanupAvailabilityForSave(sendAvailability),
+                        kind: availability.kind || 'default'
+                    }
+                ],
+                selectedDate: selectedDate
+            };
+    
+            console.log('Updating single availability', payload);
+    
+            // Make the AJAX request
             $.ajax(`${this.props.links.includeurl}/availability/save/${id}/`, {
                 method: 'POST',
-                data: JSON.stringify(sendData[0])
+                data: JSON.stringify(payload),
+                contentType: 'application/json'
             }).done((data) => {
-                console.log('single update success data: ', data)
-                this.refreshData()
+                console.log('Single update success:', data);
+                this.refreshData();
                 this.setState({
                     lastSave: new Date().getTime(),
                 }, () => {
                     this.successElement.scrollIntoView();
-                })
+                });
                 hideSpinner();
             }).fail(err => {
-                let isException = err.responseText.toLowerCase().includes('exception');
+                const isException = err.responseText.toLowerCase().includes('exception');
                 if (isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
                         message: err.responseText
                     });
                 } else {
-                    console.log('update error', err);
+                    console.log('Update error:', err);
                 }
-                this.getValidationList()
+                this.getValidationList();
                 hideSpinner();
-            })
+            });
         } else {
             hideSpinner();
         }
     }
+    
 
     onDeleteAvailability(availability) {
         showSpinner();
@@ -500,6 +511,7 @@ class AvailabilityPage extends Component {
                 selectedAvailability: this.state.selectedAvailability
             }))
         };
+        console.log("here");
         const url = `${this.props.links.includeurl}/availability/conflicts/`;
         fetch(url, requestOptions)
             .then(res => res.json())

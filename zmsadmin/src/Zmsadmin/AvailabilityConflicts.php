@@ -48,7 +48,17 @@ class AvailabilityConflicts extends BaseController
             $selectedAvailability->getEndDateTime() : $selectedDateTime;
 
         $availabilityList = $availabilityList->sortByCustomStringKey('endTime');
-        $conflictList = $availabilityList->getConflicts($startDateTime, $endDateTime);
+
+
+        error_log("" .$selectedAvailability->getEndDateTime());
+        $selectedAvailability->getEndDateTime();
+
+
+        $startDate = new \DateTimeImmutable('now');
+        $endDate = (new \DateTimeImmutable('now'))->modify('+1 month');
+
+
+        $conflictList = $availabilityList->getConflicts($startDate, $endDate);
 
         foreach ($conflictList as $conflict) {
             $availabilityId = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
@@ -58,6 +68,8 @@ class AvailabilityConflicts extends BaseController
                 $conflictedList[] = $availabilityId;
             }
         }
+
+        error_log(json_encode($conflictedList));
 
         return [
             'conflictList' => $conflictList->toConflictListByDay(),

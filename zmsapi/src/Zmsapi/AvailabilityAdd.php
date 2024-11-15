@@ -38,35 +38,28 @@ class AvailabilityAdd extends BaseController
         array $args
     ): ResponseInterface {
         (new Helper\User($request))->checkRights();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         if (!$input || count($input) === 0) {
             throw new BadRequestException();
         }
     
-        $newCollection = new Collection();
         DbConnection::getWriteConnection();
 
-        
-    
-    
+        $newCollection = new Collection();
         foreach ($input['availabilityList'] as $item) {
             $entity = new Entity($item);
             $entity->testValid();
-            error_log("here");
             $newCollection->addEntity($entity);
         }
 
-        
-
-        
-        $scopeData = $input['availabilityList'][0]['scope'];
+        $scopeData = $input['availabilityList']['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
-        $scopeId = $scope->id;
     
         $startDate = new \DateTimeImmutable('now');
         $endDate = (new \DateTimeImmutable('now'))->modify('+1 month');
         $availabilityRepo = new AvailabilityRepository();
-        $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1, $startDate, $endDate);
+        $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
     
         $mergedCollection = new Collection();
         foreach ($existingCollection as $existingAvailability) {
@@ -74,60 +67,33 @@ class AvailabilityAdd extends BaseController
         }
 
         foreach ($newCollection as $newAvailability) {
-            // Log the original values
-            error_log("Original startDate (timestamp): " . $newAvailability->startDate);
-            error_log("Original endDate (timestamp): " . $newAvailability->endDate);
-            error_log("Original startTime: " . $newAvailability->startTime);
-            error_log("Original endTime: " . $newAvailability->endTime);
-            error_log("SelectedDate: " . $input['selectedDate']);
-
-            error_log(json_encode($newAvailability));
         
-            // Convert timestamps to DateTimeImmutable objects
             $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate);
             $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate);
             $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
-        
-            // Log the converted dates
-            error_log("Converted startDate: " . $startDate->format('Y-m-d'));
-            error_log("Converted endDate: " . $endDate->format('Y-m-d'));
-            error_log("Converted selectedDate: " . $selectedDate->format('Y-m-d'));
-        
-            // Combine date and time for start and end
             $startDateTime = new \DateTimeImmutable("{$startDate->format('Y-m-d')} {$newAvailability->startTime}");
             $endDateTime = new \DateTimeImmutable("{$endDate->format('Y-m-d')} {$newAvailability->endTime}");
         
-            // Log the combined DateTimeImmutable objects for debugging
-            error_log("Combined startDateTime: " . $startDateTime->format('Y-m-d H:i:s'));
-            error_log("Combined endDateTime: " . $endDateTime->format('Y-m-d H:i:s'));
-        
-            // Pass the combined DateTimeImmutable objects to validateInputs
             $validation = $mergedCollection->validateInputs($startDateTime, $endDateTime, $selectedDate, $newAvailability->kind);
-            error_log(''. json_encode($validation));
 
-
-            // Add new availability to the merged collection after validation
             $mergedCollection->addEntity($newAvailability);
         }
-        
-        
 
-        error_log(json_encode($validation));
         if (count($validation) > 0) {
             $validation = json_decode(json_encode($validation), true);
             throw new AvailabilityUpdateFailed();
         }        
     
-        $conflicts = $mergedCollection->getConflicts($startDate, $endDate);
-    
+        [$earliestStartDateTime, $latestEndDateTime] = $this->getDateTimeRangeFromCollection($mergedCollection);
+        $conflicts = $mergedCollection->getConflicts($earliestStartDateTime, $latestEndDateTime);
         if ($conflicts->count() > 0) {
-            $conflictsArray = json_decode(json_encode($conflicts), true);
+            error_log(json_encode($conflicts));
             throw new AvailabilityUpdateFailed();
         }
 
         $updatedCollection = new Collection();
         foreach ($newCollection as $entity) {
-            $updatedEntity = $this->writeEntityUpdate($entity);
+            $updatedEntity = $this->writeEntityUpdate($entity, $resolveReferences);
             AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
             $updatedCollection->addEntity($updatedEntity);
         }
@@ -139,9 +105,40 @@ class AvailabilityAdd extends BaseController
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
     
-    
 
-    protected function writeEntityUpdate($entity): Entity
+    /**
+     * Get the earliest startDateTime and latest endDateTime from a Collection
+     *
+     * @param Collection $collection
+     * @return array
+     */
+    private function getDateTimeRangeFromCollection(Collection $collection): array
+    {
+        $earliestStartDateTime = null;
+        $latestEndDateTime = null;
+
+        foreach ($collection as $availability) {
+            // Convert Unix timestamp to a date string before concatenating with the time
+            $startDate = (new \DateTimeImmutable())->setTimestamp($availability->startDate)->format('Y-m-d');
+            $endDate = (new \DateTimeImmutable())->setTimestamp($availability->endDate)->format('Y-m-d');
+            
+            $startDateTime = new \DateTimeImmutable("{$startDate} {$availability->startTime}");
+            $endDateTime = new \DateTimeImmutable("{$endDate} {$availability->endTime}");
+
+            if (is_null($earliestStartDateTime) || $startDateTime < $earliestStartDateTime) {
+                $earliestStartDateTime = $startDateTime;
+            }
+            if (is_null($latestEndDateTime) || $endDateTime > $latestEndDateTime) {
+                $latestEndDateTime = $endDateTime;
+            }
+        }
+
+        return [$earliestStartDateTime, $latestEndDateTime];
+    }
+
+
+
+    protected function writeEntityUpdate($entity, $resolveReferences): Entity
     {
         $repository = new AvailabilityRepository();
         $updatedEntity = null;
@@ -149,7 +146,7 @@ class AvailabilityAdd extends BaseController
             $oldEntity = $repository->readEntity($entity->id);
             if ($oldEntity && $oldEntity->hasId()) {
                 $this->writeSpontaneousEntity($oldEntity);
-                $updatedEntity = $repository->updateEntity($entity->id, $entity, 2);
+                $updatedEntity = $repository->updateEntity($entity->id, $entity, $resolveReferences);
             }
         } else {
             $updatedEntity = $repository->writeEntity($entity, 2);
