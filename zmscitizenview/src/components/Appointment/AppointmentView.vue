@@ -52,8 +52,11 @@ import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
+import {
+  SelectedServiceProvider,
+  SelectedTimeslotProvider,
+} from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { SelectedServiceProvider, SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
 import { StepperItem } from "@/types/StepperTypes";
 
 const props = defineProps<{
@@ -111,7 +114,9 @@ provide<SelectedServiceProvider>("selectedServiceProvider", {
   updateSelectedService,
 } as SelectedServiceProvider);
 
-provide<SelectedTimeslotProvider>("selectedTimeslot", {selectedTimeslot} as SelectedTimeslotProvider);
+provide<SelectedTimeslotProvider>("selectedTimeslot", {
+  selectedTimeslot,
+} as SelectedTimeslotProvider);
 
 onMounted(() => {
   loadData();
@@ -143,11 +148,13 @@ const changeStep = (step: string) => {
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   showDecreaseViewButton.value = newCurrentView > 0;
-  disableIncreaseViewButton.value = newCurrentView === 1 && selectedTimeslot.value === 0;
+  disableIncreaseViewButton.value =
+    newCurrentView === 1 && selectedTimeslot.value === 0;
 });
 
 watch(selectedTimeslot, (newTimeslot) => {
-  disableIncreaseViewButton.value = currentView.value === 1 && selectedTimeslot.value === 0;
+  disableIncreaseViewButton.value =
+    currentView.value === 1 && selectedTimeslot.value === 0;
   console.log("TimeSlot: ", newTimeslot);
 });
 </script>
