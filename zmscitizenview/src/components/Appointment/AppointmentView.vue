@@ -16,7 +16,7 @@
         :t="t"
         @set-service="setShowIncreaseViewButton"
       />
-      <calendar
+      <calendar-view
         v-if="currentView === 1"
         :t="t"
       />
@@ -49,11 +49,11 @@ import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import Calendar from "@/components/Appointment/CalendarView.vue";
+import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { SelectedServiceProvider } from "@/types/ServiceTypes";
+import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { StepperItem } from "@/types/StepperTypes";
 
 const props = defineProps<{

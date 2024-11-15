@@ -67,7 +67,7 @@ import ClockSvg from "@/components/Appointment/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { SelectedServiceProvider } from "@/types/ServiceTypes";
+import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { MAX_SLOTS } from "@/utils/Constants";
 
 const props = defineProps<{

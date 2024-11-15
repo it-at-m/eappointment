@@ -21,17 +21,20 @@
         <div>
           <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
         </div>
-        <div
-          v-for="time in times"
-          :key="time.unix"
-        >
-          <muc-button
-            class="timeslot"
-            variant="secondary"
-            @click="handleTimeSlotSelection(time)"
+        <div class="grid">
+          <div
+            v-for="time in times"
+            :key="time.unix"
+            class="grid-item"
           >
-            <template #default>{{ formatTime(time) }}</template>
-          </muc-button>
+            <muc-button
+              class="timeslot"
+              variant="secondary"
+              @click="handleTimeSlotSelection(time)"
+            >
+              <template #default>{{ formatTime(time) }}</template>
+            </muc-button>
+          </div>
         </div>
       </div>
     </div>
@@ -65,7 +68,7 @@ import {
   fetchAvailableTimeSlots,
 } from "@/api/ZMSAppointmentAPI";
 import { OfficeImpl } from "@/types/OfficeImpl";
-import { SelectedServiceProvider } from "@/types/ServiceTypes";
+import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 
 defineProps<{
   t: any;
@@ -81,6 +84,7 @@ const displayInfo = ref<string>();
 const selectedServices = ref<Map<string, number>>(new Map<string, number>());
 const availableDays = ref<string[]>();
 const appointmentTimestamps = ref<number[]>();
+
 const selectedDay = ref<Date>();
 const selectedTimeSlot = ref<number>();
 const error = ref<boolean>(false);
@@ -127,10 +131,10 @@ const formatTime = (time: any) => {
 };
 
 const timeSlotsInHours = () => {
-  const timesByHours = new Map<string, number[]>();
+  const timesByHours = new Map<number, number[]>();
   appointmentTimestamps.value?.forEach((time) => {
     const berlinDate = new Date(time * 1000);
-    const hour = berlinHourFormatter.format(berlinDate);
+    const hour = parseInt(berlinHourFormatter.format(berlinDate));
     if (!timesByHours.has(hour)) {
       timesByHours.set(hour, []);
     }
@@ -269,6 +273,16 @@ onMounted(() => {
   margin: 0 8px;
 }
 
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.grid-item {
+  margin: 8px 8px;
+}
+
 .timeslot {
   height: 2rem;
 }
@@ -278,5 +292,7 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   height: 100%;
+  width: 100px;
 }
+
 </style>
