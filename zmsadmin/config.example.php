@@ -10,7 +10,7 @@ class App extends \BO\Zmsadmin\Application
     const IDENTIFIER = ZMS_IDENTIFIER;
     const DEBUG = false;
     // Per default uses dir ./cache
-    //const TWIG_CACHE = false;
+    const TWIG_CACHE = '/cache/';
 
     /**
      * HTTP url for api
