@@ -45,18 +45,26 @@ class AvailabilityUpdate extends BaseController
         }
 
         DbConnection::getWriteConnection();
-        
+
+        $availabilityRepo = new AvailabilityRepository();
         $newCollection = new Collection();
+
         foreach ($input['availabilityList'] as $item) {
             $entity = new Entity($item);
             $entity->testValid();
+            if (isset($entity->id)) {
+                $existingEntity = $availabilityRepo->readEntity($entity->id, $resolveReferences);
+                if (!$existingEntity || !$existingEntity->hasId()) {
+                    throw new NotFoundException("Availability with ID {$entity->id} not found.");
+                }
+            }
+
             $newCollection->addEntity($entity);
         }
 
         $scopeData = $input['availabilityList']['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
 
-        $availabilityRepo = new AvailabilityRepository();
         $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
 
         $mergedCollection = new Collection();
