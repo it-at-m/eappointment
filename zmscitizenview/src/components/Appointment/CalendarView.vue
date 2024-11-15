@@ -1,43 +1,55 @@
 <template>
-  <h2 tabindex="0">{{ t("location") }}</h2>
-  <!--  Add location selection-->
-  <h2 tabindex="0">{{ t("time") }}</h2>
-  <muc-calendar
-    v-model="selectedDay"
-    variant="single"
-    :allowed-dates="allowedDates"
-  />
-  <!--  Add calendar-->
-  <div class="m-component">
-    <h3 tabindex="0">{{ t("availableTimes") }}</h3>
-    <div style="background-color: var(--color-neutrals-blue-xlight)">
-      <b tabindex="0">{{ formatDay(selectedDay) }}</b>
-    </div>
-    <div
-      v-for="[timeslot, times] in timeSlotsInHours()"
-      :key="timeslot"
-    >
-      <div class="wrapper">
-        <div>
-          <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
-        </div>
-        <div class="grid">
-          <div
-            v-for="time in times"
-            :key="time.unix"
-            class="grid-item"
-          >
-            <muc-button
-              class="timeslot"
-              variant="secondary"
-              @click="handleTimeSlotSelection(time)"
+  <div v-if="!error">
+    <h2 tabindex="0">{{ t("location") }}</h2>
+    <!--  Add location selection-->
+    <h2 tabindex="0">{{ t("time") }}</h2>
+    <muc-calendar
+      v-model="selectedDay"
+      variant="single"
+      :allowed-dates="allowedDates"
+    />
+    <div class="m-component">
+      <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+      <div style="background-color: var(--color-neutrals-blue-xlight)">
+        <b tabindex="0">{{ formatDay(selectedDay) }}</b>
+      </div>
+      <div
+        v-for="[timeslot, times] in timeSlotsInHours()"
+        :key="timeslot"
+      >
+        <div class="wrapper">
+          <div>
+            <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
+          </div>
+          <div class="grid">
+            <div
+              v-for="time in times"
+              :key="time.unix"
+              class="grid-item"
             >
-              <template #default>{{ formatTime(time) }}</template>
-            </muc-button>
+              <muc-button
+                class="timeslot"
+                variant="secondary"
+                @click="handleTimeSlotSelection(time)"
+              >
+                <template #default>{{ formatTime(time) }}</template>
+              </muc-button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <muc-callout v-if="selectedTimeslot !== 0" type="info">
+      <template #content>
+        <b>{{ t("location") }}</b>
+        <br>
+        <b>{{ t("time") }}</b>
+        <br>
+        {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }} {{ t("clock") }}
+      </template>
+
+      <template #header>{{ t("selectedAppointment") }}</template>
+    </muc-callout>
   </div>
   <div
     v-if="error"
@@ -68,7 +80,7 @@ import {
   fetchAvailableTimeSlots,
 } from "@/api/ZMSAppointmentAPI";
 import { OfficeImpl } from "@/types/OfficeImpl";
-import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
+import { SelectedServiceProvider, SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
 
 defineProps<{
   t: any;
@@ -78,6 +90,10 @@ const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;
 
+const { selectedTimeslot } = inject<SelectedTimeslotProvider>(
+  "selectedTimeslot"
+) as SelectedTimeslotProvider;
+
 const selectableProviders = ref<OfficeImpl[]>();
 const currentProvider = ref<OfficeImpl>();
 const displayInfo = ref<string>();
@@ -86,7 +102,6 @@ const availableDays = ref<string[]>();
 const appointmentTimestamps = ref<number[]>();
 
 const selectedDay = ref<Date>();
-const selectedTimeSlot = ref<number>();
 const error = ref<boolean>(false);
 
 const TODAY = new Date();
@@ -162,7 +177,7 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
     Array.from(selectedServices.value.keys()),
     Array.from(selectedServices.value.values())
   ).then((data) => {
-    if (data as AvailableDaysDTO) {
+    if ( (data as AvailableDaysDTO).availableDays !== undefined ) {
       availableDays.value = (data as AvailableDaysDTO).availableDays;
       selectedDay.value = new Date(availableDays.value[0]);
       getAppointmentsOfDay(availableDays.value[0]);
@@ -217,7 +232,7 @@ watch(selectedDay, (newDate) => {
 });
 
 const handleTimeSlotSelection = (timeSlot: number) => {
-  selectedTimeSlot.value = timeSlot;
+  selectedTimeslot.value = timeSlot;
 };
 
 onMounted(() => {
@@ -255,6 +270,8 @@ onMounted(() => {
       );
       if (selectableProviders.value.length > 0)
         showSelectionForProvider(selectableProviders.value[0]);
+    } else {
+      showSelectionForProvider(selectedService.value.providers[0]);
     }
   }
 });

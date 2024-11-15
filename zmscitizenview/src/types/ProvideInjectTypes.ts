@@ -6,3 +6,7 @@ export interface SelectedServiceProvider {
   selectedService: Ref<ServiceImpl | undefined>;
   updateSelectedService: (newService: ServiceImpl) => void;
 }
+
+export interface SelectedTimeslotProvider {
+  selectedTimeslot: Ref<number>;
+}
