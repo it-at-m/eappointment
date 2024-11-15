@@ -84,7 +84,7 @@ class AvailabilityUpdate extends BaseController
         }
 
         if (count($validation) > 0) {
-            $validation = json_decode(json_encode($validation), true);
+            error_log(json_encode($validation));
             throw new AvailabilityUpdateFailed();
         }        
     

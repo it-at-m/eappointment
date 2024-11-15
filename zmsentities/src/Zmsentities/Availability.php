@@ -456,21 +456,24 @@ class Availability extends Schema\Entity
     {
         $errorList = [];
         
-        $startHour = (int)$startDate->format('H');
+        $startTime = $startDate->setTime(0, 0);
+        $startHour = ($startDate->format('H'));
         $endHour = (int)$endDate->format('H');
         $startMinute = (int)$startDate->format('i');
         $endMinute = (int)$endDate->format('i');
         $isFuture = ($type && $type === 'future');
 
-        // Validate that the start date is not in the future
-        if (!$isFuture && $selectedDate->getTimestamp() > $today->getTimestamp() && $startDate > $selectedDate->setTime(0, 0)) {
+        if (
+            !$isFuture &&
+            $selectedDate->getTimestamp() > $today->getTimestamp() &&
+            $startTime->getTimestamp() > $selectedDate->setTime(0, 0)->getTimestamp()
+        ) {
             $errorList[] = [
                 'type' => 'startTimeFuture',
                 'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
             ];
         }
         
-        // Validate that start or end time is not exactly midnight
         if (($startHour == 0 && $startMinute == 0) || ($endHour == 0 && $endMinute == 0)) {
             $errorList[] = [
                 'type' => 'startOfDay',
