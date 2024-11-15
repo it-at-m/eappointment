@@ -53,7 +53,9 @@ class AvailabilityAdd extends BaseController
             $newCollection->addEntity($entity);
         }
 
-        $scopeData = $input['availabilityList']['scope'];
+        //error_log('*'. json_encode($input));
+
+        $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
     
         $startDate = new \DateTimeImmutable('now');
@@ -80,7 +82,7 @@ class AvailabilityAdd extends BaseController
         }
 
         if (count($validation) > 0) {
-            $validation = json_decode(json_encode($validation), true);
+            error_log(json_encode($validation));
             throw new AvailabilityUpdateFailed();
         }        
     
