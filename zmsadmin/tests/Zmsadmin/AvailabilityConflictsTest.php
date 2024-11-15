@@ -1872,9 +1872,6 @@ class AvailabilityConflictsTest extends Base
                 }
             }'
         ], [], 'POST');
-        error_log("***");
-        error_log((string)$response->getBody());
-        error_log("***");
         $this->assertStringContainsString('Zwei \u00d6ffnungszeiten sind gleich', (string)$response->getBody());
         $this->assertStringContainsString('2016-04-04', (string)$response->getBody());
         $this->assertStringContainsString('2016-04-11', (string)$response->getBody());
