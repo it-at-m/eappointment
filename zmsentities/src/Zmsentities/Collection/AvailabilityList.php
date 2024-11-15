@@ -177,7 +177,46 @@ class AvailabilityList extends Base
         return $errorList;
     }
     
-    
+    /**
+     * Get the earliest startDateTime and latest endDateTime from an AvailabilityList
+     * If the start date of any availability is before the selected date, use the selected date instead.
+     *
+     * @param AvailabilityList $availabilityList
+     * @param \DateTimeImmutable $selectedDate
+     * @return array
+     */
+    public function getDateTimeRangeFromList(\DateTimeImmutable $selectedDate): array
+    {
+        $earliestStartDateTime = null;
+        $latestEndDateTime = null;
+
+        foreach ($this as $availability) {
+            // Convert Unix timestamp to date strings
+            $startDate = (new \DateTimeImmutable())->setTimestamp($availability->startDate)->format('Y-m-d');
+            $endDate = (new \DateTimeImmutable())->setTimestamp($availability->endDate)->format('Y-m-d');
+
+            // Combine date and time for start and end
+            $startDateTime = new \DateTimeImmutable("{$startDate} {$availability->startTime}");
+            $endDateTime = new \DateTimeImmutable("{$endDate} {$availability->endTime}");
+
+            // Adjust the startDateTime if it's before the selected date
+            if ($startDateTime < $selectedDate) {
+                $startDateTime = $selectedDate->setTime(0, 0);
+            }
+
+            // Determine the earliest start time
+            if (is_null($earliestStartDateTime) || $startDateTime < $earliestStartDateTime) {
+                $earliestStartDateTime = $startDateTime;
+            }
+
+            // Determine the latest end time
+            if (is_null($latestEndDateTime) || $endDateTime > $latestEndDateTime) {
+                $latestEndDateTime = $endDateTime;
+            }
+        }
+
+        return [$earliestStartDateTime, $latestEndDateTime];
+    }
 
     public function getConflicts($startDate, $endDate)
     {

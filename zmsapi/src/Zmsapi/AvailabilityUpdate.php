@@ -96,7 +96,7 @@ class AvailabilityUpdate extends BaseController
             throw new AvailabilityUpdateFailed();
         }        
     
-        [$earliestStartDateTime, $latestEndDateTime] = $this->getDateTimeRangeFromCollection($mergedCollection,  \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00'));
+        [$earliestStartDateTime, $latestEndDateTime] = $mergedCollection->getDateTimeRangeFromList(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00'));
         $conflicts = $mergedCollection->getConflicts($earliestStartDateTime, $latestEndDateTime);
         if ($conflicts->count() > 0) {
             //error_log(json_encode($conflicts));
@@ -115,46 +115,6 @@ class AvailabilityUpdate extends BaseController
 
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-    }
-
-    /**
-     * Get the earliest startDateTime and latest endDateTime from a Collection
-     * If the start date of any availability is before the selected date, 
-     * use the selected date instead.
-     *
-     * @param Collection $collection
-     * @param \DateTimeImmutable $selectedDate
-     * @return array
-     */
-    private function getDateTimeRangeFromCollection(Collection $collection, \DateTimeImmutable $selectedDate): array
-    {
-        $earliestStartDateTime = null;
-        $latestEndDateTime = null;
-
-        foreach ($collection as $availability) {
-            // Convert Unix timestamp to a date string before concatenating with the time
-            $startDate = (new \DateTimeImmutable())->setTimestamp($availability->startDate)->format('Y-m-d');
-            $endDate = (new \DateTimeImmutable())->setTimestamp($availability->endDate)->format('Y-m-d');
-            
-            // Combine date and time for start and end
-            $startDateTime = new \DateTimeImmutable("{$startDate} {$availability->startTime}");
-            $endDateTime = new \DateTimeImmutable("{$endDate} {$availability->endTime}");
-
-            // If startDate is before the selectedDate, use the selectedDate as the start
-            if ($startDateTime < $selectedDate) {
-                $startDateTime = $selectedDate->setTime(0, 0);
-            }
-
-            // Determine the earliest start and latest end times
-            if (is_null($earliestStartDateTime) || $startDateTime < $earliestStartDateTime) {
-                $earliestStartDateTime = $startDateTime;
-            }
-            if (is_null($latestEndDateTime) || $endDateTime > $latestEndDateTime) {
-                $latestEndDateTime = $endDateTime;
-            }
-        }
-
-        return [$earliestStartDateTime, $latestEndDateTime];
     }
 
     protected function writeEntityUpdate($entity, $resolveReferences): Entity

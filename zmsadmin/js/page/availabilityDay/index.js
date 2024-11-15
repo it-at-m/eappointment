@@ -511,7 +511,6 @@ class AvailabilityPage extends Component {
                 selectedAvailability: this.state.selectedAvailability
             }))
         };
-        console.log("here");
         const url = `${this.props.links.includeurl}/availability/conflicts/`;
         fetch(url, requestOptions)
             .then(res => res.json())
