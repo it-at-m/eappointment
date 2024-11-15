@@ -39,13 +39,17 @@
         </div>
       </div>
     </div>
-    <muc-callout v-if="selectedTimeslot !== 0" type="info">
+    <muc-callout
+      v-if="selectedTimeslot !== 0"
+      type="info"
+    >
       <template #content>
         <b>{{ t("location") }}</b>
-        <br>
+        <br />
         <b>{{ t("time") }}</b>
-        <br>
-        {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }} {{ t("clock") }}
+        <br />
+        {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
+        {{ t("clock") }}
       </template>
 
       <template #header>{{ t("selectedAppointment") }}</template>
@@ -80,7 +84,10 @@ import {
   fetchAvailableTimeSlots,
 } from "@/api/ZMSAppointmentAPI";
 import { OfficeImpl } from "@/types/OfficeImpl";
-import { SelectedServiceProvider, SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
+import {
+  SelectedServiceProvider,
+  SelectedTimeslotProvider,
+} from "@/types/ProvideInjectTypes";
 
 defineProps<{
   t: any;
@@ -177,7 +184,7 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
     Array.from(selectedServices.value.keys()),
     Array.from(selectedServices.value.values())
   ).then((data) => {
-    if ( (data as AvailableDaysDTO).availableDays !== undefined ) {
+    if ((data as AvailableDaysDTO).availableDays !== undefined) {
       availableDays.value = (data as AvailableDaysDTO).availableDays;
       selectedDay.value = new Date(availableDays.value[0]);
       getAppointmentsOfDay(availableDays.value[0]);
@@ -290,7 +297,6 @@ onMounted(() => {
   margin: 0 8px;
 }
 
-
 .grid {
   display: flex;
   flex-wrap: wrap;
@@ -311,5 +317,4 @@ onMounted(() => {
   height: 100%;
   width: 100px;
 }
-
 </style>
