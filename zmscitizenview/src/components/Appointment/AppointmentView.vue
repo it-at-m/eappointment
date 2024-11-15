@@ -24,7 +24,6 @@
       <div class="m-submit-group">
         <muc-button
           v-if="showDecreaseViewButton"
-          :disabled="disableIncreaseViewButton"
           variant="secondary"
           @click="decreaseCurrentView"
         >
@@ -32,6 +31,7 @@
         </muc-button>
         <muc-button
           v-if="showIncreaseViewButton"
+          :disabled="disableIncreaseViewButton"
           @click="increaseCurrentView"
         >
           <template #default>{{ t("next") }}</template>
@@ -53,7 +53,7 @@ import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
+import { SelectedServiceProvider, SelectedTimeslotProvider } from "@/types/ProvideInjectTypes";
 import { StepperItem } from "@/types/StepperTypes";
 
 const props = defineProps<{
@@ -104,10 +104,14 @@ const updateSelectedService = (newService: ServiceImpl): void => {
   selectedService.value = newService;
 };
 
+const selectedTimeslot = ref<number>(0);
+
 provide<SelectedServiceProvider>("selectedServiceProvider", {
   selectedService,
   updateSelectedService,
 } as SelectedServiceProvider);
+
+provide<SelectedTimeslotProvider>("selectedTimeslot", {selectedTimeslot} as SelectedTimeslotProvider);
 
 onMounted(() => {
   loadData();
@@ -139,5 +143,11 @@ const changeStep = (step: string) => {
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   showDecreaseViewButton.value = newCurrentView > 0;
+  disableIncreaseViewButton.value = newCurrentView === 1 && selectedTimeslot.value === 0;
+});
+
+watch(selectedTimeslot, (newTimeslot) => {
+  disableIncreaseViewButton.value = currentView.value === 1 && selectedTimeslot.value === 0;
+  console.log("TimeSlot: ", newTimeslot);
 });
 </script>
