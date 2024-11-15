@@ -462,10 +462,6 @@ class Availability extends Schema\Entity
         $endMinute = (int)$endDate->format('i');
         $isFuture = ($type && $type === 'future');
 
-        error_log($isFuture);
-        
-        error_log("*" . $selectedDate->getTimestamp()  . "*");
-        error_log("*" . $today->getTimestamp()  . "*");
         // Validate that the start date is not in the future
         if (!$isFuture && $selectedDate->getTimestamp() > $today->getTimestamp() && $startDate > $selectedDate->setTime(0, 0)) {
             $errorList[] = [
