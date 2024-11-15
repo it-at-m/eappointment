@@ -62,7 +62,7 @@ class AvailabilityUpdate extends BaseController
             $newCollection->addEntity($entity);
         }
 
-        $scopeData = $input['availabilityList']['scope'];
+        $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
 
         $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
