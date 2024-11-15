@@ -119,6 +119,10 @@
       "type": "string",
       "description": "format '0:00' or '17:30'"
     },
+    "kind": {
+      "type": "string",
+      "description": "format"
+    },
     "type": {
       "type": "string",
       "enum": [

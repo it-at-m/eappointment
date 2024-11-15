@@ -101,35 +101,60 @@ class AvailabilityPage extends Component {
     }
 
     onSaveUpdates() {
-        const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?')
+        const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?');
         if (ok) {
             showSpinner();
-            const sendData = this.state.availabilitylist.filter((availability) => {
-                return (
-                    (availability.__modified || 
-                    availability.tempId && availability.tempId.includes('__temp__'))) &&
-                    ! this.hasErrors(availability)
-            }).map(availability => {
-                const sendAvailability = Object.assign({}, availability)
-                if (availability.tempId) {
-                    delete sendAvailability.tempId
-                }
-                return sendAvailability;
-            }).map(cleanupAvailabilityForSave)
-                
-            console.log('Saving updates', sendData)
+    
+            // Format the selected date
+            const selectedDate = formatTimestampDate(this.props.timestamp);
 
+            console.log(this.state);
+    
+            // Prepare the data to send
+            const sendData = this.state.availabilitylist
+                .filter((availability) => {
+                    return (
+                        (availability.__modified || 
+                        (availability.tempId && availability.tempId.includes('__temp__'))) &&
+                        !this.hasErrors(availability)
+                    );
+                })
+                .map(availability => {
+                    const sendAvailability = Object.assign({}, availability);
+                    if (availability.tempId) {
+                        delete sendAvailability.tempId;
+                    }
+                    console.log(availability.kind);
+                    return {
+                        ...sendAvailability,
+                        kind: availability.kind || 'default', // Include the kind attribute
+                    };
+                })
+                .map(cleanupAvailabilityForSave);
+    
+            // Attach the selectedDate to sendData
+            const payload = {
+                availabilityList: sendData,
+                selectedDate: selectedDate
+            };
+
+            
+    
+            console.log('Saving updates', payload);
+    
+            // Make the AJAX request with the updated payload
             $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
-                data: JSON.stringify(sendData)
+                data: JSON.stringify(payload),
+                contentType: 'application/json'
             }).done((success) => {
-                console.log('save success:', success)
+                console.log('save success:', success);
                 this.refreshData();
                 this.setState({
                     lastSave: new Date().getTime(),
                 }, () => {
                     this.successElement.scrollIntoView();
-                })
+                });
                 hideSpinner();
             }).fail((err) => {
                 let isException = err.responseText.toLowerCase().includes('exception');
@@ -139,18 +164,18 @@ class AvailabilityPage extends Component {
                         message: err.responseText
                     });
                 } else if (err.status === 404) {
-                    console.log('404 error, ignored')
+                    console.log('404 error, ignored');
                 } else {
-                    console.log('save all error', err)
+                    console.log('save all error', err);
                 }
                 this.getValidationList();
                 hideSpinner();
-            })
+            });
         } else {
             hideSpinner();
         }
     }
-
+    
 
     onRevertUpdates() {
         this.isCreatingExclusion = false
