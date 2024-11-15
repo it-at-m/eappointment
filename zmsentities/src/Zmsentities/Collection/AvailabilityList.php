@@ -161,7 +161,7 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
-    public function validateInputs(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate, \DateTimeImmutable $selectedDate, String $type)
+    public function validateInputs(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate, \DateTimeImmutable $selectedDate, String $kind)
     {
         $errorList = [];
         foreach ($this as $availability) {
@@ -171,7 +171,7 @@ class AvailabilityList extends Base
         
             $errorList = array_merge(
                 $errorList,
-                $availability->validateAll($today, $yesterday, $tomorrow, $startDate, $endDate, $selectedDate, $type)
+                $availability->validateAll($today, $yesterday, $tomorrow, $startDate, $endDate, $selectedDate, $kind)
             );
         }
         return $errorList;
