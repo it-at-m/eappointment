@@ -12,44 +12,39 @@ class AvailabilityUpdateTest extends Base
 
     public function testRendering()
     {
+
         $input = (new Entity)->createExample();
+        $input = [
+            "description" => "Test Öffnungszeit update",
+            "startDate" => time() + (2 * 24 * 60 * 60), // 2 days in the future
+            "endDate" => time() + (5 * 24 * 60 * 60),   // 5 days in the future
+            "startTime" => "09:00:00",
+            "endTime" => "17:00:00",
+            "kind" => "default",
+            "scope" => ["id" => 312],
+        ];
 
-        $currentTimestamp = time();
-        $input['startDate'] = $currentTimestamp + (2 * 24 * 60 * 60); // 2 days in the future
-        $input['endDate'] = $currentTimestamp + (5 * 24 * 60 * 60);   // 5 days in the future
-        $input['startTime'] = "09:00:00";
-        $input['endTime'] = "17:00:00";
-        $input['scope'] = ["id" => 312];
-        $input['kind'] = "default";
-
+        // Write the entity to the database
         $entity = (new Query())->writeEntity($input);
-        error_log(json_encode($entity));
         $this->setWorkstation();
 
         $response = $this->render([
             "id" => $entity->getId()
         ], [
             '__body' => json_encode([
-                'availabilityList' => [
+                'availabilityList' => [$input],
+                'selectedDate' => date('Y-m-d'),
+                'dayoff' => [
                     [
-                        "id" => 21202,
-                        "description" => "Test Öffnungszeit update",
-                        "startDate" => time() + (2 * 24 * 60 * 60), // 2 days in the future
-                        "endDate" => time() + (5 * 24 * 60 * 60),   // 5 days in the future
-                        "startTime" => "09:00:00",
-                        "endTime" => "17:00:00",
-                        "kind" => "default",
-                        "scope" => [
-                            "id" => 312
-                        ],
-                        "dayoff" => []
+                        "id" => 302,
+                        "date" => time() + (10 * 24 * 60 * 60),
+                        "name" => "Test Dayoff"
                     ]
-                ],
-                'selectedDate' => date('Y-m-d')
+                ]
             ])
         ], []);
 
-        $this->assertStringContainsString('availability.json', (string) $response->getBody());
+        $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
