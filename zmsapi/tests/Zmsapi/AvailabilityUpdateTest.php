@@ -12,27 +12,38 @@ class AvailabilityUpdateTest extends Base
 
     public function testRendering()
     {
-
         $input = (new Entity)->createExample();
-        $input = [
-            "description" => "Test Öffnungszeit update",
-            "startDate" => time() + (2 * 24 * 60 * 60), // 2 days in the future
-            "endDate" => time() + (5 * 24 * 60 * 60),   // 5 days in the future
-            "startTime" => "09:00:00",
-            "endTime" => "17:00:00",
-            "kind" => "default",
-            "scope" => ["id" => 312],
-        ];
 
-        // Write the entity to the database
+        $currentTimestamp = time();
+        $input['startDate'] = $currentTimestamp + (2 * 24 * 60 * 60); // 2 days in the future
+        $input['endDate'] = $currentTimestamp + (5 * 24 * 60 * 60);   // 5 days in the future
+        $input['startTime'] = "09:00:00";
+        $input['endTime'] = "17:00:00";
+        $input['scope'] = ["id" => 312];
+        $input['kind'] = "default";
+
         $entity = (new Query())->writeEntity($input);
+        error_log(json_encode($entity));
         $this->setWorkstation();
 
         $response = $this->render([
             "id" => $entity->getId()
         ], [
             '__body' => json_encode([
-                'availabilityList' => [$input],
+                'availabilityList' => [
+                    [
+                        "id" => 21202,
+                        "description" => "Test Öffnungszeit update",
+                        "startDate" => time() + (2 * 24 * 60 * 60), // 2 days in the future
+                        "endDate" => time() + (5 * 24 * 60 * 60),   // 5 days in the future
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
+                        "kind" => "default",
+                        "scope" => [
+                            "id" => 312
+                        ]
+                    ]
+                ],
                 'selectedDate' => date('Y-m-d'),
                 'dayoff' => [
                     [
@@ -44,7 +55,7 @@ class AvailabilityUpdateTest extends Base
             ])
         ], []);
 
-        $this->assertStringContainsString('availability.json', (string)$response->getBody());
+        $this->assertStringContainsString('availability.json', (string) $response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
