@@ -79,7 +79,7 @@ class AvailabilityAddTest extends Base
             ])
         ], []);
     }
-    public function testDuplicateAvailability()
+    public function testDuplicateOverlappingAvailability()
     {
         $this->setWorkstation();
         $this->expectException(AvailabilityUpdateFailed::class);

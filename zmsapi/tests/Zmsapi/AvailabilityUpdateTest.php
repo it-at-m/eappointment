@@ -80,7 +80,7 @@ class AvailabilityUpdateTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testDuplicateAvailability()
+    public function testDuplicateOverlappingAvailability()
     {
 
         $input = (new Entity)->createExample();
