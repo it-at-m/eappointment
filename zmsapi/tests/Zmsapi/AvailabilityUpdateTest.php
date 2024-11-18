@@ -145,7 +145,7 @@ class AvailabilityUpdateTest extends Base
 
                     ],
                     [
-                        "id" => $secondEntity->getId(), // Duplicate ID
+                        "id" => $secondEntity->getId(),
                         "description" => "Duplicate Entry 2",
                         "startDate" => $currentTimestamp + (20 * 24 * 60 * 60),
                         "endDate" => $currentTimestamp + (20 * 24 * 60 * 60),
@@ -175,6 +175,7 @@ class AvailabilityUpdateTest extends Base
             ])
         ], []);
     }
+
     public function testOverlappingAvailability()
     {
 
@@ -290,6 +291,57 @@ class AvailabilityUpdateTest extends Base
                                 ]
                             ]
                         ]
+                    ]
+                ],
+                'selectedDate' => date('Y-m-d')
+            ])
+        ], []);
+    }
+
+    public function testInvalidEndTime()
+    {
+
+        $input = (new Entity)->createExample();
+        $currentTimestamp = time();
+        $input['startDate'] = $currentTimestamp + (20 * 24 * 60 * 60); // 2 days in the future
+        $input['endDate'] = $currentTimestamp + (50 * 24 * 60 * 60);   // 5 days in the future
+        $input['startTime'] = "09:00:00";
+        $input['endTime'] = "17:00:00";
+        $input['scope'] = [
+            "id" => 312,
+            "dayoff" => [
+                [
+                    "id" => 35,
+                    "date" => $currentTimestamp + (70 * 24 * 60 * 60), // 7 days in the future
+                    "name" => "1. Mai",
+                    "lastChange" => $currentTimestamp
+                ],
+                [
+                    "id" => 36,
+                    "date" => $currentTimestamp + (140 * 24 * 60 * 60), // 14 days in the future
+                    "name" => "Christi Himmelfahrt",
+                    "lastChange" => $currentTimestamp
+                ]
+            ]
+        ];
+        $input['kind'] = "default";
+
+        $entity = (new Query())->writeEntity($input);
+        $this->setWorkstation();
+        $this->expectException(AvailabilityUpdateFailed::class);
+        
+        $this->render([], [
+            '__body' => json_encode([
+                'availabilityList' => [
+                    [
+                        "id" => $entity->getId(),
+                        "description" => "End Time Before Start Time",
+                        "startDate" => time() + (20 * 24 * 60 * 60),
+                        "endDate" => time() + (20 * 24 * 60 * 60),
+                        "startTime" => "17:00:00",
+                        "endTime" => "09:00:00",
+                        "kind" => "default",
+                        "scope" => ["id" => 141]
                     ]
                 ],
                 'selectedDate' => date('Y-m-d')
