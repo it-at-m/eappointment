@@ -66,19 +66,19 @@
 </template>
 
 <script setup lang="ts">
-import {MucButton, MucCounter, MucSelect} from "@muenchen/muc-patternlab-vue";
+import { MucButton, MucCounter, MucSelect } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, onMounted, ref, watch } from "vue";
 
 import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
+import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import ClockSvg from "@/components/Appointment/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { MAX_SLOTS } from "@/utils/Constants";
-import {fetchServicesAndProviders} from "@/api/ZMSAppointmentAPI";
 
 const props = defineProps<{
   preselectedServiceId: string | undefined;
