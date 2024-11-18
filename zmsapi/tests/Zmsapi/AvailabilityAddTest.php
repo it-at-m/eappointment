@@ -110,7 +110,76 @@ class AvailabilityAddTest extends Base
                 'selectedDate' => date('Y-m-d')
             ])
         ], []);
-    }   
+    }
+
+    public function testInvalidStartTime()
+    {
+        $this->setWorkstation();
+        $this->expectException(AvailabilityUpdateFailed::class);
+
+        $this->render([], [
+            '__body' => json_encode([
+                'availabilityList' => [
+                    [
+                        "description" => "Start Time in Future",
+                        "startDate" => time() + (10 * 24 * 60 * 60), // 10 days in the future
+                        "endDate" => time() + (15 * 24 * 60 * 60),
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
+                        "kind" => "past",
+                        "scope" => ["id" => 312]
+                    ]
+                ],
+                'selectedDate' => date('Y-m-d')
+            ])
+        ], []);
+    }
+
+    public function testInvalidEndTime()
+    {
+        $this->setWorkstation();
+        $this->expectException(AvailabilityUpdateFailed::class);
+
+        $this->render([], [
+            '__body' => json_encode([
+                'availabilityList' => [
+                    [
+                        "description" => "End Time Before Start Time",
+                        "startDate" => time() + (2 * 24 * 60 * 60),
+                        "endDate" => time() + (2 * 24 * 60 * 60),
+                        "startTime" => "17:00:00",
+                        "endTime" => "09:00:00",
+                        "kind" => "default",
+                        "scope" => ["id" => 312]
+                    ]
+                ],
+                'selectedDate' => date('Y-m-d')
+            ])
+        ], []);
+    }
+
+    public function testMissingKind()
+    {
+        $this->setWorkstation();
+        $this->expectException(AvailabilityUpdateFailed::class);
+
+        $this->render([], [
+            '__body' => json_encode([
+                'availabilityList' => [
+                    [
+                        "description" => "Missing Kind",
+                        "startDate" => time() + (2 * 24 * 60 * 60),
+                        "endDate" => time() + (3 * 24 * 60 * 60),
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
+                        "scope" => ["id" => 312]
+                    ]
+                ],
+                'selectedDate' => date('Y-m-d')
+            ])
+        ], []);
+    }
+
     public function testEmpty()
     {
         $this->setWorkstation();
