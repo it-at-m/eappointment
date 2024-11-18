@@ -21,13 +21,6 @@ class AvailabilityUpdateTest extends Base
         $input['endTime'] = "17:00:00";
         $input['scope'] = ["id" => 312];
         $input['kind'] = "default";
-        $input["dayoff"] = [
-            [
-                "id" => 302,
-                "date" => time() + (10 * 24 * 60 * 60), // 10 days in the future
-                "name" => "Test Dayoff"
-            ]
-        ];
 
         $entity = (new Query())->writeEntity($input);
         error_log(json_encode($entity));
