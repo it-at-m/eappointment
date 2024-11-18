@@ -304,9 +304,9 @@ class AvailabilityUpdateTest extends Base
         $input = (new Entity)->createExample();
         $currentTimestamp = time();
         $input['startDate'] = $currentTimestamp + (20 * 24 * 60 * 60); // 2 days in the future
-        $input['endDate'] = $currentTimestamp + (50 * 24 * 60 * 60);   // 5 days in the future
-        $input['startTime'] = "09:00:00";
-        $input['endTime'] = "17:00:00";
+        $input['endDate'] = $currentTimestamp + (20 * 24 * 60 * 60);
+        $input['startTime'] = "17:00:00";
+        $input['endTime'] = "09:00:00";
         $input['scope'] = [
             "id" => 312,
             "dayoff" => [
@@ -346,13 +346,13 @@ class AvailabilityUpdateTest extends Base
                             "dayoff" => [
                                 [
                                     "id" => 35,
-                                    "date" => $currentTimestamp + (700 * 24 * 60 * 60),
+                                    "date" => $currentTimestamp + (70 * 24 * 60 * 60),
                                     "name" => "1. Mai",
                                     "lastChange" => $currentTimestamp
                                 ],
                                 [
                                     "id" => 36,
-                                    "date" => $currentTimestamp + (1400 * 24 * 60 * 60),
+                                    "date" => $currentTimestamp + (140 * 24 * 60 * 60),
                                     "name" => "Christi Himmelfahrt",
                                     "lastChange" => $currentTimestamp
                                 ]
