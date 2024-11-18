@@ -164,11 +164,12 @@ class AvailabilityList extends Base
     public function validateInputs(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate, \DateTimeImmutable $selectedDate, String $kind)
     {
         $errorList = [];
-        foreach ($this as $availability) {
-            $today = new \DateTimeImmutable();
-            $yesterday = $selectedDate->modify('-1 day');
-            $tomorrow = $selectedDate->modify('+1 day');
-        
+
+        $today = new \DateTimeImmutable();
+        $yesterday = $selectedDate->modify('-1 day');
+        $tomorrow = $selectedDate->modify('+1 day');
+
+        foreach ($this as $availability) {    
             $errorList = array_merge(
                 $errorList,
                 $availability->validateAll($today, $yesterday, $tomorrow, $startDate, $endDate, $selectedDate, $kind)
