@@ -32,7 +32,7 @@ class AvailabilityUpdateTest extends Base
             '__body' => json_encode([
                 'availabilityList' => [
                     [
-                        "id" => 21202,
+                        "id" => $entity->getId(),
                         "description" => "Test Öffnungszeit update",
                         "startDate" => time() + (2 * 24 * 60 * 60), // 2 days in the future
                         "endDate" => time() + (5 * 24 * 60 * 60),   // 5 days in the future
