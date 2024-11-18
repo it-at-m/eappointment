@@ -25,6 +25,7 @@ class ProcessNextByCluster extends BaseController
         $workstation = (new Helper\User($request, 1))->checkRights();
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();
+        $exclude = Validator::param('exclude')->isString()->getValue();
         $allowClusterWideCall = Validator::param('allowClusterWideCall')->isBool()->setDefault(true)->getValue();
         $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
         $cluster = $query->readEntity($args['id']);
@@ -40,7 +41,7 @@ class ProcessNextByCluster extends BaseController
         }
         
         $message = Response\Message::create($request);
-        $message->data = ProcessNextByScope::getProcess($queueList, $dateTime);
+        $message->data = ProcessNextByScope::getProcess($queueList, $dateTime, $exclude);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
