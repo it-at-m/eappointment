@@ -329,7 +329,7 @@ class AvailabilityUpdateTest extends Base
         $entity = (new Query())->writeEntity($input);
         $this->setWorkstation();
         $this->expectException(AvailabilityUpdateFailed::class);
-        
+
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
@@ -341,7 +341,23 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "17:00:00",
                         "endTime" => "09:00:00",
                         "kind" => "default",
-                        "scope" => ["id" => 141]
+                        "scope" => [
+                            "id" => 312,
+                            "dayoff" => [
+                                [
+                                    "id" => 35,
+                                    "date" => $currentTimestamp + (700 * 24 * 60 * 60),
+                                    "name" => "1. Mai",
+                                    "lastChange" => $currentTimestamp
+                                ],
+                                [
+                                    "id" => 36,
+                                    "date" => $currentTimestamp + (1400 * 24 * 60 * 60),
+                                    "name" => "Christi Himmelfahrt",
+                                    "lastChange" => $currentTimestamp
+                                ]
+                            ]
+                        ]
                     ]
                 ],
                 'selectedDate' => date('Y-m-d')
