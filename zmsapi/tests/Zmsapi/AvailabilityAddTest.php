@@ -3,6 +3,7 @@
 namespace BO\Zmsapi\Tests;
 
 use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed;
+use \DateTime;
 class AvailabilityAddTest extends Base
 {
     protected $classname = "AvailabilityAdd";
@@ -130,7 +131,7 @@ class AvailabilityAddTest extends Base
                         "scope" => ["id" => 312]
                     ]
                 ],
-                'selectedDate' => date('Y-m-d')
+                'selectedDate' => (new DateTime('2024-11-17'))->format('Y-m-d')
             ])
         ], []);
     }
@@ -172,7 +173,8 @@ class AvailabilityAddTest extends Base
                         "endDate" => time() + (3 * 24 * 60 * 60),
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
-                        "scope" => ["id" => 312]
+                        "scope" => ["id" => 312],
+                        "kind" => null,
                     ]
                 ],
                 'selectedDate' => date('Y-m-d')
