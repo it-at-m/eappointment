@@ -82,6 +82,34 @@ class AvailabilityUpdateTest extends Base
 
     public function testDuplicateAvailability()
     {
+
+        $input = (new Entity)->createExample();
+        $currentTimestamp = time();
+        $input['startDate'] = $currentTimestamp + (20 * 24 * 60 * 60); // 2 days in the future
+        $input['endDate'] = $currentTimestamp + (50 * 24 * 60 * 60);   // 5 days in the future
+        $input['startTime'] = "09:00:00";
+        $input['endTime'] = "17:00:00";
+        $input['scope'] = [
+            "id" => 312,
+            "dayoff" => [
+                [
+                    "id" => 35,
+                    "date" => $currentTimestamp + (70 * 24 * 60 * 60), // 7 days in the future
+                    "name" => "1. Mai",
+                    "lastChange" => $currentTimestamp
+                ],
+                [
+                    "id" => 36,
+                    "date" => $currentTimestamp + (140 * 24 * 60 * 60), // 14 days in the future
+                    "name" => "Christi Himmelfahrt",
+                    "lastChange" => $currentTimestamp
+                ]
+            ]
+        ];
+        $input['kind'] = "default";
+
+        $entity = (new Query())->writeEntity($input);
+        $secondEntity = (new Query())->writeEntity($input);
         $this->setWorkstation();
         $currentTimestamp = time();
         $this->expectException(AvailabilityUpdateFailed::class);
@@ -90,10 +118,10 @@ class AvailabilityUpdateTest extends Base
             '__body' => json_encode([
                 'availabilityList' => [
                     [
-                        "id" => 21202,
+                        "id" => $entity->getId(),
                         "description" => "Duplicate Entry 1",
-                        "startDate" => $currentTimestamp + (3 * 24 * 60 * 60),
-                        "endDate" => $currentTimestamp + (4 * 24 * 60 * 60),
+                        "startDate" => $currentTimestamp + (20 * 24 * 60 * 60),
+                        "endDate" => $currentTimestamp + (20 * 24 * 60 * 60),
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
                         "kind" => "default",
@@ -102,13 +130,13 @@ class AvailabilityUpdateTest extends Base
                             "dayoff" => [
                                 [
                                     "id" => 35,
-                                    "date" => $currentTimestamp + (7 * 24 * 60 * 60),
+                                    "date" => $currentTimestamp + (70 * 24 * 60 * 60),
                                     "name" => "1. Mai",
                                     "lastChange" => $currentTimestamp
                                 ],
                                 [
                                     "id" => 36,
-                                    "date" => $currentTimestamp + (14 * 24 * 60 * 60),
+                                    "date" => $currentTimestamp + (140 * 24 * 60 * 60),
                                     "name" => "Christi Himmelfahrt",
                                     "lastChange" => $currentTimestamp
                                 ]
@@ -117,10 +145,10 @@ class AvailabilityUpdateTest extends Base
 
                     ],
                     [
-                        "id" => 21202, // Duplicate ID
+                        "id" => $secondEntity->getId(), // Duplicate ID
                         "description" => "Duplicate Entry 2",
-                        "startDate" => $currentTimestamp + (3 * 24 * 60 * 60),
-                        "endDate" => $currentTimestamp + (4 * 24 * 60 * 60),
+                        "startDate" => $currentTimestamp + (20 * 24 * 60 * 60),
+                        "endDate" => $currentTimestamp + (20 * 24 * 60 * 60),
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
                         "kind" => "default",
@@ -129,13 +157,13 @@ class AvailabilityUpdateTest extends Base
                             "dayoff" => [
                                 [
                                     "id" => 35,
-                                    "date" => $currentTimestamp + (7 * 24 * 60 * 60),
+                                    "date" => $currentTimestamp + (70 * 24 * 60 * 60),
                                     "name" => "1. Mai",
                                     "lastChange" => $currentTimestamp
                                 ],
                                 [
                                     "id" => 36,
-                                    "date" => $currentTimestamp + (14 * 24 * 60 * 60),
+                                    "date" => $currentTimestamp + (140 * 24 * 60 * 60),
                                     "name" => "Christi Himmelfahrt",
                                     "lastChange" => $currentTimestamp
                                 ]
