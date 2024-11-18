@@ -67,6 +67,20 @@
       <template #header>{{ t("noAppointmentsAvailableHeader") }}</template>
     </muc-callout>
   </div>
+  <div class="m-submit-group">
+    <muc-button
+      variant="secondary"
+      @click="previousStep"
+    >
+      <template #default>{{ t("back") }}</template>
+    </muc-button>
+    <muc-button
+      :disabled="!selectedTimeslot"
+      @click="nextStep"
+    >
+      <template #default>{{ t("next") }}</template>
+    </muc-button>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -92,6 +106,12 @@ import {
 defineProps<{
   t: any;
 }>();
+
+const emit = defineEmits<{
+  (e: "next"): void;
+  (e: "back"): void;
+}>();
+
 
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
@@ -241,6 +261,9 @@ watch(selectedDay, (newDate) => {
 const handleTimeSlotSelection = (timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
 };
+
+const nextStep = () => emit("next");
+const previousStep = () => emit("back");
 
 onMounted(() => {
   if (selectedService.value) {

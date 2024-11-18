@@ -11,38 +11,26 @@
         :preselected-service-id="serviceId"
         :preselected-offive-id="locationId"
         :t="t"
-        @set-service="setShowIncreaseViewButton"
+        @next="increaseCurrentView"
       />
       <calendar-view
         v-if="currentView === 1"
         :t="t"
+        @back="decreaseCurrentView"
+        @next="increaseCurrentView"
       />
       <customer-info
         v-if="currentView === 2"
         :t="t"
+        @back="decreaseCurrentView"
+        @next="increaseCurrentView"
       />
-      <div class="m-submit-group">
-        <muc-button
-          v-if="showDecreaseViewButton"
-          variant="secondary"
-          @click="decreaseCurrentView"
-        >
-          <template #default>{{ t("back") }}</template>
-        </muc-button>
-        <muc-button
-          v-if="showIncreaseViewButton"
-          :disabled="disableIncreaseViewButton"
-          @click="increaseCurrentView"
-        >
-          <template #default>{{ t("next") }}</template>
-        </muc-button>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { MucButton, MucStepper } from "@muenchen/muc-patternlab-vue";
+import { MucStepper } from "@muenchen/muc-patternlab-vue";
 import { provide, ref, watch } from "vue";
 
 import CalendarView from "@/components/Appointment/CalendarView.vue";
@@ -90,9 +78,6 @@ const STEPPER_ITEMS: StepperItem[] = [
 const activeStep = ref<string>("0");
 
 const currentView = ref<number>(0);
-const disableIncreaseViewButton = ref<boolean>(false);
-const showIncreaseViewButton = ref<boolean>(false);
-const showDecreaseViewButton = ref<boolean>(false);
 
 const selectedService = ref<ServiceImpl>();
 const updateSelectedService = (newService: ServiceImpl): void => {
@@ -114,8 +99,6 @@ const increaseCurrentView = () => currentView.value++;
 
 const decreaseCurrentView = () => currentView.value--;
 
-const setShowIncreaseViewButton = () => (showIncreaseViewButton.value = true);
-
 const changeStep = (step: string) => {
   if (parseInt(step) < parseInt(activeStep.value)) {
     currentView.value = parseInt(step);
@@ -124,14 +107,9 @@ const changeStep = (step: string) => {
 
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
-  showDecreaseViewButton.value = newCurrentView > 0;
-  disableIncreaseViewButton.value =
-    newCurrentView === 1 && selectedTimeslot.value === 0;
 });
 
 watch(selectedTimeslot, (newTimeslot) => {
-  disableIncreaseViewButton.value =
-    currentView.value === 1 && selectedTimeslot.value === 0;
   console.log("TimeSlot: ", newTimeslot);
 });
 </script>
