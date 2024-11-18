@@ -30,20 +30,34 @@
       :label="t('remarks')"
       :hint="t('remarkCompletionInstructions')"
     />
-    <p>{{ validForm }}</p>
-    <p>{{ !errorMessageFirstName }}</p>
-    <p>{{ !errorMessageLastName }}</p>
-    <p>{{ !errorMessagemMailAddress }}</p>
-    <p>{{ !errorMessagemTelephoneNumber }}</p>
   </form>
+  <div class="m-submit-group">
+    <muc-button
+      variant="secondary"
+      @click="previousStep"
+    >
+      <template #default>{{ t("back") }}</template>
+    </muc-button>
+    <muc-button
+      :disabled="!validForm"
+      @click="nextStep"
+    >
+      <template #default>{{ t("next") }}</template>
+    </muc-button>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
+import {MucButton, MucInput, MucTextArea} from "@muenchen/muc-patternlab-vue";
 import {computed, ref} from "vue";
 
 const props = defineProps<{
   t: any;
+}>();
+
+const emit = defineEmits<{
+  (e: "next"): void;
+  (e: "back"): void;
 }>();
 
 const firstName = ref<string>();
@@ -91,6 +105,8 @@ const errorMessagemTelephoneNumber = computed(
 
 const validForm = computed(() => !errorMessageFirstName.value && !errorMessageLastName.value && !errorMessagemMailAddress.value && !errorMessagemTelephoneNumber.value);
 
+const nextStep = () => emit("next");
+const previousStep = () => emit("back");
 </script>
 
 <style scoped></style>

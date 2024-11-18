@@ -55,10 +55,18 @@
       </div>
     </div>
   </div>
+  <div class="m-submit-group">
+    <muc-button
+      v-if="service"
+      @click="nextStep"
+    >
+      <template #default>{{ t("next") }}</template>
+    </muc-button>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { MucCounter, MucSelect } from "@muenchen/muc-patternlab-vue";
+import {MucButton, MucCounter, MucSelect} from "@muenchen/muc-patternlab-vue";
 import { computed, inject, onMounted, ref, watch } from "vue";
 
 import { Office } from "@/api/models/Office";
@@ -78,7 +86,7 @@ const props = defineProps<{
   t: any;
 }>();
 
-const emit = defineEmits<(e: "setService") => void>();
+const emit = defineEmits<(e: "next") => void>();
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
@@ -154,8 +162,6 @@ const setServiceData = (selectedService: ServiceImpl) => {
     maxSlotsOfProvider > 0
       ? Math.min(maxSlotsOfProvider, MAX_SLOTS)
       : MAX_SLOTS;
-
-  emit("setService");
 };
 
 const getProviders = (serviceId: string, providers: string[] | null) => {
@@ -225,6 +231,8 @@ const getMaxSlotsPerAppointementOfProvider = (provider: OfficeImpl[]) => {
   });
   return maxSlot;
 };
+
+const nextStep = () => emit("next");
 
 onMounted(() => {
   fetchServicesAndProviders(
