@@ -18,6 +18,8 @@
     "providerList": providerList
 } %}
 
+{% set rights = workstation.useraccount.rights %}
+
 {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, custombutton, checkboxfield, inputsubmit %}
 
 {#% embed "block/scaffholding/board.twig" with {'class': 'scope-form'} %}
@@ -321,23 +323,25 @@
 			<fieldset>
 				<legend>Internetbuchung</legend>
 				<div class="panel--heavy">
-					{{ formgroup(
-                            {
-                                "legend": "Captcha:",
-                                "groupTag": "fieldset"
-                            },
-                            [
-                            {
-                                "type":"checkbox",
-                                "parameter": {
-                                    "label": "bei der Internetbuchung und ist Pflichtfeld",
-                                    "name": "preferences[client][captchaActivatedRequired]",
-                                    "id": "customTextfield",
-                                    "value": 1,
-                                    "checked": scope.preferences.client.captchaActivatedRequired|default(0),
-                                }
-                            }]
-                        ) }}
+                    {% if rights.superuser %}
+                        {{ formgroup(
+                                {
+                                    "legend": "Captcha:",
+                                    "groupTag": "fieldset"
+                                },
+                                [
+                                {
+                                    "type":"checkbox",
+                                    "parameter": {
+                                        "label": "bei der Internetbuchung und ist Pflichtfeld",
+                                        "name": "preferences[client][captchaActivatedRequired]",
+                                        "id": "customTextfield",
+                                        "value": 1,
+                                        "checked": scope.preferences.client.captchaActivatedRequired|default(0),
+                                    }
+                                }]
+                            ) }}
+                    {% endif %}
 					{{ formgroup(
                         {
                             "legend": "Telefoneingabefeld:",
@@ -492,124 +496,128 @@
 				</div>
 			</fieldset>
 
-			<fieldset>
-				<legend>SMS Einstellungen</legend>
-				<div class="panel--heavy">
-					{% if department.preferences.notifications.enabled %}
-						{{ formgroup(
+            {% if rights.superuser %}
+                <fieldset>
+                    <legend>SMS Einstellungen</legend>
+                    <div class="panel--heavy">
+                        {% if department.preferences.notifications.enabled %}
+                            {{ formgroup(
+                                {
+                                    "legend": "SMS-Bestätigung:",
+                                    "groupTag": "fieldset",
+                                    "description": "Der Kunde erhält eine SMS zur Bestätigung, dass sein Termin gebucht wurde. Bei Terminkunden wird der Text automatisch erstellt."
+                                },
+                                [{
+                                    "type":"checkbox",
+                                    "parameter": {
+                                        "label": " (In Behörde administrierbar)",
+                                        "disabled": 1,
+                                        "name": "preferences[appointment][notificationConfirmationEnabled]",
+                                        "value": 1,
+                                        "checked": (department.preferences.notifications.enabled|default(0) and department.preferences.notifications.sendConfirmationEnabled|default(0)),
+                                    }
+                                }]
+                            ) }}
+
+                            {{ formgroup(
+                                {
+                                    "legend": "SMS-Erinnerung:",
+                                    "groupTag": "fieldset",
+                                    "description": "Der Kunde erhält optional eine SMS zur Erinnerung. Bei Terminkunden wird der Text automatisch erstellt."
+                                },
+                                [{
+                                    "type":"checkbox",
+                                    "parameter": {
+                                        "label": " (In Behörde administrierbar)",
+                                        "disabled": 1,
+                                        "name": "preferences[appointment][notificationConfirmationEnabled]",
+                                        "value": 1,
+                                        "checked": (department.preferences.notifications.enabled|default(0) and department.preferences.notifications.sendReminderEnabled|default(0)),
+                                    }
+                                }]
+                            ) }}
+
+                            {{ formgroup(
+                                {"label": "SMS-Aufruf:", "description": "In Minuten errechnete Wartezeit. Der Kunde erhält eine SMS mit dem Hinweis, dass er jeden Moment aufgerufen wird."},
+                                [{
+                                    "type":"input",
+                                    "parameter": {
+                                        "name": "preferences[notifications][headsUpTime]",
+                                        "value": scope.preferences.notifications.headsUpTime|default(0),
+                                        "maxlength": 2,
+                                        "width": 1
+                                    }
+                                }]
+                            ) }}
+
+                            {{ formgroup(
+                                {"label": "SMS-Aufruftext:", "description": "Die Eingabe ist auf 150 Zeichen beschränkt und die Wartenummer wird ans Textende angehängt."},
+                                [{
+                                    "type":"textarea",
+                                    "parameter": {
+                                        "name": "preferences[notifications][headsUpContent]",
+                                        "value": scope.preferences.notifications.headsUpContent,
+                                        "width": 10,
+                                        "id": "smsbenachrichtigungstext",
+                                        "maxlength": 150
+                                    }
+                                }]
+                            ) }}
+                        {% else %}
+                            <p>
+                                {% trans %}Aktivieren Sie SMS in den Behördeneinstellungen um Einstellungen für diesen Standort vornehmen zu können.{% endtrans %}
+                            </p>
+                        {% endif %}
+                    </div>
+                </fieldset>
+            {% endif %}
+
+            {% if rights.superuser %}
+                <fieldset>
+                    <legend>Kundenbefragung</legend>
+                    <div class="panel--heavy">
+                        {{ formgroup(
                             {
-                                "legend": "SMS-Bestätigung:",
-                                "groupTag": "fieldset",
-                                "description": "Der Kunde erhält eine SMS zur Bestätigung, dass sein Termin gebucht wurde. Bei Terminkunden wird der Text automatisch erstellt."
+                                "legend": "Kundenbefragung aktivieren:",
+                                "groupTag": "fieldset"
                             },
                             [{
                                 "type":"checkbox",
                                 "parameter": {
-                                    "label": " (In Behörde administrierbar)",
-                                    "disabled": 1,
-                                    "name": "preferences[appointment][notificationConfirmationEnabled]",
+                                    "label": "bei der Internetbuchung",
+                                    "name": "preferences[survey][enabled]",
                                     "value": 1,
-                                    "checked": (department.preferences.notifications.enabled|default(0) and department.preferences.notifications.sendConfirmationEnabled|default(0)),
+                                    "checked": scope.preferences.survey.enabled|default(0),
                                 }
                             }]
                         ) }}
 
-						{{ formgroup(
-                            {
-                                "legend": "SMS-Erinnerung:",
-                                "groupTag": "fieldset",
-                                "description": "Der Kunde erhält optional eine SMS zur Erinnerung. Bei Terminkunden wird der Text automatisch erstellt."
-                            },
-                            [{
-                                "type":"checkbox",
-                                "parameter": {
-                                    "label": " (In Behörde administrierbar)",
-                                    "disabled": 1,
-                                    "name": "preferences[appointment][notificationConfirmationEnabled]",
-                                    "value": 1,
-                                    "checked": (department.preferences.notifications.enabled|default(0) and department.preferences.notifications.sendReminderEnabled|default(0)),
-                                }
-                            }]
-                        ) }}
-
-						{{ formgroup(
-                            {"label": "SMS-Aufruf:", "description": "In Minuten errechnete Wartezeit. Der Kunde erhält eine SMS mit dem Hinweis, dass er jeden Moment aufgerufen wird."},
+                        {{ formgroup(
+                            {"label": "Zustimmung zur Kundenbefragung:", "description": "Dieser Text wird über den Nutzungsbedingungen neben einer Checkbox angezeigt. Bitte machen Sie hier deutlich, dass es sich bei der Zustimmung um eine Kundenbefragung handelt."},
                             [{
                                 "type":"input",
                                 "parameter": {
-                                    "name": "preferences[notifications][headsUpTime]",
-                                    "value": scope.preferences.notifications.headsUpTime|default(0),
-                                    "maxlength": 2,
-                                    "width": 1
+                                    "name": "preferences[survey][label]",
+                                    "value": scope.preferences.survey.label,
+                                    "maxlength": 250
                                 }
                             }]
                         ) }}
 
-						{{ formgroup(
-                            {"label": "SMS-Aufruftext:", "description": "Die Eingabe ist auf 150 Zeichen beschränkt und die Wartenummer wird ans Textende angehängt."},
+                        {{ formgroup(
+                            {"label": "E-Mail-Text zur Kundenbefragung:", "description": "Dieser Text wird dem Kunden nach der Inanspruchnahme des Termins per E-Mail zugestellt."},
                             [{
                                 "type":"textarea",
                                 "parameter": {
-                                    "name": "preferences[notifications][headsUpContent]",
-                                    "value": scope.preferences.notifications.headsUpContent,
-                                    "width": 10,
-                                    "id": "smsbenachrichtigungstext",
-                                    "maxlength": 150
+                                    "name": "preferences[survey][emailContent]",
+                                    "value": scope.preferences.survey.emailContent,
+                                    "id": "kundenbef_emailtext",
                                 }
                             }]
                         ) }}
-					{% else %}
-						<p>
-							{% trans %}Aktivieren Sie SMS in den Behördeneinstellungen um Einstellungen für diesen Standort vornehmen zu können.{% endtrans %}
-						</p>
-					{% endif %}
-				</div>
-			</fieldset>
-
-			<fieldset>
-				<legend>Kundenbefragung</legend>
-				<div class="panel--heavy">
-					{{ formgroup(
-                        {
-                            "legend": "Kundenbefragung aktivieren:",
-                            "groupTag": "fieldset"
-                        },
-                        [{
-                            "type":"checkbox",
-                            "parameter": {
-                                "label": "bei der Internetbuchung",
-                                "name": "preferences[survey][enabled]",
-                                "value": 1,
-                                "checked": scope.preferences.survey.enabled|default(0),
-                            }
-                        }]
-                    ) }}
-
-					{{ formgroup(
-                        {"label": "Zustimmung zur Kundenbefragung:", "description": "Dieser Text wird über den Nutzungsbedingungen neben einer Checkbox angezeigt. Bitte machen Sie hier deutlich, dass es sich bei der Zustimmung um eine Kundenbefragung handelt."},
-                        [{
-                            "type":"input",
-                            "parameter": {
-                                "name": "preferences[survey][label]",
-                                "value": scope.preferences.survey.label,
-                                "maxlength": 250
-                            }
-                        }]
-                    ) }}
-
-					{{ formgroup(
-                        {"label": "E-Mail-Text zur Kundenbefragung:", "description": "Dieser Text wird dem Kunden nach der Inanspruchnahme des Termins per E-Mail zugestellt."},
-                        [{
-                            "type":"textarea",
-                            "parameter": {
-                                "name": "preferences[survey][emailContent]",
-                                "value": scope.preferences.survey.emailContent,
-                                "id": "kundenbef_emailtext",
-                            }
-                        }]
-                    ) }}
-				</div>
-			</fieldset>
+                    </div>
+                </fieldset>
+            {% endif %}
 
 			<fieldset>
 				<legend>Notruf</legend>
@@ -664,111 +672,113 @@
 				</div>
 			</fieldset>
 
-			<fieldset>
-				<legend>Wartenummern-Kiosk</legend>
-				<div class="panel--heavy">
-					{{ formgroup(
-                        {"label": "Button-Name:", "description": "Diese Angabe dient der Unterscheidung identischer Dienstleister und erscheint auf dem Wartenummernkiosk."},
-                        [{
-                            "type":"input",
-                            "parameter": {
-                                "name": "preferences[ticketprinter][buttonName]",
-                                "value": scope.preferences.ticketprinter.buttonName,
-                                "maxlength": 40,
-                                "width": 7,
-                            }
-                        }]
-                    ) }}
+            {% if rights.superuser %}
+                <fieldset>
+                    <legend>Wartenummern-Kiosk</legend>
+                    <div class="panel--heavy">
+                        {{ formgroup(
+                            {"label": "Button-Name:", "description": "Diese Angabe dient der Unterscheidung identischer Dienstleister und erscheint auf dem Wartenummernkiosk."},
+                            [{
+                                "type":"input",
+                                "parameter": {
+                                    "name": "preferences[ticketprinter][buttonName]",
+                                    "value": scope.preferences.ticketprinter.buttonName,
+                                    "maxlength": 40,
+                                    "width": 7,
+                                }
+                            }]
+                        ) }}
 
-					{% if department.preferences.notifications.enabled %}
+                        {% if department.preferences.notifications.enabled %}
 
-						{{ formgroup(
-                        {
-                            "legend": "SMS-Eintrag:", 
-                            "groupTag": "fieldset",
-                            "description": "Eine Mobilfunknummereingabe beim Ziehen einer Nummer am Kiosk erlauben."
-                        },
-                        [{
-                            "type":"checkbox",
-                            "parameter": {
-                                "label": "SMS-Eintrag am Kiosk aktivieren",
-                                "name": "preferences[ticketprinter][notificationsEnabled]",
-                                "value": 1,
-                                "checked": scope.preferences.ticketprinter.notificationsEnabled|default(0),
-                            }
-                        }]
-                    ) }}
+                            {{ formgroup(
+                            {
+                                "legend": "SMS-Eintrag:", 
+                                "groupTag": "fieldset",
+                                "description": "Eine Mobilfunknummereingabe beim Ziehen einer Nummer am Kiosk erlauben."
+                            },
+                            [{
+                                "type":"checkbox",
+                                "parameter": {
+                                    "label": "SMS-Eintrag am Kiosk aktivieren",
+                                    "name": "preferences[ticketprinter][notificationsEnabled]",
+                                    "value": 1,
+                                    "checked": scope.preferences.ticketprinter.notificationsEnabled|default(0),
+                                }
+                            }]
+                        ) }}
 
-						{{ formgroup(
-                        {
-                            "legend": "SMS-Nachtrag:", 
-                            "groupTag": "fieldset", 
-                            "description": "Eine nachträglicher Mobilfunknummereingabe am Kiosk erlauben."
-                        },
-                        [{
-                            "type":"checkbox",
-                            "parameter": {
-                                "label": "SMS-Nachtrag am Kiosk aktivieren",
-                                "name": "preferences[ticketprinter][notificationsAmendmentEnabled]",
-                                "value": 1,
-                                "checked": scope.preferences.ticketprinter.notificationsAmendmentEnabled|default(0),
-                            }
-                        }]
-                    ) }}
+                            {{ formgroup(
+                            {
+                                "legend": "SMS-Nachtrag:", 
+                                "groupTag": "fieldset", 
+                                "description": "Eine nachträglicher Mobilfunknummereingabe am Kiosk erlauben."
+                            },
+                            [{
+                                "type":"checkbox",
+                                "parameter": {
+                                    "label": "SMS-Nachtrag am Kiosk aktivieren",
+                                    "name": "preferences[ticketprinter][notificationsAmendmentEnabled]",
+                                    "value": 1,
+                                    "checked": scope.preferences.ticketprinter.notificationsAmendmentEnabled|default(0),
+                                }
+                            }]
+                        ) }}
 
-						{{ formgroup(
-                        {
-                            "legend": "SMS-Bestätigung:", 
-                            "groupTag": "fieldset", 
-                            "description": "Der Kunde erhält eine SMS zur Bestätigung, dass er in die Warteschlange aufgenommen wurde."
-                        },
-                        [{
-                            "type":"checkbox",
-                            "parameter": {
-                                "label": "für den Kiosk aktivieren",
-                                "name": "preferences[ticketprinter][confirmationEnabled]",
-                                "value": 1,
-                                "checked": scope.preferences.ticketprinter.confirmationEnabled|default(0),
-                            }
-                        }]
-                    ) }}
+                            {{ formgroup(
+                            {
+                                "legend": "SMS-Bestätigung:", 
+                                "groupTag": "fieldset", 
+                                "description": "Der Kunde erhält eine SMS zur Bestätigung, dass er in die Warteschlange aufgenommen wurde."
+                            },
+                            [{
+                                "type":"checkbox",
+                                "parameter": {
+                                    "label": "für den Kiosk aktivieren",
+                                    "name": "preferences[ticketprinter][confirmationEnabled]",
+                                    "value": 1,
+                                    "checked": scope.preferences.ticketprinter.confirmationEnabled|default(0),
+                                }
+                            }]
+                        ) }}
 
-						{{ formgroup(
-                        {
-                            "label": "SMS-Angebotsfrist:", 
-                            "description": "In Minuten errechnete Wartezeit. Wartezeit, ab der am Kiosk die SMS-Option angeboten wird, bei 0 wird der Systemdefaultwert verwendet."
-                        },
-                        [{
-                            "type":"input",
-                            "parameter": {
-                                "name": "preferences[ticketprinter][notificationsDelay]",
-                                "value": scope.preferences.ticketprinter.notificationsDelay|default(0),
-                                "maxlength": 2,
-                                "width": 1
-                            }
-                        }]
-                    ) }}
+                            {{ formgroup(
+                            {
+                                "label": "SMS-Angebotsfrist:", 
+                                "description": "In Minuten errechnete Wartezeit. Wartezeit, ab der am Kiosk die SMS-Option angeboten wird, bei 0 wird der Systemdefaultwert verwendet."
+                            },
+                            [{
+                                "type":"input",
+                                "parameter": {
+                                    "name": "preferences[ticketprinter][notificationsDelay]",
+                                    "value": scope.preferences.ticketprinter.notificationsDelay|default(0),
+                                    "maxlength": 2,
+                                    "width": 1
+                                }
+                            }]
+                        ) }}
 
-						{{ formgroup(
-                        {"label": "SMS-Bestätigungstext für Spontankunden:", "description": "Die Eingabe ist auf 150 Zeichen beschränkt und die Wartenummer wird ans Textende angehängt."},
-                        [{
-                            "type":"textarea",
-                            "parameter": {
-                                "name": "preferences[notifications][confirmationContent]",
-                                "id": "smsbestaetigungstext",
-                                "value": scope.preferences.notifications.confirmationContent,
-                                "width": 10,
-                                "maxlength": 150
-                            }
-                        }]
-                    ) }}
-					{% else %}
-						<p>
-							{% trans %}Aktivieren Sie SMS in den Behördeneinstellungen um Einstellungen für diesen Standort vornehmen zu können.{% endtrans %}
-						</p>
-					{% endif %}
-				</div>
-			</fieldset>
+                            {{ formgroup(
+                            {"label": "SMS-Bestätigungstext für Spontankunden:", "description": "Die Eingabe ist auf 150 Zeichen beschränkt und die Wartenummer wird ans Textende angehängt."},
+                            [{
+                                "type":"textarea",
+                                "parameter": {
+                                    "name": "preferences[notifications][confirmationContent]",
+                                    "id": "smsbestaetigungstext",
+                                    "value": scope.preferences.notifications.confirmationContent,
+                                    "width": 10,
+                                    "maxlength": 150
+                                }
+                            }]
+                        ) }}
+                        {% else %}
+                            <p>
+                                {% trans %}Aktivieren Sie SMS in den Behördeneinstellungen um Einstellungen für diesen Standort vornehmen zu können.{% endtrans %}
+                            </p>
+                        {% endif %}
+                    </div>
+                </fieldset>
+            {% endif %}
 
 			<fieldset>
 				<legend>Warteschlangenmanagement</legend>
@@ -912,45 +922,46 @@
 						) }}
 					{% endif %}
 
-					<fieldset>
-						<legend class="label">Bild für Aufrufanlage:</legend>
-						{{ formgroup(
+                    {% if rights.superuser %}
+                        <fieldset>
+                            <legend class="label">Bild für Aufrufanlage:</legend>
+                            {{ formgroup(
+                                    {
+                                        "label": null
+                                    },
+                                    [
+                                        {
+                                            "type":"checkbox",
+                                            "parameter": {
+                                                "name": "removeImage",
+                                                "value": 1,
+                                                "label": "Kein Bild in der Aufrufanzeige anzeigen"
+                                            }
+                                        }
+                                    ]
+                                ) }}
+                            {{ formgroup(
                                 {
-                                    "label": null
+                                    "label": "Bild auswählen", 
+                                    "labelClass": "aural", 
+                                    "description": "Zulässig sind nur SVG-, JPG-, PNG oder GIF-Bilder bis 48 KB Größe. Das Bild wird in einer Breite von 200 Pixel erscheinen."
                                 },
                                 [
                                     {
-                                        "type":"checkbox",
+                                        "type":"file",
                                         "parameter": {
-                                            "name": "removeImage",
-                                            "value": 1,
-                                            "label": "Kein Bild in der Aufrufanzeige anzeigen"
+                                            "name": "uploadCallDisplayImage",
+                                            "file": {
+                                                "type": "image",
+                                                "alt": "Bild der Aufrufanlage",
+                                                "data": callDisplayImage,
+                                            }
                                         }
                                     }
                                 ]
                             ) }}
-						{{ formgroup(
-                            {
-                                "label": "Bild auswählen", 
-                                "labelClass": "aural", 
-                                "description": "Zulässig sind nur SVG-, JPG-, PNG oder GIF-Bilder bis 48 KB Größe. Das Bild wird in einer Breite von 200 Pixel erscheinen."
-                            },
-                            [
-                                {
-                                    "type":"file",
-                                    "parameter": {
-                                        "name": "uploadCallDisplayImage",
-                                        "file": {
-                                            "type": "image",
-                                            "alt": "Bild der Aufrufanlage",
-                                            "data": callDisplayImage,
-                                        }
-                                    }
-                                }
-                            ]
-                        ) }}
-					</fieldset>
-
+                        </fieldset>
+                    {% endif %}
 				</div>
 			</fieldset>
 
