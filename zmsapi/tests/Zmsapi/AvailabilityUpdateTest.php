@@ -21,6 +21,13 @@ class AvailabilityUpdateTest extends Base
         $input['endTime'] = "17:00:00";
         $input['scope'] = ["id" => 312];
         $input['kind'] = "default";
+        $input["dayoff"] = [
+            [
+                "id" => 302,
+                "date" => time() + (10 * 24 * 60 * 60), // 10 days in the future
+                "name" => "Test Dayoff"
+            ]
+        ];
 
         $entity = (new Query())->writeEntity($input);
         error_log(json_encode($entity));
@@ -32,7 +39,7 @@ class AvailabilityUpdateTest extends Base
             '__body' => json_encode([
                 'availabilityList' => [
                     [
-                        "id" => $entity->getId(),
+                        "id" => 21202,
                         "description" => "Test Öffnungszeit update",
                         "startDate" => time() + (2 * 24 * 60 * 60), // 2 days in the future
                         "endDate" => time() + (5 * 24 * 60 * 60),   // 5 days in the future
@@ -41,17 +48,18 @@ class AvailabilityUpdateTest extends Base
                         "kind" => "default",
                         "scope" => [
                             "id" => 312
-                        ]
+                        ],
+                        "dayoff" => []
                     ]
                 ],
                 'selectedDate' => date('Y-m-d')
             ])
         ], []);
 
-        $this->assertStringContainsString('availability.json', (string)$response->getBody());
+        $this->assertStringContainsString('availability.json', (string) $response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
-    
+
 
     public function testEmpty()
     {
@@ -63,10 +71,10 @@ class AvailabilityUpdateTest extends Base
     public function testNotFound()
     {
         $this->setWorkstation();
-    
+
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
         $this->expectExceptionCode(404);
-    
+
         $this->render(
             ["id" => 1],
             [
@@ -84,5 +92,5 @@ class AvailabilityUpdateTest extends Base
             []
         );
     }
-    
+
 }
