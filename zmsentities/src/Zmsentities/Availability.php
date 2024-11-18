@@ -811,11 +811,6 @@ class Availability extends Schema\Entity
     
         return $processList;
     }
-    
-    
-    
-    
-    
 
     /**
      * Update workstationCount to number of calculated appointments
