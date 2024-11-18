@@ -112,7 +112,6 @@ const emit = defineEmits<{
   (e: "back"): void;
 }>();
 
-
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;

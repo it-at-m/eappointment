@@ -48,8 +48,8 @@
 </template>
 
 <script setup lang="ts">
-import {MucButton, MucInput, MucTextArea} from "@muenchen/muc-patternlab-vue";
-import {computed, ref} from "vue";
+import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
+import { computed, ref } from "vue";
 
 const props = defineProps<{
   t: any;
@@ -69,41 +69,44 @@ const remarks = ref<string>();
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const telephonPattern = /^\+?\d[\d\s]*$/;
 
-const errorMessageFirstName = computed(
-  () =>
-    firstName.value ? undefined : props.t('errorMessageFirstName')
+const errorMessageFirstName = computed(() =>
+  firstName.value ? undefined : props.t("errorMessageFirstName")
 );
 
-const errorMessageLastName = computed(
-  () =>
-    lastName.value ? undefined : props.t('errorMessageLastName')
+const errorMessageLastName = computed(() =>
+  lastName.value ? undefined : props.t("errorMessageLastName")
 );
 
-const errorMessagemMailAddress = computed(
-  () => {
-    if (!mailAddress.value) {
-      return props.t('errorMessageMailAddressRequired');
-    } else if (!emailPattern.test(mailAddress.value)) {
-      return props.t('errorMessageMailAddressValidation');
-    } else {
-      return undefined;
-    }
+const errorMessagemMailAddress = computed(() => {
+  if (!mailAddress.value) {
+    return props.t("errorMessageMailAddressRequired");
+  } else if (!emailPattern.test(mailAddress.value)) {
+    return props.t("errorMessageMailAddressValidation");
+  } else {
+    return undefined;
   }
-);
+});
 
-const errorMessagemTelephoneNumber = computed(
-  () => {
-    if (!telephoneNumber.value && false) {
-      return props.t('errorMessageTelephoneNumberRequired');
-    } else if (telephoneNumber.value && !telephonPattern.test(telephoneNumber.value)) {
-      return props.t('errorMessageTelephoneNumberValidation');
-    } else {
-      return undefined;
-    }
+const errorMessagemTelephoneNumber = computed(() => {
+  if (!telephoneNumber.value && false) {
+    return props.t("errorMessageTelephoneNumberRequired");
+  } else if (
+    telephoneNumber.value &&
+    !telephonPattern.test(telephoneNumber.value)
+  ) {
+    return props.t("errorMessageTelephoneNumberValidation");
+  } else {
+    return undefined;
   }
-);
+});
 
-const validForm = computed(() => !errorMessageFirstName.value && !errorMessageLastName.value && !errorMessagemMailAddress.value && !errorMessagemTelephoneNumber.value);
+const validForm = computed(
+  () =>
+    !errorMessageFirstName.value &&
+    !errorMessageLastName.value &&
+    !errorMessagemMailAddress.value &&
+    !errorMessagemTelephoneNumber.value
+);
 
 const nextStep = () => emit("next");
 const previousStep = () => emit("back");
