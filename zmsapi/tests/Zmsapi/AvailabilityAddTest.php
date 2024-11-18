@@ -7,7 +7,6 @@ class AvailabilityAddTest extends Base
 {
     protected $classname = "AvailabilityAdd";
 
-
     public function testRendering()
     {
         $this->setWorkstation();

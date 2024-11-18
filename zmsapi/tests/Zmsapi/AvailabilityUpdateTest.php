@@ -52,7 +52,7 @@ class AvailabilityUpdateTest extends Base
                         "kind" => "default",
                         "scope" => [
                             "id" => 312,
-                            "dayoff" => [  // Moved dayoff inside the scope object
+                            "dayoff" => [
                                 [
                                     "id" => 35,
                                     "date" => $currentTimestamp + (7 * 24 * 60 * 60),
@@ -75,6 +75,130 @@ class AvailabilityUpdateTest extends Base
         
         $this->assertStringContainsString('availability.json', (string) $response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+    public function testDuplicateAvailability()
+    {
+        $this->setWorkstation();
+        $currentTimestamp = time();
+        $this->expectException(AvailabilityUpdateFailed::class);
+
+        $this->render([], [
+            '__body' => json_encode([
+                'availabilityList' => [
+                    [
+                        "id" => 21202,
+                        "description" => "Duplicate Entry 1",
+                        "startDate" => $currentTimestamp + (3 * 24 * 60 * 60),
+                        "endDate" => $currentTimestamp + (4 * 24 * 60 * 60),
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
+                        "kind" => "default",
+                        "scope" => ["id" => 312],
+                        "dayoff" => [
+                            [
+                                "id" => 35,
+                                "date" => $currentTimestamp + (7 * 24 * 60 * 60),
+                                "name" => "1. Mai",
+                                "lastChange" => $currentTimestamp
+                            ],
+                            [
+                                "id" => 36,
+                                "date" => $currentTimestamp + (14 * 24 * 60 * 60),
+                                "name" => "Christi Himmelfahrt",
+                                "lastChange" => $currentTimestamp
+                            ]
+                        ]
+                    ],
+                    [
+                        "id" => 21202, // Duplicate ID
+                        "description" => "Duplicate Entry 2",
+                        "startDate" => $currentTimestamp + (3 * 24 * 60 * 60),
+                        "endDate" => $currentTimestamp + (4 * 24 * 60 * 60),
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
+                        "kind" => "default",
+                        "scope" => ["id" => 312],
+                        "dayoff" => [
+                            [
+                                "id" => 35,
+                                "date" => $currentTimestamp + (7 * 24 * 60 * 60),
+                                "name" => "1. Mai",
+                                "lastChange" => $currentTimestamp
+                            ],
+                            [
+                                "id" => 36,
+                                "date" => $currentTimestamp + (14 * 24 * 60 * 60),
+                                "name" => "Christi Himmelfahrt",
+                                "lastChange" => $currentTimestamp
+                            ]
+                        ]
+                    ]
+                ],
+                'selectedDate' => date('Y-m-d')
+            ])
+        ], []);
+    }
+    public function testOverlappingAvailability()
+    {
+        $this->setWorkstation();
+        $currentTimestamp = time();
+        $this->expectException(AvailabilityUpdateFailed::class);
+
+        $this->render([], [
+            '__body' => json_encode([
+                'availabilityList' => [
+                    [
+                        "id" => 21202,
+                        "description" => "Overlapping Entry 1",
+                        "startDate" => $currentTimestamp + (2 * 24 * 60 * 60),
+                        "endDate" => $currentTimestamp + (3 * 24 * 60 * 60),
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
+                        "kind" => "default",
+                        "scope" => ["id" => 312],
+                        "dayoff" => [
+                            [
+                                "id" => 35,
+                                "date" => $currentTimestamp + (7 * 24 * 60 * 60),
+                                "name" => "1. Mai",
+                                "lastChange" => $currentTimestamp
+                            ],
+                            [
+                                "id" => 36,
+                                "date" => $currentTimestamp + (14 * 24 * 60 * 60),
+                                "name" => "Christi Himmelfahrt",
+                                "lastChange" => $currentTimestamp
+                            ]
+                        ]
+                    ],
+                    [
+                        "id" => 21203,
+                        "description" => "Overlapping Entry 2",
+                        "startDate" => $currentTimestamp + (2 * 24 * 60 * 60),
+                        "endDate" => $currentTimestamp + (3 * 24 * 60 * 60),
+                        "startTime" => "10:00:00",
+                        "endTime" => "18:00:00",
+                        "kind" => "default",
+                        "scope" => ["id" => 312],
+                        "dayoff" => [
+                            [
+                                "id" => 35,
+                                "date" => $currentTimestamp + (7 * 24 * 60 * 60),
+                                "name" => "1. Mai",
+                                "lastChange" => $currentTimestamp
+                            ],
+                            [
+                                "id" => 36,
+                                "date" => $currentTimestamp + (14 * 24 * 60 * 60),
+                                "name" => "Christi Himmelfahrt",
+                                "lastChange" => $currentTimestamp
+                            ]
+                        ]
+                    ]
+                ],
+                'selectedDate' => date('Y-m-d')
+            ])
+        ], []);
     }
 
     public function testEmpty()
