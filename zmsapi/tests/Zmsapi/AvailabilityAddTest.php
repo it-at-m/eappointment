@@ -2,7 +2,7 @@
 
 namespace BO\Zmsapi\Tests;
 
-use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed;
+use BO\Zmsapi\Exception\Availability\AvailabilityAddFailed;
 use \DateTime;
 class AvailabilityAddTest extends Base
 {
@@ -50,7 +50,7 @@ class AvailabilityAddTest extends Base
     public function testOverlappingAvailability()
     {
         $this->setWorkstation();
-        $this->expectException(AvailabilityUpdateFailed::class);
+        $this->expectException(AvailabilityAddFailed::class);
 
         $this->render([], [
             '__body' => json_encode([
@@ -84,7 +84,7 @@ class AvailabilityAddTest extends Base
     public function testDuplicateOverlappingAvailability()
     {
         $this->setWorkstation();
-        $this->expectException(AvailabilityUpdateFailed::class);
+        $this->expectException(AvailabilityAddFailed::class);
 
         $this->render([], [
             '__body' => json_encode([
@@ -118,7 +118,7 @@ class AvailabilityAddTest extends Base
     public function testInvalidEndTime()
     {
         $this->setWorkstation();
-        $this->expectException(AvailabilityUpdateFailed::class);
+        $this->expectException(AvailabilityAddFailed::class);
 
         $this->render([], [
             '__body' => json_encode([
@@ -158,7 +158,7 @@ class AvailabilityAddTest extends Base
     public function testUpdateFailed()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed');
+        $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityAddFailed');
         $this->expectExceptionCode(400);
 
         $this->render([], [
