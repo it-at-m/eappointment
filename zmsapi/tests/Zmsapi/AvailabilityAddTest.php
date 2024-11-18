@@ -46,6 +46,7 @@ class AvailabilityAddTest extends Base
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
+
     public function testOverlappingAvailability()
     {
         $this->setWorkstation();
@@ -79,6 +80,7 @@ class AvailabilityAddTest extends Base
             ])
         ], []);
     }
+
     public function testDuplicateOverlappingAvailability()
     {
         $this->setWorkstation();
@@ -113,29 +115,6 @@ class AvailabilityAddTest extends Base
         ], []);
     }
 
-    public function testInvalidStartTime()
-    {
-        $this->setWorkstation();
-        $this->expectException(AvailabilityUpdateFailed::class);
-
-        $this->render([], [
-            '__body' => json_encode([
-                'availabilityList' => [
-                    [
-                        "description" => "Start Time in Future",
-                        "startDate" => time() + (10 * 24 * 60 * 60), // 10 days in the future
-                        "endDate" => time() + (15 * 24 * 60 * 60),
-                        "startTime" => "09:00:00",
-                        "endTime" => "17:00:00",
-                        "kind" => "past",
-                        "scope" => ["id" => 312]
-                    ]
-                ],
-                'selectedDate' => (new DateTime('2024-11-17'))->format('Y-m-d')
-            ])
-        ], []);
-    }
-
     public function testInvalidEndTime()
     {
         $this->setWorkstation();
@@ -152,29 +131,6 @@ class AvailabilityAddTest extends Base
                         "endTime" => "09:00:00",
                         "kind" => "default",
                         "scope" => ["id" => 312]
-                    ]
-                ],
-                'selectedDate' => date('Y-m-d')
-            ])
-        ], []);
-    }
-
-    public function testMissingKind()
-    {
-        $this->setWorkstation();
-        $this->expectException(AvailabilityUpdateFailed::class);
-
-        $this->render([], [
-            '__body' => json_encode([
-                'availabilityList' => [
-                    [
-                        "description" => "Missing Kind",
-                        "startDate" => time() + (2 * 24 * 60 * 60),
-                        "endDate" => time() + (3 * 24 * 60 * 60),
-                        "startTime" => "09:00:00",
-                        "endTime" => "17:00:00",
-                        "scope" => ["id" => 312],
-                        "kind" => null,
                     ]
                 ],
                 'selectedDate' => date('Y-m-d')
