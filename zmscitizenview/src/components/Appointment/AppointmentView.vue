@@ -8,9 +8,6 @@
       />
       <service-finder
         v-if="currentView === 0"
-        :services="services"
-        :relations="relations"
-        :offices="offices"
         :preselected-service-id="serviceId"
         :preselected-offive-id="locationId"
         :t="t"
@@ -20,7 +17,10 @@
         v-if="currentView === 1"
         :t="t"
       />
-      <customer-info v-if="currentView === 2" />
+      <customer-info
+        v-if="currentView === 2"
+        :t="t"
+      />
       <div class="m-submit-group">
         <muc-button
           v-if="showDecreaseViewButton"
@@ -43,12 +43,8 @@
 
 <script setup lang="ts">
 import { MucButton, MucStepper } from "@muenchen/muc-patternlab-vue";
-import { onMounted, provide, ref, watch } from "vue";
+import { provide, ref, watch } from "vue";
 
-import { Office } from "@/api/models/Office";
-import { Relation } from "@/api/models/Relation";
-import { Service } from "@/api/models/Service";
-import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
@@ -93,10 +89,6 @@ const STEPPER_ITEMS: StepperItem[] = [
 
 const activeStep = ref<string>("0");
 
-const services = ref<Service[]>([]);
-const relations = ref<Relation[]>([]);
-const offices = ref<Office[]>([]);
-
 const currentView = ref<number>(0);
 const disableIncreaseViewButton = ref<boolean>(false);
 const showIncreaseViewButton = ref<boolean>(false);
@@ -117,21 +109,6 @@ provide<SelectedServiceProvider>("selectedServiceProvider", {
 provide<SelectedTimeslotProvider>("selectedTimeslot", {
   selectedTimeslot,
 } as SelectedTimeslotProvider);
-
-onMounted(() => {
-  loadData();
-});
-
-function loadData() {
-  fetchServicesAndProviders(
-    props.serviceId ?? undefined,
-    props.locationId ?? undefined
-  ).then((data) => {
-    services.value = data.services;
-    relations.value = data.relations;
-    offices.value = data.offices;
-  });
-}
 
 const increaseCurrentView = () => currentView.value++;
 
