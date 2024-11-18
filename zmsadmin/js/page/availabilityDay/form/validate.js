@@ -41,7 +41,7 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
     //const startDateTime = startTime.clone().set({ h: startHour, m: startMinute });
     const isFuture = (data.kind && 'future' == data.kind);
     //const isOrigin = (data.kind && 'origin' == data.kind);
-    
+
     if (! isFuture && selectedDate.unix() > today.unix() && startTime.isAfter(selectedDate.startOf('day'), 'day')) {
         errorList.push({
             type: 'startTimeFuture', 
