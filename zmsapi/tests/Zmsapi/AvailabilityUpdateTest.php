@@ -79,6 +79,7 @@ class AvailabilityUpdateTest extends Base
         $this->assertStringContainsString('availability.json', (string) $response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
+    
     public function testDuplicateAvailability()
     {
         $this->setWorkstation();
@@ -143,6 +144,7 @@ class AvailabilityUpdateTest extends Base
             ])
         ], []);
     }
+
     public function testOverlappingAvailability()
     {
         $this->setWorkstation();
