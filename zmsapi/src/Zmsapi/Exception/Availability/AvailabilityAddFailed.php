@@ -5,9 +5,9 @@ namespace BO\Zmsapi\Exception\Availability;
 /**
  * example class to generate an exception
  */
-class AvailabilityUpdateFailed extends \Exception
+class AvailabilityAddFailed extends \Exception
 {
     protected $code = 400;
 
-    protected $message = 'Could not update availablity.';
+    protected $message = 'Could not create availablity.';
 }

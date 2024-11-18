@@ -20,7 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 
 use BO\Zmsapi\AvailabilitySlotsUpdate;
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
-use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed;
+use BO\Zmsapi\Exception\Availability\AvailabilityAddFailed;
 
 
 /**
@@ -86,14 +86,14 @@ class AvailabilityAdd extends BaseController
 
         if (count($validation) > 0) {
             //error_log(json_encode($validation));
-            throw new AvailabilityUpdateFailed();
+            throw new AvailabilityAddFailed();
         }        
     
         [$earliestStartDateTime, $latestEndDateTime] = $mergedCollection->getDateTimeRangeFromList(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00'));
         $conflicts = $mergedCollection->getConflicts($earliestStartDateTime, $latestEndDateTime);
         if ($conflicts->count() > 0) {
             //error_log(json_encode($conflicts));
-            throw new AvailabilityUpdateFailed();
+            throw new AvailabilityAddFailed();
         }
 
         $updatedCollection = new Collection();
@@ -124,7 +124,7 @@ class AvailabilityAdd extends BaseController
             $updatedEntity = $repository->writeEntity($entity, 2);
         }
         if (!$updatedEntity) {
-            throw new AvailabilityUpdateFailed();
+            throw new AvailabilityAddFailed();
         }
         return $updatedEntity;
     }
