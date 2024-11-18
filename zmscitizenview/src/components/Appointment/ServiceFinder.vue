@@ -2,6 +2,7 @@
   <h2 tabindex="0">{{ t("service") }}</h2>
   <div
     v-if="!service"
+    :hidden="preselectedServiceId"
     class="m-component"
     style="background-color: var(--color-neutrals-blue-xlight)"
   >
@@ -69,17 +70,19 @@ import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { MAX_SLOTS } from "@/utils/Constants";
+import {fetchServicesAndProviders} from "@/api/ZMSAppointmentAPI";
 
 const props = defineProps<{
-  services: Service[];
-  relations: Relation[];
-  offices: Office[];
   preselectedServiceId: string | undefined;
   preselectedOffiveId: string | undefined;
   t: any;
 }>();
 
 const emit = defineEmits<(e: "setService") => void>();
+
+const services = ref<Service[]>([]);
+const relations = ref<Relation[]>([]);
+const offices = ref<Office[]>([]);
 
 const { selectedService, updateSelectedService } =
   inject<SelectedServiceProvider>(
@@ -120,7 +123,7 @@ const setServiceData = (selectedService: ServiceImpl) => {
 
     service.value.subServices = Object.entries(combinable)
       .map(([subServiceId, providers]) => {
-        const subService = props.services.filter(
+        const subService = services.value.filter(
           (subService) => parseInt(subService.id) === parseInt(subServiceId)
         );
         if (subService && subService.length === 1) {
@@ -157,9 +160,9 @@ const setServiceData = (selectedService: ServiceImpl) => {
 
 const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
-  props.relations.forEach((relation) => {
+  relations.value.forEach((relation) => {
     if (relation.serviceId === serviceId) {
-      const foundOffice: OfficeImpl = props.offices.filter((office) => {
+      const foundOffice: OfficeImpl = offices.value.filter((office) => {
         return office.id === relation.officeId;
       })[0];
 
@@ -224,12 +227,20 @@ const getMaxSlotsPerAppointementOfProvider = (provider: OfficeImpl[]) => {
 };
 
 onMounted(() => {
-  if (props.preselectedServiceId) {
-    const preselectedService = props.services.find(
-      (service) => service.id === props.preselectedServiceId
-    );
-    if (preselectedService) setServiceData(preselectedService);
-  }
+  fetchServicesAndProviders(
+    props.preselectedServiceId ?? undefined,
+    props.preselectedOffiveId ?? undefined
+  ).then((data) => {
+    services.value = data.services;
+    relations.value = data.relations;
+    offices.value = data.offices;
+
+    if (props.preselectedServiceId) {
+      service.value = services.value.find(
+        (service) => service.id === props.preselectedServiceId
+      );
+    }
+  });
 });
 </script>
 

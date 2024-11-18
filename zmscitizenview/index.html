@@ -24,6 +24,26 @@
     <zms-appointment></zms-appointment>
 </i18n-host>
 
+<script type="text/javascript">
+    const element = document.getElementsByTagName('zms-appointment')[0]
+    const urlElements = window.location.hash.split('/')
+
+    if (urlElements.length >= 3 && urlElements[1] === 'services') {
+        element.setAttribute('service-id', urlElements[2])
+    }
+
+    if (urlElements.length >= 5 && urlElements[3] === 'locations') {
+        element.setAttribute('location-id', urlElements[4])
+    }
+
+    if (urlElements.length === 4 && urlElements[1] === 'appointment' && urlElements[2] === 'confirm') {
+        element.setAttribute('confirm-appointment-hash', urlElements[3])
+    }
+
+    if (urlElements.length === 3 && urlElements[1] === 'appointment') {
+        element.setAttribute('appointment-hash', urlElements[2])
+    }
+</script>
 
 </body>
 
