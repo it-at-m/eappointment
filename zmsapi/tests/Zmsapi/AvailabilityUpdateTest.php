@@ -79,7 +79,7 @@ class AvailabilityUpdateTest extends Base
         $this->assertStringContainsString('availability.json', (string) $response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
-    
+
     public function testDuplicateAvailability()
     {
         $this->setWorkstation();
@@ -97,21 +97,24 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
                         "kind" => "default",
-                        "scope" => ["id" => 312],
-                        "dayoff" => [
-                            [
-                                "id" => 35,
-                                "date" => $currentTimestamp + (7 * 24 * 60 * 60),
-                                "name" => "1. Mai",
-                                "lastChange" => $currentTimestamp
-                            ],
-                            [
-                                "id" => 36,
-                                "date" => $currentTimestamp + (14 * 24 * 60 * 60),
-                                "name" => "Christi Himmelfahrt",
-                                "lastChange" => $currentTimestamp
+                        "scope" => [
+                            "id" => 312,
+                            "dayoff" => [
+                                [
+                                    "id" => 35,
+                                    "date" => $currentTimestamp + (7 * 24 * 60 * 60),
+                                    "name" => "1. Mai",
+                                    "lastChange" => $currentTimestamp
+                                ],
+                                [
+                                    "id" => 36,
+                                    "date" => $currentTimestamp + (14 * 24 * 60 * 60),
+                                    "name" => "Christi Himmelfahrt",
+                                    "lastChange" => $currentTimestamp
+                                ]
                             ]
-                        ]
+                        ],
+
                     ],
                     [
                         "id" => 21202, // Duplicate ID
@@ -188,21 +191,23 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "10:00:00",
                         "endTime" => "18:00:00",
                         "kind" => "default",
-                        "scope" => ["id" => 312],
-                        "dayoff" => [
-                            [
-                                "id" => 35,
-                                "date" => $currentTimestamp + (7 * 24 * 60 * 60),
-                                "name" => "1. Mai",
-                                "lastChange" => $currentTimestamp
-                            ],
-                            [
-                                "id" => 36,
-                                "date" => $currentTimestamp + (14 * 24 * 60 * 60),
-                                "name" => "Christi Himmelfahrt",
-                                "lastChange" => $currentTimestamp
+                        "scope" => [
+                            "id" => 312,
+                            "dayoff" => [
+                                [
+                                    "id" => 35,
+                                    "date" => $currentTimestamp + (7 * 24 * 60 * 60),
+                                    "name" => "1. Mai",
+                                    "lastChange" => $currentTimestamp
+                                ],
+                                [
+                                    "id" => 36,
+                                    "date" => $currentTimestamp + (14 * 24 * 60 * 60),
+                                    "name" => "Christi Himmelfahrt",
+                                    "lastChange" => $currentTimestamp
+                                ]
                             ]
-                        ]
+                        ],
                     ]
                 ],
                 'selectedDate' => date('Y-m-d')
