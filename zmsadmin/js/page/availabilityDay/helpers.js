@@ -187,10 +187,6 @@ export const cleanupAvailabilityForSave = availability => {
         delete newAvailability.tempId;
     }
 
-    /*if (newAvailability.kind) {
-        delete newAvailability.kind;
-    }*/
-
     return newAvailability;
 }
 
