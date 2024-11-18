@@ -2,6 +2,7 @@
 
 namespace BO\Zmsapi\Tests;
 
+use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed;
 class AvailabilityAddTest extends Base
 {
     protected $classname = "AvailabilityAdd";
@@ -42,11 +43,75 @@ class AvailabilityAddTest extends Base
             ])
         ], []);
 
-        error_log(json_encode((string)$response->getBody()));
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
-    
+    public function testOverlappingAvailability()
+    {
+        $this->setWorkstation();
+        $this->expectException(AvailabilityUpdateFailed::class);
+
+        $this->render([], [
+            '__body' => json_encode([
+                'availabilityList' => [
+                    [
+                        "id" => 21202,
+                        "description" => "Overlapping Entry 1",
+                        "startDate" => time() + (2 * 24 * 60 * 60),
+                        "endDate" => time() + (3 * 24 * 60 * 60),
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
+                        "kind" => "default",
+                        "scope" => ["id" => 312]
+                    ],
+                    [
+                        "id" => 21203,
+                        "description" => "Overlapping Entry 2",
+                        "startDate" => time() + (2 * 24 * 60 * 60),
+                        "endDate" => time() + (3 * 24 * 60 * 60),
+                        "startTime" => "10:00:00",
+                        "endTime" => "18:00:00",
+                        "kind" => "default",
+                        "scope" => ["id" => 312]
+                    ]
+                ],
+                'selectedDate' => date('Y-m-d')
+            ])
+        ], []);
+    }
+    public function testDuplicateAvailability()
+    {
+        $this->setWorkstation();
+        $this->expectException(AvailabilityUpdateFailed::class);
+
+        $this->render([], [
+            '__body' => json_encode([
+                'availabilityList' => [
+                    [
+                        "id" => 21202,
+                        "description" => "Duplicate Entry 1",
+                        "startDate" => time() + (3 * 24 * 60 * 60),
+                        "endDate" => time() + (4 * 24 * 60 * 60),
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
+                        "kind" => "default",
+                        "scope" => ["id" => 312]
+                    ],
+                    [
+                        "id" => 21203,
+                        "description" => "Duplicate Entry 2",
+                        "startDate" => time() + (3 * 24 * 60 * 60),
+                        "endDate" => time() + (4 * 24 * 60 * 60),
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
+                        "kind" => "default",
+                        "scope" => ["id" => 312]
+                    ]
+                ],
+                'selectedDate' => date('Y-m-d')
+            ])
+        ], []);
+    }   
     public function testEmpty()
     {
         $this->setWorkstation();

@@ -12,10 +12,7 @@ class AvailabilityUpdateTest extends Base
 
     public function testRendering()
     {
-        // Create an example entity
         $input = (new Entity)->createExample();
-
-        // Set test data
         $currentTimestamp = time();
         $input['startDate'] = $currentTimestamp + (2 * 24 * 60 * 60); // 2 days in the future
         $input['endDate'] = $currentTimestamp + (5 * 24 * 60 * 60);   // 5 days in the future
@@ -37,12 +34,9 @@ class AvailabilityUpdateTest extends Base
         ]];
         $input['kind'] = "default";
 
-
-        // Write the entity to the database
         $entity = (new Query())->writeEntity($input);
         $this->setWorkstation();
 
-        // Prepare and send the request with the updated availability and dayoff data
         $response = $this->render([
             "id" => $entity->getId()
         ], [
@@ -79,8 +73,6 @@ class AvailabilityUpdateTest extends Base
             ])
         ], []);
         
-
-        // Assertions to check if the response is correct
         $this->assertStringContainsString('availability.json', (string) $response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
