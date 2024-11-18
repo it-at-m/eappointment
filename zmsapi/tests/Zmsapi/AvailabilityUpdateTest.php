@@ -2,9 +2,9 @@
 
 namespace BO\Zmsapi\Tests;
 
-use \BO\Zmsentities\Availability as Entity;
-
-use \BO\Zmsdb\Availability as Query;
+use BO\Zmsentities\Availability as Entity;
+use BO\Zmsdb\Availability as Query;
+use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed;
 
 class AvailabilityUpdateTest extends Base
 {
@@ -12,8 +12,10 @@ class AvailabilityUpdateTest extends Base
 
     public function testRendering()
     {
+        // Create an example entity
         $input = (new Entity)->createExample();
 
+        // Set test data
         $currentTimestamp = time();
         $input['startDate'] = $currentTimestamp + (2 * 24 * 60 * 60); // 2 days in the future
         $input['endDate'] = $currentTimestamp + (5 * 24 * 60 * 60);   // 5 days in the future
@@ -21,44 +23,64 @@ class AvailabilityUpdateTest extends Base
         $input['endTime'] = "17:00:00";
         $input['scope'] = ["id" => 312];
         $input['kind'] = "default";
+        $input['dayoff'] = [
+            [
+                "id" => 35,
+                "date" => $currentTimestamp + (7 * 24 * 60 * 60), // 7 days in the future
+                "name" => "1. Mai",
+                "lastChange" => $currentTimestamp
+            ],
+            [
+                "id" => 36,
+                "date" => $currentTimestamp + (14 * 24 * 60 * 60), // 14 days in the future
+                "name" => "Christi Himmelfahrt",
+                "lastChange" => $currentTimestamp
+            ]
+        ];
 
+        // Write the entity to the database
         $entity = (new Query())->writeEntity($input);
-        error_log(json_encode($entity));
         $this->setWorkstation();
 
+        // Prepare and send the request with the updated availability and dayoff data
         $response = $this->render([
             "id" => $entity->getId()
         ], [
             '__body' => json_encode([
                 'availabilityList' => [
                     [
-                        "id" => 21202,
+                        "id" => $entity->getId(),
                         "description" => "Test Öffnungszeit update",
-                        "startDate" => time() + (2 * 24 * 60 * 60), // 2 days in the future
-                        "endDate" => time() + (5 * 24 * 60 * 60),   // 5 days in the future
+                        "startDate" => $currentTimestamp + (2 * 24 * 60 * 60),
+                        "endDate" => $currentTimestamp + (5 * 24 * 60 * 60),
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
                         "kind" => "default",
-                        "scope" => [
-                            "id" => 312
+                        "scope" => ["id" => 312],
+                        "dayoff" => [
+                            [
+                                "id" => 35,
+                                "date" => $currentTimestamp + (7 * 24 * 60 * 60),
+                                "name" => "1. Mai",
+                                "lastChange" => $currentTimestamp
+                            ],
+                            [
+                                "id" => 36,
+                                "date" => $currentTimestamp + (14 * 24 * 60 * 60),
+                                "name" => "Christi Himmelfahrt",
+                                "lastChange" => $currentTimestamp
+                            ]
                         ]
                     ]
                 ],
-                'selectedDate' => date('Y-m-d'),
-                'dayoff' => [
-                    [
-                        "id" => 302,
-                        "date" => time() + (10 * 24 * 60 * 60),
-                        "name" => "Test Dayoff"
-                    ]
-                ]
+                'selectedDate' => date('Y-m-d')
             ])
         ], []);
 
+        // Assertions to check if the response is correct
         $this->assertStringContainsString('availability.json', (string) $response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
-
 
     public function testEmpty()
     {
@@ -70,7 +92,6 @@ class AvailabilityUpdateTest extends Base
     public function testNotFound()
     {
         $this->setWorkstation();
-
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
         $this->expectExceptionCode(404);
 
@@ -91,5 +112,4 @@ class AvailabilityUpdateTest extends Base
             []
         );
     }
-
 }
