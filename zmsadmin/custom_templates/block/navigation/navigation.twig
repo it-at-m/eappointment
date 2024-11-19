@@ -24,17 +24,21 @@
                         <li class="nav__link{{ menuActive == 'workstation'? ' active' }}">
                             <a title="{% trans %}Die Oberfläche für den Sachberarbeiter mit der Möglichkeit, Kunden aufzurufen{% endtrans %}" href="{{ urlGet('workstation', {}, {}) }}" {{ menuActive == 'workstation'? ' aria-current="page"' }}>Sach&shy;bearbeiter&shy;platz</a>
                         </li>
-                        <li class="nav__link{{ menuActive == 'pickup'? ' active' }}">
-                            <a title="{% trans %}Hier verwalten Sie die Abholer{% endtrans %}" href="{{ urlGet('pickup', {'id':1}, {}) }}" {{ menuActive == 'pickup'? ' aria-current="page"' }}>Abholer verwalten</a>
-                        </li>
+                        {% if workstation.useraccount.rights.superuser %}
+                            <li class="nav__link{{ menuActive == 'pickup'? ' active' }}">
+                                <a title="{% trans %}Hier verwalten Sie die Abholer{% endtrans %}" href="{{ urlGet('pickup', {'id':1}, {}) }}" {{ menuActive == 'pickup'? ' aria-current="page"' }}>Abholer verwalten</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                     {% if rights.ticketprinter and workstation.scope.id %}
-                        <li class="nav__link{{ menuActive == 'calldisplay'? ' active' }}">
-                            <a title="{% trans %}Standortauswahlseite der Aufrufanlage{% endtrans %}" href="{{ urlGet('calldisplay', {}, {}) }}" {{ menuActive == 'calldisplay'? ' aria-current="page"' }}>Anzeige Aufrufsystem</a>
-                        </li>
-                        <li class="nav__link{{ menuActive == 'ticketprinter'? ' active' }}">
-                            <a title="{% trans %}Standortauswahlseite der Wartenummernausgabe{% endtrans %}" href="{{ urlGet('ticketprinter', {}, {}) }}" {{ menuActive == 'ticketprinter'? ' aria-current="page"' }}>Wartenummern</a>
-                        </li>
+                        {% if workstation.useraccount.rights.superuser %}
+                            <li class="nav__link{{ menuActive == 'calldisplay'? ' active' }}">
+                                <a title="{% trans %}Standortauswahlseite der Aufrufanlage{% endtrans %}" href="{{ urlGet('calldisplay', {}, {}) }}" {{ menuActive == 'calldisplay'? ' aria-current="page"' }}>Anzeige Aufrufsystem</a>
+                            </li>
+                            <li class="nav__link{{ menuActive == 'ticketprinter'? ' active' }}">
+                                <a title="{% trans %}Standortauswahlseite der Wartenummernausgabe{% endtrans %}" href="{{ urlGet('ticketprinter', {}, {}) }}" {{ menuActive == 'ticketprinter'? ' aria-current="page"' }}>Wartenummern</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                 </ul>
             </nav>
@@ -97,9 +101,11 @@
             <nav role="navigation" aria-labelledby="admin-title">
                 <ul class="nav__list">
                 {% if workstation.id > 0 %}
-                    <li class="nav__link{{ menuActive == 'profile'? ' active' }}">
-                        <a title="{% trans %}Hier können Sie Ihre eigenen Anmeldedaten einsehen und sich ein neues Passwort geben{% endtrans %}" {{ menuActive == 'profile'? ' aria-current="page"' }} href="{{ urlGet('profile', {}, {}) }}">Mein Profil</a>
-                    </li>
+                    {% if workstation.useraccount.rights.superuser %}
+                        <li class="nav__link{{ menuActive == 'profile'? ' active' }}">
+                            <a title="{% trans %}Hier können Sie Ihre eigenen Anmeldedaten einsehen und sich ein neues Passwort geben{% endtrans %}" {{ menuActive == 'profile'? ' aria-current="page"' }} href="{{ urlGet('profile', {}, {}) }}">Mein Profil</a>
+                        </li>
+                    {% endif %}
                 {% endif %}
                 {% if workstation.scope.id and rights.ticketprinter %}
                     <li class="nav__link{{ menuActive == 'ticketprinterStatus'? ' active' }}">
