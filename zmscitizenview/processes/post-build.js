@@ -1,5 +1,5 @@
 import { generateLoaderJs } from './lib/loaderjsGenerator.js';
-import manifest from '../dist/.vite/manifest.json' assert {type: 'json'};
+import manifest from '../dist/.vite/manifest.json' with {type: 'json'};
 
 /**
  * Why this?
