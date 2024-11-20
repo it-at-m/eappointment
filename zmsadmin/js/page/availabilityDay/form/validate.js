@@ -83,12 +83,12 @@ function validateEndTime(today, yesterday, selectedDate, data) {
     if (dayMinutesEnd <= dayMinutesStart) {
         errorList.push({
             type: 'endTime', 
-            message: 'Die Uhrzeit "von" muss kleiner der Uhrzeit "bis" sein.'
+            message: 'Die Endzeit darf nicht vor der Startzeit liegen.'
         })
     } else if (startTimestamp >= endTimestamp) {
         errorList.push({
             type: 'endTime', 
-            message: 'Das Startdatum muss nach dem Enddatum sein.'
+            message: 'Das Enddatum darf nicht vor dem Startdatum liegen.'
         })
     }
     return errorList;

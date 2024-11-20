@@ -92,14 +92,14 @@ class AvailabilityUpdate extends BaseController
         }
 
         if (count($validation) > 0) {
-            //error_log(json_encode($validation));
+            error_log(json_encode($validation));
             throw new AvailabilityUpdateFailed();
         }        
     
         [$earliestStartDateTime, $latestEndDateTime] = $mergedCollection->getDateTimeRangeFromList(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00'));
         $conflicts = $mergedCollection->getConflicts($earliestStartDateTime, $latestEndDateTime);
         if ($conflicts->count() > 0) {
-            //error_log(json_encode($conflicts));
+            error_log(json_encode($conflicts));
             throw new AvailabilityUpdateFailed();
         }
 

@@ -502,12 +502,12 @@ class Availability extends Schema\Entity
         if ($dayMinutesEnd <= $dayMinutesStart) {
             $errorList[] = [
                 'type' => 'endTime',
-                'message' => 'Die Uhrzeit "von" muss kleiner der Uhrzeit "bis" sein.'
+                'message' => 'Die Endzeit darf nicht vor der Startzeit liegen.'
             ];
         } elseif ($startTimestamp >= $endTimestamp) {
             $errorList[] = [
                 'type' => 'endTime',
-                'message' => 'Das Startdatum muss vor dem Enddatum sein.'
+                'message' => 'Das Enddatum darf nicht vor dem Startdatum liegen.'
             ];
         }
         
