@@ -11,6 +11,7 @@ const PageLayout = (props) => {
             {props.timeTable}
             {props.saveBar}
             {props.accordion}
+            {props.saveBar}
         </div>
     )
 }
@@ -19,8 +20,8 @@ PageLayout.propTypes = {
     timeTable: PropTypes.node,
     accordion: PropTypes.node,
     conflicts: PropTypes.node,
+    saveBar: PropTypes.node,
     tabs: PropTypes.node,
-    saveBar: PropTypes.node
 }
 
 export default PageLayout

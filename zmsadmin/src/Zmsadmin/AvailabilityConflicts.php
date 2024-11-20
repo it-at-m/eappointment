@@ -93,7 +93,4 @@ class AvailabilityConflicts extends BaseController
         return $availabilityList->withScope($scope);
     }
 
-
-
-
 }

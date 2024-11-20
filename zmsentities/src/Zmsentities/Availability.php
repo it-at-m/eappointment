@@ -578,6 +578,7 @@ class Availability extends Schema\Entity
     
     public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $kind)
     {
+        
         $errorList = array_merge(
             $this->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $kind),
             $this->validateEndTime($today, $yesterday, $startDate, $endDate, $selectedDate),

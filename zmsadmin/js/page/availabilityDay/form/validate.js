@@ -1,35 +1,168 @@
-import moment from 'moment'
+import moment from 'moment';
 
 const validate = (data, props) => {
-    const currentTime = new Date()
-    const today = moment(props.today, 'X')
-    today.set('hour', currentTime.getHours())
-    today.set('minute', currentTime.getMinutes())
-    today.set('second', currentTime.getSeconds())
+    const currentTime = new Date();
+    const today = moment(props.today, 'X');
+    today.set('hour', currentTime.getHours());
+    today.set('minute', currentTime.getMinutes());
+    today.set('second', currentTime.getSeconds());
 
-    const selectedDate = moment(props.timestamp, 'X')
-    const yesterday = selectedDate.startOf('day').clone().subtract(1, 'days')
-    const tomorrow = selectedDate.startOf('day').clone().add(1, 'days')
-    
+    const selectedDate = moment(props.timestamp, 'X');
+    const yesterday = selectedDate.startOf('day').clone().subtract(1, 'days');
+    const tomorrow = selectedDate.startOf('day').clone().add(1, 'days');
+
     let errorList = {
         id: data.id || data.tempId,
         itemList: []
-    }
+    };
 
-    errorList.itemList.push(validateStartTime(today, tomorrow, selectedDate, data))
-    errorList.itemList.push(validateEndTime(today, yesterday, selectedDate, data))
-    errorList.itemList.push(validateOriginEndTime(today, yesterday, selectedDate, data))
-    errorList.itemList.push(validateType(data))
-    errorList.itemList.push(validateSlotTime(data))
-    
+    // Add new validation functions for null and format checks
+    errorList.itemList.push(validateNullValues(data));
+    errorList.itemList.push(validateTimestampAndTimeFormats(data));
+
+    errorList.itemList.push(validateStartTime(today, tomorrow, selectedDate, data));
+    errorList.itemList.push(validateEndTime(today, yesterday, selectedDate, data));
+    errorList.itemList.push(validateOriginEndTime(today, yesterday, selectedDate, data));
+    errorList.itemList.push(validateType(data));
+    errorList.itemList.push(validateSlotTime(data));
+
     errorList.itemList = errorList.itemList.filter(el => el.length);
-    let valid = (0 < errorList.itemList.length) ? false : true
+    let valid = (0 < errorList.itemList.length) ? false : true;
 
     return {
         valid,
         errorList
+    };
+};
+
+// Validate if startDate, endDate, startTime, and endTime are not null
+function validateNullValues(data) {
+    let errorList = [];
+
+    if (!data.startDate) {
+        errorList.push({
+            type: 'startDateNull',
+            message: 'Das Startdatum darf nicht leer sein.'
+        });
     }
+
+    if (!data.endDate) {
+        errorList.push({
+            type: 'endDateNull',
+            message: 'Das Enddatum darf nicht leer sein.'
+        });
+    }
+
+    if (!data.startTime) {
+        errorList.push({
+            type: 'startTimeNull',
+            message: 'Die Startzeit darf nicht leer sein.'
+        });
+    }
+
+    if (!data.endTime) {
+        errorList.push({
+            type: 'endTimeNull',
+            message: 'Die Endzeit darf nicht leer sein.'
+        });
+    }
+
+    return errorList;
 }
+
+// Validate timestamps and time formats
+function validateTimestampAndTimeFormats(data) {
+    let errorList = [];
+    const timeRegex = /^\d{2}:\d{2}(:\d{2})?$/; // HH:mm:ss or HH:mm
+
+    // Validate startDate and endDate as valid timestamps
+    if (!isValidTimestamp(data.startDate)) {
+        errorList.push({
+            type: 'startDateInvalid',
+            message: 'Das Startdatum ist kein gültiger Zeitstempel.'
+        });
+    }
+
+    if (!isValidTimestamp(data.endDate)) {
+        errorList.push({
+            type: 'endDateInvalid',
+            message: 'Das Enddatum ist kein gültiger Zeitstempel.'
+        });
+    }
+
+    // Validate startTime and endTime format
+    if (data.startTime && !timeRegex.test(data.startTime)) {
+        errorList.push({
+            type: 'startTimeFormat',
+            message: 'Die Startzeit muss im Format "HH:mm:ss" oder "HH:mm" vorliegen.'
+        });
+    }
+
+    if (data.endTime && !timeRegex.test(data.endTime)) {
+        errorList.push({
+            type: 'endTimeFormat',
+            message: 'Die Endzeit muss im Format "HH:mm:ss" oder "HH:mm" vorliegen.'
+        });
+    }
+
+    return errorList;
+}
+
+// Helper function to check if a timestamp is valid
+function isValidTimestamp(timestamp) {
+    return !isNaN(timestamp) && moment.unix(timestamp).isValid();
+}
+
+// Parse timestamp and time into moment objects
+function parseTimestampAndTime(dateTimestamp, timeStr) {
+    const date = moment.unix(dateTimestamp);
+    if (!date.isValid()) return null;
+
+    const [hours, minutes, seconds] = timeStr.split(':').map((val, index) => parseInt(val || 0));
+    return date.set({ hour: hours, minute: minutes, second: seconds });
+}
+
+// Example usage in validateStartTime and validateEndTime
+function validateStartTime(today, tomorrow, selectedDate, data) {
+    let errorList = [];
+    const startTime = parseTimestampAndTime(data.startDate, data.startTime);
+    const isFuture = data.kind && data.kind === 'future';
+
+    if (!startTime) {
+        errorList.push({
+            type: 'startTimeInvalid',
+            message: 'Ungültige Startzeit oder Startdatum.'
+        });
+    } else if (!isFuture && startTime.isAfter(today, 'minute')) {
+        errorList.push({
+            type: 'startTimeFuture',
+            message: `Das Startdatum der Öffnungszeit muss vor dem ${tomorrow.format('DD.MM.YYYY')} liegen.`
+        });
+    }
+
+    return errorList;
+}
+
+function validateEndTime(today, yesterday, selectedDate, data) {
+    let errorList = [];
+    const endTime = parseTimestampAndTime(data.endDate, data.endTime);
+    const startTime = parseTimestampAndTime(data.startDate, data.startTime);
+
+    if (!endTime) {
+        errorList.push({
+            type: 'endTimeInvalid',
+            message: 'Ungültige Endzeit oder Enddatum.'
+        });
+    } else if (startTime && endTime.isBefore(startTime)) {
+        errorList.push({
+            type: 'endTime',
+            message: 'Das Enddatum darf nicht vor dem Startdatum liegen.'
+        });
+    }
+
+    return errorList;
+}
+
 
 function validateStartTime(today, tomorrow, selectedDate, data) {
     let errorList = []
