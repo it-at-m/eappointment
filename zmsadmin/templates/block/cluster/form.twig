@@ -1,5 +1,7 @@
 {% from 'element/helper/form.twig' import formgroup, formbutton, checkboxfield, custombutton %}
 
+{% set rights = workstation.useraccount.rights %}
+
 {#% embed "block/scaffholding/board.twig" with {'class': 'cluster-form'} %}
         {% block board_title %}
         {% endblock %}
@@ -49,46 +51,48 @@
                     </div>
                 </fieldset>
 
-                <fieldset>
-                    <legend>Bild für Aufrufanlage</legend>
-                    <div class="panel--heavy">
-                    {{ formgroup(
-                        {
-                            "label": null
-                        },
-                        [
+                {% if rights.superuser %}
+                    <fieldset>
+                        <legend>Bild für Aufrufanlage (Nur in der Rolle "Technische Administration" sichtbar)</legend>
+                        <div class="panel--heavy">
+                        {{ formgroup(
                             {
-                                "type":"checkbox",
-                                "parameter": {
-                                    "name": "removeImage",
-                                    "value": 1,
-                                    "label": "Kein Bild in der Aufrufanzeige anzeigen"
-                                }
-                            }
-                        ]
-                    ) }}
-                    {{ formgroup(
-                        {
-                            "label": "Bild auswählen",
-                            "description": "Zulässig sind nur SVG-, JPG-, PNG oder GIF-Bilder bis 48 KB Größe. Das Bild wird in einer Breite von 200 Pixel erscheinen."
-                        },
-                        [
-                            {
-                                "type":"file",
-                                "parameter": {
-                                    "name": "uploadCallDisplayImage",
-                                    "id": "imageFieldId",
-                                    "file": {
-                                        "type": "image",
-                                        "alt": "Bild der Aufrufanlage",
-                                        "data": callDisplayImage
+                                "label": null
+                            },
+                            [
+                                {
+                                    "type":"checkbox",
+                                    "parameter": {
+                                        "name": "removeImage",
+                                        "value": 1,
+                                        "label": "Kein Bild in der Aufrufanzeige anzeigen"
                                     }
                                 }
-                            }
-                        ]
-                    ) }}
-                    </div>
-                </fieldset>
+                            ]
+                        ) }}
+                        {{ formgroup(
+                            {
+                                "label": "Bild auswählen",
+                                "description": "Zulässig sind nur SVG-, JPG-, PNG oder GIF-Bilder bis 48 KB Größe. Das Bild wird in einer Breite von 200 Pixel erscheinen."
+                            },
+                            [
+                                {
+                                    "type":"file",
+                                    "parameter": {
+                                        "name": "uploadCallDisplayImage",
+                                        "id": "imageFieldId",
+                                        "file": {
+                                            "type": "image",
+                                            "alt": "Bild der Aufrufanlage",
+                                            "data": callDisplayImage
+                                        }
+                                    }
+                                }
+                            ]
+                        ) }}
+                        </div>
+                    </fieldset>
+                {% endif %}
 
                 <fieldset>
                     <legend>Zugehörige Standorte</legend>

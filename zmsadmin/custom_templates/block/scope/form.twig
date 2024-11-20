@@ -326,7 +326,7 @@
                     {% if rights.superuser %}
                         {{ formgroup(
                                 {
-                                    "legend": "Captcha:",
+                                    "legend": "Captcha (Nur in der Rolle \"Technische Administration\" sichtbar):",
                                     "groupTag": "fieldset"
                                 },
                                 [
@@ -498,7 +498,7 @@
 
             {% if rights.superuser %}
                 <fieldset>
-                    <legend>SMS Einstellungen</legend>
+                    <legend>SMS Einstellungen (Nur in der Rolle "Technische Administration" sichtbar)</legend>
                     <div class="panel--heavy">
                         {% if department.preferences.notifications.enabled %}
                             {{ formgroup(
@@ -574,7 +574,7 @@
 
             {% if rights.superuser %}
                 <fieldset>
-                    <legend>Kundenbefragung</legend>
+                    <legend>Kundenbefragung (Nur in der Rolle "Technische Administration" sichtbar)</legend>
                     <div class="panel--heavy">
                         {{ formgroup(
                             {
@@ -674,7 +674,7 @@
 
             {% if rights.superuser %}
                 <fieldset>
-                    <legend>Wartenummern-Kiosk</legend>
+                    <legend>Wartenummern-Kiosk (Nur in der Rolle "Technische Administration" sichtbar)</legend>
                     <div class="panel--heavy">
                         {{ formgroup(
                             {"label": "Button-Name:", "description": "Diese Angabe dient der Unterscheidung identischer Dienstleister und erscheint auf dem Wartenummernkiosk."},
@@ -924,7 +924,7 @@
 
                     {% if rights.superuser %}
                         <fieldset>
-                            <legend class="label">Bild für Aufrufanlage:</legend>
+                            <legend class="label">Bild für Aufrufanlage (Nur in der Rolle "Technische Administration" sichtbar):</legend>
                             {{ formgroup(
                                     {
                                         "label": null
