@@ -339,6 +339,7 @@ class AvailabilityDatePicker extends Component
                                 excludeTimes={this.state.excludeTimeList}
                                 //filterTime={filterPassedTime}
                                 disabled={this.props.attributes.disabled}
+                                readOnly
                                 onInputClick={this.openTimePicker}
                                 onKeyDown={this.tpKeyDownHandler}
                                 onClickOutside={this.closeTimePicker}

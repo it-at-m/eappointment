@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const FormButtons = (props) => {
-    const { data, onCopy, onExclusion, onEditInFuture, onUpdateSingle, onDelete, selectedDate, hasConflicts } = props
-    const disabled = ((data && (! data.id || data.__modified === true)) || hasConflicts);
+    const { data, onCopy, onExclusion, onEditInFuture, onUpdateSingle, onDelete, selectedDate, hasConflicts, hasSlotCountError } = props
+    const disabled = ((data && (! data.id || data.__modified === true)) || hasConflicts || hasSlotCountError);
     return (
         <div className="body">
             <div className="form-actions">
@@ -21,7 +21,7 @@ const FormButtons = (props) => {
                     className="button button--diamond" disabled={disabled || data.startDate == selectedDate}>Ab diesem Tag ändern</button> 
                 <button onClick={onUpdateSingle}
                     title="Öffnungszeit aktualisieren"
-                    className="button button--diamond" disabled={(data && !data.id) || hasConflicts || props.isCreatingExclusion}>Aktualisieren</button>
+                    className="button button--diamond" disabled={(data && !data.id) || hasConflicts || hasSlotCountError || props.isCreatingExclusion}>Aktualisieren</button>
             </div>
         </div>
     )

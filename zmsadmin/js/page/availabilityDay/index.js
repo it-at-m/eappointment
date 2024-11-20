@@ -51,6 +51,10 @@ class AvailabilityPage extends Component {
         };
     }
 
+    handleScrollToBottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
     componentDidMount() {
         this.getValidationList()
         this.unloadHandler = ev => {
@@ -144,10 +148,12 @@ class AvailabilityPage extends Component {
                 this.refreshData();
                 this.setState({
                     lastSave: new Date().getTime(),
+                    saveSuccess: true,
                 }, () => {
                     this.successElement.scrollIntoView();
                 });
                 hideSpinner();
+                this.handleScrollToBottom();
             }).fail((err) => {
                 let isException = err.responseText.toLowerCase().includes('exception');
                 if (err.status >= 500 && isException) {
@@ -160,8 +166,13 @@ class AvailabilityPage extends Component {
                 } else {
                     console.log('save all error', err);
                 }
+                this.setState({
+                    lastSave: new Date().getTime(),
+                    saveSuccess: false,
+                });
                 this.getValidationList();
                 hideSpinner();
+                this.handleScrollToBottom();
             });
         } else {
             hideSpinner();
@@ -219,10 +230,12 @@ class AvailabilityPage extends Component {
                 this.refreshData();
                 this.setState({
                     lastSave: new Date().getTime(),
+                    saveSuccess: true,
                 }, () => {
                     this.successElement.scrollIntoView();
                 });
                 hideSpinner();
+                this.handleScrollToBottom();
             }).fail(err => {
                 const isException = err.responseText.toLowerCase().includes('exception');
                 if (isException) {
@@ -233,14 +246,19 @@ class AvailabilityPage extends Component {
                 } else {
                     console.log('Update error:', err);
                 }
+                this.setState({
+                    lastSave: new Date().getTime(),
+                    saveSuccess: false,
+                });
+    
                 this.getValidationList();
                 hideSpinner();
+                this.handleScrollToBottom();
             });
         } else {
             hideSpinner();
         }
     }
-    
 
     onDeleteAvailability(availability) {
         showSpinner();
@@ -775,9 +793,15 @@ class AvailabilityPage extends Component {
 
     renderSaveBar() {
         if (this.state.lastSave) {
-            return <SaveBar lastSave={this.state.lastSave} setSuccessRef={this.setSuccessRef} />
+            return (
+                <SaveBar 
+                    lastSave={this.state.lastSave} 
+                    success={this.state.saveSuccess} 
+                    setSuccessRef={this.setSuccessRef} 
+                />
+            )
         }
-    }
+    }    
 
     render() {
         return (
