@@ -25,8 +25,7 @@ jobs:
         uses: it-at-m/.github/.github/actions/action-maven-build@main
         with:
           app-path: "${{ matrix.app-path }}"
-      - if: github.ref == 'refs/heads/main'
-        uses: it-at-m/.github/.github/actions/action-build-image@main
+      - uses: it-at-m/.github/.github/actions/action-build-image@main
         with:
           path: "${{  matrix.app-path }}"
           image-name: "${{  matrix.app-path }}"
