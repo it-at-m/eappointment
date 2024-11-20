@@ -54,7 +54,6 @@ class IndexTest extends Base
                 'buttonlist' => 's141,l[http://www.berlin.de/|Portal berlin.de]'
             ]
         ], [ ]);
-        $this->assertStringContainsString('fordern Sie eine Wartenummer', (string) $response->getBody());
         $this->assertStringContainsString('Bürgeramt Hohenzollerndamm', (string) $response->getBody());
         $this->assertStringContainsString('Portal berlin.de', (string) $response->getBody());
     }

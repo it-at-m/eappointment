@@ -99,7 +99,7 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
-                        $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                        $entity = $this->readResolvedReferences($entity, $resolveReferences - 1);
                         $scopeList->addEntity($entity);
                     }
                 }
@@ -256,7 +256,7 @@ class Scope extends Base
             (new Query\Scope(Query\Base::SELECT))->getQueryLastWaitingNumber(),
             ['scope_id' => $scopeId]
         );
-        $entity = $this->readEntity($scopeId)->updateStatusQueue($dateTime);
+        $entity = $this->readEntity($scopeId, 0, true)->updateStatusQueue($dateTime);
         $scope = $this->updateEntity($scopeId, $entity);
         return $scope->getStatus('queue', 'lastGivenNumber');
     }
