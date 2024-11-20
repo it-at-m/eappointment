@@ -22,6 +22,7 @@ class GraphDefaults
         id, 
         shortName
         source,
+        cluster,
         contact {
             name
         }

@@ -18,6 +18,7 @@ class Workstation extends Base implements MappingInterface
             '. self::TABLE .'
         SET
             `SessionID`=?,
+            `sessionExpiry`=?,
             `Datum`=?,
             `lastUpdate`=?,
             `Arbeitsplatznr`="",
@@ -33,6 +34,7 @@ class Workstation extends Base implements MappingInterface
             '. self::TABLE .'
         SET
             `SessionID`=?,
+            `sessionExpiry`=?,
             `Datum`=?,
             `Arbeitsplatznr`="",
             `aufrufzusatz`="",
@@ -56,6 +58,7 @@ class Workstation extends Base implements MappingInterface
             '. self::TABLE .'
         SET
             `SessionID`="",
+            `sessionExpiry`=NULL,
             `StandortID`=0,
             `Datum`="0000-00-00",
             `Arbeitsplatznr`="",
@@ -78,7 +81,8 @@ class Workstation extends Base implements MappingInterface
         UPDATE
             '. self::TABLE .'
         SET
-            `SessionID`=?
+            `SessionID`=?,
+            `sessionExpiry`=?
         WHERE
             `Name`= ?  AND
             `Passworthash` = ?

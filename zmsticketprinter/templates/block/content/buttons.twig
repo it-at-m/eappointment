@@ -10,16 +10,17 @@
             </div>
 		{% else %}
     		<form action="{{ urlGet('Process', {}, {}) }}" method="post">
+				{% set button = ticketprinter.buttons|first %}
                 {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": ticketprinter.buttons|first.cluster.id }) }}
-				{{ hiddenfield({ "name": "requestId", "value": first.request.id }) }}
+				{{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
     			{% set label = buttonLabelPrefix ~ ticketprinter.buttons|first.name %}
                 {% if ticketprinter.buttons|first.type == "link" %}
     			{% set label = "Information" %}
     			{% endif %}
     			<div class="warteschlangebutton_gross" id="warteschlangebutton_gross">
-                    {{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern", "disabled": disabled  }) }}
-                </div>
+					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translations[button.requestId] ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
+				</div>
             </form>
         {% endif %}
 	</div>
@@ -44,8 +45,8 @@
                 {{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
     			{% set label = buttonLabelPrefix ~ button.name %}
     			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-                    {{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
-                </div>
+					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translations[button.requestId] ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
+				</div>
             </form>
         {% endif %}
 	{% endfor %}
@@ -69,8 +70,9 @@
 				{{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
 				{{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
 				{% set label = buttonLabelPrefix ~ button.name %}
+
 				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
+					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translations[button.requestId] ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
 				</div>
 			</form>
 		{% endif %}

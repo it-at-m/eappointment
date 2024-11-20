@@ -113,10 +113,6 @@ class ProcessReserve extends BaseController
                 $validator->getParameter('amendment'),
                 $delegatedProcess->setter('amendment')
             )
-            ->validateText(
-                $validator->getParameter('customTextfield'),
-                $delegatedProcess->setter('customTextfield')
-            )
             ->validateReminderTimestamp(
                 $validator->getParameter('headsUpTime'),
                 $delegatedProcess->setter('reminderTimestamp'),
@@ -126,6 +122,14 @@ class ProcessReserve extends BaseController
             )
         ;
 
+        if (isset($process->scope->preferences['client']['customTextfieldRequired'])
+            && $process->scope->preferences['client']['customTextfieldRequired']
+        ) {
+            $processValidator->validateCustomField(
+                $validator->getParameter('customTextfield'),
+                $delegatedProcess->setter('customTextfield')
+            );
+        }
 
         $processValidator->getCollection()->addValid(
             $validator->getParameter('sendConfirmation')->isNumber(),
