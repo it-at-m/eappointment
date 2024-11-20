@@ -53,7 +53,10 @@
 
                 {% if rights.superuser %}
                     <fieldset>
-                        <legend>Bild für Aufrufanlage (Nur in der Rolle "Technische Administration" sichtbar)</legend>
+                        <legend>
+                            Bild für Aufrufanlage 
+                            <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                        </legend>
                         <div class="panel--heavy">
                         {{ formgroup(
                             {

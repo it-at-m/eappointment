@@ -326,7 +326,7 @@
                     {% if rights.superuser %}
                         {{ formgroup(
                                 {
-                                    "legend": "Captcha (Nur in der Rolle \"Technische Administration\" sichtbar):",
+                                    "legend": "Captcha (Nur für technische Administration sichtbar):",
                                     "groupTag": "fieldset"
                                 },
                                 [
@@ -498,7 +498,10 @@
 
             {% if rights.superuser %}
                 <fieldset>
-                    <legend>SMS Einstellungen (Nur in der Rolle "Technische Administration" sichtbar)</legend>
+                    <legend>
+                        SMS Einstellungen 
+                        <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                    </legend>
                     <div class="panel--heavy">
                         {% if department.preferences.notifications.enabled %}
                             {{ formgroup(
@@ -574,7 +577,10 @@
 
             {% if rights.superuser %}
                 <fieldset>
-                    <legend>Kundenbefragung (Nur in der Rolle "Technische Administration" sichtbar)</legend>
+                    <legend>
+                        Kundenbefragung 
+                        <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                    </legend>
                     <div class="panel--heavy">
                         {{ formgroup(
                             {
@@ -674,7 +680,10 @@
 
             {% if rights.superuser %}
                 <fieldset>
-                    <legend>Wartenummern-Kiosk (Nur in der Rolle "Technische Administration" sichtbar)</legend>
+                    <legend>
+                        Wartenummern-Kiosk 
+                        <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                    </legend>
                     <div class="panel--heavy">
                         {{ formgroup(
                             {"label": "Button-Name:", "description": "Diese Angabe dient der Unterscheidung identischer Dienstleister und erscheint auf dem Wartenummernkiosk."},
@@ -908,9 +917,9 @@
                         }]
                     ) }}
 
-					{% if workstation.useraccount.rights.superuser %}
+					{% if rights.superuser %}
 						{{ formgroup(
-							{"label": "Information zu Terminbuchung im Bürgerfrontend:", "description": "Dieser Text erscheint im Bürgerfrontend."},
+							{"label": "Information zu Terminbuchung im Bürgerfrontend (Nur für technische Administration sichtbar):", "description": "Dieser Text erscheint im Bürgerfrontend."},
 							[{
 								"type":"textarea",
 								"parameter": {
@@ -924,7 +933,7 @@
 
                     {% if rights.superuser %}
                         <fieldset>
-                            <legend class="label">Bild für Aufrufanlage (Nur in der Rolle "Technische Administration" sichtbar):</legend>
+                            <legend class="label">Bild für Aufrufanlage (Nur für technische Administration sichtbar):</legend>
                             {{ formgroup(
                                     {
                                         "label": null
