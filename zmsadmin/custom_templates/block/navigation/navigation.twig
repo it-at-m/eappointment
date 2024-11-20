@@ -108,6 +108,7 @@
                     {% endif %}
                 {% endif %}
                 {% if workstation.scope.id and rights.ticketprinter %}
+                    {% if workstation.useraccount.rights.superuser %}
                     <li class="nav__link{{ menuActive == 'ticketprinterStatus'? ' active' }}">
                         <a {{ menuActive == 'ticketprinterStatus'? ' aria-current="page"' }} href="{{ urlGet('ticketprinterStatusByScope', {'id': workstation.scope.id}, {}) }}">
                             Wartenummern&shy;ausgabe am Kiosk ({% if workstation.scope.status.ticketprinter.deactivated %}
@@ -117,6 +118,7 @@
                         {% endif %})
                         </a>
                     </li>
+                    {% endif %}
                 {% endif %}
                 {% if rights.scope or rights.department or rights.organisation or rights.availability %}
                     <li class="nav__link{{ menuActive == 'owner'? ' active' }}">
