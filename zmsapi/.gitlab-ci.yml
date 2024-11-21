@@ -4,7 +4,7 @@ include:
 .test-php-custom:
     stage: test
     variables:
-      PHP_VERSION: 7.3
+      PHP_VERSION: 8.0
     image: ghcr.io/it-at-m/eappointment-php-base:${PHP_VERSION}-dev
     cache:
         key: "zmsbase"
