@@ -8,9 +8,9 @@
     "build": "vite build --mode production && npm run post-build",
     "post-build": "node ./processes/post-build.js",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
-    "lint": "prettier . --check && eslint . && vue-tsc --noEmit",
+    "lint": "prettier src/ --check",
     "format": "prettier --write src/",
-    "test:unit": "vitest run"
+    "test": "vitest run"
   },
   "dependencies": {
     "@muenchen/muc-patternlab-vue": "2.0.1-beta.1",

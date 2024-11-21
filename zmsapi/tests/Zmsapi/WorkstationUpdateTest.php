@@ -63,7 +63,7 @@ class WorkstationUpdateTest extends Base
         $this->expectExceptionCode(200);
 
         $entity = (new \BO\Zmsdb\Workstation)
-            ->writeEntityLoginByName(static::$loginName, static::$authKey, \App::getNow(), 2);
+            ->writeEntityLoginByName(static::$loginName, static::$authKey, \App::getNow(), (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION), 2);
         $entity->scope['id'] = self::SCOPEID;
         $entity->name = self::PLACE;
         (new \BO\Zmsdb\Workstation)->updateEntity($entity, 0);

@@ -461,7 +461,8 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionScopeId($scopeId)
             ->addConditionAssigned()
             ->addConditionIgnoreSlots()
-            ->addConditionTime($dateTime);
+            ->addConditionTime($dateTime)
+            ->removeDuplicates();
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
     }

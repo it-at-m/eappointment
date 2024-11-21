@@ -5,6 +5,6 @@ coverage
 tags
 config.php
 vendor.old
-vendor.updatecomposer.*.lock
-#composer.*.lock
+vendor.update
 .phpunit.result.cache
+.DS_*

@@ -43,6 +43,7 @@ class Workstation extends Base
                     new ScopeEntity($workstation->scope),
                     $resolveReferences - 1
                 );
+                $workstation->scope->cluster = (new Cluster)->readByScopeId($workstation->scope->id);
                 $department = (new Department())->readByScopeId($workstation->scope['id']);
                 $workstation->linkList = (new Link())->readByDepartmentId($department->getId());
             }
@@ -129,7 +130,7 @@ class Workstation extends Base
         return $collection;
     }
 
-    public function writeEntityLoginByOidc($loginName, $authKey, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    public function writeEntityLoginByOidc($loginName, $authKey, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, $resolveReferences = 0)
     {
         $workstation = new Entity();
         $query = Query\Workstation::QUERY_LOGIN_OIDC;
@@ -137,6 +138,7 @@ class Workstation extends Base
             $query,
             array(
                 $authKey,
+                $sessionExpiry->format('Y-m-d H:i:s'),
                 $dateTime->format('Y-m-d'),
                 $loginName
             )
@@ -150,7 +152,7 @@ class Workstation extends Base
         return $workstation;
     }
 
-    public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, $resolveReferences = 0)
     {
         $useraccount = new Useraccount();
         $workstation = new Entity();
@@ -161,6 +163,7 @@ class Workstation extends Base
                 $query,
                 array(
                     $authKey,
+                    $sessionExpiry->format('Y-m-d H:i:s'),
                     $dateTime->format('Y-m-d'),
                     $dateTime->format('Y-m-d H:i:s'),
                     $loginName,
@@ -285,13 +288,14 @@ class Workstation extends Base
      *
      * @return Entity
      */
-    public function updateEntityAuthkey($loginName, $password, $authKey, $resolveReferences)
+    public function updateEntityAuthkey($loginName, $password, $authKey, \DateTimeInterface $sessionExpiry, $resolveReferences)
     {
         $query = Query\Workstation::QUERY_UPDATE_AUTHKEY;
         $result = $this->perform(
             $query,
             array(
                 $authKey,
+                $sessionExpiry->format('Y-m-d H:i:s'),
                 $loginName,
                 $password
             )

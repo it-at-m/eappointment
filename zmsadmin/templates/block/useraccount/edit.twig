@@ -145,9 +145,15 @@
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
+                        {% if workstation.useraccount.rights.superuser %}
+                            {% set departmentOptions = departmentOptions|merge([
+                                { "value": department.id, "name": department.name ~ " (Id: " ~ department.id ~ ")", "selected": selected }
+                            ]) %}
+                        {% else %}
                             {% set departmentOptions = departmentOptions|merge([
                                 { "value": department.id, "name": department.name, "selected": selected }
                             ]) %}
+                        {% endif %}
                     {% endfor %}
                     {% set departmentOptionsGroup = departmentOptionsGroup|merge([{ 'name' : organisationName , 'options' : departmentOptions }]) %}
                 {% endfor %}
@@ -163,7 +169,8 @@
                     "parameter": {
                         "name": "departments[][id]",
                         "multiple": 1,
-                        "options": departmentOptionsGroup
+                        "options": departmentOptionsGroup,
+                        "size": 20
                     }
                 }]
             ) }}
@@ -175,7 +182,7 @@
             {
                 "type":"checkbox",
                 "parameter": {
-                    "label": "Sachbearbeitung",
+                    "label": "Sachbearbeitung (Rolle: 0)",
                     "name": "rights[basic]",
                     "value": 1,
                     "checked" : 1,
@@ -190,22 +197,22 @@
                 {
                     "type":"checkbox",
                     "parameter": {
-                        "label": "Terminadministration",
-                        "name": "rights[scope]",
-                        "value": 1,
-                            "checked" : userAccount.rights.scope,
-                        "id": "check_rights_5"
-                    }
-                },
-                {
-                    "type":"checkbox",
-                    "parameter": {
-                    "label": "Innenrevision",
+                    "label": "Innenrevision (Rolle: 5)",
                     "name": "rights[audit]",
                     "value": 1,
                     "checked" : userAccount.rights.audit,
                     "id": "check_rights_15"
                 }
+                },
+                {
+                    "type":"checkbox",
+                    "parameter": {
+                        "label": "Terminadministration (Rolle: 30)",
+                        "name": "rights[scope]",
+                        "value": 1,
+                            "checked" : userAccount.rights.scope,
+                        "id": "check_rights_5"
+                    }
                 }
             ]) %}
         {% endif %}
@@ -215,7 +222,7 @@
                 {
                     "type":"checkbox",
                     "parameter": {
-                        "label": "Fachliche Administration",
+                        "label": "Fachliche Administration (Rolle: 40)",
                         "name": "rights[cluster]",
                         "value": 1,
                             "checked" : userAccount.rights.cluster,
@@ -230,7 +237,7 @@
                 {
                     "type":"checkbox",
                     "parameter": {
-                        "label": "Technische Administration",
+                        "label": "Technische Administration (Rolle: 90)",
                         "name": "rights[superuser]",
                         "value": 1,
                             "checked" : userAccount.rights.superuser,
