@@ -5,7 +5,7 @@ include:
     stage: test
     variables:
       PHP_VERSION: 7.3
-    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
+    image: ghcr.io/it-at-m/eappointment-php-base:${PHP_VERSION}-dev
     cache:
         key: "zmsbase"
         paths:
@@ -74,7 +74,7 @@ apidoc:
     stage: .pre
     variables:
         PHP_VERSION: "7.3"
-    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
+    image: ghcr.io/it-at-m/eappointment-php-base:${PHP_VERSION}-dev
     before_script:
         - $CLI_COMPOSER --no-scripts
         - bin/configure

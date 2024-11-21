@@ -4,7 +4,7 @@ include:
 test-php-73:
     variables:
       PHP_VERSION: 7.3
-    image: registry.gitlab.com/eappointment/php-base:${PHP_VERSION}-dev
+    image: ghcr.io/it-at-m/eappointment-php-base:${PHP_VERSION}-dev
     script:
         - $CLI_COMPOSER
         - $CLI_PHPCS
