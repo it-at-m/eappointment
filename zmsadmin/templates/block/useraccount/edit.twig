@@ -65,23 +65,7 @@
                 }
             }]
         ) }}
-        {{ formgroup(
-            {
-                "label": "E-Mail:",
-                "description": metadata.email.description|filter((v, k) => k != 'pattern'),
-                "required": false,
-                "errors": exception.data.email.messages
-            },
-            [{
-                "type":"input",
-                "parameter": {
-                    "name": "email",
-                    "value": userAccount.email,
-                    "maxlength": 100,
-                    "readonly": isFromOidc ? 1 : 0
-                }
-            }]
-        ) }}
+        
 
         {% if not isFromOidc %}
         {% set passwordDescription = metadata.password.description + metadata.changePassword.description %}

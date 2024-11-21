@@ -83,25 +83,6 @@ def cli_modules_reference_libraries(no_symlink: bool):
     os.system(f"cd {module_dir} && composer update {' '.join(module_dependencies[module])} --no-scripts --no-plugins 1>/dev/null")
 
 
-@cli_modules.command("loop")
-@click.argument("commands", required=True, nargs=-1)
-def cli_modules_loop(commands):
-    """Loops through repositories and executes a given command. Limits npm commands to specific modules."""
-    specific_modules = ["zmsadmin", "zmscalldisplay", "zmsstatistic", "zmsticketprinter"]
-    
-    is_npm_command = commands[0] == "npm"
-    
-    target_modules = specific_modules if is_npm_command else modules
-
-    for module in target_modules:
-        print_info(f"Repository: {module}")
-        module_dir = os.path.join(repo_dir, module)
-        os.chdir(module_dir)
-        
-        # Execute the command
-        os.system(" ".join(commands))
-
-
 @cli_modules.command("check-upgrade")
 @click.argument("php_version")
 def cli_modules_check_upgrade(php_version):
