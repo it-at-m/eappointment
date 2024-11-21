@@ -58,13 +58,19 @@ class View extends BaseView {
     loadCancel() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/cancel/`
-        return this.loadInto(url).then(() => this.onNextProcess());
+        return this.loadInto(url).then(() => {
+            this.onNextProcess();
+            this.updateURL();
+        });
     }
 
     loadParked() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/parked/`
-        return this.loadInto(url).then(() => this.onNextProcess());
+        return this.loadInto(url).then(() => {
+            this.onNextProcess();
+            this.updateURL();
+        });
     }
 
     // if process is called and button "nein, nächster Kunde bitte" is clicked, delete process from workstation and call next
@@ -82,6 +88,12 @@ class View extends BaseView {
 
     loadInto(url) {
         return this.loadContent(url, 'GET', null, null, this.showLoader).catch(err => this.loadErrorCallback(err.source, err.url));
+    }
+
+    updateURL() {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('calledprocess');
+        window.history.replaceState({}, '', url);
     }
 
     bindEvents() {
