@@ -1,3 +1,5 @@
+import {Contact} from "@/api/models/Contact";
+
 /**
  *
  * @export
@@ -16,4 +18,10 @@ export interface Provider {
    * @memberof Provider
    */
   source: string;
+  /**
+   *
+   * @type {Contact}
+   * @memberof Provider
+   */
+  contact?: Contact;
 }
