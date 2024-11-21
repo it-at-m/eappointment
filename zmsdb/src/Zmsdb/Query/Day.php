@@ -22,7 +22,7 @@ class Day extends Base
     const QUERY_INSERT_TEMPORARY_SCOPELIST = '
         INSERT INTO calendarscope SET
             scopeID = :scopeID,
-            year = :year,
+            year = :year,[]
             month = :month,
             slotsRequired = :slotsRequired;
     ';

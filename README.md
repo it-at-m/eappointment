@@ -1,3 +1,12 @@
+<div id="top"></div>
+
+<!-- PROJECT SHIELDS -->
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+<!-- [![EUPL License][license-shield]][license-url] -->
+
 # E-Appointment
 <!-- <img src="https://it-at-m.github.io/eappointment/zmsapi/public/doc/logo.png" width="150" align="right"> -->
 
@@ -94,6 +103,8 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 ## Getting Started
 - `ddev start`
 - `ddev exec ./cli modules loop composer install`
+- `ddev exec ./cli modules loop npm install`
+- `ddev exec ./cli modules loop npm build`
 
 ## Import Database
 - `ddev import-db --file=.resources/zms.sql`
@@ -154,3 +165,23 @@ The branch name must match the following regular expression:
 `^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|mpdzbs)-[0-9]+-[a-z0-9-]+$`
 
 **For further commit rules please refer to https://www.conventionalcommits.org/en/v1.0.0-beta.4/**
+
+## Screenshot
+![screenshot](https://github.com/user-attachments/assets/54d360e9-c47b-4f3c-b849-5966a8766af9)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/it-at-m/eappointment.svg?style=for-the-badge
+[contributors-url]: https://github.com/it-at-m/eappointment/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/it-at-m/eappointment.svg?style=for-the-badge
+[forks-url]: https://github.com/it-at-m/eappointment/network/members
+[stars-shield]: https://img.shields.io/github/stars/it-at-m/eappointment.svg?style=for-the-badge
+[stars-url]: https://github.com/it-at-m/eappointment/stargazers
+[issues-shield]: https://img.shields.io/github/issues/it-at-m/eappointment.svg?style=for-the-badge
+[issues-url]: https://github.com/it-at-m/eappointment/issues
+[license-shield]: https://img.shields.io/github/license/it-at-m/eappointment.svg?style=for-the-badge
+[license-url]: https://github.com/it-at-m/eappointment/blob/main/LICENSE
+[product-screenshot]: images/screenshot.png
+
