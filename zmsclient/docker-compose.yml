@@ -14,7 +14,7 @@ services:
   test:
     depends_on:
       - mockup
-    image: ghcr.io/it-at-m/eappointment-php-base:7.4-base
+    image: ghcr.io/it-at-m/eappointment-php-base:8.0-base
     volumes:
       - type: bind
         source: "."
