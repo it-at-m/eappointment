@@ -21,7 +21,7 @@
                 {% for department in organisation.departments %}
                     <li>
                         <h4 class="department-title owner-overview_department-list_title">
-                            {{ department.name }}
+                            {% if rights.superuser %}(Id: {{ department.id }}) {% endif %}{{ department.name }}
                             {% if rights.department or rights.superuser %}
                                 <a class="float-right" href="{{ urlGet('department', {'id':department.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
                             {% endif %}

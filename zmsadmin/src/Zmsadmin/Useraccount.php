@@ -8,34 +8,38 @@
  */
 namespace BO\Zmsadmin;
 
+use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class Useraccount extends BaseController
 {
 
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return ResponseInterface
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
+        RequestInterface $request,
+        ResponseInterface $response,
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
-        // API call to ownerlist is already restricted to user rights
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
+        
+        $useraccountList = new Collection();
         if ($workstation->hasSuperUseraccount()) {
-            $collection = \App::$http->readGetResult("/useraccount/", ["resolveReferences" => 0])->getCollection();
+            $useraccountList = \App::$http->readGetResult("/useraccount/", ["resolveReferences" => 0])->getCollection();
         } else {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
-            $collection = new \BO\Zmsentities\Collection\UseraccountList();
             foreach ($departmentList as $accountDepartment) {
-                $accountUserList = \App::$http
+                $departmentUseraccountList = \App::$http
                     ->readGetResult("/department/$accountDepartment->id/useraccount/")
                     ->getCollection();
-                if ($accountUserList) {
-                    $collection = $collection->addList($accountUserList)->withoutDublicates();
+                if ($departmentUseraccountList) {
+                    $useraccountList = $useraccountList->addList($departmentUseraccountList)->withoutDublicates();
                 }
             }
         }
@@ -47,7 +51,9 @@ class Useraccount extends BaseController
                 'title' => 'Nutzer',
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
-                'useraccountList' => $collection,
+                'useraccountList' => ($useraccountList) ?
+                $useraccountList->sortByCustomStringKey('id') :
+                new Collection(),
                 'ownerlist' => $ownerList,
                 'success' => $success,
             )

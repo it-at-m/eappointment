@@ -1,4 +1,4 @@
-import {Scope} from "@/api/models/Scope";
+import { Scope } from "@/api/models/Scope";
 
 /**
  *

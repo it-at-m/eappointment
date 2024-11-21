@@ -664,6 +664,48 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/useraccount/queue/":
+ *      get:
+ *          summary: Get a waiting queue for user account
+ *          tags:
+ *              - useraccount
+ *              - queue
+ *          parameters:
+ *              -   name: status
+ *                  description: comma separated statuses
+ *                  in: path
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, return empty queueList if no entry was found"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/queue.json"
+ */
+\App::$slim->get(
+    '/useraccount/queue/',
+    '\BO\Zmsapi\UserQueue'
+)
+    ->setName("UserQueue");
+
+/**
+ *  @swagger
  *  "/cluster/{id}/request/":
  *      get:
  *          summary: Get a list of requests by cluster ID
@@ -1582,9 +1624,197 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/department/{id:\d{1,11}}/useraccount/',
-    '\BO\Zmsapi\DepartmentUseraccountList'
+    '\BO\Zmsapi\UseraccountByDepartmentList'
 )
-    ->setName("DepartmentUseraccountList");
+    ->setName("UseraccountByDepartmentList");
+
+/**
+ *  @swagger
+ *  "/role/{level}/useraccount/":
+ *      get:
+ *          summary: Get a list of useraccounts for a role
+ *          x-since: 2.10
+ *          tags:
+ *              - role
+ *              - useraccount
+ *          parameters:
+ *              -   name: level
+ *                  description: role number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "role is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "role does not exist"
+ */
+\App::$slim->get(
+    '/role/{level:\d{1,11}}/useraccount/',
+    '\BO\Zmsapi\UseraccountByRoleList'
+)
+    ->setName("UseraccountByRoleList");
+
+
+/**
+ *  @swagger
+ *  "/role/{level}/department/{id}/useraccount/":
+ *      get:
+ *          summary: Get a list of useraccounts for a role and department
+ *          x-since: 2.10
+ *          tags:
+ *              - role
+ *              - department
+ *              - useraccount
+ *          parameters:
+ *              -   name: level
+ *                  description: role number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "role is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "role does not exist"
+ */
+\App::$slim->get(
+    '/role/{level:\d{1,11}}/department/{id:\d{1,11}}/useraccount/',
+    '\BO\Zmsapi\UseraccountByRoleAndDepartmentList'
+)
+    ->setName("UseraccountByRoleAndDepartmentList");
+
+/**
+ *  @swagger
+ *  "/useraccount/search/":
+ *      get:
+ *          summary: Get a list of search results for user accounts
+ *          x-since: 2.11
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id" <- ###########################################
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of user accounts
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ */
+\App::$slim->get(
+    '/useraccount/search/',
+    '\BO\Zmsapi\UseraccountSearch'
+)
+    ->setName("UseraccountSearch");
+
+
+/**
+ *  @swagger
+ *  "/department/{id}/useraccount/search/":
+ *      get:
+ *          summary: Get a list of search results for user accounts by department
+ *          x-since: 2.11
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id" <- ###########################################
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of user accounts
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ */
+\App::$slim->get(
+    '/department/{id:\d{1,11}}/useraccount/search/',
+    '\BO\Zmsapi\UseraccountSearchByDepartment'
+)
+    ->setName("UseraccountSearchByDepartment");
 
 /**
  *  @swagger

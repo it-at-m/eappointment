@@ -142,14 +142,14 @@
                                             <span class="counter">{{ item.clients|first.emailSendCount }}</span>
                                         {% endif %}
                                     {% endif %}
-                                </td> 
+                                </td>
 								<td title="{% for request in item.requests%}{{request.name}}{% if not loop.last %}; {% endif %}{% endfor %}">
 									{{ item.requests|first.name }}
 									{% if item.requests|length > 1 %}
 										+{{ (item.requests|length) - 1 }}
 									{% endif %}
 								</td>
-								{#DL#}                               
+								{#DL#}
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<td>
@@ -177,6 +177,66 @@
 				Keine Einträge gefunden.
 			{% endif %}
 		</div>
+
+		<div class="table-responsive-wrapper">
+			<h2 class="accordion">
+				<span class="color-green">
+					<i class="fas fa-play-circle" aria-hidden="true"></i>
+				</span>
+				Offene Aufrufe ({{ clusterQueueListCalled|length }})
+				<span class="accordion-icon">
+					<i class="fas fa-angle-down icon-down" aria-hidden="true"></i>
+					<i class="fas fa-angle-up icon-up" aria-hidden="true"></i>
+				</span>
+			</h2>
+				<div class="table-responsive-wrapper accordion-panel">
+					{% if clusterQueueListCalled|length %}
+					<table id="table-called-appointments" class="table--base compact">
+						<thead>
+						<tr>
+							{% if clusterEnabled %}
+								<th title="{% trans %}Standort im Cluster{% endtrans %}">Kürzel</th>
+							{% else %}
+								<th title="{% trans %}Reihenfolge der Aufrufe{% endtrans %}">Lfdnr.</th>
+							{% endif %}
+							<th>Terminnummer</th>
+							<th>Zimmernummer</th>
+							<th>Standort</th>
+							<th>DL</th>
+						</tr>
+						</thead>
+						{% set lfdnr = 0 %}
+						{% for item in clusterQueueListCalled %}
+							{% set lfdnr = lfdnr + 1 %}
+							<tr class="parked">
+								<td>
+									{{ lfdnr }}
+								</td>
+								<td>
+									{{ item.number }}
+								</td>
+								<td>
+									{{ item.destination }}
+								</td>
+								<td>
+									{{ item.process.scope.contact.name }}
+								</td>
+								<td>
+									{% if item.process.requests %}
+										{{ item.process.requests|map(request => request.name)|join('; ') }}
+									{% endif %}
+								</td>
+							</tr>
+						{% endfor %}
+					</table>
+					{% else %}
+						<span>
+							Keine Einträge gefunden.
+						</span>
+					{% endif %}
+				</div>
+		</div>
+
 		<div class="table-responsive-wrapper">
 			<h2>
 				<span class="color-blue">
@@ -247,7 +307,7 @@
 										{% endif %}
 									</td>
 									<td>
-										{% if item.queue.status != "reserved" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+										{% if item.queue.status != "reserved" and item.queue.status != "deleted" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
 											<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
 												{{ item.queue.number }}
 											</a>
@@ -258,6 +318,8 @@
 									<td class="callnextclient">
 										{% if item.queue.status == "reserved" %}
 											Reservierung
+										{% elseif item.queue.status == "deleted" %}
+                                                {{ item.clients|first.familyName|decodeEntities|raw }}
 										{% else %}
 											{% set familyName = item.clients|first.familyName|decodeEntities|raw %}
 											{% set currentTime = "now"|date('U') %}
@@ -350,7 +412,7 @@
 											<p class="queue-table-amendment-time">+{{ item.queue.waitingTimeOptimistic }}&#8209;{{ item.queue.waitingTimeEstimate }}&nbsp;Min.</p>
 										{% endif %}
 									</td>
-									{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" %}
+									{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" %}
 										<td class="center">
 											<a data-id="{{ item.id }}" data-name="{{ item.queue.withAppointment ? item.clients|first.familyName|raw : ('Wartenummer ' ~ item.queue.number) }}" href="#" class="icon process-delete" title="Löschen">
 												<i class="far fa-trash-alt" aria-hidden="true"></i>
@@ -596,6 +658,35 @@ content.addClass('hidden')
 				{{ dumpHttpLog() }}
 			</div>
 		{% endif %}
+
+		<script>
+			var acc = document.getElementsByClassName("accordion");
+			var i;
+
+			for (i = 0; i < acc.length; i++) {
+				acc[i].addEventListener("click", function () {
+					this.classList.toggle("active");
+					var panel = this.nextElementSibling;
+					if (panel.style.display === "block") {
+						panel.style.display = "none";
+					} else {
+						panel.style.display = "block";
+					}
+				});
+			}
+		</script>
 	{% endblock %}
 	{% block board_footer %}{% endblock %}
 {% endembed %}
+
+<style>
+    .queue-table tr.deleted {
+        background-color: #ddd !important;
+        opacity: 0.45;
+    }
+    .queue-table tr.deleted a {
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+</style>
+

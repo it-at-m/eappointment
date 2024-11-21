@@ -8,48 +8,33 @@
     {% block board_body %}
         <div class="table-responsive-wrapper"> 
              <fieldset>
-                {% if useraccountList|length == 0 %}
+                {% if useraccountListByDepartment|length == 0 %}
                 <div class="message message--info" role="alert">
                     <p>Dieser Behörde ist bisher noch kein Nutzer zugeordnet.</p>
                 </div>
                 {% else %}
-                <div class="table-action-link">
-                    {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
-                </div>
+                <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neue*r Nutzer*in' }) }}
+                    </div>
+                    <div>
+                        {% if useraccountListByDepartment|length == 1 %}({{ useraccountListByDepartment|length }} Nutzer*in){% else %}({{ useraccountListByDepartment|length }} Nutzer*innen){% endif %}
+                    </div>
+                </div>             
                 <table class="table--base">
                     <thead>
                         <tr>
                             <th>Loginname</th>
-                            <th>Standort</th>
-                            <th>Platznummer</th>
+                            <th>E-Mail Adresse</th>
                             <th>Letzter Login</th>
                             <th>Aktion</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% for useraccount in useraccountList %}
-                        {% set loggedInWorkstation = null %}
-                        {% for loggedInworkstationItem in workstationList %}
-                            {% if
-                                loggedInworkstationItem.useraccount.id != workstation.useraccount.id and
-                                loggedInworkstationItem.useraccount.id == useraccount.id and
-                                loggedInworkstationItem.scope.id
-                            %}
-                                {% set loggedInWorkstation = loggedInworkstationItem %}
-                            {% endif %}
-                        {% endfor %}
+                    {% for useraccount in useraccountListByDepartment %}
                         <tr>
                             <td><a href="{{ urlGet('useraccountEdit', {'loginname':useraccount.id}, {}) }}">{{ useraccount.id }}</a></td>
-                            <td>
-                                {% if useraccount.lastLogin|date("U") > getNow()|date_modify("-1 day")|date("U") %}
-                                {{ loggedInWorkstation.scope.contact.name }}
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if useraccount.lastLogin|date("U") > getNow()|date_modify("-1 day")|date("U") %}
-                                    {% if loggedInWorkstation.name %}{{ loggedInWorkstation.name }}{% elseif loggedInWorkstation %}Tresen{% endif %}
-                                {% endif %}
-                            </td>
+                            <td>{% if useraccount.email %}{{ useraccount.email }}{% endif %}</td>
                             <td>{% if useraccount.lastLogin %}{{ useraccount.lastLogin|date("Y-m-d") }}{% endif %}</td>
                             <td>
                                 {{ custombutton({ "type":"edit", "class":"link" ,"target": urlGet('useraccountEdit', {'loginname':useraccount.id}, {}), "label":'<i class="fa fa-user-edit" aria-hidden="true"></i> bearbeiten' }) }}
@@ -65,9 +50,14 @@
                     </tbody>
                 </table>
                 {% endif %}
-                <div class="table-action-link">
-                    {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neuer Nutzer' }) }}
-                </div>
+                <div class="table-action-link" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        {{ custombutton({ "type":"new", "class":"button-new" ,"target": urlGet("useraccountAdd", {}, {'department':department.id}), "label":'<i class="fa fa-user-plus color-positive" aria-hidden="true"></i> neue*r Nutzer*in' }) }}
+                    </div>
+                    <div>
+                        {% if useraccountListByDepartment|length == 1 %}({{ useraccountListByDepartment|length }} Nutzer*in){% else %}({{ useraccountListByDepartment|length }} Nutzer*innen){% endif %}
+                    </div>
+                </div>  
              </fieldset>
         </div>
     {% endblock %}
