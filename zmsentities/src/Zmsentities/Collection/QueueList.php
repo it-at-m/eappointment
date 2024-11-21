@@ -368,6 +368,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function sortByCallTime(string $order)
     {
+        $queueListArray = [];
         foreach ($this as $entity) {
             $queueListArray[] = $entity;
         }
