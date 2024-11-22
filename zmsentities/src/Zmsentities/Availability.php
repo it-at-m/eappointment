@@ -450,8 +450,6 @@ class Availability extends Schema\Entity
         } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
         return false;
     }
-
-
     public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $kind)
     {
         $errorList = [];
@@ -482,9 +480,7 @@ class Availability extends Schema\Entity
         }
         
         return $errorList;
-    }
-    
-    
+    }  
     public function validateEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate)
     {
         $errorList = [];
@@ -497,8 +493,7 @@ class Availability extends Schema\Entity
         $dayMinutesEnd = ($endHour * 60) + $endMinute;
         $startTimestamp = $startDate->getTimestamp();
         $endTimestamp = $endDate->getTimestamp();
-    
-        // Check if end time is before start time
+
         if ($dayMinutesEnd <= $dayMinutesStart) {
             $errorList[] = [
                 'type' => 'endTime',
@@ -513,7 +508,6 @@ class Availability extends Schema\Entity
         
         return $errorList;
     }
-    
     
     public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $kind)
     {

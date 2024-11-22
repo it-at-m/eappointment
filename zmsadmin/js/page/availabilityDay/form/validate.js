@@ -16,10 +16,8 @@ const validate = (data, props) => {
         itemList: []
     };
 
-    // Add new validation functions for null and format checks
     errorList.itemList.push(validateNullValues(data));
     errorList.itemList.push(validateTimestampAndTimeFormats(data));
-
     errorList.itemList.push(validateStartTime(today, tomorrow, selectedDate, data));
     errorList.itemList.push(validateEndTime(today, yesterday, selectedDate, data));
     errorList.itemList.push(validateOriginEndTime(today, yesterday, selectedDate, data));
@@ -35,7 +33,6 @@ const validate = (data, props) => {
     };
 };
 
-// Validate if startDate, endDate, startTime, and endTime are not null
 function validateNullValues(data) {
     let errorList = [];
 
@@ -70,50 +67,71 @@ function validateNullValues(data) {
     return errorList;
 }
 
-// Validate timestamps and time formats
 function validateTimestampAndTimeFormats(data) {
     let errorList = [];
-    const timeRegex = /^\d{2}:\d{2}(:\d{2})?$/; // HH:mm:ss or HH:mm
+    const timeRegex = /^\d{2}:\d{2}(:\d{2})?$/;
 
-    // Validate startDate and endDate as valid timestamps
-    if (!isValidTimestamp(data.startDate)) {
+    let isStartDateValid = isValidTimestamp(data.startDate);
+    let isEndDateValid = isValidTimestamp(data.endDate);
+
+    if (!isStartDateValid) {
         errorList.push({
             type: 'startDateInvalid',
             message: 'Das Startdatum ist kein gültiger Zeitstempel.'
         });
     }
 
-    if (!isValidTimestamp(data.endDate)) {
+    if (!isEndDateValid) {
         errorList.push({
             type: 'endDateInvalid',
             message: 'Das Enddatum ist kein gültiger Zeitstempel.'
         });
     }
 
-    // Validate startTime and endTime format
-    if (data.startTime && !timeRegex.test(data.startTime)) {
+    if (data.startTime) {
+        if (!timeRegex.test(data.startTime)) {
+            errorList.push({
+                type: 'startTimeFormat',
+                message: 'Die Startzeit muss im Format "HH:mm:ss" oder "HH:mm" vorliegen.'
+            });
+        }
+    } else {
         errorList.push({
-            type: 'startTimeFormat',
-            message: 'Die Startzeit muss im Format "HH:mm:ss" oder "HH:mm" vorliegen.'
+            type: 'startTimeMissing',
+            message: 'Die Startzeit darf nicht leer sein.'
         });
     }
 
-    if (data.endTime && !timeRegex.test(data.endTime)) {
+    if (data.endTime) {
+        if (!timeRegex.test(data.endTime)) {
+            errorList.push({
+                type: 'endTimeFormat',
+                message: 'Die Endzeit muss im Format "HH:mm:ss" oder "HH:mm" vorliegen.'
+            });
+        }
+    } else {
         errorList.push({
-            type: 'endTimeFormat',
-            message: 'Die Endzeit muss im Format "HH:mm:ss" oder "HH:mm" vorliegen.'
+            type: 'endTimeMissing',
+            message: 'Die Endzeit darf nicht leer sein.'
         });
+    }
+
+    if (isStartDateValid && isEndDateValid) {
+        if (new Date(data.startDate) > new Date(data.endDate)) {
+            errorList.push({
+                type: 'dateOrderInvalid',
+                message: 'Das Startdatum darf nicht nach dem Enddatum liegen.'
+            });
+        }
     }
 
     return errorList;
 }
 
-// Helper function to check if a timestamp is valid
 function isValidTimestamp(timestamp) {
     return !isNaN(timestamp) && moment.unix(timestamp).isValid();
 }
 
-// Parse timestamp and time into moment objects
 function parseTimestampAndTime(dateTimestamp, timeStr) {
     const date = moment.unix(dateTimestamp);
     if (!date.isValid()) return null;
@@ -121,48 +139,6 @@ function parseTimestampAndTime(dateTimestamp, timeStr) {
     const [hours, minutes, seconds] = timeStr.split(':').map((val, index) => parseInt(val || 0));
     return date.set({ hour: hours, minute: minutes, second: seconds });
 }
-
-// Example usage in validateStartTime and validateEndTime
-function validateStartTime(today, tomorrow, selectedDate, data) {
-    let errorList = [];
-    const startTime = parseTimestampAndTime(data.startDate, data.startTime);
-    const isFuture = data.kind && data.kind === 'future';
-
-    if (!startTime) {
-        errorList.push({
-            type: 'startTimeInvalid',
-            message: 'Ungültige Startzeit oder Startdatum.'
-        });
-    } else if (!isFuture && startTime.isAfter(today, 'minute')) {
-        errorList.push({
-            type: 'startTimeFuture',
-            message: `Das Startdatum der Öffnungszeit muss vor dem ${tomorrow.format('DD.MM.YYYY')} liegen.`
-        });
-    }
-
-    return errorList;
-}
-
-function validateEndTime(today, yesterday, selectedDate, data) {
-    let errorList = [];
-    const endTime = parseTimestampAndTime(data.endDate, data.endTime);
-    const startTime = parseTimestampAndTime(data.startDate, data.startTime);
-
-    if (!endTime) {
-        errorList.push({
-            type: 'endTimeInvalid',
-            message: 'Ungültige Endzeit oder Enddatum.'
-        });
-    } else if (startTime && endTime.isBefore(startTime)) {
-        errorList.push({
-            type: 'endTime',
-            message: 'Das Enddatum darf nicht vor dem Startdatum liegen.'
-        });
-    }
-
-    return errorList;
-}
-
 
 function validateStartTime(today, tomorrow, selectedDate, data) {
     let errorList = []
@@ -181,15 +157,15 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
             message: `Das Startdatum der Öffnungszeit muss vor dem ${tomorrow.format('DD.MM.YYYY')} liegen.`
         })
     }
-/*
-    if (isOrigin && startTime.isBefore(today.startOf('day'), 'day') && data.__modified) {
-        errorList.push({
-            type: 'startTimeOrigin', 
-            message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
-            + '(Der Terminanfang am "'+startDateTime.format('DD.MM.YYYY')+' liegt vor dem heutigen Tag").'
-        })
-    }
-*/
+    /*
+        if (isOrigin && startTime.isBefore(today.startOf('day'), 'day') && data.__modified) {
+            errorList.push({
+                type: 'startTimeOrigin', 
+                message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
+                + '(Der Terminanfang am "'+startDateTime.format('DD.MM.YYYY')+' liegt vor dem heutigen Tag").'
+            })
+        }
+    */
 
     if ((startHour == "00" && startMinute == "00") || (endHour == "00" && endMinute == "00")) {
         errorList.push({
@@ -218,12 +194,15 @@ function validateEndTime(today, yesterday, selectedDate, data) {
             type: 'endTime', 
             message: 'Die Endzeit darf nicht vor der Startzeit liegen.'
         })
-    } else if (startTimestamp >= endTimestamp) {
+    } 
+    
+    if (startTimestamp >= endTimestamp) {
         errorList.push({
             type: 'endTime', 
             message: 'Das Enddatum darf nicht vor dem Startdatum liegen.'
         })
     }
+
     return errorList;
 }
 
