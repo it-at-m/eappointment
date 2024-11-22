@@ -179,7 +179,6 @@ class AvailabilityPage extends Component {
         }
     }
     
-
     onRevertUpdates() {
         this.isCreatingExclusion = false
         this.setState(Object.assign({}, getInitialState(this.props), {
@@ -196,18 +195,14 @@ class AvailabilityPage extends Component {
         const id = availability.id;
     
         if (ok) {
-            // Format the selected date
             const selectedDate = formatTimestampDate(this.props.timestamp);
     
-            // Prepare the data to send
             const sendAvailability = Object.assign({}, availability);
     
-            // Clean up temporary fields
             if (sendAvailability.tempId) {
                 delete sendAvailability.tempId;
             }
     
-            // Include 'kind' and wrap it in 'availabilityList'
             const payload = {
                 availabilityList: [
                     {
@@ -220,7 +215,6 @@ class AvailabilityPage extends Component {
     
             console.log('Updating single availability', payload);
     
-            // Make the AJAX request
             $.ajax(`${this.props.links.includeurl}/availability/save/${id}/`, {
                 method: 'POST',
                 data: JSON.stringify(payload),
@@ -495,72 +489,110 @@ class AvailabilityPage extends Component {
         return hasError || hasConflict;
     }
 
-    getValidationList(list = []) {
-        const validateData = data => {
-            let validationResult = validate(data, this.props)
-            if (!validationResult.valid) {
-                return validationResult.errorList              
-                
-            } 
-            return [];
-        }
-
-        this.state.availabilitylist.map(availability => {
-            list.push(validateData(availability))
-        })
-        list = list.filter(el => el.id)
-
-        this.setState({
-            errorList: list.length ? Object.assign({}, list) : {}
-        }, () => {
-            if (list.length) {
-                this.errorElement.scrollIntoView()
+    getValidationList() {
+        return new Promise((resolve, reject) => {
+            const validateData = (data) => {
+                const validationResult = validate(data, this.props);
+                if (!validationResult.valid) {
+                    return validationResult.errorList;
+                }
+                return [];
+            };
+    
+            const list = this.state.availabilitylist
+                .map(validateData)
+                .flat();
+    
+            console.log("Validation list:", list);
+    
+            this.setState(
+                {
+                    errorList: list.length ? list : [],
+                },
+                () => {
+                    if (list.length > 0) {
+                        console.warn("Validation failed with errors:", list);
+                        this.errorElement?.scrollIntoView();
+                        //reject(new Error("Validation failed")); // Reject with an error object
+                    } else {
+                        console.log("Validation passed.");
+                        resolve();
+                    }
+                }
+            );
+        });
+    }
+    
+    validateAvailabilityList(availabilitylist) {
+        const timeRegex = /^\d{2}:\d{2}(:\d{2})?$/;
+    
+        const isValidTimestamp = (timestamp) => !isNaN(timestamp) && moment.unix(timestamp).isValid();
+    
+        const invalidAvailabilities = availabilitylist.filter((availability) => {
+            const hasInvalidDates =
+                !isValidTimestamp(availability.startDate) || !isValidTimestamp(availability.endDate);
+            const hasInvalidTimes =
+                !timeRegex.test(availability.startTime) || !timeRegex.test(availability.endTime);
+    
+            if (hasInvalidDates || hasInvalidTimes) {
+                console.warn("Invalid availability detected:", availability);
             }
-        })
+    
+            return hasInvalidDates || hasInvalidTimes;
+        });
+    
+        return invalidAvailabilities;
     }
 
     getConflictList() {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(Object.assign({}, {
-                availabilityList: this.state.availabilitylist, 
-                selectedDate: formatTimestampDate(this.props.timestamp),
-                selectedAvailability: this.state.selectedAvailability
-            }))
-        };
-        const url = `${this.props.links.includeurl}/availability/conflicts/`;
-        fetch(url, requestOptions)
-            .then(res => res.json())
-            .then(
-                (data) => {
-                    this.setState({
-                        conflictList: Object.assign({}, 
-                            {
-                                itemList: Object.assign({}, data.conflictList), 
-                                conflictIdList: data.conflictIdList
+        this.getValidationList()
+            .then(() => {
+                const { availabilitylist, selectedAvailability } = this.state;
+                const { timestamp } = this.props;
+    
+                console.log("Validation passed. Proceeding with /availability/conflicts/.");
+    
+                selectedAvailability.startTime = moment(selectedAvailability.startTime, ['HH:mm:ss', 'HH:mm']).format('HH:mm');
+                selectedAvailability.endTime = moment(selectedAvailability.endTime, ['HH:mm:ss', 'HH:mm']).format('HH:mm');
+    
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        availabilityList: availabilitylist,
+                        selectedDate: formatTimestampDate(timestamp),
+                        selectedAvailability,
+                    }),
+                };
+    
+                const url = `${this.props.links.includeurl}/availability/conflicts/`;
+    
+                fetch(url, requestOptions)
+                    .then((res) => res.json())
+                    .then(
+                        (data) => {
+                            console.log("Conflicts fetched successfully:", data);
+                            this.setState({
+                                conflictList: {
+                                    itemList: { ...data.conflictList },
+                                    conflictIdList: data.conflictIdList,
+                                },
+                            });
+                            if (data.conflictIdList.length > 0) {
+                                this.errorElement?.scrollIntoView();
                             }
-                        )
-                    })
-                    if (data.conflictIdList.length > 0) {
-                        this.errorElement.scrollIntoView()
-                    }
-                },
-                (err) => {
-                    let isException = err.responseText.toLowerCase().includes('exception');
-                    if (err.status >= 500 && isException) {
-                        new ExceptionHandler($('.opened'), {
-                            code: err.status,
-                            message: err.responseText
-                        });
-                    } else {
-                        console.log('conflict error', err);
-                    }
-                    hideSpinner();
-                }
-            )
+                        },
+                        (err) => {
+                            console.error("Conflict fetch error:", err);
+                            hideSpinner();
+                        }
+                    );
+            })
+            .catch((error) => {
+                console.warn("Validation failed. Conflict fetch aborted.", error);
+            });
     }
-
+    
     renderTimeTable() {
         const onSelect = data => {
             this.onSelectAvailability(data)
@@ -586,41 +618,55 @@ class AvailabilityPage extends Component {
     }
 
     readCalculatedAvailabilityList() {
-        $.ajax(`${this.props.links.includeurl}/availability/slots/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            data: JSON.stringify({
-                'availabilityList': this.state.availabilitylist,
-                'busySlots': this.state.busyslots
-            })
-        }).done((responseData) => {
-            let availabilityList =  writeSlotCalculationIntoAvailability(
-                this.state.availabilitylist, 
-                responseData['maxSlots'], 
-                responseData['busySlots']
-            );
-            this.setState({ 
-                availabilitylistslices: availabilityList,
-                maxWorkstationCount: parseInt(responseData['maxWorkstationCount']),
-            })
-        }).fail((err) => {
-            if (err.status === 404) {
-                console.log('404 error, ignored')
-            } else {
-                let isException = err.responseText.toLowerCase().includes('exception');
-                    if (err.status >= 500 && isException) {
-                        new ExceptionHandler($('.opened'), {
-                            code: err.status,
-                            message: err.responseText
+        this.getValidationList()
+            .then(() => {
+                const { availabilitylist, busyslots } = this.state;
+    
+                console.log("Validation passed. Proceeding with /availability/slots/.");
+    
+                $.ajax(`${this.props.links.includeurl}/availability/slots/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    data: JSON.stringify({
+                        availabilityList: availabilitylist,
+                        busySlots: busyslots,
+                    }),
+                })
+                    .done((responseData) => {
+                        console.log("Slots fetched successfully:", responseData);
+                        const availabilityList = writeSlotCalculationIntoAvailability(
+                            this.state.availabilitylist,
+                            responseData['maxSlots'],
+                            responseData['busySlots']
+                        );
+                        this.setState({
+                            availabilitylistslices: availabilityList,
+                            maxWorkstationCount: parseInt(responseData['maxWorkstationCount']),
                         });
-                    } else {
-                        console.log('reading calculated availability list error', err);
-                    }
-                    hideSpinner();
-            }
-        })
-    }
-
+                    })
+                    .fail((err) => {
+                        console.error("Error during /availability/slots/ fetch:", err);
+                        if (err.status === 404) {
+                            console.log("404 error ignored.");
+                        } else {
+                            const isException = err.responseText.toLowerCase().includes("exception");
+                            if (err.status >= 500 && isException) {
+                                new ExceptionHandler($(".opened"), {
+                                    code: err.status,
+                                    message: err.responseText,
+                                });
+                            }
+                        }
+                        hideSpinner();
+                    });
+            })
+            .catch((error) => {
+                console.warn("Validation failed. Slot calculation fetch aborted.", error);
+                this.setState({ errorList: error });
+                this.errorElement?.scrollIntoView();
+            });
+    }    
+    
     handleChange(data) {
         if (data.__modified) {
             clearTimeout(this.timer)
