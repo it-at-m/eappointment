@@ -11,19 +11,20 @@
         :preselected-service-id="serviceId"
         :preselected-offive-id="locationId"
         :t="t"
-        @next="increaseCurrentView"
+        @next="setServices"
       />
       <calendar-view
         v-if="currentView === 1"
+        :selected-service-map="selectedServiceMap"
         :t="t"
         @back="decreaseCurrentView"
-        @next="increaseCurrentView"
+        @next="nextReserveAppointment"
       />
       <customer-info
         v-if="currentView === 2"
         :t="t"
         @back="decreaseCurrentView"
-        @next="increaseCurrentView"
+        @next="nextUpdateAppointment"
       />
     </div>
   </div>
@@ -37,11 +38,20 @@ import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import {
+  CustomerDataProvider,
+  SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
+import {OfficeImpl} from "@/types/OfficeImpl";
+import {
+  reserveAppointment, updateAppointment
+} from "@/api/ZMSAppointmentAPI";
+import {AppointmentDTO} from "@/api/models/AppointmentDTO";
+import {AppointmentImpl} from "@/types/AppointmentImpl";
+import {CustomerData} from "@/types/CustomerData";
 
 const props = defineProps<{
   baseUrl: any;
@@ -84,7 +94,13 @@ const updateSelectedService = (newService: ServiceImpl): void => {
   selectedService.value = newService;
 };
 
+const selectedServiceMap = ref<Map<string, number>>(new Map<string, number>());
+
+const selectedProvider = ref<OfficeImpl>();
 const selectedTimeslot = ref<number>(0);
+
+const customerData = ref<CustomerData>(new CustomerData("","","","",""));
+const appointment = ref<AppointmentImpl>();
 
 provide<SelectedServiceProvider>("selectedServiceProvider", {
   selectedService,
@@ -92,8 +108,17 @@ provide<SelectedServiceProvider>("selectedServiceProvider", {
 } as SelectedServiceProvider);
 
 provide<SelectedTimeslotProvider>("selectedTimeslot", {
+  selectedProvider,
   selectedTimeslot,
 } as SelectedTimeslotProvider);
+
+provide<CustomerDataProvider>("customerData", {
+  customerData: customerData,
+} as CustomerDataProvider);
+
+provide<SelectedAppointmentProvider>("appointment", {
+  appointment,
+} as SelectedAppointmentProvider);
 
 const increaseCurrentView = () => currentView.value++;
 
@@ -105,11 +130,69 @@ const changeStep = (step: string) => {
   }
 };
 
+const setServices = () => {
+  if (selectedService.value) {
+    if (selectedService.value.count) {
+      selectedServiceMap.value.set(
+        selectedService.value.id,
+        selectedService.value.count
+      );
+    }
+
+    if (selectedService.value.subServices) {
+      selectedService.value.subServices.forEach((subservice) => {
+        if (subservice.count > 0) {
+          selectedServiceMap.value.set(
+            subservice.id.toString(),
+            subservice.count
+          );
+        }
+      });
+    }
+    increaseCurrentView();
+  }
+};
+
+const nextReserveAppointment = () => {
+  increaseCurrentView();
+  reserveAppointment(
+    selectedTimeslot.value,
+    Array.from(selectedServiceMap.value.keys()),
+    Array.from(selectedServiceMap.value.values()),
+    selectedProvider.value.id
+  ).then((data) => {
+    if ((data as AppointmentDTO).processId !== undefined) {
+      appointment.value = data as AppointmentDTO;
+    } else {
+      // error.value = true;
+    }
+  });
+
+};
+
+const nextUpdateAppointment = () => {
+  if(appointment.value) {
+    appointment.value.familyName = customerData.value.firstName +  " " +  customerData.value.lastName;
+    appointment.value.email = customerData.value.mailAddress;
+    appointment.value.telephone = customerData.value.telephoneNumber ? customerData.value.telephoneNumber : undefined;
+    appointment.value.customTextfield = customerData.value.remarks ? customerData.value.remarks : undefined;
+
+    increaseCurrentView();
+    updateAppointment(
+      appointment.value
+    ).then((data) => {
+      if ((data as AppointmentDTO).processId !== undefined) {
+        appointment.value = data as AppointmentDTO;
+        console.log("Appointment: ", appointment.value);
+
+      } else {
+        // error.value = true;
+      }
+    });
+  }
+};
+
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
-});
-
-watch(selectedTimeslot, (newTimeslot) => {
-  console.log("TimeSlot: ", newTimeslot);
 });
 </script>
