@@ -93,13 +93,14 @@ export function reserveAppointment(
   timeSlot: number,
   serviceIds: string[],
   serviceCount: number[],
-  providerId: string
+  providerId: string,
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     timestamp: timeSlot,
     serviceCount: serviceCount,
     officeId: providerId,
     serviceId: serviceIds,
+    captchaSolution: null,
   };
 
   return fetch(
@@ -114,7 +115,7 @@ export function reserveAppointment(
   });
 }
 
-export function updateAppointmentData(
+export function updateAppointment(
   appointment: AppointmentDTO
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {

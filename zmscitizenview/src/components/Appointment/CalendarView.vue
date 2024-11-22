@@ -103,7 +103,8 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 
-defineProps<{
+const props = defineProps<{
+  selectedServiceMap: Map<string, number>;
   t: any;
 }>();
 
@@ -113,14 +114,12 @@ const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;
 
-const { selectedTimeslot } = inject<SelectedTimeslotProvider>(
+const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
 
 const selectableProviders = ref<OfficeImpl[]>();
-const currentProvider = ref<OfficeImpl>();
 const displayInfo = ref<string>();
-const selectedServices = ref<Map<string, number>>(new Map<string, number>());
 const availableDays = ref<string[]>();
 const appointmentTimestamps = ref<number[]>();
 
@@ -182,7 +181,7 @@ const timeSlotsInHours = () => {
 };
 
 const showSelectionForProvider = (provider: OfficeImpl) => {
-  currentProvider.value = provider;
+  selectedProvider.value = provider;
   error.value = false;
 
   if (
@@ -196,9 +195,9 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
   }
 
   fetchAvailableDays(
-    currentProvider.value,
-    Array.from(selectedServices.value.keys()),
-    Array.from(selectedServices.value.values())
+    selectedProvider.value,
+    Array.from(props.selectedServiceMap.keys()),
+    Array.from(props.selectedServiceMap.values())
   ).then((data) => {
     if ((data as AvailableDaysDTO).availableDays !== undefined) {
       availableDays.value = (data as AvailableDaysDTO).availableDays;
@@ -213,9 +212,9 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
 const getAppointmentsOfDay = (date: string) => {
   fetchAvailableTimeSlots(
     date,
-    currentProvider.value,
-    Array.from(selectedServices.value.keys()),
-    Array.from(selectedServices.value.values())
+    selectedProvider.value,
+    Array.from(props.selectedServiceMap.keys()),
+    Array.from(props.selectedServiceMap.values())
   ).then((data) => {
     if (data as AvailableTimeSlotsDTO) {
       appointmentTimestamps.value = (
@@ -263,24 +262,6 @@ const previousStep = () => emit("back");
 
 onMounted(() => {
   if (selectedService.value) {
-    if (selectedService.value.count) {
-      selectedServices.value.set(
-        selectedService.value.id,
-        selectedService.value.count
-      );
-    }
-
-    if (selectedService.value.subServices) {
-      selectedService.value.subServices.forEach((subservice) => {
-        if (subservice.count > 0) {
-          selectedServices.value.set(
-            subservice.id.toString(),
-            subservice.count
-          );
-        }
-      });
-    }
-
     if (selectedService.value.providers && selectedService.value.subServices) {
       const choosenSubservices = selectedService.value.subServices.filter(
         (subservice) => subservice.count > 0
