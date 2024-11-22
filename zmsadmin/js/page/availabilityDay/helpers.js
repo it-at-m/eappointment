@@ -220,8 +220,8 @@ export const cleanupFormData = data => {
     return Object.assign({}, data, {
         workstationCount_callcenter: callcenterCount,
         workstationCount_public: publicCount,
-        open_from: (data.open_from === "0" || data.open_from === data.openFromDefault) ? "" : data.open_from,
-        open_to: (data.open_to === "0" || data.open_to === data.openToDefault) ? "" : data.open_to
+        open_from: (data.open_from === data.openFromDefault) ? "" : data.open_from,
+        open_to: (data.open_to === data.openToDefault) ? "" : data.open_to
     })
 }
 
