@@ -174,6 +174,10 @@ class AvailabilityDatePicker extends Component
     }
 
     handleTimeChange(name, date) {
+        if (!date) {
+            this.closeDatePicker();
+            return;
+        }
         if ('startDate' == name) {
             if (this.state.availability.startTime != moment(date).format('HH:mm')) {
                 this.props.onChange("startTime", moment(date).format('HH:mm'));
@@ -339,7 +343,6 @@ class AvailabilityDatePicker extends Component
                                 excludeTimes={this.state.excludeTimeList}
                                 //filterTime={filterPassedTime}
                                 disabled={this.props.attributes.disabled}
-                                readOnly
                                 onInputClick={this.openTimePicker}
                                 onKeyDown={this.tpKeyDownHandler}
                                 onClickOutside={this.closeTimePicker}
