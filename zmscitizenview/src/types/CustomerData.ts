@@ -14,7 +14,7 @@ export class CustomerData {
     lastName: string,
     mailAddress: string,
     telephoneNumber: string | undefined,
-    remarks: string | undefined,
+    remarks: string | undefined
   ) {
     this.firstName = firstName;
     this.lastName = lastName;

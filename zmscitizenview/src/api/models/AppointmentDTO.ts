@@ -79,4 +79,3 @@ export interface AppointmentDTO {
    */
   serviceCount: number;
 }
-

@@ -1,9 +1,9 @@
 import { Ref } from "vue";
 
+import { AppointmentImpl } from "@/types/AppointmentImpl";
+import { CustomerData } from "@/types/CustomerData";
+import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import {OfficeImpl} from "@/types/OfficeImpl";
-import {AppointmentImpl} from "@/types/AppointmentImpl";
-import {CustomerData} from "@/types/CustomerData";
 
 export interface SelectedServiceProvider {
   selectedService: Ref<ServiceImpl | undefined>;
