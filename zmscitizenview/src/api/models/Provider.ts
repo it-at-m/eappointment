@@ -1,4 +1,4 @@
-import {Contact} from "@/api/models/Contact";
+import { Contact } from "@/api/models/Contact";
 
 /**
  *

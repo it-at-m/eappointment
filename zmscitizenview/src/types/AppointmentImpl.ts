@@ -1,5 +1,5 @@
-import {AppointmentDTO} from "@/api/models/AppointmentDTO";
-import {Scope} from "@/api/models/Scope";
+import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { Scope } from "@/api/models/Scope";
 
 export class AppointmentImpl implements AppointmentDTO {
   processId: string;

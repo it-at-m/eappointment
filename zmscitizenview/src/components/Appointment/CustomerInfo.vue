@@ -51,8 +51,12 @@
 
 <script setup lang="ts">
 import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
-import {computed, inject} from "vue";
-import {CustomerDataProvider, SelectedAppointmentProvider} from "@/types/ProvideInjectTypes";
+import { computed, inject } from "vue";
+
+import {
+  CustomerDataProvider,
+  SelectedAppointmentProvider,
+} from "@/types/ProvideInjectTypes";
 
 const props = defineProps<{
   t: any;
@@ -72,14 +76,14 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const telephonPattern = /^\+?\d[\d\s]*$/;
 
 const telephoneActivated = () =>
-  appointment.value
-  && appointment.value.scope
-  && appointment.value.scope.telephoneActivated == "1";
+  appointment.value &&
+  appointment.value.scope &&
+  appointment.value.scope.telephoneActivated == "1";
 
 const customTextfieldActivated = () =>
-  appointment.value
-  && appointment.value.scope
-  && appointment.value.scope.customTextfieldActivated == "1";
+  appointment.value &&
+  appointment.value.scope &&
+  appointment.value.scope.customTextfieldActivated == "1";
 
 const errorMessageFirstName = computed(() =>
   customerData.value.firstName ? undefined : props.t("errorMessageFirstName")
@@ -100,7 +104,11 @@ const errorMessageMailAddress = computed(() => {
 });
 
 const errorMessageTelephoneNumber = computed(() => {
-  if (!customerData.value.telephoneNumber && appointment.value && appointment.value.scope.telephoneRequired == "1") {
+  if (
+    !customerData.value.telephoneNumber &&
+    appointment.value &&
+    appointment.value.scope.telephoneRequired == "1"
+  ) {
     return props.t("errorMessageTelephoneNumberRequired");
   } else if (
     customerData.value.telephoneNumber &&
@@ -122,7 +130,6 @@ const validForm = computed(
 
 const nextStep = () => emit("next");
 const previousStep = () => emit("back");
-
 </script>
 
 <style scoped></style>

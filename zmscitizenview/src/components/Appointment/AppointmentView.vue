@@ -34,9 +34,14 @@
 import { MucStepper } from "@muenchen/muc-patternlab-vue";
 import { provide, ref, watch } from "vue";
 
+import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { reserveAppointment, updateAppointment } from "@/api/ZMSAppointmentAPI";
 import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
+import { AppointmentImpl } from "@/types/AppointmentImpl";
+import { CustomerData } from "@/types/CustomerData";
+import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   CustomerDataProvider,
   SelectedAppointmentProvider,
@@ -45,13 +50,6 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
-import {OfficeImpl} from "@/types/OfficeImpl";
-import {
-  reserveAppointment, updateAppointment
-} from "@/api/ZMSAppointmentAPI";
-import {AppointmentDTO} from "@/api/models/AppointmentDTO";
-import {AppointmentImpl} from "@/types/AppointmentImpl";
-import {CustomerData} from "@/types/CustomerData";
 
 const props = defineProps<{
   baseUrl: any;
@@ -99,7 +97,7 @@ const selectedServiceMap = ref<Map<string, number>>(new Map<string, number>());
 const selectedProvider = ref<OfficeImpl>();
 const selectedTimeslot = ref<number>(0);
 
-const customerData = ref<CustomerData>(new CustomerData("","","","",""));
+const customerData = ref<CustomerData>(new CustomerData("", "", "", "", ""));
 const appointment = ref<AppointmentImpl>();
 
 provide<SelectedServiceProvider>("selectedServiceProvider", {
@@ -167,24 +165,25 @@ const nextReserveAppointment = () => {
       // error.value = true;
     }
   });
-
 };
 
 const nextUpdateAppointment = () => {
-  if(appointment.value) {
-    appointment.value.familyName = customerData.value.firstName +  " " +  customerData.value.lastName;
+  if (appointment.value) {
+    appointment.value.familyName =
+      customerData.value.firstName + " " + customerData.value.lastName;
     appointment.value.email = customerData.value.mailAddress;
-    appointment.value.telephone = customerData.value.telephoneNumber ? customerData.value.telephoneNumber : undefined;
-    appointment.value.customTextfield = customerData.value.remarks ? customerData.value.remarks : undefined;
+    appointment.value.telephone = customerData.value.telephoneNumber
+      ? customerData.value.telephoneNumber
+      : undefined;
+    appointment.value.customTextfield = customerData.value.remarks
+      ? customerData.value.remarks
+      : undefined;
 
     increaseCurrentView();
-    updateAppointment(
-      appointment.value
-    ).then((data) => {
+    updateAppointment(appointment.value).then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
         appointment.value = data as AppointmentDTO;
         console.log("Appointment: ", appointment.value);
-
       } else {
         // error.value = true;
       }

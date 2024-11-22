@@ -1,3 +1,4 @@
+import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
@@ -6,12 +7,12 @@ import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
-  VUE_APP_ZMS_API_CALENDAR_ENDPOINT, VUE_APP_ZMS_API_PRECONFIRM_RESERVATION_ENDPOINT,
+  VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
+  VUE_APP_ZMS_API_PRECONFIRM_RESERVATION_ENDPOINT,
   VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT,
   VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT,
 } from "@/utils/Constants";
-import {AppointmentDTO} from "@/api/models/AppointmentDTO";
 
 const TODAY = new Date();
 const MAXDATE = new Date(
@@ -93,7 +94,7 @@ export function reserveAppointment(
   timeSlot: number,
   serviceIds: string[],
   serviceCount: number[],
-  providerId: string,
+  providerId: string
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     timestamp: timeSlot,
@@ -103,14 +104,11 @@ export function reserveAppointment(
     captchaSolution: null,
   };
 
-  return fetch(
-    getAPIBaseURL() +
-    VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(requestBody),
-    }
-  ).then((response) => {
+  return fetch(getAPIBaseURL() + VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(requestBody),
+  }).then((response) => {
     return response.json();
   });
 }
@@ -128,14 +126,11 @@ export function updateAppointment(
     customTextfield: appointment.customTextfield,
   };
 
-  return fetch(
-    getAPIBaseURL() +
-    VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(requestBody),
-    }
-  ).then((response) => {
+  return fetch(getAPIBaseURL() + VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(requestBody),
+  }).then((response) => {
     return response.json();
   });
 }
@@ -150,10 +145,10 @@ export function preconfirmAppointment(
   };
 
   return fetch(
-    getAPIBaseURL() +
-    VUE_APP_ZMS_API_PRECONFIRM_RESERVATION_ENDPOINT, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+    getAPIBaseURL() + VUE_APP_ZMS_API_PRECONFIRM_RESERVATION_ENDPOINT,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody),
     }
   ).then((response) => {
