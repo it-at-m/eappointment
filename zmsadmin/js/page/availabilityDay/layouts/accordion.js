@@ -61,7 +61,10 @@ class Accordion extends Component
                     availability.tempId = `spontaneous_ID_${index}`
                 }
                 let eventId = availability.id ? availability.id : availability.tempId;
-                let accordionExpanded = availability.tempId || (availability.id && availability.id === this.isExpanded);
+
+                let accordionExpanded =
+                    (availability.id && availability.id === this.isExpanded) ||
+                    (availability.tempId && availability.tempId === this.isExpanded);
             
                 const onToggle = ev => {
                     ev.preventDefault();

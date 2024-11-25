@@ -35,7 +35,7 @@ class Availability extends Base implements MappingInterface
             'scope__id' => 'availability.StandortID',
             'bookable__startInDays' => self::expression(
                 'CAST(
-                    IF(`availability`.`Offen_ab`, `availability`.`Offen_ab`, `availabilityscope`.`Termine_ab`)
+                    IF(`availability`.`Offen_ab` = "0" OR `availability`.`Offen_ab`, `availability`.`Offen_ab`, `availabilityscope`.`Termine_ab`)
                     AS SIGNED)'
             ),
             'bookable__endInDays' => self::expression(
