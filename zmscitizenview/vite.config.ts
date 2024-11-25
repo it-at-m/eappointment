@@ -42,4 +42,5 @@ export default defineConfig({
   esbuild: {
     drop: process.env.NODE_ENV === 'development' ? [] : ['console', 'debugger'],
   },
+  base: './',
 })
