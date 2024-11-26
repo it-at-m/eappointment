@@ -92,7 +92,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/offices-and-services.json"
+ *               $ref: "schema/citizenapi/officesAndServices.json"
  */
 \App::$slim->get(
     '/offices-and-services/',
@@ -154,7 +154,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/services-by-office.json"
+ *               $ref: "schema/citizenapi/servicesByOffice.json"
  */
 \App::$slim->get(
     '/services-by-office/',
@@ -184,7 +184,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/offices-by-service.json"
+ *               $ref: "schema/citizenapi/officesByService.json"
  */
 \App::$slim->get(
     '/offices-by-service/',
@@ -219,7 +219,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/available-days.json"
+ *               $ref: "schema/citizenapi/availableDays.json"
  */
 \App::$slim->get(
     '/available-days/',
@@ -259,7 +259,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/available-appointments.json"
+ *               $ref: "schema/citizenapi/availableAppointments.json"
  */
 \App::$slim->get(
     '/available-appointments/',
@@ -338,7 +338,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/captcha-details.json"
+ *               $ref: "schema/citizenapi/captchaDetails.json"
  */
 \App::$slim->get(
     '/captcha-details/',
@@ -359,7 +359,7 @@ use \Psr\Http\Message\ResponseInterface;
  *         in: body
  *         required: true
  *         schema:
- *           $ref: "schema/citizenapi/appointment-reserve.json"
+ *           $ref: "schema/citizenapi/appointmentReserve.json"
  *     responses:
  *       200:
  *         description: Reservation successful
@@ -410,7 +410,7 @@ use \Psr\Http\Message\ResponseInterface;
  *         in: body
  *         required: true
  *         schema:
- *           $ref: "schema/citizenapi/appointment-update.json"
+ *           $ref: "schema/citizenapi/appointmentUpdate.json"
  *     responses:
  *       200:
  *         description: Update successful
@@ -461,7 +461,7 @@ use \Psr\Http\Message\ResponseInterface;
  *         in: body
  *         required: true
  *         schema:
- *           $ref: "schema/citizenapi/appointment-confirm.json"
+ *           $ref: "schema/citizenapi/appointmentConfirm.json"
  *     responses:
  *       200:
  *         description: Confirmation successful
@@ -512,7 +512,7 @@ use \Psr\Http\Message\ResponseInterface;
  *         in: body
  *         required: true
  *         schema:
- *           $ref: "schema/citizenapi/appointment-preconfirm.json"
+ *           $ref: "schema/citizenapi/appointmentPreconfirm.json"
  *     responses:
  *       200:
  *         description: Preconfirmation successful
@@ -563,7 +563,7 @@ use \Psr\Http\Message\ResponseInterface;
  *         in: body
  *         required: true
  *         schema:
- *           $ref: "schema/citizenapi/appointment-cancel.json"
+ *           $ref: "schema/citizenapi/appointmentCancel.json"
  *     responses:
  *       200:
  *         description: Cancellation successful

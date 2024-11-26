@@ -1,71 +1,33 @@
 definitions:
-  apikey:
-    $ref: "schema/apikey.json"
-  apiclient:
-    $ref: "schema/apiclient.json"
   appointment:
-    $ref: "schema/appointment.json"
-  availability:
-    $ref: "schema/availability.json"
-  calendar:
-    $ref: "schema/calendar.json"
-  calldisplay:
-    $ref: "schema/calldisplay.json"
-  client:
-    $ref: "schema/client.json"
-  cluster:
-    $ref: "schema/cluster.json"
-  config:
-    $ref: "schema/config.json"
-  contact:
-    $ref: "schema/contact.json"
-  day:
-    $ref: "schema/day.json"
-  department:
-    $ref: "schema/department.json"
-  dayoff:
-    $ref: "schema/dayoff.json"
-  exchange:
-    $ref: "schema/exchange.json"
-  link:
-    $ref: "schema/link.json"
-  log:
-    $ref: "schema/log.json"
-  mail:
-    $ref: "schema/mail.json"
-  mimepart:
-    $ref: "schema/mimepart.json"
-  metaresult:
-    $ref: "schema/metaresult.json"
-  notification:
-    $ref: "schema/notification.json"
-  organisation:
-    $ref: "schema/organisation.json"
-  owner:
-    $ref: "schema/owner.json"
-  process:
-    $ref: "schema/process.json"
-  provider:
-    $ref: "schema/provider.json"
-  queue:
-    $ref: "schema/queue.json"
-  request:
-    $ref: "schema/request.json"
-  requestrelation:
-    $ref: "schema/requestrelation.json"
+    $ref: "schema/citizenapi/appointment.json"
+  appointmentCancel:
+    $ref: "schema/citizenapi/appointmentCancel.json"
+  appointmentConfirm:
+    $ref: "schema/citizenapi/appointmentConfirm.json"
+  appointmentPreconfirm:
+    $ref: "schema/citizenapi/appointmentPreconfirm.json"
+  appointmentReserve:
+    $ref: "schema/citizenapi/appointmentReserve.json"
+  appointmentUpdate:
+    $ref: "schema/citizenapi/appointmentUpdate.json"
+  availableAppointments:
+    $ref: "schema/citizenapi/availableAppointments.json"
+  availableDays:
+    $ref: "schema/citizenapi/availableDays.json"
+  captchaDetails:
+    $ref: "schema/citizenapi/captchaDetails.json"
+  offices:
+    $ref: "schema/citizenapi/offices.json"
+  officesAndServices:
+    $ref: "schema/citizenapi/officesAndServices.json"
+  officesByService:
+    $ref: "schema/citizenapi/officesByService.json"
   scope:
-    $ref: "schema/scope.json"
-  session:
-    $ref: "schema/session.json"
-  slot:
-    $ref: "schema/slot.json"
-  source:
-    $ref: "schema/source.json"
-  status:
-    $ref: "schema/status.json"
-  ticketprinter:
-    $ref: "schema/ticketprinter.json"
-  useraccount:
-    $ref: "schema/useraccount.json"
-  workstation:
-    $ref: "schema/workstation.json"
+    $ref: "schema/citizenapi/scope.json"
+  scopes:
+    $ref: "schema/citizenapi/scopes.json"
+  services:
+    $ref: "schema/citizenapi/services.json"
+  servicesByOffice:
+    $ref: "schema/citizenapi/servicesByOffice.json"
