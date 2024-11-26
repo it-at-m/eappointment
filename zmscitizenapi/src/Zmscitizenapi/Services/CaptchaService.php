@@ -35,7 +35,6 @@ class CaptchaService
             return $responseBody;
         } catch (RequestException $e) {
             $errorMessage = $e->hasResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
-            //error_log('Error verifying captcha: ' . $errorMessage);
             throw new Exception('Captcha verification failed.');
         }
     }
