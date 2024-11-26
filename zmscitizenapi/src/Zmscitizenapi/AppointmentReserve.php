@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi;
 use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Helper\UtilityHelper;
-use BO\Zmscitizenapi\Services\CaptchaService;
+use BO\Zmscitizenapi\Services\FriendlyCaptchaService;
 use BO\Zmscitizenapi\Services\MapperService;
 use BO\Zmscitizenapi\Services\ValidationService;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
@@ -41,7 +41,7 @@ class AppointmentReserve extends BaseController
             $captchaRequired = Application::$CAPTCHA_ENABLED === true && $providerScope['captchaActivatedRequired'] === "1";
 
             if ($captchaRequired) {
-                $captchaVerificationResult = CaptchaService::verifyCaptcha($captchaSolution);
+                $captchaVerificationResult = FriendlyCaptchaService::verifyCaptcha($captchaSolution);
                 if (!$captchaVerificationResult['success']) {
                     return $this->createJsonResponse($response, [
                         'errorCode' => 'captchaVerificationFailed',

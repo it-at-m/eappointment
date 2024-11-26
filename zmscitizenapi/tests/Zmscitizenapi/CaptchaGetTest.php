@@ -12,9 +12,9 @@ class CaptchaGetTest extends Base
     {
         parent::setUp();
 
-        putenv('FRIENDLYCAPTCHA_SITEKEY=FAKE_SITE_KEY');
-        putenv('FRIENDLYCAPTCHA_ENDPOINT=https://api.friendlycaptcha.com/api/v1/siteverify');
-        putenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE=https://api.friendlycaptcha.com/api/v1/puzzle');
+        putenv('CAPTCHA_SITEKEY=FAKE_SITE_KEY');
+        putenv('CAPTCHA_ENDPOINT=https://api.friendlycaptcha.com/api/v1/siteverify');
+        putenv('CAPTCHA_ENDPOINT_PUZZLE=https://api.friendlycaptcha.com/api/v1/puzzle');
         putenv('CAPTCHA_ENABLED=1');
 
         Application::initialize();
@@ -22,9 +22,9 @@ class CaptchaGetTest extends Base
 
     public function tearDown(): void
     {
-        putenv('FRIENDLYCAPTCHA_SITEKEY=');
-        putenv('FRIENDLYCAPTCHA_ENDPOINT=');
-        putenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE=');
+        putenv('CAPTCHA_SITEKEY=');
+        putenv('CAPTCHA_ENDPOINT=');
+        putenv('CAPTCHA_ENDPOINT_PUZZLE=');
         putenv('CAPTCHA_ENABLED=');
 
         parent::tearDown();
