@@ -38,7 +38,7 @@ class AppointmentReserve extends BaseController
 
         try {
             $providerScope = ZmsApiFacadeService::getScopeByOfficeId($officeId);
-            $captchaRequired = Application::$CAPTCHA_ENABLED === "1" && $providerScope['captchaActivatedRequired'] === "1";
+            $captchaRequired = Application::$CAPTCHA_ENABLED === true && $providerScope['captchaActivatedRequired'] === "1";
 
             if ($captchaRequired) {
                 $captchaVerificationResult = CaptchaService::verifyCaptcha($captchaSolution);
