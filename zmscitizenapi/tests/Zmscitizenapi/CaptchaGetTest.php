@@ -14,8 +14,8 @@ class CaptchaGetTest extends Base
         parent::setUp();
 
         putenv('FRIENDLYCAPTCHA_SITEKEY=FAKE_SITE_KEY');
-        putenv('FRIENDLYCAPTCHA_ENDPOINT=https://api.friendlycaptcha.com/api/v1/siteverify');
-        putenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE=https://api.friendlycaptcha.com/api/v1/puzzle');
+        putenv('FRIENDLYCAPTCHA_ENDPOINT=https://eu-api.friendlycaptcha.eu/api/v1/siteverify');
+        putenv('FRIENDLYCAPTCHA_ENDPOINT_PUZZLE=https://eu-api.friendlycaptcha.eu/api/v1/puzzle');
         putenv('CAPTCHA_ENABLED=1');
 
         Application::initialize();
@@ -38,8 +38,8 @@ class CaptchaGetTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'siteKey' => 'FAKE_SITE_KEY',
-            'captchaEndpoint' => 'https://api.friendlycaptcha.com/api/v1/siteverify',
-            'puzzle' => 'https://api.friendlycaptcha.com/api/v1/puzzle',
+            'captchaEndpoint' => 'https://eu-api.friendlycaptcha.eu/api/v1/siteverify',
+            'puzzle' => 'https://eu-api.friendlycaptcha.eu/api/v1/puzzle',
             'captchaEnabled' => true,
             'status' => 200
         ];
