@@ -1,4 +1,4 @@
-basePath: /terminvereinbarung/api/2
+basePath: /terminvereinbarung/api/citizen
 schemes:
   - https
 consumes:

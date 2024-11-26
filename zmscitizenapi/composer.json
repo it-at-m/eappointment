@@ -36,10 +36,6 @@
     "scripts": {
         "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
         "command": "bin/configure",
-        "wget-files": [
-            "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
-            "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js"
-        ],
         "post-install-cmd": [
             "@wget-files"
         ],

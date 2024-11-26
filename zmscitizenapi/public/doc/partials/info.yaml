@@ -1,27 +1,20 @@
 info:
-  title: ZMS (human waiting queue management) API
+  title: ZMSCitizenAPI
   x-logo:
     url: "./logo.png"
   description: |
-      The ZMS system is intended to manage human waiting queues. It has the following features:
+      The ZMSCitizenAPI builds upon the ZMSApi to provide an interface specifically designed for external citizens. Its key features include:
 
-       * make appointments via a calender and initiate a process to manage an appointment
-       * import requests (services) and providers (locations) from external sources
-       * manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
-       * manage opening hours including closed days
-       * login-system with different access levels
-       * pickup for documents
-       * ticketprinter support for customers without appointments (authenticated, lockable, timeable)
-       * calldisplay support
-       * collecting statistics like waiting time or served clients per day
-       * emergency call for employees
+      * Citizens can select services and providers (locations) from ZMS sources.
+      * Citizens can book ZMS appointments via an integrated calendar and email system, enabling a seamless process for managing appointments.
+      * Citizens can modify or reschedule ZMS appointments through the same calendar and email functionality.
 
-       This documentation covers the Citizen Frontend Bürgeransicht API-level access to these features.       
+      This documentation provides detailed API-level guidance for accessing the Citizen Frontend (Bürgeransicht) features.       
   termsOfService: 'http://service.berlin.de/terminvereinbarung/'
   contact:
-    name: Mathias Fischer
-    email: mathias.fischer@berlinonline.de
-    url: 'http://www.berlinonline.net/unternehmen/team/'
+    name: ''
+    email: 'example@example.com'
+    url: 'https://opensource.muenchen.de/software/zeitmanagementsystem.html'
   license:
-    name: Commercial
-    url: 'http://www.berlinonline.net'
+    name: 'MIT'
+    url: ''

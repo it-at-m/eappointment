@@ -26,7 +26,3 @@ https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html
 * To access all paths resolved via redoc or the open api documentation, a resolved swagger.json must be created from the swagger.yaml. This is done via the swagger cli with a call to ``bin/doc``. This call executes the above npm command ``npm run doc`` and subsequently creates a full swagger.json. 
 
 To render the open-api doc by redoc and swagger, appropriate files such as swagger-ui files are fetched in the CI process and stored at https://eappointment.gitlab.io/zmsapi/.
-
-* If a new entity definition should be added, the reference must be set here under definitions.
-
-Translated with www.DeepL.com/Translator (free version)
