@@ -267,4 +267,24 @@ class OfficesByServiceListTest extends Base
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
         
     }
+
+    public function testInvalidServiceId()
+    {
+        $response = $this->render([], [
+            'serviceId' => 'blahblahblah'
+        ], []);
+    
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'offices' => [],
+                    'errorMessage' => 'Invalid service ID: blahblahblah. Must be a number.',
+                    'status' => 400,
+                ]
+            ]
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+    }
+    
 }

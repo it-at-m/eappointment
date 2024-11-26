@@ -2,6 +2,8 @@
 
 namespace BO\Zmscitizenapi\Services;
 
+use \BO\Mellon\Validator;
+
 class ValidationService
 {
 
@@ -364,7 +366,40 @@ class ValidationService
 
         return ['status' => 200, 'message' => 'Valid input for updating appointment.'];
     }
+    
+    public static function validateServiceIdParam(array $serviceIds): array
+    {
+        $errors = [];
 
+        foreach ($serviceIds as $id) {
+            if (!is_numeric($id)) {
+                $errors[] = [
+                    'offices' => [],
+                    'errorMessage' => "Invalid service ID: $id. Must be a number.",
+                    'status' => 400,
+                ];
+            }
+        }
+
+        return empty($errors) ? [] : $errors;
+    }   
+
+    public static function validateScopeIdParam(array $serviceIds): array
+    {
+        $errors = [];
+
+        foreach ($serviceIds as $id) {
+            if (!is_numeric($id)) {
+                $errors[] = [
+                    'scopes' => [],
+                    'errorMessage' => "Invalid scope ID: $id. Must be a number.",
+                    'status' => 400,
+                ];
+            }
+        }
+
+        return empty($errors) ? [] : $errors;
+    }
 
 }
 

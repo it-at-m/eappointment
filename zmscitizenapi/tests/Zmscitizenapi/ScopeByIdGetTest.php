@@ -231,5 +231,24 @@ class ScopeByIdGetTest extends Base
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
 
     }
+
+    public function testInvalidScopeId()
+    {
+        $response = $this->render([], [
+            'scopeId' => 'blahblahblah'
+        ], []);
     
+        $expectedResponse = [
+            'errors' => [
+                [
+                    'scopes' => [],
+                    'errorMessage' => 'Invalid scope ID: blahblahblah. Must be a number.',
+                    'status' => 400
+                ]
+            ]
+        ]; 
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+    }
+            
 }
