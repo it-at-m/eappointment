@@ -99,11 +99,7 @@ class AppointmentReserve extends BaseController
             return $this->createJsonResponse($response, $thinnedProcessData, 200);
 
         } catch (\Exception $e) {
-            return [
-                'errorCode' => 'unexpectedError',
-                'errorMessage' => 'Unexpected error: ' . $e->getMessage(),
-                'status' => 500,
-            ];
+            throw $e;
         }
     }
 
