@@ -6,26 +6,25 @@ use GuzzleHttp\Exception\RequestException;
 use BO\Zmscitizenapi\Application;
 use Exception;
 
-class CaptchaService
+class FriendlyCaptchaService implements CaptchaServiceInterface
 {
-
-    public static function getCaptchaDetails()
+    public static function getCaptchaDetails(): array
     {
         return [
-            'siteKey' => Application::$FRIENDLYCAPTCHA_SITEKEY,
-            'captchaEndpoint' => Application::$FRIENDLYCAPTCHA_ENDPOINT,
-            'puzzle' => Application::$FRIENDLYCAPTCHA_ENDPOINT_PUZZLE,
+            'siteKey' => Application::$CAPTCHA_SITEKEY,
+            'captchaEndpoint' => Application::$CAPTCHA_ENDPOINT,
+            'puzzle' => Application::$CAPTCHA_ENDPOINT_PUZZLE,
             'captchaEnabled' => Application::$CAPTCHA_ENABLED,
             'status' => 200
         ];
     }
 
-    public static function verifyCaptcha($solution)
+    public static function verifyCaptcha(string $solution)
     {
         try {
-            $response = \App::$http->post(Application::$FRIENDLYCAPTCHA_ENDPOINT, [
+            $response = \App::$http->post(Application::$CAPTCHA_ENDPOINT, [
                 'form_params' => [
-                    'secret' => Application::$FRIENDLYCAPTCHA_SECRET,
+                    'secret' => Application::$CAPTCHA_SECRET,
                     'solution' => $solution
                 ]
             ]);
@@ -35,8 +34,7 @@ class CaptchaService
             return $responseBody;
         } catch (RequestException $e) {
             $errorMessage = $e->hasResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
-            throw new Exception('Captcha verification failed.');
+            throw new Exception('Captcha verification failed: ' . $errorMessage);
         }
     }
 }
-
