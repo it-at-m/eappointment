@@ -592,11 +592,7 @@ class ZmsApiFacadeService
             if (strpos($e->getMessage(), 'kein Termin gefunden') !== false) {
                 return ExceptionService::appointmentNotFound();
             } else {
-                return [
-                    'errorCode' => 'unexpectedError',
-                    'errorMessage' => 'Unexpected error: ' . $e->getMessage(),
-                    'status' => 500,
-                ];
+                throw $e;
             }
         }
     }

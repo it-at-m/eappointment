@@ -32,8 +32,8 @@ require(APP_PATH . '/config.php');
 \App::$http = new \BO\Zmsclient\Http(\App::ZMS_API_URL);
 //\BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
-//$errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
-//$errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Helper\ErrorHandler());
+$errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
+$errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Helper\ErrorHandler());
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
