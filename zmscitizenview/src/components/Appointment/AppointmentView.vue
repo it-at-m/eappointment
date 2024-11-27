@@ -1,6 +1,9 @@
 <template>
   <div class="m-component">
-    <div v-if="!confirmAppointmentHash" class="container">
+    <div
+      v-if="!confirmAppointmentHash"
+      class="container"
+    >
       <muc-stepper
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
@@ -32,7 +35,10 @@
         @back="decreaseCurrentView"
         @book-appointment="nextBookAppointment"
       />
-      <muc-callout v-if="currentView === 4" type="warning">
+      <muc-callout
+        v-if="currentView === 4"
+        type="warning"
+      >
         <template #content>
           {{ t("confirmAppointmentText") }}
         </template>
@@ -40,15 +46,24 @@
         <template #header>{{ t("confirmAppointmentHeader") }}</template>
       </muc-callout>
     </div>
-    <div v-else class="container">
-      <muc-callout v-if="!confirmAppointmentError" type="success">
+    <div
+      v-else
+      class="container"
+    >
+      <muc-callout
+        v-if="!confirmAppointmentError"
+        type="success"
+      >
         <template #content>
           {{ t("confirmAppointmentText") }}
         </template>
 
         <template #header>{{ t("confirmAppointmentHeader") }}</template>
       </muc-callout>
-      <muc-callout v-else type="error">
+      <muc-callout
+        v-else
+        type="error"
+      >
         <template #content>
           {{ t("confirmAppointmentText") }}
         </template>
@@ -60,15 +75,16 @@
 </template>
 
 <script setup lang="ts">
-import {MucCallout, MucStepper} from "@muenchen/muc-patternlab-vue";
-import {onMounted, provide, ref, watch} from "vue";
+import { MucCallout, MucStepper } from "@muenchen/muc-patternlab-vue";
+import { onMounted, provide, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import {
   preconfirmAppointment,
   reserveAppointment,
-  updateAppointment
+  updateAppointment,
 } from "@/api/ZMSAppointmentAPI";
+import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue";
 import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
@@ -83,7 +99,6 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
-import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue";
 
 const props = defineProps<{
   baseUrl: any;
@@ -243,16 +258,16 @@ watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
 });
 
-
 onMounted(() => {
   if (props.confirmAppointmentHash) {
     try {
-      const appointmentData = JSON.parse(window.atob(props.confirmAppointmentHash));
+      const appointmentData = JSON.parse(
+        window.atob(props.confirmAppointmentHash)
+      );
       console.log("HIER: ", appointmentData);
     } catch {
       confirmAppointmentError.value = true;
     }
   }
-
 });
 </script>

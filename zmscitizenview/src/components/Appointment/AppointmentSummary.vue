@@ -14,11 +14,15 @@
                 </div>
                 <div class="m-content">
                   <p>
-                    {{ selectedService.count }}x {{ selectedService.name }} <br>
+                    {{ selectedService.count }}x {{ selectedService.name }}
+                    <br />
                   </p>
                   <div v-if="selectedService && selectedService.subServices">
-                    <p v-for="subService in service.subServices" :key="subService.id">
-                      {{ subService.count }}x {{ selectedService.name }} <br>
+                    <p
+                      v-for="subService in service.subServices"
+                      :key="subService.id"
+                    >
+                      {{ subService.count }}x {{ selectedService.name }} <br />
                     </p>
                   </div>
                 </div>
@@ -27,16 +31,18 @@
                 </div>
                 <div class="m-content">
                   <p>
-                    <strong>Landeshauptstadt München</strong><br>
-                    {{ appointment.scope.provider.contact.name }}<br>
+                    <strong>Landeshauptstadt München</strong><br />
+                    {{ appointment.scope.provider.contact.name }}<br />
                   </p>
                   <p>
                     <strong>{{ t("address") }}</strong>
-                    <br>
+                    <br />
                   </p>
                   <p>
-                    {{ appointment.scope.provider.contact.street }} {{ appointment.scope.provider.contact.streetNumber }}<br>
-                    {{ appointment.scope.provider.contact.postalCode }} {{ appointment.scope.provider.contact.region }}<br>
+                    {{ appointment.scope.provider.contact.street }}
+                    {{ appointment.scope.provider.contact.streetNumber }}<br />
+                    {{ appointment.scope.provider.contact.postalCode }}
+                    {{ appointment.scope.provider.contact.region }}<br />
                   </p>
                 </div>
                 <div class="m-content">
@@ -44,8 +50,8 @@
                 </div>
                 <div class="m-content">
                   <p>
-                    {{ formatTime(appointment.timestamp) }} <br>
-                    {{ t("estimatedDuration") }} {{ t("minutes") }}<br>
+                    {{ formatTime(appointment.timestamp) }} <br />
+                    {{ t("estimatedDuration") }} {{ t("minutes") }}<br />
                   </p>
                 </div>
                 <div class="m-content">
@@ -53,22 +59,25 @@
                 </div>
                 <div class="m-content">
                   <p>
-                    {{ customerData.firstName }} {{ customerData.lastName }} <br>
-                    {{ customerData.mailAddress }}<br>
-                    {{ customerData.telephoneNumber }}<br>
+                    {{ customerData.firstName }} {{ customerData.lastName }}
+                    <br />
+                    {{ customerData.mailAddress }}<br />
+                    {{ customerData.telephoneNumber }}<br />
                   </p>
                   <div v-if="customerData.remarks">
-                    <strong>{{ t("remarks") }}</strong><br>
-                    <p>{{ customerData.remarks }}</p><br>
+                    <strong>{{ t("remarks") }}</strong
+                    ><br />
+                    <p>{{ customerData.remarks }}</p>
+                    <br />
                   </div>
-
                 </div>
                 <div class="m-content">
                   <h3>{{ t("termsOfUse") }}</h3>
                 </div>
                 <div class="m-content">
                   <p>
-                    <strong>{{ t("privacyCheckboxLabel") }}</strong><br>
+                    <strong>{{ t("privacyCheckboxLabel") }}</strong
+                    ><br />
                   </p>
                 </div>
                 <div class="m-content">
@@ -91,7 +100,8 @@
                 </div>
                 <div class="m-content">
                   <p>
-                    <strong>{{ t("communicationCheckboxLabel") }}</strong><br>
+                    <strong>{{ t("communicationCheckboxLabel") }}</strong
+                    ><br />
                   </p>
                 </div>
                 <div class="m-content">
@@ -136,13 +146,14 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref} from "vue";
+import { MucButton } from "@muenchen/muc-patternlab-vue";
+import { computed, inject, ref } from "vue";
 
 import {
   CustomerDataProvider,
-  SelectedAppointmentProvider, SelectedServiceProvider,
+  SelectedAppointmentProvider,
+  SelectedServiceProvider,
 } from "@/types/ProvideInjectTypes";
-import {MucButton} from "@muenchen/muc-patternlab-vue";
 
 defineProps<{
   t: any;
@@ -169,7 +180,7 @@ const formatterDate = new Intl.DateTimeFormat("de-DE", {
   weekday: "long",
   year: "numeric",
   month: "numeric",
-  day: "numeric"
+  day: "numeric",
 });
 
 const formatterTime = new Intl.DateTimeFormat("de-DE", {
@@ -179,24 +190,21 @@ const formatterTime = new Intl.DateTimeFormat("de-DE", {
   hour12: false,
 });
 
-
 const formatTime = (time: any) => {
   const date = new Date(time * 1000);
   return formatterDate.format(date) + ", " + formatterTime.format(date);
 };
 
-const clickPrivacyPolicy = () => privacyPolicy.value = !privacyPolicy.value;
-const clickElectronicCommunication = () => electronicCommunication.value = !electronicCommunication.value;
+const clickPrivacyPolicy = () => (privacyPolicy.value = !privacyPolicy.value);
+const clickElectronicCommunication = () =>
+  (electronicCommunication.value = !electronicCommunication.value);
 
 const validForm = computed(
-  () =>
-    privacyPolicy.value &&
-    electronicCommunication.value
+  () => privacyPolicy.value && electronicCommunication.value
 );
 
 const bookAppointment = () => emit("bookAppointment");
 const previousStep = () => emit("back");
-
 </script>
 
 <style scoped>
