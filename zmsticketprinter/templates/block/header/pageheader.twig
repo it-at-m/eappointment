@@ -11,10 +11,24 @@
             {% endfor %}
         </div>
         {% endif %}
-    	<div class="adressangabe">
+
+        {# Check if there are multiple different scopes #}
+        {% set firstScopeId = ticketprinter.buttons[0].scope.id %}
+        {% set allSameScopeId = true %}
+
+        {% for button in ticketprinter.buttons %}
+            {% if button.scope.id != firstScopeId %}
+                {% set allSameScopeId = false %}
+            {% endif %}
+        {% endfor %}
+
+        {% if allSameScopeId %}
+        <div class="adressangabe">
             <div class="adressangabe_behoerde">{{ organisation.name }}</div>
-    		<div class="adressangabe_name">{{ department.name }}</div>
+            <div class="adressangabe_name">{{ department.name }}</div>
         </div>
+        {% endif %}
+
     </span>
     {% block timer %}
         {{ parent() }}
