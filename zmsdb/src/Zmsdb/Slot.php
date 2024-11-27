@@ -172,6 +172,7 @@ class Slot extends Base
             $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
         }
         $availability['processingNote'][] = 'lastchange='.$slotLastChange->format('c');
+        error_log("availabilityID: " . $availability->id . ', lastchange: '.$slotLastChange->format('c') . ", isAvailabilityOutdated: " . $this->isAvailabilityOutdated($availability, $now, $slotLastChange));
         if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange)) {
             return false;
         }
