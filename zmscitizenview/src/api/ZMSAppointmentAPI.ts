@@ -142,6 +142,7 @@ export function preconfirmAppointment(
     processId: appointment.processId,
     authKey: appointment.authKey,
     scope: appointment.scope,
+    captchaSolution: null,
   };
 
   return fetch(
