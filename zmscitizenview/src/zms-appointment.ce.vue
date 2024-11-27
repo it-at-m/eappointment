@@ -25,23 +25,28 @@ import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 defineProps({
   baseUrl: {
     type: String,
-    required: true,
+    required: false,
+    default: undefined,
   },
   serviceId: {
     type: String,
     required: false,
+    default: undefined,
   },
   locationId: {
     type: String,
     required: false,
+    default: undefined,
   },
   appointmentHash: {
     type: String,
     required: false,
+    default: undefined,
   },
   confirmAppointmentHash: {
     type: String,
     required: false,
+    default: undefined,
   },
 });
 
