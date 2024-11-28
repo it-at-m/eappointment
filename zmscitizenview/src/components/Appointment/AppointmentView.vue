@@ -36,10 +36,7 @@
         @book-appointment="nextBookAppointment"
       />
       <div v-if="currentView === 3 && updateAppointmentError">
-        <muc-callout
-
-          type="error"
-        >
+        <muc-callout type="error">
           <template #content>
             {{ t("updateAppointmentErrorText") }}
           </template>
@@ -48,11 +45,11 @@
         </muc-callout>
       </div>
     </div>
-    <div v-if="currentView === 4" class="container">
-      <muc-callout
-
-        type="warning"
-      >
+    <div
+      v-if="currentView === 4"
+      class="container"
+    >
+      <muc-callout type="warning">
         <template #content>
           {{ t("confirmAppointmentText") }}
         </template>
@@ -72,7 +69,9 @@
           {{ t("appointmentSuccessfullyBookedText") }}
         </template>
 
-        <template #header>{{ t("appointmentSuccessfullyBookedHeader") }}</template>
+        <template #header>{{
+          t("appointmentSuccessfullyBookedHeader")
+        }}</template>
       </muc-callout>
       <muc-callout
         v-if="confirmAppointmentError"
@@ -103,6 +102,7 @@ import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue"
 import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
+import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { CustomerData } from "@/types/CustomerData";
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -114,7 +114,6 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
-import { AppointmentHash } from "@/types/AppointmentHashTypes";
 
 const props = defineProps<{
   baseUrl: any;
@@ -169,7 +168,6 @@ const updateAppointmentError = ref<boolean>(false);
 
 const confirmAppointmentSuccess = ref<boolean>(false);
 const confirmAppointmentError = ref<boolean>(false);
-
 
 provide<SelectedServiceProvider>("selectedServiceProvider", {
   selectedService,
@@ -280,12 +278,13 @@ watch(currentView, (newCurrentView) => {
 
 onMounted(() => {
   if (props.confirmAppointmentHash) {
-    let appointmentData : AppointmentHash;
+    let appointmentData: AppointmentHash;
     try {
-      appointmentData = JSON.parse(
-        window.atob(props.confirmAppointmentHash)
-      );
-      if (appointmentData.id === undefined || appointmentData.authKey === undefined) {
+      appointmentData = JSON.parse(window.atob(props.confirmAppointmentHash));
+      if (
+        appointmentData.id === undefined ||
+        appointmentData.authKey === undefined
+      ) {
         confirmAppointmentError.value = true;
         return;
       }
@@ -299,7 +298,7 @@ onMounted(() => {
       } else {
         confirmAppointmentError.value = true;
       }
-    })
+    });
   }
 });
 </script>
