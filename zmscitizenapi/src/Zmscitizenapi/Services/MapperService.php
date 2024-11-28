@@ -2,6 +2,8 @@
 
 namespace BO\Zmscitizenapi\Services;
 
+use \BO\Zmsentities\Collection\ScopeList;
+
 class MapperService
 {
 
@@ -27,14 +29,17 @@ class MapperService
     public static function mapOfficesWithScope($providerList)
     {
         $offices = [];
+
+        $scopes = new ScopeList(ZmsApiClientService::getScopes() ?? []);
+
         foreach ($providerList as $provider) {
             $officeData = [
                 "id" => $provider->id,
                 "name" => $provider->displayName ?? $provider->name,
             ];
-            $scope = ZmsApiFacadeService::getScopeForProvider($provider->id);
-            if ($scope) {
-                $officeData['scope'] = $scope;
+            $providerScope = ZmsApiFacadeService::getScopeForProvider($provider->id, $scopes);
+            if (isset($providerScope['scope'])) {
+                $officeData['scope'] = $providerScope['scope'];
             }
 
             $offices[] = $officeData;
