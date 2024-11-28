@@ -26,6 +26,12 @@ class DepartmentDelete extends BaseController
         array $args
     ) {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
+
+        $entity = \App::$http->readGetResult('/department/' . $entityId . '/')->getEntity();
+        $departmentName = $entity->name;
+       // xdebug_var_dump($entity);
+        
+        // $departmentName = $entity->offsetGet('contact')->offsetGet('name'); 
         \App::$http->readDeleteResult(
             '/department/'. $entityId .'/'
         )->getEntity();
@@ -33,8 +39,8 @@ class DepartmentDelete extends BaseController
             'owner_overview',
             array(),
             array(
-                'success' => 'department_deleted'
-            )
+                'success' => 'department_deleted',
+                'departmentName' => $departmentName            )
         );
     }
 }
