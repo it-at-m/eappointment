@@ -12,8 +12,8 @@ class AppointmentGet extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $queryParams = $request->getQueryParams();
-        $processId = $queryParams['processId'] ?? null;
-        $authKey = $queryParams['authKey'] ?? null;
+        $processId = isset($queryParams['processId']) && is_numeric($queryParams['processId']) ? (int)$queryParams['processId'] : null;
+        $authKey = isset($queryParams['authKey']) && is_string($queryParams['authKey']) && trim($queryParams['authKey']) !== '' ? $queryParams['authKey'] : null;
 
         $result = ZmsApiFacadeService::getProcessById($processId, $authKey);
 

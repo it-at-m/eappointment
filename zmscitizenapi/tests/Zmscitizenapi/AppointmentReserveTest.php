@@ -32,15 +32,15 @@ class AppointmentReserveTest extends Base
                 ]
             ]
         );
-
+    
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
             'timestamp' => "32526616522",
             'captchaSolution' => null
         ];
-
+    
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
@@ -52,26 +52,17 @@ class AppointmentReserveTest extends Base
             'email' => 'default@example.com',
             'telephone' => '123456789',
             'officeName' => null,
-            'officeId' => '10546',
+            'officeId' => 10546,
             'scope' => [
+                '$schema' => 'https://schema.berlin.de/queuemanagement/scope.json',
                 'id' => '58',
-                'provider' => [
-                    'id' => '10546',
-                    'source' => 'dldb'
-                ],
-                'shortName' => 'Gewerbemeldungen',
-                'telephoneActivated' => '0',
-                'telephoneRequired' => '1',
-                'customTextfieldActivated' => '0',
-                'customTextfieldRequired' => '1',
-                'customTextfieldLabel' => '',
-                'captchaActivatedRequired' => '0',
-                'displayInfo' => null
+                'source' => 'dldb',
             ],
             'subRequestCounts' => [],
             'serviceId' => null,
             'serviceCount' => 0
         ];
+    
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
@@ -97,7 +88,7 @@ class AppointmentReserveTest extends Base
         );
     
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
             'timestamp' => "32526616300",
@@ -137,7 +128,7 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing officeId.',
+                    'errorMessage' => 'officeId should be a 32-bit integer.',
                 ]
             ],
             'status' => 400
@@ -151,7 +142,7 @@ class AppointmentReserveTest extends Base
         $this->setApiCalls([]);
 
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceCount' => [0],
             'timestamp' => "32526616522",
             'captchaSolution' => null
@@ -177,7 +168,7 @@ class AppointmentReserveTest extends Base
         $this->setApiCalls([]);
 
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
             'captchaSolution' => null
@@ -189,7 +180,7 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing timestamp.',
+                    'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
                 ]
             ],
             'status' => 400
@@ -214,7 +205,7 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing officeId.',
+                    'errorMessage' => 'officeId should be a 32-bit integer.',
                 ],
                 [
                     'status' => 400,
@@ -243,11 +234,11 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing officeId.',
+                    'errorMessage' => 'officeId should be a 32-bit integer.',
                 ],
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing timestamp.',
+                    'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
                 ]
             ],
             'status' => 400
@@ -261,7 +252,7 @@ class AppointmentReserveTest extends Base
         $this->setApiCalls([]);
 
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceCount' => [0],
             'captchaSolution' => null
         ];
@@ -276,7 +267,7 @@ class AppointmentReserveTest extends Base
                 ],
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing timestamp.',
+                    'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
                 ]
             ],
             'status' => 400
@@ -297,7 +288,7 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing officeId.',
+                    'errorMessage' => 'officeId should be a 32-bit integer.',
                 ],
                 [
                     'status' => 400,
@@ -305,7 +296,7 @@ class AppointmentReserveTest extends Base
                 ],
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing timestamp.',
+                    'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
                 ]
             ],
             'status' => 400
@@ -332,7 +323,7 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Invalid officeId format. It should be a numeric value.',
+                    'errorMessage' => 'officeId should be a 32-bit integer.',
                 ]
             ],
             'status' => 400
@@ -346,7 +337,7 @@ class AppointmentReserveTest extends Base
         $this->setApiCalls([]);
     
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => ['invalid_service_id'],
             'serviceCount' => [0],
             'timestamp' => "32526616522",
@@ -373,7 +364,7 @@ class AppointmentReserveTest extends Base
         $this->setApiCalls([]);
     
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
             'timestamp' => 'invalid_timestamp',
@@ -386,7 +377,7 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Invalid timestamp format. It should be a positive numeric value.',
+                    'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
                 ]
             ],
             'status' => 400
@@ -399,7 +390,7 @@ class AppointmentReserveTest extends Base
         $this->setApiCalls([]);
     
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => [],
             'serviceCount' => [0],
             'timestamp' => "32526616522",
@@ -426,7 +417,7 @@ class AppointmentReserveTest extends Base
         $this->setApiCalls([]);
     
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => ['invalid'],
             'timestamp' => "32526616522",

@@ -108,7 +108,7 @@ use \Psr\Http\Message\ResponseInterface;
  *     tags:
  *       - scopes
  *     parameters:
- *       - name: id
+ *       - name: scopeId
  *         description: Scope ID
  *         in: query
  *         required: true

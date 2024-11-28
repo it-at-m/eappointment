@@ -20,7 +20,7 @@ class AvailableAppointmentsListTest extends Base
     
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => '1063423',
             'serviceCount' => '1',
         ];
@@ -50,7 +50,7 @@ class AvailableAppointmentsListTest extends Base
 
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => '1063423',
             'serviceCount' => '1',
         ];
@@ -74,7 +74,7 @@ class AvailableAppointmentsListTest extends Base
     public function testDateMissing()
     {
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => '1063423',
             'serviceCount' => '1',
         ];
@@ -121,7 +121,7 @@ class AvailableAppointmentsListTest extends Base
     {
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceCount' => '1',
         ];
 
@@ -144,7 +144,7 @@ class AvailableAppointmentsListTest extends Base
     {
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => '1063423',
         ];
 
@@ -192,7 +192,7 @@ class AvailableAppointmentsListTest extends Base
     public function testDateAndServiceIdMissing()
     {
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceCount' => '1',
         ];
 
@@ -218,7 +218,7 @@ class AvailableAppointmentsListTest extends Base
     public function testDateAndServiceCountMissing()
     {
         $parameters = [
-            'officeId' => '10546',
+            'officeId' => 10546,
             'serviceId' => '1063423',
         ];
 
@@ -297,7 +297,7 @@ class AvailableAppointmentsListTest extends Base
     {
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => '10546',
+            'officeId' => 10546,
         ];
 
         $response = $this->render([], $parameters, []);

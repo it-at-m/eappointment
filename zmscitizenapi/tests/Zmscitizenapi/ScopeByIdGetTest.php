@@ -25,26 +25,26 @@ class ScopeByIdGetTest extends Base
             'scopeId' => '1'
         ], []);
         $expectedResponse = [
-            'scopes' => [
-                [
-                    'id' => '1',
-                    'provider' => [
-                        'id' => '9999998',
-                        'source' => 'unittest',
-                    ],
-                    'shortName' => 'Scope 1',
-                    'telephoneActivated' => '1',
-                    'telephoneRequired' => '0',
-                    'customTextfieldActivated' => '1',
-                    'customTextfieldRequired' => '0',
-                    'customTextfieldLabel' => 'Custom Label',
-                    'captchaActivatedRequired' => '1',
-                    'displayInfo' => null
-                ]
+            [
+                'id' => '1',
+                'provider' => [
+                    '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                    'id' => '9999998',
+                    'source' => 'unittest',
+                ],
+                'shortName' => 'Scope 1',
+                'telephoneActivated' => '1',
+                'telephoneRequired' => '0',
+                'customTextfieldActivated' => '1',
+                'customTextfieldRequired' => '0',
+                'customTextfieldLabel' => 'Custom Label',
+                'captchaActivatedRequired' => '1',
+                'displayInfo' => null
             ]
         ];
+        $responseBody = json_decode((string) $response->getBody(), true);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
   
     public function testRenderingMulti()
@@ -63,41 +63,42 @@ class ScopeByIdGetTest extends Base
             'scopeId' => '1,2'
         ], []);
         $expectedResponse = [
-            'scopes' => [
-                [
-                    'id' => '1',
-                    'provider' => [
-                        'id' => '9999998',
-                        'source' => 'unittest',
-                    ],
-                    'shortName' => 'Scope 1',
-                    'telephoneActivated' => '1',
-                    'telephoneRequired' => '0',
-                    'customTextfieldActivated' => '1',
-                    'customTextfieldRequired' => '0',
-                    'customTextfieldLabel' => 'Custom Label',
-                    'captchaActivatedRequired' => '1',
-                    'displayInfo' => null
+            [
+                'id' => '1',
+                'provider' => [
+                    '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                    'id' => '9999998',
+                    'source' => 'unittest',
                 ],
-                [
-                    'id' => '2',
-                    'provider' => [
-                        'id' => '9999999',
-                        'source' => 'unittest',
-                    ],
-                    'shortName' => 'Scope 2',
-                    'telephoneActivated' => '0',
-                    'telephoneRequired' => '1',
-                    'customTextfieldActivated' => '0',
-                    'customTextfieldRequired' => '1',
-                    'customTextfieldLabel' => '',
-                    'captchaActivatedRequired' => '0',
-                    'displayInfo' => null
+                'shortName' => 'Scope 1',
+                'telephoneActivated' => '1',
+                'telephoneRequired' => '0',
+                'customTextfieldActivated' => '1',
+                'customTextfieldRequired' => '0',
+                'customTextfieldLabel' => 'Custom Label',
+                'captchaActivatedRequired' => '1',
+                'displayInfo' => null
+            ],
+            [
+                'id' => '2',
+                'provider' => [
+                    '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                    'id' => '9999999',
+                    'source' => 'unittest',
                 ],
+                'shortName' => 'Scope 2',
+                'telephoneActivated' => '0',
+                'telephoneRequired' => '1',
+                'customTextfieldActivated' => '0',
+                'customTextfieldRequired' => '1',
+                'customTextfieldLabel' => '',
+                'captchaActivatedRequired' => '0',
+                'displayInfo' => null
             ]
         ];
+        $responseBody = json_decode((string) $response->getBody(), true);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
     public function testScopeNotFound()
@@ -151,7 +152,7 @@ class ScopeByIdGetTest extends Base
 
     }
     
-    public function testPartialResultsWithWarning()
+    public function testPartialResultsWithWarning() //Don't return invalid scopes thta don't exist like 99
     {
         $this->setApiCalls([
             [
@@ -165,31 +166,31 @@ class ScopeByIdGetTest extends Base
         ]);    
         $response = $this->render([], [
             'scopeId' => '1,99'
-        ], []);   
+        ], []);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
-            'scopes' => [
-                [
-                    'id' => '1',
-                    'provider' => [
-                        'id' => '9999998',
-                        'source' => 'unittest',
-                    ],
-                    'shortName' => 'Scope 1',
-                    'telephoneActivated' => '1',
-                    'telephoneRequired' => '0',
-                    'customTextfieldActivated' => '1',
-                    'customTextfieldRequired' => '0',
-                    'customTextfieldLabel' => 'Custom Label',
-                    'captchaActivatedRequired' => '1',
-                    'displayInfo' => null
-                ]
-            ],
-            'warning' => 'The following scopeId(s) were not found: 99'
+            [
+                'id' => '1',
+                'provider' => [
+                    '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                    'id' => '9999998',
+                    'source' => 'unittest',
+                ],
+                'shortName' => 'Scope 1',
+                'telephoneActivated' => '1',
+                'telephoneRequired' => '0',
+                'customTextfieldActivated' => '1',
+                'customTextfieldRequired' => '0',
+                'customTextfieldLabel' => 'Custom Label',
+                'captchaActivatedRequired' => '1',
+                'displayInfo' => null
+            ]
         ];
+    
         $this->assertEquals(200, $response->getStatusCode());  
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
-        
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
+    
     
     public function testDuplicateScopeIds()
     {
@@ -207,30 +208,29 @@ class ScopeByIdGetTest extends Base
         $response = $this->render([], [
             'scopeId' => '1,1,1'
         ], []);
-    
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
-            'scopes' => [
-                [
-                    'id' => '1',
-                    'provider' => [
-                        'id' => '9999998',
-                        'source' => 'unittest',
-                    ],
-                    'shortName' => 'Scope 1',
-                    'telephoneActivated' => '1',
-                    'telephoneRequired' => '0',
-                    'customTextfieldActivated' => '1',
-                    'customTextfieldRequired' => '0',
-                    'customTextfieldLabel' => 'Custom Label',
-                    'captchaActivatedRequired' => '1',
-                    'displayInfo' => null
-                ]
+            [
+                'id' => '1',
+                'provider' => [
+                    '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                    'id' => '9999998',
+                    'source' => 'unittest',
+                ],
+                'shortName' => 'Scope 1',
+                'telephoneActivated' => '1',
+                'telephoneRequired' => '0',
+                'customTextfieldActivated' => '1',
+                'customTextfieldRequired' => '0',
+                'customTextfieldLabel' => 'Custom Label',
+                'captchaActivatedRequired' => '1',
+                'displayInfo' => null
             ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
-
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
+    
 
     public function testInvalidScopeId()
     {

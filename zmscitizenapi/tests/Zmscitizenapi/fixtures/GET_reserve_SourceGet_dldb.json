@@ -15,7 +15,7 @@
     },
     "providers": [
       {
-        "id": "10546",
+        "id": 10546,
         "source": "dldb",
         "contact": {
           "city": "Muenchen",
@@ -51,7 +51,7 @@
           "country": "Germany"
         },
         "provider": {
-          "id": "10546",
+          "id": 10546,
           "source": "dldb"
         },
         "hint": "",
@@ -128,7 +128,7 @@
     "requestrelation": [
       {
         "provider": {
-          "id": "10546",
+          "id": 10546,
           "source": "unittest"
         },
         "request": {

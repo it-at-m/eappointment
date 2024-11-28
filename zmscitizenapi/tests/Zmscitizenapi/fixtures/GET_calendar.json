@@ -472,7 +472,7 @@
                     "country": "Germany"
                 },
                 "provider": {
-                    "id": "10546",
+                    "id": 10546,
                     "source": "dldb",
                     "contact": {
                         "city": "Muenchen",

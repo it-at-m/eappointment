@@ -4,10 +4,15 @@ namespace BO\Zmscitizenapi\Services;
 
 use \BO\Mellon\Validator;
 
+use \BO\Zmsentities\Process;
+use \BO\Zmsentities\Scope;
+use \BO\Zmsentities\Collection\ProcessList;
+use \BO\Zmsentities\Collection\ScopeList;
+
 class ValidationService
 {
 
-    public static function validateServiceLocationCombination($officeId, array $serviceIds)
+    public static function validateServiceLocationCombination(int $officeId, array $serviceIds): array
     {
         $availableServices = ZmsApiFacadeService::getServicesProvidedAtOffice($officeId);
         $availableServiceIds = array_map(function ($service) {
@@ -34,7 +39,7 @@ class ValidationService
         ];
     }
 
-    public static function validateGetBookableFreeDays($officeId, $serviceId, $startDate, $endDate, $serviceCounts)
+    public static function validateGetBookableFreeDays(?int $officeId, ?int $serviceId, ?string $startDate, ?string $endDate, ?array $serviceCounts): array
     {
         $errors = [];
         if (!$startDate) {
@@ -56,7 +61,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 400];
     }
 
-    public static function validateGetProcessById($processId, $authKey)
+    public static function validateGetProcessById(?int $processId, ?string $authKey): array
     {
         $errors = [];
         if (!$processId || !is_numeric($processId) || intval($processId) <= 0) {
@@ -76,7 +81,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 400];
     }
 
-    public static function validateGetAvailableAppointments($date, $officeId, $serviceIds, $serviceCounts)
+    public static function validateGetAvailableAppointments(?string $date, ?int $officeId, ?array $serviceIds, ?array $serviceCounts): array
     {
         $errors = [];
         if (!$date) {
@@ -109,18 +114,14 @@ class ValidationService
 
         return ['errors' => $errors, 'status' => 400];
     }
-    public static function validatePostAppointmentReserve($officeId, $serviceIds, $serviceCounts, $captchaSolution, $timestamp)
+
+    public static function validatePostAppointmentReserve(?int $officeId, ?array $serviceIds, ?array $serviceCounts, ?int $timestamp): array
     {
         $errors = [];
-        if (!$officeId) {
+        if (!$officeId || !is_numeric($officeId)) {
             $errors[] = [
                 'status' => 400,
-                'errorMessage' => 'Missing officeId.',
-            ];
-        } elseif (!is_numeric($officeId)) {
-            $errors[] = [
-                'status' => 400,
-                'errorMessage' => 'Invalid officeId format. It should be a numeric value.',
+                'errorMessage' => 'officeId should be a 32-bit integer.',
             ];
         }
 
@@ -136,15 +137,10 @@ class ValidationService
             ];
         }
 
-        if (!$timestamp) {
+        if (!$timestamp || !is_numeric($timestamp) || $timestamp < 0) {
             $errors[] = [
                 'status' => 400,
-                'errorMessage' => 'Missing timestamp.',
-            ];
-        } elseif (!is_numeric($timestamp) || $timestamp < 0) {
-            $errors[] = [
-                'status' => 400,
-                'errorMessage' => 'Invalid timestamp format. It should be a positive numeric value.',
+                'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
             ];
         }
 
@@ -158,7 +154,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 400];
     }
 
-    public static function validateGetOfficesByServiceIds($serviceIds)
+    public static function validateGetOfficesByServiceIds(?array $serviceIds): array
     {
         $errors = [];
         if (empty($serviceIds) || $serviceIds == ['']) {
@@ -172,7 +168,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 400];
     }
 
-    public static function validateGetScopeByIds($scopeIds)
+    public static function validateGetScopeByIds(?array $scopeIds): array
     {
         $errors = [];
         if (empty($scopeIds) || $scopeIds == ['']) {
@@ -186,7 +182,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 400];
     }
 
-    public static function validateGetServicesByOfficeIds($officeIds)
+    public static function validateGetServicesByOfficeIds(?array $officeIds): array
     {
 
         $errors = [];
@@ -201,7 +197,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 400];
     }
 
-    public static function validateGetProcessFreeSlots($freeSlots)
+    public static function validateGetProcessFreeSlots(?ProcessList $freeSlots): array
     {
         $errors = [];
         if (empty($freeSlots) || !is_iterable($freeSlots)) {
@@ -216,7 +212,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 404];
     }
 
-    public static function validateGetProcessByIdTimestamps($appointmentTimestamps)
+    public static function validateGetProcessByIdTimestamps(?array $appointmentTimestamps): array
     {
         $errors = [];
         if (empty($appointmentTimestamps)) {
@@ -231,7 +227,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 404];
     }
 
-    public static function validateGetProcessNotFound($process)
+    public static function validateGetProcessNotFound(?Process $process): array
     {
         $errors = [];
         if (!$process) {
@@ -245,10 +241,10 @@ class ValidationService
         return ['errors' => $errors, 'status' => 404];
     }
 
-    public static function validateScopesNotFound($scopes)
+    public static function validateScopesNotFound(?ScopeList $scopes): array
     {
         $errors = [];
-        if (empty($scopes)) {
+        if (empty($scopes) || $scopes === null || $scopes->count() === 0) {
             $errors[] = [
                 'errorCode' => 'scopesNotFound',
                 'errorMessage' => 'Scope(s) not found.',
@@ -259,7 +255,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 404];
     }
 
-    public static function validateServicesNotFound($services)
+    public static function validateServicesNotFound(?array $services): array 
     {
         $errors = [];
         if (empty($services)) {
@@ -273,7 +269,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 404];
     }
 
-    public static function validateOfficesNotFound($offices)
+    public static function validateOfficesNotFound(?array $offices): array
     {
         $errors = [];
         if (empty($offices)) {
@@ -287,7 +283,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 404];
     }
 
-    public static function validateAppointmentDaysNotFound($formattedDays)
+    public static function validateAppointmentDaysNotFound(?array $formattedDays): array
     {
         $errors = [];
         if (empty($formattedDays)) {
@@ -301,7 +297,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 404];
     }
 
-    public static function validateNoAppointmentsAtLocation()
+    public static function validateNoAppointmentsAtLocation(): array
     {
 
         $errors[] = [
