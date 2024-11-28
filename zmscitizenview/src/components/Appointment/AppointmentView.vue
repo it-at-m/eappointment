@@ -9,40 +9,70 @@
         :active-item="activeStep"
         @change-step="changeStep"
       />
-      <service-finder
-        v-if="currentView === 0"
-        :preselected-service-id="serviceId"
-        :preselected-offive-id="locationId"
-        :t="t"
-        @next="setServices"
-      />
-      <calendar-view
-        v-if="currentView === 1"
-        :selected-service-map="selectedServiceMap"
-        :t="t"
-        @back="decreaseCurrentView"
-        @next="nextReserveAppointment"
-      />
-      <customer-info
-        v-if="currentView === 2"
-        :t="t"
-        @back="decreaseCurrentView"
-        @next="nextUpdateAppointment"
-      />
-      <appointment-summary
-        v-if="currentView === 3 && !updateAppointmentError"
-        :t="t"
-        @back="decreaseCurrentView"
-        @book-appointment="nextBookAppointment"
-      />
-      <div v-if="currentView === 3 && updateAppointmentError">
-        <muc-callout type="error">
-          <template #content>
-            {{ t("updateAppointmentErrorText") }}
-          </template>
+      <div v-if="currentView === 0">
+        <service-finder
+          :preselected-service-id="serviceId"
+          :preselected-offive-id="locationId"
+          :t="t"
+          @next="setServices"
+        />
+      </div>
+      <div v-if="currentView === 1">
+        <calendar-view
+          :selected-service-map="selectedServiceMap"
+          :t="t"
+          @back="decreaseCurrentView"
+          @next="nextReserveAppointment"
+        />
+        <div v-if="appointmentNotAvailableError">
+          <muc-callout type="error">
+            <template #content>
+              {{ t("selectedDateNoLongerAvailableText") }}
+            </template>
 
-          <template #header>{{ t("updateAppointmentErrorHeader") }}</template>
-        </muc-callout>
+            <template #header>{{
+              t("selectedDateNoLongerAvailableHeader")
+            }}</template>
+          </muc-callout>
+        </div>
+      </div>
+      <div v-if="currentView === 2">
+        <customer-info
+          :t="t"
+          @back="decreaseCurrentView"
+          @next="nextUpdateAppointment"
+        />
+      </div>
+      <div v-if="currentView === 3">
+        <!-- Delete tooManyAppointmentsWithSameMailError if contact is transferred from backend call offices-and-services    -->
+        <appointment-summary
+          v-if="
+            !updateAppointmentError && !tooManyAppointmentsWithSameMailError
+          "
+          :t="t"
+          @back="decreaseCurrentView"
+          @book-appointment="nextBookAppointment"
+        />
+        <div v-if="tooManyAppointmentsWithSameMailError">
+          <muc-callout type="error">
+            <template #content>
+              {{ t("tooManyAppointmentsWithSameMailErrorText") }}
+            </template>
+
+            <template #header>{{
+              t("tooManyAppointmentsWithSameMailErrorHeader")
+            }}</template>
+          </muc-callout>
+        </div>
+        <div v-if="updateAppointmentError">
+          <muc-callout type="error">
+            <template #content>
+              {{ t("updateAppointmentErrorText") }}
+            </template>
+
+            <template #header>{{ t("updateAppointmentErrorHeader") }}</template>
+          </muc-callout>
+        </div>
       </div>
     </div>
     <div
@@ -92,6 +122,7 @@ import { MucCallout, MucStepper } from "@muenchen/muc-patternlab-vue";
 import { onMounted, provide, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { ErrorDTO } from "@/api/models/ErrorDTO";
 import {
   confirmAppointment,
   preconfirmAppointment,
@@ -164,7 +195,9 @@ const selectedTimeslot = ref<number>(0);
 const customerData = ref<CustomerData>(new CustomerData("", "", "", "", ""));
 const appointment = ref<AppointmentImpl>();
 
+const appointmentNotAvailableError = ref<boolean>(false);
 const updateAppointmentError = ref<boolean>(false);
+const tooManyAppointmentsWithSameMailError = ref<boolean>(false);
 
 const confirmAppointmentSuccess = ref<boolean>(false);
 const confirmAppointmentError = ref<boolean>(false);
@@ -221,7 +254,6 @@ const setServices = () => {
 };
 
 const nextReserveAppointment = () => {
-  increaseCurrentView();
   reserveAppointment(
     selectedTimeslot.value,
     Array.from(selectedServiceMap.value.keys()),
@@ -230,8 +262,11 @@ const nextReserveAppointment = () => {
   ).then((data) => {
     if ((data as AppointmentDTO).processId !== undefined) {
       appointment.value = data as AppointmentDTO;
+      increaseCurrentView();
     } else {
-      // error.value = true;
+      if ((data as ErrorDTO).errorCode === "appointmentNotAvailable") {
+        appointmentNotAvailableError.value = true;
+      }
     }
   });
 };
@@ -252,7 +287,13 @@ const nextUpdateAppointment = () => {
       if ((data as AppointmentDTO).processId !== undefined) {
         appointment.value = data as AppointmentDTO;
       } else {
-        updateAppointmentError.value = true;
+        if (
+          (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
+        ) {
+          tooManyAppointmentsWithSameMailError.value = true;
+        } else {
+          updateAppointmentError.value = true;
+        }
       }
       increaseCurrentView();
     });
