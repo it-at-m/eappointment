@@ -11,11 +11,11 @@ export const VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT =
 export const VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT = "/api/backend/appointment";
 export const VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT =
   "/api/backend/update-appointment";
-export const VUE_APP_ZMS_API_CONFIRM_RESERVATION_ENDPOINT =
+export const VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT =
   "/api/backend/confirm-appointment";
 export const VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT =
   "/api/backend/cancel-appointment";
-export const VUE_APP_ZMS_API_PRECONFIRM_RESERVATION_ENDPOINT =
+export const VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT =
   "/api/backend/preconfirm-appointment";
 export const VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT =
   "/api/backend/captcha-details";

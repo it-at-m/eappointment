@@ -1,6 +1,10 @@
 {
   "address": "Address",
   "appointment": "Appointment",
+  "appointmentBookingErrorHeader": "Activation failed.",
+  "appointmentBookingErrorText": "Activation failed.",
+  "appointmentSuccessfullyBookedHeader": " Your appointment has been booked.",
+  "appointmentSuccessfullyBookedText": "You will receive confirmation and further information about your appointment by e-mail. We look forward to your visit.",
   "availableTimes": "Available dates",
   "back": "Back",
   "bookAppointment": "Book appointment",
@@ -39,6 +43,8 @@
   "telephoneNumber": "Telephone number",
   "termsOfUse": "Terms of Use",
   "time": "Zeit",
+  "updateAppointmentErrorHeader": "Appointment update failed.",
+  "updateAppointmentErrorText": "Appointment update failed.",
   "your": "Ihr",
 
   "backToHome": "Back to Appointments",
