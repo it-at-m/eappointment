@@ -1,7 +1,7 @@
 <template>
   <div class="m-component">
     <div
-      v-if="!confirmAppointmentHash"
+      v-if="!confirmAppointmentHash && currentView < 4"
       class="container"
     >
       <muc-stepper
@@ -30,13 +30,27 @@
         @next="nextUpdateAppointment"
       />
       <appointment-summary
-        v-if="currentView === 3"
+        v-if="currentView === 3 && !updateAppointmentError"
         :t="t"
         @back="decreaseCurrentView"
         @book-appointment="nextBookAppointment"
       />
+      <div v-if="currentView === 3 && updateAppointmentError">
+        <muc-callout
+
+          type="error"
+        >
+          <template #content>
+            {{ t("updateAppointmentErrorText") }}
+          </template>
+
+          <template #header>{{ t("updateAppointmentErrorHeader") }}</template>
+        </muc-callout>
+      </div>
+    </div>
+    <div v-if="currentView === 4" class="container">
       <muc-callout
-        v-if="currentView === 4"
+
         type="warning"
       >
         <template #content>
@@ -51,24 +65,24 @@
       class="container"
     >
       <muc-callout
-        v-if="!confirmAppointmentError"
+        v-if="confirmAppointmentSuccess"
         type="success"
       >
         <template #content>
-          {{ t("confirmAppointmentText") }}
+          {{ t("appointmentSuccessfullyBookedText") }}
         </template>
 
-        <template #header>{{ t("confirmAppointmentHeader") }}</template>
+        <template #header>{{ t("appointmentSuccessfullyBookedHeader") }}</template>
       </muc-callout>
       <muc-callout
-        v-else
+        v-if="confirmAppointmentError"
         type="error"
       >
         <template #content>
-          {{ t("confirmAppointmentText") }}
+          {{ t("appointmentBookingErrorText") }}
         </template>
 
-        <template #header>{{ t("confirmAppointmentHeader") }}</template>
+        <template #header>{{ t("appointmentBookingErrorHeader") }}</template>
       </muc-callout>
     </div>
   </div>
@@ -80,6 +94,7 @@ import { onMounted, provide, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import {
+  confirmAppointment,
   preconfirmAppointment,
   reserveAppointment,
   updateAppointment,
@@ -99,6 +114,7 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
+import { AppointmentHash } from "@/types/AppointmentHashTypes";
 
 const props = defineProps<{
   baseUrl: any;
@@ -149,7 +165,11 @@ const selectedTimeslot = ref<number>(0);
 const customerData = ref<CustomerData>(new CustomerData("", "", "", "", ""));
 const appointment = ref<AppointmentImpl>();
 
+const updateAppointmentError = ref<boolean>(false);
+
+const confirmAppointmentSuccess = ref<boolean>(false);
 const confirmAppointmentError = ref<boolean>(false);
+
 
 provide<SelectedServiceProvider>("selectedServiceProvider", {
   selectedService,
@@ -230,26 +250,26 @@ const nextUpdateAppointment = () => {
       ? customerData.value.remarks
       : undefined;
 
-    increaseCurrentView();
     updateAppointment(appointment.value).then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
         appointment.value = data as AppointmentDTO;
       } else {
-        // error.value = true;
+        updateAppointmentError.value = true;
       }
+      increaseCurrentView();
     });
   }
 };
 
 const nextBookAppointment = () => {
   if (appointment.value) {
-    increaseCurrentView();
     preconfirmAppointment(appointment.value).then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
         appointment.value = data as AppointmentDTO;
       } else {
         // error.value = true;
       }
+      increaseCurrentView();
     });
   }
 };
@@ -260,14 +280,26 @@ watch(currentView, (newCurrentView) => {
 
 onMounted(() => {
   if (props.confirmAppointmentHash) {
+    let appointmentData : AppointmentHash;
     try {
-      const appointmentData = JSON.parse(
+      appointmentData = JSON.parse(
         window.atob(props.confirmAppointmentHash)
       );
-      console.log("HIER: ", appointmentData);
+      if (appointmentData.id === undefined || appointmentData.authKey === undefined) {
+        confirmAppointmentError.value = true;
+        return;
+      }
     } catch {
       confirmAppointmentError.value = true;
+      return;
     }
+    confirmAppointment(appointmentData).then((data) => {
+      if ((data as AppointmentDTO).processId !== undefined) {
+        confirmAppointmentSuccess.value = true;
+      } else {
+        confirmAppointmentError.value = true;
+      }
+    })
   }
 });
 </script>

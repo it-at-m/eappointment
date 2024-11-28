@@ -7,12 +7,13 @@ import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
-  VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
-  VUE_APP_ZMS_API_PRECONFIRM_RESERVATION_ENDPOINT,
+  VUE_APP_ZMS_API_CALENDAR_ENDPOINT, VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
+  VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT,
   VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT,
 } from "@/utils/Constants";
+import {AppointmentHash} from "@/types/AppointmentHashTypes";
 
 const TODAY = new Date();
 const MAXDATE = new Date(
@@ -146,7 +147,28 @@ export function preconfirmAppointment(
   };
 
   return fetch(
-    getAPIBaseURL() + VUE_APP_ZMS_API_PRECONFIRM_RESERVATION_ENDPOINT,
+    getAPIBaseURL() + VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+    }
+  ).then((response) => {
+    return response.json();
+  });
+}
+
+export function confirmAppointment(
+  appointment: AppointmentHash
+): Promise<AppointmentDTO | ErrorDTO> {
+  const requestBody = {
+    processId: appointment.id,
+    authKey: appointment.authKey,
+    scope: appointment.scope,
+  };
+
+  return fetch(
+    getAPIBaseURL() + VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

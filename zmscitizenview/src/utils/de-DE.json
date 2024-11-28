@@ -1,6 +1,10 @@
 {
   "address": "Adresse",
   "appointment": "Termin",
+  "appointmentBookingErrorHeader": "Aktivierung fehlgeschlagen.",
+  "appointmentBookingErrorText": "Aktivierung fehlgeschlagen.",
+  "appointmentSuccessfullyBookedHeader": "Ihr Termin wurde reserviert.",
+  "appointmentSuccessfullyBookedText": "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.",
   "availableTimes": "Verfügbare Termine",
   "back": "Zurück",
   "bookAppointment": "Termin reservieren",
@@ -39,6 +43,8 @@
   "telephoneNumber": "Telefonnummer",
   "termsOfUse": "Einwilligungen",
   "time": "Zeit",
+  "updateAppointmentErrorHeader": "Terminupdate fehlgeschlagen",
+  "updateAppointmentErrorText": "Terminupdate fehlgeschlagen.",
   "your": "Ihr",
 
   "backToHome": "Zurück zur Terminvereinbarung",
