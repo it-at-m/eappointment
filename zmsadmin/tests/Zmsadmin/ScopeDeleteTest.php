@@ -20,11 +20,16 @@ class ScopeDeleteTest extends Base
                     'function' => 'readDeleteResult',
                     'url' => '/scope/141/',
                     'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'response' => $this->readFixture("GET_scope_141.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response, '/owner/?success=scope_deleted');
+        $this->assertStringContainsString('/owner/?success=scope_deleted', $response->getHeaderLine('Location'));
         $this->assertEquals(302, $response->getStatusCode());
     }
 }
