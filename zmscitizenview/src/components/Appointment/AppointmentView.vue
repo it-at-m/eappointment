@@ -124,7 +124,7 @@ import { onMounted, provide, ref, watch } from "vue";
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import {
-  confirmAppointment,
+  confirmAppointment, fetchAppointment, fetchServicesAndProviders,
   preconfirmAppointment,
   reserveAppointment,
   updateAppointment,
@@ -143,8 +143,10 @@ import {
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
+import { Service } from "@/api/models/Service";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
+import {SubService} from "@/types/SubService";
 
 const props = defineProps<{
   baseUrl: any;
@@ -194,6 +196,8 @@ const selectedTimeslot = ref<number>(0);
 
 const customerData = ref<CustomerData>(new CustomerData("", "", "", "", ""));
 const appointment = ref<AppointmentImpl>();
+
+const services = ref<Service[]>([]);
 
 const appointmentNotAvailableError = ref<boolean>(false);
 const updateAppointmentError = ref<boolean>(false);
@@ -339,6 +343,60 @@ onMounted(() => {
       } else {
         confirmAppointmentError.value = true;
       }
+    });
+  }
+
+  if (props.appointmentHash) {
+    fetchServicesAndProviders(
+      props.serviceId ?? undefined,
+      props.locationId ?? undefined
+    ).then((data) => {
+      services.value = data.services;
+      let appointmentData: AppointmentHash;
+      try {
+        appointmentData = JSON.parse(window.atob(props.appointmentHash));
+        if (
+          appointmentData.id === undefined ||
+          appointmentData.authKey === undefined
+        ) {
+          confirmAppointmentError.value = true;
+          return;
+        }
+      } catch {
+        confirmAppointmentError.value = true;
+        return;
+      }
+      fetchAppointment(appointmentData).then((data) => {
+        if ((data as AppointmentDTO).processId !== undefined) {
+          appointment.value = data as AppointmentDTO;
+          selectedService.value = services.value.find(
+            (service) => service.id === appointment.value.serviceId
+          );
+          selectedService.value.count = appointment.value.serviceCount;
+
+          if(appointment.value.subRequestCounts.length > 0) {
+            appointment.value.subRequestCounts.forEach((subRequestCount) => {
+              const subRequest : Service = services.value.find(
+                (service) => service.id === subRequestCount.id
+              );
+              const subService = new SubService(
+                subRequest.id,
+                subRequest.name,
+                subRequest.maxQuantity,
+                [],
+                subRequestCount.count
+              );
+              if (!selectedService.value.subServices) {
+                selectedService.value.subServices = [];
+              }
+              selectedService.value.subServices.push(subService);
+            });
+          }
+          currentView.value = 3;
+        } else {
+          //confirmAppointmentError.value = true;
+        }
+      });
     });
   }
 });

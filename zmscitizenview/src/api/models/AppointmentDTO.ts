@@ -1,4 +1,5 @@
 import { Scope } from "@/api/models/Scope";
+import { SubRequestCount } from "@/api/models/SubRequestCount";
 
 /**
  *
@@ -65,7 +66,7 @@ export interface AppointmentDTO {
    * @type {any[]}
    * @memberof AppointmentDTO
    */
-  subRequestCounts: any[];
+  subRequestCounts: SubRequestCount[];
   /**
    *
    * @type {string}
