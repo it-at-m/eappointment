@@ -268,7 +268,7 @@
                         {% if scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
                             {{ formgroup(
                                 {
-                                    "label": "Zusätzliche Bemerkungen (für Bürger sichtbar)",
+                                    "label": scope.preferences.client.customTextfieldLabel,
                                     "required": selectedProcess.preferences.client.customTextfieldRequired|default(scope.preferences.client.customTextfieldRequired),
                                     "errors": formData.customTextfield.messages,
                                     "checked": scope.preferences.client.customTextfieldActivated,
