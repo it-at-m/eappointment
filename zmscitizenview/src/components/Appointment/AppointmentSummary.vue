@@ -22,9 +22,7 @@
                       v-for="subService in selectedService.subServices"
                       :key="subService.id"
                     >
-                      <p
-                        v-if="subService.count > 0"
-                      >
+                      <p v-if="subService.count > 0">
                         {{ subService.count }}x {{ subService.name }} <br />
                       </p>
                     </div>

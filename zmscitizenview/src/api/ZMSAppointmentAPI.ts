@@ -6,7 +6,8 @@ import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
-  getAPIBaseURL, VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
+  getAPIBaseURL,
+  VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
   VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
   VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
@@ -188,9 +189,9 @@ export function fetchAppointment(
 
   return fetch(
     getAPIBaseURL() +
-    VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT +
-    "?" +
-    new URLSearchParams(params).toString()
+      VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT +
+      "?" +
+      new URLSearchParams(params).toString()
   ).then((response) => {
     return response.json();
   });

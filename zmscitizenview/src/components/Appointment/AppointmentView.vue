@@ -123,8 +123,11 @@ import { onMounted, provide, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
+import { Service } from "@/api/models/Service";
 import {
-  confirmAppointment, fetchAppointment, fetchServicesAndProviders,
+  confirmAppointment,
+  fetchAppointment,
+  fetchServicesAndProviders,
   preconfirmAppointment,
   reserveAppointment,
   updateAppointment,
@@ -143,10 +146,9 @@ import {
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
-import { Service } from "@/api/models/Service";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
-import {SubService} from "@/types/SubService";
+import { SubService } from "@/types/SubService";
 
 const props = defineProps<{
   baseUrl: any;
@@ -374,9 +376,9 @@ onMounted(() => {
           );
           selectedService.value.count = appointment.value.serviceCount;
 
-          if(appointment.value.subRequestCounts.length > 0) {
+          if (appointment.value.subRequestCounts.length > 0) {
             appointment.value.subRequestCounts.forEach((subRequestCount) => {
-              const subRequest : Service = services.value.find(
+              const subRequest: Service = services.value.find(
                 (service) => service.id === subRequestCount.id
               );
               const subService = new SubService(
