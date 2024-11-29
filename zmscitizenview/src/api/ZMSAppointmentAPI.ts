@@ -6,7 +6,7 @@ import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
-  getAPIBaseURL,
+  getAPIBaseURL, VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
   VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
   VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
@@ -173,6 +173,25 @@ export function confirmAppointment(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(requestBody),
   }).then((response) => {
+    return response.json();
+  });
+}
+
+export function fetchAppointment(
+  appointment: AppointmentHash
+): Promise<AppointmentDTO | ErrorDTO> {
+  const params: Record<string, any> = {
+    processId: appointment.id,
+    authKey: appointment.authKey,
+    scope: appointment.scope,
+  };
+
+  return fetch(
+    getAPIBaseURL() +
+    VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT +
+    "?" +
+    new URLSearchParams(params).toString()
+  ).then((response) => {
     return response.json();
   });
 }

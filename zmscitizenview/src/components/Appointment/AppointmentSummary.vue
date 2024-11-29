@@ -18,12 +18,16 @@
                     <br />
                   </p>
                   <div v-if="selectedService && selectedService.subServices">
-                    <p
-                      v-for="subService in service.subServices"
+                    <div
+                      v-for="subService in selectedService.subServices"
                       :key="subService.id"
                     >
-                      {{ subService.count }}x {{ selectedService.name }} <br />
-                    </p>
+                      <p
+                        v-if="subService.count > 0"
+                      >
+                        {{ subService.count }}x {{ subService.name }} <br />
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <div class="m-content">
@@ -59,15 +63,15 @@
                 </div>
                 <div class="m-content">
                   <p>
-                    {{ customerData.firstName }} {{ customerData.lastName }}
+                    {{ appointment.familyName }}
                     <br />
-                    {{ customerData.mailAddress }}<br />
-                    {{ customerData.telephoneNumber }}<br />
+                    {{ appointment.email }}<br />
+                    {{ appointment.telephone }}<br />
                   </p>
-                  <div v-if="customerData.remarks">
+                  <div v-if="appointment.customTextfield">
                     <strong>{{ t("remarks") }}</strong
                     ><br />
-                    <p>{{ customerData.remarks }}</p>
+                    <p>{{ appointment.customTextfield }}</p>
                     <br />
                   </div>
                 </div>
@@ -150,7 +154,6 @@ import { MucButton } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import {
-  CustomerDataProvider,
   SelectedAppointmentProvider,
   SelectedServiceProvider,
 } from "@/types/ProvideInjectTypes";
@@ -164,10 +167,6 @@ const emit = defineEmits<(e: "bookAppointment" | "back") => void>();
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;
-
-const { customerData } = inject<CustomerDataProvider>(
-  "customerData"
-) as CustomerDataProvider;
 
 const { appointment } = inject<SelectedAppointmentProvider>(
   "appointment"

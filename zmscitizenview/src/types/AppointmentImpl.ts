@@ -1,5 +1,6 @@
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Scope } from "@/api/models/Scope";
+import { SubRequestCount } from "@/api/models/SubRequestCount";
 
 export class AppointmentImpl implements AppointmentDTO {
   processId: string;
@@ -22,7 +23,7 @@ export class AppointmentImpl implements AppointmentDTO {
 
   scope: Scope;
 
-  subRequestCounts: any[];
+  subRequestCounts: SubRequestCount[];
 
   serviceId: string;
 
