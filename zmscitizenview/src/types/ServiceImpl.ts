@@ -9,11 +9,11 @@ export class ServiceImpl implements Service {
 
   maxQuantity: number;
 
-  combinable?: Array<Array<string>>;
+  combinable?: string[][];
 
-  providers?: Array<OfficeImpl>;
+  providers?: OfficeImpl[];
 
-  subServices?: Array<SubService>;
+  subServices?: SubService[];
 
   count?: number;
 
@@ -21,9 +21,9 @@ export class ServiceImpl implements Service {
     id: string,
     name: string,
     maxQuantity: number,
-    combinable: Array<Array<string>> | undefined,
-    providers: Array<OfficeImpl> | undefined,
-    subServices: Array<SubService> | undefined,
+    combinable: string[][] | undefined,
+    providers: OfficeImpl[] | undefined,
+    subServices: SubService[] | undefined,
     count: number | undefined
   ) {
     this.id = id;

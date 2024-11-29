@@ -13,17 +13,17 @@ export interface OfficesAndServicesDTO {
    * @type {Array<Office>}
    * @memberof OfficesAndServicesDTO
    */
-  offices: Array<Office>;
+  offices: Office[];
   /**
    *
    * @type {Array<Service>}
    * @memberof OfficesAndServicesDTO
    */
-  services: Array<Service>;
+  services: Service[];
   /**
    *
    * @type {Array<Relation>}
    * @memberof OfficesAndServicesDTO
    */
-  relations: Array<Relation>;
+  relations: Relation[];
 }

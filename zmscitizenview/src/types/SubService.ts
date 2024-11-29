@@ -7,7 +7,7 @@ export class SubService {
 
   maxQuantity: number;
 
-  providers: Array<OfficeImpl>;
+  providers: OfficeImpl[];
 
   count: number;
 
@@ -15,7 +15,7 @@ export class SubService {
     id: string,
     name: string,
     maxQuantity: number,
-    providers: Array<OfficeImpl>,
+    providers: OfficeImpl[],
     count: number
   ) {
     this.id = id;
