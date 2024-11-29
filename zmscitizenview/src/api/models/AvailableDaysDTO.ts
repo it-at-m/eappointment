@@ -9,7 +9,7 @@ export interface AvailableDaysDTO {
    * @type {Array<string>}
    * @memberof AvailableDaysDTO
    */
-  availableDays: Array<string>;
+  availableDays: string[];
   /**
    *
    * @type {number}

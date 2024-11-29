@@ -9,7 +9,7 @@ export interface AvailableTimeSlotsDTO {
    * @type {Array<number>}
    * @memberof AvailableTimeSlotsDTO
    */
-  appointmentTimestamps: Array<number>;
+  appointmentTimestamps: number[];
   /**
    *
    * @type {number}

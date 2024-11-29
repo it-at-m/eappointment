@@ -27,5 +27,5 @@ export interface Service {
    * @type {Array<Array<string>>}
    * @memberof Service
    */
-  combinable?: Array<Array<string>>;
+  combinable?: string[][];
 }
