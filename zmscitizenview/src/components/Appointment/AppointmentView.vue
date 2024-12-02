@@ -1,9 +1,7 @@
 <template>
   <div class="m-component">
     <div
-      v-if="
-      !confirmAppointmentHash &&
-       currentView < 4"
+      v-if="!confirmAppointmentHash && currentView < 4"
       class="container"
     >
       <muc-stepper
@@ -86,7 +84,10 @@
       v-if="currentView === 4"
       class="container"
     >
-      <muc-callout v-if="!cancelAppointmentSuccess" type="warning">
+      <muc-callout
+        v-if="!cancelAppointmentSuccess"
+        type="warning"
+      >
         <template #content>
           {{ t("confirmAppointmentText") }}
         </template>
@@ -102,8 +103,8 @@
         </template>
 
         <template #header>{{
-            t("appointmentSuccessfullyCanceledHeader")
-          }}</template>
+          t("appointmentSuccessfullyCanceledHeader")
+        }}</template>
       </muc-callout>
     </div>
     <div
@@ -287,11 +288,12 @@ const setServices = () => {
 };
 
 const setRebookData = () => {
-  if(appointment.value && rebookedAppointment.value) {
+  if (appointment.value && rebookedAppointment.value) {
     appointment.value.familyName = rebookedAppointment.value.familyName;
     appointment.value.email = rebookedAppointment.value.email;
-    appointment.value.telephone = rebookedAppointment.value.telephone ;
-    appointment.value.customTextfield = rebookedAppointment.value.customTextfield;
+    appointment.value.telephone = rebookedAppointment.value.telephone;
+    appointment.value.customTextfield =
+      rebookedAppointment.value.customTextfield;
     updateAppointment(appointment.value).then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
         appointment.value = data as AppointmentDTO;
@@ -308,7 +310,6 @@ const setRebookData = () => {
     });
   }
 };
-
 
 const nextReserveAppointment = () => {
   rebookOrCanelDialog.value = false;
@@ -370,7 +371,7 @@ const nextBookAppointment = () => {
     preconfirmAppointment(appointment.value).then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
         appointment.value = data as AppointmentDTO;
-        if(isRebooking.value && rebookedAppointment.value) {
+        if (isRebooking.value && rebookedAppointment.value) {
           cancelAppointment(rebookedAppointment.value);
         }
       } else {
@@ -387,7 +388,7 @@ const nextCancelAppointment = () => {
       if ((data as AppointmentDTO).processId !== undefined) {
         cancelAppointmentSuccess.value = true;
       } else {
-       cancelAppointmentError.value = true;
+        cancelAppointmentError.value = true;
       }
       increaseCurrentView();
     });

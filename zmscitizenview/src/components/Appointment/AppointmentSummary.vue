@@ -133,10 +133,11 @@
       </div>
     </div>
   </div>
-  <div v-if="rebookOrCancelDialog" class="m-submit-group">
-    <muc-button
-      @click="rescheduleAppointment"
-    >
+  <div
+    v-if="rebookOrCancelDialog"
+    class="m-submit-group"
+  >
+    <muc-button @click="rescheduleAppointment">
       <template #default>{{ t("rescheduleAppointment") }}</template>
     </muc-button>
     <muc-button
@@ -146,7 +147,10 @@
       <template #default>{{ t("cancelAppointment") }}</template>
     </muc-button>
   </div>
-  <div v-if="isRebooking" class="m-submit-group">
+  <div
+    v-if="isRebooking"
+    class="m-submit-group"
+  >
     <muc-button
       :disabled="!validForm"
       @click="bookAppointment"
@@ -160,7 +164,10 @@
       <template #default>{{ t("cancelReschedule") }}</template>
     </muc-button>
   </div>
-  <div v-if="!rebookOrCancelDialog && !isRebooking" class="m-submit-group">
+  <div
+    v-if="!rebookOrCancelDialog && !isRebooking"
+    class="m-submit-group"
+  >
     <muc-button
       variant="secondary"
       @click="previousStep"
@@ -191,7 +198,16 @@ defineProps<{
   t: any;
 }>();
 
-const emit = defineEmits<(e: "bookAppointment" | "back" | "cancelAppointment" | "rescheduleAppointment") => void>();
+const emit =
+  defineEmits<
+    (
+      e:
+        | "bookAppointment"
+        | "back"
+        | "cancelAppointment"
+        | "rescheduleAppointment"
+    ) => void
+  >();
 
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
