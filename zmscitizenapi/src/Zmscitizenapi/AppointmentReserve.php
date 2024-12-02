@@ -3,12 +3,12 @@
 namespace BO\Zmscitizenapi;
 
 use BO\Zmscitizenapi\Application;
-use BO\Zmscitizenapi\BaseController;
+use \BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Helper\UtilityHelper;
 use BO\Zmscitizenapi\Services\FriendlyCaptchaService;
 use BO\Zmscitizenapi\Services\MapperService;
 use BO\Zmscitizenapi\Services\ValidationService;
-use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
+use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use \BO\Zmsentities\Process;
 use \BO\Zmsentities\Scope;
 use \BO\Zmsentities\Collection\ProcessList;

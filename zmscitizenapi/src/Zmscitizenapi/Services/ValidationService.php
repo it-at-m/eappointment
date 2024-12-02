@@ -5,6 +5,7 @@ namespace BO\Zmscitizenapi\Services;
 use \BO\Zmsentities\Process;
 use \BO\Zmsentities\Collection\ProcessList;
 use \BO\Zmsentities\Collection\ScopeList;
+use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
 class ValidationService
 {
