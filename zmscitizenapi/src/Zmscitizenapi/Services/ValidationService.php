@@ -234,9 +234,10 @@ class ValidationService
                 'status' => 404,
             ];
         }
-
+    
         return ['errors' => $errors, 'status' => 404];
     }
+    
 
     public static function validateScopesNotFound(?ScopeList $scopes): array
     {

@@ -21,24 +21,24 @@ class AppointmentReserve extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $request = $request instanceof ServerRequestInterface ? $request : null;
-    
+
         $body = $request->getParsedBody();
-    
+
         $officeId = isset($body['officeId']) && is_numeric($body['officeId']) ? (int) $body['officeId'] : null;
         $serviceIds = $body['serviceId'] ?? null;
         $serviceCounts = $body['serviceCount'] ?? [1];
         $captchaSolution = $body['captchaSolution'] ?? null;
         $timestamp = isset($body['timestamp']) && is_numeric($body['timestamp']) ? (int) $body['timestamp'] : null;
-    
+
         $errors = ValidationService::validatePostAppointmentReserve($officeId, $serviceIds, $serviceCounts, $timestamp);
         if (!empty($errors['errors'])) {
             return $this->createJsonResponse($response, $errors, 400);
         }
-    
+
         try {
             $providerScope = ZmsApiFacadeService::getScopeByOfficeId($officeId);
-            $captchaRequired = Application::$CAPTCHA_ENABLED === true && $providerScope['captchaActivatedRequired'] === "1";
-    
+            $captchaRequired = Application::$CAPTCHA_ENABLED === true && isset($providerScope['captchaActivatedRequired']) && $providerScope['captchaActivatedRequired'] === "1";
+
             if ($captchaRequired) {
                 $captchaVerificationResult = FriendlyCaptchaService::verifyCaptcha($captchaSolution);
                 if (!$captchaVerificationResult['success']) {
@@ -48,12 +48,12 @@ class AppointmentReserve extends BaseController
                     ], 400);
                 }
             }
-    
+
             $serviceValidationResult = ValidationService::validateServiceLocationCombination($officeId, $serviceIds);
             if ($serviceValidationResult['status'] !== 200) {
                 return $this->createJsonResponse($response, $serviceValidationResult, 400);
             }
-    
+
             $freeAppointments = new ProcessList();
             $freeAppointments = ZmsApiFacadeService::getFreeAppointments([
                 'officeId' => $officeId,
@@ -61,7 +61,7 @@ class AppointmentReserve extends BaseController
                 'serviceCounts' => $serviceCounts,
                 'date' => UtilityHelper::getInternalDateFromTimestamp($timestamp)
             ]);
-            
+
             $processArray = json_decode(json_encode($freeAppointments), true);
 
             $filteredProcesses = array_filter($processArray, function ($process) use ($timestamp) {
@@ -70,47 +70,46 @@ class AppointmentReserve extends BaseController
                 }
                 return in_array($timestamp, array_column($process['appointments'], 'date'));
             });
-    
-            $selectedProcess = null;
-    
+
+            $selectedProcess = $filteredProcesses ? new Process() : null;
+
             if (!empty($filteredProcesses)) {
                 $selectedProcessData = array_values($filteredProcesses)[0];
-            
-                $selectedProcess = new Process();
+
                 $scopeData = $selectedProcessData['scope'] ?? null;
                 $scope = $scopeData ? new Scope($scopeData) : null;
-            
+
                 $selectedProcess->withUpdatedData($selectedProcessData, new \DateTime("@$timestamp"), $scope);
-            }            
-    
+            }
+
             $errors = ValidationService::validateGetProcessNotFound($selectedProcess);
             if (!empty($errors['errors'])) {
                 return $this->createJsonResponse($response, $errors, 404);
             }
-    
+
             $selectedProcess->clients = [
                 [
                     'email' => 'default@example.com'
                 ]
             ];
-    
+
             $reservedProcess = new Process();
             $reservedProcess = ZmsApiFacadeService::reserveTimeslot($selectedProcess, $serviceIds, $serviceCounts);
-    
+
             if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {
                 $scopeIds = [$reservedProcess->scope->id];
                 $scopesData = ZmsApiFacadeService::getScopeByIds($scopeIds);
-            
+
                 if ($scopesData['status'] === 200 && isset($scopesData['scopes']['scopes']) && !empty($scopesData['scopes']['scopes'])) {
                     $reservedProcess->scope = MapperService::mapScope($scopesData['scopes']['scopes'][0]);
                 }
             }
-    
+
             $thinnedProcessData = UtilityHelper::getThinnedProcessData($reservedProcess);
             $thinnedProcessData = array_merge($thinnedProcessData, ['officeId' => $officeId]);
-    
+
             return $this->createJsonResponse($response, $thinnedProcessData, 200);
-    
+
         } catch (\Exception $e) {
             return $this->createJsonResponse($response, [
                 'errorCode' => 'internalServerError',

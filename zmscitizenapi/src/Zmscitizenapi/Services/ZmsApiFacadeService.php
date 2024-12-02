@@ -399,11 +399,11 @@ class ZmsApiFacadeService
             $lastDay = UtilityHelper::getInternalDateFromISO($endDate);
 
             $freeDays = ZmsApiClientService::getFreeDays(
-                new ProviderList([['id' => $officeId, 'source' => 'dldb']]),
+                new ProviderList([['id' => $officeId, 'source' => \App::$source_name]]),
                 new RequestList([
                     [
                         'id' => $serviceId,
-                        'source' => 'dldb',
+                        'source' => \App::$source_name,
                         'slotCount' => $serviceCounts,
                     ]
                 ]),
@@ -436,7 +436,7 @@ class ZmsApiFacadeService
     {
         $office = [
             'id' => $params['officeId'],
-            'source' => 'dldb'
+            'source' => \App::$source_name
         ];
 
         $requests = [];
@@ -444,7 +444,7 @@ class ZmsApiFacadeService
         foreach ($params['serviceIds'] as $index => $serviceId) {
             $service = [
                 'id' => $serviceId,
-                'source' => 'dldb',
+                'source' => \App::$source_name,
                 'slotCount' => $params['serviceCounts'][$index]
             ];
             $requests = array_merge($requests, array_fill(0, $service['slotCount'], $service));
@@ -490,7 +490,7 @@ class ZmsApiFacadeService
                 for ($i = 0; $i < $slotCount; $i++) {
                     $requests[] = [
                         'id' => $serviceId,
-                        'source' => 'dldb',
+                        'source' => \App::$source_name,
                         'slotCount' => 1,
                     ];
                 }
@@ -498,7 +498,7 @@ class ZmsApiFacadeService
 
             $freeSlots = new ProcessList();
             $freeSlots = ZmsApiClientService::getFreeTimeslots(
-                new ProviderList([['id' => $officeId, 'source' => 'dldb']]),
+                new ProviderList([['id' => $officeId, 'source' => \App::$source_name]]),
                 new RequestList($requests),
                 UtilityHelper::getInternalDateFromISO($date),
                 UtilityHelper::getInternalDateFromISO($date)
