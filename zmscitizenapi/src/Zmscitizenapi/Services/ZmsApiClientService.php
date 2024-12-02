@@ -70,6 +70,7 @@ class ZmsApiClientService
 
         return $requestRelationList;
     }
+
     public static function getFreeDays(ProviderList $providers, RequestList $requests, array $firstDay, array $lastDay): Calendar
     {
         $calendar = new Calendar();
