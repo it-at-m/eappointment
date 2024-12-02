@@ -357,34 +357,34 @@ class ZmsApiFacadeService
      * 
      */
 
-    public static function getServicesProvidedAtOffice(int $officeId): array
-    {
-
-        $requestRelationList = ZmsApiClientService::getRequestRelationList();
-
-        $requestRelationArray = [];
-        foreach ($requestRelationList as $relation) {
-            $requestRelationArray[] = $relation;
-        }
-
-        $serviceIds = array_filter($requestRelationArray, function ($relation) use ($officeId) {
-            return $relation->provider->id === $officeId;
-        });
-
-        $serviceIds = array_map(function ($relation) {
-            return $relation->request->id;
-        }, $serviceIds);
-
-        $requestList = ZmsApiClientService::getServices() ?? [];
-        $requestArray = [];
-        foreach ($requestList as $request) {
-            $requestArray[] = $request;
-        }
-
-        return array_filter($requestArray, function ($request) use ($serviceIds) {
-            return in_array($request->id, $serviceIds);
-        });
-    }
+     public static function getServicesProvidedAtOffice(int $officeId): array
+     {
+         $requestRelationList = ZmsApiClientService::getRequestRelationList();
+     
+         $requestRelationArray = [];
+         foreach ($requestRelationList as $relation) {
+             $requestRelationArray[] = $relation;
+         }
+     
+         $serviceIds = array_filter($requestRelationArray, function ($relation) use ($officeId) {
+             return $relation->provider->id === $officeId || (string)$relation->provider->id === (string)$officeId;
+         });
+     
+         $serviceIds = array_map(function ($relation) {
+             return $relation->request->id;
+         }, $serviceIds);
+     
+         $requestList = ZmsApiClientService::getServices() ?? [];
+         $requestArray = [];
+         foreach ($requestList as $request) {
+             $requestArray[] = $request;
+         }
+     
+         return array_filter($requestArray, function ($request) use ($serviceIds) {
+             return in_array($request->id, $serviceIds);
+         });
+     }
+     
 
     public static function getBookableFreeDays(array $queryParams): array
     {
