@@ -377,11 +377,11 @@ class ValidationService
         return empty($errors) ? [] : $errors;
     }   
 
-    public static function validateScopeIdParam(array $serviceIds): array
+    public static function validateScopeIdParam(array $scopeIds): array
     {
         $errors = [];
 
-        foreach ($serviceIds as $id) {
+        foreach ($scopeIds as $id) {
             if (!is_numeric($id)) {
                 $errors[] = [
                     'scopes' => [],
