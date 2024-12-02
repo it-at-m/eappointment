@@ -158,7 +158,7 @@ class ZmsApiFacadeService
     public static function getScopeByOfficeId(int $officeId): array
     {
         $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
-        $matchingScope = $scopeList->withProviderID('dldb', $officeId)->getIterator()->current();
+        $matchingScope = $scopeList->withProviderID(\App::$source_name, $officeId)->getIterator()->current();
 
         if ($matchingScope instanceof Scope) {
             return [
