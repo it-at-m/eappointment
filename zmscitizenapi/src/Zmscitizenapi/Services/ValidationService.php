@@ -12,6 +12,7 @@ class ValidationService
 
     public static function validateServiceLocationCombination(int $officeId, array $serviceIds): array
     {
+
         $availableServices = ZmsApiFacadeService::getServicesProvidedAtOffice($officeId);
         $availableServiceIds = array_map(function ($service) {
             return $service['id'];
