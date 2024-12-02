@@ -4,6 +4,7 @@ namespace BO\Zmscitizenapi\Services;
 
 use BO\Zmsentities\Calendar as Calendar;
 use BO\Zmsentities\Process as Process;
+use BO\Zmsentities\Collection\SourceList;
 use \BO\Zmsentities\Collection\ProcessList;
 use \BO\Zmsentities\Collection\ProviderList;
 use \BO\Zmsentities\Collection\RequestList;
@@ -21,6 +22,7 @@ class ZmsApiClientService
 
     public static function getOffices(): ProviderList
     {
+        $sources = new SourceList();
         $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
             'resolveReferences' => 2,
         ])->getEntity();

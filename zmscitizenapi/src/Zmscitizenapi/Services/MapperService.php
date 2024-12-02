@@ -15,11 +15,8 @@ class MapperService
     {
         return [
             'id' => $scope->id ?? null,
-            'provider' => [
-                'id' => $scope->provider->id ?? null,
-                'source' => $scope->provider->source ?? null,
-            ],
-            'shortName' => $scope->shortName ?? null,
+            "provider" => $scope->getProvider() ?? null,
+            "shortName" => $scope->getShortName() ?? null,
             'telephoneActivated' => $scope->getTelephoneActivated() ?? null,
             'telephoneRequired' => $scope->getTelephoneRequired() ?? null,
             'customTextfieldActivated' => $scope->getCustomTextfieldActivated() ?? null,
@@ -37,10 +34,15 @@ class MapperService
         $scopes = new ScopeList(ZmsApiClientService::getScopes() ?? []);
 
         foreach ($providerList as $provider) {
-            $officeData = [
-                "id" => $provider->id,
-                "name" => $provider->displayName ?? $provider->name,
-            ];
+            $officeData = array_merge(
+                [
+                    "id" => $provider->id,
+                    "name" => $provider->displayName ?? $provider->name,
+                ],
+                !empty($provider->data['address']) ? ["address" => $provider->data['address']] : [],
+                !empty($provider->data['geo']) ? ["geo" => $provider->data['geo']] : []
+            );  
+                      
             $providerScope = ZmsApiFacadeService::getScopeForProvider($provider->id, $scopes);
             if (isset($providerScope['scope'])) {
                 $officeData['scope'] = $providerScope['scope'];

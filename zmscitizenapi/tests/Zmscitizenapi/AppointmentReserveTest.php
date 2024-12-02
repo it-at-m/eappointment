@@ -128,6 +128,7 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidOfficeId',
                     'errorMessage' => 'officeId should be a 32-bit integer.',
                 ]
             ],
@@ -154,7 +155,8 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing serviceId.',
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',
                 ]
             ],
             'status' => 400
@@ -180,6 +182,7 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidTimestamp',
                     'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
                 ]
             ],
@@ -205,11 +208,13 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidOfficeId',
                     'errorMessage' => 'officeId should be a 32-bit integer.',
                 ],
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing serviceId.',
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',
                 ]
             ],
             'status' => 400
@@ -234,10 +239,12 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidOfficeId',
                     'errorMessage' => 'officeId should be a 32-bit integer.',
                 ],
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidTimestamp',
                     'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
                 ]
             ],
@@ -263,10 +270,12 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing serviceId.',
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',
                 ],
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidTimestamp',
                     'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
                 ]
             ],
@@ -288,14 +297,17 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidOfficeId',
                     'errorMessage' => 'officeId should be a 32-bit integer.',
                 ],
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing serviceId.',
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',
                 ],
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidTimestamp',
                     'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
                 ]
             ],
@@ -323,6 +335,7 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidOfficeId',
                     'errorMessage' => 'officeId should be a 32-bit integer.',
                 ]
             ],
@@ -350,7 +363,8 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Invalid serviceId format. It should be an array of numeric values.',
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',
                 ]
             ],
             'status' => 400
@@ -377,6 +391,7 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidTimestamp',
                     'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
                 ]
             ],
@@ -403,7 +418,8 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Missing serviceId.',
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',
                 ]
             ],
             'status' => 400
@@ -430,7 +446,8 @@ class AppointmentReserveTest extends Base
             'errors' => [
                 [
                     'status' => 400,
-                    'errorMessage' => 'Invalid serviceCount format. It should be an array of non-negative numeric values.',
+                    'errorCode' => 'invalidServiceCount',
+                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
                 ]
             ],
             'status' => 400

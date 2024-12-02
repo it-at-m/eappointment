@@ -84,6 +84,7 @@ class AvailableAppointmentsListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
+                    'errorCode' => 'invalidDate',
                     'errorMessage' => 'date is required and must be a valid date.',                
                     'status' => 400,
                 ]
@@ -107,6 +108,7 @@ class AvailableAppointmentsListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
+                    'errorCode' => 'invalidOfficeId',
                     'errorMessage' => 'officeId should be a 32-bit integer.',                
                     'status' => 400,
                 ]
@@ -130,7 +132,8 @@ class AvailableAppointmentsListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
-                    'errorMessage' => 'serviceId should be a comma-separated string of integers.',                
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',                
                     'status' => 400,
                 ]
             ],
@@ -153,6 +156,7 @@ class AvailableAppointmentsListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
+                    'errorCode' => 'invalidServiceCount',
                     'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
                     'status' => 400,
                 ]
@@ -175,10 +179,12 @@ class AvailableAppointmentsListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
+                    'errorCode' => 'invalidDate',
                     'errorMessage' => 'date is required and must be a valid date.',                
                     'status' => 400,
                 ],
                 [
+                    'errorCode' => 'invalidOfficeId',
                     'errorMessage' => 'officeId should be a 32-bit integer.',                
                     'status' => 400,
                 ]
@@ -201,11 +207,13 @@ class AvailableAppointmentsListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
+                    'errorCode' => 'invalidDate',
                     'errorMessage' => 'date is required and must be a valid date.',                
                     'status' => 400,
                 ],
                 [
-                    'errorMessage' => 'serviceId should be a comma-separated string of integers.',                
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',                
                     'status' => 400,
                 ]
             ],
@@ -227,10 +235,12 @@ class AvailableAppointmentsListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
+                    'errorCode' => 'invalidDate',
                     'errorMessage' => 'date is required and must be a valid date.',                
                     'status' => 400,
                 ],
                 [
+                    'errorCode' => 'invalidServiceCount',
                     'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
                     'status' => 400,
                 ]
@@ -253,11 +263,13 @@ class AvailableAppointmentsListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
+                    'errorCode' => 'invalidOfficeId',
                     'errorMessage' => 'officeId should be a 32-bit integer.',                
                     'status' => 400,
                 ],
                 [
-                    'errorMessage' => 'serviceId should be a comma-separated string of integers.',                
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',                
                     'status' => 400,
                 ]
             ],
@@ -279,10 +291,12 @@ class AvailableAppointmentsListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
+                    'errorCode' => 'invalidOfficeId',
                     'errorMessage' => 'officeId should be a 32-bit integer.',                
                     'status' => 400,
                 ],
                 [
+                    'errorCode' => 'invalidServiceCount',
                     'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
                     'status' => 400,
                 ]
@@ -305,10 +319,12 @@ class AvailableAppointmentsListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
-                    'errorMessage' => 'serviceId should be a comma-separated string of integers.',                
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',                
                     'status' => 400,
                 ],
                 [
+                    'errorCode' => 'invalidServiceCount',
                     'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
                     'status' => 400,
                 ]

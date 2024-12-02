@@ -40,19 +40,19 @@ class ValidationService
     {
         $errors = [];
         if (!$startDate) {
-            $errors[] = ['status' => 400, 'errorMessage' => 'startDate is required and must be a valid date.'];
+            $errors[] = ['status' => 400, 'errorCode' => 'invalidStartDate', 'errorMessage' => 'startDate is required and must be a valid date.'];
         }
         if (!$endDate) {
-            $errors[] = ['status' => 400, 'errorMessage' => 'endDate is required and must be a valid date.'];
+            $errors[] = ['status' => 400, 'errorCode' => 'invalidEndDate', 'errorMessage' => 'endDate is required and must be a valid date.'];
         }
         if (!$officeId || !is_numeric($officeId)) {
-            $errors[] = ['status' => 400, 'errorMessage' => 'officeId should be a 32-bit integer.'];
+            $errors[] = ['status' => 400, 'errorCode' => 'invalidOfficeId', 'errorMessage' => 'officeId should be a 32-bit integer.'];
         }
         if (!$serviceId || !is_numeric($serviceId)) {
-            $errors[] = ['status' => 400, 'errorMessage' => 'serviceId should be a 32-bit integer.'];
+            $errors[] = ['status' => 400, 'errorCode' => 'invalidServiceId', 'errorMessage' => 'serviceId should be a 32-bit integer.'];
         }
         if (empty($serviceCounts[0]) || !preg_match('/^\d+(,\d+)*$/', implode(',', $serviceCounts))) {
-            $errors[] = ['status' => 400, 'errorMessage' => 'serviceCount should be a comma-separated string of integers.'];
+            $errors[] = ['status' => 400, 'errorCode' => 'invalidServiceCount', 'errorMessage' => 'serviceCount should be a comma-separated string of integers.'];
         }
 
         return ['errors' => $errors, 'status' => 400];
@@ -64,6 +64,7 @@ class ValidationService
         if (!$processId || !is_numeric($processId) || intval($processId) <= 0) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidProcessId',
                 'errorMessage' => 'processId should be a 32-bit integer.',
             ];
         }
@@ -71,6 +72,7 @@ class ValidationService
         if (!$authKey || !is_string($authKey)) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidAuthKey',
                 'errorMessage' => 'authKey should be a string.',
             ];
         }
@@ -84,6 +86,7 @@ class ValidationService
         if (!$date) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidDate',
                 'errorMessage' => 'date is required and must be a valid date.',
             ];
         }
@@ -91,6 +94,7 @@ class ValidationService
         if (!$officeId || !is_numeric($officeId)) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidOfficeId',
                 'errorMessage' => 'officeId should be a 32-bit integer.',
             ];
         }
@@ -98,13 +102,15 @@ class ValidationService
         if (empty($serviceIds) || !is_array($serviceIds) || array_filter($serviceIds, fn($id) => !is_numeric($id))) {
             $errors[] = [
                 'status' => 400,
-                'errorMessage' => 'serviceId should be a comma-separated string of integers.',
+                'errorCode' => 'invalidServiceId',
+                'errorMessage' => 'serviceId should be a 32-bit integer.',
             ];
         }
 
         if (empty($serviceCounts[0]) || !preg_match('/^\d+(,\d+)*$/', implode(',', $serviceCounts))) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidServiceCount',
                 'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
             ];
         }
@@ -118,6 +124,7 @@ class ValidationService
         if (!$officeId || !is_numeric($officeId)) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidOfficeId',
                 'errorMessage' => 'officeId should be a 32-bit integer.',
             ];
         }
@@ -125,18 +132,21 @@ class ValidationService
         if (empty($serviceIds)) {
             $errors[] = [
                 'status' => 400,
-                'errorMessage' => 'Missing serviceId.',
+                'errorCode' => 'invalidServiceId',
+                'errorMessage' => 'serviceId should be a 32-bit integer.',
             ];
         } elseif (!is_array($serviceIds) || array_filter($serviceIds, fn($id) => !is_numeric($id))) {
             $errors[] = [
                 'status' => 400,
-                'errorMessage' => 'Invalid serviceId format. It should be an array of numeric values.',
+                'errorCode' => 'invalidServiceId',
+                'errorMessage' => 'serviceId should be a 32-bit integer.',
             ];
         }
 
         if (!$timestamp || !is_numeric($timestamp) || $timestamp < 0) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidTimestamp',
                 'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
             ];
         }
@@ -144,7 +154,8 @@ class ValidationService
         if (!is_array($serviceCounts) || array_filter($serviceCounts, fn($count) => !is_numeric($count) || $count < 0)) {
             $errors[] = [
                 'status' => 400,
-                'errorMessage' => 'Invalid serviceCount format. It should be an array of non-negative numeric values.',
+                'errorCode' => 'invalidServiceCount',
+                'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
             ];
         }
 
@@ -157,7 +168,8 @@ class ValidationService
         if (empty($serviceIds) || $serviceIds == ['']) {
             $errors[] = [
                 'offices' => [],
-                'errorMessage' => 'Invalid serviceId(s).',
+                'errorCode' => 'invalidServiceId',
+                'errorMessage' => 'serviceId should be a 32-bit integer.',
                 'status' => 400
             ];
         }
@@ -171,7 +183,8 @@ class ValidationService
         if (empty($scopeIds) || $scopeIds == ['']) {
             $errors[] = [
                 'scopes' => [],
-                'errorMessage' => 'Invalid scopeId(s).',
+                'errorCode' => 'invalidScopeId',
+                'errorMessage' => "scopeId should be a 32-bit integer.",
                 'status' => 400
             ];
         }
@@ -183,12 +196,16 @@ class ValidationService
     {
 
         $errors = [];
-        if (empty($officeIds) || $officeIds == ['']) {
-            $errors[] = [
-                'services' => [],
-                'errorMessage' => 'Invalid officeId(s)',
-                'status' => 400,
-            ];
+
+        foreach ($officeIds as $id) {
+            if (!is_numeric($id)) {
+                $errors[] = [
+                    'services' => [],
+                    'errorCode' => 'invalidOfficeId',
+                    'errorMessage' => "officeId should be a 32-bit integer.",
+                    'status' => 400,
+                ];
+            }
         }
 
         return ['errors' => $errors, 'status' => 400];
@@ -238,7 +255,6 @@ class ValidationService
         return ['errors' => $errors, 'status' => 404];
     }
     
-
     public static function validateScopesNotFound(?ScopeList $scopes): array
     {
         $errors = [];
@@ -315,6 +331,7 @@ class ValidationService
         if (!$processId || !is_numeric($processId) || intval($processId) <= 0) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidProcessId',
                 'errorMessage' => 'processId should be a positive 32-bit integer.',
             ];
         }
@@ -322,6 +339,7 @@ class ValidationService
         if (!$authKey || !is_string($authKey)) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidAuthKey',
                 'errorMessage' => 'authKey should be a non-empty string.',
             ];
         }
@@ -329,6 +347,7 @@ class ValidationService
         if (!$familyName || !is_string($familyName)) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidFamilyName',
                 'errorMessage' => 'familyName should be a non-empty string.',
             ];
         }
@@ -336,6 +355,7 @@ class ValidationService
         if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidEmail',
                 'errorMessage' => 'email should be a valid email address.',
             ];
         }
@@ -343,6 +363,7 @@ class ValidationService
         if ($telephone !== null && (!$telephone || !preg_match('/^\d{7,15}$/', $telephone))) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidTelephone',
                 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.',
             ];
         }
@@ -350,6 +371,7 @@ class ValidationService
         if ($customTextfield !== null && (!is_string($customTextfield) || is_numeric($customTextfield))) {
             $errors[] = [
                 'status' => 400,
+                'errorCode' => 'invalidCustomTextfield',
                 'errorMessage' => 'customTextfield should be a string.',
             ];
         }
@@ -369,7 +391,8 @@ class ValidationService
             if (!is_numeric($id)) {
                 $errors[] = [
                     'offices' => [],
-                    'errorMessage' => "Invalid service ID: $id. Must be a number.",
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => "serviceId should be a 32-bit integer.",
                     'status' => 400,
                 ];
             }
@@ -381,12 +404,12 @@ class ValidationService
     public static function validateScopeIdParam(array $scopeIds): array
     {
         $errors = [];
-
         foreach ($scopeIds as $id) {
             if (!is_numeric($id)) {
                 $errors[] = [
                     'scopes' => [],
-                    'errorMessage' => "Invalid scope ID: $id. Must be a number.",
+                    'errorCode' => 'invalidScopeId',
+                    'errorMessage' => "scopeId should be a 32-bit integer.",
                     'status' => 400,
                 ];
             }
@@ -396,4 +419,3 @@ class ValidationService
     }
 
 }
-
