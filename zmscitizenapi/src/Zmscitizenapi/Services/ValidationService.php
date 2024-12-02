@@ -339,7 +339,7 @@ class ValidationService
             ];
         }
 
-        if ($telephone !== null && !$telephone || !preg_match('/^\d{7,15}$/', $telephone)) {
+        if ($telephone !== null && (!$telephone || !preg_match('/^\d{7,15}$/', $telephone))) {
             $errors[] = [
                 'status' => 400,
                 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.',
