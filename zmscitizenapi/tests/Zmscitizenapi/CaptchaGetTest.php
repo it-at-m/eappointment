@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
-use BO\Zmscitizenapi\Application;
+use \BO\Zmscitizenapi\Application;
 
 class CaptchaGetTest extends Base
 {

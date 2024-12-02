@@ -6,7 +6,7 @@ use \BO\Zmscitizenapi\BaseController;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
-use BO\Zmscitizenapi\Services\ValidationService;
+use \BO\Zmscitizenapi\Services\ValidationService;
 
 class OfficesByServiceList extends BaseController
 {
