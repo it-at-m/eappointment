@@ -46,8 +46,6 @@ class MapperService
             $providerScope = ZmsApiFacadeService::getScopeForProvider($provider->id, $scopes);
             if (isset($providerScope['scope']) && !isset($providerScope['errors'])) {
                 $officeData['scope'] = $providerScope['scope'];
-            } elseif (isset($providerScope['errors'])) {
-                return $providerScope['errors'];
             }
 
             $offices[] = $officeData;
