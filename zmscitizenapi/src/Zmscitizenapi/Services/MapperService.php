@@ -14,19 +14,19 @@ class MapperService
     public static function mapScope(Scope $scope): array
     {
         return [
-            'id' => $scope['id'] ?? null,
+            'id' => $scope->id ?? null,
             'provider' => [
-                'id' => $scope['provider']['id'] ?? null,
-                'source' => $scope['provider']['source'] ?? null,
+                'id' => $scope->provider->id ?? null,
+                'source' => $scope->provider->source ?? null,
             ],
-            'shortName' => $scope['shortName'] ?? null,
-            'telephoneActivated' => $scope['telephoneActivated'] ?? null,
-            'telephoneRequired' => $scope['telephoneRequired'] ?? null,
-            'customTextfieldActivated' => $scope['customTextfieldActivated'] ?? null,
-            'customTextfieldRequired' => $scope['customTextfieldRequired'] ?? null,
-            'customTextfieldLabel' => $scope['customTextfieldLabel'] ?? null,
-            'captchaActivatedRequired' => $scope['captchaActivatedRequired'] ?? null,
-            'displayInfo' => $scope['displayInfo'] ?? null,
+            'shortName' => $scope->shortName ?? null,
+            'telephoneActivated' => $scope->getTelephoneActivated() ?? null,
+            'telephoneRequired' => $scope->getTelephoneRequired() ?? null,
+            'customTextfieldActivated' => $scope->getCustomTextfieldActivated() ?? null,
+            'customTextfieldRequired' => $scope->getCustomTextfieldRequired() ?? null,
+            'customTextfieldLabel' => $scope->getCustomTextfieldLabel() ?? null,
+            'captchaActivatedRequired' => $scope->getCaptchaActivatedRequired() ?? null,
+            'displayInfo' => $scope->getDisplayInfo() ?? null,
         ];
     }
 

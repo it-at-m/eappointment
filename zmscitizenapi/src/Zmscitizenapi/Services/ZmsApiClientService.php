@@ -110,7 +110,7 @@ class ZmsApiClientService
             for ($i = 0; $i < $count; $i++) {
                 $requests[] = [
                     'id' => $serviceId,
-                    'source' => 'dldb'
+                    'source' => \App::$source_name
                 ];
             }
         }

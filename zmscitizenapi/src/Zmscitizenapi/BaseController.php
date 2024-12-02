@@ -23,18 +23,31 @@ abstract class BaseController extends \BO\Slim\Controller
      * @param array $args Route parameters
      * @return ResponseInterface The modified response
      */
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface|null
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         return parent::__invoke($request, $response, $args);
     }
 
     protected function createJsonResponse(ResponseInterface $response, array $content, int $statusCode): ResponseInterface
     {
+        if ($statusCode < 100 || $statusCode > 599) {
+            throw new \InvalidArgumentException('Invalid HTTP status code');
+        }
+
         $response = $response->withStatus($statusCode)
-                             ->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode($content));
+            ->withHeader('Content-Type', 'application/json; charset=utf-8');
+
+        try {
+            $json = json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        } catch (\JsonException $e) {
+            throw new \RuntimeException('Failed to encode JSON response: ' . $e->getMessage(), 0, $e);
+        }
+
+        $response->getBody()->write($json);
+
         return $response;
     }
-    
+
+
 
 }

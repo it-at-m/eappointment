@@ -4,7 +4,8 @@ namespace BO\Zmscitizenapi\Helper;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Bo\Slim\Response;
+use BO\Slim\Response;
+use Slim\Exception\HttpException;
 use Slim\Interfaces\ErrorHandlerInterface;
 use Throwable;
 
