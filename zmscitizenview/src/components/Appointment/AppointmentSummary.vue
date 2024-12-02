@@ -73,54 +73,56 @@
                     <br />
                   </div>
                 </div>
-                <div class="m-content">
-                  <h3>{{ t("termsOfUse") }}</h3>
-                </div>
-                <div class="m-content">
-                  <p>
-                    <strong>{{ t("privacyCheckboxLabel") }}</strong
-                    ><br />
-                  </p>
-                </div>
-                <div class="m-content">
-                  <div class="m-checkboxes">
-                    <div class="m-checkboxes__item">
-                      <input
-                        id="checkbox-privacy-policy"
-                        class="m-checkboxes__input"
-                        name="checkbox-privacy-policy"
-                        type="checkbox"
-                        @click="clickPrivacyPolicy"
-                      />
-                      <label
-                        class="m-label m-checkboxes__label"
-                        for="checkbox-privacy-policy"
-                        v-html="t('privacyCheckboxText')"
-                      />
+                <div v-if="!rebookOrCancelDialog">
+                  <div class="m-content">
+                    <h3>{{ t("termsOfUse") }}</h3>
+                  </div>
+                  <div class="m-content">
+                    <p>
+                      <strong>{{ t("privacyCheckboxLabel") }}</strong
+                      ><br />
+                    </p>
+                  </div>
+                  <div class="m-content">
+                    <div class="m-checkboxes">
+                      <div class="m-checkboxes__item">
+                        <input
+                          id="checkbox-privacy-policy"
+                          class="m-checkboxes__input"
+                          name="checkbox-privacy-policy"
+                          type="checkbox"
+                          @click="clickPrivacyPolicy"
+                        />
+                        <label
+                          class="m-label m-checkboxes__label"
+                          for="checkbox-privacy-policy"
+                          v-html="t('privacyCheckboxText')"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="m-content">
-                  <p>
-                    <strong>{{ t("communicationCheckboxLabel") }}</strong
-                    ><br />
-                  </p>
-                </div>
-                <div class="m-content">
-                  <div class="m-checkboxes">
-                    <div class="m-checkboxes__item">
-                      <input
-                        id="checkbox-electronic-communication"
-                        class="m-checkboxes__input"
-                        name="checkbox-electronic-communication"
-                        type="checkbox"
-                        @click="clickElectronicCommunication"
-                      />
-                      <label
-                        class="m-label m-checkboxes__label"
-                        for="checkbox-electronic-communication"
-                        v-html="t('communicationCheckboxText')"
-                      />
+                  <div class="m-content">
+                    <p>
+                      <strong>{{ t("communicationCheckboxLabel") }}</strong
+                      ><br />
+                    </p>
+                  </div>
+                  <div class="m-content">
+                    <div class="m-checkboxes">
+                      <div class="m-checkboxes__item">
+                        <input
+                          id="checkbox-electronic-communication"
+                          class="m-checkboxes__input"
+                          name="checkbox-electronic-communication"
+                          type="checkbox"
+                          @click="clickElectronicCommunication"
+                        />
+                        <label
+                          class="m-label m-checkboxes__label"
+                          for="checkbox-electronic-communication"
+                          v-html="t('communicationCheckboxText')"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -131,7 +133,34 @@
       </div>
     </div>
   </div>
-  <div class="m-submit-group">
+  <div v-if="rebookOrCancelDialog" class="m-submit-group">
+    <muc-button
+      @click="rescheduleAppointment"
+    >
+      <template #default>{{ t("rescheduleAppointment") }}</template>
+    </muc-button>
+    <muc-button
+      variant="secondary"
+      @click="cancelAppointment"
+    >
+      <template #default>{{ t("cancelAppointment") }}</template>
+    </muc-button>
+  </div>
+  <div v-if="isRebooking" class="m-submit-group">
+    <muc-button
+      :disabled="!validForm"
+      @click="bookAppointment"
+    >
+      <template #default>{{ t("rescheduleAppointment") }}</template>
+    </muc-button>
+    <muc-button
+      variant="secondary"
+      @click="cancelReschedule"
+    >
+      <template #default>{{ t("cancelReschedule") }}</template>
+    </muc-button>
+  </div>
+  <div v-if="!rebookOrCancelDialog && !isRebooking" class="m-submit-group">
     <muc-button
       variant="secondary"
       @click="previousStep"
@@ -157,10 +186,12 @@ import {
 } from "@/types/ProvideInjectTypes";
 
 defineProps<{
+  isRebooking: boolean;
+  rebookOrCancelDialog: boolean;
   t: any;
 }>();
 
-const emit = defineEmits<(e: "bookAppointment" | "back") => void>();
+const emit = defineEmits<(e: "bookAppointment" | "back" | "cancelAppointment" | "rescheduleAppointment") => void>();
 
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
@@ -202,6 +233,9 @@ const validForm = computed(
 
 const bookAppointment = () => emit("bookAppointment");
 const previousStep = () => emit("back");
+const cancelAppointment = () => emit("cancelAppointment");
+const cancelReschedule = () => console.log("Canceled Reschedule");
+const rescheduleAppointment = () => emit("rescheduleAppointment");
 </script>
 
 <style scoped>

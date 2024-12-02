@@ -69,6 +69,7 @@
   </div>
   <div class="m-submit-group">
     <muc-button
+      v-if="!isRebooking"
       variant="secondary"
       @click="previousStep"
     >
@@ -104,6 +105,7 @@ import {
 } from "@/types/ProvideInjectTypes";
 
 const props = defineProps<{
+  isRebooking: boolean;
   selectedServiceMap: Map<string, number>;
   t: any;
 }>();
