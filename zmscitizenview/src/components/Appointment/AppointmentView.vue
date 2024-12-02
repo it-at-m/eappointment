@@ -1,7 +1,9 @@
 <template>
   <div class="m-component">
     <div
-      v-if="!confirmAppointmentHash && currentView < 4"
+      v-if="
+      !confirmAppointmentHash &&
+       currentView < 4"
       class="container"
     >
       <muc-stepper
@@ -19,6 +21,7 @@
       </div>
       <div v-if="currentView === 1">
         <calendar-view
+          :is-rebooking="isRebooking"
           :selected-service-map="selectedServiceMap"
           :t="t"
           @back="decreaseCurrentView"
@@ -49,9 +52,13 @@
           v-if="
             !updateAppointmentError && !tooManyAppointmentsWithSameMailError
           "
+          :is-rebooking="isRebooking"
+          :rebook-or-cancel-dialog="rebookOrCanelDialog"
           :t="t"
           @back="decreaseCurrentView"
           @book-appointment="nextBookAppointment"
+          @cancel-appointment="nextCancelAppointment"
+          @reschedule-appointment="nextRescheduleAppointment"
         />
         <div v-if="tooManyAppointmentsWithSameMailError">
           <muc-callout type="error">
@@ -79,12 +86,24 @@
       v-if="currentView === 4"
       class="container"
     >
-      <muc-callout type="warning">
+      <muc-callout v-if="!cancelAppointmentSuccess" type="warning">
         <template #content>
           {{ t("confirmAppointmentText") }}
         </template>
 
         <template #header>{{ t("confirmAppointmentHeader") }}</template>
+      </muc-callout>
+      <muc-callout
+        v-if="cancelAppointmentSuccess"
+        type="success"
+      >
+        <template #content>
+          {{ t("appointmentSuccessfullyCanceledText") }}
+        </template>
+
+        <template #header>{{
+            t("appointmentSuccessfullyCanceledHeader")
+          }}</template>
       </muc-callout>
     </div>
     <div
@@ -125,6 +144,7 @@ import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { Service } from "@/api/models/Service";
 import {
+  cancelAppointment,
   confirmAppointment,
   fetchAppointment,
   fetchServicesAndProviders,
@@ -198,8 +218,12 @@ const selectedTimeslot = ref<number>(0);
 
 const customerData = ref<CustomerData>(new CustomerData("", "", "", "", ""));
 const appointment = ref<AppointmentImpl>();
+const rebookedAppointment = ref<AppointmentImpl>();
 
 const services = ref<Service[]>([]);
+
+const rebookOrCanelDialog = ref<boolean>(false);
+const isRebooking = ref<boolean>(false);
 
 const appointmentNotAvailableError = ref<boolean>(false);
 const updateAppointmentError = ref<boolean>(false);
@@ -207,6 +231,9 @@ const tooManyAppointmentsWithSameMailError = ref<boolean>(false);
 
 const confirmAppointmentSuccess = ref<boolean>(false);
 const confirmAppointmentError = ref<boolean>(false);
+
+const cancelAppointmentSuccess = ref<boolean>(false);
+const cancelAppointmentError = ref<boolean>(false);
 
 provide<SelectedServiceProvider>("selectedServiceProvider", {
   selectedService,
@@ -259,7 +286,32 @@ const setServices = () => {
   }
 };
 
+const setRebookData = () => {
+  if(appointment.value && rebookedAppointment.value) {
+    appointment.value.familyName = rebookedAppointment.value.familyName;
+    appointment.value.email = rebookedAppointment.value.email;
+    appointment.value.telephone = rebookedAppointment.value.telephone ;
+    appointment.value.customTextfield = rebookedAppointment.value.customTextfield;
+    updateAppointment(appointment.value).then((data) => {
+      if ((data as AppointmentDTO).processId !== undefined) {
+        appointment.value = data as AppointmentDTO;
+      } else {
+        if (
+          (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
+        ) {
+          tooManyAppointmentsWithSameMailError.value = true;
+        } else {
+          updateAppointmentError.value = true;
+        }
+      }
+      currentView.value = 3;
+    });
+  }
+};
+
+
 const nextReserveAppointment = () => {
+  rebookOrCanelDialog.value = false;
   reserveAppointment(
     selectedTimeslot.value,
     Array.from(selectedServiceMap.value.keys()),
@@ -267,8 +319,15 @@ const nextReserveAppointment = () => {
     selectedProvider.value.id
   ).then((data) => {
     if ((data as AppointmentDTO).processId !== undefined) {
+      if (appointment.value && !isRebooking.value) {
+        cancelAppointment(appointment.value);
+      }
       appointment.value = data as AppointmentDTO;
-      increaseCurrentView();
+      if (isRebooking.value) {
+        setRebookData();
+      } else {
+        increaseCurrentView();
+      }
     } else {
       if ((data as ErrorDTO).errorCode === "appointmentNotAvailable") {
         appointmentNotAvailableError.value = true;
@@ -311,12 +370,35 @@ const nextBookAppointment = () => {
     preconfirmAppointment(appointment.value).then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
         appointment.value = data as AppointmentDTO;
+        if(isRebooking.value && rebookedAppointment.value) {
+          cancelAppointment(rebookedAppointment.value);
+        }
       } else {
         // error.value = true;
       }
       increaseCurrentView();
     });
   }
+};
+
+const nextCancelAppointment = () => {
+  if (appointment.value) {
+    cancelAppointment(appointment.value).then((data) => {
+      if ((data as AppointmentDTO).processId !== undefined) {
+        cancelAppointmentSuccess.value = true;
+      } else {
+       cancelAppointmentError.value = true;
+      }
+      increaseCurrentView();
+    });
+  }
+};
+
+const nextRescheduleAppointment = () => {
+  isRebooking.value = true;
+  rebookedAppointment.value = appointment.value;
+  setServices();
+  currentView.value = 1;
 };
 
 watch(currentView, (newCurrentView) => {
@@ -349,6 +431,7 @@ onMounted(() => {
   }
 
   if (props.appointmentHash) {
+    rebookOrCanelDialog.value = true;
     fetchServicesAndProviders(
       props.serviceId ?? undefined,
       props.locationId ?? undefined
