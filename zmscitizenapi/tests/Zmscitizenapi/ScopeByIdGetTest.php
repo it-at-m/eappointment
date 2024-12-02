@@ -141,7 +141,8 @@ class ScopeByIdGetTest extends Base
             'errors' => [
                 [
                     'services' => [],
-                    'errorMessage' => 'Invalid scopeId(s).',
+                    'errorCode' => 'invalidScopeId',
+                    'errorMessage' => "scopeId should be a 32-bit integer.",
                     'status' => 400
                 ]
             ],
@@ -242,7 +243,8 @@ class ScopeByIdGetTest extends Base
             'errors' => [
                 [
                     'scopes' => [],
-                    'errorMessage' => 'Invalid scope ID: blahblahblah. Must be a number.',
+                    'errorCode' => 'invalidScopeId',
+                    'errorMessage' => 'scopeId should be a 32-bit integer.',
                     'status' => 400
                 ]
             ]

@@ -33,21 +33,20 @@ abstract class BaseController extends \BO\Slim\Controller
         if ($statusCode < 100 || $statusCode > 599) {
             throw new \InvalidArgumentException('Invalid HTTP status code');
         }
-
+    
         $response = $response->withStatus($statusCode)
             ->withHeader('Content-Type', 'application/json; charset=utf-8');
-
+    
         try {
-            $json = json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            // Add JSON_UNESCAPED_SLASHES to ensure slashes in HTML are not escaped
+            $json = json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         } catch (\JsonException $e) {
             throw new \RuntimeException('Failed to encode JSON response: ' . $e->getMessage(), 0, $e);
         }
-
+    
         $response->getBody()->write($json);
-
+    
         return $response;
     }
-
-
-
+    
 }

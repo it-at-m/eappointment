@@ -136,7 +136,8 @@ class OfficesByServiceListTest extends Base
             'errors' => [
                 [
                     'offices' => [],
-                    'errorMessage' => 'Invalid serviceId(s).',
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',
                     'status' => 400
                 ]
             ],
@@ -278,8 +279,9 @@ class OfficesByServiceListTest extends Base
             'errors' => [
                 [
                     'offices' => [],
-                    'errorMessage' => 'Invalid service ID: blahblahblah. Must be a number.',
-                    'status' => 400,
+                    'errorCode' => 'invalidServiceId',
+                    'errorMessage' => 'serviceId should be a 32-bit integer.',
+                    'status' => 400
                 ]
             ]
         ];

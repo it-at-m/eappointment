@@ -109,7 +109,8 @@ class ServicesByOfficeListTest extends Base
             'errors' => [
                 [
                     'services' => [],
-                    'errorMessage' => 'Invalid officeId(s)',
+                    'errorCode' => 'invalidOfficeId',
+                    'errorMessage' => 'officeId should be a 32-bit integer.',
                     'status' => 400
                 ]
             ],

@@ -170,6 +170,7 @@ class AppointmentGetTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidProcessId',
                     'errorMessage' => 'processId should be a 32-bit integer.'
                 ]
             ],
@@ -191,6 +192,7 @@ class AppointmentGetTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidAuthKey',
                     'errorMessage' => 'authKey should be a string.'
                 ]
             ],
@@ -213,6 +215,7 @@ class AppointmentGetTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidProcessId',
                     'errorMessage' => 'processId should be a 32-bit integer.'
                 ]
             ],
@@ -235,6 +238,7 @@ class AppointmentGetTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidAuthKey',
                     'errorMessage' => 'authKey should be a string.'
                 ]
             ],
@@ -254,10 +258,12 @@ class AppointmentGetTest extends Base
             'errors' => [
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidProcessId',
                     'errorMessage' => 'processId should be a 32-bit integer.',
                 ],
                 [
                     'status' => 400,
+                    'errorCode' => 'invalidAuthKey',
                     'errorMessage' => 'authKey should be a string.',
                 ]
             ],

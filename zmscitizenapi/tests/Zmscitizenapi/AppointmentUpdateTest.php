@@ -168,12 +168,12 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -197,11 +197,11 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -225,11 +225,11 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -253,10 +253,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
             ],
             'status' => 400
         ];
@@ -280,11 +280,11 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -308,10 +308,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -335,10 +335,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -362,9 +362,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.']
             ],
             'status' => 400
         ];
@@ -388,11 +388,11 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -416,10 +416,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -443,10 +443,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -470,9 +470,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
             ],
             'status' => 400
         ];
@@ -496,10 +496,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -523,9 +523,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -549,9 +549,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -575,8 +575,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.']
             ],
             'status' => 400
         ];
@@ -600,11 +600,11 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -628,10 +628,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -655,10 +655,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -682,9 +682,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
             ],
             'status' => 400
         ];
@@ -708,10 +708,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -735,9 +735,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -761,9 +761,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -787,8 +787,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.']
             ],
             'status' => 400
         ];
@@ -812,10 +812,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -839,9 +839,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -865,9 +865,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -891,8 +891,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
             ],
             'status' => 400
         ];
@@ -916,9 +916,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -942,8 +942,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -967,8 +967,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -992,7 +992,7 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'processId should be a positive 32-bit integer.']
+                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.']
             ],
             'status' => 400
         ];
@@ -1016,11 +1016,11 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1044,10 +1044,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -1071,10 +1071,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1098,9 +1098,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
             ],
             'status' => 400
         ];
@@ -1124,10 +1124,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1151,9 +1151,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -1177,9 +1177,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1203,8 +1203,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.']
             ],
             'status' => 400
         ];
@@ -1228,10 +1228,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1255,9 +1255,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -1281,9 +1281,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1307,8 +1307,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
             ],
             'status' => 400
         ];
@@ -1332,9 +1332,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1358,8 +1358,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -1383,8 +1383,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1408,7 +1408,7 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'authKey should be a non-empty string.']
+                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.']
             ],
             'status' => 400
         ];
@@ -1432,10 +1432,10 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1459,9 +1459,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -1485,9 +1485,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1511,8 +1511,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.']
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
             ],
             'status' => 400
         ];
@@ -1536,9 +1536,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1562,8 +1562,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -1587,8 +1587,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1612,7 +1612,7 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'familyName should be a non-empty string.']
+                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.']
             ],
             'status' => 400
         ];
@@ -1636,9 +1636,9 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1662,8 +1662,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -1687,8 +1687,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1712,7 +1712,7 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'email should be a valid email address.']
+                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
             ],
             'status' => 400
         ];
@@ -1736,8 +1736,8 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];
@@ -1761,7 +1761,7 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
+                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
             ],
             'status' => 400
         ];
@@ -1785,7 +1785,7 @@ class AppointmentUpdateTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorMessage' => 'customTextfield should be a string.']
+                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
             ],
             'status' => 400
         ];

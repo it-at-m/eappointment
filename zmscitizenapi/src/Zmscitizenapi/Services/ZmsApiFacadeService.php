@@ -21,23 +21,27 @@ class ZmsApiFacadeService
         foreach (ZmsApiClientService::getOffices() as $provider) {
             $matchingScope = $scopeList->withProviderID($provider->source, $provider->id)->getIterator()->current();
 
-            $providerData = [
-                "id" => $provider->id,
-                "name" => $provider->displayName ?? $provider->name,
-            ];
-
+            $providerData = array_merge(
+                [
+                    "id" => $provider->id,
+                    "name" => $provider->displayName ?? $provider->name,
+                ],
+                !empty($provider->data['address']) ? ["address" => $provider->data['address']] : [],
+                !empty($provider->data['geo']) ? ["geo" => $provider->data['geo']] : []
+            );
+            
             if ($matchingScope instanceof Scope) {
                 $providerData["scope"] = [
                     "id" => $matchingScope->id,
-                    "provider" => $matchingScope->provider,
-                    "shortName" => $matchingScope->shortName,
-                    "telephoneActivated" => $matchingScope->getTelephoneActivated(),
-                    "telephoneRequired" => $matchingScope->getTelephoneRequired(),
-                    "customTextfieldActivated" => $matchingScope->getCustomTextfieldActivated(),
-                    "customTextfieldRequired" => $matchingScope->getCustomTextfieldRequired(),
-                    "customTextfieldLabel" => $matchingScope->getCustomTextfieldLabel(),
-                    "captchaActivatedRequired" => $matchingScope->getCaptchaActivatedRequired(),
-                    "displayInfo" => $matchingScope->getDisplayInfo()
+                    "provider" => $matchingScope->getProvider() ?? null,
+                    "shortName" => $matchingScope->getShortName() ?? null,
+                    "telephoneActivated" => $matchingScope->getTelephoneActivated() ?? null,
+                    "telephoneRequired" => $matchingScope->getTelephoneRequired() ?? null,
+                    "customTextfieldActivated" => $matchingScope->getCustomTextfieldActivated() ?? null,
+                    "customTextfieldRequired" => $matchingScope->getCustomTextfieldRequired() ?? null,
+                    "customTextfieldLabel" => $matchingScope->getCustomTextfieldLabel() ?? null,
+                    "captchaActivatedRequired" => $matchingScope->getCaptchaActivatedRequired() ?? null,
+                    "displayInfo" => $matchingScope->getDisplayInfo() ?? null
                 ];
             }
 
@@ -58,15 +62,15 @@ class ZmsApiFacadeService
         foreach ($scopeList as $scope) {
             $scopesProjectionList[] = [
                 "id" => $scope->id,
-                "provider" => $scope->getProvider(),
-                "shortName" => $scope->shortName,
-                "telephoneActivated" => $scope->getTelephoneActivated(),
-                "telephoneRequired" => $scope->getTelephoneRequired(),
-                "customTextfieldActivated" => $scope->getCustomTextfieldActivated(),
-                "customTextfieldRequired" => $scope->getCustomTextfieldRequired(),
-                "customTextfieldLabel" => $scope->getCustomTextfieldLabel(),
-                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired(),
-                "displayInfo" => $scope->getDisplayInfo()
+                "provider" => $scope->getProvider() ?? null,
+                "shortName" => $scope->getShortName() ?? null,
+                "telephoneActivated" => $scope->getTelephoneActivated() ?? null,
+                "telephoneRequired" => $scope->getTelephoneRequired() ?? null,
+                "customTextfieldActivated" => $scope->getCustomTextfieldActivated() ?? null,
+                "customTextfieldRequired" => $scope->getCustomTextfieldRequired() ?? null,
+                "customTextfieldLabel" => $scope->getCustomTextfieldLabel() ?? null,
+                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired() ?? null,
+                "displayInfo" => $scope->getDisplayInfo() ?? null
             ];
         }
 
@@ -113,14 +117,14 @@ class ZmsApiFacadeService
             $result = [
                 "id" => $scope->id,
                 "provider" => $scope->getProvider(),
-                "shortName" => $scope->shortName,
-                "telephoneActivated" => $scope->getTelephoneActivated(),
-                "telephoneRequired" => $scope->getTelephoneRequired(),
-                "customTextfieldActivated" => $scope->getCustomTextfieldActivated(),
-                "customTextfieldRequired" => $scope->getCustomTextfieldRequired(),
-                "customTextfieldLabel" => $scope->getCustomTextfieldLabel(),
-                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired(),
-                "displayInfo" => $scope->getDisplayInfo(),
+                "shortName" => $scope->getShortName() ?? null,
+                "telephoneActivated" => $scope->getTelephoneActivated() ?? null,
+                "telephoneRequired" => $scope->getTelephoneRequired() ?? null,
+                "customTextfieldActivated" => $scope->getCustomTextfieldActivated() ?? null,
+                "customTextfieldRequired" => $scope->getCustomTextfieldRequired() ?? null,
+                "customTextfieldLabel" => $scope->getCustomTextfieldLabel() ?? null,
+                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired() ?? null,
+                "displayInfo" => $scope->getDisplayInfo() ?? null,
             ];
         }
 
@@ -163,15 +167,15 @@ class ZmsApiFacadeService
         if ($matchingScope instanceof Scope) {
             return [
                 "id" => $matchingScope->id,
-                "provider" => $matchingScope->provider,
-                "shortName" => $matchingScope->shortName,
-                "telephoneActivated" => $matchingScope->getTelephoneActivated(),
-                "telephoneRequired" => $matchingScope->getTelephoneRequired(),
-                "customTextfieldActivated" => $matchingScope->getCustomTextfieldActivated(),
-                "customTextfieldRequired" => $matchingScope->getCustomTextfieldRequired(),
-                "customTextfieldLabel" => $matchingScope->getCustomTextfieldLabel(),
-                "captchaActivatedRequired" => $matchingScope->getCaptchaActivatedRequired(),
-                "displayInfo" => $matchingScope->getDisplayInfo(),
+                "provider" => $matchingScope->getProvider() ?? null,
+                "shortName" => $matchingScope->getShortName() ?? null,
+                "telephoneActivated" => $matchingScope->getTelephoneActivated() ?? null,
+                "telephoneRequired" => $matchingScope->getTelephoneRequired() ?? null,
+                "customTextfieldActivated" => $matchingScope->getCustomTextfieldActivated() ?? null,
+                "customTextfieldRequired" => $matchingScope->getCustomTextfieldRequired() ?? null,
+                "customTextfieldLabel" => $matchingScope->getCustomTextfieldLabel() ?? null,
+                "captchaActivatedRequired" => $matchingScope->getCaptchaActivatedRequired() ?? null,
+                "displayInfo" => $matchingScope->getDisplayInfo() ?? null,
             ];
         }
 
@@ -273,15 +277,15 @@ class ZmsApiFacadeService
         foreach ($filteredScopes as $scope) {
             $scopes[] = [
                 "id" => $scope->id,
-                "provider" => $scope->getProvider(),
-                "shortName" => $scope->shortName,
-                "telephoneActivated" => $scope->getTelephoneActivated(),
-                "telephoneRequired" => $scope->getTelephoneRequired(),
-                "customTextfieldActivated" => $scope->getCustomTextfieldActivated(),
-                "customTextfieldRequired" => $scope->getCustomTextfieldRequired(),
-                "customTextfieldLabel" => $scope->getCustomTextfieldLabel(),
-                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired(),
-                "displayInfo" => $scope->getDisplayInfo(),
+                "provider" => $scope->getProvider() ?? null,
+                "shortName" => $scope->getShortName() ?? null,
+                "telephoneActivated" => $scope->getTelephoneActivated() ?? null,
+                "telephoneRequired" => $scope->getTelephoneRequired() ?? null,
+                "customTextfieldActivated" => $scope->getCustomTextfieldActivated() ?? null,
+                "customTextfieldRequired" => $scope->getCustomTextfieldRequired() ?? null,
+                "customTextfieldLabel" => $scope->getCustomTextfieldLabel() ?? null,
+                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired() ?? null,
+                "displayInfo" => $scope->getDisplayInfo() ?? null,
             ];
         }
 
@@ -432,6 +436,7 @@ class ZmsApiFacadeService
             return ExceptionService::noAppointmentsAtLocation();
         }
     }
+    
     public static function getFreeAppointments(array $params): mixed
     {
         $office = [
