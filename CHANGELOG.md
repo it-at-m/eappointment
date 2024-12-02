@@ -1,3 +1,56 @@
+## Release Muc-17 (29.11.2024)
+                        
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2184'>ZMS-2184</a>] -         Alle SCSS und JS Builds in der Pipeline
+</li>
+</ul>
+    
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3240'>ZMS-3240</a>] -         Nicht aktivierte Termine in Warteschlange aufrufbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3258'>ZMS-3258</a>] -         Ungewollter Wiederaufruf von Terminen im Status &quot;nicht erschienen&quot; und Parken
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3267'>ZMS-3267</a>] -          Ungewollter Wiederaufruf von Terminen bei Clusteransicht im Status &quot;nicht erschienen&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3271'>ZMS-3271</a>] -         Vorlaufzeit Öffnungszeitenprofil
+</li>
+</ul>
+                                                                                                                                                                                        
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2333'>ZMS-2333</a>] -         Anpassung des Textes bei User*in Erstellung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2528'>ZMS-2528</a>] -         Minimallösung: Benutzeroberfläche am eKiosk ist mehrsprachig verfügbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2981'>ZMS-2981</a>] -         Aktivierungsmail - Globales Template anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3133'>ZMS-3133</a>] -         Standesamt - eine Dienstleistung mehrere Standorte -&gt; Zuweisung der Kunden zu einem bestimmten Standort
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3150'>ZMS-3150</a>] -         Offene Aufrufe für Sachbearbeiter*innen sichtbar machen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3180'>ZMS-3180</a>] -         Verschiedene Felder von Standorteinstellungen und Clustereinstellungen ausblenden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3187'>ZMS-3187</a>] -         Bestätigungsmail - Globales Template anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3190'>ZMS-3190</a>] -         Verschiedene Felder auf ZMS Admin für nicht technische User ausblenden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3199'>ZMS-3199</a>] -         Terminerinnerung - Globales Template anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3200'>ZMS-3200</a>] -         Terminabsage - Globales Template anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3201'>ZMS-3201</a>] -         ics-Template - Globales Template anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3229'>ZMS-3229</a>] -         Ausnahme erstellen - Aufklappen des Konfigurationsfensters nur für Ausnahme
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3374'>ZMS-3374</a>] -         Berliner Changelog über Münchener Changelog Anhängen
+</li>
+</ul>
+                                                        
 ## Release Muc-16 (08.11.2024)
 
 <h2>        Aufgabe</h2>
