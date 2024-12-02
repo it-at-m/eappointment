@@ -95,7 +95,7 @@ class ValidationService
             ];
         }
 
-        if (empty($serviceIds[0]) || !preg_match('/^\d+(,\d+)*$/', implode(',', $serviceIds))) {
+        if (empty($serviceIds) || !is_array($serviceIds) || array_filter($serviceIds, fn($id) => !is_numeric($id))) {
             $errors[] = [
                 'status' => 400,
                 'errorMessage' => 'serviceId should be a comma-separated string of integers.',
