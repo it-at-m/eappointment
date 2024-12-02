@@ -7,7 +7,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 abstract class BaseController extends \BO\Slim\Controller
 {
-    public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
+    public function __invoke(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $request = $this->initRequest($request);
         $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
@@ -23,7 +23,7 @@ abstract class BaseController extends \BO\Slim\Controller
      * @param array $args Route parameters
      * @return ResponseInterface The modified response
      */
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface|null
     {
         return parent::__invoke($request, $response, $args);
     }

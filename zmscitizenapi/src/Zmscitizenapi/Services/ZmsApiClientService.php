@@ -2,59 +2,16 @@
 
 namespace BO\Zmscitizenapi\Services;
 
-use BO\Zmsentities\Calendar as CalendarEntity;
-use BO\Zmsentities\Process as ProcessEntity;
+use BO\Zmsentities\Calendar as Calendar;
+use BO\Zmsentities\Process as Process;
+use \BO\Zmsentities\Collection\ProcessList;
+use \BO\Zmsentities\Collection\ProviderList;
+use \BO\Zmsentities\Collection\RequestList;
+use \BO\Zmsentities\Collection\RequestRelationList;
+use \BO\Zmsentities\Collection\ScopeList;
 
 class ZmsApiClientService
 {
-
-    public static function getOffices()
-    {
-        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-            'resolveReferences' => 2,
-        ])->getEntity();
-
-        $providerList = $sources->getProviderList() ?? [];
-
-        return $providerList;
-
-    }
-
-    public static function getScopes()
-    {
-        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-            'resolveReferences' => 2,
-        ])->getEntity();
-
-        $scopeList = $sources->getScopeList() ?? [];
-
-        return $scopeList;
-
-    }
-
-    public static function getServices()
-    {
-        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-            'resolveReferences' => 2,
-        ])->getEntity();
-
-        $requestList = $sources->getRequestList() ?? [];
-
-        return $requestList;
-
-    }
-
-    public static function getRequestRelationList()
-    {
-
-        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-            'resolveReferences' => 2,
-        ])->getEntity();
-
-        $requestRelationList = $sources->getRequestRelationList();
-
-        return $requestRelationList;
-    }
 
     /* Todo add cache methods
     haveCachedSourcesExpired
@@ -62,22 +19,74 @@ class ZmsApiClientService
 
     */
 
-    public static function getFreeDays($providers, $requests, $firstDay, $lastDay)
+    public static function getOffices(): ProviderList
+    {
+        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+            'resolveReferences' => 2,
+        ])->getEntity();
+
+        $providerList = new ProviderList();
+        $providerList = $sources->getProviderList() ?? $providerList;
+
+        return $providerList;
+
+    }
+
+    public static function getScopes(): ScopeList
+    {
+        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+            'resolveReferences' => 2,
+        ])->getEntity();
+
+        $scopeList = new ScopeList();
+        $scopeList = $sources->getScopeList() ?? $scopeList;
+
+        return $scopeList;
+
+    }
+
+    public static function getServices(): RequestList
+    {
+        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+            'resolveReferences' => 2,
+        ])->getEntity();
+
+        $requestList = new RequestList();
+        $requestList = $sources->getRequestList() ?? $requestList;
+
+        return $requestList;
+
+    }
+
+    public static function getRequestRelationList(): RequestRelationList
     {
 
-        $calendar = new CalendarEntity();
+        $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+            'resolveReferences' => 2,
+        ])->getEntity();
+
+        $requestRelationList = new RequestRelationList();
+        $requestRelationList = $sources->getRequestRelationList() ?? $requestRelationList;
+
+        return $requestRelationList;
+    }
+    public static function getFreeDays(ProviderList $providers, RequestList $requests, array $firstDay, array $lastDay): Calendar
+    {
+        $calendar = new Calendar();
         $calendar->firstDay = $firstDay;
         $calendar->lastDay = $lastDay;
         $calendar->providers = $providers;
         $calendar->requests = $requests;
 
-        return \App::$http->readPostResult('/calendar/', $calendar)->getEntity();
+        $result = new Calendar();
+        $result = \App::$http->readPostResult('/calendar/', $calendar)->getEntity() ?? $result;
+        return $result;
     }
 
-    public static function getFreeTimeslots($providers, $requests, $firstDay, $lastDay)
+    public static function getFreeTimeslots(ProviderList $providers, RequestList $requests, array $firstDay, array $lastDay): ProcessList
     {
 
-        $calendar = new CalendarEntity();
+        $calendar = new Calendar();
         $calendar->firstDay = $firstDay;
         $calendar->lastDay = $lastDay;
         $calendar->providers = $providers;
@@ -88,13 +97,10 @@ class ZmsApiClientService
         if (!$result || !method_exists($result, 'getCollection')) {
             throw new \Exception('Invalid response from API');
         }
-
-        $psr7Response = $result->getResponse();
-
-        return $result;
+        return $result->getCollection();
     }
 
-    public static function reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts)
+    public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): Process
     {
         $requests = [];
 
@@ -108,8 +114,7 @@ class ZmsApiClientService
             }
         }
 
-        $processEntity = new ProcessEntity();
-
+        $processEntity = new Process();
         $processEntity->appointments = $appointmentProcess['appointments'] ?? [];
         $processEntity->authKey = $appointmentProcess['authKey'] ?? null;
         $processEntity->clients = $appointmentProcess['clients'] ?? [];
@@ -118,7 +123,6 @@ class ZmsApiClientService
         $processEntity->requests = $requests;
         $processEntity->lastChange = $appointmentProcess['lastChange'] ?? time();
 
-
         $processEntity->createIP = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
         $processEntity->createTimestamp = time();
 
@@ -126,14 +130,15 @@ class ZmsApiClientService
             $processEntity->queue = $appointmentProcess['queue'];
         }
 
+        $result = new Process();
         $result = \App::$http->readPostResult('/process/status/reserved/', $processEntity);
 
         return $result->getEntity();
     }
 
-    public static function submitClientData($process)
+    public static function submitClientData(Process $process): Process|array
     {
-        $processEntity = new ProcessEntity();
+        $processEntity = new Process();
         $processEntity->id = $process['data']['processId'] ?? null;
         $processEntity->authKey = $process['data']['authKey'] ?? null;
         $processEntity->appointments = $process['appointments'] ?? [];
@@ -161,50 +166,52 @@ class ZmsApiClientService
                     'exception' => 'tooManyAppointmentsWithSameMail'
                 ];
                 return $exception;
+            } else {
+                throw $e;
             }
         }
-
     }
 
-    public function preconfirmProcess($process)
+    public function preconfirmProcess(?Process $process): Process
     {
         $url = '/process/status/preconfirmed/';
         return \App::$http->readPostResult($url, $process)->getEntity();
     }
 
-    public function confirmProcess($process)
+    public function confirmProcess(?Process $process): Process
     {
         $url = '/process/status/confirmed/';
         return \App::$http->readPostResult($url, $process)->getEntity();
     }
 
-    public function cancelAppointment($process)
+    public function cancelAppointment(?Process $process): Process
     {
         $url = "/process/{$process['id']}/{$process['authKey']}/";
         return \App::$http->readDeleteResult($url, $process)->getEntity();
     }
 
-    public function sendConfirmationEmail($process)
+    public function sendConfirmationEmail(?Process $process): Process
     {
         $url = "/process/{$process['id']}/{$process['authKey']}/confirmation/mail/";
         return \App::$http->readPostResult($url, $process)->getEntity();
     }
 
-    public function sendPreconfirmationEmail($process)
+    public function sendPreconfirmationEmail(?Process $process): Process
     {
         $url = "/process/{$process['id']}/{$process['authKey']}/preconfirmation/mail/";
         return \App::$http->readPostResult($url, $process)->getEntity();
     }
 
-    public function sendCancelationEmail($process)
+    public function sendCancelationEmail(?Process $process): Process
     {
         $url = "/process/{$process['id']}/{$process['authKey']}/delete/mail/";
         return \App::$http->readPostResult($url, $process)->getEntity();
     }
 
-    public static function getProcessById($processId, $authKey)
+    public static function getProcessById(?int $processId, ?string $authKey): Process
     {
         $resolveReferences = 2;
+        $process = new Process();
         $process = \App::$http->readGetResult("/process/{$processId}/{$authKey}/", [
             'resolveReferences' => $resolveReferences
         ])->getEntity();

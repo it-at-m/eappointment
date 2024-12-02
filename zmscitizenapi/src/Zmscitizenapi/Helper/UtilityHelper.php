@@ -1,6 +1,7 @@
 <?php
 
 namespace BO\Zmscitizenapi\Helper;
+use \BO\Zmsentities\Process;
 
 class UtilityHelper
 {
@@ -14,7 +15,7 @@ class UtilityHelper
         ];
     }
 
-    public static function getInternalDateFromISO($dateString)
+    public static function getInternalDateFromISO($dateString): array
     {
         try {
             if (!is_string($dateString)) {
@@ -27,7 +28,7 @@ class UtilityHelper
         }
     }
 
-    public static function getInternalDateFromTimestamp(int $timestamp)
+    public static function getInternalDateFromTimestamp(int $timestamp): array
     {
         try {
             $date = (new \DateTime())->setTimestamp($timestamp);
@@ -37,12 +38,12 @@ class UtilityHelper
         }
     }
 
-    public static function uniqueElementsFilter($value, $index, $self)
+    public static function uniqueElementsFilter($value, $index, $self): bool
     {
         return array_search($value, $self) === $index;
     }
 
-    public static function getThinnedProcessData(?object $myProcess): array
+    public static function getThinnedProcessData(?Process $myProcess): array
     {
         if (!$myProcess || !isset($myProcess->id)) {
             return [];

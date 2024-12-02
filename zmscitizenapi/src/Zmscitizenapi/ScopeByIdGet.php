@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class ScopeByIdGet extends BaseController
 {
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $scopeIdParam = $request->getQueryParams()['scopeId'] ?? [];
 

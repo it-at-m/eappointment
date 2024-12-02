@@ -2,10 +2,7 @@
 
 namespace BO\Zmscitizenapi\Services;
 
-use \BO\Mellon\Validator;
-
 use \BO\Zmsentities\Process;
-use \BO\Zmsentities\Scope;
 use \BO\Zmsentities\Collection\ProcessList;
 use \BO\Zmsentities\Collection\ScopeList;
 
@@ -310,7 +307,7 @@ class ValidationService
 
     }
 
-    public static function validateUpdateAppointmentInputs($processId, $authKey, $familyName, $email, $telephone, $customTextfield)
+    public static function validateUpdateAppointmentInputs(?int $processId, ?string $authKey, ?string $familyName, ?string $email, ?string $telephone, ?string $customTextfield): array
     {
         $errors = [];
 
@@ -349,7 +346,7 @@ class ValidationService
             ];
         }
 
-        if ($customTextfield !== null && !is_string($customTextfield)) {
+        if ($customTextfield !== null && (!is_string($customTextfield) || is_numeric($customTextfield))) {
             $errors[] = [
                 'status' => 400,
                 'errorMessage' => 'customTextfield should be a string.',

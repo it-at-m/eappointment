@@ -7,13 +7,14 @@ use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\ValidationService;
 use BO\Zmscitizenapi\Helper\UtilityHelper;
 use BO\Zmscitizenapi\Services\ExceptionService;
+use \BO\Zmsentities\Process;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class AppointmentUpdate extends BaseController
 {
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $request = $request instanceof ServerRequestInterface ? $request : null;
 
@@ -42,7 +43,7 @@ class AppointmentUpdate extends BaseController
             $reservedProcess['clients'][0]['telephone'] = $telephone;
             $reservedProcess['customTextfield'] = $customTextfield;
 
-            $updatedProcess = ZmsApiFacadeService::updateClientData($reservedProcess);
+            $updatedProcess = ZmsApiFacadeService::updateClientData(new Process($reservedProcess));
 
             if (isset($updatedProcess['exception']) && $updatedProcess['exception'] === 'tooManyAppointmentsWithSameMail') {
                 return $this->createJsonResponse($response, ExceptionService::tooManyAppointmentsWithSameMail(), 406);

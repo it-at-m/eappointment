@@ -10,7 +10,7 @@ use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 class ServicesByOfficeList extends BaseController
 {
 
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $officeIds = explode(',', $request->getQueryParams()['officeId'] ?? '');
 

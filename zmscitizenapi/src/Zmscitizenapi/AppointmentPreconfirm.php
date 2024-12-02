@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class AppointmentPreconfirm extends BaseController
 {
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         return Render::withJson($response, []);
     }

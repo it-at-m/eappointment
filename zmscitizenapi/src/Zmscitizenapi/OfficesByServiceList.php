@@ -11,7 +11,7 @@ use BO\Zmscitizenapi\Services\ValidationService;
 class OfficesByServiceList extends BaseController
 {
 
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
 
         $serviceIdParam = $request->getQueryParams()['serviceId'] ?? [];

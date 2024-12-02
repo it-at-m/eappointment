@@ -10,7 +10,7 @@ use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 class AvailableDaysList extends BaseController
 {
 
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $queryParams = $request->getQueryParams();
 

@@ -9,7 +9,7 @@ use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
 class AppointmentGet extends BaseController
 {
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $queryParams = $request->getQueryParams();
         $processId = isset($queryParams['processId']) && is_numeric($queryParams['processId']) ? (int)$queryParams['processId'] : null;
