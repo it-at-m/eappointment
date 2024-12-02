@@ -2,7 +2,8 @@
 
 namespace BO\Zmscitizenapi\Services;
 
-use BO\Zmscitizenapi\Helper\UtilityHelper;
+use \BO\Zmscitizenapi\Helper\UtilityHelper;
+use \BO\Zmscitizenapi\Services\ZmsApiClientService;
 use \BO\Zmsentities\Process;
 use \BO\Zmsentities\Scope;
 use \BO\Zmsentities\Collection\ScopeList;

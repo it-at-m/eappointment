@@ -41,11 +41,13 @@ class MapperService
                 ],
                 !empty($provider->data['address']) ? ["address" => $provider->data['address']] : [],
                 !empty($provider->data['geo']) ? ["geo" => $provider->data['geo']] : []
-            );  
-                      
+            );
+
             $providerScope = ZmsApiFacadeService::getScopeForProvider($provider->id, $scopes);
-            if (isset($providerScope['scope'])) {
+            if (isset($providerScope['scope']) && !isset($providerScope['errors'])) {
                 $officeData['scope'] = $providerScope['scope'];
+            } elseif (isset($providerScope['errors'])) {
+                return $providerScope['errors'];
             }
 
             $offices[] = $officeData;
