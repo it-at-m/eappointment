@@ -6,6 +6,9 @@ use BO\Zmscitizenapi\Helper\UtilityHelper;
 use \BO\Zmsentities\Process;
 use \BO\Zmsentities\Scope;
 use \BO\Zmsentities\Collection\ScopeList;
+use \BO\Zmsentities\Collection\ProviderList;
+use \BO\Zmsentities\Collection\RequestList;
+use \BO\Zmsentities\Collection\ProcessList;
 
 class ZmsApiFacadeService
 {
@@ -14,15 +17,15 @@ class ZmsApiFacadeService
     {
         $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
         $providerProjectionList = [];
-    
+
         foreach (ZmsApiClientService::getOffices() as $provider) {
             $matchingScope = $scopeList->withProviderID($provider->source, $provider->id)->getIterator()->current();
-    
+
             $providerData = [
                 "id" => $provider->id,
                 "name" => $provider->displayName ?? $provider->name,
             ];
-    
+
             if ($matchingScope instanceof Scope) {
                 $providerData["scope"] = [
                     "id" => $matchingScope->id,
@@ -37,21 +40,21 @@ class ZmsApiFacadeService
                     "displayInfo" => $matchingScope->getDisplayInfo()
                 ];
             }
-    
+
             $providerProjectionList[] = $providerData;
         }
-    
+
         return [
             "offices" => $providerProjectionList,
             "status" => 200
         ];
     }
-    
+
     public static function getScopes(): array
     {
         $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
         $scopesProjectionList = [];
-    
+
         foreach ($scopeList as $scope) {
             $scopesProjectionList[] = [
                 "id" => $scope->id,
@@ -66,13 +69,13 @@ class ZmsApiFacadeService
                 "displayInfo" => $scope->getDisplayInfo()
             ];
         }
-    
+
         return [
             "scopes" => $scopesProjectionList,
             "status" => 200
         ];
     }
-    
+
     public static function getServices(): array
     {
 
@@ -94,17 +97,17 @@ class ZmsApiFacadeService
         ];
     }
 
-    public static function getScopeForProvider(?int $providerId, ?ScopeList $scopes): array
+    public static function getScopeForProvider(int $providerId, ?ScopeList $scopes): array
     {
-        $filteredScopes = $scopes->withProviderID(\App::$source_name, (string)$providerId);
-    
+        $filteredScopes = $scopes->withProviderID(\App::$source_name, (string) $providerId);
+
         if ($filteredScopes->count() === 0) {
             $errors = ValidationService::validateScopesNotFound($filteredScopes);
             if (!empty($errors['errors'])) {
                 return $errors;
             }
         }
-    
+
         $result = [];
         foreach ($filteredScopes as $scope) {
             $result = [
@@ -120,13 +123,13 @@ class ZmsApiFacadeService
                 "displayInfo" => $scope->getDisplayInfo(),
             ];
         }
-    
+
         return [
             'scope' => $result,
             'status' => 200,
         ];
     }
-    
+
     public static function getServicesAndOffices(): array
     {
         $providerList = ZmsApiClientService::getOffices() ?? [];
@@ -152,32 +155,31 @@ class ZmsApiFacadeService
      * 
      */
 
-     public static function getScopeByOfficeId($officeId): array
-     {
-         $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
-         $matchingScope = $scopeList->withProviderID('dldb', $officeId)->getIterator()->current();
-     
-         if ($matchingScope instanceof Scope) {
-             return [
-                 "id" => $matchingScope->id,
-                 "provider" => $matchingScope->provider,
-                 "shortName" => $matchingScope->shortName,
-                 "telephoneActivated" => $matchingScope->getTelephoneActivated(),
-                 "telephoneRequired" => $matchingScope->getTelephoneRequired(),
-                 "customTextfieldActivated" => $matchingScope->getCustomTextfieldActivated(),
-                 "customTextfieldRequired" => $matchingScope->getCustomTextfieldRequired(),
-                 "customTextfieldLabel" => $matchingScope->getCustomTextfieldLabel(),
-                 "captchaActivatedRequired" => $matchingScope->getCaptchaActivatedRequired(),
-                 "displayInfo" => $matchingScope->getDisplayInfo(),
-             ];
-         }
-     
-         return [
-             'error' => 'Scope not found for the provided office ID',
-             'status' => 404,
-         ];
-     }
-     
+    public static function getScopeByOfficeId(int $officeId): array
+    {
+        $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
+        $matchingScope = $scopeList->withProviderID('dldb', $officeId)->getIterator()->current();
+
+        if ($matchingScope instanceof Scope) {
+            return [
+                "id" => $matchingScope->id,
+                "provider" => $matchingScope->provider,
+                "shortName" => $matchingScope->shortName,
+                "telephoneActivated" => $matchingScope->getTelephoneActivated(),
+                "telephoneRequired" => $matchingScope->getTelephoneRequired(),
+                "customTextfieldActivated" => $matchingScope->getCustomTextfieldActivated(),
+                "customTextfieldRequired" => $matchingScope->getCustomTextfieldRequired(),
+                "customTextfieldLabel" => $matchingScope->getCustomTextfieldLabel(),
+                "captchaActivatedRequired" => $matchingScope->getCaptchaActivatedRequired(),
+                "displayInfo" => $matchingScope->getDisplayInfo(),
+            ];
+        }
+
+        return [
+            'error' => 'Scope not found for the provided office ID',
+            'status' => 404,
+        ];
+    }
 
     /* Todo add method
      * getOfficeByIds
@@ -247,26 +249,26 @@ class ZmsApiFacadeService
     public static function getScopeByIds(array $scopeIds): array
     {
         $scopeIds = array_unique($scopeIds);
-    
+
         $errors = ValidationService::validateGetScopeByIds($scopeIds);
         if (!empty($errors['errors'])) {
             return $errors;
         }
-    
+
         $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
         $filteredScopes = new ScopeList();
-    
+
         foreach ($scopeList as $scope) {
             if (in_array($scope->id, $scopeIds)) {
                 $filteredScopes->addEntity($scope);
             }
         }
-    
+
         $errors = ValidationService::validateScopesNotFound($filteredScopes);
         if (!empty($errors['errors'])) {
             return $errors;
         }
-    
+
         $scopes = [];
         foreach ($filteredScopes as $scope) {
             $scopes[] = [
@@ -282,7 +284,7 @@ class ZmsApiFacadeService
                 "displayInfo" => $scope->getDisplayInfo(),
             ];
         }
-    
+
         return [
             'scopes' => $scopes,
             'status' => 200,
@@ -397,14 +399,14 @@ class ZmsApiFacadeService
             $lastDay = UtilityHelper::getInternalDateFromISO($endDate);
 
             $freeDays = ZmsApiClientService::getFreeDays(
-                [['id' => $officeId, 'source' => 'dldb']],
-                [
+                new ProviderList([['id' => $officeId, 'source' => 'dldb']]),
+                new RequestList([
                     [
                         'id' => $serviceId,
                         'source' => 'dldb',
                         'slotCount' => $serviceCounts,
                     ]
-                ],
+                ]),
                 $firstDay,
                 $lastDay,
             );
@@ -430,7 +432,7 @@ class ZmsApiFacadeService
             return ExceptionService::noAppointmentsAtLocation();
         }
     }
-    public static function getFreeAppointments(array $params): array
+    public static function getFreeAppointments(array $params): mixed
     {
         $office = [
             'id' => $params['officeId'],
@@ -451,23 +453,19 @@ class ZmsApiFacadeService
         try {
 
             $freeSlots = ZmsApiClientService::getFreeTimeslots(
-                [$office],
-                $requests,
+                new ProviderList([$office]),
+                new RequestList($requests),
                 $params['date'],
                 $params['date']
             );
 
-            $psr7Response = $freeSlots->getResponse();
-            $responseBody = (string) $psr7Response->getBody();
-            $responseBody = json_decode($responseBody, true);
-
-            return $responseBody['data'];
+            return $freeSlots;
 
         } catch (\Exception $e) {
             return [
                 'appointmentTimestamps' => [],
                 'errorCode' => 'internalError',
-                'errorMessage' => 'An error occurred while fetching available appointments',
+                'errorMessage' => 'An error occurred while fetching available free appointments',
                 'status' => 500,
             ];
         }
@@ -498,18 +496,15 @@ class ZmsApiFacadeService
                 }
             }
 
+            $freeSlots = new ProcessList();
             $freeSlots = ZmsApiClientService::getFreeTimeslots(
-                [['id' => $officeId, 'source' => 'dldb']],
-                $requests,
+                new ProviderList([['id' => $officeId, 'source' => 'dldb']]),
+                new RequestList($requests),
                 UtilityHelper::getInternalDateFromISO($date),
                 UtilityHelper::getInternalDateFromISO($date)
             );
 
-            if (!$freeSlots || !method_exists($freeSlots, 'getCollection')) {
-                throw new \Exception('Invalid response from API');
-            }
-
-            return self::processFreeSlots($freeSlots->getCollection());
+            return self::processFreeSlots($freeSlots);
 
         } catch (\Exception $e) {
             return [
@@ -521,7 +516,7 @@ class ZmsApiFacadeService
         }
     }
 
-    private static function processFreeSlots($freeSlots): array
+    private static function processFreeSlots(ProcessList $freeSlots): array
     {
 
         $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
@@ -562,7 +557,7 @@ class ZmsApiFacadeService
         ];
     }
 
-    public static function reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts): Process
+    public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): Process
     {
         return ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts);
     }
@@ -595,16 +590,16 @@ class ZmsApiFacadeService
         }
     }
 
-    public static function updateClientData($reservedProcess): Process|array
+    public static function updateClientData(Process $reservedProcess): Process|array
     {
         $clientUpdateResult = ZmsApiClientService::submitClientData($reservedProcess);
-    
+
         if (isset($clientUpdateResult['error'])) {
             return $clientUpdateResult;
         }
-    
+
         return $clientUpdateResult;
-    }        
+    }
 
     /* Todo add method
      * preconfirmAppointment

@@ -2,12 +2,16 @@
 
 namespace BO\Zmscitizenapi\Services;
 
+use \BO\Zmsentities\Scope;
+use \BO\Zmsentities\Collection\ProviderList;
+use \BO\Zmsentities\Collection\RequestList;
+use \BO\Zmsentities\Collection\RequestRelationList;
 use \BO\Zmsentities\Collection\ScopeList;
 
 class MapperService
 {
 
-    public static function mapScope($scope)
+    public static function mapScope(Scope $scope): array
     {
         return [
             'id' => $scope['id'] ?? null,
@@ -26,7 +30,7 @@ class MapperService
         ];
     }
 
-    public static function mapOfficesWithScope($providerList)
+    public static function mapOfficesWithScope(ProviderList $providerList): array
     {
         $offices = [];
 
@@ -47,7 +51,7 @@ class MapperService
         return $offices;
     }
 
-    public static function mapServicesWithCombinations($requestList, $relationList)
+    public static function mapServicesWithCombinations(RequestList $requestList, RequestRelationList $relationList): array
     {
         $servicesProviderIds = [];
         foreach ($relationList as $relation) {
@@ -83,7 +87,7 @@ class MapperService
         return $services;
     }
 
-    public static function mapRelations($relationList)
+    public static function mapRelations(RequestRelationList $relationList): array
     {
         $relations = [];
         foreach ($relationList as $relation) {

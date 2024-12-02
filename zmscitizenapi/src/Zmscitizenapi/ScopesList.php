@@ -9,7 +9,7 @@ use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
 class ScopesList extends BaseController
 {
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $scopes = ZmsApiFacadeService::getScopes();
 

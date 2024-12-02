@@ -19,7 +19,7 @@ class FriendlyCaptchaService implements CaptchaServiceInterface
         ];
     }
 
-    public static function verifyCaptcha(string $solution)
+    public static function verifyCaptcha(string $solution): bool
     {
         try {
             $response = \App::$http->post(Application::$CAPTCHA_ENDPOINT, [

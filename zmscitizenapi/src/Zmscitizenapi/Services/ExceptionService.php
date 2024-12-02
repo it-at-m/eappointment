@@ -12,7 +12,8 @@ class ExceptionService
     private const ERROR_APPOINTMENT_NOT_FOUND = 'appointmentNotFound';
     private const ERROR_TOO_MANY_APPOINTMENTS = 'tooManyAppointmentsWithSameMail';
 
-    public static function noAppointmentsAtLocation(){
+    public static function noAppointmentsAtLocation(): array
+    {
 
         $errors[] = [
             'errorCode' => self::ERROR_NO_APPOINTMENTS,
@@ -24,7 +25,8 @@ class ExceptionService
 
     }
 
-    public static function appointmentNotFound(){
+    public static function appointmentNotFound(): array
+    {
 
         $errors[] = [
             'errorCode' => self::ERROR_APPOINTMENT_NOT_FOUND,
@@ -36,7 +38,8 @@ class ExceptionService
 
     }
 
-    public static function tooManyAppointmentsWithSameMail(){
+    public static function tooManyAppointmentsWithSameMail(): array
+    {
         $errors[] = [ 
             'errorCode' => self::ERROR_TOO_MANY_APPOINTMENTS,
             'errorMessage' => 'Zu viele Termine mit gleicher E-Mail- Adresse.',

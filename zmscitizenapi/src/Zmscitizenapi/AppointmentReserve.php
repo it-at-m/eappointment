@@ -11,15 +11,14 @@ use BO\Zmscitizenapi\Services\ValidationService;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use \BO\Zmsentities\Process;
 use \BO\Zmsentities\Scope;
-use \BO\Zmsentities\Collection\ScopeList;
+use \BO\Zmsentities\Collection\ProcessList;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class AppointmentReserve extends BaseController
 {
-
-    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
+    public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $request = $request instanceof ServerRequestInterface ? $request : null;
     
@@ -55,14 +54,17 @@ class AppointmentReserve extends BaseController
                 return $this->createJsonResponse($response, $serviceValidationResult, 400);
             }
     
+            $freeAppointments = new ProcessList();
             $freeAppointments = ZmsApiFacadeService::getFreeAppointments([
                 'officeId' => $officeId,
                 'serviceIds' => $serviceIds,
                 'serviceCounts' => $serviceCounts,
                 'date' => UtilityHelper::getInternalDateFromTimestamp($timestamp)
             ]);
-    
-            $filteredProcesses = array_filter($freeAppointments, function ($process) use ($timestamp) {
+            
+            $processArray = json_decode(json_encode($freeAppointments), true);
+
+            $filteredProcesses = array_filter($processArray, function ($process) use ($timestamp) {
                 if (!isset($process['appointments']) || !is_array($process['appointments'])) {
                     return false;
                 }
@@ -92,6 +94,7 @@ class AppointmentReserve extends BaseController
                 ]
             ];
     
+            $reservedProcess = new Process();
             $reservedProcess = ZmsApiFacadeService::reserveTimeslot($selectedProcess, $serviceIds, $serviceCounts);
     
             if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {
@@ -101,7 +104,7 @@ class AppointmentReserve extends BaseController
                 if ($scopesData['status'] === 200 && isset($scopesData['scopes']['scopes']) && !empty($scopesData['scopes']['scopes'])) {
                     $reservedProcess->scope = MapperService::mapScope($scopesData['scopes']['scopes'][0]);
                 }
-            }                        
+            }
     
             $thinnedProcessData = UtilityHelper::getThinnedProcessData($reservedProcess);
             $thinnedProcessData = array_merge($thinnedProcessData, ['officeId' => $officeId]);
@@ -115,6 +118,4 @@ class AppointmentReserve extends BaseController
             ], 500);
         }
     }
-    
-
 }
