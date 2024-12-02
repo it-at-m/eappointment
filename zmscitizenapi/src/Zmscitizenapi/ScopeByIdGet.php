@@ -4,7 +4,7 @@ namespace BO\Zmscitizenapi;
 
 use \BO\Zmscitizenapi\BaseController;
 use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
-use BO\Zmscitizenapi\Services\ValidationService;
+use \BO\Zmscitizenapi\Services\ValidationService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
