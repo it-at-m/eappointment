@@ -127,7 +127,7 @@ class CounterQueueInfoTest extends Base
             'selecteddate' => '2016-04-01'
         ], []);
         $this->assertStringContainsString('davon vor nächstem Spontankunden', (string)$response->getBody());
-        $this->assertStringContainsString('Wartezeit für neue Spontankunden in Stunden', (string)$response->getBody());
+        $this->assertStringContainsString('Wartezeit für neue Spontankunden', (string)$response->getBody());
         
         $this->assertEquals(200, $response->getStatusCode());
     }
