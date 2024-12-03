@@ -22,7 +22,7 @@ class OfficesByServiceList extends BaseController
     
         $errors = ValidationService::validateServiceIdParam($serviceIdParam);
         if (!empty($errors)) {
-            return $this->createJsonResponse($response, ['errors' => $errors], 400);
+            return $this->createJsonResponse($response, $errors, 400);
         }
 
         $result = ZmsApiFacadeService::getOfficesByServiceIds($serviceIdParam);

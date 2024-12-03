@@ -45,7 +45,7 @@ class AppointmentUpdate extends BaseController
 
             $updatedProcess = ZmsApiFacadeService::updateClientData(new Process($reservedProcess));
 
-            if (isset($updatedProcess['exception']) && $updatedProcess['exception'] === 'tooManyAppointmentsWithSameMail') {
+            if (isset($updatedProcess['error']) && $updatedProcess['error'] === 'tooManyAppointmentsWithSameMail') {
                 return $this->createJsonResponse($response, ExceptionService::tooManyAppointmentsWithSameMail(), 406);
             }
 

@@ -199,6 +199,15 @@ class ValidationService
 
         $errors = [];
 
+        if (empty($officeIds) || !is_array($officeIds)) {
+            $errors[] = [
+                'services' => [],
+                'errorCode' => 'invalidOfficeId',
+                'errorMessage' => 'officeId should be a 32-bit integer.',
+                'status' => 400,
+            ];
+        }
+
         foreach ($officeIds as $id) {
             if (!is_numeric($id)) {
                 $errors[] = [
@@ -253,10 +262,10 @@ class ValidationService
                 'status' => 404,
             ];
         }
-    
+
         return ['errors' => $errors, 'status' => 404];
     }
-    
+
     public static function validateScopesNotFound(?ScopeList $scopes): array
     {
         $errors = [];
@@ -271,7 +280,7 @@ class ValidationService
         return ['errors' => $errors, 'status' => 404];
     }
 
-    public static function validateServicesNotFound(?array $services): array 
+    public static function validateServicesNotFound(?array $services): array
     {
         $errors = [];
         if (empty($services)) {
@@ -384,10 +393,20 @@ class ValidationService
 
         return ['status' => 200, 'message' => 'Valid input for updating appointment.'];
     }
-    
+
     public static function validateServiceIdParam(array $serviceIds): array
     {
         $errors = [];
+        
+        if (empty($serviceIds) || !is_array($serviceIds)) {
+            $errors[] = [
+                'offices' => [],
+                'errorCode' => 'invalidServiceId',
+                'errorMessage' => 'serviceId should be a 32-bit integer.',
+                'status' => 400,
+            ];
+            return ['errors' => $errors, 'status' => 400];
+        }
 
         foreach ($serviceIds as $id) {
             if (!is_numeric($id)) {
@@ -400,12 +419,23 @@ class ValidationService
             }
         }
 
-        return empty($errors) ? [] : $errors;
-    }   
+        return empty($errors) ? [] : ['errors' => $errors, 'status' => 400];
+    }
 
     public static function validateScopeIdParam(array $scopeIds): array
     {
         $errors = [];
+
+        if (empty($scopeIds) || !is_array($scopeIds)) {
+            $errors[] = [
+                'scopes' => [],
+                'errorCode' => 'invalidScopeId',
+                'errorMessage' => 'scopeId should be a 32-bit integer.',
+                'status' => 400,
+            ];
+            return ['errors' => $errors, 'status' => 400];
+        }
+
         foreach ($scopeIds as $id) {
             if (!is_numeric($id)) {
                 $errors[] = [
@@ -417,7 +447,7 @@ class ValidationService
             }
         }
 
-        return empty($errors) ? [] : $errors;
+        return empty($errors) ? [] : ['errors' => $errors, 'status' => 400];
     }
 
 }

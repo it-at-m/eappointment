@@ -438,7 +438,7 @@ class ZmsApiFacadeService
         }
     }
     
-    public static function getFreeAppointments(array $params): mixed
+    public static function getFreeAppointments(array $params): ProcessList|array
     {
         $office = [
             'id' => $params['officeId'],
@@ -458,6 +458,7 @@ class ZmsApiFacadeService
 
         try {
 
+            $freeSlots = new ProcessList();
             $freeSlots = ZmsApiClientService::getFreeTimeslots(
                 new ProviderList([$office]),
                 new RequestList($requests),
