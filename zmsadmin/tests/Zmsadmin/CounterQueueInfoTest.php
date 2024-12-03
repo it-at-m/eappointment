@@ -49,7 +49,7 @@ class CounterQueueInfoTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
+                    'url' => '/scope/141/process/2016-05-27/',
                     'parameters' => [
                         'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
@@ -168,7 +168,7 @@ class CounterQueueInfoTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
+                    'url' => '/scope/141/process/2016-05-27/',
                     'parameters' => [
                         'resolveReferences' => 2,
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
