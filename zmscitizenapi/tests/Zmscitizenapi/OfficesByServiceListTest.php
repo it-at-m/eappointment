@@ -283,7 +283,8 @@ class OfficesByServiceListTest extends Base
                     'errorMessage' => 'serviceId should be a 32-bit integer.',
                     'status' => 400
                 ]
-            ]
+            ],
+            "status" => 400
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));

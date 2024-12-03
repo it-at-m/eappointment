@@ -166,7 +166,7 @@ class ZmsApiClientService
             $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
             if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
                 $exception = [
-                    'exception' => 'tooManyAppointmentsWithSameMail'
+                    'error' => 'tooManyAppointmentsWithSameMail'
                 ];
                 return $exception;
             } else {
