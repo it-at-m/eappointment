@@ -29,9 +29,8 @@ class DepartmentDelete extends BaseController
 
         $entity = \App::$http->readGetResult('/department/' . $entityId . '/')->getEntity();
         $departmentName = $entity->name;
-       // xdebug_var_dump($entity);
         
-        // $departmentName = $entity->offsetGet('contact')->offsetGet('name'); 
+        
         \App::$http->readDeleteResult(
             '/department/'. $entityId .'/'
         )->getEntity();

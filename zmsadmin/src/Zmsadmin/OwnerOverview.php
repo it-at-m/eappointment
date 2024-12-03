@@ -19,9 +19,9 @@ class OwnerOverview extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 4))->getCollection();
-        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
-        $scopeName = $request->getAttribute('validator')->getParameter('scopeName')->isString()->getValue(); 
-        $departmentName = $request->getAttribute('validator')->getParameter('departmentName')->isString()->getValue(); 
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->setDefault('')->getValue();
+        $scopeName = $request->getAttribute('validator')->getParameter('scopeName')->isString()->setDefault('')->getValue(); 
+        $departmentName = $request->getAttribute('validator')->getParameter('departmentName')->isString()->setDefault('')->getValue(); 
         return \BO\Slim\Render::withHtml(
             $response,
             'page/ownerOverview.twig',
