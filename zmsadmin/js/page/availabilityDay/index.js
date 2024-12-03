@@ -74,6 +74,7 @@ class AvailabilityPage extends Component {
 
     onPublishAvailability() {
         this.getValidationList();
+        console.log("here5")
         this.getConflictList();
         let state = {};
         state = { selectedAvailability: null }
@@ -266,6 +267,7 @@ class AvailabilityPage extends Component {
                     selectedAvailability: null
                 }), () => {
                     this.refreshData()
+                    console.log("here4")
                     this.getConflictList(),
                     this.getValidationList()
                 });
@@ -398,6 +400,7 @@ class AvailabilityPage extends Component {
             }
         ), () => {
             console.log('in after merging', this.state.availabilitylist);
+            console.log("here3")
             this.getConflictList(),
             this.getValidationList()
         })
@@ -439,6 +442,7 @@ class AvailabilityPage extends Component {
                 stateChanged: true 
             }
         ), () => {
+            console.log("here2")
             this.getConflictList(),
             this.getValidationList()
         })
@@ -549,24 +553,33 @@ class AvailabilityPage extends Component {
             .then(() => {
                 const { availabilitylist, selectedAvailability } = this.state;
                 const { timestamp } = this.props;
-    
-                console.log("Validation passed. Proceeding with /availability/conflicts/.");
-    
+
+                // Skip conflict checking if selected availability is an exclusion
+                console.log(JSON.stringify(availabilitylist, null, 2))
+                console.log("Kind: " + selectedAvailability.kind)
+                if (selectedAvailability.kind === 'exclusion') {
+                    console.log("Skipping exclusion..")
+                    return;
+                }
+
+                // Filter out exclusions from conflict checking
+                const nonExclusionAvailabilities = availabilitylist.filter(a => a.kind !== 'exclusion');
+
                 selectedAvailability.startTime = moment(selectedAvailability.startTime, ['HH:mm:ss', 'HH:mm']).format('HH:mm');
                 selectedAvailability.endTime = moment(selectedAvailability.endTime, ['HH:mm:ss', 'HH:mm']).format('HH:mm');
-    
+
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        availabilityList: availabilitylist,
+                        availabilityList: nonExclusionAvailabilities,
                         selectedDate: formatTimestampDate(timestamp),
                         selectedAvailability,
                     }),
                 };
-    
+
                 const url = `${this.props.links.includeurl}/availability/conflicts/`;
-    
+
                 fetch(url, requestOptions)
                     .then((res) => res.json())
                     .then(
@@ -676,6 +689,7 @@ class AvailabilityPage extends Component {
                     this.readCalculatedAvailabilityList();
                     if (data.tempId || data.id) {
                         this.timer = setTimeout(() => {
+                            console.log("here")
                             this.getConflictList()
                             this.getValidationList()
                         }, this.waitintervall)

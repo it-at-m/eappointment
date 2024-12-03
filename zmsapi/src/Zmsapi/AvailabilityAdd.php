@@ -46,9 +46,13 @@ class AvailabilityAdd extends BaseController
     
         DbConnection::getWriteConnection();
 
+        
+
         $newCollection = new Collection();
         foreach ($input['availabilityList'] as $item) {
+            error_log(json_encode($item['kind']));
             $entity = new Entity($item);
+            error_log(json_encode($entity->kind));
             $entity->testValid();
             $newCollection->addEntity($entity);
         }
