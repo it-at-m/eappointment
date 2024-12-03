@@ -168,7 +168,7 @@ class CounterQueueInfoTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-05-27/',
+                    'url' => '/cluster/109/process/2016-05-27/',
                     'parameters' => [
                         'resolveReferences' => 2,
                         'gql' => ''
