@@ -92,14 +92,32 @@ class AvailabilityUpdate extends BaseController
         }
 
         if (count($validation) > 0) {
-            error_log(json_encode($validation));
+            //error_log(json_encode($validation));
             throw new AvailabilityUpdateFailed();
         }        
     
-        [$earliestStartDateTime, $latestEndDateTime] = $mergedCollection->getDateTimeRangeFromList(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00'));
-        $conflicts = $mergedCollection->getConflicts($earliestStartDateTime, $latestEndDateTime);
+        $originId = null;
+        foreach ($mergedCollection as $availability) {
+            if (isset($availability->kind) && $availability->kind === 'origin' && isset($availability->id)) {
+                $originId = $availability->id;
+                break;
+            }
+        }
+        
+        $mergedCollectionWithoutExclusions = new Collection();
+        foreach ($mergedCollection as $availability) {
+            if ((!isset($availability->kind) || $availability->kind !== 'exclusion') && 
+                (!isset($availability->id) || $availability->id !== $originId)) {
+                $mergedCollectionWithoutExclusions->addEntity($availability);
+            }
+        }
+        
+        [$earliestStartDateTime, $latestEndDateTime] = $mergedCollectionWithoutExclusions->getDateTimeRangeFromList(
+            \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00')
+        );
+        $conflicts = $mergedCollectionWithoutExclusions->getConflicts($earliestStartDateTime, $latestEndDateTime);
         if ($conflicts->count() > 0) {
-            error_log(json_encode($conflicts));
+            //error_log(json_encode($conflicts));
             throw new AvailabilityUpdateFailed();
         }
 
