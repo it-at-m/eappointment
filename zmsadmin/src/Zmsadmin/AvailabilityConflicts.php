@@ -34,22 +34,38 @@ class AvailabilityConflicts extends BaseController
         $conflictList = new \BO\Zmsentities\Collection\ProcessList();
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];
-
+    
         $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
-
+    
         $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
         $futureAvailabilityList = self::getAvailabilityList($scope, $selectedDateTime);
-
+    
         foreach ($futureAvailabilityList as $futureAvailability) {
             $availabilityList->addEntity($futureAvailability);
         }
-
-        [$earliestStartDateTime, $latestEndDateTime] = $availabilityList->getDateTimeRangeFromList( $selectedDateTime);
-
-        $availabilityList = $availabilityList->sortByCustomStringKey('endTime');
-        $conflictList = $availabilityList->getConflicts($earliestStartDateTime, $latestEndDateTime);
-
+    
+        $originId = null;
+        foreach ($availabilityList as $availability) {
+            if (isset($availability->kind) && $availability->kind === 'origin' && isset($availability->id)) {
+                $originId = $availability->id;
+                break;
+            }
+        }
+    
+        $filteredAvailabilityList = new AvailabilityList();
+        foreach ($availabilityList as $availability) {
+            if ((!isset($availability->kind) || $availability->kind !== 'exclusion') && 
+                (!isset($availability->id) || $availability->id !== $originId)) {
+                $filteredAvailabilityList->addEntity($availability);
+            }
+        }
+    
+        [$earliestStartDateTime, $latestEndDateTime] = $filteredAvailabilityList->getDateTimeRangeFromList($selectedDateTime);
+    
+        $filteredAvailabilityList = $filteredAvailabilityList->sortByCustomStringKey('endTime');
+        $conflictList = $filteredAvailabilityList->getConflicts($earliestStartDateTime, $latestEndDateTime);
+    
         foreach ($conflictList as $conflict) {
             $availabilityId = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
                 $conflict->getFirstAppointment()->getAvailability()->getId() :
@@ -58,7 +74,7 @@ class AvailabilityConflicts extends BaseController
                 $conflictedList[] = $availabilityId;
             }
         }
-
+    
         return [
             'conflictList' => $conflictList->toConflictListByDay(),
             'conflictIdList' => (count($conflictedList)) ? $conflictedList : []
