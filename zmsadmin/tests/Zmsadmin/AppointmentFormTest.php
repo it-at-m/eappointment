@@ -57,7 +57,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertStringContainsString('Terminvereinbarung Neu', (string)$response->getBody());
+        $this->assertStringContainsString('Termin erstellen', (string)$response->getBody());
         $this->assertStringContainsString('title="Spontankunde"', (string)$response->getBody());
         $this->assertStringContainsString('Liste leeren', (string)$response->getBody());
     }
