@@ -56,6 +56,7 @@
           @back="decreaseCurrentView"
           @book-appointment="nextBookAppointment"
           @cancel-appointment="nextCancelAppointment"
+          @cancel-reschedule="nextCancelReschedule"
           @reschedule-appointment="nextRescheduleAppointment"
         />
         <div v-if="tooManyAppointmentsWithSameMailError">
@@ -404,6 +405,11 @@ const nextRescheduleAppointment = () => {
   rebookedAppointment.value = appointment.value;
   setServices();
   currentView.value = 1;
+};
+
+const nextCancelReschedule = () => {
+  isRebooking.value = false;
+  rebookOrCanelDialog.value = true;
 };
 
 watch(currentView, (newCurrentView) => {
