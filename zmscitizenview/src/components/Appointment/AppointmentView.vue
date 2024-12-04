@@ -144,6 +144,8 @@ import { onMounted, provide, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
+import { Office } from "@/api/models/Office";
+import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import {
   cancelAppointment,
@@ -171,8 +173,6 @@ import {
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
-import {Relation} from "@/api/models/Relation";
-import {Office} from "@/api/models/Office";
 
 const props = defineProps<{
   baseUrl: any;
@@ -489,29 +489,32 @@ onMounted(() => {
           selectedService.value = services.value.find(
             (service) => service.id === appointment.value.serviceId
           );
-          if(selectedService.value) {
-          selectedService.value.count = appointment.value.serviceCount;
-          selectedService.value.providers = getProviders(selectedService.value.id, null)
+          if (selectedService.value) {
+            selectedService.value.count = appointment.value.serviceCount;
+            selectedService.value.providers = getProviders(
+              selectedService.value.id,
+              null
+            );
 
-          if (appointment.value.subRequestCounts.length > 0) {
-            appointment.value.subRequestCounts.forEach((subRequestCount) => {
-              const subRequest: Service = services.value.find(
-                (service) => service.id === subRequestCount.id
-              );
-              const subService = new SubService(
-                subRequest.id,
-                subRequest.name,
-                subRequest.maxQuantity,
-                getProviders(subRequest.id, null),
-                subRequestCount.count
-              );
-              if (!selectedService.value.subServices) {
-                selectedService.value.subServices = [];
-              }
-              selectedService.value.subServices.push(subService);
-            });
-          }
-          currentView.value = 3;
+            if (appointment.value.subRequestCounts.length > 0) {
+              appointment.value.subRequestCounts.forEach((subRequestCount) => {
+                const subRequest: Service = services.value.find(
+                  (service) => service.id === subRequestCount.id
+                );
+                const subService = new SubService(
+                  subRequest.id,
+                  subRequest.name,
+                  subRequest.maxQuantity,
+                  getProviders(subRequest.id, null),
+                  subRequestCount.count
+                );
+                if (!selectedService.value.subServices) {
+                  selectedService.value.subServices = [];
+                }
+                selectedService.value.subServices.push(subService);
+              });
+            }
+            currentView.value = 3;
           }
         } else {
           //confirmAppointmentError.value = true;
