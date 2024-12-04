@@ -205,6 +205,7 @@ const emit =
         | "bookAppointment"
         | "back"
         | "cancelAppointment"
+        | "cancelReschedule"
         | "rescheduleAppointment"
     ) => void
   >();
@@ -250,7 +251,7 @@ const validForm = computed(
 const bookAppointment = () => emit("bookAppointment");
 const previousStep = () => emit("back");
 const cancelAppointment = () => emit("cancelAppointment");
-const cancelReschedule = () => console.log("Canceled Reschedule");
+const cancelReschedule = () => emit("cancelReschedule");
 const rescheduleAppointment = () => emit("rescheduleAppointment");
 </script>
 
