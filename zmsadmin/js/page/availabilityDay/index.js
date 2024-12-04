@@ -660,6 +660,7 @@ class AvailabilityPage extends Component {
                         console.error("Error during /availability/slots/ fetch:", err);
                         if (err.status === 404) {
                             console.log("404 error ignored.");
+                            hideSpinner();
                         } else {
                             const isException = err.responseText.toLowerCase().includes("exception");
                             if (err.status >= 500 && isException) {
@@ -667,9 +668,11 @@ class AvailabilityPage extends Component {
                                     code: err.status,
                                     message: err.responseText,
                                 });
+                            } else {
+                                console.error("Unexpected error:", err.responseText);
                             }
+                            hideSpinner();
                         }
-                        hideSpinner();
                     });
             })
             .catch((error) => {
