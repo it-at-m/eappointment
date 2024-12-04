@@ -170,6 +170,8 @@ import {
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
+import {Relation} from "@/api/models/Relation";
+import {Office} from "@/api/models/Office";
 
 const props = defineProps<{
   baseUrl: any;
@@ -222,6 +224,8 @@ const appointment = ref<AppointmentImpl>();
 const rebookedAppointment = ref<AppointmentImpl>();
 
 const services = ref<Service[]>([]);
+const relations = ref<Relation[]>([]);
+const offices = ref<Office[]>([]);
 
 const rebookOrCanelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
@@ -406,6 +410,24 @@ watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
 });
 
+const getProviders = (serviceId: string, providers: string[] | null) => {
+  const officesAtService = new Array<OfficeImpl>();
+  relations.value.forEach((relation) => {
+    if (relation.serviceId === serviceId) {
+      const foundOffice: OfficeImpl = offices.value.filter((office) => {
+        return office.id === relation.officeId;
+      })[0];
+
+      if (!providers || providers.includes(foundOffice.id.toString())) {
+        foundOffice.slots = relation.slots;
+        officesAtService.push(foundOffice);
+      }
+    }
+  });
+
+  return officesAtService;
+};
+
 onMounted(() => {
   if (props.confirmAppointmentHash) {
     let appointmentData: AppointmentHash;
@@ -438,6 +460,9 @@ onMounted(() => {
       props.locationId ?? undefined
     ).then((data) => {
       services.value = data.services;
+      relations.value = data.relations;
+      offices.value = data.offices;
+
       let appointmentData: AppointmentHash;
       try {
         appointmentData = JSON.parse(window.atob(props.appointmentHash));
@@ -458,7 +483,9 @@ onMounted(() => {
           selectedService.value = services.value.find(
             (service) => service.id === appointment.value.serviceId
           );
+          if(selectedService.value) {
           selectedService.value.count = appointment.value.serviceCount;
+          selectedService.value.providers = getProviders(selectedService.value.id, null)
 
           if (appointment.value.subRequestCounts.length > 0) {
             appointment.value.subRequestCounts.forEach((subRequestCount) => {
@@ -469,7 +496,7 @@ onMounted(() => {
                 subRequest.id,
                 subRequest.name,
                 subRequest.maxQuantity,
-                [],
+                getProviders(subRequest.id, null),
                 subRequestCount.count
               );
               if (!selectedService.value.subServices) {
@@ -479,6 +506,7 @@ onMounted(() => {
             });
           }
           currentView.value = 3;
+          }
         } else {
           //confirmAppointmentError.value = true;
         }
