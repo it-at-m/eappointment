@@ -9,5 +9,5 @@ class AvailabilityUpdateFailed extends \Exception
 {
     protected $code = 400;
 
-    protected $message = 'Could not update availablity.';
+    protected $message = 'Could not update availability.';
 }

@@ -46,6 +46,13 @@ class AvailabilityAdd extends BaseController
     
         DbConnection::getWriteConnection();
 
+        if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
+            throw new BadRequestException('Missing or invalid availabilityList.');
+        } else if(!isset($input['availabilityList'][0]['scope'])){
+            throw new BadRequestException('Missing or invalid scope.');
+        } else if (!isset($input['selectedDate'])) {
+            throw new BadRequestException("'selectedDate' is required.");
+        }
         $newCollection = new Collection();
         foreach ($input['availabilityList'] as $item) {
             $entity = new Entity($item);
@@ -66,6 +73,7 @@ class AvailabilityAdd extends BaseController
             $mergedCollection->addEntity($existingAvailability);
         }
 
+        $validations = [];
         foreach ($newCollection as $newAvailability) {
         
             $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate);
@@ -74,7 +82,7 @@ class AvailabilityAdd extends BaseController
             $startDateTime = new \DateTimeImmutable("{$startDate->format('Y-m-d')} {$newAvailability->startTime}");
             $endDateTime = new \DateTimeImmutable("{$endDate->format('Y-m-d')} {$newAvailability->endTime}");
         
-            $validation = $mergedCollection->validateInputs(
+            $validations = $mergedCollection->validateInputs(
                 $startDateTime,
                 $endDateTime,
                 $selectedDate,
@@ -84,8 +92,8 @@ class AvailabilityAdd extends BaseController
             $mergedCollection->addEntity($newAvailability);
         }
 
-        if (count($validation) > 0) {
-            //error_log(json_encode($validation));
+        if (count($validations) > 0) {
+            //error_log(json_encode($validations));
             throw new AvailabilityAddFailed();
         }        
     

@@ -6,6 +6,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsapi\Exception\BadRequest as BadRequestException;
 use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
 
@@ -31,6 +32,14 @@ class AvailabilityConflicts extends BaseController
 
     protected static function getAvailabilityData($input)
     {
+
+        if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
+            throw new BadRequestException('Missing or invalid availabilityList.');
+        } else if(!isset($input['availabilityList'][0]['scope'])){
+            throw new BadRequestException('Missing or invalid scope.');
+        } else if (!isset($input['selectedDate'])) {
+            throw new BadRequestException("'selectedDate' is required.");
+        }
         $conflictList = new \BO\Zmsentities\Collection\ProcessList();
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];
@@ -39,6 +48,7 @@ class AvailabilityConflicts extends BaseController
     
         $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
+
         $futureAvailabilityList = self::getAvailabilityList($scope, $selectedDateTime);
     
         foreach ($futureAvailabilityList as $futureAvailability) {

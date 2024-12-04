@@ -46,9 +46,15 @@ class AvailabilityUpdate extends BaseController
 
         DbConnection::getWriteConnection();
 
+        if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
+            throw new BadRequestException('Missing or invalid availabilityList.');
+        } else if(!isset($input['availabilityList'][0]['scope'])){
+            throw new BadRequestException('Missing or invalid scope.');
+        } else if (!isset($input['selectedDate'])) {
+            throw new BadRequestException("'selectedDate' is required.");
+        }    
         $availabilityRepo = new AvailabilityRepository();
         $newCollection = new Collection();
-
         foreach ($input['availabilityList'] as $item) {
             $entity = new Entity($item);
             $entity->testValid();
@@ -72,6 +78,7 @@ class AvailabilityUpdate extends BaseController
             $mergedCollection->addEntity($existingAvailability);
         }
 
+        $validations = [];
         foreach ($newCollection as $newAvailability) {
             $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate)->format('Y-m-d');
             $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate)->format('Y-m-d');
@@ -81,7 +88,7 @@ class AvailabilityUpdate extends BaseController
             $startDateTime = new \DateTimeImmutable("{$startDate} {$newAvailability->startTime}");
             $endDateTime = new \DateTimeImmutable("{$endDate} {$newAvailability->endTime}");
             
-            $validation = $mergedCollection->validateInputs(
+            $validations = $mergedCollection->validateInputs(
                 $startDateTime,
                 $endDateTime,
                 $selectedDate,
@@ -91,8 +98,8 @@ class AvailabilityUpdate extends BaseController
             $mergedCollection->addEntity($newAvailability);
         }
 
-        if (count($validation) > 0) {
-            //error_log(json_encode($validation));
+        if (count($validations) > 0) {
+            //error_log(json_encode($validations));
             throw new AvailabilityUpdateFailed();
         }        
     

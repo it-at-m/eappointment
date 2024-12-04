@@ -18,7 +18,7 @@ class AvailabilityList extends Base
     {
         $max = 0;
         foreach ($this as $availability) {
-            if ($availability['workstationCount']['intern'] >  $max) {
+            if ($availability['workstationCount']['intern'] > $max) {
                 $max = $availability['workstationCount']['intern'];
             }
         }
@@ -161,7 +161,17 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
-    public function validateInputs(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate, \DateTimeImmutable $selectedDate, String $kind)
+    /**
+    * Validates availability inputs against business rules and time constraints
+    *
+    * @param \DateTimeImmutable $startDate    The start date to validate
+    * @param \DateTimeImmutable $endDate      The end date to validate
+    * @param \DateTimeImmutable $selectedDate The selected date for context
+    * @param string $kind                     The type of validation to perform
+    *
+    * @return array<string> List of validation errors
+    */
+    public function validateInputs(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate, \DateTimeImmutable $selectedDate, string $kind): array
     {
         $errorList = [];
 
@@ -169,7 +179,7 @@ class AvailabilityList extends Base
         $yesterday = $selectedDate->modify('-1 day');
         $tomorrow = $selectedDate->modify('+1 day');
 
-        foreach ($this as $availability) {    
+        foreach ($this as $availability) {
             $errorList = array_merge(
                 $errorList,
                 $availability->validateAll($today, $yesterday, $tomorrow, $startDate, $endDate, $selectedDate, $kind)
@@ -177,7 +187,7 @@ class AvailabilityList extends Base
         }
         return $errorList;
     }
-    
+
     /**
      * Get the earliest startDateTime and latest endDateTime from an AvailabilityList
      * If the start date of any availability is before the selected date, use the selected date instead.
