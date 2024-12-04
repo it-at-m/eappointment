@@ -9,5 +9,6 @@ class AvailabilityAddFailed extends \Exception
 {
     protected $code = 400;
 
-    protected $message = 'Could not create availablity.';
+    protected $message = 'Failed to create availability. Please ensure there are no conflicts with existing entries.';
+
 }

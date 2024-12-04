@@ -129,7 +129,7 @@ function validateTimestampAndTimeFormats(data) {
 }
 
 function isValidTimestamp(timestamp) {
-    return !isNaN(timestamp) && moment.unix(timestamp).isValid();
+    return !Number.isNaN(Number(timestamp)) && moment.unix(timestamp).isValid();
 }
 
 function parseTimestampAndTime(dateTimestamp, timeStr) {

@@ -454,7 +454,7 @@ class Availability extends Schema\Entity
     {
         $errorList = [];
         
-        $startTime = $startDate->setTime(0, 0);
+        $startTime = (clone $startDate)->setTime(0, 0);
         $startHour = ($startDate->format('H'));
         $endHour = (int)$endDate->format('H');
         $startMinute = (int)$startDate->format('i');
@@ -464,7 +464,7 @@ class Availability extends Schema\Entity
         if (
             !$isFuture &&
             $selectedDate->getTimestamp() > $today->getTimestamp() &&
-            $startTime->getTimestamp() > $selectedDate->setTime(0, 0)->getTimestamp()
+            $startTime->getTimestamp() > (clone $selectedDate)->setTime(0, 0)->getTimestamp()
         ) {
             $errorList[] = [
                 'type' => 'startTimeFuture',
@@ -519,7 +519,7 @@ class Availability extends Schema\Entity
         $isOrigin = ($kind && $kind === 'origin');
     
         // Validate that end date is after the selected date
-        if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < $selectedDate->setTime(0, 0)) {
+        if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < (clone $selectedDate)->setTime(0, 0)) {
             $errorList[] = [
                 'type' => 'endTimeFuture',
                 'message' => "Das Enddatum der Öffnungszeit muss nach dem " . $yesterday->format('d.m.Y') . " liegen."
@@ -559,7 +559,7 @@ class Availability extends Schema\Entity
         $startTimestamp = $startDate->getTimestamp();
         $endTimestamp = $endDate->getTimestamp();
     
-        $slotAmount = ($endTimestamp - $startTimestamp) / 60 % $slotTime;
+        $slotAmount = (($endTimestamp - $startTimestamp) / 60) % $slotTime;
         if ($slotAmount > 0) {
             $errorList[] = [
                 'type' => 'slotCount',
@@ -570,7 +570,7 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $kind)
+    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
     {
         
         $errorList = array_merge(

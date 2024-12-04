@@ -517,7 +517,6 @@ class AvailabilityPage extends Component {
                     if (list.length > 0) {
                         console.warn("Validation failed with errors:", list);
                         this.errorElement?.scrollIntoView();
-                        //reject(new Error("Validation failed")); // Reject with an error object
                     } else {
                         console.log("Validation passed.");
                         resolve();
@@ -530,7 +529,7 @@ class AvailabilityPage extends Component {
     validateAvailabilityList(availabilitylist) {
         const timeRegex = /^\d{2}:\d{2}(:\d{2})?$/;
     
-        const isValidTimestamp = (timestamp) => !isNaN(timestamp) && moment.unix(timestamp).isValid();
+        const isValidTimestamp = (timestamp) => !Number.isNaN(Number(timestamp)) && moment.unix(timestamp).isValid();
     
         const invalidAvailabilities = availabilitylist.filter((availability) => {
             const hasInvalidDates =

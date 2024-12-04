@@ -26,8 +26,8 @@ const SaveBar = (props) => {
             className={`message ${props.success ? 'message--success' : 'message--error'}`}
         >
             {props.success 
-                ? <b><i class="fas fa-check-circle" aria-hidden="true"></i> Öffnungszeiten gespeichert, {formatDate(props.lastSave)}</b>
-                : <b><i class="fas fa-times-circle" aria-hidden="true"></i> Fehler beim Speichern der Öffnungszeiten. Bitte versuchen Sie es erneut.</b>}
+                ? <b><i class="fas fa-check-circle" aria-hidden="true" aria-label="Erfolg"></i> Öffnungszeiten gespeichert, {formatDate(props.lastSave)}</b>
+                : <b><i class="fas fa-times-circle" aria-hidden="true" aria-label="Fehler"></i> Fehler beim Speichern der Öffnungszeiten. Bitte versuchen Sie es erneut.</b>}
         </div>
     )
 }
