@@ -19,7 +19,7 @@ test-php-73:
         - npm install --legacy-peer-deps
         - make css
     variables:
-        PHP_VERSION: "7.3"
+        PHP_VERSION: "8.0"
     only:
         changes:
             - .gitlab-ci.yml

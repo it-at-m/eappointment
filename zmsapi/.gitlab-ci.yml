@@ -38,7 +38,7 @@ test-php-73:
         - ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
         - vendor/bin/importTestData --commit
     variables:
-      PHP_VERSION: "7.3"
+      PHP_VERSION: "8.0"
       MYSQL_PORT: "tcp://mysql:3306"
       MYSQL_DATABASE: zmsbo
       MYSQL_ROOT_PASSWORD: zmsapi
@@ -73,7 +73,7 @@ outdated:
 apidoc:
     stage: .pre
     variables:
-        PHP_VERSION: "7.3"
+        PHP_VERSION: "8.0"
     image: ghcr.io/it-at-m/eappointment-php-base:${PHP_VERSION}-dev
     before_script:
         - $CLI_COMPOSER --no-scripts

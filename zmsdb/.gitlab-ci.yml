@@ -13,7 +13,7 @@ test-php-73:
         - $CLI_COMPOSER
         - bin/importTestData --commit
     variables:
-      PHP_VERSION: "7.3"
+      PHP_VERSION: "8.0"
       MYSQL_DATABASE: zmsbo
       MYSQL_ROOT_PASSWORD: mysql
     only:
