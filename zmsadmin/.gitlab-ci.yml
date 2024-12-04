@@ -1,7 +1,7 @@
 include:
     remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
 
-test-php-73:
+test-php-80:
     variables:
       PHP_VERSION: 8.0
     image: ghcr.io/it-at-m/eappointment-php-base:${PHP_VERSION}-dev

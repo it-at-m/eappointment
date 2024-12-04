@@ -16,7 +16,7 @@ build-mockup:
     - docker build --pull -t "${MOCKUP_IMAGE}" tests/mockup/
     - docker push "${MOCKUP_IMAGE}"
 
-test-php-73:
+test-php-80:
     extends: .test-php
     allow_failure: false
     variables:

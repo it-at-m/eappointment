@@ -1,7 +1,7 @@
 include:
     remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
 
-test-php-73:
+test-php-80:
     extends: .test-php
     cache: []
     allow_failure: false
