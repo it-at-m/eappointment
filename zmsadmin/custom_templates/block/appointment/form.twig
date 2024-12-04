@@ -4,9 +4,9 @@
 
     {% block board_title %}
         {% if selectedProcess %}
-            <span id="appointment-edit-title" tabindex="0">Termin aktualisieren</span>
+            <span id="appointment-edit-title" tabindex="0">Terminvereinbarung Aktualisieren</span>
         {% else %}
-            Termin erstellen
+            Terminvereinbarung Neu
         {% endif %}
 
         <script>
@@ -248,7 +248,7 @@
                         {% endif %}
                         {{ formgroup(
                             {
-                                "label": "Anmerkung (nur intern sichtbar)",
+                                "label": "Anmerkung",
                                 "checked": scope.preferences.client.amendmentActivated,
                                 "class": "form-group--nomaxwidth",
                                 "errors": formData.amendment.messages
@@ -268,7 +268,7 @@
                         {% if scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
                             {{ formgroup(
                                 {
-                                    "label": "Zusätzliche Bemerkungen (für Bürger sichtbar)",
+                                    "label": scope.preferences.client.customTextfieldLabel,
                                     "required": selectedProcess.preferences.client.customTextfieldRequired|default(scope.preferences.client.customTextfieldRequired),
                                     "errors": formData.customTextfield.messages,
                                     "checked": scope.preferences.client.customTextfieldActivated,
