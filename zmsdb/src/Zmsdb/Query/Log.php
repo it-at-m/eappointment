@@ -55,9 +55,7 @@ class Log extends Base
 
     public function addConditionDataSearch(string $search)
     {
-        $this->query->where(function ($query) use ($search) {
-            $query->where('log.data', 'LIKE', '%' . $search . '%')
-                ->orWhere('log.id', '=', $search);
-        });
+        $this->query->where('log.data', 'LIKE', '%' . $search . '%');
+        $this->query->orWhere('log.reference_id', '=', $search);
     }
 }
