@@ -710,6 +710,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function writeDeletedEntity($processId)
     {
         $processEntityList = $this->readEntityList($processId);
+        $status = false;
         if ($processEntityList->count()) {
             foreach ($processEntityList as $entity) {
                 $entityId = $entity->getId();
