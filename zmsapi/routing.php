@@ -1899,7 +1899,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                                  $ref: "schema/log.json"
  */
 \App::$slim->get(
-    '/log/process/{id:\d{1,11}}/',
+    '/log/process/{id}/',
     '\BO\Zmsapi\ProcessLog'
 )
     ->setName("ProcessLog");

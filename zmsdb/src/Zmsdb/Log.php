@@ -87,7 +87,7 @@ class Log extends Base
             "Anmerkung" => $process->getAmendment(),
             "E-Mail" => $process->getFirstClient()->email,
             "Telefon" => $process->getFirstClient()->telephone,
-        ]));
+        ]), JSON_UNESCAPED_UNICODE);
 
         Log::writeLogEntry(
             $method,
@@ -106,6 +106,15 @@ class Log extends Base
         $query->addConditionProcessId($processId);
         $logList = new \BO\Zmsentities\Collection\LogList($this->fetchList($query, new Entity()));
         return $logList;
+    }
+
+    public function readByProcessData($search)
+    {
+        $query = new Query\Log(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionDataSearch($search);
+
+        return new \BO\Zmsentities\Collection\LogList($this->fetchList($query, new Entity()));
     }
 
     public function delete($processId)
