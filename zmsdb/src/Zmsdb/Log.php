@@ -113,6 +113,7 @@ class Log extends Base
         $query = new Query\Log(Query\Base::SELECT);
         $query->addEntityMapping();
         $query->addConditionDataSearch($search);
+        $query->addLimit(1000);
 
         return new \BO\Zmsentities\Collection\LogList($this->fetchList($query, new Entity()));
     }
