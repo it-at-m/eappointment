@@ -30,6 +30,11 @@ class ProcessSearchTest extends Base
                         'query' => 'Test%20BO'
                     ],
                     'response' => $this->readFixture("GET_searchresult.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/Test%2520BO/',
+                    'response' => $this->readFixture("GET_loglist.json")
                 ]
             ]
         );
@@ -89,6 +94,11 @@ class ProcessSearchTest extends Base
                         'query' => 'Test%20BO'
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/log/process/Test%2520BO/',
+                    'response' => $this->readFixture("GET_loglist.json")
                 ]
             ]
         );

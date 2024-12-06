@@ -52,4 +52,13 @@ class Log extends Base
     {
         $this->query->where('log.ts', '<', $olderThanDate->format('Y-m-d H:i:s'));
     }
+
+    public function addConditionDataSearch(string $search)
+    {
+        $this->query->where('log.data', 'LIKE', '%' . $search . '%');
+
+        if (is_numeric($search)) {
+            $this->query->orWhere('log.reference_id', '=', $search);
+        }
+    }
 }

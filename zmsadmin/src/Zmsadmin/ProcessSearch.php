@@ -40,7 +40,8 @@ class ProcessSearch extends BaseController
         }
 
         $processList = $processList ? $processList : new \BO\Zmsentities\Collection\ProcessList();
-        if (preg_match('#^\d{4,}$#', $queryString) && $workstation->hasAuditAccount()) {
+        if ($workstation->hasAuditAccount()) {
+            $queryString = urlencode($queryString);
             $logList = \App::$http->readGetResult("/log/process/$queryString/")->getCollection();
             $logList = $this->filterLogListForUserRights($logList, $scopeIds);
         }
@@ -59,7 +60,7 @@ class ProcessSearch extends BaseController
                 'processList' => $processList,
                 'processListOther' => $processListOther,
                 'logList' => $logList ?? [],
-                'searchProcessQuery' => $queryString,
+                'searchProcessQuery' => urldecode($queryString),
                 'menuActive' => 'search'
             )
         );
