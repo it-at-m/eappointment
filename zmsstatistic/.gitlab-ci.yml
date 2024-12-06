@@ -1,11 +1,11 @@
 include:
     remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
 
-test-php-73:
+test-php-80:
     extends: .test-php
     allow_failure: false
     variables:
-        PHP_VERSION: "7.3"
+        PHP_VERSION: "8.0"
     only:
         changes:
             - .gitlab-ci.yml
