@@ -32,8 +32,8 @@ class Result
     protected $data = null;
 
     /**
-    * @var Metaresult|null
-    */
+     * @var Metaresult|null
+     */
     protected $meta = null;
 
     /**
@@ -55,7 +55,7 @@ class Result
      */
     public function setResponse(ResponseInterface $response)
     {
-        $body = Validator::value((string)$response->getBody())->isJson();
+        $body = Validator::value((string) $response->getBody())->isJson();
         $this->testMeta($body, $response);
         $result = $body->getValue();
         if (array_key_exists("data", $result)) {
@@ -74,10 +74,10 @@ class Result
     protected function testMeta($body, ResponseInterface $response)
     {
         if ($body->hasFailed()) {
-            $content = (string)$response->getBody();
+            $content = (string) $response->getBody();
             throw new Exception\ApiFailed(
                 'API-Call failed, JSON parsing with error: ' . $body->getMessages()
-                    . ' - Snippet: ' .substr(\strip_tags($content), 0, 2000) . '[...]',
+                . ' - Snippet: ' . substr(\strip_tags($content), 0, 2000) . '[...]',
                 $response,
                 $this->request
             );
@@ -203,20 +203,26 @@ class Result
     }
 
     /**
-     * Description
+     * Get the list of IDs from the data
      *
-     * @return String
+     * @return string
      */
     public function getIds()
     {
         $data = $this->getData();
-        $idList = array();
+        $idList = [];
+
         foreach ($data as $item) {
-            if (array_key_exists('id', $item)) {
+            if (is_object($item) && method_exists($item, 'getId')) {
+                $idList[] = $item->getId();
+            } elseif (is_array($item) && array_key_exists('id', $item)) {
                 $idList[] = $item['id'];
+            } else {
+                throw new \UnexpectedValueException('Item is neither array nor object with getId() method');
             }
         }
-        return join(',', array_unique($idList));
+
+        return implode(',', array_unique($idList));
     }
 
     /**
@@ -232,7 +238,7 @@ class Result
             $data = [$data];
         }
         foreach ($data as $entityData) {
-            if (! array_key_exists('$schema', $entityData)) {
+            if (!array_key_exists('$schema', $entityData)) {
                 $entityData['$schema'] = $data[0]['$schema'];
             }
             $this->data[] = Factory::create($entityData)->getEntity();

@@ -184,4 +184,3 @@ The branch name must match the following regular expression:
 [license-shield]: https://img.shields.io/github/license/it-at-m/eappointment.svg?style=for-the-badge
 [license-url]: https://github.com/it-at-m/eappointment/blob/main/LICENSE
 [product-screenshot]: images/screenshot.png
-

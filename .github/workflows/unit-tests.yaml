@@ -7,7 +7,7 @@ jobs:
   module-test:
     runs-on: ubuntu-latest
     container:
-      image: "registry.gitlab.com/eappointment/php-base:${{ matrix.php_version }}-dev"
+      image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
@@ -44,7 +44,7 @@ jobs:
   zmsapi-test:
     runs-on: ubuntu-latest
     container:
-      image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
+      image: "ghcr.io/it-at-m/eappointment-php-base:8.0-dev"
     services:
       mariadb:
         image: mariadb:10.6
@@ -96,7 +96,7 @@ jobs:
   zmsdb-test:
     runs-on: ubuntu-latest
     container:
-      image: "registry.gitlab.com/eappointment/php-base:8.0-dev"
+      image: "ghcr.io/it-at-m/eappointment-php-base:8.0-dev"
     services:
       mariadb:
         image: mariadb:10.6
