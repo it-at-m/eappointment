@@ -165,8 +165,10 @@
 								</td>
 								<td>
 									<p>
-										<a title="{% trans %}wieder aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">wieder aufrufen</a>
+                                        {% if workstation.name %}
+										    <a title="{% trans %}wieder aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">wieder aufrufen</a>
 										{{ callCount|raw }}
+										{% endif %}
                                     </p>
 								</td>
 							</tr>
@@ -307,7 +309,7 @@
 										{% endif %}
 									</td>
 									<td>
-										{% if item.queue.status != "reserved" and item.queue.status != "deleted" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
+										{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" and source != 'counter' and (workstation.scope.id == item.scope.id or allowClusterWideCall) and isToday %}
 											<a title="{% trans %}Diesen Bürger aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">
 												{{ item.queue.number }}
 											</a>
@@ -318,6 +320,8 @@
 									<td class="callnextclient">
 										{% if item.queue.status == "reserved" %}
 											Reservierung
+										{% elseif item.queue.status == "preconfirmed" %}
+                                                {{ item.clients|first.familyName|decodeEntities|raw }}
 										{% elseif item.queue.status == "deleted" %}
                                                 {{ item.clients|first.familyName|decodeEntities|raw }}
 										{% else %}
@@ -537,7 +541,9 @@
 								</td>
 								<td>
 									<p>
-										<a title="{% trans %}wieder aufnehmen{% endtrans %}" href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
+                                        {% if workstation.name %}
+										    <a title="{% trans %}wieder aufnehmen{% endtrans %}" href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
+									    {% endif %}
 									</p>
 								</td>
 							</tr>
