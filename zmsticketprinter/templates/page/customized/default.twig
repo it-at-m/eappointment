@@ -9,38 +9,50 @@
 {% block pagetype %}customized{% endblock %}
 {% block content %}
 
-	{% if enabled and not hasDisabledButton %}
-		{% if buttonDisplay == "button_single" %}
-			{{ block("IntroMultiButtonText") }}
-		<div class="werbeblock_oben">
-		</div>
-		{% set buttonLabelPrefix = "Wartenummer für " %}
-		{% else %}
-		{{ block("IntroMultiButtonText") }}
-		{% endif %}
+    {% set scopes = [] %}
+    {% set allButtonsDisabled = true %}
+    {% for button in ticketprinter.buttons %}
+        {% if button.scope.id not in scopes %}
+            {% set scopes = scopes|merge([button.scope.id]) %}
+        {% endif %}
+        {% if button.enabled %}
+            {% set allButtonsDisabled = false %}
+        {% endif %}
+    {% endfor %}
+    {% set number_of_scopes = scopes|length %}
 
-    	{{ block(buttonDisplay) }}
-	{% else %}
-		<div style="font-size: 60px;
-          text-align: center;
-          padding: 10px;
-          border-radius: 5px;
-          font-weight: bold;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 100%;
-          height: 100%;
-          box-sizing: border-box;
-          overflow: hidden;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          ">Kundenservice ist geschlossen</div>
-	{% endif %}
+    {% if (enabled and not hasDisabledButton) or (number_of_scopes > 1 and not allButtonsDisabled) %}
+        {% if buttonDisplay == "button_single" %}
+            {{ block("IntroMultiButtonText") }}
+        <div class="werbeblock_oben">
+        </div>
+        {% set buttonLabelPrefix = "Wartenummer für " %}
+        {% else %}
+            {{ block("IntroMultiButtonText") }}
+        {% endif %}
 
-	{% if department.preferences.notifications.enabled %}
-		{{ block("button_append_notification") }}
-	{% endif %}
+        {{ block(buttonDisplay) }}
+    {% else %}
+        <div style="font-size: 60px;
+              text-align: center;
+              padding: 10px;
+              border-radius: 5px;
+              font-weight: bold;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 100%;
+              height: 100%;
+              box-sizing: border-box;
+              overflow: hidden;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              ">Kundenservice ist geschlossen</div>
+    {% endif %}
+
+    {% if department.preferences.notifications.enabled %}
+        {{ block("button_append_notification") }}
+    {% endif %}
 {% endblock %}
