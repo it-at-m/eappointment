@@ -1,7 +1,7 @@
 <?php
 /**
  * @package ZMS API
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
+ * @copyright BerlinOnline Stadtportal GmbH & Co.
  **/
 
 namespace BO\Zmsapi;
@@ -13,12 +13,15 @@ use BO\Zmsdb\Availability as AvailabilityRepository;
 use BO\Zmsdb\Connection\Select as DbConnection;
 
 use BO\Zmsentities\Availability as Entity;
+use BO\Zmsentities\Collection\AvailabilityList as Collection;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 use BO\Zmsapi\AvailabilitySlotsUpdate;
-use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotfoundException;
+use BO\Zmsapi\Exception\BadRequest as BadRequestException;
+use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotFoundException;
+use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -36,25 +39,129 @@ class AvailabilityUpdate extends BaseController
         (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $entity = new Entity($input);
-        $entity->testValid();
 
-        $availability = (new AvailabilityRepository())->readEntity($args['id'], $resolveReferences);
-        if (! $availability->hasId()) {
-            throw new NotfoundException();
+        if (!$input || count($input) === 0) {
+            throw new BadRequestException();
         }
 
         DbConnection::getWriteConnection();
-        $this->writeSpontaneousEntity($availability);
-        $updatedEntity = (new AvailabilityRepository())->updateEntity($args['id'], $entity, $resolveReferences);
-        AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
+
+        if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
+            throw new BadRequestException('Missing or invalid availabilityList.');
+        } else if(!isset($input['availabilityList'][0]['scope'])){
+            throw new BadRequestException('Missing or invalid scope.');
+        } else if (!isset($input['selectedDate'])) {
+            throw new BadRequestException("'selectedDate' is required.");
+        }    
+        $availabilityRepo = new AvailabilityRepository();
+        $newCollection = new Collection();
+        foreach ($input['availabilityList'] as $item) {
+            $entity = new Entity($item);
+            $entity->testValid();
+            if (isset($entity->id)) {
+                $existingEntity = $availabilityRepo->readEntity($entity->id, $resolveReferences);
+                if (!$existingEntity || !$existingEntity->hasId()) {
+                    throw new NotFoundException("Availability with ID {$entity->id} not found.");
+                }
+            }
+
+            $newCollection->addEntity($entity);
+        }
+
+        $scopeData = $input['availabilityList'][0]['scope'];
+        $scope = new \BO\Zmsentities\Scope($scopeData);
+
+        $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
+
+        $mergedCollection = new Collection();
+        foreach ($existingCollection as $existingAvailability) {
+            $mergedCollection->addEntity($existingAvailability);
+        }
+
+        $validations = [];
+        foreach ($newCollection as $newAvailability) {
+            $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate)->format('Y-m-d');
+            $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate)->format('Y-m-d');
+            
+            $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
+            
+            $startDateTime = new \DateTimeImmutable("{$startDate} {$newAvailability->startTime}");
+            $endDateTime = new \DateTimeImmutable("{$endDate} {$newAvailability->endTime}");
+            
+            $validations = $mergedCollection->validateInputs(
+                $startDateTime,
+                $endDateTime,
+                $selectedDate,
+                $newAvailability->kind ?? 'default'
+            );
+
+            $mergedCollection->addEntity($newAvailability);
+        }
+
+        if (count($validations) > 0) {
+            //error_log(json_encode($validations));
+            throw new AvailabilityUpdateFailed();
+        }        
+    
+        $originId = null;
+        foreach ($mergedCollection as $availability) {
+            if (isset($availability->kind) && $availability->kind === 'origin' && isset($availability->id)) {
+                $originId = $availability->id;
+                break;
+            }
+        }
+        
+        $mergedCollectionWithoutExclusions = new Collection();
+        foreach ($mergedCollection as $availability) {
+            if ((!isset($availability->kind) || $availability->kind !== 'exclusion') && 
+                (!isset($availability->id) || $availability->id !== $originId)) {
+                $mergedCollectionWithoutExclusions->addEntity($availability);
+            }
+        }
+        
+        [$earliestStartDateTime, $latestEndDateTime] = $mergedCollectionWithoutExclusions->getDateTimeRangeFromList(
+            \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00')
+        );
+        $conflicts = $mergedCollectionWithoutExclusions->getConflicts($earliestStartDateTime, $latestEndDateTime);
+        if ($conflicts->count() > 0) {
+            //error_log(json_encode($conflicts));
+            throw new AvailabilityUpdateFailed();
+        }
+
+        $updatedCollection = new Collection();
+        foreach ($newCollection as $entity) {
+            $updatedEntity = $this->writeEntityUpdate($entity, $resolveReferences);
+            AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
+            $updatedCollection->addEntity($updatedEntity);
+        }
 
         $message = Response\Message::create($request);
-        $message->data = $updatedEntity;
+        $message->data = $updatedCollection->getArrayCopy();
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-        return $response;
+        return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+    }
+
+    protected function writeEntityUpdate($entity, $resolveReferences): Entity
+    {
+        $repository = new AvailabilityRepository();
+        $updatedEntity = null;
+
+        if ($entity->id) {
+            $oldEntity = $repository->readEntity($entity->id);
+            if ($oldEntity && $oldEntity->hasId()) {
+                $this->writeSpontaneousEntity($oldEntity);
+                $updatedEntity = $repository->updateEntity($entity->id, $entity, $resolveReferences);
+            }
+        } else {
+            $updatedEntity = $repository->writeEntity($entity, 2);
+        }
+
+        if (!$updatedEntity) {
+            throw new AvailabilityUpdateFailed();
+        }
+
+        return $updatedEntity;
     }
 
     protected function writeSpontaneousEntity(Entity $entity): void

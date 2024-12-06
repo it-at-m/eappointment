@@ -20,7 +20,8 @@ use Psr\Http\Message\ResponseInterface;
 
 use BO\Zmsapi\AvailabilitySlotsUpdate;
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
-use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed as UpdateFailedException;
+use BO\Zmsapi\Exception\Availability\AvailabilityAddFailed;
+
 
 /**
  * @SuppressWarnings(Coupling)
@@ -37,43 +38,119 @@ class AvailabilityAdd extends BaseController
         array $args
     ): ResponseInterface {
         (new Helper\User($request))->checkRights();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        if (! $input || count($input) === 0) {
+        if (!$input || count($input) === 0) {
             throw new BadRequestException();
         }
-        $collection = new Collection();
+    
         DbConnection::getWriteConnection();
-        foreach ($input as $item) {
+
+        if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
+            throw new BadRequestException('Missing or invalid availabilityList.');
+        } else if(!isset($input['availabilityList'][0]['scope'])){
+            throw new BadRequestException('Missing or invalid scope.');
+        } else if (!isset($input['selectedDate'])) {
+            throw new BadRequestException("'selectedDate' is required.");
+        }
+        $newCollection = new Collection();
+        foreach ($input['availabilityList'] as $item) {
             $entity = new Entity($item);
             $entity->testValid();
-            $updatedEntity = $this->writeEntityUpdate($entity);
-            AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
-            $collection->addEntity($updatedEntity);
+            $newCollection->addEntity($entity);
         }
 
-        $message = Response\Message::create($request);
-        $message->data = $collection->getArrayCopy();
+        $scopeData = $input['availabilityList'][0]['scope'];
+        $scope = new \BO\Zmsentities\Scope($scopeData);
+    
+        $startDate = new \DateTimeImmutable('now');
+        $endDate = (new \DateTimeImmutable('now'))->modify('+1 month');
+        $availabilityRepo = new AvailabilityRepository();
+        $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
+    
+        $mergedCollection = new Collection();
+        foreach ($existingCollection as $existingAvailability) {
+            $mergedCollection->addEntity($existingAvailability);
+        }
 
+        $validations = [];
+        foreach ($newCollection as $newAvailability) {
+        
+            $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate);
+            $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate);
+            $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
+            $startDateTime = new \DateTimeImmutable("{$startDate->format('Y-m-d')} {$newAvailability->startTime}");
+            $endDateTime = new \DateTimeImmutable("{$endDate->format('Y-m-d')} {$newAvailability->endTime}");
+        
+            $validations = $mergedCollection->validateInputs(
+                $startDateTime,
+                $endDateTime,
+                $selectedDate,
+                $newAvailability->kind ?? 'default'
+            );
+
+            $mergedCollection->addEntity($newAvailability);
+        }
+
+        if (count($validations) > 0) {
+            //error_log(json_encode($validations));
+            throw new AvailabilityAddFailed();
+        }        
+    
+        $originId = null;
+        foreach ($mergedCollection as $availability) {
+            if (isset($availability->kind) && $availability->kind === 'origin' && isset($availability->id)) {
+                $originId = $availability->id;
+                break;
+            }
+        }
+        
+        $mergedCollectionWithoutExclusions = new Collection();
+        foreach ($mergedCollection as $availability) {
+            if ((!isset($availability->kind) || $availability->kind !== 'exclusion') && 
+                (!isset($availability->id) || $availability->id !== $originId)) {
+                $mergedCollectionWithoutExclusions->addEntity($availability);
+            }
+        }
+        
+        [$earliestStartDateTime, $latestEndDateTime] = $mergedCollectionWithoutExclusions->getDateTimeRangeFromList(
+            \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00')
+        );
+        $conflicts = $mergedCollectionWithoutExclusions->getConflicts($earliestStartDateTime, $latestEndDateTime);
+        if ($conflicts->count() > 0) {
+            //error_log(json_encode($conflicts));
+            throw new AvailabilityAddFailed();
+        }
+
+        $updatedCollection = new Collection();
+        foreach ($newCollection as $entity) {
+            $updatedEntity = $this->writeEntityUpdate($entity, $resolveReferences);
+            AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
+            $updatedCollection->addEntity($updatedEntity);
+        }
+    
+        $message = Response\Message::create($request);
+        $message->data = $updatedCollection->getArrayCopy();
+    
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
-        return $response;
+        return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
-    protected function writeEntityUpdate($entity): Entity
+    protected function writeEntityUpdate($entity, $resolveReferences): Entity
     {
         $repository = new AvailabilityRepository();
         $updatedEntity = null;
         if ($entity->id) {
-            $oldentity = $repository->readEntity($entity->id);
-            if ($oldentity && $oldentity->hasId()) {
-                $this->writeSpontaneousEntity($oldentity);
-                $updatedEntity = $repository->updateEntity($entity->id, $entity, 2);
+            $oldEntity = $repository->readEntity($entity->id);
+            if ($oldEntity && $oldEntity->hasId()) {
+                $this->writeSpontaneousEntity($oldEntity);
+                $updatedEntity = $repository->updateEntity($entity->id, $entity, $resolveReferences);
             }
         } else {
             $updatedEntity = $repository->writeEntity($entity, 2);
         }
-        if (! $updatedEntity) {
-            throw new UpdateFailedException();
+        if (!$updatedEntity) {
+            throw new AvailabilityAddFailed();
         }
         return $updatedEntity;
     }
