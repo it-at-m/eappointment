@@ -4,9 +4,9 @@
 
     {% block board_title %}
         {% if selectedProcess %}
-            <span id="appointment-edit-title" tabindex="0">Terminvereinbarung Aktualisieren</span>
+            <span id="appointment-edit-title" tabindex="0">Termin aktualisieren</span>
         {% else %}
-            Terminvereinbarung Neu
+            Termin erstellen
         {% endif %}
 
         <script>
@@ -248,7 +248,7 @@
                         {% endif %}
                         {{ formgroup(
                             {
-                                "label": "Anmerkung",
+                                "label": "Anmerkung (nur intern sichtbar)",
                                 "checked": scope.preferences.client.amendmentActivated,
                                 "class": "form-group--nomaxwidth",
                                 "errors": formData.amendment.messages
