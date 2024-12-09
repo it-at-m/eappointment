@@ -1,139 +1,148 @@
 <template>
-  <div class="m-component">
+  <div class="m-component m-component-form">
     <div
       v-if="!confirmAppointmentHash && currentView < 4"
-      class="container"
     >
       <muc-stepper
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
         @change-step="changeStep"
       />
-      <div v-if="currentView === 0">
-        <service-finder
-          :preselected-service-id="serviceId"
-          :preselected-offive-id="locationId"
-          :t="t"
-          @next="setServices"
-        />
-      </div>
-      <div v-if="currentView === 1">
-        <calendar-view
-          :is-rebooking="isRebooking"
-          :selected-service-map="selectedServiceMap"
-          :t="t"
-          @back="decreaseCurrentView"
-          @next="nextReserveAppointment"
-        />
-        <div v-if="appointmentNotAvailableError">
-          <muc-callout type="error">
-            <template #content>
-              {{ t("selectedDateNoLongerAvailableText") }}
-            </template>
+      <div class="container">
+        <div class="m-component__grid">
+          <div class="m-component__column">
+            <div v-if="currentView === 0">
+              <service-finder
+                :preselected-service-id="serviceId"
+                :preselected-offive-id="locationId"
+                :t="t"
+                @next="setServices"
+              />
+            </div>
+            <div v-if="currentView === 1">
+              <calendar-view
+                :is-rebooking="isRebooking"
+                :selected-service-map="selectedServiceMap"
+                :t="t"
+                @back="decreaseCurrentView"
+                @next="nextReserveAppointment"
+              />
+              <div v-if="appointmentNotAvailableError">
+                <muc-callout type="error">
+                  <template #content>
+                    {{ t("selectedDateNoLongerAvailableText") }}
+                  </template>
 
-            <template #header>{{
-              t("selectedDateNoLongerAvailableHeader")
-            }}</template>
-          </muc-callout>
-        </div>
-      </div>
-      <div v-if="currentView === 2">
-        <customer-info
-          :t="t"
-          @back="decreaseCurrentView"
-          @next="nextUpdateAppointment"
-        />
-      </div>
-      <div v-if="currentView === 3">
-        <!-- Delete tooManyAppointmentsWithSameMailError if contact is transferred from backend call offices-and-services    -->
-        <appointment-summary
-          v-if="
-            !updateAppointmentError && !tooManyAppointmentsWithSameMailError
-          "
-          :is-rebooking="isRebooking"
-          :rebook-or-cancel-dialog="rebookOrCanelDialog"
-          :t="t"
-          @back="decreaseCurrentView"
-          @book-appointment="nextBookAppointment"
-          @cancel-appointment="nextCancelAppointment"
-          @cancel-reschedule="nextCancelReschedule"
-          @reschedule-appointment="nextRescheduleAppointment"
-        />
-        <div v-if="tooManyAppointmentsWithSameMailError">
-          <muc-callout type="error">
-            <template #content>
-              {{ t("tooManyAppointmentsWithSameMailErrorText") }}
-            </template>
+                  <template #header>{{
+                      t("selectedDateNoLongerAvailableHeader")
+                    }}</template>
+                </muc-callout>
+              </div>
+            </div>
+            <div v-if="currentView === 2">
+              <customer-info
+                :t="t"
+                @back="decreaseCurrentView"
+                @next="nextUpdateAppointment"
+              />
+            </div>
+            <div v-if="currentView === 3">
+              <!-- Delete tooManyAppointmentsWithSameMailError if contact is transferred from backend call offices-and-services    -->
+              <appointment-summary
+                v-if="
+              !updateAppointmentError && !tooManyAppointmentsWithSameMailError
+            "
+                :is-rebooking="isRebooking"
+                :rebook-or-cancel-dialog="rebookOrCanelDialog"
+                :t="t"
+                @back="decreaseCurrentView"
+                @book-appointment="nextBookAppointment"
+                @cancel-appointment="nextCancelAppointment"
+                @cancel-reschedule="nextCancelReschedule"
+                @reschedule-appointment="nextRescheduleAppointment"
+              />
+              <div v-if="tooManyAppointmentsWithSameMailError">
+                <muc-callout type="error">
+                  <template #content>
+                    {{ t("tooManyAppointmentsWithSameMailErrorText") }}
+                  </template>
 
-            <template #header>{{
-              t("tooManyAppointmentsWithSameMailErrorHeader")
-            }}</template>
-          </muc-callout>
-        </div>
-        <div v-if="updateAppointmentError">
-          <muc-callout type="error">
-            <template #content>
-              {{ t("updateAppointmentErrorText") }}
-            </template>
+                  <template #header>{{
+                      t("tooManyAppointmentsWithSameMailErrorHeader")
+                    }}</template>
+                </muc-callout>
+              </div>
+              <div v-if="updateAppointmentError">
+                <muc-callout type="error">
+                  <template #content>
+                    {{ t("updateAppointmentErrorText") }}
+                  </template>
 
-            <template #header>{{ t("updateAppointmentErrorHeader") }}</template>
-          </muc-callout>
+                  <template #header>{{ t("updateAppointmentErrorHeader") }}</template>
+                </muc-callout>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div
-      v-if="currentView === 4"
-      class="container"
-    >
-      <muc-callout
-        v-if="!cancelAppointmentSuccess"
-        type="warning"
-      >
-        <template #content>
-          {{ t("confirmAppointmentText") }}
-        </template>
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <div
+          v-if="currentView === 4"
+          class="container"
+        >
+          <muc-callout
+            v-if="!cancelAppointmentSuccess"
+            type="warning"
+          >
+            <template #content>
+              {{ t("confirmAppointmentText") }}
+            </template>
 
-        <template #header>{{ t("confirmAppointmentHeader") }}</template>
-      </muc-callout>
-      <muc-callout
-        v-if="cancelAppointmentSuccess"
-        type="success"
-      >
-        <template #content>
-          {{ t("appointmentSuccessfullyCanceledText") }}
-        </template>
+            <template #header>{{ t("confirmAppointmentHeader") }}</template>
+          </muc-callout>
+          <muc-callout
+            v-if="cancelAppointmentSuccess"
+            type="success"
+          >
+            <template #content>
+              {{ t("appointmentSuccessfullyCanceledText") }}
+            </template>
 
-        <template #header>{{
-          t("appointmentSuccessfullyCanceledHeader")
-        }}</template>
-      </muc-callout>
-    </div>
-    <div
-      v-else
-      class="container"
-    >
-      <muc-callout
-        v-if="confirmAppointmentSuccess"
-        type="success"
-      >
-        <template #content>
-          {{ t("appointmentSuccessfullyBookedText") }}
-        </template>
+            <template #header>{{
+                t("appointmentSuccessfullyCanceledHeader")
+              }}</template>
+          </muc-callout>
+        </div>
+        <div
+          v-else
+          class="container"
+        >
+          <muc-callout
+            v-if="confirmAppointmentSuccess"
+            type="success"
+          >
+            <template #content>
+              {{ t("appointmentSuccessfullyBookedText") }}
+            </template>
 
-        <template #header>{{
-          t("appointmentSuccessfullyBookedHeader")
-        }}</template>
-      </muc-callout>
-      <muc-callout
-        v-if="confirmAppointmentError"
-        type="error"
-      >
-        <template #content>
-          {{ t("appointmentBookingErrorText") }}
-        </template>
+            <template #header>{{
+                t("appointmentSuccessfullyBookedHeader")
+              }}</template>
+          </muc-callout>
+          <muc-callout
+            v-if="confirmAppointmentError"
+            type="error"
+          >
+            <template #content>
+              {{ t("appointmentBookingErrorText") }}
+            </template>
 
-        <template #header>{{ t("appointmentBookingErrorHeader") }}</template>
-      </muc-callout>
+            <template #header>{{ t("appointmentBookingErrorHeader") }}</template>
+          </muc-callout>
+        </div>
+      </div>
     </div>
   </div>
 </template>
