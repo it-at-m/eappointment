@@ -50,7 +50,7 @@ class Index extends BaseController
         $defaultLanguage = 'de';
 
         if ($languageConfig) {
-            $defaultLanguage = $languageConfig['defaultLanguage'];
+            $defaultLanguage = $languageConfig['defaultLanguage'] ?? '';
             foreach ($languageConfig['languages'] as $language) {
                 $languages[] = $language['language'];
 
@@ -65,7 +65,7 @@ class Index extends BaseController
         }
 
         if (empty($currentLang) || $currentLang === 'de') {
-            $translations['printText'] = $languageConfig['defaultPrintText'];
+            $translations['printText'] = $languageConfig['defaultPrintText'] ?? '';
         }
 
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
