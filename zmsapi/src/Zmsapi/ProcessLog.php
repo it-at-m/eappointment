@@ -22,7 +22,7 @@ class ProcessLog extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('audit');
-        $searchQuery = urldecode($args['id']);
+        $searchQuery = urldecode($args['search']);
         $logList = (new Query())->readByProcessData($searchQuery);
 
         $message = Response\Message::create($request);
