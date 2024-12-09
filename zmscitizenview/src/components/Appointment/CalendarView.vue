@@ -1,7 +1,29 @@
 <template>
   <div v-if="!error">
     <h2 tabindex="0">{{ t("location") }}</h2>
-    <!--  Add location selection-->
+    <div v-if="selectedProvider" class="m-teaser-contained m-teaser-contained-contact">
+      <div class="m-teaser-contained-contact__body">
+        <div class="m-teaser-contained-contact__body__inner">
+          <div class="m-teaser-contained-contact__icon">
+            <svg aria-hidden="true" class="icon">
+              <use xlink:href="#icon-place"></use>
+            </svg>
+          </div>
+          <h3 class="m-teaser-contained-contact__headline">{{selectedProvider.name}}</h3>
+          <p class="m-teaser-contained-contact__summary">
+            Abteilung<br>Beschreibung<br>Weiter Beschreibung
+          </p>
+          <div class="m-teaser-contained-contact__details">
+            <p class="m-teaser-contained-contact__detail">
+              <svg aria-hidden="true" class="icon icon--before">
+                <use xlink:href="#icon-map-pin"></use>
+              </svg>
+              <span>Straße Hausnummer</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
     <h2 tabindex="0">{{ t("time") }}</h2>
     <muc-calendar
       v-model="selectedDay"
@@ -89,6 +111,8 @@ import {
   MucButton,
   MucCalendar,
   MucCallout,
+  MucCard,
+  MucIcon,
 } from "@muenchen/muc-patternlab-vue";
 import { inject, onMounted, ref, watch } from "vue";
 
@@ -263,6 +287,7 @@ const nextStep = () => emit("next");
 const previousStep = () => emit("back");
 
 onMounted(() => {
+  console.log("Location: ", selectedProvider);
   if (selectedService.value) {
     if (selectedService.value.providers && selectedService.value.subServices) {
       const choosenSubservices = selectedService.value.subServices.filter(

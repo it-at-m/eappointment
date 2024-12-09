@@ -1,130 +1,124 @@
 <template>
-  <div class="m-component m-component-dataset">
-    <div class="container">
-      <div class="m-component__grid">
-        <div class="m-component__column">
-          <div class="m-contact">
-            <div class="m-contact__body">
-              <div class="m-contact__section">
-                <div class="m-content">
-                  <h2>{{ t("your") }} {{ t("appointment") }}</h2>
+  <div class="m-component">
+    <div class="m-contact">
+      <div class="m-contact__body">
+        <div class="m-contact__section">
+          <div class="m-content">
+            <h2>{{ t("your") }} {{ t("appointment") }}</h2>
+          </div>
+          <div class="m-content">
+            <h3>{{ t("service") }}</h3>
+          </div>
+          <div class="m-content">
+            <p>
+              {{ selectedService.count }}x {{ selectedService.name }}
+              <br />
+            </p>
+            <div v-if="selectedService && selectedService.subServices">
+              <div
+                v-for="subService in selectedService.subServices"
+                :key="subService.id"
+              >
+                <p v-if="subService.count > 0">
+                  {{ subService.count }}x {{ subService.name }} <br />
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="m-content">
+            <h3>{{ t("location") }}</h3>
+          </div>
+          <div class="m-content">
+            <p>
+              <strong>Landeshauptstadt München</strong><br />
+              {{ appointment.scope.provider.contact.name }}<br />
+            </p>
+            <p>
+              <strong>{{ t("address") }}</strong>
+              <br />
+            </p>
+            <p>
+              {{ appointment.scope.provider.contact.street }}
+              {{ appointment.scope.provider.contact.streetNumber }}<br />
+              {{ appointment.scope.provider.contact.postalCode }}
+              {{ appointment.scope.provider.contact.region }}<br />
+            </p>
+          </div>
+          <div class="m-content">
+            <h3>{{ t("time") }}</h3>
+          </div>
+          <div class="m-content">
+            <p>
+              {{ formatTime(appointment.timestamp) }} <br />
+              {{ t("estimatedDuration") }} {{ t("minutes") }}<br />
+            </p>
+          </div>
+          <div class="m-content">
+            <h3>{{ t("contact") }}</h3>
+          </div>
+          <div class="m-content">
+            <p>
+              {{ appointment.familyName }}
+              <br />
+              {{ appointment.email }}<br />
+              {{ appointment.telephone }}<br />
+            </p>
+            <div v-if="appointment.customTextfield">
+              <strong>{{ t("remarks") }}</strong
+              ><br />
+              <p>{{ appointment.customTextfield }}</p>
+              <br />
+            </div>
+          </div>
+          <div v-if="!rebookOrCancelDialog">
+            <div class="m-content">
+              <h3>{{ t("termsOfUse") }}</h3>
+            </div>
+            <div class="m-content">
+              <p>
+                <strong>{{ t("privacyCheckboxLabel") }}</strong
+                ><br />
+              </p>
+            </div>
+            <div class="m-content">
+              <div class="m-checkboxes">
+                <div class="m-checkboxes__item">
+                  <input
+                    id="checkbox-privacy-policy"
+                    class="m-checkboxes__input"
+                    name="checkbox-privacy-policy"
+                    type="checkbox"
+                    @click="clickPrivacyPolicy"
+                  />
+                  <label
+                    class="m-label m-checkboxes__label"
+                    for="checkbox-privacy-policy"
+                    v-html="t('privacyCheckboxText')"
+                  />
                 </div>
-                <div class="m-content">
-                  <h3>{{ t("service") }}</h3>
-                </div>
-                <div class="m-content">
-                  <p>
-                    {{ selectedService.count }}x {{ selectedService.name }}
-                    <br />
-                  </p>
-                  <div v-if="selectedService && selectedService.subServices">
-                    <div
-                      v-for="subService in selectedService.subServices"
-                      :key="subService.id"
-                    >
-                      <p v-if="subService.count > 0">
-                        {{ subService.count }}x {{ subService.name }} <br />
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div class="m-content">
-                  <h3>{{ t("location") }}</h3>
-                </div>
-                <div class="m-content">
-                  <p>
-                    <strong>Landeshauptstadt München</strong><br />
-                    {{ appointment.scope.provider.contact.name }}<br />
-                  </p>
-                  <p>
-                    <strong>{{ t("address") }}</strong>
-                    <br />
-                  </p>
-                  <p>
-                    {{ appointment.scope.provider.contact.street }}
-                    {{ appointment.scope.provider.contact.streetNumber }}<br />
-                    {{ appointment.scope.provider.contact.postalCode }}
-                    {{ appointment.scope.provider.contact.region }}<br />
-                  </p>
-                </div>
-                <div class="m-content">
-                  <h3>{{ t("time") }}</h3>
-                </div>
-                <div class="m-content">
-                  <p>
-                    {{ formatTime(appointment.timestamp) }} <br />
-                    {{ t("estimatedDuration") }} {{ t("minutes") }}<br />
-                  </p>
-                </div>
-                <div class="m-content">
-                  <h3>{{ t("contact") }}</h3>
-                </div>
-                <div class="m-content">
-                  <p>
-                    {{ appointment.familyName }}
-                    <br />
-                    {{ appointment.email }}<br />
-                    {{ appointment.telephone }}<br />
-                  </p>
-                  <div v-if="appointment.customTextfield">
-                    <strong>{{ t("remarks") }}</strong
-                    ><br />
-                    <p>{{ appointment.customTextfield }}</p>
-                    <br />
-                  </div>
-                </div>
-                <div v-if="!rebookOrCancelDialog">
-                  <div class="m-content">
-                    <h3>{{ t("termsOfUse") }}</h3>
-                  </div>
-                  <div class="m-content">
-                    <p>
-                      <strong>{{ t("privacyCheckboxLabel") }}</strong
-                      ><br />
-                    </p>
-                  </div>
-                  <div class="m-content">
-                    <div class="m-checkboxes">
-                      <div class="m-checkboxes__item">
-                        <input
-                          id="checkbox-privacy-policy"
-                          class="m-checkboxes__input"
-                          name="checkbox-privacy-policy"
-                          type="checkbox"
-                          @click="clickPrivacyPolicy"
-                        />
-                        <label
-                          class="m-label m-checkboxes__label"
-                          for="checkbox-privacy-policy"
-                          v-html="t('privacyCheckboxText')"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div class="m-content">
-                    <p>
-                      <strong>{{ t("communicationCheckboxLabel") }}</strong
-                      ><br />
-                    </p>
-                  </div>
-                  <div class="m-content">
-                    <div class="m-checkboxes">
-                      <div class="m-checkboxes__item">
-                        <input
-                          id="checkbox-electronic-communication"
-                          class="m-checkboxes__input"
-                          name="checkbox-electronic-communication"
-                          type="checkbox"
-                          @click="clickElectronicCommunication"
-                        />
-                        <label
-                          class="m-label m-checkboxes__label"
-                          for="checkbox-electronic-communication"
-                          v-html="t('communicationCheckboxText')"
-                        />
-                      </div>
-                    </div>
-                  </div>
+              </div>
+            </div>
+            <div class="m-content">
+              <p>
+                <strong>{{ t("communicationCheckboxLabel") }}</strong
+                ><br />
+              </p>
+            </div>
+            <div class="m-content">
+              <div class="m-checkboxes">
+                <div class="m-checkboxes__item">
+                  <input
+                    id="checkbox-electronic-communication"
+                    class="m-checkboxes__input"
+                    name="checkbox-electronic-communication"
+                    type="checkbox"
+                    @click="clickElectronicCommunication"
+                  />
+                  <label
+                    class="m-label m-checkboxes__label"
+                    for="checkbox-electronic-communication"
+                    v-html="t('communicationCheckboxText')"
+                  />
                 </div>
               </div>
             </div>
