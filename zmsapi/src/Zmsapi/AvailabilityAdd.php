@@ -144,9 +144,11 @@ class AvailabilityAdd extends BaseController
         $updatedEntity = null;
         if ($entity->id) {
             $oldEntity = $repository->readEntity($entity->id);
-            if ($oldEntity && $oldEntity->hasId()) {
+            if ($oldEntity !== null && $oldEntity->hasId()) {
                 $this->writeSpontaneousEntity($oldEntity);
                 $updatedEntity = $repository->updateEntity($entity->id, $entity, $resolveReferences);
+            } else {
+                throw new AvailabilityAddFailed("Entity with ID {$entity->id} not found.");
             }
         } else {
             $updatedEntity = $repository->writeEntity($entity, 2);

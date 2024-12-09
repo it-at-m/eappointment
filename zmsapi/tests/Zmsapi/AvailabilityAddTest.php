@@ -155,7 +155,7 @@ class AvailabilityAddTest extends Base
         ], []);
     }
 
-    public function testUpdateFailed()
+    public function testAddFailed()
     {
         $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityAddFailed');
