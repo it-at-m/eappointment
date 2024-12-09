@@ -14,6 +14,7 @@
                 {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": ticketprinter.buttons|first.cluster.id }) }}
 				{{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
+				{{ hiddenfield({ "name": "printText", "value": translations['printText'] }) }}
     			{% set label = buttonLabelPrefix ~ ticketprinter.buttons|first.name %}
                 {% if ticketprinter.buttons|first.type == "link" %}
     			{% set label = "Information" %}
@@ -43,6 +44,7 @@
                 {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
                 {{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
+				{{ hiddenfield({ "name": "printText", "value": translations['printText'] }) }}
     			{% set label = buttonLabelPrefix ~ button.name %}
     			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
 					{{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label": translations[button.requestId] ?? label|trans, "value": "Wartenummer anfordern", "disabled": disabled }) }}
@@ -69,6 +71,7 @@
 				{{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
 				{{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
 				{{ hiddenfield({ "name": "requestId", "value": button.requestId }) }}
+				{{ hiddenfield({ "name": "printText", "value": translations['printText'] }) }}
 				{% set label = buttonLabelPrefix ~ button.name %}
 
 				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
