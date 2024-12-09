@@ -555,6 +555,12 @@ class Availability extends Schema\Entity
         $slotTime = $this['slotTimeInMinutes'];
         $startTimestamp = $startDate->getTimestamp();
         $endTimestamp = $endDate->getTimestamp();
+        if ($slotTime === 0) { 
+            $errorList[] = [
+                'type' => 'slotTime', 
+                'message' => 'Die Slot-Zeit darf nicht 0 sein.']; 
+            return $errorList;
+        }
     
         $slotAmount = (($endTimestamp - $startTimestamp) / 60) % $slotTime;
         if ($slotAmount > 0) {
