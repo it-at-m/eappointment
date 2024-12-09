@@ -555,6 +555,7 @@ class Availability extends Schema\Entity
         $slotTime = $this['slotTimeInMinutes'];
         $startTimestamp = $startDate->getTimestamp();
         $endTimestamp = $endDate->getTimestamp();
+
         if ($slotTime === 0) { 
             $errorList[] = [
                 'type' => 'slotTime', 
