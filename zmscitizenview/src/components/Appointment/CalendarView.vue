@@ -1,21 +1,32 @@
 <template>
   <div v-if="!error">
     <h2 tabindex="0">{{ t("location") }}</h2>
-    <div v-if="selectedProvider" class="m-teaser-contained m-teaser-contained-contact">
+    <div
+      v-if="selectedProvider"
+      class="m-teaser-contained m-teaser-contained-contact"
+    >
       <div class="m-teaser-contained-contact__body">
         <div class="m-teaser-contained-contact__body__inner">
           <div class="m-teaser-contained-contact__icon">
-            <svg aria-hidden="true" class="icon">
+            <svg
+              aria-hidden="true"
+              class="icon"
+            >
               <use xlink:href="#icon-place"></use>
             </svg>
           </div>
-          <h3 class="m-teaser-contained-contact__headline">{{selectedProvider.name}}</h3>
+          <h3 class="m-teaser-contained-contact__headline">
+            {{ selectedProvider.name }}
+          </h3>
           <p class="m-teaser-contained-contact__summary">
-            Abteilung<br>Beschreibung<br>Weiter Beschreibung
+            Abteilung<br />Beschreibung<br />Weiter Beschreibung
           </p>
           <div class="m-teaser-contained-contact__details">
             <p class="m-teaser-contained-contact__detail">
-              <svg aria-hidden="true" class="icon icon--before">
+              <svg
+                aria-hidden="true"
+                class="icon icon--before"
+              >
                 <use xlink:href="#icon-map-pin"></use>
               </svg>
               <span>Straße Hausnummer</span>
