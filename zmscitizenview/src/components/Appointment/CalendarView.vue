@@ -122,8 +122,6 @@ import {
   MucButton,
   MucCalendar,
   MucCallout,
-  MucCard,
-  MucIcon,
 } from "@muenchen/muc-patternlab-vue";
 import { inject, onMounted, ref, watch } from "vue";
 
@@ -298,7 +296,6 @@ const nextStep = () => emit("next");
 const previousStep = () => emit("back");
 
 onMounted(() => {
-  console.log("Location: ", selectedProvider);
   if (selectedService.value) {
     if (selectedService.value.providers && selectedService.value.subServices) {
       const choosenSubservices = selectedService.value.subServices.filter(
