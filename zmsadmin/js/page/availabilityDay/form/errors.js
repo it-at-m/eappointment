@@ -27,7 +27,7 @@ const Errors = (props) => {
 };
 
 Errors.defaultProps = {
-    errorList: {}
+    errorList: []
 };
 
 Errors.propTypes = {
