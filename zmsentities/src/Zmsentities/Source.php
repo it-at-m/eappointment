@@ -51,6 +51,18 @@ class Source extends Schema\Entity
         return $providerList;
     }
 
+    public function getScopeList()
+    {
+        $scopeList = new Collection\ScopeList();
+        foreach ($this->toProperty()->scopes->get() as $scope) {
+            if (!$scope instanceof Scope) {
+                $scope = new Scope($scope);
+            }
+            $scopeList->addEntity($scope);
+        }
+        return $scopeList;
+    }
+
     public function getRequestList()
     {
         $requestList = new Collection\RequestList();
