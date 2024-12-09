@@ -4,7 +4,11 @@
     <div class="printausgabe msg_ihre_nummernanzeige nummernanzeige">{{ process.queue.number }}</div>
     <span class="printausgabe msg_stdname">
     	<span class="printausgabe msg_ihre_wartenummer">
-    		{{ process.scope.contact.name }}<br>
+    		{{ process.scope.contact.name }}
+			{% if printText %}
+			. {{ printText }}
+			{% endif %}
+			<br>
     		{{ process.queue.arrivalTime|format_date(pattern="EE dd. MMMM Y") }}, {{ process.queue.arrivalTime|format_date(pattern="HH:mm") }} {% trans %}Uhr{% endtrans %}<br>
 		</span>
 	</span>
