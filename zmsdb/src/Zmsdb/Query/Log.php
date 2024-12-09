@@ -60,5 +60,7 @@ class Log extends Base
         if (is_numeric($search)) {
             $this->query->orWhere('log.reference_id', '=', $search);
         }
+
+        $this->query->orderBy('log.ts', 'DESC');
     }
 }
