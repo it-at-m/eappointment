@@ -112,7 +112,7 @@ class Availability extends Schema\Entity
      * ATTENTION: Time critical function, keep highly optimized
      *
      * @param \DateTimeInterface $dateTime
-     * @param String $type of "openinghours", "appointment" or false to ignore type
+     * @param string $type of "openinghours", "appointment" or false to ignore type
      *
      * @return Bool
      */
@@ -136,7 +136,7 @@ class Availability extends Schema\Entity
      * Compared to hasDate() the time of the day is checked, but not booking time
      *
      * @param \DateTimeInterface $dateTime
-     * @param String $type of "openinghours", "appointment" or false to ignore type
+     * @param string $type of "openinghours", "appointment" or false to ignore type
      *
      */
     public function isOpened(\DateTimeInterface $dateTime, $type = false)
@@ -434,7 +434,7 @@ class Availability extends Schema\Entity
      *
      * @return Array of arrays with the keys time, public, callcenter, intern
      */
-    public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now)
+    public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now): bool
     {
         if ($startTime->getTimestamp() < $now->getTimestamp()) {
             $startTime = $now;
@@ -450,7 +450,7 @@ class Availability extends Schema\Entity
         } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
         return false;
     }
-    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $kind)
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
     {
         $errorList = [];
         
@@ -481,7 +481,7 @@ class Availability extends Schema\Entity
         
         return $errorList;
     }  
-    public function validateEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate)
+    public function validateEndTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
     {
         $errorList = [];
         
@@ -509,7 +509,7 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, String $kind)
+    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
     {
         $errorList = [];
         $endHour = (int) $endDate->format('H');
@@ -518,7 +518,6 @@ class Availability extends Schema\Entity
         $endTimestamp = $endDateTime->getTimestamp();
         $isOrigin = ($kind && $kind === 'origin');
     
-        // Validate that end date is after the selected date
         if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < (clone $selectedDate)->setTime(0, 0)) {
             $errorList[] = [
                 'type' => 'endTimeFuture',
@@ -526,7 +525,6 @@ class Availability extends Schema\Entity
             ];
         }
     
-        // Validate that end time is not in the past
         if (!$isOrigin && $endTimestamp < $today->getTimestamp()) {
             $errorList[] = [
                 'type' => 'endTimePast',
@@ -539,8 +537,7 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    
-    public function validateType(String $kind)
+    public function validateType(string $kind): array
     {
         $errorList = [];
         if (empty($kind)) {
@@ -552,7 +549,7 @@ class Availability extends Schema\Entity
         return $errorList;
     }
     
-    public function validateSlotTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    public function validateSlotTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
     {
         $errorList = [];
         $slotTime = $this['slotTimeInMinutes'];
@@ -569,21 +566,19 @@ class Availability extends Schema\Entity
     
         return $errorList;
     }
-    
-    public function validateAll(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+
+    public function validateBookableDayRange(int $startInDays, int $endInDays): array
     {
-        
-        $errorList = array_merge(
-            $this->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $kind),
-            $this->validateEndTime($today, $yesterday, $startDate, $endDate, $selectedDate),
-            $this->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, $kind),
-            $this->validateType($kind),
-            $this->validateSlotTime($startDate, $endDate)
-        );
+        $errorList = [];
+        if ($startInDays > $endInDays) {
+            $errorList[] = [
+                'type' => 'bookableDayRange',
+                'message' => 'Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.'
+            ];
+        }
     
         return $errorList;
     }
-    
     
     /**
      * Get problems on configuration of this availability

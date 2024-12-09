@@ -171,7 +171,7 @@ class AvailabilityList extends Base
     *
     * @return array<string> List of validation errors
     */
-    public function validateInputs(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate, \DateTimeImmutable $selectedDate, string $kind): array
+    public function validateInputs(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate, \DateTimeImmutable $selectedDate, string $kind, $startInDays, $endInDays): array
     {
         $errorList = [];
 
@@ -181,8 +181,12 @@ class AvailabilityList extends Base
 
         foreach ($this as $availability) {
             $errorList = array_merge(
-                $errorList,
-                $availability->validateAll($today, $yesterday, $tomorrow, $startDate, $endDate, $selectedDate, $kind)
+                $availability->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $kind),
+                $availability->validateEndTime($startDate, $endDate),
+                $availability->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, $kind),
+                $availability->validateType($kind),
+                $availability->validateSlotTime($startDate, $endDate),
+                $availability->validateBookableDayRange((int)$startInDays, (int)$endInDays)
             );
         }
         return $errorList;

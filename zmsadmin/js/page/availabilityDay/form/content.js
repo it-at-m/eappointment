@@ -141,7 +141,7 @@ const FormContent = (props) => {
                                 <Label attributes={{"htmlFor": "AvDayOpenfrom", "className": "light"}}>von</Label> 
                                 <Inputs.Text name="open_from"
                                     width="2"
-                                    value={data.open_from}
+                                    value={data.open_from ?? ""}
                                     attributes={{ placeholder: data.scope.preferences.appointment.startInDaysDefault, "id": "AvDayOpenfrom", "aria-describedby": "help_AvDayOpenfromto" }}
                                     {...{ onChange }}
                                 />
@@ -150,7 +150,7 @@ const FormContent = (props) => {
                                 <Label attributes={{"htmlFor": "AvDayOpento", "className": "light"}}>bis</Label> 
                                     <Inputs.Text name="open_to"
                                     width="2"
-                                    value={data.open_to}
+                                    value={data.open_to ?? ""}
                                     attributes={{ placeholder: data.scope.preferences.appointment.endInDaysDefault, "id": "AvDayOpento", "aria-describedby": "help_AvDayOpenfromto" }}
                                     {...{ onChange }}
                                 />

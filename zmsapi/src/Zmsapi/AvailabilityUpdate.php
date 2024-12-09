@@ -92,7 +92,9 @@ class AvailabilityUpdate extends BaseController
                 $startDateTime,
                 $endDateTime,
                 $selectedDate,
-                $newAvailability->kind ?? 'default'
+                $newAvailability->kind ?? 'default',
+                $newAvailability->bookable['startInDays'],
+                $newAvailability->bookable['endInDays']
             );
 
             $mergedCollection->addEntity($newAvailability);
