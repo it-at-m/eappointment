@@ -89,20 +89,10 @@
                         {{ workstationInfo.waitingClientsBeforeNext }}
                         </div>
                     </li>
-                
-                
+
                     <li>
                         <div class="cell middle">
-                        <h4>{% trans %}davon mit Wartezeit{% endtrans %}:</h4>
-                        </div>
-                        <div class="cell right">
-                        {{ workstationInfo.waitingClientsEffective }}
-                        </div>
-                    </li>
-                
-                    <li>
-                        <div class="cell middle">
-                        <h4>{% trans %}Wartezeit für neue Spontankunden in Minuten{% endtrans %}:</h4>
+                        <h4>{% trans %}Wartezeit für neue Spontankunden{% endtrans %}:</h4>
                         </div>
                         <div class="cell right">
                             {% if workstationInfo.workstationGhostCount == 0 %}
@@ -129,7 +119,84 @@
                             {% endif %}
                         </div>
                     </li>
-                
+                    <li>
+                        <div class="cell middle">
+                            <h4>{% trans %}Durchschnittliche Wartezeit von Terminkunden{% endtrans %}:</h4>
+                        </div>
+                        <div class="cell right">
+                            {{ workstationInfo.averageWaitingTimeWithAppointment|round }} Minuten
+                        </div>
+                    </li>
+                    <li>
+                        <div class="cell middle">
+                            <h4>{% trans %}Durchschnittliche Wartezeit von Spontankunden{% endtrans %}:</h4>
+                        </div>
+                        <div class="cell right">
+                            {{ workstationInfo.averageWaitingTimeWithoutAppointment|round }} Minuten
+                        </div>
+                    </li>
+                        <li>
+                            <div class="cell middle">
+                                <h4>{% trans %}Wartende{% endtrans %}:</h4>
+                            </div>
+                            <div class="cell right">
+                                <span class="waiting-count">{{ workstationInfo.waitingClientsEffective }}</span>
+
+                                {% set waiting_customers = workstationInfo.waitingClientsEffective %}
+
+                                {% if waiting_customers >= 0 and waiting_customers <= 10 %}
+                                    <div class="traffic-light green" title="Grün" alt="Grün"></div>
+                                {% elseif waiting_customers >= 11 and waiting_customers <= 20 %}
+                                    <div class="traffic-light yellow" title="Gelb" alt="Gelb"></div>
+                                {% elseif waiting_customers >= 21 and waiting_customers <= 40 %}
+                                    <div class="traffic-light orange" title="Orange" alt="Orange"></div>
+                                {% elseif waiting_customers >= 41 %}
+                                    <div class="traffic-light red" title="Rot" alt="Rot"></div>
+                                {% endif %}
+                            </div>
+                        </li>
+
+                        <style>
+                            .cell.right {
+                                display: flex;
+                                align-items: center;  /* Vertically align the items in the center */
+                                gap: 10px;  /* Adds space between the number and the traffic light */
+                            }
+
+                            .waiting-count {
+                                font-size: 16px;  /* Style for the number */
+                                font-weight: bold;
+                            }
+
+                            .traffic-light {
+                                width: 12px;
+                                height: 12px;
+                                border-radius: 50%;
+                                display: inline-block;
+                                background-color: #ccc;  /* Default background color for unstyled traffic lights */
+                                text-align: center;
+                                line-height: 12px;
+                                color: white;
+                                border: 2px solid #222;
+                            }
+
+                            .green {
+                                background-color: rgba(0, 255, 0, 0.5);  /* Green */
+                            }
+
+                            .yellow {
+                                background-color: rgba(255, 255, 0, 0.5);  /* Yellow */
+                            }
+
+                            .orange {
+                                background-color: rgba(255, 127, 0, 0.5);  /* Orange */
+                            }
+
+                            .red {
+                                background-color: rgba(255, 0, 0, 0.5);  /* Red */
+                            }
+
+                        </style>
                 {% endif %}
                 
                 </ul>
