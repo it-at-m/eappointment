@@ -180,7 +180,7 @@ class AvailabilityList extends Base
         $tomorrow = $selectedDate->modify('+1 day');
 
         foreach ($this as $availability) {
-            $errorList = array_merge(
+            $errorList = array_merge($errorList,
                 $availability->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $kind),
                 $availability->validateEndTime($startDate, $endDate),
                 $availability->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, $kind),
