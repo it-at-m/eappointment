@@ -23,6 +23,7 @@ const validate = (data, props) => {
     errorList.itemList.push(validateOriginEndTime(today, yesterday, selectedDate, data));
     errorList.itemList.push(validateType(data));
     errorList.itemList.push(validateSlotTime(data));
+    errorList.itemList.push(validateBookableDayRange(data));
 
     errorList.itemList = errorList.itemList.filter(el => el.length);
     let valid = (0 < errorList.itemList.length) ? false : true;
@@ -61,6 +62,22 @@ function validateNullValues(data) {
         errorList.push({
             type: 'endTimeNull',
             message: 'Die Endzeit darf nicht leer sein.'
+        });
+    }
+
+    return errorList;
+}
+
+function validateBookableDayRange(data) {
+    const errorList = [];
+
+    const startInDays = parseInt(data.bookable.startInDays, 10);
+    const endInDays = parseInt(data.bookable.endInDays, 10);
+
+    if (startInDays > endInDays) {
+        errorList.push({
+            type: 'bookableDayRange',
+            message: 'Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.'
         });
     }
 
