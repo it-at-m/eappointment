@@ -8,7 +8,7 @@ class ProcessLogTest extends Base
 {
     protected $classname = "ProcessLog";
 
-    const PROCESS_ID = 10029;
+    const SEARCH_PARAM = 10029;
 
     const AUTHKEY = '1c56';
 
@@ -16,7 +16,7 @@ class ProcessLogTest extends Base
     {
         (new ProcessUpdateTest)->testRendering();
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
-        $response = $this->render(['id' => self::PROCESS_ID], [], []);
+        $response = $this->render(['search' => self::SEARCH_PARAM], [], []);
         $this->assertStringContainsString('log.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -24,7 +24,7 @@ class ProcessLogTest extends Base
     public function testNotFound()
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
-        $response = $this->render(['id' => 123], [], []);
+        $response = $this->render(['search' => 123], [], []);
         $this->assertStringContainsString('"data":[]', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
