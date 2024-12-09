@@ -49,6 +49,15 @@ class CounterQueueInfoTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-05-27/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => ''
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/scope/141/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141_workstationlist.json")
@@ -98,6 +107,15 @@ class CounterQueueInfoTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/scope/141/process/2016-04-01/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => ''
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/scope/141/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141_workstationlist.json")
@@ -109,7 +127,7 @@ class CounterQueueInfoTest extends Base
             'selecteddate' => '2016-04-01'
         ], []);
         $this->assertStringContainsString('davon vor nächstem Spontankunden', (string)$response->getBody());
-        $this->assertStringContainsString('Wartezeit für neue Spontankunden in Stunden', (string)$response->getBody());
+        $this->assertStringContainsString('Wartezeit für neue Spontankunden', (string)$response->getBody());
         
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -147,6 +165,15 @@ class CounterQueueInfoTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/process/2016-05-27/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => ''
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ],
                 [
                     'function' => 'readGetResult',

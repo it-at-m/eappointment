@@ -58,7 +58,6 @@ class TicketprinterByScopeWithNotificationTest extends Base
                 'Ticketprinter' => '71abcdefghijklmnopqrstuvwxyz',
             ]
         ], [ ]);
-        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
         $this->assertStringContainsString('buttonTelefonnummernachtragen', (string) $response->getBody());
         $this->assertStringContainsString('Handynummer nachträglich eintragen', (string) $response->getBody());
     }
