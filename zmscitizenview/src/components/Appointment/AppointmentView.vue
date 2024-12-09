@@ -1,8 +1,6 @@
 <template>
   <div class="m-component m-component-form">
-    <div
-      v-if="!confirmAppointmentHash && currentView < 4"
-    >
+    <div v-if="!confirmAppointmentHash && currentView < 4">
       <muc-stepper
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
@@ -34,8 +32,8 @@
                   </template>
 
                   <template #header>{{
-                      t("selectedDateNoLongerAvailableHeader")
-                    }}</template>
+                    t("selectedDateNoLongerAvailableHeader")
+                  }}</template>
                 </muc-callout>
               </div>
             </div>
@@ -50,8 +48,9 @@
               <!-- Delete tooManyAppointmentsWithSameMailError if contact is transferred from backend call offices-and-services    -->
               <appointment-summary
                 v-if="
-              !updateAppointmentError && !tooManyAppointmentsWithSameMailError
-            "
+                  !updateAppointmentError &&
+                  !tooManyAppointmentsWithSameMailError
+                "
                 :is-rebooking="isRebooking"
                 :rebook-or-cancel-dialog="rebookOrCanelDialog"
                 :t="t"
@@ -68,8 +67,8 @@
                   </template>
 
                   <template #header>{{
-                      t("tooManyAppointmentsWithSameMailErrorHeader")
-                    }}</template>
+                    t("tooManyAppointmentsWithSameMailErrorHeader")
+                  }}</template>
                 </muc-callout>
               </div>
               <div v-if="updateAppointmentError">
@@ -78,7 +77,9 @@
                     {{ t("updateAppointmentErrorText") }}
                   </template>
 
-                  <template #header>{{ t("updateAppointmentErrorHeader") }}</template>
+                  <template #header>{{
+                    t("updateAppointmentErrorHeader")
+                  }}</template>
                 </muc-callout>
               </div>
             </div>
@@ -111,8 +112,8 @@
             </template>
 
             <template #header>{{
-                t("appointmentSuccessfullyCanceledHeader")
-              }}</template>
+              t("appointmentSuccessfullyCanceledHeader")
+            }}</template>
           </muc-callout>
         </div>
         <div
@@ -128,8 +129,8 @@
             </template>
 
             <template #header>{{
-                t("appointmentSuccessfullyBookedHeader")
-              }}</template>
+              t("appointmentSuccessfullyBookedHeader")
+            }}</template>
           </muc-callout>
           <muc-callout
             v-if="confirmAppointmentError"
@@ -139,7 +140,9 @@
               {{ t("appointmentBookingErrorText") }}
             </template>
 
-            <template #header>{{ t("appointmentBookingErrorHeader") }}</template>
+            <template #header>{{
+              t("appointmentBookingErrorHeader")
+            }}</template>
           </muc-callout>
         </div>
       </div>
