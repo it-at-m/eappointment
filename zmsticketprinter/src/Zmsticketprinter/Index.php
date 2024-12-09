@@ -43,7 +43,9 @@ class Index extends BaseController
             $currentLang = 'de';
         }
 
-        $translations = [];
+        $translations = [
+            'printText' => ''
+        ];
         $languages = [];
         $defaultLanguage = 'de';
 
@@ -60,6 +62,10 @@ class Index extends BaseController
                     $translations[$requestId] = $translation;
                 }
             }
+        }
+
+        if (empty($currentLang) || $currentLang === 'de') {
+            $translations['printText'] = $languageConfig['defaultPrintText'];
         }
 
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
