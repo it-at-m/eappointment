@@ -94,40 +94,25 @@ class Slot extends Base
         \DateTimeInterface $now,
         \DateTimeInterface $slotLastChange = null
     ) {
-        // Initial input logging
-        error_log("isAvailabilityOutdated called");
-        error_log("Availability: " . json_encode($availability));
-        error_log("Now: " . $now->format('Y-m-d H:i:s'));
-        error_log("Slot Last Change: " . ($slotLastChange ? $slotLastChange->format('Y-m-d H:i:s') : "null"));
-    
         $proposedChange = new Helper\AvailabilitySnapShot($availability, $now);
         $formerChange = new Helper\AvailabilitySnapShot($availability, $slotLastChange);
-    
+
         if ($formerChange->hasOutdatedAvailability()) {
             $availability['processingNote'][] = 'outdated: availability change';
-            error_log("Condition met: hasOutdatedAvailability");
             return true;
         }
-        error_log("Condition failed: hasOutdatedAvailability");
-    
         if ($formerChange->hasOutdatedScope()
             && $this->hasScopeRelevantChanges($availability->scope, $slotLastChange)
         ) {
             $availability['processingNote'][] = 'outdated: scope change';
-            error_log("Condition met: hasOutdatedScope and hasScopeRelevantChanges");
             return true;
         }
-        error_log("Condition failed: hasOutdatedScope or hasScopeRelevantChanges");
-    
         if ($formerChange->hasOutdatedDayoff()) {
             $availability['processingNote'][] = 'outdated: dayoff change';
-            error_log("Condition met: hasOutdatedDayoff");
             return true;
         }
-        error_log("Condition failed: hasOutdatedDayoff");
-    
         // Be aware, that last slot change and current time might differ serval days
-        // if the rebuild fails in some way
+        //  if the rebuild fails in some way
         if (1
             // First check if the bookable end date on current time was already calculated on last slot change
             && !$formerChange->hasBookableDateTime($proposedChange->getLastBookableDateTime())
@@ -155,11 +140,8 @@ class Slot extends Base
             )
         ) {
             $availability['processingNote'][] = 'outdated: new slots required';
-            error_log("Condition met: new slots required");
             return true;
         }
-        error_log("Condition failed: new slots required");
-    
         if ($availability->getBookableStart($slotLastChange) != $availability->getBookableStart($now)
             // First check, if bookable start from lastChange was not included in bookable time from now
             && !$availability->hasDate($availability->getBookableStart($slotLastChange), $now)
@@ -171,15 +153,11 @@ class Slot extends Base
             )
         ) {
             $availability['processingNote'][] = 'outdated: slots invalidated by bookable start';
-            error_log("Condition met: slots invalidated by bookable start");
             return true;
         }
-        error_log("Condition failed: slots invalidated by bookable start");
-    
         $availability['processingNote'][] = 'not outdated';
-        error_log("Result: not outdated");
         return false;
-    }    
+    }
 
     /**
      * @return bool TRUE if there were changes on slots
@@ -194,7 +172,6 @@ class Slot extends Base
             $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
         }
         $availability['processingNote'][] = 'lastchange='.$slotLastChange->format('c');
-        error_log("availabilityID: " . $availability->id . ', lastchange: '.$slotLastChange->format('c') . ", isAvailabilityOutdated: " . $this->isAvailabilityOutdated($availability, $now, $slotLastChange));
         if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange)) {
             return false;
         }
