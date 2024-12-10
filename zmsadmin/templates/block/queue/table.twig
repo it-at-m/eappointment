@@ -165,8 +165,10 @@
 								</td>
 								<td>
 									<p>
-										<a title="{% trans %}wieder aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">wieder aufrufen</a>
-										{{ callCount|raw }}
+                                        {% if workstation.name %}
+                                            <a title="{% trans %}wieder aufrufen{% endtrans %}" href="{{ urlGet('workstation', {}, {'calledprocess': item.id}) }}" data-process="{{ item.id }}">wieder aufrufen</a>
+                                            {{ callCount|raw }}
+                                        {% endif %}
                                     </p>
 								</td>
 							</tr>
@@ -475,7 +477,9 @@
 								</td>
 								<td>
 									<p>
-										<a title="{% trans %}wieder aufnehmen{% endtrans %}" href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
+                                        {% if workstation.name %}
+										    <a title="{% trans %}wieder aufnehmen{% endtrans %}" href="#" data-id="{{ item.id }}" class="process-reset">wieder aufnehmen</a>
+									    {% endif %}
 									</p>
 								</td>
 							</tr>
