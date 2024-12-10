@@ -4,6 +4,7 @@
       <muc-stepper
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
+        :disable-previous-steps="appointmentHash"
         @change-step="changeStep"
       />
       <div class="container">
