@@ -11,7 +11,7 @@
                         {% endif %}
                     {% endfor %}
 
-                    {% for batchQueue in queueList|batch(5) %}
+                    {% for batchQueue in queueList|batch(tableSettings.maxResults / 2) %}
                         {% if loop.index <= tableColumns %}
                             <td style="vertical-align:top;" class="{% if not loop.first %}puffer{% endif %}">
                                 <table class="aufrufanzeige_aufruf zweispaltig" >
@@ -19,13 +19,18 @@
                                         "leftHead": tableSettings.head.left,
                                         "leftHeadEn": tableSettings.head.left_en,
                                         "rightHead": tableSettings.head.right,
-                                        "rightHeadEn": tableSettings.head.right_en
+                                        "rightHeadEn": tableSettings.head.right_en,
+                                        "maxResults": tableSettings.maxResults
                                     } %}
                                     <tbody>
                                         {% for queue in batchQueue %}
                                             <tr class="{% if loop.index in [1,3,5] %}odd{% endif %}">
-                                                {% include "element/queueTable/leftCol.twig" %}
-                                                {% include "element/queueTable/rightCol.twig" %}
+                                                {% include "element/queueTable/leftCol.twig" with {
+                                                    "inColumn": tableSettings.maxResults / 2
+                                                } %}
+                                                {% include "element/queueTable/rightCol.twig" with {
+                                                    "inColumn": tableSettings.maxResults / 2
+                                                } %}
                                             </tr>
                                         {% endfor %}
                                     </tbody>
