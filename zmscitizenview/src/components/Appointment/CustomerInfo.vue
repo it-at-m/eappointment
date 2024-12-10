@@ -40,9 +40,7 @@
     >
       <template #default>{{ t("back") }}</template>
     </muc-button>
-    <muc-button
-      @click="nextStep"
-    >
+    <muc-button @click="nextStep">
       <template #default>{{ t("next") }}</template>
     </muc-button>
   </div>
@@ -134,7 +132,7 @@ const nextStep = () => {
   if (validForm.value) {
     emit("next");
   }
-}
+};
 const previousStep = () => emit("back");
 </script>
 
