@@ -1,5 +1,7 @@
 <template>
-  <h2 tabindex="0">{{ t("service") }}</h2>
+  <div class="m-content">
+    <h2 tabindex="0">{{ t("service") }}</h2>
+  </div>
   <div
     v-if="!service"
     :hidden="preselectedServiceId"

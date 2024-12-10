@@ -1,6 +1,8 @@
 <template>
   <div v-if="!error">
-    <h2 tabindex="0">{{ t("location") }}</h2>
+    <div class="m-content">
+      <h2 tabindex="0">{{ t("location") }}</h2>
+    </div>
     <div
       v-if="selectedProvider"
       class="m-teaser-contained m-teaser-contained-contact"
@@ -35,14 +37,18 @@
         </div>
       </div>
     </div>
-    <h2 tabindex="0">{{ t("time") }}</h2>
+    <div class="m-content">
+      <h2 tabindex="0">{{ t("time") }}</h2>
+    </div>
     <muc-calendar
       v-model="selectedDay"
       variant="single"
       :allowed-dates="allowedDates"
     />
     <div class="m-component">
-      <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+      <div class="m-content">
+        <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+      </div>
       <div style="background-color: var(--color-neutrals-blue-xlight)">
         <b tabindex="0">{{ formatDay(selectedDay) }}</b>
       </div>
