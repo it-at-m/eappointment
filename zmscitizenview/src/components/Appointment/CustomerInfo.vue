@@ -3,26 +3,26 @@
   <form class="m-form m-form--default">
     <muc-input
       v-model="customerData.firstName"
-      :error-msg="errorMessageFirstName"
+      :error-msg="showErrorMessage ? errorMessageFirstName : undefined"
       :label="t('firstName')"
       required
     />
     <muc-input
       v-model="customerData.lastName"
-      :error-msg="errorMessageLastName"
+      :error-msg="showErrorMessage ? errorMessageLastName : undefined"
       :label="t('lastName')"
       required
     />
     <muc-input
       v-model="customerData.mailAddress"
-      :error-msg="errorMessageMailAddress"
+      :error-msg="showErrorMessage ? errorMessageMailAddress : undefined"
       :label="t('mailAddress')"
       required
     />
     <muc-input
       v-if="telephoneActivated"
       v-model="customerData.telephoneNumber"
-      :error-msg="errorMessageTelephoneNumber"
+      :error-msg="showErrorMessage ? errorMessageTelephoneNumber : undefined"
       :label="t('telephoneNumber')"
       placeholder="+49 151 1234567"
     />
@@ -41,7 +41,6 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      :disabled="!validForm"
       @click="nextStep"
     >
       <template #default>{{ t("next") }}</template>
@@ -51,7 +50,7 @@
 
 <script setup lang="ts">
 import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
-import { computed, inject } from "vue";
+import { computed, inject, ref } from "vue";
 
 import {
   CustomerDataProvider,
@@ -71,6 +70,8 @@ const { customerData } = inject<CustomerDataProvider>(
 const { appointment } = inject<SelectedAppointmentProvider>(
   "appointment"
 ) as SelectedAppointmentProvider;
+
+const showErrorMessage = ref<boolean>(false);
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const telephonPattern = /^\+?\d[\d\s]*$/;
@@ -128,7 +129,12 @@ const validForm = computed(
     !errorMessageTelephoneNumber.value
 );
 
-const nextStep = () => emit("next");
+const nextStep = () => {
+  showErrorMessage.value = true;
+  if (validForm.value) {
+    emit("next");
+  }
+}
 const previousStep = () => emit("back");
 </script>
 
