@@ -175,7 +175,10 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
         return office.id === relation.officeId;
       })[0];
 
-      if (props.exclusiveLocation && foundOffice.id !== props.preselectedOffiveId) {
+      if (
+        props.exclusiveLocation &&
+        foundOffice.id !== props.preselectedOffiveId
+      ) {
         return;
       }
 
