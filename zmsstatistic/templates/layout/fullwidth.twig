@@ -15,8 +15,9 @@
 <body>
     <span id="js-is_palm"></span>
     <div id="page-wrapper" class="handheld">
-        <header id="page-header">
-            {% block pageheader -%}
+        <header id="page-header" style="{% if getSystemStatus('ZMS_ENV') == 'dev' %}background-color: #2ECC40;
+            {% elseif getSystemStatus('ZMS_ENV') == 'stage' %}background-color: #7FDBFF;{% endif %}">
+            {% block pageheader %}
                 {{ parent() }}
             {%- endblock %}
         </header>
