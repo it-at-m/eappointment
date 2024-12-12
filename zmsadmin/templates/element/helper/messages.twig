@@ -104,7 +104,7 @@
 
 	    {% block department_deleted %}
     	{{ block('success_start') }}
-        	Die Behörde wurde {{ timeString }} erfolgreich entfernt.
+        	Die Behörde {{ departmentName }} wurde {{ timeString }} erfolgreich entfernt.
         {{ block('success_end') }}
     	{% endblock %}
 
@@ -167,7 +167,7 @@
     	{% block scope_deleted %}
 			{% set successTitle = "Löschen erfolgreich" %}
 	    	{{ block('success_start') }}
-	        	Der Standort wurde {{ timeString }} erfolgreich entfernt.
+	        	Der Standort {{ scopeName }} wurde {{ timeString }} erfolgreich entfernt.
 	        {{ block('success_end') }}
     	{% endblock %}
 
