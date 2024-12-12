@@ -29,7 +29,7 @@ class WarehouseIndex extends BaseController
             $response,
             'page/warehouseIndex.twig',
             array(
-                'title' => 'Übersicht verfügbarer Kategorien',
+                'title' => 'Kategorie auswählen',
                 'menuActive' => 'warehouse',
                 'warehouse' => $warehouse,
                 'workstation' => $this->workstation->getArrayCopy()
