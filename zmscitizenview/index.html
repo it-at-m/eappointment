@@ -27,6 +27,8 @@
 <script type="text/javascript">
     const element = document.getElementsByTagName('zms-appointment')[0]
     const urlElements = window.location.hash.split('/')
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
 
     if (urlElements.length >= 3 && urlElements[1] === 'services') {
         element.setAttribute('service-id', urlElements[2])
@@ -42,6 +44,10 @@
 
     if (urlElements.length === 3 && urlElements[1] === 'appointment') {
         element.setAttribute('appointment-hash', urlElements[2])
+    }
+
+    if (params.get('exclusiveLocation')) {
+        element.setAttribute('exclusive-location', '1')
     }
 </script>
 

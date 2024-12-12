@@ -14,6 +14,7 @@
               <service-finder
                 :preselected-service-id="serviceId"
                 :preselected-offive-id="locationId"
+                :exclusive-location="exclusiveLocation"
                 :t="t"
                 @next="setServices"
               />
@@ -191,6 +192,7 @@ const props = defineProps<{
   baseUrl: any;
   serviceId?: string;
   locationId?: string;
+  exclusiveLocation?: string;
   appointmentHash?: any;
   confirmAppointmentHash?: any;
   t: any;

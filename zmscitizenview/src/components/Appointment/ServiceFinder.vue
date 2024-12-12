@@ -85,6 +85,7 @@ import { MAX_SLOTS } from "@/utils/Constants";
 const props = defineProps<{
   preselectedServiceId: string | undefined;
   preselectedOffiveId: string | undefined;
+  exclusiveLocation: string | undefined;
   t: any;
 }>();
 
@@ -173,6 +174,10 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
       const foundOffice: OfficeImpl = offices.value.filter((office) => {
         return office.id === relation.officeId;
       })[0];
+
+      if (props.exclusiveLocation && foundOffice.id !== props.preselectedOffiveId) {
+        return;
+      }
 
       if (!providers || providers.includes(foundOffice.id.toString())) {
         foundOffice.slots = relation.slots;
