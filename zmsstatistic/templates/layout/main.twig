@@ -17,7 +17,10 @@
 <body>
     <span id="js-is_palm"></span>
     <div id="page-wrapper">
-        <header id="page-header">
+        <header id="page-header" style="{% if getSystemStatus('ZMS_ENV') == 'dev' %}background-color: #2ECC40;
+            {% elseif getSystemStatus('ZMS_ENV') == 'test' %}background-color: #FF851B;
+            {% elseif getSystemStatus('ZMS_ENV') == 'demo' %}background-color: #7FDBFF;
+            {% elseif getSystemStatus('ZMS_ENV') == 'load' %}background-color: #F012BE;{% endif %}">
             {% block pageheader %}
                 {{ parent() }}
             {%- endblock %}
