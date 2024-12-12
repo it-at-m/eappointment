@@ -18,12 +18,15 @@
 <body>
     <span id="js-is_palm"></span>
     <div id="page-wrapper">
-        <header id="page-header" role="banner">
+        <header id="page-header" role="banner" style="{% if getSystemStatus('ZMS_ENV') == 'dev' %}background-color: #2ECC40;
+            {% elseif getSystemStatus('ZMS_ENV') == 'test' %}background-color: #FF851B;
+            {% elseif getSystemStatus('ZMS_ENV') == 'demo' %}background-color: #7FDBFF;
+            {% elseif getSystemStatus('ZMS_ENV') == 'load' %}background-color: #F012BE;{% endif %}">
             {% block pageheader %}
                 {{ parent() }}
             {%- endblock %}
         </header>
-
+        
         <div id="content-wrapper">
             {% block breadcrumb %}
                 {{ parent() }}
