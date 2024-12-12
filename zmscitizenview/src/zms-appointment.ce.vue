@@ -7,6 +7,7 @@
         :base-url="baseUrl"
         :service-id="serviceId"
         :location-id="locationId"
+        :exclusive-location="exclusiveLocation"
         :appointment-hash="appointmentHash"
         :confirm-appointment-hash="confirmAppointmentHash"
         :t="t"
@@ -34,6 +35,11 @@ defineProps({
     default: undefined,
   },
   locationId: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
+  exclusiveLocation: {
     type: String,
     required: false,
     default: undefined,
