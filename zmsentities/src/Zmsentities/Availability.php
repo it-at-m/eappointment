@@ -112,7 +112,7 @@ class Availability extends Schema\Entity
      * ATTENTION: Time critical function, keep highly optimized
      *
      * @param \DateTimeInterface $dateTime
-     * @param String $type of "openinghours", "appointment" or false to ignore type
+     * @param string $type of "openinghours", "appointment" or false to ignore type
      *
      * @return Bool
      */
@@ -136,7 +136,7 @@ class Availability extends Schema\Entity
      * Compared to hasDate() the time of the day is checked, but not booking time
      *
      * @param \DateTimeInterface $dateTime
-     * @param String $type of "openinghours", "appointment" or false to ignore type
+     * @param string $type of "openinghours", "appointment" or false to ignore type
      *
      */
     public function isOpened(\DateTimeInterface $dateTime, $type = false)
@@ -434,7 +434,7 @@ class Availability extends Schema\Entity
      *
      * @return Array of arrays with the keys time, public, callcenter, intern
      */
-    public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now)
+    public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now): bool
     {
         if ($startTime->getTimestamp() < $now->getTimestamp()) {
             $startTime = $now;
@@ -450,7 +450,143 @@ class Availability extends Schema\Entity
         } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
         return false;
     }
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+    {
+        $errorList = [];
+        
+        $startTime = (clone $startDate)->setTime(0, 0);
+        $startHour = ($startDate->format('H'));
+        $endHour = (int)$endDate->format('H');
+        $startMinute = (int)$startDate->format('i');
+        $endMinute = (int)$endDate->format('i');
+        $isFuture = ($kind && $kind === 'future');
 
+        if (
+            !$isFuture &&
+            $selectedDate->getTimestamp() > $today->getTimestamp() &&
+            $startTime->getTimestamp() > (clone $selectedDate)->setTime(0, 0)->getTimestamp()
+        ) {
+            $errorList[] = [
+                'type' => 'startTimeFuture',
+                'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
+            ];
+        }
+        
+        if (($startHour == 0 && $startMinute == 0) || ($endHour == 0 && $endMinute == 0)) {
+            $errorList[] = [
+                'type' => 'startOfDay',
+                'message' => 'Die Uhrzeit darf nicht "00:00" sein.'
+            ];
+        }
+        
+        return $errorList;
+    }  
+    public function validateEndTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        $errorList = [];
+        
+        $startHour = (int)$startDate->format('H');
+        $endHour = (int)$endDate->format('H');
+        $startMinute = (int)$startDate->format('i');
+        $endMinute = (int)$endDate->format('i');
+        $dayMinutesStart = ($startHour * 60) + $startMinute;
+        $dayMinutesEnd = ($endHour * 60) + $endMinute;
+        $startTimestamp = $startDate->getTimestamp();
+        $endTimestamp = $endDate->getTimestamp();
+
+        if ($dayMinutesEnd <= $dayMinutesStart) {
+            $errorList[] = [
+                'type' => 'endTime',
+                'message' => 'Die Endzeit darf nicht vor der Startzeit liegen.'
+            ];
+        } elseif ($startTimestamp >= $endTimestamp) {
+            $errorList[] = [
+                'type' => 'endTime',
+                'message' => 'Das Enddatum darf nicht vor dem Startdatum liegen.'
+            ];
+        }
+        
+        return $errorList;
+    }
+    
+    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+    {
+        $errorList = [];
+        $endHour = (int) $endDate->format('H');
+        $endMinute = (int) $endDate->format('i');
+        $endDateTime = (clone $endDate)->setTime($endHour, $endMinute);
+        $endTimestamp = $endDateTime->getTimestamp();
+        $isOrigin = ($kind && $kind === 'origin');
+    
+        if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < (clone $selectedDate)->setTime(0, 0)) {
+            $errorList[] = [
+                'type' => 'endTimeFuture',
+                'message' => "Das Enddatum der Öffnungszeit muss nach dem " . $yesterday->format('d.m.Y') . " liegen."
+            ];
+        }
+    
+        if (!$isOrigin && $endTimestamp < $today->getTimestamp()) {
+            $errorList[] = [
+                'type' => 'endTimePast',
+                'message' => 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
+                    . '(Die aktuelle Zeit "' . $today->format('d.m.Y H:i') . ' Uhr" liegt nach dem Terminende am "'
+                    . $endDateTime->format('d.m.Y H:i') . ' Uhr").'
+            ];
+        }
+    
+        return $errorList;
+    }
+    
+    public function validateType(string $kind): array
+    {
+        $errorList = [];
+        if (empty($kind)) {
+            $errorList[] = [
+                'type' => 'type',
+                'message' => 'Typ erforderlich'
+            ];
+        }
+        return $errorList;
+    }
+    
+    public function validateSlotTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        $errorList = [];
+        $slotTime = $this['slotTimeInMinutes'];
+        $startTimestamp = $startDate->getTimestamp();
+        $endTimestamp = $endDate->getTimestamp();
+
+        if ($slotTime === 0) { 
+            $errorList[] = [
+                'type' => 'slotTime', 
+                'message' => 'Die Slot-Zeit darf nicht 0 sein.']; 
+            return $errorList;
+        }
+    
+        $slotAmount = (($endTimestamp - $startTimestamp) / 60) % $slotTime;
+        if ($slotAmount > 0) {
+            $errorList[] = [
+                'type' => 'slotCount',
+                'message' => 'Zeitschlitze müssen sich gleichmäßig in der Öffnungszeit aufteilen lassen.'
+            ];
+        }
+    
+        return $errorList;
+    }
+
+    public function validateBookableDayRange(int $startInDays, int $endInDays): array
+    {
+        $errorList = [];
+        if ($startInDays > $endInDays) {
+            $errorList[] = [
+                'type' => 'bookableDayRange',
+                'message' => 'Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.'
+            ];
+        }
+    
+        return $errorList;
+    }
+    
     /**
      * Get problems on configuration of this availability
      *
@@ -632,35 +768,36 @@ class Availability extends Schema\Entity
             && $this->hasSharedWeekdayWith($availability)
         ) {
             $processTemplate = new Process();
-            $processTemplate->amendment = "Zwei Öffnungszeiten überschneiden sich.";
             $processTemplate->status = 'conflict';
             $appointment = $processTemplate->getFirstAppointment();
             $appointment->availability = $this;
             $appointment->date = $this->getStartDateTime()->getTimestamp();
-            $thisStart = $this->getStartDateTime()->getSecondsOfDay();
-            $thisEnd = $this->getEndDateTime()->getSecondsOfDay();
-            $availabilityStart = $availability->getStartDateTime()->getSecondsOfDay();
-            $availabilityEnd = $availability->getEndDateTime()->getSecondsOfDay();
 
-            $isEqual = ($availabilityStart == $thisStart && $availabilityEnd == $thisEnd);
-                
-            if ($availabilityStart < $thisEnd && $thisStart < $availabilityEnd && ! $isEqual) {
+            $existingDateRange = $this->getStartDateTime()->format('d.m.Y') . ' - ' . $this->getEndDateTime()->format('d.m.Y');
+            $newDateRange = $availability->getStartDateTime()->format('d.m.Y') . ' - ' . $availability->getEndDateTime()->format('d.m.Y');
+            
+            $existingTimeRange = $this->getStartDateTime()->format('H:i') . ' - ' . $this->getEndDateTime()->format('H:i');
+            $newTimeRange = $availability->getStartDateTime()->format('H:i') . ' - ' . $availability->getEndDateTime()->format('H:i');
+
+            $isEqual = ($this->getStartDateTime()->getSecondsOfDay() == $availability->getStartDateTime()->getSecondsOfDay() &&
+                        $this->getEndDateTime()->getSecondsOfDay() == $availability->getEndDateTime()->getSecondsOfDay());
+            if ($isEqual) {
                 $process = clone $processTemplate;
-                $process->getFirstAppointment()->date = $this
-                    ->getStartDateTime()
-                    ->modify($currentDate->format("Y-m-d"))
-                    ->getTimestamp();
-                $processList->addEntity($process);
-            } elseif ($thisEnd < $availabilityStart && $availabilityEnd < $thisStart && ! $isEqual) {
-                $process = clone $processTemplate;
+                $process->amendment = "Konflikt: Zwei Öffnungszeiten sind gleich.\n"
+                                    . "Bestehende Öffnungszeit:&thinsp;&thinsp;[$newDateRange, $newTimeRange]\n"
+                                    . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange]";
                 $process->getFirstAppointment()->date = $availability
                     ->getStartDateTime()
                     ->modify($currentDate->format("Y-m-d"))
                     ->getTimestamp();
                 $processList->addEntity($process);
-            } elseif ($isEqual) {
+            }
+            elseif ($availability->getStartDateTime()->getSecondsOfDay() < $this->getEndDateTime()->getSecondsOfDay() &&
+                    $this->getStartDateTime()->getSecondsOfDay() < $availability->getEndDateTime()->getSecondsOfDay()) {
                 $process = clone $processTemplate;
-                $process->amendment = "Zwei Öffnungszeiten sind gleich.";
+                $process->amendment = "Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n"
+                                    . "Bestehende Öffnungszeit:&thinsp;&thinsp;[$newDateRange, $newTimeRange]\n"
+                                    . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange]";
                 $process->getFirstAppointment()->date = $availability
                     ->getStartDateTime()
                     ->modify($currentDate->format("Y-m-d"))
@@ -668,6 +805,7 @@ class Availability extends Schema\Entity
                 $processList->addEntity($process);
             }
         }
+    
         return $processList;
     }
 

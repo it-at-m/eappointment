@@ -6,13 +6,12 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsapi\Exception\BadRequest as BadRequestException;
 use BO\Zmsentities\Availability;
-
 use BO\Zmsentities\Collection\AvailabilityList;
 
 /**
  * Check if new Availability is in conflict with existing availability
- *
  */
 class AvailabilityConflicts extends BaseController
 {
@@ -28,44 +27,77 @@ class AvailabilityConflicts extends BaseController
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
         $data = static::getAvailabilityData($input);
-        return \BO\Slim\Render::withJson(
-            $response,
-            $data
-        );
+        return \BO\Slim\Render::withJson($response, $data);
     }
 
     protected static function getAvailabilityData($input)
     {
+
+        if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
+            throw new BadRequestException('Missing or invalid availabilityList.');
+        } else if(!isset($input['availabilityList'][0]['scope'])){
+            throw new BadRequestException('Missing or invalid scope.');
+        } else if (!isset($input['selectedDate'])) {
+            throw new BadRequestException("'selectedDate' is required.");
+        }
         $conflictList = new \BO\Zmsentities\Collection\ProcessList();
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];
-
+    
         $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
-        $selectedAvailability = new Availability($input['selectedAvailability']);
-        $startDateTime = ($selectedAvailability->getStartDateTime() >= \App::$now) ?
-            $selectedAvailability->getStartDateTime() : $selectedDateTime;
-        $endDateTime = ($input['selectedAvailability']) ?
-            $selectedAvailability->getEndDateTime() : $selectedDateTime;
+    
+        $scopeData = $input['availabilityList'][0]['scope'];
+        $scope = new \BO\Zmsentities\Scope($scopeData);
 
-        $availabilityList = $availabilityList->sortByCustomStringKey('endTime');
-        $conflictList = $availabilityList->getConflicts($startDateTime, $endDateTime);
-
+        $futureAvailabilityList = self::getAvailabilityList($scope, $selectedDateTime);
+    
+        foreach ($futureAvailabilityList as $futureAvailability) {
+            $availabilityList->addEntity($futureAvailability);
+        }
+    
+        $originId = null;
+        foreach ($availabilityList as $availability) {
+            if (isset($availability->kind) && $availability->kind === 'origin' && isset($availability->id)) {
+                $originId = $availability->id;
+                break;
+            }
+        }
+    
+        $filteredAvailabilityList = new AvailabilityList();
+        foreach ($availabilityList as $availability) {
+            if ((!isset($availability->kind) || $availability->kind !== 'exclusion') && 
+                (!isset($availability->id) || $availability->id !== $originId)) {
+                $filteredAvailabilityList->addEntity($availability);
+            }
+        }
+    
+        [$earliestStartDateTime, $latestEndDateTime] = $filteredAvailabilityList->getDateTimeRangeFromList($selectedDateTime);
+    
+        $filteredAvailabilityList = $filteredAvailabilityList->sortByCustomStringKey('endTime');
+        $conflictList = $filteredAvailabilityList->getConflicts($earliestStartDateTime, $latestEndDateTime);
+    
         foreach ($conflictList as $conflict) {
             $availabilityId = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
                 $conflict->getFirstAppointment()->getAvailability()->getId() :
                 $conflict->getFirstAppointment()->getAvailability()->tempId;
-            if (! in_array($availabilityId, $conflictedList)) {
+            if (!in_array($availabilityId, $conflictedList)) {
                 $conflictedList[] = $availabilityId;
             }
         }
-
+    
         return [
             'conflictList' => $conflictList->toConflictListByDay(),
             'conflictIdList' => (count($conflictedList)) ? $conflictedList : []
         ];
     }
 
-    /*
+    /**
+     * Fetch availabilities for a given scope and date.
+     * 
+     * @param \BO\Zmsentities\Scope $scope
+     * @param \DateTimeImmutable $dateTime
+     * @return AvailabilityList
+     */
     protected static function getAvailabilityList($scope, $dateTime)
     {
         try {
@@ -74,7 +106,7 @@ class AvailabilityConflicts extends BaseController
                     '/scope/' . $scope->getId() . '/availability/',
                     [
                         'resolveReferences' => 0,
-                        'startDate' => $dateTime->format('Y-m-d') //for skipping old availabilities
+                        'startDate' => $dateTime->format('Y-m-d') // Only fetch availabilities from this date onward
                     ]
                 )
                 ->getCollection();
@@ -86,5 +118,5 @@ class AvailabilityConflicts extends BaseController
         }
         return $availabilityList->withScope($scope);
     }
-    */
+
 }

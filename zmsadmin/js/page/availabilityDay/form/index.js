@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import FormButtons from './formButtons'
 import FormContent from './content'
 import { getDataValuesFromForm, cleanupFormData, getFormValuesFromData } from '../helpers'
+import { hasSlotCountError } from '../form/validate';
 
 class AvailabilityForm extends Component {
     constructor(props) {
@@ -64,6 +65,7 @@ class AvailabilityForm extends Component {
                     onUpdateSingle={this.props.onUpdateSingle}
                     selectedDate={this.props.selectedDate}
                     hasConflicts={hasConflicts}
+                    hasSlotCountError={hasSlotCountError(this.props)}
                     isCreatingExclusion={this.props.isCreatingExclusion}
                 />}
             </div>

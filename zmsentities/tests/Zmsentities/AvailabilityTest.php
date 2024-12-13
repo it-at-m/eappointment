@@ -179,7 +179,7 @@ class AvailabilityTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $withCalculatedSlots = $entity->withCalculatedSlots();
-        $this->assertEquals(5346000, $withCalculatedSlots->getAvailableSecondsPerDay());
+        $this->assertEquals(6534000, $withCalculatedSlots->getAvailableSecondsPerDay());
     }
 
     public function testGetAvailableSecondsOnDateTime()
@@ -196,7 +196,7 @@ class AvailabilityTest extends EntityCommonTests
         $collection = new $this->collectionclass();
         $collection->addEntity($entity);
         $collection = $collection->withCalculatedSlots();
-        $this->assertEquals(5346000, $collection->getAvailableSecondsOnDateTime($time));
+        $this->assertEquals(6534000, $collection->getAvailableSecondsOnDateTime($time));
     }
 
     public function testDayOff()
@@ -498,7 +498,7 @@ class AvailabilityTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $withCalculatedSlots = $entity->withCalculatedSlots();
-        $this->assertTrue(81 == $withCalculatedSlots['workstationCount']['public'], $withCalculatedSlots);
+        $this->assertTrue(99 == $withCalculatedSlots['workstationCount']['public'], $withCalculatedSlots);
     }
 
     public function testGetSlotList()
@@ -507,9 +507,9 @@ class AvailabilityTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $collection->addEntity($entity);
         $slotList = $collection->getSlotList();
-        $this->assertTrue(28 == count($slotList));
+        $this->assertTrue(33 == count($slotList));
         $this->assertEquals('10:00', $slotList->getFirst()['time']);
-        $this->assertEquals('10:12', $slotList[1]['time']);
+        $this->assertEquals('10:10', $slotList[1]['time']);
     }
 
     public function testToString()
@@ -541,7 +541,7 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertTrue(
             2 == count($collection),
             'Amount of entities in collection failed, 2 expected (' .
-                count($collection) . ' found)'
+            count($collection) . ' found)'
         );
 
         $this->assertTrue(
@@ -550,7 +550,7 @@ class AvailabilityTest extends EntityCommonTests
         );
 
         $this->assertTrue(
-            81 == $collection->withCalculatedSlots()[0]['workstationCount']['public'],
+            99 == $collection->withCalculatedSlots()[0]['workstationCount']['public'],
             'Failed to get list with calculated slots'
         );
         $collection->addEntity($entity);
@@ -878,36 +878,83 @@ class AvailabilityTest extends EntityCommonTests
             */
 
             $id = $conflict->getFirstAppointment()->getAvailability()->getId();
-            if (! isset($list[$conflict->amendment])) {
+            if (!isset($list[$conflict->amendment])) {
                 $list[$conflict->amendment] = [];
             }
-            if (! isset($list[$conflict->amendment][$id])) {
+            if (!isset($list[$conflict->amendment][$id])) {
                 $list[$conflict->amendment][$id] = 1;
             } else {
                 $list[$conflict->amendment][$id] += 1;
             }
         }
-    
-        // Availability 1 und 5 überschneiden sich jeweils 3 mal
-        $this->assertEquals(3, $list['Zwei Öffnungszeiten überschneiden sich.'][1]);
-        $this->assertEquals(3, $list['Zwei Öffnungszeiten überschneiden sich.'][5]);
 
-        // Availability 2, 4 und 6 überschneiden sich jeweils 2 mal
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][2]);
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][4]);
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][6]);
-
-        // Availability 1 und 5 sind sich jeweils gleich
-        $this->assertEquals(1, $list['Zwei Öffnungszeiten sind gleich.'][1]);
-        $this->assertEquals(1, $list['Zwei Öffnungszeiten sind gleich.'][5]);
-
-        // Availability 3 hat eine falsche Slotgröße
+        // Assertion for overlapping availabilities - Availability 1 and 5
         $this->assertEquals(
             1,
-            $list['Der eingestellte Zeitschlitz von 25 Minuten sollte in die eingestellte Uhrzeit passen.'][3]
+            $list[
+                "Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n" .
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]"
+            ][1]
         );
-    }
 
+        $this->assertEquals(
+            1,
+            $list[
+                "Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n" .
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]"
+            ][5]
+        );
+
+        // Assertions for overlapping availabilities - Availability 2, 4
+        $this->assertEquals(
+            2,
+            $list[
+                "Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n" .
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00]"
+            ][2]
+        );
+
+        $this->assertEquals(
+            2,
+            $list[
+                "Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n" .
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 15:00 - 17:00]"
+            ][4]
+        );
+
+        // Assertions for exact matches - Availability 1 and 5
+        $this->assertEquals(
+            1,
+            $list[
+                "Konflikt: Zwei Öffnungszeiten sind gleich.\n" .
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]"
+            ][1]
+        );
+
+        $this->assertEquals(
+            1,
+            $list[
+                "Konflikt: Zwei Öffnungszeiten sind gleich.\n" .
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]"
+            ][5]
+        );
+
+        // Assertion for slot size conflict
+        $this->assertEquals(
+            1,
+            $list[
+                'Der eingestellte Zeitschlitz von 25 Minuten sollte in die eingestellte Uhrzeit passen.'
+            ][3]
+        );
+
+
+    }
 
     protected function getExampleWithTypeOpeningHours(\DateTimeImmutable $time)
     {
