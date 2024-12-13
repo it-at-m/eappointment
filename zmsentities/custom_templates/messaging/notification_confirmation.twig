@@ -1,7 +1,0 @@
-{% block german %}
-{% if process.scope.preferences.notifications.confirmationContent %}
-{{ process.scope.preferences.notifications.confirmationContent }} {{ process.queue.number }}
-{% else %}
-{{ config.notifications.confirmationContent }} {{ process.queue.number }}
-{% endif %}
-{% endblock %}
