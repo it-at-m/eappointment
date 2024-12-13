@@ -337,14 +337,17 @@ class CallDisplayConfigView extends Component {
                                 { name: '10 Aufrufe | Platz (engl. site)', value: 'default_platz' },
                                 { name: '10 Aufrufe | Tür (engl. door)', value: 'default_tuer' },
                                 { name: '10 Aufrufe | Raum (engl. room)', value: 'default_raum' },
+                                { name: '10 Aufrufe | Tisch (engl. desk)', value: 'default_tisch' },
                                 { name: '8 Aufrufe | Schalter (engl. counter)', value: 'default_counter8' },
                                 { name: '8 Aufrufe | Platz (engl. site)', value: 'default_platz8' },
                                 { name: '8 Aufrufe | Tür (engl. door)', value: 'default_tuer8' },
                                 { name: '8 Aufrufe | Raum (engl. room)', value: 'default_raum8' },
+                                { name: '8 Aufrufe | Tisch (engl. desk)', value: 'default_tisch8' },
                                 { name: '6 Aufrufe | Schalter (engl. counter)', value: 'default_counter6' },
                                 { name: '6 Aufrufe | Platz (engl. site)', value: 'default_platz6' },
                                 { name: '6 Aufrufe | Tür (engl. door)', value: 'default_tuer6' },
-                                { name: '6 Aufrufe | Raum (engl. room)', value: 'default_raum6' }
+                                { name: '6 Aufrufe | Raum (engl. room)', value: 'default_raum6' },
+                                { name: '6 Aufrufe | Tisch (engl. desk)', value: 'default_tisch6' }
                             ]}
                             value={this.state.template}
                             onChange={onTemplateStatusChange} />

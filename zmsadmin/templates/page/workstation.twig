@@ -12,7 +12,7 @@
         data-selected-time="{{ selectedTime }}"
         data-selected-process="{{ selectedProcess }}"
         data-cluster-enabled="{{ workstation.queue.clusterEnabled }}"
-        data-email-confirmation-activated="{{ workstation.scope.preferences.client.emailConfirmationActivated }}
+        data-email-confirmation-activated="{{ workstation.scope.preferences.client.emailConfirmationActivated }}"
         data-selected-scope="{% if workstation.queue.clusterEnabled == 0 %}{{ workstation.scope.id }}{% else %}{{ selectedScope }}{% endif %}"
         data-called-process="{{ calledProcess }}">
         <div class="grid" style="

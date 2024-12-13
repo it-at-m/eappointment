@@ -160,7 +160,7 @@ class Mail extends BaseController
                 $results[] = ['errorInfo' => $e->getMessage()];
             }
     
-            $processedItems[] = '[' . $entity->id . ', ' . $entity['process']['id'] . ']';
+            $processedItems[] = '[' . $entity->id . ', ' . $entity['process']['id'] . ', ' . $entity->createTimestamp . ']';
         }
     
         if ($action && !empty($successfullySentIds)) {
@@ -171,7 +171,7 @@ class Mail extends BaseController
             }
         }
     
-        $this->log("Processing finished for IDs: " . implode(', ', $processedItems));
+        $this->log("Processing finished for IDs [emailId, processId, createdTimestamp)]: " . implode(', ', $processedItems));
     
         return $results;
     }
