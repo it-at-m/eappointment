@@ -38,12 +38,20 @@ class AppointmentUpdate extends BaseController
                 return $this->createJsonResponse($response, $reservedProcess, 404);
             }
 
-            $reservedProcess['clients'][0]['familyName'] = $familyName;
-            $reservedProcess['clients'][0]['email'] = $email;
-            $reservedProcess['clients'][0]['telephone'] = $telephone;
-            $reservedProcess['customTextfield'] = $customTextfield;
+            error_log(json_encode($reservedProcess['data']['processId']));
+            error_log(json_encode($reservedProcess['data']['email']));
+            error_log(json_encode($reservedProcess['data']['familyName']));
 
-            $updatedProcess = ZmsApiFacadeService::updateClientData(new Process($reservedProcess));
+
+            $reservedProcess['data']['familyName'] = $familyName;
+            $reservedProcess['data']['email'] = $email;
+            $reservedProcess['data']['telephone'] = $telephone;
+            $reservedProcess['data']['customTextfield'] = $customTextfield;
+            //$reservedProcess['data']['id'] = $processId;
+
+            //error_log(json_encode($reservedProcess));
+
+            $updatedProcess = ZmsApiFacadeService::updateClientData(Process::create($reservedProcess['data']));
 
             if (isset($updatedProcess['error']) && $updatedProcess['error'] === 'tooManyAppointmentsWithSameMail') {
                 return $this->createJsonResponse($response, ExceptionService::tooManyAppointmentsWithSameMail(), 406);

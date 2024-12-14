@@ -17,7 +17,7 @@ class AppointmentGet extends BaseController
 
         $result = ZmsApiFacadeService::getProcessById($processId, $authKey);
 
-        return $this->createJsonResponse($response, $result['data'] ?? $result, $result['status']);
+        return $this->createJsonResponse($response, $result ?? $result, $result['status']);
     }
     
 }

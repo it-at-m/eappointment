@@ -141,24 +141,30 @@ class ZmsApiClientService
 
     public static function submitClientData(Process $process): Process|array
     {
+
+        error_log(json_encode($process));
+
         $processEntity = new Process();
-        $processEntity->id = $process['data']['processId'] ?? null;
-        $processEntity->authKey = $process['data']['authKey'] ?? null;
-        $processEntity->appointments = $process['appointments'] ?? [];
-        $processEntity->clients = $process['clients'] ?? [];
-        $processEntity->scope = $process['data']['scope'] ?? null;
-        $processEntity->customTextfield = $process['customTextfield'] ?? null;
-        $processEntity->lastChange = $process['lastChange'] ?? time();
-
-        if (isset($process['queue'])) {
-            $processEntity->queue = $process['queue'];
+        $processEntity->id = $process->id ?? null;
+        $processEntity->authKey = $process->authKey ?? null;
+        $processEntity->appointments = $process->appointments ?? [];
+        $processEntity->clients = $process->clients ?? [];
+        $processEntity->scope = $process->scope ?? null;
+        $processEntity->customTextfield = $process->customTextfield ?? null;
+        $processEntity->lastChange = $process->lastChange ?? time();
+    
+        if (isset($process->queue)) {
+            $processEntity->queue = $process->queue;
         }
-
+    
         $processEntity->createIP = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
         $processEntity->createTimestamp = time();
-
+    
         $url = "/process/{$processEntity->id}/{$processEntity->authKey}/";
 
+        
+        error_log($url);
+    
         try {
             $result = \App::$http->readPostResult($url, $processEntity);
             return $result->getEntity();
@@ -174,6 +180,7 @@ class ZmsApiClientService
             }
         }
     }
+    
 
     public function preconfirmProcess(?Process $process): Process
     {

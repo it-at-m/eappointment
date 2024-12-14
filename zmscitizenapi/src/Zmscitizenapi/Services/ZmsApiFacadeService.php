@@ -569,7 +569,7 @@ class ZmsApiFacadeService
         return ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts);
     }
 
-    public static function getProcessById(?int $processId, ?string $authKey): array
+    public static function getProcessById(?int $processId, ?string $authKey): Process|array
     {
         $errors = ValidationService::validateGetProcessById($processId, $authKey);
         if (!empty($errors['errors'])) {
@@ -586,6 +586,8 @@ class ZmsApiFacadeService
             }
 
             $responseData = UtilityHelper::getThinnedProcessData($process);
+            //$responseData = $process;
+
             return ['data' => $responseData, 'status' => 200];
 
         } catch (\Exception $e) {

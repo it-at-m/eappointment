@@ -43,7 +43,7 @@ class UtilityHelper
         return array_search($value, $self) === $index;
     }
 
-    public static function getThinnedProcessData(?Process $myProcess): array
+    public static function getThinnedProcessData(Process $myProcess): array
     {
         if (!$myProcess || !isset($myProcess->id)) {
             return [];
@@ -75,7 +75,7 @@ class UtilityHelper
         }
 
         return [
-            'processId' => $myProcess->id,
+            'id' => $myProcess->id,
             'timestamp' => isset($myProcess->appointments[0]) ? $myProcess->appointments[0]->date : null,
             'authKey' => $myProcess->authKey ?? null,
             'familyName' => isset($myProcess->clients[0]) ? $myProcess->clients[0]->familyName : null,
