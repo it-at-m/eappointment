@@ -6,7 +6,7 @@ use BO\Zmsentities\Schema\Entity;
 
 class ThinnedProcess extends Entity
 {
-    public static $schema = "citizenapi/thinnedProcess.json";
+    public static $schema = "zmsentities/schema/citizenapi/thinnedProcess.json";
 
     // Add properties based on schema (or dynamically handle them in Entity class)
 
