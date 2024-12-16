@@ -181,18 +181,21 @@
 		</div>
 
 		<div class="table-responsive-wrapper">
-			<h2 class="accordion">
+			<h2 class="accordion {{ showCalledList ? 'active' : '' }}" id="called-appointments">
 				<span class="color-green">
 					<i class="fas fa-play-circle" aria-hidden="true"></i>
 				</span>
-				Offene Aufrufe ({{ clusterQueueListCalled|length }})
+				Offene Aufrufe
+				{% if showCalledList %}
+				({{ queueListCalled|length }})
+				{% endif %}
 				<span class="accordion-icon">
 					<i class="fas fa-angle-down icon-down" aria-hidden="true"></i>
 					<i class="fas fa-angle-up icon-up" aria-hidden="true"></i>
 				</span>
 			</h2>
-			<div class="table-responsive-wrapper accordion-panel">
-				{% if clusterQueueListCalled|length %}
+			<div class="table-responsive-wrapper accordion-panel" style="{{ showCalledList ? 'display:block;' : '' }}">
+				{% if queueListCalled|length %}
 					<table id="table-called-appointments" class="table--base compact">
 						<thead>
 						<tr>
@@ -208,7 +211,7 @@
 						</tr>
 						</thead>
 						{% set lfdnr = 0 %}
-						{% for item in clusterQueueListCalled %}
+						{% for item in queueListCalled %}
 							{% set lfdnr = lfdnr + 1 %}
 							<tr class="parked">
 								<td>
