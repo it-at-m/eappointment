@@ -2,11 +2,11 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
-use BO\Zmscitizenapi\AppointmentGet;
+use BO\Zmscitizenapi\AppointmentById;
 
-class AppointmentGetTest extends Base
+class AppointmentByIdTest extends Base
 {
-    protected $classname = "AppointmentGet";
+    protected $classname = "AppointmentById";
 
     public function testRendering()
     {
@@ -171,7 +171,7 @@ class AppointmentGetTest extends Base
                 [
                     'status' => 400,
                     'errorCode' => 'invalidProcessId',
-                    'errorMessage' => 'processId should be a 32-bit integer.'
+                    'errorMessage' => 'processId should be a positive 32-bit integer.'
                 ]
             ],
             'status' => 400
@@ -216,7 +216,7 @@ class AppointmentGetTest extends Base
                 [
                     'status' => 400,
                     'errorCode' => 'invalidProcessId',
-                    'errorMessage' => 'processId should be a 32-bit integer.'
+                    'errorMessage' => 'processId should be a positive 32-bit integer.'
                 ]
             ],
             'status' => 400
@@ -259,7 +259,7 @@ class AppointmentGetTest extends Base
                 [
                     'status' => 400,
                     'errorCode' => 'invalidProcessId',
-                    'errorMessage' => 'processId should be a 32-bit integer.',
+                    'errorMessage' => 'processId should be a positive 32-bit integer.',
                 ],
                 [
                     'status' => 400,

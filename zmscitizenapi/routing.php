@@ -128,9 +128,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/scope-by-id/',
-    '\BO\Zmscitizenapi\ScopeByIdGet'
+    '\BO\Zmscitizenapi\ScopeById'
 )
-    ->setName("ScopeByIdGet");
+    ->setName("ScopeById");
 
 /**
  * @swagger
@@ -294,7 +294,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
@@ -318,9 +318,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/appointment/',
-    '\BO\Zmscitizenapi\AppointmentGet'
+    '\BO\Zmscitizenapi\AppointmentById'
 )
-    ->setName("AppointmentGet");
+    ->setName("AppointmentById");
 
 /**
  * @swagger
@@ -342,9 +342,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/captcha-details/',
-    '\BO\Zmscitizenapi\CaptchaGet'
+    '\BO\Zmscitizenapi\Captcha'
 )
-    ->setName("CaptchaGet");
+    ->setName("Captcha");
 
 /**
  * @swagger
@@ -369,7 +369,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
@@ -420,7 +420,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
@@ -471,7 +471,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
@@ -522,7 +522,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
@@ -573,7 +573,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:

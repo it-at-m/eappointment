@@ -1,9 +1,4 @@
 <?php
-/*if (php_sapi_name() !== 'cli' && (!defined('BOOTSTRAP_ALLOW_WEB') || !BOOTSTRAP_ALLOW_WEB)) {
-    header('HTTP/1.0 403 Forbidden');
-    exit('Access Denied');
-}*/ // If activated blocks direct api access via http
-
 // @codingStandardsIgnoreFile
 chdir(__DIR__);
 

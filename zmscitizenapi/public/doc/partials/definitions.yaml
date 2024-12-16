@@ -1,6 +1,6 @@
 definitions:
   appointment:
-    $ref: "schema/citizenapi/appointment.json"
+    $ref: "schema/citizenapi/thinnedProcess.json"
   appointmentCancel:
     $ref: "schema/citizenapi/appointmentCancel.json"
   appointmentConfirm:

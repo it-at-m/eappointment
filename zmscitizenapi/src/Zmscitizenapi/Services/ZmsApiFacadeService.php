@@ -3,6 +3,7 @@
 namespace BO\Zmscitizenapi\Services;
 
 use \BO\Zmscitizenapi\Helper\UtilityHelper;
+use \BO\Zmscitizenapi\Models\ThinnedProcess;
 use \BO\Zmscitizenapi\Services\ZmsApiClientService;
 use \BO\Zmsentities\Process;
 use \BO\Zmsentities\Scope;
@@ -569,7 +570,7 @@ class ZmsApiFacadeService
         return ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts);
     }
 
-    public static function getProcessById(?int $processId, ?string $authKey): array
+    public static function getThinnedProcessById(?int $processId, ?string $authKey): ThinnedProcess|array
     {
         $errors = ValidationService::validateGetProcessById($processId, $authKey);
         if (!empty($errors['errors'])) {
@@ -585,8 +586,10 @@ class ZmsApiFacadeService
                 return $errors;
             }
 
-            $responseData = UtilityHelper::getThinnedProcessData($process);
-            return ['data' => $responseData, 'status' => 200];
+            $thinnedProcess = new ThinnedProcess();
+            $thinnedProcess = UtilityHelper::processToThinnedProcess($process);
+
+            return $thinnedProcess;
 
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'kein Termin gefunden') !== false) {

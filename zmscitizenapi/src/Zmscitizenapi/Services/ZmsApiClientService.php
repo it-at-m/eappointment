@@ -141,26 +141,11 @@ class ZmsApiClientService
 
     public static function submitClientData(Process $process): Process|array
     {
-        $processEntity = new Process();
-        $processEntity->id = $process['data']['processId'] ?? null;
-        $processEntity->authKey = $process['data']['authKey'] ?? null;
-        $processEntity->appointments = $process['appointments'] ?? [];
-        $processEntity->clients = $process['clients'] ?? [];
-        $processEntity->scope = $process['data']['scope'] ?? null;
-        $processEntity->customTextfield = $process['customTextfield'] ?? null;
-        $processEntity->lastChange = $process['lastChange'] ?? time();
-
-        if (isset($process['queue'])) {
-            $processEntity->queue = $process['queue'];
-        }
-
-        $processEntity->createIP = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-        $processEntity->createTimestamp = time();
-
-        $url = "/process/{$processEntity->id}/{$processEntity->authKey}/";
+    
+        $url = "/process/{$process->id}/{$process->authKey}/";
 
         try {
-            $result = \App::$http->readPostResult($url, $processEntity);
+            $result = \App::$http->readPostResult($url, $process);
             return $result->getEntity();
         } catch (\Exception $e) {
             $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
@@ -174,6 +159,7 @@ class ZmsApiClientService
             }
         }
     }
+    
 
     public function preconfirmProcess(?Process $process): Process
     {
