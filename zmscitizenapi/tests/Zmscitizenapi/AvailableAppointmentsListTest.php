@@ -157,7 +157,7 @@ class AvailableAppointmentsListTest extends Base
             'errors' => [
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',                
                     'status' => 400,
                 ]
             ],
@@ -241,7 +241,7 @@ class AvailableAppointmentsListTest extends Base
                 ],
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',                
                     'status' => 400,
                 ]
             ],
@@ -297,7 +297,7 @@ class AvailableAppointmentsListTest extends Base
                 ],
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',                
                     'status' => 400,
                 ]
             ],
@@ -325,7 +325,7 @@ class AvailableAppointmentsListTest extends Base
                 ],
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',                
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',                
                     'status' => 400,
                 ]
             ],

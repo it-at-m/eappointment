@@ -64,7 +64,7 @@
         "clients": [
             {
                 "familyName": "Smith",
-                "email": "default@example.com",
+                "email": "test@muenchen.de",
                 "emailSendCount": "0",
                 "notificationsSendCount": "0",
                 "surveyAccepted": "0",

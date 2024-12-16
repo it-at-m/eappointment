@@ -90,7 +90,7 @@ class AppointmentReserve extends BaseController
 
             $selectedProcess->clients = [
                 [
-                    'email' => 'default@example.com'
+                    'email' => 'test@muenchen.de'
                 ]
             ];
 

@@ -31,7 +31,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'Smith',
-            'email' => "default@example.com",
+            'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
         ];
@@ -44,7 +44,7 @@ class AppointmentUpdateTest extends Base
             "authKey" => "fb43",
             "familyName" => "Smith",
             "customTextfield" => "Some custom text",
-            "email" => "default@example.com",
+            "email" => "test@muenchen.de",
             "telephone" => "123456789",
             "officeName" => null,
             "officeId" => null,
@@ -91,7 +91,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'Smith',
-            'email' => "default@example.com",
+            'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
         ];
@@ -132,7 +132,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101003',
             'authKey' => 'fb43',
             'familyName' => 'Smith',
-            'email' => "default@example.com",
+            'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
         ];
@@ -271,7 +271,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => '',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 123
         ];
@@ -299,7 +299,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => '',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 'Some custom text'
         ];
@@ -326,7 +326,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => '',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 123
         ];
@@ -353,7 +353,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => '',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text'
         ];
@@ -487,7 +487,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => '',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 123
         ];
@@ -514,7 +514,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => '',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 'Some custom text'
         ];
@@ -540,7 +540,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => '',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 123
         ];
@@ -566,7 +566,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => '',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text'
         ];
@@ -699,7 +699,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 123
         ];
@@ -726,7 +726,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 'Some custom text'
         ];
@@ -752,7 +752,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 123
         ];
@@ -778,7 +778,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text'
         ];
@@ -907,7 +907,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => 'fb43',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 123
         ];
@@ -933,7 +933,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => 'fb43',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 'Some custom text'
         ];
@@ -958,7 +958,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => 'fb43',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 123
         ];
@@ -983,7 +983,7 @@ class AppointmentUpdateTest extends Base
             'processId' => null,
             'authKey' => 'fb43',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text'
         ];
@@ -1115,7 +1115,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => '',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 123
         ];
@@ -1142,7 +1142,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => '',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 'Some custom text'
         ];
@@ -1168,7 +1168,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => '',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 123
         ];
@@ -1194,7 +1194,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => '',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text'
         ];
@@ -1323,7 +1323,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => '',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 123
         ];
@@ -1349,7 +1349,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => '',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 'Some custom text'
         ];
@@ -1374,7 +1374,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => '',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 123
         ];
@@ -1399,7 +1399,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => '',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text'
         ];
@@ -1527,7 +1527,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 123
         ];
@@ -1553,7 +1553,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 'Some custom text'
         ];
@@ -1578,7 +1578,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 123
         ];
@@ -1603,7 +1603,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 'Some custom text'
         ];
@@ -1727,7 +1727,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 123
         ];
@@ -1752,7 +1752,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123',
             'customTextfield' => 'Some custom text'
         ];
@@ -1776,7 +1776,7 @@ class AppointmentUpdateTest extends Base
             'processId' => '101002',
             'authKey' => 'fb43',
             'familyName' => 'Smith',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'customTextfield' => 123
         ];
