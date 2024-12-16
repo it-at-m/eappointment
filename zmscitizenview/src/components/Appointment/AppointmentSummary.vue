@@ -9,7 +9,7 @@
           <div class="m-content">
             <h3>{{ t("service") }}</h3>
           </div>
-          <div class="m-content border-bottom ">
+          <div class="m-content border-bottom">
             <p>
               {{ selectedService.count }}x {{ selectedService.name }}
               <br />
@@ -28,7 +28,7 @@
           <div class="m-content">
             <h3>{{ t("location") }}</h3>
           </div>
-          <div class="m-content border-bottom ">
+          <div class="m-content border-bottom">
             <p>
               <strong>Landeshauptstadt München</strong><br />
               {{ appointment.scope.provider.contact.name }}<br />
@@ -47,7 +47,7 @@
           <div class="m-content">
             <h3>{{ t("time") }}</h3>
           </div>
-          <div class="m-content border-bottom ">
+          <div class="m-content border-bottom">
             <p>
               {{ formatTime(appointment.timestamp) }} <br />
               {{ t("estimatedDuration") }} {{ t("minutes") }}<br />
@@ -56,7 +56,7 @@
           <div class="m-content">
             <h3>{{ t("contact") }}</h3>
           </div>
-          <div class="m-content border-bottom ">
+          <div class="m-content border-bottom">
             <p>
               {{ appointment.familyName }}
               <br />

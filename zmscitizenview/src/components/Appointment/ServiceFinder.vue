@@ -81,7 +81,7 @@ import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue"
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { getServiceBaseURL, MAX_SLOTS} from "@/utils/Constants";
+import { getServiceBaseURL, MAX_SLOTS } from "@/utils/Constants";
 
 const props = defineProps<{
   preselectedServiceId: string | undefined;
