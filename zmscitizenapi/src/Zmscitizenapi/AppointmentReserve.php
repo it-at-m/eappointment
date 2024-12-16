@@ -56,12 +56,12 @@ class AppointmentReserve extends BaseController
             }
 
             $freeAppointments = new ProcessList();
-            $freeAppointments = ZmsApiFacadeService::getFreeAppointments([
-                'officeId' => $officeId,
-                'serviceIds' => $serviceIds,
-                'serviceCounts' => $serviceCounts,
-                'date' => UtilityHelper::getInternalDateFromTimestamp($timestamp)
-            ]);
+            $freeAppointments = ZmsApiFacadeService::getFreeAppointments(
+                $officeId,
+                $serviceIds,
+                $serviceCounts,
+                UtilityHelper::getInternalDateFromTimestamp($timestamp)
+            );
 
             $processArray = json_decode(json_encode($freeAppointments), true);
 
@@ -106,17 +106,17 @@ class AppointmentReserve extends BaseController
                 }
             }
 
-            $appointment = new ThinnedProcess();
-            $appointment = UtilityHelper::processToThinnedProcess($reservedProcess);
+            $thinnedProcess = new ThinnedProcess();
+            $thinnedProcess = UtilityHelper::processToThinnedProcess($reservedProcess);
 
-            $appointment = array_merge($appointment->toArray(), ['officeId' => $officeId]);
+            $thinnedProcess = array_merge($thinnedProcess->toArray(), ['officeId' => $officeId]);
             
-            return $this->createJsonResponse($response, $appointment, 200);
+            return $this->createJsonResponse($response, $thinnedProcess, 200);
 
         } catch (\Exception $e) {
             return $this->createJsonResponse($response, [
                 'errorCode' => 'internalServerError',
-                'errorMessage' => $e->getMessage()
+                'errorMessage' => 'An internal server error occurred'
             ], 500);
         }
     }

@@ -51,16 +51,27 @@ class UtilityHelper
         return array_search($value, $self) === $index;
     }
 
+    public static function getClientIp(): string
+    {
+        $headers = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'];
+        foreach ($headers as $header) {
+            if (isset($_SERVER[$header]) && filter_var($_SERVER[$header], FILTER_VALIDATE_IP)) {
+                return $_SERVER[$header];
+            }
+        }
+        return '127.0.0.1';
+    }
+
     public static function processToThinnedProcess(Process $myProcess): ThinnedProcess
     {
         if (!$myProcess || !isset($myProcess->id)) {
             return null;
         }
-    
+
         $subRequestCounts = [];
         $mainServiceId = null;
         $mainServiceCount = 0;
-    
+
         $requests = $myProcess->requests ?? [];
         if ($requests) {
             $requests = is_array($requests) ? $requests : iterator_to_array($requests);
@@ -96,7 +107,7 @@ class UtilityHelper
         $thinnedProcess->subRequestCounts = array_values($subRequestCounts);
         $thinnedProcess->serviceId = $mainServiceId;
         $thinnedProcess->serviceCount = $mainServiceCount;
-    
+
         return $thinnedProcess;
     }
 
@@ -105,23 +116,23 @@ class UtilityHelper
         if (!$thinnedProcess || !isset($thinnedProcess->processId)) {
             return null;
         }
-    
+
         $processEntity = new Process();
         $processEntity->id = $thinnedProcess->processId;
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
-    
+
         $client = new Client();
         $client->familyName = $thinnedProcess->familyName ?? null;
         $client->email = $thinnedProcess->email ?? null;
         $client->telephone = $thinnedProcess->telephone ?? null;
         $client->customTextfield = $thinnedProcess->customTextfield ?? null;
-    
+
         $processEntity->clients = [$client];
-    
+
         $thinnedProcess = new Appointment();
         $thinnedProcess->date = $thinnedProcess->timestamp ?? null;
         $processEntity->appointments = [$thinnedProcess];
-    
+
         $scope = new Scope();
         if (isset($thinnedProcess->officeName)) {
             $scope->contact = new Contact();
@@ -133,11 +144,11 @@ class UtilityHelper
             $scope->provider->source = \App::$source_name;
         }
         $processEntity->scope = $scope;
-    
+
         $mainServiceId = $thinnedProcess->serviceId ?? null;
         $mainServiceCount = $thinnedProcess->serviceCount ?? 0;
         $subRequestCounts = $thinnedProcess->subRequestCounts ?? [];
-    
+
         $requests = [];
         for ($i = 0; $i < $mainServiceCount; $i++) {
             $request = new Request();
@@ -154,13 +165,13 @@ class UtilityHelper
             }
         }
         $processEntity->requests = $requests;
-    
+
         $processEntity->lastChange = time();
-        $processEntity->createIP = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $processEntity->createIP = self::getClientIp();
         $processEntity->createTimestamp = time();
-    
+
         return $processEntity;
     }
-      
+
 
 }
