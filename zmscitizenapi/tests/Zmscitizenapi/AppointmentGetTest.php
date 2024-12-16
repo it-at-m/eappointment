@@ -24,14 +24,14 @@ class AppointmentGetTest extends Base
         );
 
         $parameters = [
-            'id' => '101002',
+            'processId' => '101002',
             'authKey' => 'fb43',
         ];
 
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
-            'id' => '101002',
+            'processId' => '101002',
             'timestamp' => 1724907600,
             'authKey' => 'fb43',
             'familyName' => 'Doe',
@@ -171,7 +171,7 @@ class AppointmentGetTest extends Base
                 [
                     'status' => 400,
                     'errorCode' => 'invalidProcessId',
-                    'errorMessage' => 'id should be a 32-bit integer.'
+                    'errorMessage' => 'processId should be a positive 32-bit integer.'
                 ]
             ],
             'status' => 400
@@ -183,7 +183,7 @@ class AppointmentGetTest extends Base
     public function testMissingAuthKey()
     {
         $parameters = [
-            'id' => '101002',
+            'processId' => '101002',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -205,7 +205,7 @@ class AppointmentGetTest extends Base
     public function testInvalidProcessId()
     {
         $parameters = [
-            'id' => 'invalid',
+            'processId' => 'invalid',
             'authKey' => 'fb43',
         ];
 
@@ -216,7 +216,7 @@ class AppointmentGetTest extends Base
                 [
                     'status' => 400,
                     'errorCode' => 'invalidProcessId',
-                    'errorMessage' => 'id should be a 32-bit integer.'
+                    'errorMessage' => 'processId should be a positive 32-bit integer.'
                 ]
             ],
             'status' => 400
@@ -228,7 +228,7 @@ class AppointmentGetTest extends Base
     public function testInvalidAuthKey()
     {
         $parameters = [
-            'id' => '101002',
+            'processId' => '101002',
             'authKey' => 12345,
         ];
 
@@ -259,7 +259,7 @@ class AppointmentGetTest extends Base
                 [
                     'status' => 400,
                     'errorCode' => 'invalidProcessId',
-                    'errorMessage' => 'id should be a 32-bit integer.',
+                    'errorMessage' => 'processId should be a positive 32-bit integer.',
                 ],
                 [
                     'status' => 400,
@@ -290,7 +290,7 @@ class AppointmentGetTest extends Base
         );
 
         $parameters = [
-            'id' => '101002',
+            'processId' => '101002',
             'authKey' => 'fb43',
         ];
 

@@ -20,13 +20,13 @@ class AppointmentUpdate extends BaseController
         $request = $request instanceof ServerRequestInterface ? $request : null;
 
         $body = $request->getParsedBody();
-        $processId = $body['id'] ?? null;
+        $processId = $body['processId'] ?? null;
         $authKey = $body['authKey'] ?? null;
         $familyName = $body['familyName'] ?? null;
         $email = $body['email'] ?? null;
         $telephone = $body['telephone'] ?? null;
         $customTextfield = $body['customTextfield'] ?? null;
-        
+
         $errors = ValidationService::validateUpdateAppointmentInputs($processId, $authKey, $familyName, $email, $telephone, $customTextfield);
         if (!empty($errors['errors'])) {
             return $this->createJsonResponse($response, $errors, 400);
@@ -39,7 +39,7 @@ class AppointmentUpdate extends BaseController
             }
 
             $processEntity = new Process();
-            $processEntity->id = $reservedProcess['data']['id'] ?? null;
+            $processEntity->id = $reservedProcess['data']['processId'] ?? null;
             $processEntity->authKey = $reservedProcess['data']['authKey'] ?? null;
             $processEntity->appointments = $reservedProcess['data']['appointments'] ?? [];
             $processEntity->clients = [];

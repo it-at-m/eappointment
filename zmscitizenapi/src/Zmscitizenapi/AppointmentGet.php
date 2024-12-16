@@ -12,7 +12,7 @@ class AppointmentGet extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $queryParams = $request->getQueryParams();
-        $processId = isset($queryParams['id']) && is_numeric($queryParams['id']) ? (int)$queryParams['id'] : null;
+        $processId = isset($queryParams['processId']) && is_numeric($queryParams['processId']) ? (int)$queryParams['processId'] : null;
         $authKey = isset($queryParams['authKey']) && is_string($queryParams['authKey']) && trim($queryParams['authKey']) !== '' ? $queryParams['authKey'] : null;
 
         $result = ZmsApiFacadeService::getProcessById($processId, $authKey);

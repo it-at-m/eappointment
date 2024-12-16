@@ -77,7 +77,7 @@ class UtilityHelper
         }
 
         return [
-            'id' => $myProcess->id,
+            'processId' => $myProcess->id,
             'timestamp' => isset($myProcess->appointments[0]) ? $myProcess->appointments[0]->date : null,
             'authKey' => $myProcess->authKey ?? null,
             'familyName' => isset($myProcess->clients[0]) ? $myProcess->clients[0]->familyName : null,

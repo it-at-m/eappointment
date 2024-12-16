@@ -143,6 +143,8 @@ class ZmsApiClientService
     {
     
         $url = "/process/{$process->id}/{$process->authKey}/";
+
+        error_log($url);
     
         try {
             $result = \App::$http->readPostResult($url, $process);

@@ -586,7 +586,6 @@ class ZmsApiFacadeService
             }
 
             $responseData = UtilityHelper::getThinnedProcessData($process);
-            //$responseData = $process;
 
             return ['data' => $responseData, 'status' => 200];
 
