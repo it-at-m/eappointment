@@ -67,7 +67,7 @@ class ValidationService
             $errors[] = [
                 'status' => 400,
                 'errorCode' => 'invalidProcessId',
-                'errorMessage' => 'processId should be a 32-bit integer.',
+                'errorMessage' => 'id should be a 32-bit integer.',
             ];
         }
 
@@ -343,7 +343,7 @@ class ValidationService
             $errors[] = [
                 'status' => 400,
                 'errorCode' => 'invalidProcessId',
-                'errorMessage' => 'processId should be a positive 32-bit integer.',
+                'errorMessage' => 'id should be a positive 32-bit integer.',
             ];
         }
 

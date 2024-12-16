@@ -44,7 +44,7 @@ class AppointmentReserveTest extends Base
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
-            'processId' => '101002',
+            'id' => '101002',
             'timestamp' => 32526616522,
             'authKey' => 'fb43',
             'familyName' => 'Smith',

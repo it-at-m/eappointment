@@ -1,6 +1,8 @@
 <?php
 
 namespace BO\Zmscitizenapi\Helper;
+
+use \BO\Zmscitizenapi\Models\Appointment;
 use \BO\Zmsentities\Process;
 
 class UtilityHelper
