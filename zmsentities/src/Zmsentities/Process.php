@@ -33,25 +33,6 @@ class Process extends Schema\Entity
 
     public static $schema = "process.json";
 
-    public static function create(array $data = []): self
-    {
-        $instance = new self();
-        foreach ($data as $key => $value) {
-            if (property_exists($instance, $key)) {
-                $instance->$key = $value;
-            }
-        }
-
-        $defaults = $instance->getDefaults();
-        foreach ($defaults as $key => $defaultValue) {
-            if (!isset($instance->$key)) {
-                $instance->$key = $defaultValue;
-            }
-        }
-
-        return $instance;
-    }
-
     public function getDefaults()
     {
         return [
