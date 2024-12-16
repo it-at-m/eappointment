@@ -11,9 +11,9 @@ use \BO\Zmsentities\Schema\Entity;
  * @SuppressWarnings(Public)
  *
  */
-class Appointment extends Entity
+class AppointmentUpdate extends Entity
 {
 
-    public static $schema = "citizenapi/appointment.json";
+    public static $schema = "citizenapi/appointmentUpdate.json";
 
 }

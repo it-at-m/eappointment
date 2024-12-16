@@ -2,8 +2,14 @@
 
 namespace BO\Zmscitizenapi\Helper;
 
-use \BO\Zmscitizenapi\Models\Appointment;
+use \BO\Zmscitizenapi\Models\ThinnedProcess;
+use \BO\Zmsentities\Appointment;
+use \BO\Zmsentities\Client;
+use \BO\Zmsentities\Contact;
 use \BO\Zmsentities\Process;
+use \BO\Zmsentities\Provider;
+use \BO\Zmsentities\Request;
+use \BO\Zmsentities\Scope;
 
 class UtilityHelper
 {
@@ -45,16 +51,16 @@ class UtilityHelper
         return array_search($value, $self) === $index;
     }
 
-    public static function getThinnedProcessData(Process $myProcess): array
+    public static function processToThinnedProcess(Process $myProcess): ThinnedProcess
     {
         if (!$myProcess || !isset($myProcess->id)) {
-            return [];
+            return null;
         }
-
+    
         $subRequestCounts = [];
         $mainServiceId = null;
         $mainServiceCount = 0;
-
+    
         $requests = $myProcess->requests ?? [];
         if ($requests) {
             $requests = is_array($requests) ? $requests : iterator_to_array($requests);
@@ -75,22 +81,87 @@ class UtilityHelper
                 }
             }
         }
-
-        return [
-            'processId' => $myProcess->id,
-            'timestamp' => isset($myProcess->appointments[0]) ? $myProcess->appointments[0]->date : null,
-            'authKey' => $myProcess->authKey ?? null,
-            'familyName' => isset($myProcess->clients[0]) ? $myProcess->clients[0]->familyName : null,
-            'customTextfield' => $myProcess->customTextfield ?? null,
-            'email' => isset($myProcess->clients[0]) ? $myProcess->clients[0]->email : null,
-            'telephone' => isset($myProcess->clients[0]) ? $myProcess->clients[0]->telephone : null,
-            'officeName' => $myProcess->scope->contact->name ?? null,
-            'officeId' => $myProcess->scope->provider->id ?? null,
-            'scope' => $myProcess->scope ?? null,
-            'subRequestCounts' => array_values($subRequestCounts),
-            'serviceId' => $mainServiceId,
-            'serviceCount' => $mainServiceCount,
-        ];
+    
+        // Populate ThinnedProcess object
+        $appointment = new ThinnedProcess();
+        $appointment->processId = $myProcess->id;
+        $appointment->timestamp = isset($myProcess->appointments[0]) ? $myProcess->appointments[0]->date : null;
+        $appointment->authKey = $myProcess->authKey ?? null;
+        $appointment->familyName = isset($myProcess->clients[0]) ? $myProcess->clients[0]->familyName : null;
+        $appointment->customTextfield = $myProcess->customTextfield ?? null;
+        $appointment->email = isset($myProcess->clients[0]) ? $myProcess->clients[0]->email : null;
+        $appointment->telephone = isset($myProcess->clients[0]) ? $myProcess->clients[0]->telephone : null;
+        $appointment->officeName = $myProcess->scope->contact->name ?? null;
+        $appointment->officeId = $myProcess->scope->provider->id ?? null;
+        $appointment->scope = $myProcess->scope ?? null;
+        $appointment->subRequestCounts = array_values($subRequestCounts);
+        $appointment->serviceId = $mainServiceId;
+        $appointment->serviceCount = $mainServiceCount;
+    
+        return $appointment;
     }
+
+    public static function thinnedProcessToProcess(ThinnedProcess $thinnedProcess): Process
+    {
+        if (!$thinnedProcess || !isset($thinnedProcess->processId)) {
+            return null;
+        }
+    
+        $processEntity = new Process();
+        $processEntity->id = $thinnedProcess->processId;
+        $processEntity->authKey = $thinnedProcess->authKey ?? null;
+    
+        $client = new Client();
+        $client->familyName = $thinnedProcess->familyName ?? null;
+        $client->email = $thinnedProcess->email ?? null;
+        $client->telephone = $thinnedProcess->telephone ?? null;
+        $client->customTextfield = $thinnedProcess->customTextfield ?? null;
+    
+        $processEntity->clients = [$client];
+    
+        $appointment = new Appointment();
+        $appointment->date = $thinnedProcess->timestamp ?? null;
+        $processEntity->appointments = [$appointment];
+    
+        $scope = new Scope();
+        if (isset($thinnedProcess->officeName)) {
+            $scope->contact = new Contact();
+            $scope->contact->name = $thinnedProcess->officeName;
+        }
+        if (isset($thinnedProcess->officeId)) {
+            $scope->provider = new Provider();
+            $scope->provider->id = $thinnedProcess->officeId;
+            $scope->provider->source = \App::$source_name;
+        }
+        $processEntity->scope = $scope;
+    
+        $mainServiceId = $thinnedProcess->serviceId ?? null;
+        $mainServiceCount = $thinnedProcess->serviceCount ?? 0;
+        $subRequestCounts = $thinnedProcess->subRequestCounts ?? [];
+    
+        $requests = [];
+        for ($i = 0; $i < $mainServiceCount; $i++) {
+            $request = new Request();
+            $request->id = $mainServiceId;
+            $request->source = \App::$source_name;
+            $requests[] = $request;
+        }
+        foreach ($subRequestCounts as $subRequest) {
+            for ($i = 0; $i < ($subRequest['count'] ?? 0); $i++) {
+                $request = new Request();
+                $request->id = $subRequest['id'];
+                $request->source = \App::$source_name;
+                $requests[] = $request;
+            }
+        }
+        $processEntity->requests = $requests;
+    
+        $processEntity->lastChange = time();
+        $processEntity->createIP = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $processEntity->createTimestamp = time();
+    
+        return $processEntity;
+    }
+      
 
 }

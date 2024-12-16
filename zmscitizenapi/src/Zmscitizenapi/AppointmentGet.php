@@ -3,9 +3,10 @@
 namespace BO\Zmscitizenapi;
 
 use \BO\Zmscitizenapi\BaseController;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
+use \BO\Zmscitizenapi\Models\ThinnedProcess;
+use \Psr\Http\Message\RequestInterface;
+use \Psr\Http\Message\ResponseInterface;
 
 class AppointmentGet extends BaseController
 {
@@ -14,10 +15,21 @@ class AppointmentGet extends BaseController
         $queryParams = $request->getQueryParams();
         $processId = isset($queryParams['processId']) && is_numeric($queryParams['processId']) ? (int)$queryParams['processId'] : null;
         $authKey = isset($queryParams['authKey']) && is_string($queryParams['authKey']) && trim($queryParams['authKey']) !== '' ? $queryParams['authKey'] : null;
-
-        $result = ZmsApiFacadeService::getProcessById($processId, $authKey);
-
-        return $this->createJsonResponse($response, $result['data'] ?? $result, $result['status']);
+    
+        $result = ZmsApiFacadeService::getThinnedProcessById($processId, $authKey);
+    
+        if (!empty($result['errors'])) {
+            $errorCodes = array_column($result['errors'], 'errorCode');
+            $statusCode = in_array('appointmentNotFound', $errorCodes) ? 404 : 400; 
+            return $this->createJsonResponse($response, $result, $statusCode);
+        }
+    
+        if (isset($result) && $result instanceof ThinnedProcess) {
+            $appointment = $result;
+            return $this->createJsonResponse($response, $appointment->toArray(), 200);
+        }
+    
+        return $this->createJsonResponse($response, $result, 400);
     }
     
 }

@@ -294,7 +294,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
@@ -369,7 +369,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
@@ -420,7 +420,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
@@ -471,7 +471,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
@@ -522,7 +522,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
@@ -573,7 +573,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/appointment.json"
+ *               $ref: "schema/citizenapi/thinnedProcess.json"
  *       400:
  *         description: Invalid input
  *         schema:
