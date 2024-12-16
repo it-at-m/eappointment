@@ -106,7 +106,7 @@
       <template #header>{{ t("noAppointmentsAvailableHeader") }}</template>
     </muc-callout>
   </div>
-  <div class="m-submit-group">
+  <div class="m-button-group">
     <muc-button
       v-if="!isRebooking"
       variant="secondary"

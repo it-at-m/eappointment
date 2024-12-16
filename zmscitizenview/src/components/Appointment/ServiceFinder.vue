@@ -26,6 +26,7 @@
       <muc-counter
         v-model="countOfService"
         :label="service.name"
+        :link="getServiceBaseURL() + service.id"
         :max="maxValueOfService"
         min="1"
       />
@@ -57,7 +58,7 @@
       </div>
     </div>
   </div>
-  <div class="m-submit-group">
+  <div class="m-button-group">
     <muc-button
       v-if="service"
       @click="nextStep"
@@ -80,7 +81,7 @@ import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue"
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { MAX_SLOTS } from "@/utils/Constants";
+import { getServiceBaseURL, MAX_SLOTS} from "@/utils/Constants";
 
 const props = defineProps<{
   preselectedServiceId: string | undefined;

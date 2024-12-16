@@ -9,7 +9,7 @@
           <div class="m-content">
             <h3>{{ t("service") }}</h3>
           </div>
-          <div class="m-content">
+          <div class="m-content border-bottom ">
             <p>
               {{ selectedService.count }}x {{ selectedService.name }}
               <br />
@@ -28,7 +28,7 @@
           <div class="m-content">
             <h3>{{ t("location") }}</h3>
           </div>
-          <div class="m-content">
+          <div class="m-content border-bottom ">
             <p>
               <strong>Landeshauptstadt München</strong><br />
               {{ appointment.scope.provider.contact.name }}<br />
@@ -47,7 +47,7 @@
           <div class="m-content">
             <h3>{{ t("time") }}</h3>
           </div>
-          <div class="m-content">
+          <div class="m-content border-bottom ">
             <p>
               {{ formatTime(appointment.timestamp) }} <br />
               {{ t("estimatedDuration") }} {{ t("minutes") }}<br />
@@ -56,7 +56,7 @@
           <div class="m-content">
             <h3>{{ t("contact") }}</h3>
           </div>
-          <div class="m-content">
+          <div class="m-content border-bottom ">
             <p>
               {{ appointment.familyName }}
               <br />
@@ -129,7 +129,7 @@
   </div>
   <div
     v-if="rebookOrCancelDialog"
-    class="m-submit-group"
+    class="m-button-group"
   >
     <muc-button @click="rescheduleAppointment">
       <template #default>{{ t("rescheduleAppointment") }}</template>
@@ -143,7 +143,7 @@
   </div>
   <div
     v-if="isRebooking"
-    class="m-submit-group"
+    class="m-button-group"
   >
     <muc-button
       :disabled="!validForm"
@@ -160,7 +160,7 @@
   </div>
   <div
     v-if="!rebookOrCancelDialog && !isRebooking"
-    class="m-submit-group"
+    class="m-button-group"
   >
     <muc-button
       variant="secondary"
@@ -250,8 +250,8 @@ const rescheduleAppointment = () => emit("rescheduleAppointment");
 </script>
 
 <style scoped>
-.list-item {
-  margin-bottom: 1.75rem;
+.border-bottom {
+  border-bottom: 1px solid var(--color-neutrals-blue);
 }
 
 .m-component {
