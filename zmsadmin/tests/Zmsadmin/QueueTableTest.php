@@ -7,7 +7,8 @@ class QueueTableTest extends Base
     protected $arguments = [];
 
     protected $parameters = [
-        'selecteddate' => '2016-04-01'
+        'selecteddate' => '2016-04-01',
+        'withCalled' => 1
     ];
 
     protected $classname = "QueueTable";
@@ -197,15 +198,6 @@ class QueueTableTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
                     ],
                     'response' => $this->readFixture("GET_process_100044_57c2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/useraccount/queue/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                        'status' => 'called',
-                    ],
-                    'response' => $this->readFixture("GET_queuelist_141.json")
                 ]
             ]
         );
