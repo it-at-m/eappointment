@@ -49,7 +49,7 @@ class AppointmentReserveTest extends Base
             'authKey' => 'fb43',
             'familyName' => 'Smith',
             'customTextfield' => '',
-            'email' => 'default@example.com',
+            'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'officeName' => null,
             'officeId' => 10546,
@@ -447,7 +447,7 @@ class AppointmentReserveTest extends Base
                 [
                     'status' => 400,
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                 ]
             ],
             'status' => 400

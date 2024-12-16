@@ -43,9 +43,13 @@ class ValidationService
         $errors = [];
         if (!$startDate) {
             $errors[] = ['status' => 400, 'errorCode' => 'invalidStartDate', 'errorMessage' => 'startDate is required and must be a valid date.'];
+        } elseif (!\DateTime::createFromFormat('Y-m-d', $startDate)) {
+            $errors[] = ['status' => 400, 'errorCode' => 'invalidStartDateFormat', 'errorMessage' => 'startDate must be in YYYY-MM-DD format.'];
         }
         if (!$endDate) {
             $errors[] = ['status' => 400, 'errorCode' => 'invalidEndDate', 'errorMessage' => 'endDate is required and must be a valid date.'];
+        } elseif (!\DateTime::createFromFormat('Y-m-d', $endDate)) {
+            $errors[] = ['status' => 400, 'errorCode' => 'invalidEndDateFormat', 'errorMessage' => 'endDate must be in YYYY-MM-DD format.'];
         }
         if (!$officeId || !is_numeric($officeId)) {
             $errors[] = ['status' => 400, 'errorCode' => 'invalidOfficeId', 'errorMessage' => 'officeId should be a 32-bit integer.'];
@@ -54,7 +58,7 @@ class ValidationService
             $errors[] = ['status' => 400, 'errorCode' => 'invalidServiceId', 'errorMessage' => 'serviceId should be a 32-bit integer.'];
         }
         if (empty($serviceCounts[0]) || !preg_match('/^\d+(,\d+)*$/', implode(',', $serviceCounts))) {
-            $errors[] = ['status' => 400, 'errorCode' => 'invalidServiceCount', 'errorMessage' => 'serviceCount should be a comma-separated string of integers.'];
+            $errors[] = ['status' => 400, 'errorCode' => 'invalidServiceCount', 'errorMessage' => 'serviceCounts should be an array of numeric values.'];
         }
 
         return ['errors' => $errors, 'status' => 400];
@@ -113,7 +117,7 @@ class ValidationService
             $errors[] = [
                 'status' => 400,
                 'errorCode' => 'invalidServiceCount',
-                'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                'errorMessage' => 'serviceCounts should be an array of numeric values.',
             ];
         }
 
@@ -157,7 +161,7 @@ class ValidationService
             $errors[] = [
                 'status' => 400,
                 'errorCode' => 'invalidServiceCount',
-                'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                'errorMessage' => 'serviceCounts should be an array of numeric values.',
             ];
         }
 
@@ -325,6 +329,7 @@ class ValidationService
     public static function validateNoAppointmentsAtLocation(): array
     {
 
+        $errors = [];
         $errors[] = [
             'errorCode' => 'noAppointmentForThisScope',
             'errorMessage' => 'An diesem Standort gibt es aktuell leider keine freien Termine.',

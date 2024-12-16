@@ -89,14 +89,19 @@ class AvailableDaysListTest extends Base
         $expectedResponse = [
             'errors' => [
                 [
-                    'errorCode' => 'noAppointmentForThisOffice',
-                    'errorMessage' => 'An diesem Standort gibt es aktuell leider keine freien Termine.',
-                    'status' => 404,
-                ]
+                    'status' => 400,
+                    'errorCode' => 'invalidStartDateFormat',
+                    'errorMessage' => 'startDate must be in YYYY-MM-DD format.',
+                ],
+                [
+                    'status' => 400,
+                    'errorCode' => 'invalidEndDateFormat',
+                    'errorMessage' => 'endDate must be in YYYY-MM-DD format.',
+                ],
             ],
-            'status' => 404,
+            'status' => 400,
         ];
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
 
     }
@@ -216,7 +221,7 @@ class AvailableDaysListTest extends Base
             'errors' => [
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                     'status' => 400,
                 ]
             ],
@@ -242,7 +247,7 @@ class AvailableDaysListTest extends Base
             'errors' => [
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                     'status' => 400,
                 ]
             ],
@@ -268,7 +273,7 @@ class AvailableDaysListTest extends Base
             'errors' => [
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                     'status' => 400,
                 ]
             ],
@@ -308,7 +313,7 @@ class AvailableDaysListTest extends Base
                 ],
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                     'status' => 400,
                 ]
             ],
@@ -395,7 +400,7 @@ class AvailableDaysListTest extends Base
                 ],
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                     'status' => 400,
                 ]
             ],
@@ -453,7 +458,7 @@ class AvailableDaysListTest extends Base
                 ],
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                     'status' => 400,
                 ]
             ],
@@ -482,7 +487,7 @@ class AvailableDaysListTest extends Base
                 ],
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                     'status' => 400,
                 ]
             ],
@@ -581,7 +586,7 @@ class AvailableDaysListTest extends Base
                 ],
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                     'status' => 400,
                 ]
             ],
@@ -614,7 +619,7 @@ class AvailableDaysListTest extends Base
                 ],
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                     'status' => 400,
                 ]
             ],
@@ -671,7 +676,7 @@ class AvailableDaysListTest extends Base
             'errors' => [
                 [
                     'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCount should be a comma-separated string of integers.',
+                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
                     'status' => 400,
                 ]
             ],
