@@ -4,6 +4,7 @@
       <muc-counter
         v-model="count"
         :label="subService.name"
+        :link="getServiceBaseURL()  + subService.id"
         :max="maxValue"
         :disabled="disabled"
       />
@@ -17,7 +18,7 @@ import { computed, ref, watch } from "vue";
 
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SubService } from "@/types/SubService";
-import { MAX_SLOTS } from "@/utils/Constants";
+import { getServiceBaseURL, MAX_SLOTS} from "@/utils/Constants";
 
 const props = defineProps<{
   subService: SubService;

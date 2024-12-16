@@ -33,7 +33,7 @@
       :hint="t('remarkCompletionInstructions')"
     />
   </form>
-  <div class="m-submit-group">
+  <div class="m-button-group">
     <muc-button
       variant="secondary"
       @click="previousStep"
