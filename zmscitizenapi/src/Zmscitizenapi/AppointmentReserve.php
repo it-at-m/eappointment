@@ -41,12 +41,19 @@ class AppointmentReserve extends BaseController
             $captchaRequired = Application::$CAPTCHA_ENABLED === true && isset($providerScope['captchaActivatedRequired']) && $providerScope['captchaActivatedRequired'] === "1";
 
             if ($captchaRequired) {
-                $captchaVerificationResult = FriendlyCaptchaService::verifyCaptcha($captchaSolution);
-                if (!$captchaVerificationResult['success']) {
+                try {
+                    $captchaVerificationResult = FriendlyCaptchaService::verifyCaptcha($captchaSolution);
+                    if (!$captchaVerificationResult) {
+                        return $this->createJsonResponse($response, [
+                            'errorCode' => 'captchaVerificationFailed',
+                            'errorMessage' => 'Captcha verification failed'
+                        ], 400);
+                    }
+                } catch (\Exception $e) {
                     return $this->createJsonResponse($response, [
-                        'errorCode' => 'captchaVerificationFailed',
-                        'errorMessage' => 'Captcha verification failed'
-                    ], 400);
+                        'errorCode' => 'captchaVerificationError',
+                        'errorMessage' => 'An error occurred during captcha verification'
+                    ], 500);
                 }
             }
 
