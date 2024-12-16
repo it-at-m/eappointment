@@ -38,8 +38,8 @@ class View extends BaseView {
     }
 
 
-    load() {
-        const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}`
+    load(withCalled = false) {
+        const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}&withCalled=${withCalled ? 1 : 0}`
         return this.loadContent(url, 'GET', null, null, this.showLoader).catch(err => this.loadErrorCallback(err));
     }
 
@@ -63,6 +63,11 @@ class View extends BaseView {
             this.onEditProcess(ev)
         }).on('click', 'a.process-reset', (ev) => {
             this.onResetProcess(ev);
+        }).on('click', '#called-appointments', (ev) => {
+            this.withCalled = ! this.withCalled
+            if (this.withCalled) {
+                this.load(true)
+            }
         }).on('click', 'a.process-delete', (ev) => {
             this.onConfirm(ev, "confirm_delete", () => { this.onDeleteProcess(ev) });
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {
