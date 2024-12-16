@@ -2,11 +2,11 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
-use BO\Zmscitizenapi\AppointmentGet;
+use BO\Zmscitizenapi\AppointmentById;
 
-class AppointmentGetTest extends Base
+class AppointmentByIdTest extends Base
 {
-    protected $classname = "AppointmentGet";
+    protected $classname = "AppointmentById";
 
     public function testRendering()
     {

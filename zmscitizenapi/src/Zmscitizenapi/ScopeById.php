@@ -8,7 +8,7 @@ use \BO\Zmscitizenapi\Services\ValidationService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class ScopeByIdGet extends BaseController
+class ScopeById extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {

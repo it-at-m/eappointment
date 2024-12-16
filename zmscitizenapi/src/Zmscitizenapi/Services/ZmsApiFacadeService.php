@@ -586,10 +586,10 @@ class ZmsApiFacadeService
                 return $errors;
             }
 
-            $appointment = new ThinnedProcess();
-            $appointment = UtilityHelper::processToThinnedProcess($process);
+            $thinnedProcess = new ThinnedProcess();
+            $thinnedProcess = UtilityHelper::processToThinnedProcess($process);
 
-            return $appointment;
+            return $thinnedProcess;
 
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'kein Termin gefunden') !== false) {

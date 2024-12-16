@@ -8,7 +8,7 @@ use \BO\Zmscitizenapi\Models\ThinnedProcess;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 
-class AppointmentGet extends BaseController
+class AppointmentById extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
@@ -25,8 +25,8 @@ class AppointmentGet extends BaseController
         }
     
         if (isset($result) && $result instanceof ThinnedProcess) {
-            $appointment = $result;
-            return $this->createJsonResponse($response, $appointment->toArray(), 200);
+            $thinnedProcess = $result;
+            return $this->createJsonResponse($response, $thinnedProcess->toArray(), 200);
         }
     
         return $this->createJsonResponse($response, $result, 400);

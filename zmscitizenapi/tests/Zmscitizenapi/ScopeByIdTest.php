@@ -4,10 +4,10 @@ namespace BO\Zmscitizenapi\Tests;
 
 use BO\Slim\Render;
 
-class ScopeByIdGetTest extends Base
+class ScopeByIdTest extends Base
 {
 
-    protected $classname = "ScopeByIdGet";
+    protected $classname = "ScopeById";
 
     public function testRendering()
     {

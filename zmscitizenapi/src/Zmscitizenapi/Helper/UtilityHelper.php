@@ -81,24 +81,23 @@ class UtilityHelper
                 }
             }
         }
+
+        $thinnedProcess = new ThinnedProcess();
+        $thinnedProcess->processId = $myProcess->id;
+        $thinnedProcess->timestamp = isset($myProcess->appointments[0]) ? $myProcess->appointments[0]->date : null;
+        $thinnedProcess->authKey = $myProcess->authKey ?? null;
+        $thinnedProcess->familyName = isset($myProcess->clients[0]) ? $myProcess->clients[0]->familyName : null;
+        $thinnedProcess->customTextfield = $myProcess->customTextfield ?? null;
+        $thinnedProcess->email = isset($myProcess->clients[0]) ? $myProcess->clients[0]->email : null;
+        $thinnedProcess->telephone = isset($myProcess->clients[0]) ? $myProcess->clients[0]->telephone : null;
+        $thinnedProcess->officeName = $myProcess->scope->contact->name ?? null;
+        $thinnedProcess->officeId = $myProcess->scope->provider->id ?? null;
+        $thinnedProcess->scope = $myProcess->scope ?? null;
+        $thinnedProcess->subRequestCounts = array_values($subRequestCounts);
+        $thinnedProcess->serviceId = $mainServiceId;
+        $thinnedProcess->serviceCount = $mainServiceCount;
     
-        // Populate ThinnedProcess object
-        $appointment = new ThinnedProcess();
-        $appointment->processId = $myProcess->id;
-        $appointment->timestamp = isset($myProcess->appointments[0]) ? $myProcess->appointments[0]->date : null;
-        $appointment->authKey = $myProcess->authKey ?? null;
-        $appointment->familyName = isset($myProcess->clients[0]) ? $myProcess->clients[0]->familyName : null;
-        $appointment->customTextfield = $myProcess->customTextfield ?? null;
-        $appointment->email = isset($myProcess->clients[0]) ? $myProcess->clients[0]->email : null;
-        $appointment->telephone = isset($myProcess->clients[0]) ? $myProcess->clients[0]->telephone : null;
-        $appointment->officeName = $myProcess->scope->contact->name ?? null;
-        $appointment->officeId = $myProcess->scope->provider->id ?? null;
-        $appointment->scope = $myProcess->scope ?? null;
-        $appointment->subRequestCounts = array_values($subRequestCounts);
-        $appointment->serviceId = $mainServiceId;
-        $appointment->serviceCount = $mainServiceCount;
-    
-        return $appointment;
+        return $thinnedProcess;
     }
 
     public static function thinnedProcessToProcess(ThinnedProcess $thinnedProcess): Process
@@ -119,9 +118,9 @@ class UtilityHelper
     
         $processEntity->clients = [$client];
     
-        $appointment = new Appointment();
-        $appointment->date = $thinnedProcess->timestamp ?? null;
-        $processEntity->appointments = [$appointment];
+        $thinnedProcess = new Appointment();
+        $thinnedProcess->date = $thinnedProcess->timestamp ?? null;
+        $processEntity->appointments = [$thinnedProcess];
     
         $scope = new Scope();
         if (isset($thinnedProcess->officeName)) {
