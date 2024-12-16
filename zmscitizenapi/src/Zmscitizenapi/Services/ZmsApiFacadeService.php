@@ -439,36 +439,38 @@ class ZmsApiFacadeService
         }
     }
     
-    public static function getFreeAppointments(array $params): ProcessList|array
-    {
+    public static function getFreeAppointments(
+        int $officeId,
+        array $serviceIds,
+        array $serviceCounts,
+        array $date
+    ): ProcessList|array {
         $office = [
-            'id' => $params['officeId'],
+            'id' => $officeId,
             'source' => \App::$source_name
         ];
-
+    
         $requests = [];
-
-        foreach ($params['serviceIds'] as $index => $serviceId) {
+    
+        foreach ($serviceIds as $index => $serviceId) {
             $service = [
                 'id' => $serviceId,
                 'source' => \App::$source_name,
-                'slotCount' => $params['serviceCounts'][$index]
+                'slotCount' => $serviceCounts[$index]
             ];
             $requests = array_merge($requests, array_fill(0, $service['slotCount'], $service));
         }
-
+    
         try {
-
             $freeSlots = new ProcessList();
             $freeSlots = ZmsApiClientService::getFreeTimeslots(
                 new ProviderList([$office]),
                 new RequestList($requests),
-                $params['date'],
-                $params['date']
+                $date,
+                $date
             );
-
+    
             return $freeSlots;
-
         } catch (\Exception $e) {
             return [
                 'appointmentTimestamps' => [],
@@ -478,6 +480,7 @@ class ZmsApiFacadeService
             ];
         }
     }
+    
 
     public static function getAvailableAppointments(array $queryParams): array
     {

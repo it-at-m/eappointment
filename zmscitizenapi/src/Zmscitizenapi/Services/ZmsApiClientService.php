@@ -2,6 +2,7 @@
 
 namespace BO\Zmscitizenapi\Services;
 
+use BO\Zmscitizenapi\Helper\UtilityHelper;
 use \BO\Zmsentities\Calendar as Calendar;
 use \BO\Zmsentities\Process as Process;
 use \BO\Zmsentities\Collection\SourceList;
@@ -126,7 +127,7 @@ class ZmsApiClientService
         $processEntity->requests = $requests;
         $processEntity->lastChange = $appointmentProcess['lastChange'] ?? time();
 
-        $processEntity->createIP = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $processEntity->createIP = UtilityHelper::getClientIp();
         $processEntity->createTimestamp = time();
 
         if (isset($appointmentProcess['queue'])) {
@@ -175,25 +176,25 @@ class ZmsApiClientService
 
     public function cancelAppointment(?Process $process): Process
     {
-        $url = "/process/{$process['id']}/{$process['authKey']}/";
+        $url = "/process/{$process->id}/{$process->authKey}/";
         return \App::$http->readDeleteResult($url, $process)->getEntity();
     }
 
     public function sendConfirmationEmail(?Process $process): Process
     {
-        $url = "/process/{$process['id']}/{$process['authKey']}/confirmation/mail/";
+        $url = "/process/{$process->id}/{$process->authKey}/confirmation/mail/";
         return \App::$http->readPostResult($url, $process)->getEntity();
     }
 
     public function sendPreconfirmationEmail(?Process $process): Process
     {
-        $url = "/process/{$process['id']}/{$process['authKey']}/preconfirmation/mail/";
+        $url = "/process/{$process->id}/{$process->authKey}/preconfirmation/mail/";
         return \App::$http->readPostResult($url, $process)->getEntity();
     }
 
     public function sendCancelationEmail(?Process $process): Process
     {
-        $url = "/process/{$process['id']}/{$process['authKey']}/delete/mail/";
+        $url = "/process/{$process->id}/{$process->authKey}/delete/mail/";
         return \App::$http->readPostResult($url, $process)->getEntity();
     }
 
