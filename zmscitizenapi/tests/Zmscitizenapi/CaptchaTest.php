@@ -3,6 +3,7 @@
 namespace BO\Zmscitizenapi\Tests;
 
 use \BO\Zmscitizenapi\Application;
+use \BO\Zmscitizenapi\Services\FriendlyCaptchaService;
 
 class CaptchaTest extends Base
 {
@@ -48,4 +49,37 @@ class CaptchaTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
+
+    public function testVerifyCaptchaSuccess()
+    {
+        // Mock the HTTP client to return a successful response
+        $mockResponse = new \GuzzleHttp\Psr7\Response(200, [], json_encode(['success' => true]));
+        \App::$http = new \GuzzleHttp\Client(['handler' => \GuzzleHttp\HandlerStack::create(new \GuzzleHttp\Handler\MockHandler([$mockResponse]))]);
+    
+        $result = FriendlyCaptchaService::verifyCaptcha('valid_solution');
+        $this->assertTrue($result);
+    }
+    
+    public function testVerifyCaptchaFailure()
+    {
+        // Mock the HTTP client to return a failure response
+        $mockResponse = new \GuzzleHttp\Psr7\Response(200, [], json_encode(['success' => false]));
+        \App::$http = new \GuzzleHttp\Client(['handler' => \GuzzleHttp\HandlerStack::create(new \GuzzleHttp\Handler\MockHandler([$mockResponse]))]);
+    
+        $result = FriendlyCaptchaService::verifyCaptcha('invalid_solution');
+        $this->assertFalse($result);
+    }
+    
+    public function testVerifyCaptchaException()
+    {
+        // Mock the HTTP client to throw an exception
+        $mockHandler = new \GuzzleHttp\Handler\MockHandler([
+            new \GuzzleHttp\Exception\RequestException('Error Communicating with Server', new \GuzzleHttp\Psr7\Request('POST', 'test'))
+        ]);
+        \App::$http = new \GuzzleHttp\Client(['handler' => \GuzzleHttp\HandlerStack::create($mockHandler)]);
+    
+        $result = FriendlyCaptchaService::verifyCaptcha('exception_solution');
+        $this->assertFalse($result);
+    }
+
 }

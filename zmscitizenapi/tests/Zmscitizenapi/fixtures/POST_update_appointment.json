@@ -63,7 +63,7 @@
         "authKey": "fb43",
         "clients": [
             {
-                "familyName": "Smith",
+                "familyName": "TEST_USER",
                 "email": "test@muenchen.de",
                 "emailSendCount": "0",
                 "notificationsSendCount": "0",

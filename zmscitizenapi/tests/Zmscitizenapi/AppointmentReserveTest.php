@@ -47,7 +47,7 @@ class AppointmentReserveTest extends Base
             'processId' => '101002',
             'timestamp' => 32526616522,
             'authKey' => 'fb43',
-            'familyName' => 'Smith',
+            'familyName' => 'TEST_USER',
             'customTextfield' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',

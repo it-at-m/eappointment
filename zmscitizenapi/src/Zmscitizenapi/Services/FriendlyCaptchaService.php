@@ -28,13 +28,18 @@ class FriendlyCaptchaService implements CaptchaServiceInterface
                     'solution' => $solution
                 ]
             ]);
-
+    
             $responseBody = json_decode($response->getBody(), true);
-
-            return $responseBody;
+    
+            if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['success'])) {
+                // Log or handle invalid response format
+                return false;
+            }
+    
+            return $responseBody['success'] === true;
         } catch (RequestException $e) {
-            $errorMessage = $e->hasResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
-            throw new Exception('Captcha verification failed: ' . $errorMessage);
+            // You might choose to log the error here
+            return false;
         }
     }
 }
