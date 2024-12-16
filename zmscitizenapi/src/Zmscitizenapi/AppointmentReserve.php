@@ -9,6 +9,7 @@ use \BO\Zmscitizenapi\Services\FriendlyCaptchaService;
 use \BO\Zmscitizenapi\Services\MapperService;
 use \BO\Zmscitizenapi\Services\ValidationService;
 use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
+use \BO\Zmscitizenapi\Models\ThinnedProcess;
 use \BO\Zmsentities\Process;
 use \BO\Zmsentities\Scope;
 use \BO\Zmsentities\Collection\ProcessList;
@@ -105,10 +106,12 @@ class AppointmentReserve extends BaseController
                 }
             }
 
-            $thinnedProcessData = UtilityHelper::getThinnedProcessData($reservedProcess);
-            $thinnedProcessData = array_merge($thinnedProcessData, ['officeId' => $officeId]);
+            $appointment = new ThinnedProcess();
+            $appointment = UtilityHelper::processToThinnedProcess($reservedProcess);
 
-            return $this->createJsonResponse($response, $thinnedProcessData, 200);
+            $appointment = array_merge($appointment->toArray(), ['officeId' => $officeId]);
+            
+            return $this->createJsonResponse($response, $appointment, 200);
 
         } catch (\Exception $e) {
             return $this->createJsonResponse($response, [

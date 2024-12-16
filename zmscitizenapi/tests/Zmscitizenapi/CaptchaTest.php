@@ -4,9 +4,9 @@ namespace BO\Zmscitizenapi\Tests;
 
 use \BO\Zmscitizenapi\Application;
 
-class CaptchaGetTest extends Base
+class CaptchaTest extends Base
 {
-    protected $classname = "CaptchaGet";
+    protected $classname = "Captcha";
 
     public function setUp(): void
     {
