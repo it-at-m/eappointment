@@ -1,18 +1,18 @@
 <?php
 
-namespace BO\Zmscitizenapi;
+namespace BO\Zmscitizenapi\Controllers;
 
 use \BO\Zmscitizenapi\BaseController;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
-class ScopesList extends BaseController
+class OfficesList extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $scopes = ZmsApiFacadeService::getScopes();
+        $offices = ZmsApiFacadeService::getOffices();
 
-        return $this->createJsonResponse($response, $scopes, statusCode: $scopes['status']);
+        return $this->createJsonResponse($response, $offices->toArray(), statusCode: $offices->status);
     }
 }

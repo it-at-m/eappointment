@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmscitizenapi;
+namespace BO\Zmscitizenapi\Controllers;
 
 use \BO\Zmscitizenapi\BaseController;
 use Psr\Http\Message\RequestInterface;

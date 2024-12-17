@@ -14,10 +14,12 @@ class ValidationService
     {
 
         $availableServices = ZmsApiFacadeService::getServicesProvidedAtOffice($officeId);
-        $availableServiceIds = array_map(function ($service) {
-            return $service['id'];
-        }, $availableServices);
 
+        $availableServiceIds = [];
+        foreach ($availableServices as $service) {
+            $availableServiceIds[] = $service->id;
+        }
+        
         $invalidServiceIds = array_filter($serviceIds, function ($serviceId) use ($availableServiceIds) {
             return !in_array($serviceId, $availableServiceIds);
         });

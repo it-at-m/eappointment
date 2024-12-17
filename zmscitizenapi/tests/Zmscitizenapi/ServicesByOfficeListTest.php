@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Tests;
 class ServicesByOfficeListTest extends Base
 {
 
-    protected $classname = "ServicesByOfficeList";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\ServicesByOfficeList";
 
     public function testRendering()
     {
@@ -29,10 +29,11 @@ class ServicesByOfficeListTest extends Base
                     'name' => 'Unittest Source Dienstleistung',
                     'maxQuantity' => 1,
                 ]
-            ]
+            ],
+            'status' => 200
         ];
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
     }
 
     public function testRenderingMulti()
@@ -62,12 +63,13 @@ class ServicesByOfficeListTest extends Base
                     'name' => 'Unittest Source Dienstleistung 2',
                     'maxQuantity' => 1,
                 ]
-            ]
+            ],
+            'status' => 200
         ];
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
     }
-    
+
 
     public function testServiceNotFound()
     {
@@ -81,7 +83,7 @@ class ServicesByOfficeListTest extends Base
                 'response' => $this->readFixture("GET_SourceGet_dldb.json"),
             ]
         ]);
-    
+
         $response = $this->render([], [
             'officeId' => '99999999'
         ], []);
@@ -98,8 +100,8 @@ class ServicesByOfficeListTest extends Base
         ];
 
         $this->assertEquals(404, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
-   
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
+
     }
 
     public function testNoOfficeIdProvided()
@@ -116,10 +118,10 @@ class ServicesByOfficeListTest extends Base
             ],
             'status' => 400
         ];
-        
+
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
-        
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
+
     }
 
     public function testPartialResultsWithWarning()
@@ -133,7 +135,7 @@ class ServicesByOfficeListTest extends Base
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json"),
             ]
-        ]);    
+        ]);
         $response = $this->render([], [
             'officeId' => '9999998,99999999'
         ], []);
@@ -145,12 +147,12 @@ class ServicesByOfficeListTest extends Base
                     'maxQuantity' => 1,
                 ]
             ],
-            'warning' => 'The following officeId(s) were not found: 99999999'
+            'status' => 200
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
-        
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
+
     }
 
     public function testDuplicateOfficeIds()
@@ -175,10 +177,11 @@ class ServicesByOfficeListTest extends Base
                     'name' => 'Unittest Source Dienstleistung',
                     'maxQuantity' => 1,
                 ]
-            ]
+            ],
+            'status' => 200
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
     }
 }

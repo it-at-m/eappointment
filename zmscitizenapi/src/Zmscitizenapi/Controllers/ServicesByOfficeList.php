@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmscitizenapi;
+namespace BO\Zmscitizenapi\Controllers;
 
 use \BO\Zmscitizenapi\BaseController;
 use Psr\Http\Message\RequestInterface;
@@ -20,7 +20,7 @@ class ServicesByOfficeList extends BaseController
             return $this->createJsonResponse($response, $result, $result['status']);
         }
     
-        return $this->createJsonResponse($response, $result['services'], $result['status']);
+        return $this->createJsonResponse($response, $result->toArray(), $result->status);
     }
 
 }

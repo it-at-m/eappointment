@@ -65,7 +65,7 @@ class UtilityHelper
     public static function processToThinnedProcess(Process $myProcess): ThinnedProcess
     {
         if (!$myProcess || !isset($myProcess->id)) {
-            return null;
+            return new ThinnedProcess();
         }
 
         $subRequestCounts = [];
@@ -114,7 +114,7 @@ class UtilityHelper
     public static function thinnedProcessToProcess(ThinnedProcess $thinnedProcess): Process
     {
         if (!$thinnedProcess || !isset($thinnedProcess->processId)) {
-            return null;
+            return new Process();
         }
 
         $processEntity = new Process();

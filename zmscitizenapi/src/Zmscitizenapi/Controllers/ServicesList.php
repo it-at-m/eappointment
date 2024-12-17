@@ -1,22 +1,18 @@
 <?php
 
-namespace BO\Zmscitizenapi;
+namespace BO\Zmscitizenapi\Controllers;
 
 use \BO\Zmscitizenapi\BaseController;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
-class AvailableDaysList extends BaseController
+class ServicesList extends BaseController
 {
-
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $queryParams = $request->getQueryParams();
+        $services = ZmsApiFacadeService::getServices();
 
-        $result = ZmsApiFacadeService::getBookableFreeDays($queryParams);
-        
-        return $this->createJsonResponse($response, $result, $result['status']);
+        return $this->createJsonResponse($response, $services->toArray(), statusCode: $services->status);
     }
-
 }
