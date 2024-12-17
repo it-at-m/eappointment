@@ -5,9 +5,9 @@ namespace BO\Zmscitizenapi\Models;
 use \BO\Zmsentities\Helper\Property;
 use \BO\Zmsentities\Schema\Entity;
 
-class Scopes extends Entity
+class ThinnedScope extends Entity
 {
 
-    public static $schema = "zmsentities/schema/citizenapi/scopes.json";
+    public static $schema = "zmsentities/schema/citizenapi/scope.json";
 
 }
