@@ -53,7 +53,7 @@ class ZmsApiFacadeService
             $providerProjectionList[] = $providerData;
         }
 
-        return new OfficeList(["offices" => $providerProjectionList], 200);
+        return new OfficeList($providerProjectionList, 200);
     }
     public static function getScopes(): array
     {
@@ -95,11 +95,7 @@ class ZmsApiFacadeService
             ];
         }
 
-        $responseContent = [
-            "services" => $servicesProjectionList
-        ];
-
-        return new ServiceList($responseContent, 200);
+        return new ServiceList($servicesProjectionList, 200);
     }
 
     public static function getScopeForProvider(int $providerId, ?ScopeList $scopes): array
@@ -237,9 +233,7 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        $responseContent = ['offices' => $offices];
-
-        return new OfficeList($responseContent, 200);
+        return new OfficeList($offices, 200);
     }
 
     public static function getScopeByIds(array $scopeIds): array
@@ -327,9 +321,7 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        $responseContent = ['services' => $services];
-
-        return new ServiceList($responseContent, 200);
+        return new ServiceList($services, 200);
     }
 
     /* Todo add method

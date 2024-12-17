@@ -13,7 +13,7 @@ class OfficeList extends Entity
 
     public function __construct(array $data = [], int $status = 200)
     {
-        $this->offices = $data['offices'] ?? [];
+        $this->offices = $data;
         $this->status = $status;
     }
 
