@@ -7,7 +7,7 @@ use \BO\Zmscitizenapi\Services\FriendlyCaptchaService;
 
 class CaptchaTest extends Base
 {
-    protected $classname = "Captcha";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\Captcha";
 
     public function setUp(): void
     {

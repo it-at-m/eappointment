@@ -7,7 +7,7 @@ use BO\Slim\Render;
 class ScopeByIdTest extends Base
 {
 
-    protected $classname = "ScopeById";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\ScopeById";
 
     public function testRendering()
     {

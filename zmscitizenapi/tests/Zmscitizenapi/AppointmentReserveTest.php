@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class AppointmentReserveTest extends Base
 {
-    protected $classname = "AppointmentReserve";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\AppointmentReserve";
 
     public function testRendering()
     {

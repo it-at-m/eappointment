@@ -58,6 +58,9 @@
               },
               "captchaActivatedRequired": {
                 "type": "string"
+              },
+              "displayInfo": {
+                "type": "string"
               }
             },
             "required": [
@@ -78,6 +81,9 @@
           "name"
         ]
       }
+    },
+    "status": {
+      "type": "number"
     }
   },
   "required": [

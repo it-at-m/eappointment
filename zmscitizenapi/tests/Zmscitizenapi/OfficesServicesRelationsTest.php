@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Tests;
 class OfficesServicesRelationsTest extends Base
 {
 
-    protected $classname = "OfficesServicesRelations";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\OfficesServicesRelations";
 
     public function testRendering()
     {

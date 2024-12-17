@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmscitizenapi;
+namespace BO\Zmscitizenapi\Controllers;
 
 use \BO\Zmscitizenapi\BaseController;
 use \BO\Zmscitizenapi\Helper\UtilityHelper;
@@ -53,8 +53,8 @@ class AppointmentUpdate extends BaseController
                 return $this->createJsonResponse($response, ExceptionService::tooManyAppointmentsWithSameMail(), 406);
             }
     
-            $appointment = UtilityHelper::processToThinnedProcess($updatedProcess);
-            return $this->createJsonResponse($response, $appointment->toArray(), 200);
+            $thinnedProcess = UtilityHelper::processToThinnedProcess($updatedProcess);
+            return $this->createJsonResponse($response, $thinnedProcess->toArray(), 200);
     
         } catch (\Exception $e) {
             throw $e;
