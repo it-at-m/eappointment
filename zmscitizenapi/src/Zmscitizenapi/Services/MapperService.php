@@ -4,6 +4,7 @@ namespace BO\Zmscitizenapi\Services;
 
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use \BO\Zmscitizenapi\Models\ThinnedProcess;
+use \BO\Zmsentities\Appointment;
 use \BO\Zmsentities\Client;
 use \BO\Zmsentities\Contact;
 use \BO\Zmsentities\Process;
@@ -176,7 +177,7 @@ class MapperService
 
         $processEntity->clients = [$client];
 
-        $appointment = new ThinnedProcess();
+        $appointment = new Appointment();
         $appointment->date = $thinnedProcess->timestamp ?? null;
         $processEntity->appointments = [$appointment];
 
