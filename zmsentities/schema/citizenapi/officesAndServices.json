@@ -152,6 +152,9 @@
       }
     }
   },
+  "status": {
+    "type": "number"
+  },
   "required": [
     "offices",
     "services",

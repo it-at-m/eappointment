@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Services;
 
-use \BO\Zmscitizenapi\Helper\UtilityHelper;
+use \BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
 use \BO\Zmscitizenapi\Models\ThinnedProcess;
 use \BO\Zmscitizenapi\Models\OfficeList;
 use \BO\Zmscitizenapi\Models\ServiceList;
@@ -389,8 +389,8 @@ class ZmsApiFacadeService
         }
 
         try {
-            $firstDay = UtilityHelper::getInternalDateFromISO($startDate);
-            $lastDay = UtilityHelper::getInternalDateFromISO($endDate);
+            $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
+            $lastDay = DateTimeFormatHelper::getInternalDateFromISO($endDate);
 
             $freeDays = ZmsApiClientService::getFreeDays(
                 new ProviderList([['id' => $officeId, 'source' => \App::$source_name]]),
@@ -498,8 +498,8 @@ class ZmsApiFacadeService
             $freeSlots = ZmsApiClientService::getFreeTimeslots(
                 new ProviderList([['id' => $officeId, 'source' => \App::$source_name]]),
                 new RequestList($requests),
-                UtilityHelper::getInternalDateFromISO($date),
-                UtilityHelper::getInternalDateFromISO($date)
+                DateTimeFormatHelper::getInternalDateFromISO($date),
+                DateTimeFormatHelper::getInternalDateFromISO($date)
             );
 
             return self::processFreeSlots($freeSlots);
@@ -576,7 +576,7 @@ class ZmsApiFacadeService
             }
 
             $thinnedProcess = new ThinnedProcess();
-            $thinnedProcess = UtilityHelper::processToThinnedProcess($process);
+            $thinnedProcess = MapperService::processToThinnedProcess($process);
 
             return $thinnedProcess;
 

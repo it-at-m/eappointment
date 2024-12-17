@@ -17,9 +17,6 @@ class ServiceOfficeList extends Entity
         $this->status = $status;
     }
 
-    /**
-     * Convert ServiceOfficeList object to an array
-     */
     public function toArray(): array
     {
         return array_merge($this->data, ["status" => $this->status]);

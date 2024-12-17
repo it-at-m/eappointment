@@ -3,13 +3,11 @@
 namespace BO\Zmscitizenapi\Controllers;
 
 use \BO\Zmscitizenapi\BaseController;
-use \BO\Zmscitizenapi\Helper\UtilityHelper;
 use \BO\Zmscitizenapi\Models\ThinnedProcess;
 use \BO\Zmscitizenapi\Services\ExceptionService;
+use \BO\Zmscitizenapi\Services\MapperService;
 use \BO\Zmscitizenapi\Services\ValidationService;
 use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
-use \BO\Zmsentities\Client;
-use \BO\Zmsentities\Process;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -45,7 +43,7 @@ class AppointmentUpdate extends BaseController
             $reservedProcess->telephone = $telephone ?? $reservedProcess->telephone ?? null;
             $reservedProcess->customTextfield = $customTextfield ?? $reservedProcess->customTextfield ?? null;
     
-            $processEntity = UtilityHelper::thinnedProcessToProcess($reservedProcess);
+            $processEntity = MapperService::thinnedProcessToProcess($reservedProcess);
     
             $updatedProcess = ZmsApiFacadeService::updateClientData($processEntity);
     
@@ -53,7 +51,7 @@ class AppointmentUpdate extends BaseController
                 return $this->createJsonResponse($response, ExceptionService::tooManyAppointmentsWithSameMail(), 406);
             }
     
-            $thinnedProcess = UtilityHelper::processToThinnedProcess($updatedProcess);
+            $thinnedProcess = MapperService::processToThinnedProcess($updatedProcess);
             return $this->createJsonResponse($response, $thinnedProcess->toArray(), 200);
     
         } catch (\Exception $e) {
