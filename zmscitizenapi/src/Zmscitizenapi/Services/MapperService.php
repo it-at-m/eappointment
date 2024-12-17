@@ -176,9 +176,9 @@ class MapperService
 
         $processEntity->clients = [$client];
 
-        $thinnedProcess = new ThinnedProcess();
-        $thinnedProcess->date = $thinnedProcess->timestamp ?? null;
-        $processEntity->appointments = [$thinnedProcess];
+        $appointment = new ThinnedProcess();
+        $appointment->date = $thinnedProcess->timestamp ?? null;
+        $processEntity->appointments = [$appointment];
 
         $scope = new Scope();
         if (isset($thinnedProcess->officeName)) {
