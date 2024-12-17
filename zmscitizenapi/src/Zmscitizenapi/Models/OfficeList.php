@@ -9,7 +9,7 @@ class OfficeList extends Entity
     public static $schema = "zmsentities/schema/citizenapi/offices.json";
 
     protected array $offices = [];
-    public int $status; // Explicitly include status property
+    public int $status;
 
     public function __construct(array $data = [], int $status = 200)
     {
@@ -17,9 +17,6 @@ class OfficeList extends Entity
         $this->status = $status;
     }
 
-    /**
-     * Convert OfficeList object to an array
-     */
     public function toArray(): array
     {
         return [

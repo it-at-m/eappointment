@@ -8,8 +8,6 @@ class ThinnedProcess extends Entity
 {
     public static $schema = "zmsentities/schema/citizenapi/thinnedProcess.json";
 
-    // Add properties based on schema (or dynamically handle them in Entity class)
-
     /**
      * Convert the ThinnedProcess object to an array.
      *
@@ -33,4 +31,5 @@ class ThinnedProcess extends Entity
             'serviceCount' => $this->serviceCount ?? 0,
         ];
     }
+    
 }

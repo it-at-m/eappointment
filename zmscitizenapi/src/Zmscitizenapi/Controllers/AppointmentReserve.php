@@ -4,7 +4,7 @@ namespace BO\Zmscitizenapi\Controllers;
 
 use \BO\Zmscitizenapi\Application;
 use \BO\Zmscitizenapi\BaseController;
-use \BO\Zmscitizenapi\Helper\UtilityHelper;
+use \BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
 use \BO\Zmscitizenapi\Services\FriendlyCaptchaService;
 use \BO\Zmscitizenapi\Services\MapperService;
 use \BO\Zmscitizenapi\Services\ValidationService;
@@ -67,7 +67,7 @@ class AppointmentReserve extends BaseController
                 $officeId,
                 $serviceIds,
                 $serviceCounts,
-                UtilityHelper::getInternalDateFromTimestamp($timestamp)
+                DateTimeFormatHelper::getInternalDateFromTimestamp($timestamp)
             );
 
             $processArray = json_decode(json_encode($freeAppointments), true);
@@ -114,7 +114,7 @@ class AppointmentReserve extends BaseController
             }
 
             $thinnedProcess = new ThinnedProcess();
-            $thinnedProcess = UtilityHelper::processToThinnedProcess($reservedProcess);
+            $thinnedProcess = MapperService::processToThinnedProcess($reservedProcess);
 
             $thinnedProcess = array_merge($thinnedProcess->toArray(), ['officeId' => $officeId]);
             

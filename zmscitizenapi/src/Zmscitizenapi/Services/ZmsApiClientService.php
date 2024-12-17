@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Services;
 
-use \BO\Zmscitizenapi\Helper\UtilityHelper;
+use \BO\Zmscitizenapi\Helper\ClientIpHelper;
 use \BO\Zmsentities\Calendar as Calendar;
 use \BO\Zmsentities\Process as Process;
 use \BO\Zmsentities\Collection\SourceList;
@@ -127,7 +127,7 @@ class ZmsApiClientService
         $processEntity->requests = $requests;
         $processEntity->lastChange = $appointmentProcess['lastChange'] ?? time();
 
-        $processEntity->createIP = UtilityHelper::getClientIp();
+        $processEntity->createIP = ClientIpHelper::getClientIp();
         $processEntity->createTimestamp = time();
 
         if (isset($appointmentProcess['queue'])) {
