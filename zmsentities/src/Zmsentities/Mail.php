@@ -168,8 +168,8 @@ class Mail extends Schema\Entity
 
         $entity->process = ($mainProcess) ? ($mainProcess) : new Process();
         $entity->subject = ($mainProcess) ?
-            Messaging::getMailSubject($mainProcess, $config, $initiator, $status) :
-            Messaging::getMailSubject((new Process()), $config, $initiator, $status);
+            Messaging::getMailSubject($mainProcess, $config, $initiator, $status, $this->templateProvider) :
+            Messaging::getMailSubject((new Process()), $config, $initiator, $status, $this->templateProvider);
         $entity->createIP = ($mainProcess) ? $mainProcess->createIP : '';
         $entity['client'] = (! isset($entity['client'])) ? $entity->getFirstClient() : $entity['client'];
 
