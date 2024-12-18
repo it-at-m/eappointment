@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Models;
 
-use \BO\Zmsentities\Schema\Entity;
+use BO\Zmsentities\Schema\Entity;
 
 class ServiceOfficeList extends Entity
 {

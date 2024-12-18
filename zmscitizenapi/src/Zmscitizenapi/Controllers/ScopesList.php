@@ -2,10 +2,10 @@
 
 namespace BO\Zmscitizenapi\Controllers;
 
-use \BO\Zmscitizenapi\BaseController;
+use BO\Zmscitizenapi\BaseController;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
 class ScopesList extends BaseController
 {
@@ -13,6 +13,6 @@ class ScopesList extends BaseController
     {
         $scopes = ZmsApiFacadeService::getScopes();
 
-        return $this->createJsonResponse($response, $scopes, statusCode: $scopes['status']);
+        return $this->createJsonResponse($response, $scopes->toArray(), statusCode: $scopes->status);
     }
 }

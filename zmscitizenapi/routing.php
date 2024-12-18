@@ -20,7 +20,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/services.json"
+ *               $ref: "schema/citizenapi/serviceList.json"
  */
 \App::$slim->get(
     '/services/',
@@ -68,7 +68,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/offices.json"
+ *               $ref: "schema/citizenapi/officeList.json"
  */
 \App::$slim->get(
     '/offices/',
@@ -127,7 +127,7 @@ use \Psr\Http\Message\ResponseInterface;
  *         description: Scope not found
  */
 \App::$slim->get(
-    '/scope-by-id/',
+    '/scope-by-ids/',
     '\BO\Zmscitizenapi\Controllers\ScopeById'
 )
     ->setName("ScopeById");

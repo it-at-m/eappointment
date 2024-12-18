@@ -2,9 +2,9 @@
 
 namespace BO\Zmscitizenapi\Controllers;
 
-use \BO\Zmscitizenapi\BaseController;
-use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
-use \BO\Zmscitizenapi\Models\ThinnedProcess;
+use BO\Zmscitizenapi\BaseController;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
+use BO\Zmscitizenapi\Models\ThinnedProcess;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 

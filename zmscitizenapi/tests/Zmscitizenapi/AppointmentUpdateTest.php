@@ -26,7 +26,7 @@ class AppointmentUpdateTest extends Base
                 ]
             ]
         );
-
+    
         $parameters = [
             'processId' => '101002',
             'authKey' => 'fb43',
@@ -35,32 +35,40 @@ class AppointmentUpdateTest extends Base
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
         ];
-
+    
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
-            "processId" => "101002",
-            "timestamp" => 1727865900,
+            "processId" => 101002,
+            "timestamp" => "1727865900",
             "authKey" => "fb43",
             "familyName" => "TEST_USER",
             "customTextfield" => "Some custom text",
             "email" => "test@muenchen.de",
             "telephone" => "123456789",
             "officeName" => null,
-            "officeId" => null,
+            "officeId" => 0,
             "scope" => [
-                '$schema' => "https://schema.berlin.de/queuemanagement/scope.json",
                 "id" => 0,
-                "source" => "dldb"
+                "provider" => [
+                    '$schema' => "https://schema.berlin.de/queuemanagement/provider.json"
+                ],
+                "shortName" => null,
+                "telephoneActivated" => null,
+                "telephoneRequired" => null,
+                "customTextfieldActivated" => null,
+                "customTextfieldRequired" => null,
+                "customTextfieldLabel" => null,
+                "captchaActivatedRequired" => null,
+                "displayInfo" => null
             ],
             "subRequestCounts" => [],
-            "serviceId" => "10242339",
+            "serviceId" => 10242339,
             "serviceCount" => 1
         ];
-
+    
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-
     }
 
     public function testTooManyEmailsAtLocation()

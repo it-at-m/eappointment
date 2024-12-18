@@ -2,10 +2,10 @@
 
 namespace BO\Zmscitizenapi\Services;
 
-use \BO\Zmsentities\Process;
-use \BO\Zmsentities\Collection\ProcessList;
-use \BO\Zmsentities\Collection\ScopeList;
-use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
 class ValidationService
 {
@@ -185,10 +185,10 @@ class ValidationService
         return ['errors' => $errors, 'status' => 400];
     }
 
-    public static function validateGetScopeByIds(?array $scopeIds): array
+    public static function validateGetScopeByIds(?int $scopeId): array
     {
         $errors = [];
-        if (empty($scopeIds) || $scopeIds == ['']) {
+        if (empty($scopeId) || $scopeId === '') {
             $errors[] = [
                 'scopes' => [],
                 'errorCode' => 'invalidScopeId',
@@ -282,7 +282,6 @@ class ValidationService
                 'status' => 404,
             ];
         }
-
         return ['errors' => $errors, 'status' => 404];
     }
 
@@ -430,11 +429,11 @@ class ValidationService
         return empty($errors) ? [] : ['errors' => $errors, 'status' => 400];
     }
 
-    public static function validateScopeIdParam(array $scopeIds): array
+    public static function validateScopeIdParam(?int $scopeId): array
     {
         $errors = [];
 
-        if (empty($scopeIds) || !is_array($scopeIds)) {
+        if (empty($scopeId) || !is_numeric($scopeId)) {
             $errors[] = [
                 'scopes' => [],
                 'errorCode' => 'invalidScopeId',
@@ -442,17 +441,6 @@ class ValidationService
                 'status' => 400,
             ];
             return ['errors' => $errors, 'status' => 400];
-        }
-
-        foreach ($scopeIds as $id) {
-            if (!is_numeric($id)) {
-                $errors[] = [
-                    'scopes' => [],
-                    'errorCode' => 'invalidScopeId',
-                    'errorMessage' => "scopeId should be a 32-bit integer.",
-                    'status' => 400,
-                ];
-            }
         }
 
         return empty($errors) ? [] : ['errors' => $errors, 'status' => 400];

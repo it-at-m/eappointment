@@ -2,8 +2,8 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
-use \BO\Zmscitizenapi\Application;
-use \BO\Zmscitizenapi\Services\FriendlyCaptchaService;
+use BO\Zmscitizenapi\Application;
+use BO\Zmscitizenapi\Services\FriendlyCaptchaService;
 
 class CaptchaTest extends Base
 {

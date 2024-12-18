@@ -2,18 +2,21 @@
 
 namespace BO\Zmscitizenapi\Services;
 
-use \BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
-use \BO\Zmscitizenapi\Models\ThinnedProcess;
-use \BO\Zmscitizenapi\Models\OfficeList;
-use \BO\Zmscitizenapi\Models\ServiceList;
-use \BO\Zmscitizenapi\Models\ServiceOfficeList;
-use \BO\Zmscitizenapi\Services\ZmsApiClientService;
-use \BO\Zmsentities\Process;
-use \BO\Zmsentities\Scope;
-use \BO\Zmsentities\Collection\ScopeList;
-use \BO\Zmsentities\Collection\ProviderList;
-use \BO\Zmsentities\Collection\RequestList;
-use \BO\Zmsentities\Collection\ProcessList;
+use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
+
+use BO\Zmscitizenapi\Models\OfficeList;
+use BO\Zmscitizenapi\Models\ServiceList;
+use BO\Zmscitizenapi\Models\ServiceOfficeList;
+use BO\Zmscitizenapi\Models\ThinnedProcess;
+use BO\Zmscitizenapi\Models\ThinnedScope;
+use BO\Zmscitizenapi\Models\ThinnedScopeList;
+use BO\Zmscitizenapi\Services\ZmsApiClientService;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Scope;
+use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Collection\ProviderList;
+use BO\Zmsentities\Collection\RequestList;
+use BO\Zmsentities\Collection\ProcessList;
 
 class ZmsApiFacadeService
 {
@@ -55,7 +58,7 @@ class ZmsApiFacadeService
 
         return new OfficeList($providerProjectionList, 200);
     }
-    public static function getScopes(): array
+    public static function getScopes(): ThinnedScopeList
     {
         $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
         $scopesProjectionList = [];
@@ -75,10 +78,8 @@ class ZmsApiFacadeService
             ];
         }
 
-        return [
-            "scopes" => $scopesProjectionList,
-            "status" => 200
-        ];
+        return new ThinnedScopeList($scopesProjectionList, 200);
+
     }
 
     public static function getServices(): ServiceList
@@ -98,7 +99,7 @@ class ZmsApiFacadeService
         return new ServiceList($servicesProjectionList, 200);
     }
 
-    public static function getScopeForProvider(int $providerId, ?ScopeList $scopes): array
+    public static function getScopeForProvider(int $providerId, ?ScopeList $scopes): ThinnedScope|array
     {
         $filteredScopes = $scopes->withProviderID(\App::$source_name, (string) $providerId);
 
@@ -123,12 +124,9 @@ class ZmsApiFacadeService
                 "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired() ?? null,
                 "displayInfo" => $scope->getDisplayInfo() ?? null,
             ];
-        }
+        }       
 
-        return [
-            'scope' => $result,
-            'status' => 200,
-        ];
+        return new ThinnedScope(...$result);
     }
 
     public static function getServicesAndOffices(): ServiceOfficeList
@@ -157,13 +155,13 @@ class ZmsApiFacadeService
      * 
      */
 
-    public static function getScopeByOfficeId(int $officeId): array
+    public static function getScopeByOfficeId(int $officeId): ThinnedScope|array
     {
         $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
         $matchingScope = $scopeList->withProviderID(\App::$source_name, $officeId)->getIterator()->current();
 
         if ($matchingScope instanceof Scope) {
-            return [
+            $result = [
                 "id" => $matchingScope->id,
                 "provider" => $matchingScope->getProvider() ?? null,
                 "shortName" => $matchingScope->getShortName() ?? null,
@@ -175,6 +173,8 @@ class ZmsApiFacadeService
                 "captchaActivatedRequired" => $matchingScope->getCaptchaActivatedRequired() ?? null,
                 "displayInfo" => $matchingScope->getDisplayInfo() ?? null,
             ];
+
+            return new ThinnedScope(...$result);
         }
 
         return [
@@ -236,32 +236,30 @@ class ZmsApiFacadeService
         return new OfficeList($offices, 200);
     }
 
-    public static function getScopeByIds(array $scopeIds): array
+    public static function getScopeById(?int $scopeId): ThinnedScope|array
     {
-        $scopeIds = array_unique($scopeIds);
-
-        $errors = ValidationService::validateGetScopeByIds($scopeIds);
+        $errors = ValidationService::validateGetScopeByIds($scopeId);
         if (!empty($errors['errors'])) {
             return $errors;
         }
-
+    
         $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
         $filteredScopes = new ScopeList();
 
         foreach ($scopeList as $scope) {
-            if (in_array($scope->id, $scopeIds)) {
+            if ((int)$scope->id === $scopeId) {
                 $filteredScopes->addEntity($scope);
             }
         }
-
+    
         $errors = ValidationService::validateScopesNotFound($filteredScopes);
         if (!empty($errors['errors'])) {
             return $errors;
         }
-
-        $scopes = [];
+    
+        $result = [];
         foreach ($filteredScopes as $scope) {
-            $scopes[] = [
+            $result = [
                 "id" => $scope->id,
                 "provider" => $scope->getProvider() ?? null,
                 "shortName" => $scope->getShortName() ?? null,
@@ -274,12 +272,10 @@ class ZmsApiFacadeService
                 "displayInfo" => $scope->getDisplayInfo() ?? null,
             ];
         }
-
-        return [
-            'scopes' => $scopes,
-            'status' => 200,
-        ];
+    
+        return new ThinnedScope(...$result);
     }
+    
 
     public static function getServicesByOfficeIds(array $officeIds): ServiceList|array
     {
@@ -546,9 +542,9 @@ class ZmsApiFacadeService
         ];
     }
 
-    public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): Process
+    public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess
     {
-        return ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts);
+        return MapperService::processToThinnedProcess(ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts));
     }
 
     public static function getThinnedProcessById(?int $processId, ?string $authKey): ThinnedProcess|array
@@ -559,15 +555,13 @@ class ZmsApiFacadeService
         }
 
         try {
-            $process = new Process;
-            $process = ZmsApiClientService::getProcessById($processId, $authKey);
 
+            $process = ZmsApiClientService::getProcessById($processId, $authKey);
             $errors = ValidationService::validateGetProcessNotFound($process);
             if (!empty($errors['errors'])) {
                 return $errors;
             }
 
-            $thinnedProcess = new ThinnedProcess();
             $thinnedProcess = MapperService::processToThinnedProcess($process);
 
             return $thinnedProcess;
