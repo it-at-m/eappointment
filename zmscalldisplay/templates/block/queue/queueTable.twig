@@ -5,13 +5,6 @@
     </div>
 {% endif %}
 
-{% if text %}
-    <div class="infotext">
-        <span id="infoicon"></span>
-        <div class="infotext-content">{{ text }}</div>
-    </div>
-{% endif %}
-
 {% block queueTable %}
     {% if tableSettings.multiColumns == 1 %}
         {% include "block/queue/table/oneColumn.twig" with {"settings": tableSettings} %}
