@@ -3,7 +3,7 @@
 namespace BO\Zmscitizenapi\Services;
 
 use GuzzleHttp\Exception\RequestException;
-use \BO\Zmscitizenapi\Application;
+use BO\Zmscitizenapi\Application;
 use Exception;
 
 class FriendlyCaptchaService implements CaptchaServiceInterface

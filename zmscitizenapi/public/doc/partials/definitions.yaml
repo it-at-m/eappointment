@@ -18,7 +18,7 @@ definitions:
   captchaDetails:
     $ref: "schema/citizenapi/captchaDetails.json"
   offices:
-    $ref: "schema/citizenapi/offices.json"
+    $ref: "schema/citizenapi/officeList.json"
   officesAndServices:
     $ref: "schema/citizenapi/officesAndServices.json"
   officesByService:
@@ -28,6 +28,6 @@ definitions:
   scopes:
     $ref: "schema/citizenapi/scopes.json"
   services:
-    $ref: "schema/citizenapi/services.json"
+    $ref: "schema/citizenapi/serviceList.json"
   servicesByOffice:
     $ref: "schema/citizenapi/servicesByOffice.json"

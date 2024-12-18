@@ -2,17 +2,17 @@
 
 namespace BO\Zmscitizenapi\Controllers;
 
-use \BO\Zmscitizenapi\Application;
-use \BO\Zmscitizenapi\BaseController;
-use \BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
-use \BO\Zmscitizenapi\Services\FriendlyCaptchaService;
-use \BO\Zmscitizenapi\Services\MapperService;
-use \BO\Zmscitizenapi\Services\ValidationService;
-use \BO\Zmscitizenapi\Services\ZmsApiFacadeService;
-use \BO\Zmscitizenapi\Models\ThinnedProcess;
-use \BO\Zmsentities\Process;
-use \BO\Zmsentities\Scope;
-use \BO\Zmsentities\Collection\ProcessList;
+use BO\Zmscitizenapi\Application;
+use BO\Zmscitizenapi\BaseController;
+use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
+use BO\Zmscitizenapi\Services\FriendlyCaptchaService;
+use BO\Zmscitizenapi\Services\MapperService;
+use BO\Zmscitizenapi\Services\ValidationService;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
+use BO\Zmscitizenapi\Models\ThinnedProcess;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Scope;
+use BO\Zmsentities\Collection\ProcessList;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -38,7 +38,7 @@ class AppointmentReserve extends BaseController
 
         try {
             $providerScope = ZmsApiFacadeService::getScopeByOfficeId($officeId);
-            $captchaRequired = Application::$CAPTCHA_ENABLED === true && isset($providerScope['captchaActivatedRequired']) && $providerScope['captchaActivatedRequired'] === "1";
+            $captchaRequired = Application::$CAPTCHA_ENABLED === true && isset($providerScope->captchaActivatedRequired) && $providerScope->captchaActivatedRequired === "1";
 
             if ($captchaRequired) {
                 try {
@@ -101,22 +101,19 @@ class AppointmentReserve extends BaseController
                 ]
             ];
 
-            $reservedProcess = new Process();
             $reservedProcess = ZmsApiFacadeService::reserveTimeslot($selectedProcess, $serviceIds, $serviceCounts);
 
             if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {
-                $scopeIds = [$reservedProcess->scope->id];
-                $scopesData = ZmsApiFacadeService::getScopeByIds($scopeIds);
+                
+                $scopeId = $reservedProcess->scope->id;
+                $scope = ZmsApiFacadeService::getScopeById((int)$scopeId);
 
-                if ($scopesData['status'] === 200 && isset($scopesData['scopes']['scopes']) && !empty($scopesData['scopes']['scopes'])) {
-                    $reservedProcess->scope = MapperService::mapScope($scopesData['scopes']['scopes'][0]);
+                if (!isset($scope['errors']) && isset($scope) && !empty($scope)) {
+                    $reservedProcess->scope = $scope;
                 }
             }
 
-            $thinnedProcess = new ThinnedProcess();
-            $thinnedProcess = MapperService::processToThinnedProcess($reservedProcess);
-
-            $thinnedProcess = array_merge($thinnedProcess->toArray(), ['officeId' => $officeId]);
+            $thinnedProcess = array_merge($reservedProcess->toArray(), ['officeId' => $officeId]);
             
             return $this->createJsonResponse($response, $thinnedProcess, 200);
 

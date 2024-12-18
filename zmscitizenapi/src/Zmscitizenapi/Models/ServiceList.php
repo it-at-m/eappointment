@@ -2,11 +2,11 @@
 
 namespace BO\Zmscitizenapi\Models;
 
-use \BO\Zmsentities\Schema\Entity;
+use BO\Zmsentities\Schema\Entity;
 
 class ServiceList extends Entity
 {
-    public static $schema = "zmsentities/schema/citizenapi/services.json";
+    public static $schema = "zmsentities/schema/citizenapi/serviceList.json";
 
     protected array $services = [];
     public int $status;

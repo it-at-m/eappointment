@@ -2,8 +2,7 @@
 
 namespace BO\Zmscitizenapi\Models;
 
-use \BO\Zmsentities\Helper\Property;
-use \BO\Zmsentities\Schema\Entity;
+use BO\Zmsentities\Schema\Entity;
 
 class AppointmentUpdate extends Entity
 {
