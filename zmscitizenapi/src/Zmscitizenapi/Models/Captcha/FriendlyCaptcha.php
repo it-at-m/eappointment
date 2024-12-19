@@ -32,7 +32,7 @@ class FriendlyCaptcha extends Entity implements CaptchaInterface
         $this->service = 'FriendlyCaptcha';
         $this->siteKey = Application::$FRIENDLY_CAPTCHA_SITE_KEY;
         $this->apiUrl = Application::$FRIENDLY_CAPTCHA_ENDPOINT;
-        $this->secretKey = Application::$FRIENDLY_CAPTCHA_SITE_KEY;
+        $this->secretKey = Application::$FRIENDLY_CAPTCHA_SECRET_KEY;
         $this->puzzle = Application::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
     }
 

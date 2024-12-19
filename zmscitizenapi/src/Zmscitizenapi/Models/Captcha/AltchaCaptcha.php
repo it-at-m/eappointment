@@ -30,7 +30,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
      */
     public function __construct(Client $httpClient = null)
     {
-        $this->service = 'FriendlyCaptcha';
+        $this->service = 'AltchaCaptcha';
         $this->siteKey = Application::$ALTCHA_CAPTCHA_SITE_KEY;
         $this->apiUrl = Application::$ALTCHA_CAPTCHA_ENDPOINT;
         $this->secretKey = Application::$ALTCHA_CAPTCHA_SECRET_KEY;
@@ -45,9 +45,9 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
     public function getCaptchaDetails(): array
     {
         return [
-            'service' => $this->service,
-            'apiKey' => $this->apiKey,
+            'siteKey' => $this->siteKey,
             'captchaEndpoint' => $this->apiUrl,
+            'puzzle' => $this->puzzle,
             'captchaEnabled' => Application::$CAPTCHA_ENABLED,
             'status' => 200
         ];
@@ -65,7 +65,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         try {
             $response = $this->httpClient->post($this->apiUrl, [
                 'form_params' => [
-                    'apiKey' => $this->apiKey,
+                    'secret' => $this->secretKey,
                     'solution' => $solution
                 ]
             ]);
