@@ -44,11 +44,11 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/thinnedScopesList.json"
+ *               $ref: "schema/citizenapi/thinnedScopeList.json"
  */
 \App::$slim->get(
     '/scopes/',
-    '\BO\Zmscitizenapi\Controllers\thinnedScopesList'
+    '\BO\Zmscitizenapi\Controllers\thinnedScopeList'
 )
     ->setName("ScopesList");
 
