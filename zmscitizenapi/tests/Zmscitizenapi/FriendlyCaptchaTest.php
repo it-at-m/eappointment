@@ -3,9 +3,9 @@
 namespace BO\Zmscitizenapi\Tests;
 
 use BO\Zmscitizenapi\Application;
-use BO\Zmscitizenapi\Services\FriendlyCaptchaService;
+use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
 
-class CaptchaTest extends Base
+class FriendlyCaptchaTest extends Base
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Captcha";
 
@@ -13,9 +13,9 @@ class CaptchaTest extends Base
     {
         parent::setUp();
 
-        putenv('CAPTCHA_SITEKEY=FAKE_SITE_KEY');
-        putenv('CAPTCHA_ENDPOINT=https://api.friendlycaptcha.com/api/v1/siteverify');
-        putenv('CAPTCHA_ENDPOINT_PUZZLE=https://api.friendlycaptcha.com/api/v1/puzzle');
+        putenv('FRIENDLY_CAPTCHA_SITE_KEY=FAKE_SITE_KEY');
+        putenv('FRIENDLY_CAPTCHA_ENDPOINT=https://api.friendlycaptcha.com/api/v1/siteverify');
+        putenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE=https://api.friendlycaptcha.com/api/v1/puzzle');
         putenv('CAPTCHA_ENABLED=1');
 
         Application::initialize();
@@ -23,9 +23,9 @@ class CaptchaTest extends Base
 
     public function tearDown(): void
     {
-        putenv('CAPTCHA_SITEKEY=');
-        putenv('CAPTCHA_ENDPOINT=');
-        putenv('CAPTCHA_ENDPOINT_PUZZLE=');
+        putenv('FRIENDLY_CAPTCHA_SITEKEY=');
+        putenv('FRIENDLY_CAPTCHA_ENDPOINT=');
+        putenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE=');
         putenv('CAPTCHA_ENABLED=');
 
         parent::tearDown();
@@ -56,7 +56,8 @@ class CaptchaTest extends Base
         $mockResponse = new \GuzzleHttp\Psr7\Response(200, [], json_encode(['success' => true]));
         \App::$http = new \GuzzleHttp\Client(['handler' => \GuzzleHttp\HandlerStack::create(new \GuzzleHttp\Handler\MockHandler([$mockResponse]))]);
     
-        $result = FriendlyCaptchaService::verifyCaptcha('valid_solution');
+        $captcha = new FriendlyCaptcha();
+        $result = $captcha->verifyCaptcha('valid_solution');
         $this->assertTrue($result);
     }
     
@@ -66,7 +67,8 @@ class CaptchaTest extends Base
         $mockResponse = new \GuzzleHttp\Psr7\Response(200, [], json_encode(['success' => false]));
         \App::$http = new \GuzzleHttp\Client(['handler' => \GuzzleHttp\HandlerStack::create(new \GuzzleHttp\Handler\MockHandler([$mockResponse]))]);
     
-        $result = FriendlyCaptchaService::verifyCaptcha('invalid_solution');
+        $captcha = new FriendlyCaptcha();
+        $result = $captcha->verifyCaptcha('invalid_solution');
         $this->assertFalse($result);
     }
     
@@ -78,7 +80,8 @@ class CaptchaTest extends Base
         ]);
         \App::$http = new \GuzzleHttp\Client(['handler' => \GuzzleHttp\HandlerStack::create($mockHandler)]);
     
-        $result = FriendlyCaptchaService::verifyCaptcha('exception_solution');
+        $captcha = new FriendlyCaptcha();
+        $result = $captcha->verifyCaptcha('exception_solution');
         $this->assertFalse($result);
     }
 

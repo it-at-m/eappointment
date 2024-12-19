@@ -5,11 +5,9 @@ namespace BO\Zmscitizenapi\Controllers;
 use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
-use BO\Zmscitizenapi\Services\FriendlyCaptchaService;
-use BO\Zmscitizenapi\Services\MapperService;
 use BO\Zmscitizenapi\Services\ValidationService;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
-use BO\Zmscitizenapi\Models\ThinnedProcess;
+use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\ProcessList;
@@ -42,7 +40,8 @@ class AppointmentReserve extends BaseController
 
             if ($captchaRequired) {
                 try {
-                    $captchaVerificationResult = FriendlyCaptchaService::verifyCaptcha($captchaSolution);
+                    $captcha = new FriendlyCaptcha();
+                    $captchaVerificationResult = $captcha->verifyCaptcha($captchaSolution);
                     if (!$captchaVerificationResult) {
                         return $this->createJsonResponse($response, [
                             'errorCode' => 'captchaVerificationFailed',
