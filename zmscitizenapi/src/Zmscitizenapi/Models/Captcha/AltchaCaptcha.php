@@ -33,7 +33,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         $this->service = 'FriendlyCaptcha';
         $this->siteKey = Application::$ALTCHA_CAPTCHA_SITE_KEY;
         $this->apiUrl = Application::$ALTCHA_CAPTCHA_ENDPOINT;
-        $this->secretKey = Application::$ALTCHA_CAPTCHA_SITE_KEY;
+        $this->secretKey = Application::$ALTCHA_CAPTCHA_SECRET_KEY;
         $this->puzzle = Application::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
     }
 
