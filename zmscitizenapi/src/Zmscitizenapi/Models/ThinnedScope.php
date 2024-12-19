@@ -63,6 +63,51 @@ class ThinnedScope extends Entity
         $this->displayInfo = $displayInfo;
     }
 
+    public function getProvider(): ?Provider
+    {
+        return $this->provider;
+    }
+
+    public function getShortName(): ?string
+    {
+        return $this->shortName;
+    }
+
+    public function getTelephoneActivated(): ?bool
+    {
+        return $this->telephoneActivated;
+    }
+
+    public function getTelephoneRequired(): ?bool
+    {
+        return $this->telephoneRequired;
+    }
+
+    public function getCustomTextfieldActivated(): ?bool
+    {
+        return $this->customTextfieldActivated;
+    }
+
+    public function getCustomTextfieldRequired(): ?bool
+    {
+        return $this->customTextfieldRequired;
+    }
+
+    public function getCustomTextfieldLabel(): ?string
+    {
+        return $this->customTextfieldLabel;
+    }
+
+    public function getCaptchaActivatedRequired(): ?bool
+    {
+        return $this->captchaActivatedRequired;
+    }
+
+    public function getDisplayInfo(): ?string
+    {
+        return $this->displayInfo;
+    }
+
     public function toArray(): array
     {
         return [

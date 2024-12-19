@@ -25,8 +25,26 @@ class OfficesByServiceListTest extends Base
         $expectedResponse = [
             'offices' => [
                 [
-                    'id' => '9999999',
+                    'id' => 9999999,
                     'name' => 'Unittest Source Dienstleister 2',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 2,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999999',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 2',
+                        'telephoneActivated' => false,
+                        'telephoneRequired' => true,
+                        'customTextfieldActivated' => false,
+                        'customTextfieldRequired' => true,
+                        'customTextfieldLabel' => '',
+                        'captchaActivatedRequired' => false,
+                        'displayInfo' => null
+                    ]
                 ]
             ]
         ];
@@ -52,12 +70,48 @@ class OfficesByServiceListTest extends Base
         $expectedResponse = [
             'offices' => [
                 [
-                    'id' => '9999998',
+                    'id' => 9999998,
                     'name' => 'Unittest Source Dienstleister',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 1,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999998',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 1',
+                        'telephoneActivated' => true,
+                        'telephoneRequired' => false,
+                        'customTextfieldActivated' => true,
+                        'customTextfieldRequired' => false,
+                        'customTextfieldLabel' => 'Custom Label',
+                        'captchaActivatedRequired' => true,
+                        'displayInfo' => null
+                    ]
                 ],
                 [
-                    'id' => '9999999',
+                    'id' => 9999999,
                     'name' => 'Unittest Source Dienstleister 2',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 2,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999999',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 2',
+                        'telephoneActivated' => false,
+                        'telephoneRequired' => true,
+                        'customTextfieldActivated' => false,
+                        'customTextfieldRequired' => true,
+                        'customTextfieldLabel' => '',
+                        'captchaActivatedRequired' => false,
+                        'displayInfo' => null
+                    ]
                 ]
             ]
         ];
@@ -80,20 +134,58 @@ class OfficesByServiceListTest extends Base
         $response = $this->render([], [
             'serviceId' => '1,2'
         ], []);
+        $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'offices' => [
                 [
-                    'id' => '9999998',
+                    'id' => 9999998,
                     'name' => 'Unittest Source Dienstleister',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 1,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999998',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 1',
+                        'telephoneActivated' => true,
+                        'telephoneRequired' => false,
+                        'customTextfieldActivated' => true,
+                        'customTextfieldRequired' => false,
+                        'customTextfieldLabel' => 'Custom Label',
+                        'captchaActivatedRequired' => true,
+                        'displayInfo' => null
+                    ]
                 ],
                 [
-                    'id' => '9999999',
+                    'id' => 9999999,
                     'name' => 'Unittest Source Dienstleister 2',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 2,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999999',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 2',
+                        'telephoneActivated' => false,
+                        'telephoneRequired' => true,
+                        'customTextfieldActivated' => false,
+                        'customTextfieldRequired' => true,
+                        'customTextfieldLabel' => '',
+                        'captchaActivatedRequired' => false,
+                        'displayInfo' => null
+                    ]
                 ]
             ]
         ];
+
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
     
     public function testServiceNotFound()
@@ -147,7 +239,7 @@ class OfficesByServiceListTest extends Base
     
     }
 
-    public function testPartialResultsWithWarning()
+    public function testPartialResults()
     {
         $this->setApiCalls([
             [
@@ -165,8 +257,26 @@ class OfficesByServiceListTest extends Base
         $expectedResponse = [
             'offices' => [
                 [
-                    'id' => '9999999',
+                    'id' => 9999999,
                     'name' => 'Unittest Source Dienstleister 2',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 2,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999999',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 2',
+                        'telephoneActivated' => false,
+                        'telephoneRequired' => true,
+                        'customTextfieldActivated' => false,
+                        'customTextfieldRequired' => true,
+                        'customTextfieldLabel' => '',
+                        'captchaActivatedRequired' => false,
+                        'displayInfo' => null
+                    ]
                 ]              
             ]
         ];
@@ -175,7 +285,7 @@ class OfficesByServiceListTest extends Base
         
     }
 
-    public function testPartialResultsWithWarningRequestRelation()
+    public function testPartialResultsRequestRelation()
     {
         $this->setApiCalls([
             [
@@ -193,12 +303,48 @@ class OfficesByServiceListTest extends Base
         $expectedResponse = [
             'offices' => [
                 [
-                    'id' => '9999998',
+                    'id' => 9999998,
                     'name' => 'Unittest Source Dienstleister',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 1,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999998',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 1',
+                        'telephoneActivated' => true,
+                        'telephoneRequired' => false,
+                        'customTextfieldActivated' => true,
+                        'customTextfieldRequired' => false,
+                        'customTextfieldLabel' => 'Custom Label',
+                        'captchaActivatedRequired' => true,
+                        'displayInfo' => null
+                    ]
                 ],
                 [
-                    'id' => '9999999',
+                    'id' => 9999999,
                     'name' => 'Unittest Source Dienstleister 2',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 2,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999999',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 2',
+                        'telephoneActivated' => false,
+                        'telephoneRequired' => true,
+                        'customTextfieldActivated' => false,
+                        'customTextfieldRequired' => true,
+                        'customTextfieldLabel' => '',
+                        'captchaActivatedRequired' => false,
+                        'displayInfo' => null
+                    ]
                 ]              
             ]
         ];
@@ -225,8 +371,26 @@ class OfficesByServiceListTest extends Base
         $expectedResponse = [
             'offices' => [
                 [
-                    'id' => '9999999',
+                    'id' => 9999999,
                     'name' => 'Unittest Source Dienstleister 2',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 2,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999999',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 2',
+                        'telephoneActivated' => false,
+                        'telephoneRequired' => true,
+                        'customTextfieldActivated' => false,
+                        'customTextfieldRequired' => true,
+                        'customTextfieldLabel' => '',
+                        'captchaActivatedRequired' => false,
+                        'displayInfo' => null
+                    ]
                 ]
             ]
         ];
@@ -252,12 +416,48 @@ class OfficesByServiceListTest extends Base
         $expectedResponse = [
             'offices' => [
                 [
-                    'id' => '9999998',
+                    'id' => 9999998,
                     'name' => 'Unittest Source Dienstleister',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 1,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999998',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 1',
+                        'telephoneActivated' => true,
+                        'telephoneRequired' => false,
+                        'customTextfieldActivated' => true,
+                        'customTextfieldRequired' => false,
+                        'customTextfieldLabel' => 'Custom Label',
+                        'captchaActivatedRequired' => true,
+                        'displayInfo' => null
+                    ]
                 ],
                 [
-                    'id' => '9999999',
+                    'id' => 9999999,
                     'name' => 'Unittest Source Dienstleister 2',
+                    'address' => null,
+                    'geo' => null,
+                    'scope' => [
+                        'id' => 2,
+                        'provider' => [
+                            '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
+                            'id' => '9999999',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 2',
+                        'telephoneActivated' => false,
+                        'telephoneRequired' => true,
+                        'customTextfieldActivated' => false,
+                        'customTextfieldRequired' => true,
+                        'customTextfieldLabel' => '',
+                        'captchaActivatedRequired' => false,
+                        'displayInfo' => null
+                    ]
                 ]
             ]
         ];

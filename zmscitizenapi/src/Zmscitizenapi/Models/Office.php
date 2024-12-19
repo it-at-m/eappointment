@@ -3,7 +3,7 @@
 namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmsentities\Schema\Entity;
-use BO\Zmsentities\Scope;
+use BO\Zmscitizenapi\Models\ThinnedScope;
 
 class Office extends Entity
 {
@@ -16,25 +16,25 @@ class Office extends Entity
     /** @var string */
     public string $name;
 
-    /** @var string|null */
-    public ?string $address = null;
+    /** @var array|null */
+    public ?array $address = null;
 
     /** @var array|null */
     public ?array $geo = null;
 
-    /** @var Scope|null */
-    public ?Scope $scope = null;
+    /** @var ThinnedScope|null */
+    public ?ThinnedScope $scope = null;
 
     /**
      * Constructor.
      *
      * @param int $id
      * @param string $name
-     * @param string|null $address
+     * @param array|null $address
      * @param array|null $geo
-     * @param Scope|null $scope
+     * @param ThinnedScope|null $scope
      */
-    public function __construct(int $id, string $name, ?string $address = null, ?array $geo = null, ?Scope $scope = null)
+    public function __construct(int $id, string $name, ?array $address = null, ?array $geo = null, ?ThinnedScope $scope = null)
     {
         $this->id = $id;
         $this->name = $name;

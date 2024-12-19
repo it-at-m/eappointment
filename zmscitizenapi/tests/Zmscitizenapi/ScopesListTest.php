@@ -25,39 +25,40 @@ class ScopesListTest extends Base
         $expectedResponse = [
             "scopes" => [
                 [
-                    "id" => "1",
+                    "id" => 1,
                     "provider" => [
                         '$schema' => "https://schema.berlin.de/queuemanagement/provider.json",
                         "id" => "9999998",
                         "source" => "unittest"
                     ],
                     "shortName" => "Scope 1",
-                    "telephoneActivated" => "1",
-                    "telephoneRequired" => "0",
-                    "customTextfieldActivated" => "1",
-                    "customTextfieldRequired" => "0",
+                    "telephoneActivated" => true,
+                    "telephoneRequired" => false,
+                    "customTextfieldActivated" => true,
+                    "customTextfieldRequired" => false,
                     "customTextfieldLabel" => "Custom Label",
-                    "captchaActivatedRequired" => "1",
+                    "captchaActivatedRequired" => true,
                     "displayInfo" => null
                 ],
                 [
-                    "id" => "2",
+                    "id" => 2,
                     "provider" => [
                         '$schema' => "https://schema.berlin.de/queuemanagement/provider.json",
                         "id" => "9999999",
                         "source" => "unittest"
                     ],
                     "shortName" => "Scope 2",
-                    "telephoneActivated" => "0",
-                    "telephoneRequired" => "1",
-                    "customTextfieldActivated" => "0",
-                    "customTextfieldRequired" => "1",
+                    "telephoneActivated" => false,
+                    "telephoneRequired" => true,
+                    "customTextfieldActivated" => false,
+                    "customTextfieldRequired" => true,
                     "customTextfieldLabel" => "",
-                    "captchaActivatedRequired" => "0",
+                    "captchaActivatedRequired" => false,
                     "displayInfo" => null
                 ]
             ]
         ];
+        
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);

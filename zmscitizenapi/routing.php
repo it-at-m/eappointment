@@ -48,7 +48,7 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/scopes/',
-    '\BO\Zmscitizenapi\Controllers\thinnedScopeList'
+    '\BO\Zmscitizenapi\Controllers\ScopesList'
 )
     ->setName("ScopesList");
 
