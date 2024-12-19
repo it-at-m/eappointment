@@ -20,5 +20,5 @@ interface CaptchaInterface
      * @return mixed
      * @throws \Exception
      */
-    public function verifyCaptcha(string $solution);
+    public function verifyCaptcha(string $solution): bool;
 }
