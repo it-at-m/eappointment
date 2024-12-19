@@ -32,6 +32,7 @@ class Process extends BaseController
         $validator = $request->getAttribute('validator');
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
         $requestId = $validator->getParameter('requestId')->isNumber()->getValue();
+        $printText = $validator->getParameter('printText')->isString()->getValue();
         if (null === $scopeId) {
             throw new Exception\ScopeNotFound();
         }
@@ -55,6 +56,7 @@ class Process extends BaseController
                 'ticketprinter' => $ticketprinterHelper->getEntity(),
                 'organisation' => $ticketprinterHelper->getOrganisation(),
                 'process' => $process,
+                'printText' => $printText,
                 'waitingTime' => $queueListHelper->getEstimatedWaitingTime(),
                 'waitingClients' => ($queueListHelper->getClientsBefore()),
                 'config' => $config,
