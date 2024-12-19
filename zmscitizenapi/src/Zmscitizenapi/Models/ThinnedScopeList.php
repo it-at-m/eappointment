@@ -9,19 +9,21 @@ class ThinnedScopeList extends Entity
     public static $schema = "zmsentities/schema/citizenapi/thinnedScopeList.json";
 
     protected array $scopes = [];
-    public int $status;
 
-    public function __construct(array $data = [], int $status = 200)
+    public function __construct(array $data = [])
     {
         $this->scopes = $data;
-        $this->status = $status;
     }
 
     public function toArray(): array
     {
         return [
             "scopes" => $this->scopes,
-            "status" => $this->status
         ];
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
     }
 }

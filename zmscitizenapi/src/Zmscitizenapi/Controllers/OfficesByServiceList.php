@@ -31,7 +31,7 @@ class OfficesByServiceList extends BaseController
             return $this->createJsonResponse($response, $result, $result['status']);
         }
     
-        return $this->createJsonResponse($response, $result->toArray(), $result->status);
+        return $this->createJsonResponse($response, $result->toArray(), 200);
     }
     
     

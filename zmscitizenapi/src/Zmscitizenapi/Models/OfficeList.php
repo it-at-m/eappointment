@@ -9,19 +9,21 @@ class OfficeList extends Entity
     public static $schema = "zmsentities/schema/citizenapi/officeList.json";
 
     protected array $offices = [];
-    public int $status;
 
-    public function __construct(array $data = [], int $status = 200)
+    public function __construct(array $data = [])
     {
         $this->offices = $data;
-        $this->status = $status;
     }
 
     public function toArray(): array
     {
         return [
-            "offices" => $this->offices,
-            "status" => $this->status
+            "offices" => $this->offices
         ];
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
     }
 }

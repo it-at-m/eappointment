@@ -56,8 +56,7 @@ class ScopesListTest extends Base
                     "captchaActivatedRequired" => "0",
                     "displayInfo" => null
                 ]
-            ],
-            "status" => 200,
+            ]
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

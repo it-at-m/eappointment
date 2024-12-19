@@ -13,6 +13,6 @@ class ServicesList extends BaseController
     {
         $services = ZmsApiFacadeService::getServices();
 
-        return $this->createJsonResponse($response, $services->toArray(), statusCode: $services->status);
+        return $this->createJsonResponse($response, $services->toArray(), statusCode: 200);
     }
 }

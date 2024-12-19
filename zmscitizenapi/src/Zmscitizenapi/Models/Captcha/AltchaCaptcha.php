@@ -48,8 +48,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
             'siteKey' => $this->siteKey,
             'captchaEndpoint' => $this->apiUrl,
             'puzzle' => $this->puzzle,
-            'captchaEnabled' => Application::$CAPTCHA_ENABLED,
-            'status' => 200
+            'captchaEnabled' => Application::$CAPTCHA_ENABLED
         ];
     }
 

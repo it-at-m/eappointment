@@ -42,8 +42,7 @@ class FriendlyCaptchaTest extends Base
             'siteKey' => 'FAKE_SITE_KEY',
             'captchaEndpoint' => 'https://api.friendlycaptcha.com/api/v1/siteverify',
             'puzzle' => 'https://api.friendlycaptcha.com/api/v1/puzzle',
-            'captchaEnabled' => true,
-            'status' => 200
+            'captchaEnabled' => true
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

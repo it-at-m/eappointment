@@ -28,8 +28,7 @@ class OfficesByServiceListTest extends Base
                     'id' => '9999999',
                     'name' => 'Unittest Source Dienstleister 2',
                 ]
-            ],
-            'status' => 200
+            ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
@@ -60,8 +59,7 @@ class OfficesByServiceListTest extends Base
                     'id' => '9999999',
                     'name' => 'Unittest Source Dienstleister 2',
                 ]
-            ],
-            'status' => 200
+            ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
@@ -92,8 +90,7 @@ class OfficesByServiceListTest extends Base
                     'id' => '9999999',
                     'name' => 'Unittest Source Dienstleister 2',
                 ]
-            ],
-            'status' => 200
+            ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
@@ -171,8 +168,7 @@ class OfficesByServiceListTest extends Base
                     'id' => '9999999',
                     'name' => 'Unittest Source Dienstleister 2',
                 ]              
-            ],
-            'status' => 200
+            ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
@@ -204,8 +200,7 @@ class OfficesByServiceListTest extends Base
                     'id' => '9999999',
                     'name' => 'Unittest Source Dienstleister 2',
                 ]              
-            ],
-            'status' => 200
+            ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
@@ -233,8 +228,7 @@ class OfficesByServiceListTest extends Base
                     'id' => '9999999',
                     'name' => 'Unittest Source Dienstleister 2',
                 ]
-            ],
-            'status' => 200
+            ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
@@ -265,8 +259,7 @@ class OfficesByServiceListTest extends Base
                     'id' => '9999999',
                     'name' => 'Unittest Source Dienstleister 2',
                 ]
-            ],
-            'status' => 200
+            ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));

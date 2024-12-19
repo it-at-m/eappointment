@@ -4,6 +4,8 @@ namespace BO\Zmscitizenapi\Services;
 
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
 
+use BO\Zmscitizenapi\Models\Office;
+use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\OfficeList;
 use BO\Zmscitizenapi\Models\ServiceList;
 use BO\Zmscitizenapi\Models\ServiceOfficeList;

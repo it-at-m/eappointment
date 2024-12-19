@@ -13,6 +13,6 @@ class OfficesList extends BaseController
     {
         $offices = ZmsApiFacadeService::getOffices();
 
-        return $this->createJsonResponse($response, $offices->toArray(), statusCode: $offices->status);
+        return $this->createJsonResponse($response, $offices->toArray(), statusCode: 200);
     }
 }

@@ -96,8 +96,7 @@ class OfficesServicesRelationsTest extends Base
                     "serviceId" => "2",
                     "slots" => 1
                 ]
-            ],
-            "status" => 200
+            ]
         ];
     
         $this->assertEquals(200, $response->getStatusCode());
