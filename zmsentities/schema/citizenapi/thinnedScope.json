@@ -1,0 +1,68 @@
+{
+    "type": "object",
+    "description": "Defines the scope, which represents a location or unit for processing client requests, including its configuration and availability options.",
+    "properties": {
+      "scopes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "provider": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "source"
+              ]
+            },
+            "shortName": {
+              "type": "string"
+            },
+            "telephoneActivated": {
+              "type": "string"
+            },
+            "telephoneRequired": {
+              "type": "number"
+            },
+            "customTextfieldActivated": {
+              "type": "string"
+            },
+            "customTextfieldRequired": {
+              "type": "number"
+            },
+            "customTextfieldLabel": {
+              "type": "string"
+            },
+            "captchaActivatedRequired": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "provider",
+            "shortName",
+            "telephoneActivated",
+            "telephoneRequired",
+            "customTextfieldActivated",
+            "customTextfieldRequired",
+            "customTextfieldLabel",
+            "captchaActivatedRequired"
+          ]
+        }
+      }
+    },
+    "required": [
+      "scopes"
+    ]
+  }
+  
