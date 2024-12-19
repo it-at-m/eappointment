@@ -14,16 +14,8 @@ class Captcha extends BaseController
         try {
             $captcha = new FriendlyCaptcha();
             $captchaDetails = $captcha->getCaptchaDetails();
-            
-            // Validate captcha details structure
-            if (!isset($captchaDetails['status']) || !is_int($captchaDetails['status'])) {
-                throw new \RuntimeException('Invalid captcha response structure');
-            }
-            
-            // Ensure status code is within valid HTTP range
-            $statusCode = max(min($captchaDetails['status'], 599), 100);
 
-            return $this->createJsonResponse($response, $captchaDetails, statusCode: $statusCode);
+            return $this->createJsonResponse($response, $captchaDetails, statusCode: 200);
         } catch (\Exception $e) {
             return $this->createJsonResponse(
                 $response,

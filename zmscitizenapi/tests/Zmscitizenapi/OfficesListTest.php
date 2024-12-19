@@ -64,8 +64,7 @@ class OfficesListTest extends Base
                         "displayInfo" => null
                     ]
                 ]
-            ],
-            "status" => 200
+            ]
         ];
         
         $this->assertEquals(200, $response->getStatusCode());

@@ -33,8 +33,7 @@ class ServicesListTest extends Base
                     "name" => "Unittest Source Dienstleistung 2",
                     "maxQuantity" => 1
                 ]
-            ],
-            "status" => 200,
+            ]
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

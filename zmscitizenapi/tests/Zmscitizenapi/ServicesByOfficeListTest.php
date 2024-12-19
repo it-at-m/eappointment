@@ -29,8 +29,7 @@ class ServicesByOfficeListTest extends Base
                     'name' => 'Unittest Source Dienstleistung',
                     'maxQuantity' => 1,
                 ]
-            ],
-            'status' => 200
+            ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
@@ -63,8 +62,7 @@ class ServicesByOfficeListTest extends Base
                     'name' => 'Unittest Source Dienstleistung 2',
                     'maxQuantity' => 1,
                 ]
-            ],
-            'status' => 200
+            ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
@@ -146,8 +144,7 @@ class ServicesByOfficeListTest extends Base
                     'name' => 'Unittest Source Dienstleistung',
                     'maxQuantity' => 1,
                 ]
-            ],
-            'status' => 200
+            ]
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -177,8 +174,7 @@ class ServicesByOfficeListTest extends Base
                     'name' => 'Unittest Source Dienstleistung',
                     'maxQuantity' => 1,
                 ]
-            ],
-            'status' => 200
+            ]
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

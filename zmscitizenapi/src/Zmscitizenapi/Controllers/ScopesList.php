@@ -13,6 +13,6 @@ class ScopesList extends BaseController
     {
         $scopes = ZmsApiFacadeService::getScopes();
 
-        return $this->createJsonResponse($response, $scopes->toArray(), statusCode: $scopes->status);
+        return $this->createJsonResponse($response, $scopes->toArray(), statusCode: 200);
     }
 }

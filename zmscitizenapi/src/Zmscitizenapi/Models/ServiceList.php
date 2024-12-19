@@ -9,19 +9,21 @@ class ServiceList extends Entity
     public static $schema = "zmsentities/schema/citizenapi/serviceList.json";
 
     protected array $services = [];
-    public int $status;
 
-    public function __construct(array $data = [], int $status = 200)
+    public function __construct(array $data = [])
     {
         $this->services = $data;
-        $this->status = $status;
     }
 
     public function toArray(): array
     {
         return [
-            "services" => $this->services,
-            "status" => $this->status
+            "services" => $this->services
         ];
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
     }
 }
