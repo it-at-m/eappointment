@@ -44,11 +44,11 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/scopes.json"
+ *               $ref: "schema/citizenapi/thinnedScopesList.json"
  */
 \App::$slim->get(
     '/scopes/',
-    '\BO\Zmscitizenapi\Controllers\ScopesList'
+    '\BO\Zmscitizenapi\Controllers\thinnedScopesList'
 )
     ->setName("ScopesList");
 
@@ -122,7 +122,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/scope.json"
+ *               $ref: "schema/citizenapi/thinnedScope.json"
  *       404:
  *         description: Scope not found
  */

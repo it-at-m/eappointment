@@ -24,9 +24,9 @@ definitions:
   officesByService:
     $ref: "schema/citizenapi/officesByService.json"
   scope:
-    $ref: "schema/citizenapi/scope.json"
+    $ref: "schema/citizenapi/thinnedScope.json"
   scopes:
-    $ref: "schema/citizenapi/scopes.json"
+    $ref: "schema/citizenapi/thinnedScopeList.json"
   services:
     $ref: "schema/citizenapi/serviceList.json"
   servicesByOffice:
