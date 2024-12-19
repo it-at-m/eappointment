@@ -32,9 +32,6 @@
       }
     }
   },
-  "status": {
-    "type": "number"
-  },
   "required": [
     "services"
   ]
