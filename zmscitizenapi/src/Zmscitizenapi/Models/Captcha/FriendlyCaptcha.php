@@ -2,8 +2,10 @@
 
 namespace BO\Zmscitizenapi\Models\Captcha;
 
+use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
 use BO\Zmsentities\Schema\Entity;
+use GuzzleHttp\Exception\RequestException;
 
 class FriendlyCaptcha extends Entity implements CaptchaInterface
 {
@@ -19,15 +21,19 @@ class FriendlyCaptcha extends Entity implements CaptchaInterface
     /** @var string */
     public string $secretKey;
 
+    /** @var string */
+    public string $puzzle;
+
     /**
      * Constructor.
      */
     public function __construct()
     {
         $this->service = 'FriendlyCaptcha';
-        $this->siteKey = getenv('FRIENDLY_CAPTCHA_SITE_KEY');
-        $this->apiUrl = getenv('FRIENDLY_CAPTCHA_API_URL');
-        $this->secretKey = getenv('FRIENDLY_CAPTCHA_SECRET_KEY');
+        $this->siteKey = Application::$FRIENDLY_CAPTCHA_SITE_KEY;
+        $this->apiUrl = Application::$FRIENDLY_CAPTCHA_ENDPOINT;
+        $this->secretKey = Application::$FRIENDLY_CAPTCHA_SITE_KEY;
+        $this->puzzle = Application::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
     }
 
     /**
@@ -35,14 +41,14 @@ class FriendlyCaptcha extends Entity implements CaptchaInterface
      *
      * @return array
      */
-    public static function getCaptchaDetails(): array
+    public function getCaptchaDetails(): array
     {
         return [
-            'service' => 'FriendlyCaptcha',
-            'details' => [
-                'siteKey' => getenv('FRIENDLY_CAPTCHA_SITE_KEY'),
-                'apiUrl' => getenv('FRIENDLY_CAPTCHA_API_URL'),
-            ],
+            'siteKey' => $this->siteKey,
+            'captchaEndpoint' => $this->apiUrl,
+            'puzzle' => $this->puzzle,
+            'captchaEnabled' => Application::$CAPTCHA_ENABLED,
+            'status' => 200
         ];
     }
 
@@ -53,22 +59,25 @@ class FriendlyCaptcha extends Entity implements CaptchaInterface
      * @return bool
      * @throws \Exception
      */
-    public static function verifyCaptcha(string $solution): bool
+    public function verifyCaptcha(string $solution): bool
     {
-        $apiUrl = getenv('FRIENDLY_CAPTCHA_API_URL');
-        $secretKey = getenv('FRIENDLY_CAPTCHA_SECRET_KEY');
-
-        if (!$apiUrl || !$secretKey) {
-            throw new \Exception("Captcha configuration is incomplete.");
+        try {
+            $response = \App::$http->post($this->apiUrl, [
+                'form_params' => [
+                    'secret' => $this->secretKey,
+                    'solution' => $solution
+                ]
+            ]);
+    
+            $responseBody = json_decode($response->getBody(), true);
+    
+            if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['success'])) {
+                return false;
+            }
+    
+            return $responseBody['success'] === true;
+        } catch (RequestException $e) {
+            return false;
         }
-
-        $response = file_get_contents($apiUrl . "?solution=" . urlencode($solution) . "&secret=" . urlencode($secretKey));
-        $responseData = json_decode($response, true);
-
-        if (isset($responseData['success']) && $responseData['success']) {
-            return true;
-        }
-
-        return false;
     }
 }

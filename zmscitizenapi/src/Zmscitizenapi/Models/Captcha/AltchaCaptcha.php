@@ -2,8 +2,11 @@
 
 namespace BO\Zmscitizenapi\Models\Captcha;
 
+use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
 use BO\Zmsentities\Schema\Entity;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 class AltchaCaptcha extends Entity implements CaptchaInterface
 {
@@ -11,19 +14,27 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
     public string $service;
 
     /** @var string */
-    public string $apiKey;
+    public string $siteKey;
 
     /** @var string */
-    public string $verificationUrl;
+    public string $apiUrl;
+
+    /** @var string */
+    public string $secretKey;
+
+    /** @var string */
+    public string $puzzle;
 
     /**
      * Constructor.
      */
-    public function __construct()
+    public function __construct(Client $httpClient = null)
     {
-        $this->service = 'AltchaCaptcha';
-        $this->apiKey = getenv('ALTCHA_API_KEY');
-        $this->verificationUrl = getenv('ALTCHA_VERIFICATION_URL');
+        $this->service = 'FriendlyCaptcha';
+        $this->siteKey = Application::$ALTCHA_CAPTCHA_SITE_KEY;
+        $this->apiUrl = Application::$ALTCHA_CAPTCHA_ENDPOINT;
+        $this->secretKey = Application::$ALTCHA_CAPTCHA_SITE_KEY;
+        $this->puzzle = Application::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
     }
 
     /**
@@ -31,14 +42,14 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
      *
      * @return array
      */
-    public static function getCaptchaDetails(): array
+    public function getCaptchaDetails(): array
     {
         return [
-            'service' => 'AltchaCaptcha',
-            'details' => [
-                'apiKey' => getenv('ALTCHA_API_KEY'),
-                'verificationUrl' => getenv('ALTCHA_VERIFICATION_URL'),
-            ],
+            'service' => $this->service,
+            'apiKey' => $this->apiKey,
+            'captchaEndpoint' => $this->apiUrl,
+            'captchaEnabled' => Application::$CAPTCHA_ENABLED,
+            'status' => 200
         ];
     }
 
@@ -49,22 +60,25 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
      * @return bool
      * @throws \Exception
      */
-    public static function verifyCaptcha(string $solution): bool
+    public function verifyCaptcha(string $solution): bool
     {
-        $verificationUrl = getenv('ALTCHA_VERIFICATION_URL');
-        $apiKey = getenv('ALTCHA_API_KEY');
+        try {
+            $response = $this->httpClient->post($this->apiUrl, [
+                'form_params' => [
+                    'apiKey' => $this->apiKey,
+                    'solution' => $solution
+                ]
+            ]);
 
-        if (!$verificationUrl || !$apiKey) {
-            throw new \Exception("Captcha configuration is incomplete.");
+            $responseBody = json_decode($response->getBody(), true);
+
+            if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['valid'])) {
+                return false;
+            }
+
+            return $responseBody['valid'] === true;
+        } catch (RequestException $e) {
+            return false;
         }
-
-        $response = file_get_contents($verificationUrl . "?solution=" . urlencode($solution) . "&apiKey=" . urlencode($apiKey));
-        $responseData = json_decode($response, true);
-
-        if (isset($responseData['valid']) && $responseData['valid']) {
-            return true;
-        }
-
-        return false;
     }
 }

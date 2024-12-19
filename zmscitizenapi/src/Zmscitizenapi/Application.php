@@ -34,10 +34,15 @@ class Application extends \BO\Slim\Application
      * CAPTCHA-related settings, initialized dynamically
      */
     public static bool $CAPTCHA_ENABLED;
-    public static string $CAPTCHA_SECRET;
-    public static string $CAPTCHA_SITEKEY;
-    public static string $CAPTCHA_ENDPOINT;
-    public static string $CAPTCHA_ENDPOINT_PUZZLE;
+    public static string $FRIENDLY_CAPTCHA_SECRET_KEY;
+    public static string $FRIENDLY_CAPTCHA_SITE_KEY;
+    public static string $FRIENDLY_CAPTCHA_ENDPOINT;
+    public static string $FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
+
+    public static string $ALTCHA_CAPTCHA_SECRET_KEY;
+    public static string $ALTCHA_CAPTCHA_SITE_KEY;
+    public static string $ALTCHA_CAPTCHA_ENDPOINT;
+    public static string $ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
 
     /**
      * Static initializer to set dynamic settings
@@ -46,10 +51,16 @@ class Application extends \BO\Slim\Application
     {
         self::$MAINTENANCE_MODE_ENABLED = filter_var(getenv('MAINTENANCE_ENABLED'), FILTER_VALIDATE_BOOLEAN);
         self::$CAPTCHA_ENABLED = filter_var(getenv('CAPTCHA_ENABLED'), FILTER_VALIDATE_BOOLEAN);
-        self::$CAPTCHA_SECRET = getenv('CAPTCHA_SECRET') ?: "";
-        self::$CAPTCHA_SITEKEY = getenv('CAPTCHA_SITEKEY') ?: "";
-        self::$CAPTCHA_ENDPOINT = getenv('CAPTCHA_ENDPOINT') ?: "https://eu-api.friendlycaptcha.eu/api/v1/siteverify";
-        self::$CAPTCHA_ENDPOINT_PUZZLE = getenv('CAPTCHA_ENDPOINT_PUZZLE') ?: "https://eu-api.friendlycaptcha.eu/api/v1/puzzle";
+        
+        self::$FRIENDLY_CAPTCHA_SECRET_KEY = getenv('FRIENDLY_CAPTCHA_SECRET_KEY') ?: "";
+        self::$FRIENDLY_CAPTCHA_SITE_KEY = getenv('FRIENDLY_CAPTCHA_SITE_KEY') ?: "";
+        self::$FRIENDLY_CAPTCHA_ENDPOINT = getenv('FRIENDLY_CAPTCHA_ENDPOINT') ?: "https://eu-api.friendlycaptcha.eu/api/v1/siteverify";
+        self::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE = getenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE') ?: "https://eu-api.friendlycaptcha.eu/api/v1/puzzle";
+
+        self::$ALTCHA_CAPTCHA_SECRET_KEY = getenv('ALTCHA_CAPTCHA_SECRET_KEY') ?: "";
+        self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: "";
+        self::$ALTCHA_CAPTCHA_ENDPOINT = getenv('ALTCHA_CAPTCHA_ENDPOINT') ?: "https://eu.altcha.org/form/";
+        self::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE = getenv(name: 'ALTCHA_CAPTCHA_ENDPOINT_PUZZLE') ?: "https://eu.altcha.org/";
     }    
 }
 
