@@ -26,12 +26,14 @@ class ServicesListTest extends Base
                 [
                     "id" => "1",
                     "name" => "Unittest Source Dienstleistung",
-                    "maxQuantity" => 1
+                    "maxQuantity" => 1,
+                    "combinable" => null
                 ],
                 [
                     "id" => "2",
                     "name" => "Unittest Source Dienstleistung 2",
-                    "maxQuantity" => 1
+                    "maxQuantity" => 1,
+                    "combinable" => null
                 ]
             ]
         ];
