@@ -5,10 +5,11 @@ namespace BO\Zmscitizenapi\Services;
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
 
 use BO\Zmscitizenapi\Models\Office;
+use BO\Zmscitizenapi\Models\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\OfficeList;
 use BO\Zmscitizenapi\Models\ServiceList;
-use BO\Zmscitizenapi\Models\ServiceOfficeList;
+use BO\Zmscitizenapi\Models\OfficeServiceAndRelationList;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Models\ThinnedScopeList;
@@ -55,7 +56,6 @@ class ZmsApiFacadeService
 
         return new OfficeList($offices);
     }
-    
 
     public static function getScopes(): ThinnedScopeList
     {
@@ -135,23 +135,17 @@ class ZmsApiFacadeService
         return new ThinnedScope(...$result);
     }
 
-    public static function getServicesAndOffices(): ServiceOfficeList
+    public static function getServicesAndOffices(): OfficeServiceAndRelationList
     {
         $providerList = ZmsApiClientService::getOffices() ?? [];
         $requestList = ZmsApiClientService::getServices() ?? [];
         $relationList = ZmsApiClientService::getRequestRelationList() ?? [];
-
-        $offices = MapperService::mapOfficesWithScope($providerList);
-        $services = MapperService::mapServicesWithCombinations($requestList, $relationList);
-        $relations = MapperService::mapRelations($relationList);
-
-        $responseContent = [
-            "offices" => $offices,
-            "services" => $services,
-            "relations" => $relations
-        ];
-
-        return new ServiceOfficeList($responseContent);
+    
+        $offices = MapperService::mapOfficesWithScope($providerList) ?? new OfficeList;
+        $services = MapperService::mapServicesWithCombinations($requestList, $relationList) ?? new ServiceList();
+        $relations = MapperService::mapRelations($relationList) ?? new OfficeServiceRelationList();
+    
+        return new OfficeServiceAndRelationList($offices, $services, $relations);
     }
 
     /* Todo add method
@@ -409,6 +403,8 @@ class ZmsApiFacadeService
             );
 
             $daysCollection = $freeDays->days;
+
+            //Typing
             $formattedDays = [];
 
             foreach ($daysCollection as $day) {
@@ -497,7 +493,7 @@ class ZmsApiFacadeService
                 }
             }
 
-            $freeSlots = new ProcessList();
+            //Typing
             $freeSlots = ZmsApiClientService::getFreeTimeslots(
                 new ProviderList([['id' => $officeId, 'source' => \App::$source_name]]),
                 new RequestList($requests),
@@ -551,6 +547,7 @@ class ZmsApiFacadeService
 
         sort($appointmentTimestamps);
 
+        //Typing 
         return [
             'appointmentTimestamps' => $appointmentTimestamps,
             'status' => 200,

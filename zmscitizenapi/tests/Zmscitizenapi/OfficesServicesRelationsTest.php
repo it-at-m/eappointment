@@ -24,8 +24,10 @@ class OfficesServicesRelationsTest extends Base
         $expectedResponse = [
             "offices" => [
                 [
-                    "id" => "9999998",
+                    "id" => 9999998,
                     "name" => "Unittest Source Dienstleister",
+                    "address" => null,
+                    "geo" => null,
                     "scope" => [
                         "id" => 1,
                         "provider" => [
@@ -44,8 +46,10 @@ class OfficesServicesRelationsTest extends Base
                     ]
                 ],
                 [
-                    "id" => "9999999",
+                    "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
+                    "address" => null,
+                    "geo" => null,
                     "scope" => [
                         "id" => 2,
                         "provider" => [
@@ -66,12 +70,13 @@ class OfficesServicesRelationsTest extends Base
             ],
             "services" => [
                 [
-                    "id" => "1",
+                    "id" => 1,
                     "name" => "Unittest Source Dienstleistung",
-                    "maxQuantity" => 1
+                    "maxQuantity" => 1,
+                    "combinable" => [] // Matches actual output
                 ],
                 [
-                    "id" => "2",
+                    "id" => 2,
                     "name" => "Unittest Source Dienstleistung 2",
                     "maxQuantity" => 1,
                     "combinable" => [
@@ -97,8 +102,7 @@ class OfficesServicesRelationsTest extends Base
                     "slots" => 1
                 ]
             ]
-        ];
-    
+        ]; 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
