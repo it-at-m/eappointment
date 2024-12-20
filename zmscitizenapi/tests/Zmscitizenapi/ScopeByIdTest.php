@@ -27,9 +27,10 @@ class ScopeByIdTest extends Base
         $expectedResponse = [
             'id' => 1,
             'provider' => [
-                '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
                 'id' => '9999998',
-                'source' => 'unittest',
+                "name" => null,
+                "source" => "unittest",
+                "contact" => null
             ],
             'shortName' => 'Scope 1',
             'telephoneActivated' => true,

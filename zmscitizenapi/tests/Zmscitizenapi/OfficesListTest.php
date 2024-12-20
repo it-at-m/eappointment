@@ -32,9 +32,18 @@ class OfficesListTest extends Base
                     "scope" => [
                         "id" => 1,
                         "provider" => [
-                            '$schema' => "https://schema.berlin.de/queuemanagement/provider.json",
-                            "id" => "9999998",
-                            "source" => "unittest"
+                            "id" => 9999998,
+                            "name" => "Unittest Source Dienstleister",
+                            "source" => "unittest",
+                            "contact" => [
+                                "city" => "Berlin",
+                                "country" => "Germany",
+                                "name" => "Unittest Source Dienstleister",
+                                "postalCode" => "10178",
+                                "region" => "Berlin",
+                                "street" => "Alte Jakobstraße",
+                                "streetNumber" => "105"
+                            ]
                         ],
                         "shortName" => "Scope 1",
                         "telephoneActivated" => true,
@@ -54,9 +63,18 @@ class OfficesListTest extends Base
                     "scope" => [
                         "id" => 2,
                         "provider" => [
-                            '$schema' => "https://schema.berlin.de/queuemanagement/provider.json",
-                            "id" => "9999999",
-                            "source" => "unittest"
+                            "id" => 9999999,
+                            "name" => "Unittest Source Dienstleister 2",
+                            "source" => "unittest",
+                            "contact" => [
+                                "city" => "Berlin",
+                                "country" => "Germany",
+                                "name" => "Unittest Source Dienstleister 2",
+                                "postalCode" => "10178",
+                                "region" => "Berlin",
+                                "street" => "Alte Jakobstraße",
+                                "streetNumber" => "106"
+                            ]
                         ],
                         "shortName" => "Scope 2",
                         "telephoneActivated" => false,
@@ -69,7 +87,7 @@ class OfficesListTest extends Base
                     ]
                 ]
             ]
-        ]; 
+        ];        
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }

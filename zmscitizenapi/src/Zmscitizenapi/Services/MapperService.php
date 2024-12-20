@@ -10,6 +10,7 @@ use BO\Zmscitizenapi\Models\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\ServiceList;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
+use BO\Zmscitizenapi\Models\ThinnedProvider;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmsentities\Appointment;
 use BO\Zmsentities\Client;
@@ -104,36 +105,23 @@ class MapperService
     
         return new OfficeServiceRelationList($relations);
     }
+
     public static function scopeToThinnedScope(Scope $myscope): ThinnedScope
     {
         if (!$myscope || !isset($myscope->id)) {
             return new ThinnedScope();
         }
-
-        $provider = null;
-
-        if (isset($myscope->provider)) {
-            $provider = new Provider();
-            $provider->id = $myscope->provider->id ?? null;
-            $provider->name = $myscope->provider->name ?? null;
-            $provider->link = $myscope->provider->link ?? null;
-            $provider->source = $myscope->provider->source ?? null;
     
-            if (isset($myscope->provider->contact)) {
-                $provider->contact = new Contact();
-                $provider->contact->name = $myscope->provider->contact->name ?? null;
-                $provider->contact->street = $myscope->provider->contact->street ?? null;
-                $provider->contact->streetNumber = $myscope->provider->contact->streetNumber ?? null;
-                $provider->contact->city = $myscope->provider->contact->city ?? null;
-                $provider->contact->postalCode = $myscope->provider->contact->postalCode ?? null;
-                $provider->contact->region = $myscope->provider->contact->region ?? null;
-                $provider->contact->country = $myscope->provider->contact->country ?? null;
-            }
+        $provider = null;
+    
+        if (isset($myscope->provider)) {
+            // Convert Provider to ThinnedProvider
+            $provider = self::providerToThinnedProvider($myscope->provider);
         }
     
         return new ThinnedScope(
             id: $myscope->id,
-            provider: $provider ?? null,
+            provider: $provider,
             shortName: $myscope->shortName ?? null,
             telephoneActivated: $myscope->telephoneActivated ?? null,
             telephoneRequired: $myscope->telephoneRequired ?? null,
@@ -143,21 +131,20 @@ class MapperService
             captchaActivatedRequired: $myscope->captchaActivatedRequired ?? null,
             displayInfo: $myscope->displayInfo ?? null
         );
-    }      
+    }
+    
     public static function thinnedScopeToScope(ThinnedScope $thinnedScope): Scope
     {
         if (!$thinnedScope || !isset($thinnedScope->id)) {
             return new Scope();
         }
-
+    
         $scopeEntity = new Scope();
         $scopeEntity->id = $thinnedScope->id;
     
         if ($thinnedScope->provider) {
-            $provider = new Provider();
-            $provider->id = $thinnedScope->provider->id ?? null;
-            $provider->name = $thinnedScope->provider->name ?? null;
-            $scopeEntity->provider = $provider;
+            // Convert ThinnedProvider to Provider
+            $scopeEntity->provider = self::thinnedProviderToProvider($thinnedScope->provider);
         }
     
         $scopeEntity->shortName = $thinnedScope->shortName ?? null;
@@ -170,7 +157,8 @@ class MapperService
         $scopeEntity->displayInfo = $thinnedScope->displayInfo ?? null;
     
         return $scopeEntity;
-    }        
+    }
+           
     public static function processToThinnedProcess(Process $myProcess): ThinnedProcess
     {
         if (!$myProcess || !isset($myProcess->id)) {
@@ -279,6 +267,51 @@ class MapperService
         $processEntity->createTimestamp = time();
 
         return $processEntity;
+    }
+
+    /**
+     * Convert a Provider object to a ThinnedProvider.
+     *
+     * @param Provider $provider
+     * @return ThinnedProvider
+     */
+    public static function providerToThinnedProvider(Provider $provider): ThinnedProvider
+    {
+        return new ThinnedProvider(
+            id: isset($provider->id) ? (int)$provider->id : null,
+            name: $provider->name ?? null,
+            source: $provider->source ?? null,
+            contact: $provider->contact ?? null,
+        );
+    }
+
+    /**
+     * Convert a ThinnedProvider object to a Provider.
+     *
+     * @param ThinnedProvider $thinnedProvider
+     * @return Provider
+     */
+    public static function thinnedProviderToProvider(ThinnedProvider $thinnedProvider): Provider
+    {
+        $provider = new Provider();
+        $provider->id = isset($thinnedProvider->id) ? (string)$thinnedProvider->id : null; // Convert int ID to string
+        $provider->name = $thinnedProvider->providerName ?? null;
+        $provider->source = $thinnedProvider->source ?? null;
+
+        if ($thinnedProvider->address || $thinnedProvider->geo) {
+            $provider->data = [
+                'address' => $thinnedProvider->address ?? null,
+                'geo' => $thinnedProvider->geo ?? null
+            ];
+        }
+
+        if ($thinnedProvider->telephone || $thinnedProvider->email) {
+            $provider->contact = new Contact();
+            $provider->contact->telephone = $thinnedProvider->telephone ?? null;
+            $provider->contact->email = $thinnedProvider->email ?? null;
+        }
+
+        return $provider;
     }
 
 }

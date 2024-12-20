@@ -11,11 +11,11 @@ use BO\Zmscitizenapi\Models\OfficeList;
 use BO\Zmscitizenapi\Models\ServiceList;
 use BO\Zmscitizenapi\Models\OfficeServiceAndRelationList;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
+use BO\Zmscitizenapi\Models\ThinnedProvider;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Models\ThinnedScopeList;
 use BO\Zmscitizenapi\Services\ZmsApiClientService;
 use BO\Zmsentities\Process;
-use BO\Zmsentities\Provider;
 use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Collection\ProviderList;
@@ -41,7 +41,7 @@ class ZmsApiFacadeService
                 geo: $provider->data['geo'] ?? null,
                 scope: $matchingScope ? new ThinnedScope(
                     id: $matchingScope->id,
-                    provider: $matchingScope->getProvider(),
+                    provider: MapperService::providerToThinnedProvider($provider),
                     shortName: $matchingScope->getShortName(),
                     telephoneActivated: $matchingScope->getTelephoneActivated(),
                     telephoneRequired: $matchingScope->getTelephoneRequired(),
@@ -53,26 +53,25 @@ class ZmsApiFacadeService
                 ) : null
             );
         }
-
+    
         return new OfficeList($offices);
     }
+    
 
     public static function getScopes(): ThinnedScopeList
     {
         $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
+        $providerList = ZmsApiClientService::getOffices();
         $scopesProjectionList = [];
     
         foreach ($scopeList as $scope) {
             if (!$scope instanceof Scope) {
                 throw new \InvalidArgumentException("Expected instance of Scope.");
             }
-            $provider = new Provider();
-            $provider->id = $scope->getProviderId() ?? null;
-            $provider->source = \App::$source_name;
             
             $scopesProjectionList[] = new ThinnedScope(
                 id: $scope->id,
-                provider: $provider,
+                provider: MapperService::providerToThinnedProvider($scope->getProvider()),
                 shortName: $scope->getShortName(),
                 telephoneActivated: $scope->getTelephoneActivated(),
                 telephoneRequired: $scope->getTelephoneRequired(),
@@ -120,7 +119,7 @@ class ZmsApiFacadeService
         foreach ($filteredScopes as $scope) {
             $result = [
                 "id" => $scope->id,
-                "provider" => $scope->getProvider(),
+                "provider" => MapperService::providerToThinnedProvider($scope->getProvider()),
                 "shortName" => $scope->getShortName() ?? null,
                 "telephoneActivated" => $scope->getTelephoneActivated() ?? null,
                 "telephoneRequired" => $scope->getTelephoneRequired() ?? null,
@@ -163,7 +162,7 @@ class ZmsApiFacadeService
         if ($matchingScope instanceof Scope) {
             $result = [
                 "id" => $matchingScope->id,
-                "provider" => $matchingScope->getProvider() ?? null,
+                "provider" => MapperService::providerToThinnedProvider($matchingScope->getProvider()) ?? null,
                 "shortName" => $matchingScope->getShortName() ?? null,
                 "telephoneActivated" => $matchingScope->getTelephoneActivated() ?? null,
                 "telephoneRequired" => $matchingScope->getTelephoneRequired() ?? null,
@@ -216,8 +215,6 @@ class ZmsApiFacadeService
                                  $scopeData = self::getScopeByOfficeId($provider->id);
                                  if ($scopeData instanceof ThinnedScope) {
                                      $scope = $scopeData;
-                                 } elseif (is_array($scopeData) && isset($scopeData['error'])) {
-                                     error_log("Error fetching scope for Office ID {$provider->id}: " . $scopeData['error']);
                                  }
      
                                  $offices[] = new Office(
@@ -271,7 +268,7 @@ class ZmsApiFacadeService
         foreach ($filteredScopes as $scope) {
             $result = [
                 "id" => $scope->id,
-                "provider" => $scope->getProvider() ?? null,
+                "provider" => MapperService::providerToThinnedProvider($scope->getProvider()) ?? null,
                 "shortName" => $scope->getShortName() ?? null,
                 "telephoneActivated" => $scope->getTelephoneActivated() ?? null,
                 "telephoneRequired" => $scope->getTelephoneRequired() ?? null,

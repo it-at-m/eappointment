@@ -40,11 +40,18 @@ class AppointmentByIdTest extends Base
             'scope' => [
                 'id' => 64,
                 'provider' => [
-                    '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
                     'id' => 102522,
                     'name' => 'Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)',
-                    'link' => 'https://service.berlin.de/standort/102522/',
-                    'source' => 'dldb'
+                    'source' => 'dldb',
+                    'contact' => [
+                        'city' => 'Muenchen',
+                        'country' => 'Germany',
+                        'name' => 'Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)',
+                        'postalCode' => '81667',
+                        'region' => 'Muenchen',
+                        'street' => 'Orleansstraße',
+                        'streetNumber' => '50'
+                    ]
                 ],
                 'shortName' => 'DEVV',
                 'telephoneActivated' => null,
@@ -58,7 +65,7 @@ class AppointmentByIdTest extends Base
             'subRequestCounts' => [],
             'serviceId' => 1063424,
             'serviceCount' => 1
-        ];
+        ];       
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }

@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Models;
 
-use BO\Zmsentities\Provider;
+use BO\Zmscitizenapi\Models\ThinnedProvider;
 use BO\Zmsentities\Schema\Entity;
 
 class ThinnedScope extends Entity
@@ -12,8 +12,8 @@ class ThinnedScope extends Entity
     /** @var int */
     public int $id;
 
-    /** @var Provider|null */
-    public ?Provider $provider;
+    /** @var ThinnedProvider|null */
+    public ?ThinnedProvider $provider;
 
     /** @var string|null */
     public ?string $shortName;
@@ -41,7 +41,7 @@ class ThinnedScope extends Entity
 
     public function __construct(
         int $id = 0,
-        ?Provider $provider = null,
+        ?ThinnedProvider $provider = null,
         ?string $shortName = null,
         ?bool $telephoneActivated = null,
         ?bool $telephoneRequired = null,
@@ -63,7 +63,7 @@ class ThinnedScope extends Entity
         $this->displayInfo = $displayInfo;
     }
 
-    public function getProvider(): ?Provider
+    public function getProvider(): ?ThinnedProvider
     {
         return $this->provider;
     }
