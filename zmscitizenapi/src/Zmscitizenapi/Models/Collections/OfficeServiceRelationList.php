@@ -1,7 +1,8 @@
 <?php
 
-namespace BO\Zmscitizenapi\Models;
+namespace BO\Zmscitizenapi\Models\Collections;
 
+use BO\Zmscitizenapi\Models\OfficeServiceRelation;
 use BO\Zmsentities\Schema\Entity;
 use JsonSerializable;
 

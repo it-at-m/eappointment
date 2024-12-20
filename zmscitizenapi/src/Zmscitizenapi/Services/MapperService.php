@@ -4,11 +4,11 @@ namespace BO\Zmscitizenapi\Services;
 
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Models\Office;
-use BO\Zmscitizenapi\Models\OfficeList;
+use BO\Zmscitizenapi\Models\Collections\OfficeList;
 use BO\Zmscitizenapi\Models\OfficeServiceRelation;
-use BO\Zmscitizenapi\Models\OfficeServiceRelationList;
+use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Service;
-use BO\Zmscitizenapi\Models\ServiceList;
+use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedProvider;
 use BO\Zmscitizenapi\Models\ThinnedScope;

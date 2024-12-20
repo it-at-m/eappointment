@@ -1,7 +1,10 @@
 <?php
 
-namespace BO\Zmscitizenapi\Models;
+namespace BO\Zmscitizenapi\Models\Collections;
 
+use BO\Zmscitizenapi\Models\Collections\OfficeList;
+use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
+use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmsentities\Schema\Entity;
 
 class OfficeServiceAndRelationList extends Entity
