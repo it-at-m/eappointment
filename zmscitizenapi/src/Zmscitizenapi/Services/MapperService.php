@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services;
 
@@ -34,26 +35,26 @@ class MapperService
         $scopes = ZmsApiClientService::getScopes() ?? new ScopeList();
 
         foreach ($providerList as $provider) {
-            $providerScope = ZmsApiFacadeService::getScopeForProvider($provider->id, $scopes);
+            $providerScope = ZmsApiFacadeService::getScopeForProvider((int) $provider->id, $scopes);
 
             $offices[] = new Office(
-                id: (int) $provider->id,
-                name: $provider->displayName ?? $provider->name,
-                address: $provider->data['address'] ?? null,
-                geo: $provider->data['geo'] ?? null,
+                id: isset($provider->id) ? (int) $provider->id : 0,
+                name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null),
+                address: isset($provider->data['address']) ? $provider->data['address'] : null,
+                geo: isset($provider->data['geo']) ? $provider->data['geo'] : null,
                 scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(
-                    id: (int) ($providerScope->id ?? 0),
-                    provider: $providerScope->provider ?? null,
-                    shortName: $providerScope->shortName ?? null,
-                    telephoneActivated: $providerScope->telephoneActivated ?? null,
-                    telephoneRequired: $providerScope->telephoneRequired ?? null,
-                    customTextfieldActivated: $providerScope->customTextfieldActivated ?? null,
-                    customTextfieldRequired: $providerScope->customTextfieldRequired ?? null,
-                    customTextfieldLabel: $providerScope->customTextfieldLabel ?? null,
-                    captchaActivatedRequired: $providerScope->captchaActivatedRequired ?? null,
-                    displayInfo: $providerScope->displayInfo ?? null
+                    id: isset($providerScope->id) ? (int) $providerScope->id : 0,
+                    provider: isset($providerScope->provider) ? $providerScope->provider : null,
+                    shortName: isset($providerScope->shortName) ? $providerScope->shortName : null,
+                    telephoneActivated: isset($providerScope->telephoneActivated) ? (bool) $providerScope->telephoneActivated : null,
+                    telephoneRequired: isset($providerScope->telephoneRequired) ? (bool) $providerScope->telephoneRequired : null,
+                    customTextfieldActivated: isset($providerScope->customTextfieldActivated) ? (bool) $providerScope->customTextfieldActivated : null,
+                    customTextfieldRequired: isset($providerScope->customTextfieldRequired) ? (bool) $providerScope->customTextfieldRequired : null,
+                    customTextfieldLabel: isset($providerScope->customTextfieldLabel) ? $providerScope->customTextfieldLabel : null,
+                    captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? (bool) $providerScope->captchaActivatedRequired : null,
+                    displayInfo: isset($providerScope->displayInfo) ? $providerScope->displayInfo : null
                 ) : null
-            );
+            );            
         }
 
         return new OfficeList($offices);
@@ -114,8 +115,8 @@ class MapperService
         $relations = [];
         foreach ($relationList as $relation) {
             $relations[] = new OfficeServiceRelation(
-                officeId: (string) $relation->provider->id,
-                serviceId: (string) $relation->request->id,
+                officeId: (int) $relation->provider->id,
+                serviceId: (int) $relation->request->id,
                 slots: intval($relation->slots)
             );
         }
@@ -132,20 +133,18 @@ class MapperService
         $provider = null;
 
         if (isset($myscope->provider)) {
-            // Convert Provider to ThinnedProvider
             $provider = self::providerToThinnedProvider($myscope->provider);
         }
 
         return new ThinnedScope(
-            id: $myscope->id,
-            provider: $provider,
+            id: isset($myscope->id) ? (int) $myscope->id : 0,
+            provider: isset($myscope->provider) ? self::providerToThinnedProvider($myscope->provider) : null,
             shortName: $myscope->shortName ?? null,
-            telephoneActivated: $myscope->telephoneActivated ?? null,
-            telephoneRequired: $myscope->telephoneRequired ?? null,
-            customTextfieldActivated: $myscope->customTextfieldActivated ?? null,
-            customTextfieldRequired: $myscope->customTextfieldRequired ?? null,
-            customTextfieldLabel: $myscope->customTextfieldLabel ?? null,
-            captchaActivatedRequired: $myscope->captchaActivatedRequired ?? null,
+            telephoneActivated: isset($myscope->telephoneActivated) ? (bool) $myscope->telephoneActivated : null,
+            telephoneRequired: isset($myscope->telephoneRequired) ? (bool) $myscope->telephoneRequired : null,
+            customTextfieldActivated: isset($myscope->customTextfieldActivated) ? (bool) $myscope->customTextfieldActivated : null,
+            customTextfieldRequired: isset($myscope->customTextfieldRequired) ? (bool) $myscope->customTextfieldRequired : null,
+            captchaActivatedRequired: isset($myscope->captchaActivatedRequired) ? (bool) $myscope->captchaActivatedRequired : null,
             displayInfo: $myscope->displayInfo ?? null
         );
     }
@@ -208,20 +207,20 @@ class MapperService
         }
 
         return new ThinnedProcess(
-            processId: intval($myProcess->id),
-            timestamp: isset($myProcess->appointments[0]) ? strval($myProcess->appointments[0]->date) : null,
-            authKey: $myProcess->authKey ?? null,
-            familyName: isset($myProcess->clients[0]) ? $myProcess->clients[0]->familyName : null,
-            customTextfield: $myProcess->customTextfield ?? null,
-            email: isset($myProcess->clients[0]) ? $myProcess->clients[0]->email : null,
-            telephone: isset($myProcess->clients[0]) ? $myProcess->clients[0]->telephone : null,
-            officeName: $myProcess->scope->contact->name ?? null,
-            officeId: intval($myProcess->scope->provider->id ?? 0),
-            scope: $myProcess->scope ? self::scopeToThinnedScope($myProcess->scope) : null,
-            subRequestCounts: array_values($subRequestCounts),
-            serviceId: $mainServiceId,
-            serviceCount: $mainServiceCount
-        );
+            processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
+            timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null,
+            authKey: isset($myProcess->authKey) ? $myProcess->authKey : null,
+            familyName: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->familyName)) ? $myProcess->clients[0]->familyName : null,
+            customTextfield: isset($myProcess->customTextfield) ? $myProcess->customTextfield : null,
+            email: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->email)) ? $myProcess->clients[0]->email : null,
+            telephone: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->telephone)) ? $myProcess->clients[0]->telephone : null,
+            officeName: (isset($myProcess->scope->contact) && isset($myProcess->scope->contact->name)) ? $myProcess->scope->contact->name : null,
+            officeId: (isset($myProcess->scope->provider) && isset($myProcess->scope->provider->id)) ? (int) $myProcess->scope->provider->id : 0,
+            scope: isset($myProcess->scope) ? self::scopeToThinnedScope($myProcess->scope) : null,
+            subRequestCounts: isset($subRequestCounts) ? array_values($subRequestCounts) : [],
+            serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0,
+            serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0
+        );        
     }
 
     public static function thinnedProcessToProcess(ThinnedProcess $thinnedProcess): Process

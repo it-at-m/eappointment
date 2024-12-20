@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Controllers;
 
@@ -26,14 +27,22 @@ class AppointmentUpdate extends BaseController
         $telephone = $body['telephone'] ?? null;
         $customTextfield = $body['customTextfield'] ?? null;
     
-        $errors = ValidationService::validateUpdateAppointmentInputs($processId, $authKey, $familyName, $email, $telephone, $customTextfield);
+        $errors = ValidationService::validateUpdateAppointmentInputs(
+            isset($processId) ? (int) $processId : 0,
+            isset($authKey) ? (string) $authKey : null,
+            isset($familyName) ? (string) $familyName : null,
+            isset($email) ? (string) $email : null,
+            isset($telephone) ? (string) $telephone : null,
+            isset($customTextfield) ? (string) $customTextfield : null
+        );
+        
         if (!empty($errors['errors'])) {
             return $this->createJsonResponse($response, $errors, 400);
         }
     
         try {
             $reservedProcess = new ThinnedProcess();
-            $reservedProcess = ZmsApiFacadeService::getThinnedProcessById($processId, $authKey);
+            $reservedProcess = ZmsApiFacadeService::getThinnedProcessById((int)$processId, $authKey);
             if (!empty($reservedProcess['errors'])) {
                 return $this->createJsonResponse($response, $reservedProcess, 404);
             }

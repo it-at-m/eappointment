@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Controllers;
 
@@ -21,7 +22,7 @@ class ScopeById extends BaseController
             return $this->createJsonResponse($response, $errors, 400);
         }
 
-        $result = ZmsApiFacadeService::getScopeById($scopeId);
+        $result = ZmsApiFacadeService::getScopeById((int) $scopeId);
         if (isset($result['errors'])) {
             return $this->createJsonResponse($response, $result, $result['status']);
         }
