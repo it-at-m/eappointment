@@ -1,0 +1,21 @@
+{
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "number"
+      },
+      "name": {
+        "type": "string"
+      },
+      "maxQuantity": {
+        "type": "number"
+      },
+      "combinable": {}
+    },
+    "required": [
+      "id",
+      "name",
+      "maxQuantity",
+      "combinable"
+    ]
+  }

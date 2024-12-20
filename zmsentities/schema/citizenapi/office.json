@@ -1,0 +1,61 @@
+{
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "number"
+      },
+      "name": {
+        "type": "string"
+      },
+      "address": {
+        "type": "object",
+        "properties": {
+          "house_number": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "postal_code": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "hint": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "house_number",
+          "city",
+          "postal_code",
+          "street",
+          "hint"
+        ]
+      },
+      "geo": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "string"
+          },
+          "lon": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ]
+      },
+      "scope": {}
+    },
+    "required": [
+      "id",
+      "name",
+      "address",
+      "geo",
+      "scope"
+    ]
+  }

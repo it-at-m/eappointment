@@ -2,8 +2,6 @@
 
 namespace BO\Zmscitizenapi\Models;
 
-use BO\Zmsentities\Schema\Entity;
-
 interface CaptchaInterface
 {
     /**

@@ -4,8 +4,9 @@ namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmsentities\Schema\Entity;
 use BO\Zmscitizenapi\Models\ThinnedScope;
+use JsonSerializable;
 
-class Office extends Entity
+class Office extends Entity implements JsonSerializable
 {
 
     public static $schema = 'zmscitizenapi/schema/citizenapi/office.json';

@@ -18,16 +18,16 @@ definitions:
   captchaDetails:
     $ref: "schema/citizenapi/captchaDetails.json"
   offices:
-    $ref: "schema/citizenapi/officeList.json"
+    $ref: "schema/citizenapi/collections/officeList.json"
   officesAndServices:
-    $ref: "schema/citizenapi/officesAndServices.json"
+    $ref: "schema/citizenapi/collections/officeServiceAndRelationList.json"
   officesByService:
-    $ref: "schema/citizenapi/officesByService.json"
+    $ref: "schema/citizenapi/collections/officeList.json"
   scope:
     $ref: "schema/citizenapi/thinnedScope.json"
   scopes:
-    $ref: "schema/citizenapi/thinnedScopeList.json"
+    $ref: "schema/citizenapi/collections/thinnedScopeList.json"
   services:
-    $ref: "schema/citizenapi/serviceList.json"
+    $ref: "schema/citizenapi/collections/serviceList.json"
   servicesByOffice:
-    $ref: "schema/citizenapi/servicesByOffice.json"
+    $ref: "schema/citizenapi/collections/serviceList.json"

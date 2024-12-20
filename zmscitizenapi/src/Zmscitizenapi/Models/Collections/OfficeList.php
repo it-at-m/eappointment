@@ -8,7 +8,7 @@ use JsonSerializable;
 
 class OfficeList extends Entity implements JsonSerializable
 {
-    public static $schema = "zmsentities/schema/citizenapi/officeList.json";
+    public static $schema = "zmsentities/schema/citizenapi/collections/officeList.json";
 
     /** @var Office[] */
     protected array $offices = [];

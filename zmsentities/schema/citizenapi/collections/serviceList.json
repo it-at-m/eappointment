@@ -1,27 +1,32 @@
 {
   "type": "object",
-  "description": "Lists offices associated with specific services.",
   "properties": {
-    "offices": {
+    "services": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "number"
           },
           "name": {
             "type": "string"
-          }
+          },
+          "maxQuantity": {
+            "type": "number"
+          },
+          "combinable": {}
         },
         "required": [
           "id",
-          "name"
+          "name",
+          "maxQuantity",
+          "combinable"
         ]
       }
     }
   },
   "required": [
-    "offices"
+    "services"
   ]
 }

@@ -304,7 +304,7 @@ class MapperService
     {
         $provider = new Provider();
         $provider->id = isset($thinnedProvider->id) ? (string)$thinnedProvider->id : null; // Convert int ID to string
-        $provider->name = $thinnedProvider->providerName ?? null;
+        $provider->name = $thinnedProvider->name ?? null;
         $provider->source = $thinnedProvider->source ?? null;
 
         if ($thinnedProvider->address || $thinnedProvider->geo) {
