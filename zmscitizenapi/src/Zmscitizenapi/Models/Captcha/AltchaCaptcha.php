@@ -28,7 +28,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
     /**
      * Constructor.
      */
-    public function __construct(Client $httpClient = null)
+    public function __construct()
     {
         $this->service = 'AltchaCaptcha';
         $this->siteKey = Application::$ALTCHA_CAPTCHA_SITE_KEY;
@@ -62,7 +62,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
     public function verifyCaptcha(string $solution): bool
     {
         try {
-            $response = $this->httpClient->post($this->apiUrl, [
+            $response = \App::$http->post($this->apiUrl, [
                 'form_params' => [
                     'secret' => $this->secretKey,
                     'solution' => $solution
