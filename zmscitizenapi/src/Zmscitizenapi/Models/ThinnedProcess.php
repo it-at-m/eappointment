@@ -4,8 +4,9 @@ namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmsentities\Schema\Entity;
+use JsonSerializable;
 
-class ThinnedProcess extends Entity
+class ThinnedProcess extends Entity implements JsonSerializable
 {
     public static $schema = "zmsentities/schema/citizenapi/thinnedProcess.json";
 

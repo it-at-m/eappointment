@@ -1,0 +1,113 @@
+{
+    "type": "object",
+    "properties": {
+        "combinable": {
+            "type": "object",
+            "properties": {
+                "1063426": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "1063428": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "1063441": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "1063453": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "1063475": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "1076889": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "1078273": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "1080582": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "1080843": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "10224136": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "10225119": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "10225181": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "10225197": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "10225205": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "10242339": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "10295182": {
+                    "type": "array",
+                    "items": {}
+                },
+                "10306925": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "combinable"
+    ]
+}

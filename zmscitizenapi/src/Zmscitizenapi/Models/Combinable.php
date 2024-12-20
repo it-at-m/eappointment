@@ -3,12 +3,13 @@
 namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmsentities\Schema\Entity;
+use JsonSerializable;
 
-class Combinable extends Entity
+class Combinable extends Entity implements JsonSerializable
 {
     public static $schema = 'zmscitizenapi/schema/citizenapi/combinable.json';
 
-    /** @var array */
+    /** @var array<int, int[]> */
     private array $combinations = [];
 
     /**
@@ -19,6 +20,7 @@ class Combinable extends Entity
     public function __construct(array $combinations = [])
     {
         foreach ($combinations as $id => $providerIds) {
+            // Ensure both keys (service IDs) and values (provider IDs) are integers.
             $this->combinations[(int)$id] = array_map('intval', $providerIds);
         }
     }
@@ -26,7 +28,7 @@ class Combinable extends Entity
     /**
      * Get the combinations array.
      *
-     * @return array
+     * @return array<int, int[]> The combinations as an associative array of integers.
      */
     public function getCombinations(): array
     {
@@ -36,7 +38,7 @@ class Combinable extends Entity
     /**
      * Converts the model data back into an array for serialization.
      *
-     * @return array
+     * @return array<int, int[]> The combinations as an associative array of integers.
      */
     public function toArray(): array
     {

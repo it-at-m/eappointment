@@ -20,7 +20,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/serviceList.json"
+ *               $ref: "schema/citizenapi/collections/serviceList.json"
  */
 \App::$slim->get(
     '/services/',
@@ -44,7 +44,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/thinnedScopeList.json"
+ *               $ref: "schema/citizenapi/collections/thinnedScopeList.json"
  */
 \App::$slim->get(
     '/scopes/',
@@ -68,7 +68,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/officeList.json"
+ *               $ref: "schema/citizenapi/collections/officeList.json"
  */
 \App::$slim->get(
     '/offices/',
@@ -92,7 +92,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/officesAndServices.json"
+ *               $ref: "schema/citizenapi/collections/officeServiceAndRelationList.json"
  */
 \App::$slim->get(
     '/offices-and-services/',
@@ -127,7 +127,7 @@ use \Psr\Http\Message\ResponseInterface;
  *         description: Scope not found
  */
 \App::$slim->get(
-    '/scope-by-ids/',
+    '/scope-by-id/',
     '\BO\Zmscitizenapi\Controllers\ScopeById'
 )
     ->setName("ScopeById");
@@ -154,7 +154,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/servicesByOffice.json"
+ *               $ref: "schema/citizenapi/collections/serviceList.json"
  */
 \App::$slim->get(
     '/services-by-office/',
@@ -184,7 +184,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/officesByService.json"
+ *               $ref: "schema/citizenapi/collections/officeList.json"
  */
 \App::$slim->get(
     '/offices-by-service/',

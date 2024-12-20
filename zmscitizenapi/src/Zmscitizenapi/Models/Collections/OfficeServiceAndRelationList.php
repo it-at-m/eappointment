@@ -6,10 +6,11 @@ use BO\Zmscitizenapi\Models\Collections\OfficeList;
 use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmsentities\Schema\Entity;
+use JsonSerializable;
 
-class OfficeServiceAndRelationList extends Entity
+class OfficeServiceAndRelationList extends Entity implements JsonSerializable
 {
-    public static $schema = "zmsentities/schema/citizenapi/officesAndServices.json";
+    public static $schema = "zmsentities/schema/citizenapi/collections/officeServiceAndRelationList.json";
 
     /** @var OfficeList */
     protected OfficeList $offices;
@@ -30,9 +31,9 @@ class OfficeServiceAndRelationList extends Entity
     public function toArray(): array
     {
         return [
-            'offices' => $this->offices->toArray()['offices'], // Extract only the 'offices' data
-            'services' => $this->services->toArray()['services'], // Extract only the 'services' data
-            'relations' => $this->relations->toArray()['relations'], // Extract only the 'relations' data
+            'offices' => $this->offices->toArray()['offices'],
+            'services' => $this->services->toArray()['services'],
+            'relations' => $this->relations->toArray()['relations']
         ];
     }
 

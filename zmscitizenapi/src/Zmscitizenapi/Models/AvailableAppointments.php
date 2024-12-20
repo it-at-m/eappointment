@@ -3,8 +3,9 @@
 namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmsentities\Schema\Entity;
+use JsonSerializable;
 
-class AvailableAppointments extends Entity
+class AvailableAppointments extends Entity implements JsonSerializable
 {
     public static $schema = 'zmscitizenapi/schema/citizenapi/availableAppointments.json';
 

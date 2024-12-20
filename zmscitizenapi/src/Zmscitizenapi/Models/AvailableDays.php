@@ -3,8 +3,9 @@
 namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmsentities\Schema\Entity;
+use JsonSerializable;
 
-class AvailableDays extends Entity
+class AvailableDays extends Entity implements JsonSerializable
 {
     public static $schema = 'zmscitizenapi/schema/citizenapi/availableDays.json';
 

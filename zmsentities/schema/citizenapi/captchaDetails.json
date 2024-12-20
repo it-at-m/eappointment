@@ -1,18 +1,14 @@
 {
   "type": "object",
-  "description": "Provides CAPTCHA configuration details including site key, endpoint, puzzle status, and CAPTCHA enablement.",
   "properties": {
     "siteKey": {
       "type": "string"
     },
     "captchaEndpoint": {
-      "type": "string",
-      "format": "uri",
-      "pattern": "^https?://.+",
-      "description": "The CAPTCHA verification endpoint URL (must be HTTP/HTTPS)"
+      "type": "string"
     },
     "puzzle": {
-      "type": "boolean"
+      "type": "string"
     },
     "captchaEnabled": {
       "type": "boolean"

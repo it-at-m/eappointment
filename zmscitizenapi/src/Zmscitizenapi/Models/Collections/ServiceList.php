@@ -4,10 +4,11 @@ namespace BO\Zmscitizenapi\Models\Collections;
 
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmsentities\Schema\Entity;
+use JsonSerializable;
 
-class ServiceList extends Entity
+class ServiceList extends Entity implements JsonSerializable
 {
-    public static $schema = "zmsentities/schema/citizenapi/serviceList.json";
+    public static $schema = "zmsentities/schema/citizenapi/collections/serviceList.json";
 
     /** @var Service[] */
     protected array $services = [];
@@ -34,11 +35,6 @@ class ServiceList extends Entity
         ];
     }
 
-    /**
-     * Implements JSON serialization.
-     *
-     * @return mixed
-     */
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

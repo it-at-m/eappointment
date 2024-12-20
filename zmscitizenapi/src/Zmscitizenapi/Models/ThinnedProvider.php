@@ -3,8 +3,9 @@
 namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmsentities\Schema\Entity;
+use JsonSerializable;
 
-class ThinnedProvider extends Entity
+class ThinnedProvider extends Entity implements JsonSerializable
 {
     public static $schema = "zmsentities/schema/citizenapi/thinnedProvider.json";
 
