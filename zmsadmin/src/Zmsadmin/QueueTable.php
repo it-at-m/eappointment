@@ -24,6 +24,7 @@ class QueueTable extends BaseController
         // parameters
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
+        $withCalledList = $validator->getParameter('withCalled')->isBool()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
         $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
@@ -54,7 +55,7 @@ class QueueTable extends BaseController
         $queueListParked = $queueList->withStatus(['parked']);
         $queueListFinished = $queueList->withStatus(['finished']);
 
-        $clusterQueueList = \App::$http
+        $queueListCalled = $withCalledList ? (\App::$http
             ->readGetResult(
                 '/useraccount/queue/',
                 [
@@ -62,7 +63,7 @@ class QueueTable extends BaseController
                     'status' => 'called',
                 ]
             )
-            ->getCollection() ?? [];
+            ->getCollection() ?? []) : false;
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -78,7 +79,8 @@ class QueueTable extends BaseController
                 'processListMissed' => $queueListMissed->toProcessList(),
                 'processListParked' => $queueListParked->toProcessList(),
                 'processListFinished' => $queueListFinished->toProcessList(),
-                'clusterQueueListCalled' => $clusterQueueList,
+                'showCalledList' => $withCalledList,
+                'queueListCalled' => $queueListCalled,
                 'changedProcess' => $changedProcess,
                 'success' => $success,
                 'debug' => \App::DEBUG,
