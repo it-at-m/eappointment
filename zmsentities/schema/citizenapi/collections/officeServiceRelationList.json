@@ -1,0 +1,30 @@
+{
+    "type": "object",
+    "properties": {
+        "relations": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "officeId": {
+                        "type": "number"
+                    },
+                    "serviceId": {
+                        "type": "number"
+                    },
+                    "slots": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "officeId",
+                    "serviceId",
+                    "slots"
+                ]
+            }
+        }
+    },
+    "required": [
+        "relations"
+    ]
+}

@@ -1,0 +1,142 @@
+{
+  "type": "object",
+  "properties": {
+    "processId": {
+      "type": "number"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "authKey": {
+      "type": "string"
+    },
+    "familyName": {
+      "type": "string"
+    },
+    "customTextfield": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "telephone": {
+      "type": "string"
+    },
+    "officeName": {
+      "type": "string"
+    },
+    "officeId": {
+      "type": "number"
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "provider": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "contact": {
+              "type": "object",
+              "properties": {
+                "city": {
+                  "type": "string"
+                },
+                "country": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "postalCode": {
+                  "type": "string"
+                },
+                "region": {
+                  "type": "string"
+                },
+                "street": {
+                  "type": "string"
+                },
+                "streetNumber": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "city",
+                "country",
+                "name",
+                "postalCode",
+                "region",
+                "street",
+                "streetNumber"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "source",
+            "contact"
+          ]
+        },
+        "shortName": {
+          "type": "string"
+        },
+        "telephoneActivated": {},
+        "telephoneRequired": {},
+        "customTextfieldActivated": {},
+        "customTextfieldRequired": {},
+        "customTextfieldLabel": {},
+        "captchaActivatedRequired": {},
+        "displayInfo": {}
+      },
+      "required": [
+        "id",
+        "provider",
+        "shortName",
+        "telephoneActivated",
+        "telephoneRequired",
+        "customTextfieldActivated",
+        "customTextfieldRequired",
+        "customTextfieldLabel",
+        "captchaActivatedRequired",
+        "displayInfo"
+      ]
+    },
+    "subRequestCounts": {
+      "type": "array",
+      "items": {}
+    },
+    "serviceId": {
+      "type": "number"
+    },
+    "serviceCount": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "processId",
+    "timestamp",
+    "authKey",
+    "familyName",
+    "customTextfield",
+    "email",
+    "telephone",
+    "officeName",
+    "officeId",
+    "scope",
+    "subRequestCounts",
+    "serviceId",
+    "serviceCount"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "number"
+      },
+      "name": {
+        "type": "string"
+      },
+      "maxQuantity": {
+        "type": "number",
+        "minimum": 1,
+        "description": "Maximum number of slots that can be booked for this service"
+      },
+      "combinable": {}
+    },
+    "required": [
+      "id",
+      "name",
+      "maxQuantity",
+      "combinable"
+    ]
+  }

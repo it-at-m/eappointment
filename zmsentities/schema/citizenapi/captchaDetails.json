@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "siteKey": {
+      "type": "string"
+    },
+    "captchaEndpoint": {
+      "type": "string"
+    },
+    "puzzle": {
+      "type": "string"
+    },
+    "captchaEnabled": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "siteKey",
+    "captchaEndpoint",
+    "puzzle",
+    "captchaEnabled"
+  ]
+}

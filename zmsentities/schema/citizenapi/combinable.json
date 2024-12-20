@@ -1,0 +1,20 @@
+{
+    "type": "object",
+    "properties": {
+        "combinable": {
+            "type": "object",
+            "description": "Map of service IDs to their combinable service IDs",
+            "patternProperties": {
+                "^[0-9]+$": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    },
+                    "description": "Array of service IDs that can be combined with this service"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "required": ["combinable"]
+}
