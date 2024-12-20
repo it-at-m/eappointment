@@ -31,18 +31,18 @@ class MapperService
     public static function mapOfficesWithScope(ProviderList $providerList): OfficeList
     {
         $offices = [];
-        $scopes = new ScopeList(ZmsApiClientService::getScopes() ?? []);
+        $scopes = ZmsApiClientService::getScopes() ?? new ScopeList();
 
         foreach ($providerList as $provider) {
             $providerScope = ZmsApiFacadeService::getScopeForProvider($provider->id, $scopes);
 
             $offices[] = new Office(
-                id: (int)$provider->id,
+                id: (int) $provider->id,
                 name: $provider->displayName ?? $provider->name,
                 address: $provider->data['address'] ?? null,
                 geo: $provider->data['geo'] ?? null,
                 scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(
-                    id: (int)($providerScope->id ?? 0),
+                    id: (int) ($providerScope->id ?? 0),
                     provider: $providerScope->provider ?? null,
                     shortName: $providerScope->shortName ?? null,
                     telephoneActivated: $providerScope->telephoneActivated ?? null,
@@ -64,18 +64,27 @@ class MapperService
         return !empty($serviceCombinations) ? new Combinable($serviceCombinations) : null;
     }
 
+    /**
+     * Map services with combinations based on request and relation lists.
+     *
+     * @param RequestList $requestList
+     * @param RequestRelationList $relationList
+     * @return ServiceList
+     */
     public static function mapServicesWithCombinations(RequestList $requestList, RequestRelationList $relationList): ServiceList
     {
+        /** @var array<string, array<int>> $servicesProviderIds */
         $servicesProviderIds = [];
         foreach ($relationList as $relation) {
-            if (!isset($servicesProviderIds[$relation->request->id])) {
-                $servicesProviderIds[$relation->request->id] = [];
-            }
-            $servicesProviderIds[$relation->request->id][] = $relation->provider->id;
+            $serviceId = $relation->request->id;
+            $servicesProviderIds[$serviceId] ??= [];
+            $servicesProviderIds[$serviceId][] = $relation->provider->id;
         }
 
+        /** @var Service[] $services */
         $services = [];
         foreach ($requestList as $service) {
+            /** @var array<string, array<int>> $serviceCombinations */
             $serviceCombinations = [];
             $combinableData = $service->getAdditionalData()['combinable'] ?? [];
 
@@ -90,7 +99,7 @@ class MapperService
             $combinable = self::mapCombinable($serviceCombinations);
 
             $services[] = new Service(
-                id: (int)$service->getId(),
+                id: (int) $service->getId(),
                 name: $service->getName(),
                 maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1,
                 combinable: $combinable ?? new Combinable()
@@ -100,14 +109,13 @@ class MapperService
         return new ServiceList($services);
     }
 
-
     public static function mapRelations(RequestRelationList $relationList): OfficeServiceRelationList
     {
         $relations = [];
         foreach ($relationList as $relation) {
             $relations[] = new OfficeServiceRelation(
-                officeId: (string)$relation->provider->id,
-                serviceId: (string)$relation->request->id,
+                officeId: (string) $relation->provider->id,
+                serviceId: (string) $relation->request->id,
                 slots: intval($relation->slots)
             );
         }
@@ -287,7 +295,7 @@ class MapperService
     public static function providerToThinnedProvider(Provider $provider): ThinnedProvider
     {
         return new ThinnedProvider(
-            id: isset($provider->id) ? (int)$provider->id : null,
+            id: isset($provider->id) ? (int) $provider->id : null,
             name: $provider->name ?? null,
             source: $provider->source ?? null,
             contact: $provider->contact ?? null,
@@ -303,7 +311,7 @@ class MapperService
     public static function thinnedProviderToProvider(ThinnedProvider $thinnedProvider): Provider
     {
         $provider = new Provider();
-        $provider->id = isset($thinnedProvider->id) ? (string)$thinnedProvider->id : null; // Convert int ID to string
+        $provider->id = isset($thinnedProvider->id) ? (string) $thinnedProvider->id : null; // Convert int ID to string
         $provider->name = $thinnedProvider->name ?? null;
         $provider->source = $thinnedProvider->source ?? null;
 

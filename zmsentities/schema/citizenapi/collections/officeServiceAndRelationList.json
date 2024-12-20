@@ -42,22 +42,22 @@
                 "type": "string"
               },
               "telephoneActivated": {
-                "type": "string"
+                "type": "boolean"
               },
               "telephoneRequired": {
-                "type": "number"
+                "type": "boolean"
               },
               "customTextfieldActivated": {
-                "type": "string"
+                "type": "boolean"
               },
               "customTextfieldRequired": {
-                "type": "number"
+                 "type": "boolean"
               },
               "customTextfieldLabel": {
                 "type": "string"
               },
               "captchaActivatedRequired": {
-                "type": "string"
+                 "type": "boolean"
               }
             },
             "required": [
@@ -91,7 +91,9 @@
             "type": "string"
           },
           "maxQuantity": {
-            "type": "number"
+            "type": "number",
+            "minimum": 1,
+            "description": "Maximum number of slots that can be booked for this service"
           },
           "combinable": {
             "type": "object",

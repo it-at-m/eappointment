@@ -8,7 +8,6 @@ use JsonSerializable;
 
 class Office extends Entity implements JsonSerializable
 {
-
     public static $schema = 'zmsentities/schema/citizenapi/office.json';
 
     /** @var int */
@@ -40,8 +39,34 @@ class Office extends Entity implements JsonSerializable
         $this->id = $id;
         $this->name = $name;
         $this->address = $address;
-        $this->geo = $geo;
+        $this->geo = $this->validateGeo($geo);
         $this->scope = $scope;
+    }
+
+    /**
+     * Validate and convert geo data to an array of floats.
+     *
+     * @param array|null $geo
+     * @return array|null
+     * @throws \InvalidArgumentException If geo values are out of bounds.
+     */
+    private function validateGeo(?array $geo): ?array
+    {
+        if (isset($geo['lat'], $geo['lon'])) {
+            $lat = (float)$geo['lat'];
+            $lon = (float)$geo['lon'];
+
+            if ($lat < -90 || $lat > 90) {
+                throw new \InvalidArgumentException("Latitude must be between -90 and 90.");
+            }
+
+            if ($lon < -180 || $lon > 180) {
+                throw new \InvalidArgumentException("Longitude must be between -180 and 180.");
+            }
+
+            return ['lat' => $lat, 'lon' => $lon];
+        }
+        return null;
     }
 
     /**

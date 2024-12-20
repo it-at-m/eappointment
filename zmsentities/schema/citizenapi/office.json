@@ -1,61 +1,88 @@
 {
     "type": "object",
     "properties": {
-      "id": {
-        "type": "number"
-      },
-      "name": {
-        "type": "string"
-      },
-      "address": {
-        "type": "object",
-        "properties": {
-          "house_number": {
-            "type": "string"
-          },
-          "city": {
-            "type": "string"
-          },
-          "postal_code": {
-            "type": "string"
-          },
-          "street": {
-            "type": "string"
-          },
-          "hint": {
-            "type": "boolean"
-          }
+        "id": {
+            "type": "number"
         },
-        "required": [
-          "house_number",
-          "city",
-          "postal_code",
-          "street",
-          "hint"
-        ]
-      },
-      "geo": {
-        "type": "object",
-        "properties": {
-          "lat": {
+        "name": {
             "type": "string"
-          },
-          "lon": {
-            "type": "string"
-          }
         },
-        "required": [
-          "lat",
-          "lon"
-        ]
-      },
-      "scope": {}
+        "address": {
+            "type": "object",
+            "properties": {
+                "house_number": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "hint": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "house_number",
+                "city",
+                "postal_code",
+                "street",
+                "hint"
+            ]
+        },
+        "geo": {
+            "type": "object",
+            "properties": {
+                "lat": {
+                    "default": "",
+                    "description": "Latitute of a geo coordinate as wgs84 or etrs89",
+                    "type": "number",
+                    "minimum": -90,
+                    "maximum": 90
+                },
+                "lon": {
+                    "default": "",
+                    "description": "Longitude of a geo coordinate as wgs84 or etrs89",
+                    "type": "number",
+                    "minimum": -90,
+                    "maximum": 90
+                }
+            },
+            "required": [
+                "lat",
+                "lon"
+            ]
+        },
+        "scope": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                }
+            },
+            "required": [
+                "id",
+                "name"
+            ]
+        }
     },
     "required": [
-      "id",
-      "name",
-      "address",
-      "geo",
-      "scope"
+        "id",
+        "name",
+        "address",
+        "geo",
+        "scope"
     ]
-  }
+}
