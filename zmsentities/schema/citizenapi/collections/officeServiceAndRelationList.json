@@ -96,17 +96,7 @@
             "description": "Maximum number of slots that can be booked for this service"
           },
           "combinable": {
-            "type": "object",
-            "patternProperties": {
-              "^[0-9]+$": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Array of service IDs that can be combined with this service"
-              }
-            },
-            "additionalProperties": false
+            "type": "object"
           }
         },
         "required": [
