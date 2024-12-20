@@ -15,8 +15,11 @@ class AvailableDaysList extends BaseController
         $queryParams = $request->getQueryParams();
 
         $result = ZmsApiFacadeService::getBookableFreeDays($queryParams);
+        if (isset($result['errors'])) {
+            return $this->createJsonResponse($response, $result, $result['status']);
+        }
         
-        return $this->createJsonResponse($response, $result, $result['status']);
+        return $this->createJsonResponse($response, $result->toArray(), 200);
     }
 
 }

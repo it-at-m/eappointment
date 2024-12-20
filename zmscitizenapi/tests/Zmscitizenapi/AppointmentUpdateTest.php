@@ -34,8 +34,7 @@ class AppointmentUpdateTest extends Base
             'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
-        ];
-    
+        ];   
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
@@ -136,7 +135,6 @@ class AppointmentUpdateTest extends Base
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
         ];
-
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
@@ -177,7 +175,6 @@ class AppointmentUpdateTest extends Base
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
         ];
-
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
@@ -206,7 +203,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -235,7 +231,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -263,7 +258,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -291,7 +285,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -318,7 +311,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -346,7 +338,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -373,7 +364,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -400,7 +390,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -426,7 +415,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -454,7 +442,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -481,7 +468,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -508,7 +494,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -534,7 +519,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -561,7 +545,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -587,7 +570,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -613,7 +595,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -638,7 +619,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -666,7 +646,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -693,7 +672,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -720,7 +698,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -746,7 +723,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -773,7 +749,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -799,7 +774,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -825,7 +799,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -850,7 +823,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -877,7 +849,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -903,7 +874,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -929,7 +899,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -954,7 +923,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -980,7 +948,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -1005,7 +972,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
@@ -1030,7 +996,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.']
@@ -1054,7 +1019,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1082,7 +1046,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1109,7 +1072,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1136,7 +1098,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1162,7 +1123,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1189,7 +1149,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1215,7 +1174,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1241,7 +1199,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1266,7 +1223,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1293,7 +1249,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1319,7 +1274,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1345,7 +1299,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1370,7 +1323,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1396,7 +1348,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1421,7 +1372,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
@@ -1446,7 +1396,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.']
@@ -1470,7 +1419,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
@@ -1497,7 +1445,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
@@ -1523,7 +1470,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
@@ -1549,7 +1495,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
@@ -1574,7 +1519,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
@@ -1600,7 +1544,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
@@ -1625,7 +1568,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
@@ -1650,7 +1592,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.']
@@ -1674,7 +1615,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
@@ -1700,7 +1640,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
@@ -1725,7 +1664,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
@@ -1750,7 +1688,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
@@ -1774,7 +1711,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
@@ -1799,7 +1735,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
@@ -1823,7 +1758,6 @@ class AppointmentUpdateTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-
         $expectedResponse = [
             'errors' => [
                 ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']

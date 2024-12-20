@@ -31,8 +31,7 @@ class AvailableDaysListTest extends Base
                 "2024-08-21", "2024-08-22", "2024-08-23", "2024-08-26", "2024-08-27", "2024-08-28", "2024-08-29", "2024-08-30", 
                 "2024-09-02", "2024-09-03", "2024-09-04", "2024-09-05", "2024-09-06", "2024-09-09", "2024-09-10", "2024-09-11", 
                 "2024-09-12", "2024-09-13", "2024-09-16", "2024-09-17", "2024-09-18", "2024-09-19", "2024-09-20"
-            ],
-            'status' => 200,
+            ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -46,7 +45,7 @@ class AvailableDaysListTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
-                    'response' => $this->readFixture("GET_calendar_empty_days.json") // Simulate a response with no available days
+                    'response' => $this->readFixture("GET_calendar_empty_days.json")
                 ]
             ]
         );
@@ -58,7 +57,6 @@ class AvailableDaysListTest extends Base
             'startDate' => '2024-08-21',
             'endDate' => '2024-08-23',
         ];
-
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
