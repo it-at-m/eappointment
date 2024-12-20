@@ -23,8 +23,8 @@ class Service extends Entity
      */
     public ?int $maxQuantity = null;
 
-    /** @var array */
-    public ?array $combinable = null;
+    /** @var Combinable */
+    public ?Combinable $combinable = null;
 
     /**
      * Constructor.
@@ -33,7 +33,7 @@ class Service extends Entity
      * @param string $name
      * @param int|null $maxQuantity
      */
-    public function __construct(int $id, string $name, ?int $maxQuantity = null, ?array $combinable = null)
+    public function __construct(int $id, string $name, ?int $maxQuantity = null, ?Combinable $combinable = null)
     {
         $this->id = $id;
         $this->name = $name;

@@ -4,6 +4,7 @@ namespace BO\Zmscitizenapi\Services;
 
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Models\Office;
+use BO\Zmscitizenapi\Models\Combinable;
 use BO\Zmscitizenapi\Models\Collections\OfficeList;
 use BO\Zmscitizenapi\Models\OfficeServiceRelation;
 use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
@@ -31,10 +32,10 @@ class MapperService
     {
         $offices = [];
         $scopes = new ScopeList(ZmsApiClientService::getScopes() ?? []);
-    
+
         foreach ($providerList as $provider) {
             $providerScope = ZmsApiFacadeService::getScopeForProvider($provider->id, $scopes);
-    
+
             $offices[] = new Office(
                 id: (int)$provider->id,
                 name: $provider->displayName ?? $provider->name,
@@ -56,7 +57,12 @@ class MapperService
         }
 
         return new OfficeList($offices);
-    }      
+    }
+
+    public static function mapCombinable(array $serviceCombinations): ?Combinable
+    {
+        return !empty($serviceCombinations) ? new Combinable($serviceCombinations) : null;
+    }
 
     public static function mapServicesWithCombinations(RequestList $requestList, RequestRelationList $relationList): ServiceList
     {
@@ -67,30 +73,33 @@ class MapperService
             }
             $servicesProviderIds[$relation->request->id][] = $relation->provider->id;
         }
-    
+
         $services = [];
         foreach ($requestList as $service) {
             $serviceCombinations = [];
-            $combinable = $service->getAdditionalData()['combinable'] ?? [];
+            $combinableData = $service->getAdditionalData()['combinable'] ?? [];
 
-            foreach ($combinable as $combinationServiceId) {
+            foreach ($combinableData as $combinationServiceId) {
                 $commonProviders = array_intersect(
                     $servicesProviderIds[$service->getId()] ?? [],
                     $servicesProviderIds[$combinationServiceId] ?? []
                 );
                 $serviceCombinations[$combinationServiceId] = !empty($commonProviders) ? array_values($commonProviders) : [];
             }
-    
+
+            $combinable = self::mapCombinable($serviceCombinations);
+
             $services[] = new Service(
                 id: (int)$service->getId(),
                 name: $service->getName(),
                 maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1,
-                combinable: $serviceCombinations
+                combinable: $combinable ?? new Combinable()
             );
         }
-    
+
         return new ServiceList($services);
-    } 
+    }
+
 
     public static function mapRelations(RequestRelationList $relationList): OfficeServiceRelationList
     {
@@ -102,7 +111,7 @@ class MapperService
                 slots: intval($relation->slots)
             );
         }
-    
+
         return new OfficeServiceRelationList($relations);
     }
 
@@ -111,14 +120,14 @@ class MapperService
         if (!$myscope || !isset($myscope->id)) {
             return new ThinnedScope();
         }
-    
+
         $provider = null;
-    
+
         if (isset($myscope->provider)) {
             // Convert Provider to ThinnedProvider
             $provider = self::providerToThinnedProvider($myscope->provider);
         }
-    
+
         return new ThinnedScope(
             id: $myscope->id,
             provider: $provider,
@@ -132,21 +141,21 @@ class MapperService
             displayInfo: $myscope->displayInfo ?? null
         );
     }
-    
+
     public static function thinnedScopeToScope(ThinnedScope $thinnedScope): Scope
     {
         if (!$thinnedScope || !isset($thinnedScope->id)) {
             return new Scope();
         }
-    
+
         $scopeEntity = new Scope();
         $scopeEntity->id = $thinnedScope->id;
-    
+
         if ($thinnedScope->provider) {
             // Convert ThinnedProvider to Provider
             $scopeEntity->provider = self::thinnedProviderToProvider($thinnedScope->provider);
         }
-    
+
         $scopeEntity->shortName = $thinnedScope->shortName ?? null;
         $scopeEntity->telephoneActivated = $thinnedScope->telephoneActivated ?? null;
         $scopeEntity->telephoneRequired = $thinnedScope->telephoneRequired ?? null;
@@ -155,10 +164,10 @@ class MapperService
         $scopeEntity->customTextfieldLabel = $thinnedScope->customTextfieldLabel ?? null;
         $scopeEntity->captchaActivatedRequired = $thinnedScope->captchaActivatedRequired ?? null;
         $scopeEntity->displayInfo = $thinnedScope->displayInfo ?? null;
-    
+
         return $scopeEntity;
     }
-           
+
     public static function processToThinnedProcess(Process $myProcess): ThinnedProcess
     {
         if (!$myProcess || !isset($myProcess->id)) {
@@ -313,5 +322,4 @@ class MapperService
 
         return $provider;
     }
-
 }
