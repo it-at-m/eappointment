@@ -16,6 +16,8 @@ use BO\Zmscitizenapi\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Models\Collections\ThinnedScopeList;
 use BO\Zmscitizenapi\Services\ZmsApiClientService;
+use BO\Zmsentities\Calendar;
+use BO\Zmsentities\Collection\RequestRelationList;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\ScopeList;
@@ -28,8 +30,8 @@ class ZmsApiFacadeService
 
     public static function getOffices(): OfficeList
     {
-        $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
-        $providerList = ZmsApiClientService::getOffices();
+        $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
+        $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $offices = [];
 
         foreach ($providerList as $provider) {
@@ -61,8 +63,7 @@ class ZmsApiFacadeService
 
     public static function getScopes(): ThinnedScopeList
     {
-        $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
-        $providerList = ZmsApiClientService::getOffices();
+        $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
         $scopesProjectionList = [];
 
         foreach ($scopeList as $scope) {
@@ -89,7 +90,7 @@ class ZmsApiFacadeService
 
     public static function getServices(): ServiceList
     {
-        $requestList = ZmsApiClientService::getServices() ?? [];
+        $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $services = [];
 
         foreach ($requestList as $request) {
@@ -148,9 +149,9 @@ class ZmsApiFacadeService
 
     public static function getServicesAndOffices(): OfficeServiceAndRelationList
     {
-        $providerList = ZmsApiClientService::getOffices() ?? [];
-        $requestList = ZmsApiClientService::getServices() ?? [];
-        $relationList = ZmsApiClientService::getRequestRelationList() ?? [];
+        $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
+        $requestList = ZmsApiClientService::getServices() ?? new RequestList();
+        $relationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
 
         $offices = MapperService::mapOfficesWithScope($providerList) ?? new OfficeList;
         $services = MapperService::mapServicesWithCombinations($requestList, $relationList) ?? new ServiceList();
@@ -168,7 +169,7 @@ class ZmsApiFacadeService
 
     public static function getScopeByOfficeId(int $officeId): ThinnedScope|array
     {
-        $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
+        $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
         $matchingScope = $scopeList->withProviderID(\App::$source_name, $officeId)->getIterator()->current();
 
         if ($matchingScope instanceof Scope) {
@@ -221,8 +222,8 @@ class ZmsApiFacadeService
              return $errors;
          }
      
-         $providerList = ZmsApiClientService::getOffices();
-         $requestRelationList = ZmsApiClientService::getRequestRelationList();
+         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
+         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
      
          $providerMap = [];
          foreach ($providerList as $provider) {
@@ -233,39 +234,39 @@ class ZmsApiFacadeService
          foreach ($requestRelationList as $relation) {
              $requestId = $relation->request->id;
              $providerId = $relation->provider->id;
-     
-             if (!isset($relationMap[$requestId])) {
-                 $relationMap[$requestId] = [];
-             }
              $relationMap[$requestId][] = $providerId;
          }
      
-         $offices = [];
          $addedOfficeIds = [];
+         $offices = [];
      
          foreach ($serviceIds as $serviceId) {
-             if (isset($relationMap[$serviceId])) {
-                 foreach ($relationMap[$serviceId] as $providerId) {
-                     if (!in_array($providerId, $addedOfficeIds) && isset($providerMap[$providerId])) {
-                         $provider = $providerMap[$providerId];
-                         $scope = null;
+             if (!isset($relationMap[$serviceId])) {
+                 continue;
+             }
      
-                         $scopeData = self::getScopeByOfficeId($provider->id);
-                         if ($scopeData instanceof ThinnedScope) {
-                             $scope = $scopeData;
-                         }
-     
-                         $offices[] = new Office(
-                             id: $provider->id,
-                             name: $provider->name,
-                             address: $provider->address ?? null,
-                             geo: $provider->geo ?? null,
-                             scope: $scope
-                         );
-     
-                         $addedOfficeIds[] = $provider->id;
-                     }
+             foreach ($relationMap[$serviceId] as $providerId) {
+                 if (isset($addedOfficeIds[$providerId]) || !isset($providerMap[$providerId])) {
+                     continue;
                  }
+     
+                 $provider = $providerMap[$providerId];
+                 $scope = null;
+     
+                 $scopeData = self::getScopeByOfficeId($provider->id);
+                 if ($scopeData instanceof ThinnedScope) {
+                     $scope = $scopeData;
+                 }
+     
+                 $offices[] = new Office(
+                     id: $provider->id,
+                     name: $provider->name,
+                     address: $provider->address ?? null,
+                     geo: $provider->geo ?? null,
+                     scope: $scope
+                 );
+     
+                 $addedOfficeIds[$provider->id] = true;
              }
          }
      
@@ -275,7 +276,8 @@ class ZmsApiFacadeService
          }
      
          return new OfficeList($offices);
-     }   
+     }
+     
 
 
     public static function getScopeById(?int $scopeId): ThinnedScope|array
@@ -285,7 +287,7 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        $scopeList = new ScopeList(ZmsApiClientService::getScopes() ?? []);
+        $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
         $filteredScopes = new ScopeList();
 
         foreach ($scopeList as $scope) {
@@ -338,8 +340,8 @@ class ZmsApiFacadeService
             return $errors;
         }
     
-        $requestList = ZmsApiClientService::getServices() ?? [];
-        $requestRelationList = ZmsApiClientService::getRequestRelationList();
+        $requestList = ZmsApiClientService::getServices() ?? new RequestList();
+        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
     
         $requestMap = [];
         foreach ($requestList as $request) {
@@ -393,7 +395,7 @@ class ZmsApiFacadeService
 
     public static function getServicesProvidedAtOffice(int $officeId): RequestList
     {
-        $requestRelationList = ZmsApiClientService::getRequestRelationList();
+        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
 
         $requestRelationArray = [];
         foreach ($requestRelationList as $relation) {
@@ -408,7 +410,7 @@ class ZmsApiFacadeService
             return $relation->request->id;
         }, $serviceIds);
 
-        $requestList = ZmsApiClientService::getServices();
+        $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $requestArray = [];
         foreach ($requestList as $request) {
             $requestArray[] = $request;
@@ -455,7 +457,7 @@ class ZmsApiFacadeService
                 ]),
                 $firstDay,
                 $lastDay,
-            );
+            ) ?? new Calendar();
 
             $daysCollection = $freeDays->days;
 
@@ -506,7 +508,7 @@ class ZmsApiFacadeService
                 new RequestList($requests),
                 $date,
                 $date
-            );
+            ) ?? new ProcessList();
 
             return $freeSlots;
         } catch (\Exception $e) {
@@ -548,7 +550,7 @@ class ZmsApiFacadeService
                 new RequestList($requests),
                 DateTimeFormatHelper::getInternalDateFromISO($date),
                 DateTimeFormatHelper::getInternalDateFromISO($date)
-            );
+            ) ?? new ProcessList();
 
             $timestamps = self::processFreeSlots($freeSlots);
             if (isset($timestamps['appointmentTimestamps'])) {
@@ -573,34 +575,35 @@ class ZmsApiFacadeService
         if (!empty($errors['errors'])) {
             return $errors;
         }
-
+    
         $currentTimestamp = time();
-        $appointmentTimestamps = [];
-
-        foreach ($freeSlots as $slot) {
-            if (!isset($slot->appointments) || !is_iterable($slot->appointments)) {
-                continue;
-            }
-
-            foreach ($slot->appointments as $appointment) {
-
-                if (isset($appointment->date)) {
-                    $timestamp = (int) $appointment->date;
-
-                    if (!in_array($timestamp, $appointmentTimestamps) && $timestamp > $currentTimestamp) {
-                        $appointmentTimestamps[] = $timestamp;
+    
+        $appointmentTimestamps = array_reduce(
+            iterator_to_array($freeSlots),
+            function ($timestamps, $slot) use ($currentTimestamp) {
+                if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                    foreach ($slot->appointments as $appointment) {
+                        if (isset($appointment->date)) {
+                            $timestamp = (int) $appointment->date;
+                            if ($timestamp > $currentTimestamp) {
+                                $timestamps[$timestamp] = true;
+                            }
+                        }
                     }
                 }
-            }
-        }
-
+                return $timestamps;
+            },
+            []
+        );
+    
+        $appointmentTimestamps = array_keys($appointmentTimestamps);
+        sort($appointmentTimestamps);
+    
         $errors = ValidationService::validateGetProcessByIdTimestamps($appointmentTimestamps);
         if (!empty($errors['errors'])) {
             return $errors;
         }
-
-        sort($appointmentTimestamps);
-
+    
         return [
             'appointmentTimestamps' => $appointmentTimestamps
         ];

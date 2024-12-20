@@ -43,10 +43,18 @@
             "type": "object",
             "properties": {
               "lat": {
-                "type": "string"
+                "default": "",
+                "description": "Latitute of a geo coordinate as wgs84 or etrs89",
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
               },
               "lon": {
-                "type": "string"
+                "default": "",
+                "description": "Longitude of a geo coordinate as wgs84 or etrs89",
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
               }
             },
             "required": [

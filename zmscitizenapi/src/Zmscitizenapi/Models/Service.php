@@ -2,6 +2,7 @@
 
 namespace BO\Zmscitizenapi\Models;
 
+use BO\Zmscitizenapi\Models\Combinable;
 use BO\Zmsentities\Schema\Entity;
 use JsonSerializable;
 
