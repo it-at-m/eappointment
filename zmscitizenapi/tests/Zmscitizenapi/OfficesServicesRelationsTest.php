@@ -31,9 +31,10 @@ class OfficesServicesRelationsTest extends Base
                     "scope" => [
                         "id" => 1,
                         "provider" => [
-                            '$schema' => "https://schema.berlin.de/queuemanagement/provider.json",
                             "id" => "9999998",
-                            "source" => "unittest"
+                            "name" => null,
+                            "source" => "unittest",
+                            "contact" => null
                         ],
                         "shortName" => "Scope 1",
                         "telephoneActivated" => true,
@@ -53,9 +54,10 @@ class OfficesServicesRelationsTest extends Base
                     "scope" => [
                         "id" => 2,
                         "provider" => [
-                            '$schema' => "https://schema.berlin.de/queuemanagement/provider.json",
                             "id" => "9999999",
-                            "source" => "unittest"
+                            "name" => null,
+                            "source" => "unittest",
+                            "contact" => null
                         ],
                         "shortName" => "Scope 2",
                         "telephoneActivated" => false,

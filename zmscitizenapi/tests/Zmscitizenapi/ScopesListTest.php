@@ -27,9 +27,10 @@ class ScopesListTest extends Base
                 [
                     "id" => 1,
                     "provider" => [
-                        '$schema' => "https://schema.berlin.de/queuemanagement/provider.json",
-                        "id" => "9999998",
-                        "source" => "unittest"
+                        "id" => 9999998,
+                        "name" => null,
+                        "source" => "unittest",
+                        "contact" => null
                     ],
                     "shortName" => "Scope 1",
                     "telephoneActivated" => true,
@@ -43,9 +44,10 @@ class ScopesListTest extends Base
                 [
                     "id" => 2,
                     "provider" => [
-                        '$schema' => "https://schema.berlin.de/queuemanagement/provider.json",
-                        "id" => "9999999",
-                        "source" => "unittest"
+                        "id" => 9999999,
+                        "name" => null,
+                        "source" => "unittest",
+                        "contact" => null
                     ],
                     "shortName" => "Scope 2",
                     "telephoneActivated" => false,

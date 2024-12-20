@@ -56,9 +56,10 @@ class AppointmentReserveTest extends Base
             'scope' => [
                 'id' => 58,
                 'provider' => [
-                    '$schema' => 'https://schema.berlin.de/queuemanagement/provider.json',
                     'id' => 10546,
-                    'source' => 'dldb'
+                    "name" => null,
+                    "source" => "dldb",
+                    "contact" => null
                 ],
                 'shortName' => 'Gewerbemeldungen',
                 'telephoneActivated' => false,
