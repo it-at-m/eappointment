@@ -82,25 +82,25 @@ class OfficesServicesRelationsTest extends Base
                     "name" => "Unittest Source Dienstleistung 2",
                     "maxQuantity" => 1,
                     "combinable" => [
-                        "1" => ["9999999"],
-                        "2" => ["9999999"]
+                        1 => [9999999],
+                        2 => [9999999]
                     ]
                 ]
             ],
             "relations" => [
                 [
-                    "officeId" => "9999998",
-                    "serviceId" => "1",
+                    "officeId" => 9999998,
+                    "serviceId" => 1,
                     "slots" => 2
                 ],
                 [
-                    "officeId" => "9999999",
-                    "serviceId" => "1",
+                    "officeId" => 9999999,
+                    "serviceId" => 1,
                     "slots" => 1
                 ],
                 [
-                    "officeId" => "9999999",
-                    "serviceId" => "2",
+                    "officeId" => 9999999,
+                    "serviceId" => 2,
                     "slots" => 1
                 ]
             ]
