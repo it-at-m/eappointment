@@ -8,7 +8,7 @@ use JsonSerializable;
 
 class ThinnedScope extends Entity implements JsonSerializable
 {
-    public static $schema = 'zmscitizenapi/schema/citizenapi/thinnedScope.json';
+    public static $schema = 'zmsentities/schema/citizenapi/thinnedScope.json';
 
     /** @var int */
     public int $id;

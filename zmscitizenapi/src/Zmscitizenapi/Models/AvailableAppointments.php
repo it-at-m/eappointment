@@ -7,7 +7,7 @@ use JsonSerializable;
 
 class AvailableAppointments extends Entity implements JsonSerializable
 {
-    public static $schema = 'zmscitizenapi/schema/citizenapi/availableAppointments.json';
+    public static $schema = 'zmsentities/schema/citizenapi/availableAppointments.json';
 
     /** @var array */
     public array $appointmentTimestamps = [];
