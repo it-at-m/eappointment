@@ -75,7 +75,7 @@ class OfficesServicesRelationsTest extends Base
                     "id" => 1,
                     "name" => "Unittest Source Dienstleistung",
                     "maxQuantity" => 1,
-                    "combinable" => [] // Matches actual output
+                    "combinable" => []
                 ],
                 [
                     "id" => 2,

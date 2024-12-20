@@ -19,8 +19,11 @@ class AvailableAppointmentsList extends BaseController
         $serviceCounts = isset($queryParams['serviceCount']) ? explode(',', $queryParams['serviceCount']) : [];
 
         $result = ZmsApiFacadeService::getAvailableAppointments( $date, $officeId, $serviceIds,$serviceCounts);
+        if (isset($result['errors'])) {
+            return $this->createJsonResponse($response, $result, $result['status']);
+        }
 
-        return $this->createJsonResponse($response, $result, statusCode: $result['status']);
+        return $this->createJsonResponse($response, $result->toArray(), statusCode: 200);
     }
 
 }

@@ -28,8 +28,7 @@ class AvailableAppointmentsListTest extends Base
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
-            'appointmentTimestamps' => [32526616522],
-            'status' => 200,
+            'appointmentTimestamps' => [32526616522]
         ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);

@@ -19,7 +19,6 @@ class ScopesListTest extends Base
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ]
         ]);
-
         $response = $this->render();
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [

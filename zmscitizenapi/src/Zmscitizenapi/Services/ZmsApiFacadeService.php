@@ -4,6 +4,8 @@ namespace BO\Zmscitizenapi\Services;
 
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
 
+use BO\Zmscitizenapi\Models\AvailableDays;
+use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
@@ -368,7 +370,7 @@ class ZmsApiFacadeService
 
     }
 
-    public static function getBookableFreeDays(array $queryParams): array
+    public static function getBookableFreeDays(array $queryParams): AvailableDays|array
     {
         $officeId = $queryParams['officeId'] ?? null;
         $serviceId = $queryParams['serviceId'] ?? null;
@@ -400,9 +402,7 @@ class ZmsApiFacadeService
 
             $daysCollection = $freeDays->days;
 
-            //Typing
             $formattedDays = [];
-
             foreach ($daysCollection as $day) {
                 $formattedDays[] = sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day);
             }
@@ -412,15 +412,13 @@ class ZmsApiFacadeService
                 return $errors;
             }
 
-            return [
-                'availableDays' => $formattedDays,
-                'status' => 200,
-            ];
+            return new AvailableDays($formattedDays);
 
         } catch (\Exception $e) {
             return ExceptionService::noAppointmentsAtLocation();
         }
     }
+
 
     public static function getFreeAppointments(
         int $officeId,
@@ -469,8 +467,7 @@ class ZmsApiFacadeService
         ?int $officeId,
         ?array $serviceIds,
         ?array $serviceCounts
-    ): array {
-
+    ): AvailableAppointments|array {
         $errors = ValidationService::validateGetAvailableAppointments($date, $officeId, $serviceIds, $serviceCounts);
         if (!empty($errors['errors'])) {
             return $errors;
@@ -489,7 +486,6 @@ class ZmsApiFacadeService
                 }
             }
 
-            //Typing
             $freeSlots = ZmsApiClientService::getFreeTimeslots(
                 new ProviderList([['id' => $officeId, 'source' => \App::$source_name]]),
                 new RequestList($requests),
@@ -497,7 +493,12 @@ class ZmsApiFacadeService
                 DateTimeFormatHelper::getInternalDateFromISO($date)
             );
 
-            return self::processFreeSlots($freeSlots);
+            $timestamps = self::processFreeSlots($freeSlots);
+            if (isset($timestamps['appointmentTimestamps'])) {
+                return new AvailableAppointments($timestamps['appointmentTimestamps']);
+            }
+
+            return $timestamps;
 
         } catch (\Exception $e) {
             return [
@@ -543,10 +544,8 @@ class ZmsApiFacadeService
 
         sort($appointmentTimestamps);
 
-        //Typing 
         return [
-            'appointmentTimestamps' => $appointmentTimestamps,
-            'status' => 200,
+            'appointmentTimestamps' => $appointmentTimestamps
         ];
     }
 
