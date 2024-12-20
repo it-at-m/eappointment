@@ -1,7 +1,8 @@
 <?php
 
-namespace BO\Zmscitizenapi\Models;
+namespace BO\Zmscitizenapi\Models\Collections;
 
+use BO\Zmscitizenapi\Models\Service;
 use BO\Zmsentities\Schema\Entity;
 
 class ServiceList extends Entity
