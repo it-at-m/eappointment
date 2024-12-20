@@ -13,7 +13,12 @@ class AvailableAppointmentsList extends BaseController
     {
         $queryParams = $request->getQueryParams();
 
-        $result = ZmsApiFacadeService::getAvailableAppointments($queryParams);
+        $date = $queryParams['date'] ?? null;
+        $officeId = $queryParams['officeId'] ?? null;
+        $serviceIds = isset($queryParams['serviceId']) ? explode(',', $queryParams['serviceId']) : [];
+        $serviceCounts = isset($queryParams['serviceCount']) ? explode(',', $queryParams['serviceCount']) : [];
+
+        $result = ZmsApiFacadeService::getAvailableAppointments( $date, $officeId, $serviceIds,$serviceCounts);
 
         return $this->createJsonResponse($response, $result, statusCode: $result['status']);
     }
