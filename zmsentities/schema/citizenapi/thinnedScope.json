@@ -49,15 +49,6 @@
     }
   },
   "required": [
-    "id",
-    "provider",
-    "shortName",
-    "telephoneActivated",
-    "telephoneRequired",
-    "customTextfieldActivated",
-    "customTextfieldRequired",
-    "customTextfieldLabel",
-    "captchaActivatedRequired",
-    "displayInfo"
+    "id"
   ]
 }

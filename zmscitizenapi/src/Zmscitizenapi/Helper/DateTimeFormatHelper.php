@@ -14,7 +14,7 @@ class DateTimeFormatHelper
         ];
     }
 
-    public static function getInternalDateFromISO($dateString): array
+    public static function getInternalDateFromISO(string $dateString): array
     {
         try {
             if (!is_string($dateString)) {
