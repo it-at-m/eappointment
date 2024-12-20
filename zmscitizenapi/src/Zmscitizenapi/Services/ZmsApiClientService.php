@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services;
 
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmsentities\Calendar as Calendar;
 use BO\Zmsentities\Process as Process;
-use BO\Zmsentities\Collection\SourceList;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Controllers;
 
@@ -18,7 +19,7 @@ class AvailableAppointmentsList extends BaseController
         $serviceIds = isset($queryParams['serviceId']) ? explode(',', $queryParams['serviceId']) : [];
         $serviceCounts = isset($queryParams['serviceCount']) ? explode(',', $queryParams['serviceCount']) : [];
 
-        $result = ZmsApiFacadeService::getAvailableAppointments( $date, $officeId, $serviceIds,$serviceCounts);
+        $result = ZmsApiFacadeService::getAvailableAppointments( $date, (int)$officeId, $serviceIds,$serviceCounts);
         if (isset($result['errors'])) {
             return $this->createJsonResponse($response, $result, $result['status']);
         }

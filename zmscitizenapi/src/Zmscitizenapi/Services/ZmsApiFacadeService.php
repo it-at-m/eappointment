@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services;
 
@@ -38,20 +39,20 @@ class ZmsApiFacadeService
             $matchingScope = $scopeList->withProviderID($provider->source, $provider->id)->getIterator()->current();
 
             $offices[] = new Office(
-                id: (string) $provider->id,
+                id: (int) $provider->id,
                 name: $provider->displayName ?? $provider->name,
                 address: $provider->data['address'] ?? null,
                 geo: $provider->data['geo'] ?? null,
                 scope: $matchingScope ? new ThinnedScope(
-                    id: $matchingScope->id,
+                    id: (int) $matchingScope->id,
                     provider: MapperService::providerToThinnedProvider($provider),
                     shortName: $matchingScope->getShortName(),
-                    telephoneActivated: $matchingScope->getTelephoneActivated(),
-                    telephoneRequired: $matchingScope->getTelephoneRequired(),
-                    customTextfieldActivated: $matchingScope->getCustomTextfieldActivated(),
-                    customTextfieldRequired: $matchingScope->getCustomTextfieldRequired(),
+                    telephoneActivated: (bool) $matchingScope->getTelephoneActivated(),
+                    telephoneRequired: (bool) $matchingScope->getTelephoneRequired(),
+                    customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
+                    customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
                     customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
-                    captchaActivatedRequired: $matchingScope->getCaptchaActivatedRequired(),
+                    captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
                     displayInfo: $matchingScope->getDisplayInfo()
                 ) : null
             );
@@ -72,15 +73,15 @@ class ZmsApiFacadeService
             }
 
             $scopesProjectionList[] = new ThinnedScope(
-                id: $scope->id,
+                id: (int) $scope->id,
                 provider: MapperService::providerToThinnedProvider($scope->getProvider()),
                 shortName: $scope->getShortName(),
-                telephoneActivated: $scope->getTelephoneActivated(),
-                telephoneRequired: $scope->getTelephoneRequired(),
-                customTextfieldActivated: $scope->getCustomTextfieldActivated(),
-                customTextfieldRequired: $scope->getCustomTextfieldRequired(),
+                telephoneActivated: (bool) $scope->getTelephoneActivated(),
+                telephoneRequired: (bool) $scope->getTelephoneRequired(),
+                customTextfieldActivated: (bool) $scope->getCustomTextfieldActivated(),
+                customTextfieldRequired: (bool) $scope->getCustomTextfieldRequired(),
                 customTextfieldLabel: $scope->getCustomTextfieldLabel(),
-                captchaActivatedRequired: $scope->getCaptchaActivatedRequired(),
+                captchaActivatedRequired: (bool) $scope->getCaptchaActivatedRequired(),
                 displayInfo: $scope->getDisplayInfo()
             );
         }
@@ -123,18 +124,18 @@ class ZmsApiFacadeService
                 "id" => $scope->id,
                 "provider" => MapperService::providerToThinnedProvider($scope->getProvider()),
                 "shortName" => $scope->getShortName() ?? null,
-                "telephoneActivated" => $scope->getTelephoneActivated() ?? null,
-                "telephoneRequired" => $scope->getTelephoneRequired() ?? null,
-                "customTextfieldActivated" => $scope->getCustomTextfieldActivated() ?? null,
-                "customTextfieldRequired" => $scope->getCustomTextfieldRequired() ?? null,
+                "telephoneActivated" => (bool) $scope->getTelephoneActivated() ?? null,
+                "telephoneRequired" => (bool) $scope->getTelephoneRequired() ?? null,
+                "customTextfieldActivated" => (bool) $scope->getCustomTextfieldActivated() ?? null,
+                "customTextfieldRequired" => (bool) $scope->getCustomTextfieldRequired() ?? null,
                 "customTextfieldLabel" => $scope->getCustomTextfieldLabel() ?? null,
-                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired() ?? null,
+                "captchaActivatedRequired" => (bool) $scope->getCaptchaActivatedRequired() ?? null,
                 "displayInfo" => $scope->getDisplayInfo() ?? null,
             ];
         }
 
         return new ThinnedScope(
-            id: $result['id'],
+            id: (int) $result['id'],
             provider: $result['provider'],
             shortName: $result['shortName'],
             telephoneActivated: $result['telephoneActivated'],
@@ -177,17 +178,17 @@ class ZmsApiFacadeService
                 "id" => $matchingScope->id,
                 "provider" => MapperService::providerToThinnedProvider($matchingScope->getProvider()) ?? null,
                 "shortName" => $matchingScope->getShortName() ?? null,
-                "telephoneActivated" => $matchingScope->getTelephoneActivated() ?? null,
-                "telephoneRequired" => $matchingScope->getTelephoneRequired() ?? null,
-                "customTextfieldActivated" => $matchingScope->getCustomTextfieldActivated() ?? null,
-                "customTextfieldRequired" => $matchingScope->getCustomTextfieldRequired() ?? null,
+                "telephoneActivated" => (bool) $matchingScope->getTelephoneActivated() ?? null,
+                "telephoneRequired" => (bool) $matchingScope->getTelephoneRequired() ?? null,
+                "customTextfieldActivated" => (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
+                "customTextfieldRequired" => (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
                 "customTextfieldLabel" => $matchingScope->getCustomTextfieldLabel() ?? null,
-                "captchaActivatedRequired" => $matchingScope->getCaptchaActivatedRequired() ?? null,
+                "captchaActivatedRequired" => (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
                 "displayInfo" => $matchingScope->getDisplayInfo() ?? null,
             ];
 
             return new ThinnedScope(
-                id: $result['id'],
+                id: (int) $result['id'],
                 provider: $result['provider'],
                 shortName: $result['shortName'],
                 telephoneActivated: $result['telephoneActivated'],
@@ -253,13 +254,13 @@ class ZmsApiFacadeService
                  $provider = $providerMap[$providerId];
                  $scope = null;
      
-                 $scopeData = self::getScopeByOfficeId($provider->id);
+                 $scopeData = self::getScopeByOfficeId((int) $provider->id);
                  if ($scopeData instanceof ThinnedScope) {
                      $scope = $scopeData;
                  }
      
                  $offices[] = new Office(
-                     id: $provider->id,
+                     id: (int) $provider->id,
                      name: $provider->name,
                      address: $provider->address ?? null,
                      geo: $provider->geo ?? null,
@@ -307,18 +308,18 @@ class ZmsApiFacadeService
                 "id" => $scope->id,
                 "provider" => MapperService::providerToThinnedProvider($scope->getProvider()) ?? null,
                 "shortName" => $scope->getShortName() ?? null,
-                "telephoneActivated" => $scope->getTelephoneActivated() ?? null,
-                "telephoneRequired" => $scope->getTelephoneRequired() ?? null,
-                "customTextfieldActivated" => $scope->getCustomTextfieldActivated() ?? null,
-                "customTextfieldRequired" => $scope->getCustomTextfieldRequired() ?? null,
+                "telephoneActivated" => (bool) $scope->getTelephoneActivated() ?? null,
+                "telephoneRequired" => (bool) $scope->getTelephoneRequired() ?? null,
+                "customTextfieldActivated" => (bool) $scope->getCustomTextfieldActivated() ?? null,
+                "customTextfieldRequired" => (bool) $scope->getCustomTextfieldRequired() ?? null,
                 "customTextfieldLabel" => $scope->getCustomTextfieldLabel() ?? null,
-                "captchaActivatedRequired" => $scope->getCaptchaActivatedRequired() ?? null,
+                "captchaActivatedRequired" => (bool) $scope->getCaptchaActivatedRequired() ?? null,
                 "displayInfo" => $scope->getDisplayInfo() ?? null,
             ];
         }
 
         return new ThinnedScope(
-            id: $result['id'],
+            id: (int) $result['id'],
             provider: $result['provider'],
             shortName: $result['shortName'],
             telephoneActivated: $result['telephoneActivated'],
@@ -437,7 +438,7 @@ class ZmsApiFacadeService
         $startDate = $queryParams['startDate'] ?? null;
         $endDate = $queryParams['endDate'] ?? null;
 
-        $errors = ValidationService::validateGetBookableFreeDays($officeId, $serviceId, $startDate, $endDate, $serviceCounts);
+        $errors = ValidationService::validateGetBookableFreeDays((int)$officeId, (int)$serviceId, $startDate, $endDate, $serviceCounts);
         if (!empty($errors['errors'])) {
             return $errors;
         }
