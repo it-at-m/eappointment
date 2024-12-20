@@ -132,7 +132,18 @@ class ZmsApiFacadeService
             ];
         }
 
-        return new ThinnedScope(...$result);
+        return new ThinnedScope(
+            id: $result['id'],
+            provider: $result['provider'],
+            shortName: $result['shortName'],
+            telephoneActivated: $result['telephoneActivated'],
+            telephoneRequired: $result['telephoneRequired'],
+            customTextfieldActivated: $result['customTextfieldActivated'],
+            customTextfieldRequired: $result['customTextfieldRequired'],
+            customTextfieldLabel: $result['customTextfieldLabel'],
+            captchaActivatedRequired: $result['captchaActivatedRequired'],
+            displayInfo: $result['displayInfo']
+        );
     }
 
     public static function getServicesAndOffices(): OfficeServiceAndRelationList
@@ -174,7 +185,18 @@ class ZmsApiFacadeService
                 "displayInfo" => $matchingScope->getDisplayInfo() ?? null,
             ];
 
-            return new ThinnedScope(...$result);
+            return new ThinnedScope(
+                id: $result['id'],
+                provider: $result['provider'],
+                shortName: $result['shortName'],
+                telephoneActivated: $result['telephoneActivated'],
+                telephoneRequired: $result['telephoneRequired'],
+                customTextfieldActivated: $result['customTextfieldActivated'],
+                customTextfieldRequired: $result['customTextfieldRequired'],
+                customTextfieldLabel: $result['customTextfieldLabel'],
+                captchaActivatedRequired: $result['captchaActivatedRequired'],
+                displayInfo: $result['displayInfo']
+            );
         }
 
         return [
@@ -293,7 +315,18 @@ class ZmsApiFacadeService
             ];
         }
 
-        return new ThinnedScope(...$result);
+        return new ThinnedScope(
+            id: $result['id'],
+            provider: $result['provider'],
+            shortName: $result['shortName'],
+            telephoneActivated: $result['telephoneActivated'],
+            telephoneRequired: $result['telephoneRequired'],
+            customTextfieldActivated: $result['customTextfieldActivated'],
+            customTextfieldRequired: $result['customTextfieldRequired'],
+            customTextfieldLabel: $result['customTextfieldLabel'],
+            captchaActivatedRequired: $result['captchaActivatedRequired'],
+            displayInfo: $result['displayInfo']
+        );
     }
 
     public static function getServicesByOfficeIds(array $officeIds): ServiceList|array

@@ -7,7 +7,7 @@ use JsonSerializable;
 
 class Combinable extends Entity implements JsonSerializable
 {
-    public static $schema = 'zmscitizenapi/schema/citizenapi/combinable.json';
+    public static $schema = 'zmsentities/schema/citizenapi/combinable.json';
 
     /** @var array<int, int[]> */
     private array $combinations = [];

@@ -7,7 +7,7 @@ use JsonSerializable;
 
 class AvailableDays extends Entity implements JsonSerializable
 {
-    public static $schema = 'zmscitizenapi/schema/citizenapi/availableDays.json';
+    public static $schema = 'zmsentities/schema/citizenapi/availableDays.json';
 
     /** @var array */
     public array $availableDays = [];

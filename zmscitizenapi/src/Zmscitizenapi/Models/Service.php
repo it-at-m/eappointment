@@ -8,7 +8,7 @@ use JsonSerializable;
 class Service extends Entity implements JsonSerializable
 {
 
-    public static $schema = 'zmscitizenapi/schema/citizenapi/service.json';
+    public static $schema = 'zmsentities/schema/citizenapi/service.json';
 
     /** @var int */
     public int $id;

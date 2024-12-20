@@ -7,7 +7,7 @@ use JsonSerializable;
 
 class OfficeServiceRelation extends Entity implements JsonSerializable
 {
-    public static $schema = 'zmscitizenapi/schema/citizenapi/officeServiceRelation.json';
+    public static $schema = 'zmsentities/schema/citizenapi/officeServiceRelation.json';
 
     /** @var int */
     public int $officeId;
