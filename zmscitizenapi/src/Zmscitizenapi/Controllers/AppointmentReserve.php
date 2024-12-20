@@ -100,12 +100,16 @@ class AppointmentReserve extends BaseController
                 ]
             ];
 
-            $reservedProcess = ZmsApiFacadeService::reserveTimeslot($selectedProcess, $serviceIds, $serviceCounts);
+            try {
+                $reservedProcess = ZmsApiFacadeService::reserveTimeslot($selectedProcess, $serviceIds, $serviceCounts);
+            } catch (\Exception $e) {
+                throw $e;
+            }
 
             if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {
-                
+
                 $scopeId = $reservedProcess->scope->id;
-                $scope = ZmsApiFacadeService::getScopeById((int)$scopeId);
+                $scope = ZmsApiFacadeService::getScopeById((int) $scopeId);
 
                 if (!isset($scope['errors']) && isset($scope) && !empty($scope)) {
                     $reservedProcess->scope = $scope;
@@ -113,14 +117,11 @@ class AppointmentReserve extends BaseController
             }
 
             $thinnedProcess = array_merge($reservedProcess->toArray(), ['officeId' => $officeId]);
-            
+
             return $this->createJsonResponse($response, $thinnedProcess, 200);
 
         } catch (\Exception $e) {
-            return $this->createJsonResponse($response, [
-                'errorCode' => 'internalServerError',
-                'errorMessage' => 'An internal server error occurred'
-            ], 500);
+            throw $e;
         }
     }
 }
