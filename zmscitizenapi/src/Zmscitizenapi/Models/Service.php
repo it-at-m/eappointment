@@ -9,7 +9,7 @@ use JsonSerializable;
 class Service extends Entity implements JsonSerializable
 {
 
-    public static $schema = 'zmsentities/schema/citizenapi/service.json';
+    public static $schema = 'citizenapi/service.json';
 
     /** @var int */
     public int $id;
@@ -41,6 +41,15 @@ class Service extends Entity implements JsonSerializable
         $this->name = $name;
         $this->maxQuantity = $maxQuantity;
         $this->combinable = $combinable;
+
+        $this->ensureValid();
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     /**

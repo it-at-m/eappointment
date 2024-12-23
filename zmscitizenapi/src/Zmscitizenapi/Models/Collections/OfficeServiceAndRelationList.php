@@ -10,7 +10,7 @@ use JsonSerializable;
 
 class OfficeServiceAndRelationList extends Entity implements JsonSerializable
 {
-    public static $schema = "zmsentities/schema/citizenapi/collections/officeServiceAndRelationList.json";
+    public static $schema = "citizenapi/collections/officeServiceAndRelationList.json";
 
     /** @var OfficeList */
     protected OfficeList $offices;
@@ -26,6 +26,8 @@ class OfficeServiceAndRelationList extends Entity implements JsonSerializable
         $this->offices = $offices;
         $this->services = $services;
         $this->relations = $relations;
+
+        $this->ensureValid();
     }
 
     public function toArray(): array
@@ -35,6 +37,13 @@ class OfficeServiceAndRelationList extends Entity implements JsonSerializable
             'services' => $this->services->toArray()['services'],
             'relations' => $this->relations->toArray()['relations']
         ];
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     public function jsonSerialize(): mixed

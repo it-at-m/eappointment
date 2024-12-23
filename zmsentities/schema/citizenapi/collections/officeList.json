@@ -1,172 +1,91 @@
 {
-  "type": "object",
+  "type": ["array", "object", "null"],
   "properties": {
     "offices": {
       "type": "array",
       "items": {
-        "type": "object",
+        "title": "Office",
+        "type": [
+          "array",
+          "object"
+        ],
         "properties": {
           "id": {
-            "type": "number"
+            "type": "integer",
+            "description": "Unique identifier for the office"
           },
           "name": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The name of the office"
           },
           "address": {
-            "type": "object",
-            "properties": {
-              "house_number": {
-                "type": "string"
-              },
-              "city": {
-                "type": "string"
-              },
-              "postal_code": {
-                "type": "string"
-              },
-              "street": {
-                "type": "string"
-              },
-              "hint": {
-                "type": "boolean"
+            "type": [
+              "array",
+              "object",
+              "null"
+            ],
+            "description": "The address of the office",
+            "items": {
+              "type": [
+                "array",
+                "object",
+                "null"
+              ],
+              "properties": {
+                "house_number": {
+                  "type": "string",
+                  "description": "House number of the address"
+                },
+                "city": {
+                  "type": "string",
+                  "description": "City of the address"
+                },
+                "postal_code": {
+                  "type": "string",
+                  "description": "Postal code of the address"
+                },
+                "street": {
+                  "type": "string",
+                  "description": "Street name of the address"
+                },
+                "hint": {
+                  "type": "boolean",
+                  "description": "Additional hint about the address"
+                }
               }
-            },
-            "required": [
-              "house_number",
-              "city",
-              "postal_code",
-              "street",
-              "hint"
-            ]
+            }
           },
           "geo": {
-            "type": "object",
+            "type": [
+              "array",
+              "object",
+              "null"
+            ],
+            "description": "Geographical coordinates of the office",
             "properties": {
               "lat": {
-                "default": "",
-                "description": "Latitute of a geo coordinate as wgs84 or etrs89",
                 "type": "number",
+                "description": "Latitude of a geo coordinate as wgs84 or etrs89",
                 "minimum": -90,
                 "maximum": 90
               },
               "lon": {
-                "default": "",
-                "description": "Longitude of a geo coordinate as wgs84 or etrs89",
                 "type": "number",
-                "minimum": -90,
-                "maximum": 90
+                "description": "Longitude of a geo coordinate as wgs84 or etrs89",
+                "minimum": -180,
+                "maximum": 180
               }
-            },
-            "required": [
-              "lat",
-              "lon"
-            ]
+            }
           },
-          "scope": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "number"
-              },
-              "provider": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "number"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "source": {
-                    "type": "string"
-                  },
-                  "contact": {
-                    "type": "object",
-                    "properties": {
-                      "city": {
-                        "type": "string"
-                      },
-                      "country": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      },
-                      "postalCode": {
-                        "type": "string"
-                      },
-                      "region": {
-                        "type": "string"
-                      },
-                      "street": {
-                        "type": "string"
-                      },
-                      "streetNumber": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "city",
-                      "country",
-                      "name",
-                      "postalCode",
-                      "region",
-                      "street",
-                      "streetNumber"
-                    ]
-                  }
-                },
-                "required": [
-                  "id",
-                  "name",
-                  "source",
-                  "contact"
-                ]
-              },
-              "shortName": {
-                "type": "string"
-              },
-              "telephoneActivated": {
-                "type": "boolean"
-              },
-              "telephoneRequired": {
-                "type": "boolean"
-              },
-              "customTextfieldActivated": {
-                "type": "boolean"
-              },
-              "customTextfieldRequired": {
-                "type": "boolean"
-              },
-              "customTextfieldLabel": {
-                "type": "string"
-              },
-              "captchaActivatedRequired": {
-                "type": "boolean"
-              },
-              "displayInfo": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "id",
-              "provider",
-              "shortName",
-              "telephoneActivated",
-              "telephoneRequired",
-              "customTextfieldActivated",
-              "customTextfieldRequired",
-              "customTextfieldLabel",
-              "captchaActivatedRequired"
-            ]
-          }
+          "scope": {}
         },
         "required": [
-          "id",
-          "name",
-          "address",
-          "geo"
-        ]
+          "id"
+        ],
+        "description": "Schema definition for the Office entity"
       }
     }
   },

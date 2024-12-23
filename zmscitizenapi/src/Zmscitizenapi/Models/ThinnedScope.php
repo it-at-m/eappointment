@@ -8,7 +8,7 @@ use JsonSerializable;
 
 class ThinnedScope extends Entity implements JsonSerializable
 {
-    public static $schema = 'zmsentities/schema/citizenapi/thinnedScope.json';
+    public static $schema = 'citizenapi/thinnedScope.json';
 
     /** @var int */
     public int $id;
@@ -62,6 +62,15 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->customTextfieldLabel = $customTextfieldLabel;
         $this->captchaActivatedRequired = $captchaActivatedRequired;
         $this->displayInfo = $displayInfo;
+
+        $this->ensureValid();
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     public function getProvider(): ?ThinnedProvider

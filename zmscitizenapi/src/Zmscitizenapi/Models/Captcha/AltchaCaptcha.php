@@ -10,6 +10,8 @@ use GuzzleHttp\Exception\RequestException;
 
 class AltchaCaptcha extends Entity implements CaptchaInterface
 {
+    public static $schema = "citizenapi/captcha/altchaCaptcha.json";
+
     /** @var string */
     public string $service;
 
@@ -35,6 +37,15 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         $this->apiUrl = Application::$ALTCHA_CAPTCHA_ENDPOINT;
         $this->secretKey = Application::$ALTCHA_CAPTCHA_SECRET_KEY;
         $this->puzzle = Application::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
+
+        $this->ensureValid();
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     /**

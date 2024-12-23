@@ -129,17 +129,17 @@ class ZmsApiClientService
             }
 
             $processEntity = new Process();
-            $processEntity->appointments = $appointmentProcess['appointments'] ?? [];
-            $processEntity->authKey = $appointmentProcess['authKey'] ?? null;
-            $processEntity->clients = $appointmentProcess['clients'] ?? [];
-            $processEntity->scope = $appointmentProcess['scope'] ?? null;
+            $processEntity->appointments = $appointmentProcess->appointments ?? [];
+            $processEntity->authKey = $appointmentProcess->authKey ?? null;
+            $processEntity->clients = $appointmentProcess->clients ?? [];
+            $processEntity->scope = $appointmentProcess->scope ?? null;
             $processEntity->requests = $requests;
-            $processEntity->lastChange = $appointmentProcess['lastChange'] ?? time();
+            $processEntity->lastChange = $appointmentProcess->lastChange ?? time();
             $processEntity->createIP = ClientIpHelper::getClientIp();
             $processEntity->createTimestamp = time();
 
-            if (isset($appointmentProcess['queue'])) {
-                $processEntity->queue = $appointmentProcess['queue'];
+            if (isset($appointmentProcess->queue)) {
+                $processEntity->queue = $appointmentProcess->queue;
             }
 
             $result = \App::$http->readPostResult('/process/status/reserved/', $processEntity);
@@ -168,7 +168,7 @@ class ZmsApiClientService
         }
     }
 
-    public function preconfirmProcess(?Process $process): Process
+    public function preconfirmProcess(?Process $process): ?Process
     {
         try {
             $url = '/process/status/preconfirmed/';
@@ -178,7 +178,7 @@ class ZmsApiClientService
         }
     }
 
-    public function confirmProcess(?Process $process): Process
+    public function confirmProcess(?Process $process): ?Process
     {
         try {
             $url = '/process/status/confirmed/';
@@ -188,7 +188,7 @@ class ZmsApiClientService
         }
     }
 
-    public function cancelAppointment(?Process $process): Process
+    public function cancelAppointment(?Process $process): ?Process
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/";
@@ -198,7 +198,7 @@ class ZmsApiClientService
         }
     }
 
-    public function sendConfirmationEmail(?Process $process): Process
+    public function sendConfirmationEmail(?Process $process): ?Process
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/confirmation/mail/";
@@ -208,7 +208,7 @@ class ZmsApiClientService
         }
     }
 
-    public function sendPreconfirmationEmail(?Process $process): Process
+    public function sendPreconfirmationEmail(?Process $process): ?Process
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/preconfirmation/mail/";
@@ -218,7 +218,7 @@ class ZmsApiClientService
         }
     }
 
-    public function sendCancelationEmail(?Process $process): Process
+    public function sendCancelationEmail(?Process $process): ?Process
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/delete/mail/";
@@ -228,7 +228,7 @@ class ZmsApiClientService
         }
     }
 
-    public static function getProcessById(?int $processId, ?string $authKey): Process
+    public static function getProcessById(?int $processId, ?string $authKey): ?Process
     {
         try {
             $resolveReferences = 2;

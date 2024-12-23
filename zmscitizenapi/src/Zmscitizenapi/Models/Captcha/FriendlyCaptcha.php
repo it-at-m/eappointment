@@ -9,6 +9,8 @@ use GuzzleHttp\Exception\RequestException;
 
 class FriendlyCaptcha extends Entity implements CaptchaInterface
 {
+    public static $schema = "citizenapi/captcha/friendlyCaptcha.json";
+
     /** @var string */
     public string $service;
 
@@ -34,6 +36,15 @@ class FriendlyCaptcha extends Entity implements CaptchaInterface
         $this->apiUrl = Application::$FRIENDLY_CAPTCHA_ENDPOINT;
         $this->secretKey = Application::$FRIENDLY_CAPTCHA_SECRET_KEY;
         $this->puzzle = Application::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
+
+        $this->ensureValid();
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     /**

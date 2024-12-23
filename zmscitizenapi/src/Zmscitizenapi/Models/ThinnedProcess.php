@@ -8,7 +8,7 @@ use JsonSerializable;
 
 class ThinnedProcess extends Entity implements JsonSerializable
 {
-    public static $schema = "zmsentities/schema/citizenapi/thinnedProcess.json";
+    public static $schema = "citizenapi/thinnedProcess.json";
 
     /** @var int|null */
     public ?int $processId;
@@ -77,6 +77,8 @@ class ThinnedProcess extends Entity implements JsonSerializable
         $this->subRequestCounts = $subRequestCounts;
         $this->serviceId = $serviceId;
         $this->serviceCount = $serviceCount;
+
+        $this->ensureValid();
     }
 
     /**
@@ -101,6 +103,13 @@ class ThinnedProcess extends Entity implements JsonSerializable
             'serviceId' => $this->serviceId ?? null,
             'serviceCount' => $this->serviceCount,
         ];
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     public function jsonSerialize(): mixed
