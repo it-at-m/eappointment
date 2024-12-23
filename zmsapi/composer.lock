@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26852f0ad94d49daea32d6996e74b9bb",
+    "content-hash": "664b1b0fc721ddf6ed24857a72f32b15",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -233,7 +233,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-roave-test-2",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -291,11 +291,11 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-roave-test-2",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
+                "reference": "880ca9f83e4c65ca106a8d80c2de1375b2cdd86a"
             },
             "require": {
                 "aura/sql": "^4",
@@ -328,6 +328,7 @@
                 "bin/deleteDayoffData",
                 "bin/deleteOldAvailabilityData",
                 "bin/deleteOldEventLogEntries",
+                "bin/deleteOldLogs",
                 "bin/deleteReservedData",
                 "bin/deleteSessionData",
                 "bin/deleteTicketprinterData",
@@ -370,13 +371,19 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-roave-test-2",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
+                "reference": "1c02fdbeeefac41d1a9c54bfe8b0f456d8c1f7d1"
             },
             "require": {
+                "eappointment/mellon": "@dev",
+                "eappointment/zmsapi": "@dev",
+                "eappointment/zmsclient": "@dev",
+                "eappointment/zmsdb": "@dev",
+                "eappointment/zmsentities": "@dev",
+                "eappointment/zmsslim": "@dev",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -431,11 +438,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-roave-test-2",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
+                "reference": "6d50c616376c01caa495318e4a4c3825703dd24b"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -489,11 +496,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-roave-test-2",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
+                "reference": "13a59e7a34592936e535a28e485c504f8719b5f0"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -6351,16 +6358,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.7.2",
+            "version": "3.11.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "ed8e00df0a83aa96acf703f8c2979ff33341f879"
+                "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
+                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/ed8e00df0a83aa96acf703f8c2979ff33341f879",
-                "reference": "ed8e00df0a83aa96acf703f8c2979ff33341f879",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/1368f4a58c3c52114b86b1abe8f4098869cb0079",
+                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079",
                 "shasum": ""
             },
             "require": {
@@ -6370,11 +6377,11 @@
                 "php": ">=5.4.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0"
+                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.3.4"
             },
             "bin": [
-                "bin/phpcs",
-                "bin/phpcbf"
+                "bin/phpcbf",
+                "bin/phpcs"
             ],
             "type": "library",
             "extra": {
@@ -6389,22 +6396,45 @@
             "authors": [
                 {
                     "name": "Greg Sherwood",
-                    "role": "lead"
+                    "role": "Former lead"
+                },
+                {
+                    "name": "Juliette Reinders Folmer",
+                    "role": "Current lead"
+                },
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer/graphs/contributors"
                 }
             ],
             "description": "PHP_CodeSniffer tokenizes PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
-            "homepage": "https://github.com/squizlabs/PHP_CodeSniffer",
+            "homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer",
             "keywords": [
                 "phpcs",
                 "standards",
                 "static analysis"
             ],
             "support": {
-                "issues": "https://github.com/squizlabs/PHP_CodeSniffer/issues",
-                "source": "https://github.com/squizlabs/PHP_CodeSniffer",
-                "wiki": "https://github.com/squizlabs/PHP_CodeSniffer/wiki"
+                "issues": "https://github.com/PHPCSStandards/PHP_CodeSniffer/issues",
+                "security": "https://github.com/PHPCSStandards/PHP_CodeSniffer/security/policy",
+                "source": "https://github.com/PHPCSStandards/PHP_CodeSniffer",
+                "wiki": "https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki"
             },
-            "time": "2023-02-22T23:07:41+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/PHPCSStandards",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/jrfnl",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/php_codesniffer",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2024-12-11T16:04:26+00:00"
         },
         {
             "name": "symfony/config",
@@ -6854,17 +6884,18 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "eappointment/zmsslim": 20,
+        "eappointment/mellon": 20,
         "eappointment/zmsclient": 20,
-        "eappointment/zmsdldb": 20,
         "eappointment/zmsdb": 20,
+        "eappointment/zmsdldb": 20,
         "eappointment/zmsentities": 20,
+        "eappointment/zmsslim": 20,
         "phpmd/phpmd": 0
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
+    "platform": {},
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.0"
     },
