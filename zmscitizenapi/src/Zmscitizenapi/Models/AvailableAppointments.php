@@ -7,7 +7,7 @@ use JsonSerializable;
 
 class AvailableAppointments extends Entity implements JsonSerializable
 {
-    public static $schema = 'zmsentities/schema/citizenapi/availableAppointments.json';
+    public static $schema = 'citizenapi/availableAppointments.json';
 
     /** @var array */
     public array $appointmentTimestamps = [];
@@ -15,6 +15,15 @@ class AvailableAppointments extends Entity implements JsonSerializable
     public function __construct(array $appointmentTimestamps = [])
     {
         $this->appointmentTimestamps = array_map('intval', $appointmentTimestamps);
+
+        $this->ensureValid();
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     /**

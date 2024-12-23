@@ -7,7 +7,7 @@ use JsonSerializable;
 
 class ThinnedProvider extends Entity implements JsonSerializable
 {
-    public static $schema = "zmsentities/schema/citizenapi/thinnedProvider.json";
+    public static $schema = "citizenapi/thinnedProvider.json";
 
     /** @var int|null */
     public ?int $id;
@@ -31,6 +31,15 @@ class ThinnedProvider extends Entity implements JsonSerializable
         $this->name = $name;
         $this->source = $source;
         $this->contact = $contact;
+
+        $this->ensureValid();
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     /**

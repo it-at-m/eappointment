@@ -7,7 +7,7 @@ use JsonSerializable;
 
 class OfficeServiceRelation extends Entity implements JsonSerializable
 {
-    public static $schema = 'zmsentities/schema/citizenapi/officeServiceRelation.json';
+    public static $schema = 'citizenapi/officeServiceRelation.json';
 
     /** @var int */
     public int $officeId;
@@ -30,6 +30,15 @@ class OfficeServiceRelation extends Entity implements JsonSerializable
         $this->officeId = $officeId;
         $this->serviceId = $serviceId;
         $this->slots = $slots;
+
+        $this->ensureValid();
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     /**

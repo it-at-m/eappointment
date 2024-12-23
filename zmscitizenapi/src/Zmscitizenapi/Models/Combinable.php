@@ -7,7 +7,7 @@ use JsonSerializable;
 
 class Combinable extends Entity implements JsonSerializable
 {
-    public static $schema = 'zmsentities/schema/citizenapi/combinable.json';
+    public static $schema = 'citizenapi/combinable.json';
 
     /** @var array<int, int[]> */
     private array $combinations = [];
@@ -20,8 +20,17 @@ class Combinable extends Entity implements JsonSerializable
     public function __construct(array $combinations = [])
     {
         foreach ($combinations as $id => $providerIds) {
-            // Ensure both keys (service IDs) and values (provider IDs) are integers.
+
             $this->combinations[(int)$id] = array_map('intval', $providerIds);
+
+            $this->ensureValid();
+        }
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
         }
     }
 

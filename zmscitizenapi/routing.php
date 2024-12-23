@@ -338,7 +338,7 @@ use \Psr\Http\Message\ResponseInterface;
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/captchaDetails.json"
+ *               $ref: "schema/citizenapi/captcha/friendlyCaptcha.json"
  */
 \App::$slim->get(
     '/captcha-details/',

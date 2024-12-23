@@ -1,5 +1,5 @@
 {
-  "type": "object",
+  "type": ["array", "object", "null"],
   "properties": {
     "scopes": {
       "type": "array",

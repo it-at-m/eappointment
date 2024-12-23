@@ -8,7 +8,7 @@ use JsonSerializable;
 
 class ServiceList extends Entity implements JsonSerializable
 {
-    public static $schema = "zmsentities/schema/citizenapi/collections/serviceList.json";
+    public static $schema = "citizenapi/collections/serviceList.json";
 
     /** @var Service[] */
     protected array $services = [];
@@ -16,11 +16,26 @@ class ServiceList extends Entity implements JsonSerializable
     public function __construct(array $data = [])
     {
         foreach ($data as $service) {
-            if (!$service instanceof Service) {
-                throw new \InvalidArgumentException("All elements must be instances of Service.");
+            try {
+                if (!$service instanceof Service) {
+                    throw new \InvalidArgumentException("All elements must be instances of Service.");
+                }
+                $this->services[] = $service;
+            } catch (\Exception $e) {
+                error_log("Invalid Service encountered: " . $e->getMessage()); //Gracefully handle
             }
+
         }
         $this->services = $data;
+
+        $this->ensureValid();
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     /**

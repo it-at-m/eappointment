@@ -1,23 +1,34 @@
 {
-    "type": "object",
+    "title": "Service",
+    "type": ["array", "object", "null"],
     "properties": {
       "id": {
-        "type": "number"
+        "type": ["integer", "null"],
+        "description": "Unique identifier for the service"
       },
       "name": {
-        "type": "string"
+        "type": ["string", "null"],
+        "description": "Name of the service"
       },
       "maxQuantity": {
-        "type": "number",
-        "minimum": 1,
-        "description": "Maximum number of slots that can be booked for this service"
+        "type": ["integer", "null"],
+        "description": "Maximum quantity of the service"
       },
-      "combinable": {}
+      "combinable": {
+        "type": ["object", "array", "null"],
+        "description": "Combinable services",
+        "additionalProperties": {
+          "type": ["array", "null"],
+          "items": {
+            "type": ["integer", "null"]
+          }
+        },
+        "items": {
+          "type": ["integer", "null"]
+        }
+      }
     },
-    "required": [
-      "id",
-      "name",
-      "maxQuantity",
-      "combinable"
-    ]
+    "required": ["id", "name"],
+    "description": "Schema definition for the Service entity"
   }
+  

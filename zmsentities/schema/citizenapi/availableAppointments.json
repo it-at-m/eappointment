@@ -1,19 +1,16 @@
 {
-  "type": "object",
-  "description": "Lists available appointment timestamps and the last modification time for the appointment data.",
+  "title": "AvailableAppointments",
+  "type": ["array", "object", "null"],
   "properties": {
     "appointmentTimestamps": {
-      "type": "array",
+      "type": ["array", "null"],
+      "description": "Array of available appointment timestamps in seconds since epoch",
       "items": {
-        "type": "number"
+        "type": "integer",
+        "description": "Timestamp in seconds since epoch"
       }
-    },
-    "lastModified": {
-      "type": "number"
     }
   },
-  "required": [
-    "appointmentTimestamps",
-    "lastModified"
-  ]
+  "required": ["appointmentTimestamps"],
+  "description": "Schema defining the available appointments for a specific date, office, and service"
 }

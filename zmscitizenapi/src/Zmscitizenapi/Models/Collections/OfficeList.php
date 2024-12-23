@@ -8,7 +8,7 @@ use JsonSerializable;
 
 class OfficeList extends Entity implements JsonSerializable
 {
-    public static $schema = "zmsentities/schema/citizenapi/collections/officeList.json";
+    public static $schema = "citizenapi/collections/officeList.json";
 
     /** @var Office[] */
     protected array $offices = [];
@@ -16,11 +16,25 @@ class OfficeList extends Entity implements JsonSerializable
     public function __construct(array $offices = [])
     {
         foreach ($offices as $office) {
-            if (!$office instanceof Office) {
-                throw new \InvalidArgumentException("All elements must be instances of Office.");
+            try {
+                if (!$office instanceof Office) {
+                    throw new \InvalidArgumentException("Element is not an instance of Office.");
+                }
+                $this->offices[] = $office;
+            } catch (\Exception $e) {
+                error_log("Invalid Office encountered: " . $e->getMessage()); //Gracefully handle
             }
         }
         $this->offices = $offices;
+
+        $this->ensureValid();
+    }
+
+    private function ensureValid()
+    {
+        if (!$this->testValid()) {
+            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+        }
     }
 
     public function toArray(): array

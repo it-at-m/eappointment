@@ -1,0 +1,25 @@
+{
+    "title": "FriendlyCaptcha",
+    "type": ["array", "object", "null"],
+    "properties": {
+      "siteKey": {
+        "type": ["string", "null"],
+        "description": "Site key for FriendlyCaptcha integration"
+      },
+      "captchaEndpoint": {
+        "type": ["string", "null"],
+        "description": "Endpoint for captcha verification"
+      },
+      "puzzle": {
+        "type": ["string", "null"],
+        "description": "Puzzle endpoint URL for FriendlyCaptcha"
+      },
+      "captchaEnabled": {
+        "type": ["boolean", "null"],
+        "description": "Indicates if captcha is enabled"
+      }
+    },
+    "required": ["siteKey", "captchaEndpoint", "puzzle", "captchaEnabled"],
+    "description": "Schema definition for FriendlyCaptcha configuration"
+  }
+  
