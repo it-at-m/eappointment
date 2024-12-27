@@ -230,7 +230,7 @@ class ValidationService
     {
 
         $errors = [];
-        $errors[] = ErrorMessages::get('noAppointmentForThisScope');
+        $errors[] = ErrorMessages::get('noAppointmentsAtLocation');
 
         return ['errors' => $errors];
 
