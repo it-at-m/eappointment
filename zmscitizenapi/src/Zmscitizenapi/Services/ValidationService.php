@@ -21,7 +21,7 @@ class ValidationService
         foreach ($availableServices as $service) {
             $availableServiceIds[] = $service->id;
         }
-        
+
         $invalidServiceIds = array_filter($serviceIds, function ($serviceId) use ($availableServiceIds) {
             return !in_array($serviceId, $availableServiceIds);
         });
@@ -270,7 +270,7 @@ class ValidationService
     public static function validateServiceIdParam(array $serviceIds): array
     {
         $errors = [];
-        
+
         if (empty($serviceIds) || !is_array($serviceIds)) {
             $errors[] = ErrorMessages::get('invalidServiceId');
 
