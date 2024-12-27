@@ -3,51 +3,46 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services;
 
+use BO\Zmscitizenapi\Localization\ErrorMessages;
+
 class ExceptionService
 {
 
     private const HTTP_NOT_FOUND = 404;
     private const HTTP_NOT_ACCEPTABLE = 406;
 
-    private const ERROR_NO_APPOINTMENTS = 'noAppointmentForThisOffice';
-    private const ERROR_APPOINTMENT_NOT_FOUND = 'appointmentNotFound';
-    private const ERROR_TOO_MANY_APPOINTMENTS = 'tooManyAppointmentsWithSameMail';
 
     public static function noAppointmentsAtLocation(): array
     {
 
-        $errors[] = [
-            'errorCode' => self::ERROR_NO_APPOINTMENTS,
-            'errorMessage' => 'An diesem Standort gibt es aktuell leider keine freien Termine.',
-            'status' => self::HTTP_NOT_FOUND,
-        ];
+        $errors[] = ErrorMessages::get('noAppointmentForThisScope');
 
-        return ['errors' => $errors, 'status' => self::HTTP_NOT_FOUND];
+        return ['errors' => $errors];
 
     }
 
     public static function appointmentNotFound(): array
     {
 
-        $errors[] = [
-            'errorCode' => self::ERROR_APPOINTMENT_NOT_FOUND,
-            'errorMessage' => 'Termin wurde nicht gefunden.',
-            'status' => self::HTTP_NOT_FOUND,
-        ];
+        $errors[] = ErrorMessages::get('appointmentNotFound');
 
-        return ['errors' => $errors, 'status' => self::HTTP_NOT_FOUND];
+        return ['errors' => $errors];
+
+    }
+
+    public static function authKeyMissMatch(): array
+    {
+        $errors[] = ErrorMessages::get('authKeyMissMatch');
+
+        return ['errors' => $errors];
 
     }
 
     public static function tooManyAppointmentsWithSameMail(): array
     {
-        $errors[] = [ 
-            'errorCode' => self::ERROR_TOO_MANY_APPOINTMENTS,
-            'errorMessage' => 'Zu viele Termine mit gleicher E-Mail- Adresse.',
-            'status' => self::HTTP_NOT_ACCEPTABLE,
-        ];
+        $errors[] = ErrorMessages::get('tooManyAppointmentsWithSameMail');
 
-        return ['errors' => $errors, 'status' => self::HTTP_NOT_ACCEPTABLE];
+        return ['errors' => $errors];
 
     }
 

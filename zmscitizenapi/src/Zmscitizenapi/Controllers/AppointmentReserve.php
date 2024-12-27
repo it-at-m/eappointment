@@ -6,6 +6,7 @@ namespace BO\Zmscitizenapi\Controllers;
 use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Services\ValidationService;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
@@ -44,22 +45,16 @@ class AppointmentReserve extends BaseController
                     $captcha = new FriendlyCaptcha();
                     $captchaVerificationResult = $captcha->verifyCaptcha($captchaSolution);
                     if (!$captchaVerificationResult) {
-                        return $this->createJsonResponse($response, [
-                            'errorCode' => 'captchaVerificationFailed',
-                            'errorMessage' => 'Captcha verification failed'
-                        ], 400);
+                        return $this->createJsonResponse($response, ErrorMessages::get('captchaVerificationFailed'), 400);
                     }
                 } catch (\Exception $e) {
-                    return $this->createJsonResponse($response, [
-                        'errorCode' => 'captchaVerificationError',
-                        'errorMessage' => 'An error occurred during captcha verification'
-                    ], 500);
+                    return $this->createJsonResponse($response, ErrorMessages::get('captchaVerificationError'), 500);
                 }
             }
 
-            $serviceValidationResult = ValidationService::validateServiceLocationCombination($officeId, $serviceIds);
-            if ($serviceValidationResult['status'] !== 200) {
-                return $this->createJsonResponse($response, $serviceValidationResult, 400);
+            $errors = ValidationService::validateServiceLocationCombination($officeId, $serviceIds);
+            if (!empty($errors['errors'])) {
+                return $this->createJsonResponse($response, $errors, 400);
             }
 
             $freeAppointments = new ProcessList();
@@ -70,7 +65,7 @@ class AppointmentReserve extends BaseController
                 DateTimeFormatHelper::getInternalDateFromTimestamp($timestamp)
             );
 
-            $processArray = json_decode(json_encode($freeAppointments), true);
+            $processArray = json_decode(json_encode($freeAppointments), true); //Todo cleanup
 
             $filteredProcesses = array_filter($processArray, function ($process) use ($timestamp) {
                 if (!isset($process['appointments']) || !is_array($process['appointments'])) {

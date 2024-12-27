@@ -2,6 +2,8 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
+use BO\Zmscitizenapi\Localization\ErrorMessages;
+
 class AppointmentUpdateTest extends Base
 {
 
@@ -26,7 +28,7 @@ class AppointmentUpdateTest extends Base
                 ]
             ]
         );
-    
+
         $parameters = [
             'processId' => '101002',
             'authKey' => 'fb43',
@@ -34,7 +36,7 @@ class AppointmentUpdateTest extends Base
             'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
-        ];   
+        ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
@@ -98,7 +100,7 @@ class AppointmentUpdateTest extends Base
             "subRequestCounts" => [],
             "serviceId" => 10242339,
             "serviceCount" => 1
-        ];   
+        ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
@@ -139,13 +141,8 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'tooManyAppointmentsWithSameMail',
-                    'errorMessage' => 'Zu viele Termine mit gleicher E-Mail- Adresse.',
-                    'status' => 406,
-                ]
-            ],
-            'status' => 406
+                ErrorMessages::get('tooManyAppointmentsWithSameMail')
+            ]
         ];
 
         $this->assertEquals(406, $response->getStatusCode());
@@ -154,6 +151,10 @@ class AppointmentUpdateTest extends Base
 
     public function testAppointmentNotFound()
     {
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound';
+
         $this->setApiCalls(
             [
                 [
@@ -162,7 +163,7 @@ class AppointmentUpdateTest extends Base
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'exception' => new \Exception('API-Error: Zu den angegebenen Daten konnte kein Termin gefunden werden.')
+                    'exception' => $exception
                 ]
             ]
         );
@@ -179,13 +180,8 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'appointmentNotFound',
-                    'errorMessage' => 'Termin wurde nicht gefunden.',
-                    'status' => 404,
-                ]
-            ],
-            'status' => 404
+                ErrorMessages::get('appointmentNotFound')
+            ]
         ];
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -205,17 +201,16 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -233,16 +228,15 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -260,16 +254,15 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -287,15 +280,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -313,16 +305,15 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -340,15 +331,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -366,15 +356,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -392,14 +381,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -417,16 +405,15 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -444,15 +431,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -470,15 +456,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -496,14 +481,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidEmail')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -521,15 +505,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -547,14 +530,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -572,14 +554,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -597,13 +578,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -621,16 +601,15 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -648,15 +627,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -674,15 +652,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -700,14 +677,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -725,15 +701,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -751,14 +726,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -776,14 +750,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -801,13 +774,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidFamilyName')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -825,15 +797,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -851,14 +822,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -876,14 +846,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -901,13 +870,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidEmail')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -925,14 +893,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -950,13 +917,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -974,13 +940,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -998,12 +963,11 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidProcessId', 'errorMessage' => 'processId should be a positive 32-bit integer.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1021,16 +985,15 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1048,15 +1011,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1074,15 +1036,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1100,14 +1061,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1125,15 +1085,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1151,14 +1110,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1176,14 +1134,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1201,13 +1158,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidFamilyName')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1225,15 +1181,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1251,14 +1206,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1276,14 +1230,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1301,13 +1254,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidEmail')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1325,14 +1277,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1350,13 +1301,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1374,13 +1324,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1398,12 +1347,11 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidAuthKey', 'errorMessage' => 'authKey should be a non-empty string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1421,15 +1369,14 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1447,14 +1394,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1472,14 +1418,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1497,13 +1442,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidEmail')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1521,14 +1465,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1546,13 +1489,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1570,13 +1512,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidFamilyName'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1594,12 +1535,11 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidFamilyName', 'errorMessage' => 'familyName should be a non-empty string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidFamilyName')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1617,14 +1557,13 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1642,13 +1581,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1666,13 +1604,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidEmail'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1690,12 +1627,11 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidEmail', 'errorMessage' => 'email should be a valid email address.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidEmail')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1713,13 +1649,12 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.'],
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidTelephone'),
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1737,12 +1672,11 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidTelephone', 'errorMessage' => 'telephone should be a numeric string between 7 and 15 digits.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidTelephone')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1760,12 +1694,11 @@ class AppointmentUpdateTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ['status' => 400, 'errorCode' => 'invalidCustomTextfield', 'errorMessage' => 'customTextfield should be a string.']
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidCustomTextfield')
+            ]
         ];
 
-        $this->assertEquals($expectedResponse['status'], $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 

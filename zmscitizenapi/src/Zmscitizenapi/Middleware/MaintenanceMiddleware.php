@@ -2,6 +2,7 @@
 
 namespace BO\Zmscitizenapi\Middleware;
 
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -15,13 +16,9 @@ class MaintenanceMiddleware
     {
         if (\App::MAINTENANCE_MODE_ENABLED)
         {
-            $errors[] = [
-                'errorCode' => self::ERROR_UNAVAILABLE,
-                'errorMessage' => 'Service Unavailable: The application is under maintenance.',
-                'status' => self::HTTP_UNAVAILABLE,
-            ];
+            $errors[] = ErrorMessages::get('serviceUnavailable');
     
-            return ['errors' => $errors, 'status' => self::HTTP_UNAVAILABLE];
+            return ['errors' => $errors, 'statusCode' => self::HTTP_UNAVAILABLE];
         }
         return $next->handle($request);
     }

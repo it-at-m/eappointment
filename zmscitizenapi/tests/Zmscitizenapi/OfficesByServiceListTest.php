@@ -2,6 +2,8 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
+use BO\Zmscitizenapi\Localization\ErrorMessages;
+
 class OfficesByServiceListTest extends Base
 {
 
@@ -211,13 +213,8 @@ class OfficesByServiceListTest extends Base
         ], []);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'officesNotFound',
-                    'errorMessage' => 'Office(s) not found for the provided serviceId(s).',                
-                    'status' => 404,
-                ]
-            ],
-            'status' => 404
+                ErrorMessages::get('officesNotFound')
+            ]
         ];
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
@@ -230,14 +227,8 @@ class OfficesByServiceListTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                [
-                    'offices' => [],
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                    'status' => 400
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidServiceId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
@@ -485,14 +476,8 @@ class OfficesByServiceListTest extends Base
     
         $expectedResponse = [
             'errors' => [
-                [
-                    'offices' => [],
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                    'status' => 400
-                ]
-            ],
-            "status" => 400
+                ErrorMessages::get('invalidServiceId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));

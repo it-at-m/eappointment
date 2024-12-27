@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services;
 
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
-
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Models\Office;
@@ -203,7 +203,7 @@ class ZmsApiFacadeService
 
         return [
             'error' => 'Scope not found for the provided office ID',
-            'status' => 404,
+            'statusCode' => 404,
         ];
     }
 
@@ -214,71 +214,71 @@ class ZmsApiFacadeService
      * 
      */
 
-     public static function getOfficesByServiceIds(array $serviceIds): OfficeList|array
-     {
-         $serviceIds = array_unique($serviceIds);
-     
-         $errors = ValidationService::validateGetOfficesByServiceIds($serviceIds);
-         if (!empty($errors['errors'])) {
-             return $errors;
-         }
-     
-         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
-         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-     
-         $providerMap = [];
-         foreach ($providerList as $provider) {
-             $providerMap[$provider->id] = $provider;
-         }
-     
-         $relationMap = [];
-         foreach ($requestRelationList as $relation) {
-             $requestId = $relation->request->id;
-             $providerId = $relation->provider->id;
-             $relationMap[$requestId][] = $providerId;
-         }
-     
-         $addedOfficeIds = [];
-         $offices = [];
-     
-         foreach ($serviceIds as $serviceId) {
-             if (!isset($relationMap[$serviceId])) {
-                 continue;
-             }
-     
-             foreach ($relationMap[$serviceId] as $providerId) {
-                 if (isset($addedOfficeIds[$providerId]) || !isset($providerMap[$providerId])) {
-                     continue;
-                 }
-     
-                 $provider = $providerMap[$providerId];
-                 $scope = null;
-     
-                 $scopeData = self::getScopeByOfficeId((int) $provider->id);
-                 if ($scopeData instanceof ThinnedScope) {
-                     $scope = $scopeData;
-                 }
-     
-                 $offices[] = new Office(
-                     id: (int) $provider->id,
-                     name: $provider->name,
-                     address: $provider->address ?? null,
-                     geo: $provider->geo ?? null,
-                     scope: $scope
-                 );
-     
-                 $addedOfficeIds[$provider->id] = true;
-             }
-         }
-     
-         $errors = ValidationService::validateOfficesNotFound($offices);
-         if (!empty($errors['errors'])) {
-             return $errors;
-         }
-     
-         return new OfficeList($offices);
-     }
-     
+    public static function getOfficesByServiceIds(array $serviceIds): OfficeList|array
+    {
+        $serviceIds = array_unique($serviceIds);
+
+        $errors = ValidationService::validateGetOfficesByServiceIds($serviceIds);
+        if (!empty($errors['errors'])) {
+            return $errors;
+        }
+
+        $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
+        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
+
+        $providerMap = [];
+        foreach ($providerList as $provider) {
+            $providerMap[$provider->id] = $provider;
+        }
+
+        $relationMap = [];
+        foreach ($requestRelationList as $relation) {
+            $requestId = $relation->request->id;
+            $providerId = $relation->provider->id;
+            $relationMap[$requestId][] = $providerId;
+        }
+
+        $addedOfficeIds = [];
+        $offices = [];
+
+        foreach ($serviceIds as $serviceId) {
+            if (!isset($relationMap[$serviceId])) {
+                continue;
+            }
+
+            foreach ($relationMap[$serviceId] as $providerId) {
+                if (isset($addedOfficeIds[$providerId]) || !isset($providerMap[$providerId])) {
+                    continue;
+                }
+
+                $provider = $providerMap[$providerId];
+                $scope = null;
+
+                $scopeData = self::getScopeByOfficeId((int) $provider->id);
+                if ($scopeData instanceof ThinnedScope) {
+                    $scope = $scopeData;
+                }
+
+                $offices[] = new Office(
+                    id: (int) $provider->id,
+                    name: $provider->name,
+                    address: $provider->address ?? null,
+                    geo: $provider->geo ?? null,
+                    scope: $scope
+                );
+
+                $addedOfficeIds[$provider->id] = true;
+            }
+        }
+
+        $errors = ValidationService::validateOfficesNotFound($offices);
+        if (!empty($errors['errors'])) {
+            return $errors;
+        }
+
+        return new OfficeList($offices);
+    }
+
 
 
     public static function getScopeById(?int $scopeId): ThinnedScope|array
@@ -335,41 +335,41 @@ class ZmsApiFacadeService
     public static function getServicesByOfficeIds(array $officeIds): ServiceList|array
     {
         $officeIds = array_unique($officeIds);
-    
+
         $errors = ValidationService::validateGetServicesByOfficeIds($officeIds);
         if (!empty($errors['errors'])) {
             return $errors;
         }
-    
+
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-    
+
         $requestMap = [];
         foreach ($requestList as $request) {
             $requestMap[$request->id] = $request;
         }
-    
+
         $relationMap = [];
         foreach ($requestRelationList as $relation) {
             $providerId = $relation->provider->id;
             $requestId = $relation->request->id;
-    
+
             if (!isset($relationMap[$providerId])) {
                 $relationMap[$providerId] = [];
             }
             $relationMap[$providerId][] = $requestId;
         }
-    
+
         $services = [];
         $addedServiceIds = [];
-    
+
         foreach ($officeIds as $officeId) {
             if (isset($relationMap[$officeId])) {
                 foreach ($relationMap[$officeId] as $requestId) {
                     if (!in_array($requestId, $addedServiceIds) && isset($requestMap[$requestId])) {
                         $request = $requestMap[$requestId];
                         $services[] = new Service(
-                            id: (int)$request->id,
+                            id: (int) $request->id,
                             name: $request->name,
                             maxQuantity: $request->getAdditionalData()['maxQuantity'] ?? 1
                         );
@@ -378,12 +378,12 @@ class ZmsApiFacadeService
                 }
             }
         }
-    
+
         $errors = ValidationService::validateServicesNotFound($services);
         if (!empty($errors['errors'])) {
             return $errors;
         }
-    
+
         return new ServiceList($services);
     }
 
@@ -438,15 +438,15 @@ class ZmsApiFacadeService
         $startDate = $queryParams['startDate'] ?? null;
         $endDate = $queryParams['endDate'] ?? null;
 
-        $errors = ValidationService::validateGetBookableFreeDays((int)$officeId, (int)$serviceId, $startDate, $endDate, $serviceCounts);
+        $errors = ValidationService::validateGetBookableFreeDays((int) $officeId, (int) $serviceId, $startDate, $endDate, $serviceCounts);
         if (!empty($errors['errors'])) {
             return $errors;
         }
 
-        try {
-            $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
-            $lastDay = DateTimeFormatHelper::getInternalDateFromISO($endDate);
+        $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
+        $lastDay = DateTimeFormatHelper::getInternalDateFromISO($endDate);
 
+        try {
             $freeDays = ZmsApiClientService::getFreeDays(
                 new ProviderList([['id' => $officeId, 'source' => \App::$source_name]]),
                 new RequestList([
@@ -460,23 +460,27 @@ class ZmsApiFacadeService
                 $lastDay,
             ) ?? new Calendar();
 
-            $daysCollection = $freeDays->days;
-
-            $formattedDays = [];
-            foreach ($daysCollection as $day) {
-                $formattedDays[] = sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day);
-            }
-
-            $errors = ValidationService::validateAppointmentDaysNotFound($formattedDays);
-            if (!empty($errors['errors'])) {
-                return $errors;
-            }
-
-            return new AvailableDays($formattedDays);
-
         } catch (\Exception $e) {
-            return ExceptionService::noAppointmentsAtLocation();
+            if (strpos($e->getMessage(), 'noAppointmentsAtLocation') !== false) {
+                return ExceptionService::noAppointmentsAtLocation();
+            } else {
+                throw $e;
+            }
         }
+
+        $daysCollection = $freeDays->days;
+
+        $formattedDays = [];
+        foreach ($daysCollection as $day) {
+            $formattedDays[] = sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day);
+        }
+
+        $errors = ValidationService::validateAppointmentDaysNotFound($formattedDays);
+        if (!empty($errors['errors'])) {
+            return $errors;
+        }
+
+        return new AvailableDays($formattedDays);
     }
 
 
@@ -517,7 +521,7 @@ class ZmsApiFacadeService
                 'appointmentTimestamps' => [],
                 'errorCode' => 'internalError',
                 'errorMessage' => 'An error occurred while fetching available free appointments',
-                'status' => 500,
+                'statusCode' => 500,
             ];
         }
     }
@@ -565,7 +569,7 @@ class ZmsApiFacadeService
                 'appointmentTimestamps' => [],
                 'errorCode' => 'internalError',
                 'errorMessage' => 'An error occurred while fetching available appointments',
-                'status' => 500,
+                'statusCode' => 500,
             ];
         }
     }
@@ -576,9 +580,9 @@ class ZmsApiFacadeService
         if (!empty($errors['errors'])) {
             return $errors;
         }
-    
+
         $currentTimestamp = time();
-    
+
         $appointmentTimestamps = array_reduce(
             iterator_to_array($freeSlots),
             function ($timestamps, $slot) use ($currentTimestamp) {
@@ -596,15 +600,15 @@ class ZmsApiFacadeService
             },
             []
         );
-    
+
         $appointmentTimestamps = array_keys($appointmentTimestamps);
         sort($appointmentTimestamps);
-    
+
         $errors = ValidationService::validateGetProcessByIdTimestamps($appointmentTimestamps);
         if (!empty($errors['errors'])) {
             return $errors;
         }
-    
+
         return [
             'appointmentTimestamps' => $appointmentTimestamps
         ];
@@ -623,29 +627,41 @@ class ZmsApiFacadeService
         }
 
         try {
-
             $process = ZmsApiClientService::getProcessById($processId, $authKey);
-            $errors = ValidationService::validateGetProcessNotFound($process);
-            if (!empty($errors['errors'])) {
-                return $errors;
-            }
-
-            $thinnedProcess = MapperService::processToThinnedProcess($process);
-
-            return $thinnedProcess;
-
         } catch (\Exception $e) {
-            if (strpos($e->getMessage(), 'kein Termin gefunden') !== false) {
+            if (strpos($e->getMessage(), 'appointmentNotFound') !== false) {
                 return ExceptionService::appointmentNotFound();
+            } else if (strpos($e->getMessage(), 'authKeyMissMatch') !== false) {
+                return ExceptionService::authKeyMissMatch();
             } else {
                 throw $e;
             }
         }
+
+        $errors = ValidationService::validateGetProcessNotFound($process);
+        if (!empty($errors['errors'])) {
+            return $errors;
+        }
+
+        $thinnedProcess = MapperService::processToThinnedProcess($process);
+
+        return $thinnedProcess;
+
+
     }
 
     public static function updateClientData(Process $reservedProcess): Process|array
     {
-        $clientUpdateResult = ZmsApiClientService::submitClientData($reservedProcess);
+
+        try {
+            $clientUpdateResult = ZmsApiClientService::submitClientData($reservedProcess);
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'tooManyAppointmentsWithSameMail') !== false) {
+                return ExceptionService::tooManyAppointmentsWithSameMail();
+            } else {
+                throw $e;
+            }
+        }
 
         if (isset($clientUpdateResult['error'])) {
             return $clientUpdateResult;

@@ -2,6 +2,8 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
+use BO\Zmscitizenapi\Localization\ErrorMessages;
+
 class AvailableDaysListTest extends Base
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\AvailableDaysList";
@@ -61,13 +63,8 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'noAppointmentForThisDay',
-                    'errorMessage' => 'No available days found for the given criteria.',
-                    'status' => 404,
-                ]
-            ],
-            'status' => 404,
+                ErrorMessages::get('noAppointmentForThisDay')
+            ]
         ];
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -86,18 +83,9 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidStartDateFormat',
-                    'errorMessage' => 'startDate must be in YYYY-MM-DD format.',
-                ],
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidEndDateFormat',
-                    'errorMessage' => 'endDate must be in YYYY-MM-DD format.',
-                ],
+                ErrorMessages::get('invalidStartDateFormat'),
+                ErrorMessages::get('invalidEndDateFormat')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -117,13 +105,8 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidStartDate',
-                    'errorMessage' => 'startDate is required and must be a valid date.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidStartDate')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -142,13 +125,8 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidEndDate',
-                    'errorMessage' => 'endDate is required and must be a valid date.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidEndDate')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());    
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -167,13 +145,8 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidOfficeId')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -192,13 +165,8 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidServiceId')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -217,13 +185,8 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidServiceCount')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -243,13 +206,8 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidServiceCount')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -269,13 +227,8 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidServiceCount')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -289,33 +242,12 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidStartDate',
-                    'errorMessage' => 'startDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidEndDate',
-                    'errorMessage' => 'endDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidStartDate'),
+                ErrorMessages::get('invalidEndDate'),
+                ErrorMessages::get('invalidOfficeId'),
+                ErrorMessages::get('invalidServiceId'),
+                ErrorMessages::get('invalidServiceCount')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -333,18 +265,9 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidStartDate',
-                    'errorMessage' => 'startDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidEndDate',
-                    'errorMessage' => 'endDate is required and must be a valid date.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidStartDate'),
+                ErrorMessages::get('invalidEndDate')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -362,18 +285,9 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidOfficeId'),
+                ErrorMessages::get('invalidServiceId')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -391,18 +305,9 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidServiceId'),
+                ErrorMessages::get('invalidServiceCount')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -420,18 +325,9 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidStartDate',
-                    'errorMessage' => 'startDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidStartDate'),
+                ErrorMessages::get('invalidOfficeId')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -449,18 +345,9 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidEndDate',
-                    'errorMessage' => 'endDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidEndDate'),
+                ErrorMessages::get('invalidServiceCount')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -478,18 +365,9 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidOfficeId'),
+                ErrorMessages::get('invalidServiceCount')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -506,23 +384,10 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidStartDate',
-                    'errorMessage' => 'startDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidEndDate',
-                    'errorMessage' => 'endDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidStartDate'),
+                ErrorMessages::get('invalidEndDate'),
+                ErrorMessages::get('invalidOfficeId')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -539,23 +404,10 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidStartDate',
-                    'errorMessage' => 'startDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidEndDate',
-                    'errorMessage' => 'endDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidStartDate'),
+                ErrorMessages::get('invalidEndDate'),
+                ErrorMessages::get('invalidServiceId')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -572,23 +424,10 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidStartDate',
-                    'errorMessage' => 'startDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidStartDate'),
+                ErrorMessages::get('invalidOfficeId'),
+                ErrorMessages::get('invalidServiceCount')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -605,23 +444,10 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidEndDate',
-                    'errorMessage' => 'endDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidEndDate'),
+                ErrorMessages::get('invalidOfficeId'),
+                ErrorMessages::get('invalidServiceCount')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -641,18 +467,9 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidStartDate',
-                    'errorMessage' => 'startDate is required and must be a valid date.',
-                    'status' => 400,
-                ],
-                [
-                    'errorCode' => 'invalidEndDate',
-                    'errorMessage' => 'endDate is required and must be a valid date.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidStartDate'),
+                ErrorMessages::get('invalidEndDate')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -672,13 +489,8 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                    'status' => 400,
-                ]
+                ErrorMessages::get('invalidServiceCount')
             ],
-            'status' => 400,
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);

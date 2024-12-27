@@ -1,9 +1,9 @@
 <?php
-declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Controllers;
 
 use BO\Zmscitizenapi\BaseController;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use \Psr\Http\Message\RequestInterface;
@@ -20,8 +20,7 @@ class AppointmentById extends BaseController
         $result = ZmsApiFacadeService::getThinnedProcessById($processId, $authKey);
     
         if (!empty($result['errors'])) {
-            $errorCodes = array_column($result['errors'], 'errorCode');
-            $statusCode = in_array('appointmentNotFound', $errorCodes) ? 404 : 400; 
+            $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
             return $this->createJsonResponse($response, $result, $statusCode);
         }
     
