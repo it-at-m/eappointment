@@ -26,7 +26,6 @@ class ServiceList extends Entity implements JsonSerializable
             }
 
         }
-        //$this->services = $services;
 
         $this->ensureValid();
     }
