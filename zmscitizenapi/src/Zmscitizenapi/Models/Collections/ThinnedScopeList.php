@@ -25,7 +25,6 @@ class ThinnedScopeList extends Entity implements JsonSerializable
                 error_log("Invalid ThinnedScope encountered: " . $e->getMessage()); //Gracefully handle
             }
         }
-        $this->scopes = $scopes;
 
         $this->ensureValid();
     }

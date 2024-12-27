@@ -13,9 +13,9 @@ class ServiceList extends Entity implements JsonSerializable
     /** @var Service[] */
     protected array $services = [];
 
-    public function __construct(array $data = [])
+    public function __construct(array $services = [])
     {
-        foreach ($data as $service) {
+        foreach ($services as $service) {
             try {
                 if (!$service instanceof Service) {
                     throw new \InvalidArgumentException("All elements must be instances of Service.");
@@ -26,7 +26,7 @@ class ServiceList extends Entity implements JsonSerializable
             }
 
         }
-        $this->services = $data;
+        //$this->services = $services;
 
         $this->ensureValid();
     }

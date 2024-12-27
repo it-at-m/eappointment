@@ -25,7 +25,6 @@ class OfficeList extends Entity implements JsonSerializable
                 error_log("Invalid Office encountered: " . $e->getMessage()); //Gracefully handle
             }
         }
-        $this->offices = $offices;
 
         $this->ensureValid();
     }

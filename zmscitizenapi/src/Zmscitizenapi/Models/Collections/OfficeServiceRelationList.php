@@ -27,8 +27,6 @@ class OfficeServiceRelationList extends Entity implements JsonSerializable
             }
         }
 
-        $this->relations = $relations;
-
         $this->ensureValid();
     }
 
