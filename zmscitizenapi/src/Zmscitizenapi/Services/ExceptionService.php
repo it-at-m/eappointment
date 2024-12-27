@@ -8,10 +8,6 @@ use BO\Zmscitizenapi\Localization\ErrorMessages;
 class ExceptionService
 {
 
-    private const HTTP_NOT_FOUND = 404;
-    private const HTTP_NOT_ACCEPTABLE = 406;
-
-
     public static function noAppointmentsAtLocation(): array
     {
 
