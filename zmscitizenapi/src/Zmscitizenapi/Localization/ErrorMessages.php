@@ -140,8 +140,8 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'No available days found for the given criteria.'
         ],
-        'noAppointmentForThisScope' => [
-            'errorCode' => 'noAppointmentForThisScope',
+        'noAppointmentsAtLocation' => [
+            'errorCode' => 'noAppointmentsAtLocation',
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'There are currently no free appointments available at this location.'
         ],
@@ -296,8 +296,8 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'Keine verfügbaren Termine für dieses Datum.'
         ],
-        'noAppointmentForThisScope' => [
-            'errorCode' => 'noAppointmentForThisScope',
+        'noAppointmentsAtLocation' => [
+            'errorCode' => 'noAppointmentsAtLocation',
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'An diesem Standort sind aktuell keine freien Termine verfügbar.'
         ],
