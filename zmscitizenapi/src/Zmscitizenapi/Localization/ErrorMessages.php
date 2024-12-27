@@ -5,8 +5,7 @@ namespace BO\Zmscitizenapi\Localization;
 
 class ErrorMessages
 {
-
-    private const HTTP_NOT_IMPLEMENTED = 0;
+    private const HTTP_OK = 200;
 
     private const HTTP_BAD_REQUEST = 400;
 
@@ -385,6 +384,9 @@ class ErrorMessages
     
     public static function getHighestStatusCode(array $errors): int
     {
+        if (empty($errors)) {
+               return self::HTTP_OK;
+        }
         $errorCodes = array_column($errors, 'statusCode');
         return max($errorCodes);
     }

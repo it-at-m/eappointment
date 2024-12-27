@@ -19,9 +19,7 @@ class ZmsApiClientService
     public static function getOffices(): ProviderList
     {
         try {
-            $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-                'resolveReferences' => 2,
-            ])->getEntity();
+            $sources = self::fetchSourceData();
 
             $providerList = $sources->getProviderList() ?? new ProviderList();
 
@@ -34,9 +32,7 @@ class ZmsApiClientService
     public static function getScopes(): ScopeList
     {
         try {
-            $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-                'resolveReferences' => 2,
-            ])->getEntity();
+            $sources = self::fetchSourceData();
 
             $scopeList = $sources->getScopeList() ?? new ScopeList();
 
@@ -49,9 +45,7 @@ class ZmsApiClientService
     public static function getServices(): RequestList
     {
         try {
-            $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-                'resolveReferences' => 2,
-            ])->getEntity();
+            $sources = self::fetchSourceData();
 
             $requestList = $sources->getRequestList() ?? new RequestList();
 
@@ -64,9 +58,7 @@ class ZmsApiClientService
     public static function getRequestRelationList(): RequestRelationList
     {
         try {
-            $sources = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-                'resolveReferences' => 2,
-            ])->getEntity();
+            $sources = self::fetchSourceData();
 
             $requestRelationList = $sources->getRequestRelationList() ?? new RequestRelationList();
 
@@ -85,9 +77,9 @@ class ZmsApiClientService
             $calendar->providers = $providers;
             $calendar->requests = $requests;
 
-            $result = \App::$http->readPostResult('/calendar/', $calendar)->getEntity() ?? new Calendar();
+            $result = \App::$http->readPostResult('/calendar/', $calendar);
 
-            return $result;
+            return $result->getEntity() ?? new Calendar();
 
         } catch (\Exception $e) {
             $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
@@ -255,4 +247,20 @@ class ZmsApiClientService
             }
         }
     }
+
+    private static function fetchSourceData(): mixed
+    {
+        try {
+            return \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+                'resolveReferences' => 2,
+            ])->getEntity();
+        } catch (\Exception $e) {
+            throw new \RuntimeException(
+                ErrorMessages::get('internalError')['errorMessage'],
+                ErrorMessages::get('internalError')['statusCode'],
+                $e
+            );
+        }
+    }
+
 }
