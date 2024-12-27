@@ -30,9 +30,9 @@ class ExceptionService
 
     }
 
-    public static function authKeyMissMatch(): array
+    public static function authKeyMismatch(): array
     {
-        $errors[] = ErrorMessages::get('authKeyMissMatch');
+        $errors[] = ErrorMessages::get('authKeyMismatch');
 
         return ['errors' => $errors];
 

@@ -193,4 +193,38 @@ class AppointmentByIdTest extends Base
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
+    public function testAuthKeyMismatch()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed';
+    
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/wrongKey/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'exception' => $exception
+                ]
+            ]
+        );
+    
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'wrongKey',
+        ];
+    
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('authKeyMismatch')
+            ]
+        ];
+        $this->assertEquals(406, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }    
+
 }

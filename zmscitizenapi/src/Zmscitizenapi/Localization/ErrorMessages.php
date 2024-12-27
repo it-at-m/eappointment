@@ -150,8 +150,8 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'Appointment not found.'
         ],
-        'authKeyMissMatch' => [
-            'errorCode' => 'authKeyMissMatch',
+        'authKeyMismatch' => [
+            'errorCode' => 'authKeyMismatch',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE_CLIENT,
             'errorMessage' => 'authKey is not correct for the appointment.'
         ],
@@ -306,8 +306,8 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'Termin wurde nicht gefunden.'
         ],
-        'authKeyMissMatch' => [
-            'errorCode' => 'authKeyMissMatch',
+        'authKeyMismatch' => [
+            'errorCode' => 'authKeyMismatch',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE_CLIENT,
             'errorMessage' => 'authKey ist nicht korrekt für den Termin.'
         ],

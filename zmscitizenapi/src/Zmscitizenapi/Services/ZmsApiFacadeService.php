@@ -631,8 +631,8 @@ class ZmsApiFacadeService
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'appointmentNotFound') !== false) {
                 return ExceptionService::appointmentNotFound();
-            } else if (strpos($e->getMessage(), 'authKeyMissMatch') !== false) {
-                return ExceptionService::authKeyMissMatch();
+            } else if (strpos($e->getMessage(), 'authKeyMismatch') !== false) {
+                return ExceptionService::authKeyMismatch();
             } else {
                 throw $e;
             }

@@ -255,4 +255,25 @@ class AvailableAppointmentsListTest extends Base
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
+
+    public function testInvalidDateFormat()
+    {
+        $parameters = [
+            'date' => '21-09-3000',
+            'officeId' => 10546,
+            'serviceId' => '1063423',
+            'serviceCount' => '1',
+        ];
+    
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('invalidDate')
+            ]
+        ];
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+    
 }
