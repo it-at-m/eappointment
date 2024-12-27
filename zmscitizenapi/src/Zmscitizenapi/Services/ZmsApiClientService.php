@@ -249,7 +249,7 @@ class ZmsApiClientService
             if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound') {
                 throw new \RuntimeException(ErrorMessages::get('appointmentNotFound')['errorCode'] . ": " . ErrorMessages::get('appointmentNotFound')['errorMessage'], ErrorMessages::get('appointmentNotFound')['statusCode'], $e);
             } else if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed') {
-                throw new \RuntimeException(ErrorMessages::get('tooManyAppointmentsWithSameMail')['errorCode'] . ": " . ErrorMessages::get('tooManyAppointmentsWithSameMail')['errorMessage'], ErrorMessages::get('tooManyAppointmentsWithSameMail')['statusCode'], $e);
+                throw new \RuntimeException(ErrorMessages::get('authKeyMissMatch')['errorCode'] . ": " . ErrorMessages::get('authKeyMissMatch')['errorMessage'], ErrorMessages::get('authKeyMissMatch')['statusCode'], $e);
             } else {
                 throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
             }
