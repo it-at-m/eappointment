@@ -76,7 +76,7 @@ class ValidationService
     public static function validateGetAvailableAppointments(?string $date, ?int $officeId, ?array $serviceIds, ?array $serviceCounts): array
     {
         $errors = [];
-        if (!$date) {
+        if (!$date || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
             $errors[] = ErrorMessages::get('invalidDate');
         }
 
