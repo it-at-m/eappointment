@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Controllers;
 
 use BO\Zmscitizenapi\BaseController;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\ValidationService;
 use Psr\Http\Message\RequestInterface;
@@ -23,8 +24,9 @@ class ScopeById extends BaseController
         }
 
         $result = ZmsApiFacadeService::getScopeById((int) $scopeId);
-        if (isset($result['errors'])) {
-            return $this->createJsonResponse($response, $result, $result['status']);
+        if (!empty($result['errors'])) {
+            $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
+            return $this->createJsonResponse($response, $result, $statusCode);
         }
 
         return $this->createJsonResponse($response, $result->toArray(), 200);

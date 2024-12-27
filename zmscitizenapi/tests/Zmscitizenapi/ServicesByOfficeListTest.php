@@ -2,6 +2,8 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
+use BO\Zmscitizenapi\Localization\ErrorMessages;
+
 class ServicesByOfficeListTest extends Base
 {
 
@@ -91,13 +93,8 @@ class ServicesByOfficeListTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'servicesNotFound',
-                    'errorMessage' => 'Service(s) not found for the provided officeId(s).',
-                    'status' => 404
-                ]
-            ],
-            'status' => 404
+                ErrorMessages::get('servicesNotFound')
+            ]
         ];
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -110,14 +107,8 @@ class ServicesByOfficeListTest extends Base
         $response = $this->render([], [], []);
         $expectedResponse = [
             'errors' => [
-                [
-                    'services' => [],
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                    'status' => 400
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidOfficeId')
+            ]
         ];
 
         $this->assertEquals(400, $response->getStatusCode());

@@ -1,6 +1,7 @@
 <?php
 
 namespace BO\Zmscitizenapi\Tests;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 
 class AppointmentByIdTest extends Base
 {
@@ -20,7 +21,7 @@ class AppointmentByIdTest extends Base
                 ]
             ]
         );
-    
+
         $parameters = [
             'processId' => '101002',
             'authKey' => 'fb43',
@@ -65,11 +66,11 @@ class AppointmentByIdTest extends Base
             'subRequestCounts' => [],
             'serviceId' => 1063424,
             'serviceCount' => 1
-        ];       
+        ];
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
-    
+
     public function testMissingProcessId()
     {
         $parameters = [
@@ -80,13 +81,8 @@ class AppointmentByIdTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidProcessId',
-                    'errorMessage' => 'processId should be a positive 32-bit integer.'
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -102,13 +98,8 @@ class AppointmentByIdTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidAuthKey',
-                    'errorMessage' => 'authKey should be a string.'
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -125,13 +116,8 @@ class AppointmentByIdTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidProcessId',
-                    'errorMessage' => 'processId should be a positive 32-bit integer.'
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -148,13 +134,8 @@ class AppointmentByIdTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidAuthKey',
-                    'errorMessage' => 'authKey should be a string.'
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidAuthKey')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -168,18 +149,9 @@ class AppointmentByIdTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidProcessId',
-                    'errorMessage' => 'processId should be a positive 32-bit integer.',
-                ],
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidAuthKey',
-                    'errorMessage' => 'authKey should be a string.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidProcessId'),
+                ErrorMessages::get('invalidAuthKey')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -188,6 +160,10 @@ class AppointmentByIdTest extends Base
 
     public function testAppointmentNotFound()
     {
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound';
+        
         $this->setApiCalls(
             [
                 [
@@ -196,7 +172,7 @@ class AppointmentByIdTest extends Base
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'exception' => new \Exception('API-Error: Zu den angegebenen Daten konnte kein Termin gefunden werden.')
+                    'exception' => $exception
                 ]
             ]
         );
@@ -210,13 +186,8 @@ class AppointmentByIdTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'appointmentNotFound',
-                    'errorMessage' => 'Termin wurde nicht gefunden.',
-                    'status' => 404,
-                ]
-            ],
-            'status' => 404
+                ErrorMessages::get('appointmentNotFound')
+            ]
         ];
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);

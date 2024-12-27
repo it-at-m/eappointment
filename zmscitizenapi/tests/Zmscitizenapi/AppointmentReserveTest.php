@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
-use Psr\Http\Message\ResponseInterface;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 
 class AppointmentReserveTest extends Base
 {
@@ -112,13 +112,8 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => 'appointmentNotAvailable',
-                    'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.',                
-                    'status' => 404,
-                ]
-            ],
-            'status' => 404
+                ErrorMessages::get('appointmentNotAvailable')
+            ]
         ];
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -139,13 +134,8 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidOfficeId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -166,13 +156,8 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidServiceId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -193,13 +178,8 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidTimestamp',
-                    'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidTimestamp')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -219,18 +199,9 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                ],
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidOfficeId'),
+                ErrorMessages::get('invalidServiceId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -250,18 +221,9 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                ],
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidTimestamp',
-                    'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidOfficeId'),
+                ErrorMessages::get('invalidTimestamp')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -281,18 +243,9 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                ],
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidTimestamp',
-                    'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidServiceId'),
+                ErrorMessages::get('invalidTimestamp')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -308,23 +261,10 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                ],
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                ],
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidTimestamp',
-                    'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidOfficeId'),
+                ErrorMessages::get('invalidServiceId'),
+                ErrorMessages::get('invalidTimestamp')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -346,13 +286,8 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidOfficeId',
-                    'errorMessage' => 'officeId should be a 32-bit integer.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidOfficeId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -374,13 +309,8 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidServiceId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -402,13 +332,8 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidTimestamp',
-                    'errorMessage' => 'Missing timestamp or invalid timestamp format. It should be a positive numeric value.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidTimestamp')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -429,13 +354,8 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidServiceId',
-                    'errorMessage' => 'serviceId should be a 32-bit integer.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidServiceId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
@@ -457,13 +377,8 @@ class AppointmentReserveTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                [
-                    'status' => 400,
-                    'errorCode' => 'invalidServiceCount',
-                    'errorMessage' => 'serviceCounts should be an array of numeric values.',
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidServiceCount')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Controllers;
 
 use BO\Zmscitizenapi\BaseController;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
@@ -20,8 +21,9 @@ class AvailableAppointmentsList extends BaseController
         $serviceCounts = isset($queryParams['serviceCount']) ? explode(',', $queryParams['serviceCount']) : [];
 
         $result = ZmsApiFacadeService::getAvailableAppointments( $date, (int)$officeId, $serviceIds,$serviceCounts);
-        if (isset($result['errors'])) {
-            return $this->createJsonResponse($response, $result, $result['status']);
+        if (!empty($result['errors'])) {
+            $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
+            return $this->createJsonResponse($response, $result, $statusCode);
         }
 
         return $this->createJsonResponse($response, $result->toArray(), statusCode: 200);

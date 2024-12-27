@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
-use BO\Slim\Render;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 
 class ScopeByIdTest extends Base
 {
@@ -65,13 +65,8 @@ class ScopeByIdTest extends Base
 
         $expectedResponse = [
             'errors' => [
-                [
-                    'errorCode' => "scopesNotFound",
-                    'errorMessage' => 'Scope(s) not found.',
-                    'status' => 404
-                ]
-            ],
-            'status' => 404
+                ErrorMessages::get('scopesNotFound')
+            ]
         ];
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -84,14 +79,8 @@ class ScopeByIdTest extends Base
         $response = $this->render([], [], []);
         $expectedResponse = [
             'errors' => [
-                [
-                    'services' => [],
-                    'errorCode' => 'invalidScopeId',
-                    'errorMessage' => "scopeId should be a 32-bit integer.",
-                    'status' => 400
-                ]
-            ],
-            'status' => 400
+                ErrorMessages::get('invalidScopeId')
+            ]
         ];
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
@@ -106,14 +95,8 @@ class ScopeByIdTest extends Base
     
         $expectedResponse = [
             'errors' => [
-                [
-                    'scopes' => [],
-                    'errorCode' => 'invalidScopeId',
-                    'errorMessage' => 'scopeId should be a 32-bit integer.',
-                    'status' => 400
-                ]
-            ],
-            "status" => 400
+                ErrorMessages::get('invalidScopeId')
+            ]
         ]; 
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
