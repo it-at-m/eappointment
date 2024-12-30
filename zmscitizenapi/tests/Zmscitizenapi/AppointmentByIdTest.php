@@ -193,7 +193,7 @@ class AppointmentByIdTest extends Base
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
-    public function testAuthKeyMismatch()
+    public function testAuthKeyMismatchException()
     {
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed';
@@ -225,6 +225,6 @@ class AppointmentByIdTest extends Base
         ];
         $this->assertEquals(406, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
+    } 
 
 }

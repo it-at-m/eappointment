@@ -11,7 +11,9 @@ class ErrorMessages
 
     private const HTTP_NOT_FOUND = 404;
 
-    private const HTTP_NOT_ACCEPTABLE_CLIENT = 406;
+    private const HTTP_NOT_ACCEPTABLE = 406;
+
+    private const HTTP_CONFLICT = 409;
 
     private const HTTP_INTERNAL_SERVER_ERROR = 500;
 
@@ -120,50 +122,10 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'The selected appointment is unfortunately no longer available.'
         ],
-        'scopesNotFound' => [
-            'errorCode' => 'scopesNotFound',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'Scope(s) not found.'
-        ],
-        'servicesNotFound' => [
-            'errorCode' => 'servicesNotFound',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'Service(s) not found for the provided officeId(s).'
-        ],
-        'officesNotFound' => [
-            'errorCode' => 'officesNotFound',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'Office(s) not found for the provided serviceId(s).'
-        ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'No available days found for the given criteria.'
-        ],
-        'noAppointmentsAtLocation' => [
-            'errorCode' => 'noAppointmentsAtLocation',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'There are currently no free appointments available at this location.'
-        ],
-        'appointmentNotFound' => [
-            'errorCode' => 'appointmentNotFound',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'Appointment not found.'
-        ],
-        'authKeyMismatch' => [
-            'errorCode' => 'authKeyMismatch',
-            'statusCode' => self::HTTP_NOT_ACCEPTABLE_CLIENT,
-            'errorMessage' => 'authKey is not correct for the appointment.'
-        ],
-        'tooManyAppointmentsWithSameMail' => [
-            'errorCode' => 'tooManyAppointmentsWithSameMail',
-            'statusCode' => self::HTTP_NOT_ACCEPTABLE_CLIENT,
-            'errorMessage' => 'Too many appointments with the same e-mail address.'
-        ],
-        'internalError' => [
-            'errorCode' => 'internalError',
-            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR,
-            'errorMessage' => 'An internal error occurred.'
         ],
         'captchaVerificationError' => [
             'errorCode' => 'captchaVerificationError',
@@ -174,6 +136,123 @@ class ErrorMessages
             'errorCode' => 'serviceUnavailable',
             'statusCode' => self::HTTP_UNAVAILABLE,
             'errorMessage' => 'Service Unavailable: The application is under maintenance.'
+        ],
+
+        //Zmsapi exceptions
+        'internalError' => [
+            'errorCode' => 'internalError',
+            'errorMessage' => 'An internal error occurred. Please try again later.',
+            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR
+        ],
+        'invalidApiClient' => [
+            'errorCode' => 'invalidApiClient',
+            'errorMessage' => 'Invalid API client.',
+            'statusCode' => self::HTTP_BAD_REQUEST
+        ],
+        'departmentNotFound' => [
+            'errorCode' => 'departmentNotFound',
+            'errorMessage' => 'Department not found.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'mailNotFound' => [
+            'errorCode' => 'mailNotFound',
+            'errorMessage' => 'Mail template not found.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'organisationNotFound' => [
+            'errorCode' => 'organisationNotFound',
+            'errorMessage' => 'Organisation not found.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'providerNotFound' => [
+            'errorCode' => 'providerNotFound',
+            'errorMessage' => 'Provider not found.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'requestNotFound' => [
+            'errorCode' => 'requestNotFound',
+            'errorMessage' => 'Request not found.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'scopeNotFound' => [
+            'errorCode' => 'scopeNotFound',
+            'errorMessage' => 'Scope not found.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'processInvalid' => [
+            'errorCode' => 'processInvalid',
+            'errorMessage' => 'The process data is invalid.',
+            'statusCode' => self::HTTP_BAD_REQUEST
+        ],
+        'processAlreadyExists' => [
+            'errorCode' => 'processAlreadyExists',
+            'errorMessage' => 'An appointment process already exists.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'processDeleteFailed' => [
+            'errorCode' => 'processDeleteFailed',
+            'errorMessage' => 'Failed to delete the appointment.',
+            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR
+        ],
+        'processAlreadyCalled' => [
+            'errorCode' => 'processAlreadyCalled',
+            'errorMessage' => 'The appointment has already been called.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'processNotReservedAnymore' => [
+            'errorCode' => 'processNotReservedAnymore',
+            'errorMessage' => 'The appointment is no longer reserved.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'processNotPreconfirmedAnymore' => [
+            'errorCode' => 'processNotPreconfirmedAnymore',
+            'errorMessage' => 'The appointment is no longer preconfirmed.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'emailIsRequired' => [
+            'errorCode' => 'emailIsRequired',
+            'errorMessage' => 'Email address is required.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'telephoneIsRequired' => [
+            'errorCode' => 'telephoneIsRequired',
+            'errorMessage' => 'Telephone number is required.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'appointmentNotFound' => [
+            'errorCode' => 'appointmentNotFound',
+            'errorMessage' => 'The requested appointment could not be found.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'authKeyMismatch' => [
+            'errorCode' => 'authKeyMismatch',
+            'errorMessage' => 'Invalid authentication key.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'noAppointmentsAtLocation' => [
+            'errorCode' => 'noAppointmentsAtLocation',
+            'errorMessage' => 'No appointments available at the specified location.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'tooManyAppointmentsWithSameMail' => [
+            'errorCode' => 'tooManyAppointmentsWithSameMail',
+            'errorMessage' => 'Too many appointments with the same email address.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'officesNotFound' => [
+            'errorCode' => 'officesNotFound',
+            'errorMessage' => 'No offices found.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'servicesNotFound' => [
+            'errorCode' => 'servicesNotFound',
+            'errorMessage' => 'No services found.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'scopesNotFound' => [
+            'errorCode' => 'scopesNotFound',
+            'errorMessage' => 'No scopes found.',
+            'statusCode' => self::HTTP_NOT_FOUND
         ]
 
     ];
@@ -276,50 +355,10 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.'
         ],
-        'scopesNotFound' => [
-            'errorCode' => 'scopesNotFound',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'Scope(s) nicht gefunden.'
-        ],
-        'servicesNotFound' => [
-            'errorCode' => 'servicesNotFound',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'Für die angegebenen officeId(s) wurden keine Services gefunden.'
-        ],
-        'officesNotFound' => [
-            'errorCode' => 'officesNotFound',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'Für die angegebenen serviceId(s) wurden keine Standorte gefunden.'
-        ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'Keine verfügbaren Termine für dieses Datum.'
-        ],
-        'noAppointmentsAtLocation' => [
-            'errorCode' => 'noAppointmentsAtLocation',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'An diesem Standort sind aktuell keine freien Termine verfügbar.'
-        ],
-        'appointmentNotFound' => [
-            'errorCode' => 'appointmentNotFound',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'Termin wurde nicht gefunden.'
-        ],
-        'authKeyMismatch' => [
-            'errorCode' => 'authKeyMismatch',
-            'statusCode' => self::HTTP_NOT_ACCEPTABLE_CLIENT,
-            'errorMessage' => 'authKey ist nicht korrekt für den Termin.'
-        ],
-        'tooManyAppointmentsWithSameMail' => [
-            'errorCode' => 'tooManyAppointmentsWithSameMail',
-            'statusCode' => self::HTTP_NOT_ACCEPTABLE_CLIENT,
-            'errorMessage' => 'Zu viele Termine mit gleicher E-Mail- Adresse.'
-        ],
-        'internalError' => [
-            'errorCode' => 'internalError',
-            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR,
-            'errorMessage' => 'Es ist ein interner Fehler aufgetreten.'
         ],
         'captchaVerificationError' => [
             'errorCode' => 'captchaVerificationError',
@@ -330,6 +369,123 @@ class ErrorMessages
             'errorCode' => 'serviceUnavailable',
             'statusCode' => self::HTTP_UNAVAILABLE,
             'errorMessage' => 'Der Dienst ist nicht verfügbar: Die Anwendung wird gerade gewartet.'
+        ],
+
+        //Zmsapi exceptions
+        'internalError' => [
+            'errorCode' => 'internalError',
+            'errorMessage' => 'Ein interner Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.',
+            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR
+        ],
+        'invalidApiClient' => [
+            'errorCode' => 'invalidApiClient',
+            'errorMessage' => 'Ungültiger API-Client.',
+            'statusCode' => self::HTTP_BAD_REQUEST
+        ],
+        'departmentNotFound' => [
+            'errorCode' => 'departmentNotFound',
+            'errorMessage' => 'Abteilung nicht gefunden.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'mailNotFound' => [
+            'errorCode' => 'mailNotFound',
+            'errorMessage' => 'E-Mail-Vorlage nicht gefunden.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'organisationNotFound' => [
+            'errorCode' => 'organisationNotFound',
+            'errorMessage' => 'Organisation nicht gefunden.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'providerNotFound' => [
+            'errorCode' => 'providerNotFound',
+            'errorMessage' => 'Anbieter nicht gefunden.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'requestNotFound' => [
+            'errorCode' => 'requestNotFound',
+            'errorMessage' => 'Anfrage nicht gefunden.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'scopeNotFound' => [
+            'errorCode' => 'scopeNotFound',
+            'errorMessage' => 'Bereich nicht gefunden.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'processInvalid' => [
+            'errorCode' => 'processInvalid',
+            'errorMessage' => 'Die Prozessdaten sind ungültig.',
+            'statusCode' => self::HTTP_BAD_REQUEST
+        ],
+        'processAlreadyExists' => [
+            'errorCode' => 'processAlreadyExists',
+            'errorMessage' => 'Ein Terminprozess existiert bereits.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'processDeleteFailed' => [
+            'errorCode' => 'processDeleteFailed',
+            'errorMessage' => 'Der Termin konnte nicht gelöscht werden.',
+            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR
+        ],
+        'processAlreadyCalled' => [
+            'errorCode' => 'processAlreadyCalled',
+            'errorMessage' => 'Der Termin wurde bereits aufgerufen.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'processNotReservedAnymore' => [
+            'errorCode' => 'processNotReservedAnymore',
+            'errorMessage' => 'Der Termin ist nicht mehr reserviert.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'processNotPreconfirmedAnymore' => [
+            'errorCode' => 'processNotPreconfirmedAnymore',
+            'errorMessage' => 'Der Termin ist nicht mehr vorbestätigt.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'emailIsRequired' => [
+            'errorCode' => 'emailIsRequired',
+            'errorMessage' => 'E-Mail-Adresse ist erforderlich.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'telephoneIsRequired' => [
+            'errorCode' => 'telephoneIsRequired',
+            'errorMessage' => 'Telefonnummer ist erforderlich.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'appointmentNotFound' => [
+            'errorCode' => 'appointmentNotFound',
+            'errorMessage' => 'Der angeforderte Termin wurde nicht gefunden.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'authKeyMismatch' => [
+            'errorCode' => 'authKeyMismatch',
+            'errorMessage' => 'Ungültiger Authentifizierungsschlüssel.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'noAppointmentsAtLocation' => [
+            'errorCode' => 'noAppointmentsAtLocation',
+            'errorMessage' => 'Keine Termine am angegebenen Standort verfügbar.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'tooManyAppointmentsWithSameMail' => [
+            'errorCode' => 'tooManyAppointmentsWithSameMail',
+            'errorMessage' => 'Zu viele Termine mit derselben E-Mail-Adresse.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'officesNotFound' => [
+            'errorCode' => 'officesNotFound',
+            'errorMessage' => 'Keine Standorte gefunden.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'servicesNotFound' => [
+            'errorCode' => 'servicesNotFound',
+            'errorMessage' => 'Keine Dienstleistungen gefunden.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'scopesNotFound' => [
+            'errorCode' => 'scopesNotFound',
+            'errorMessage' => 'Keine Bereiche gefunden.',
+            'statusCode' => self::HTTP_NOT_FOUND
         ]
 
     ];
