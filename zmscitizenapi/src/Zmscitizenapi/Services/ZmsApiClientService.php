@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services;
 
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Services\ExceptionService;
 use BO\Zmsentities\Calendar as Calendar;
 use BO\Zmsentities\Process as Process;
 use BO\Zmsentities\Collection\ProcessList;
@@ -15,6 +15,17 @@ use BO\Zmsentities\Collection\ScopeList;
 
 class ZmsApiClientService
 {
+    
+    private static function fetchSourceData(): mixed
+    {
+        try {
+            return \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+                'resolveReferences' => 2,
+            ])->getEntity();
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e, __FUNCTION__);
+        }
+    }
 
     public static function getOffices(): ProviderList
     {
@@ -25,7 +36,7 @@ class ZmsApiClientService
 
             return $providerList;
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('officesNotFound')['errorMessage'], ErrorMessages::get('officesNotFound')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -38,7 +49,7 @@ class ZmsApiClientService
 
             return $scopeList;
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('scopesNotFound')['errorMessage'], ErrorMessages::get('scopesNotFound')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -51,21 +62,19 @@ class ZmsApiClientService
 
             return $requestList;
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('servicesNotFound')['errorMessage'], ErrorMessages::get('servicesNotFound')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
     public static function getRequestRelationList(): RequestRelationList
     {
-        try {
+
             $sources = self::fetchSourceData();
 
             $requestRelationList = $sources->getRequestRelationList() ?? new RequestRelationList();
 
             return $requestRelationList;
-        } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
-        }
+
     }
 
     public static function getFreeDays(ProviderList $providers, RequestList $requests, array $firstDay, array $lastDay): Calendar
@@ -82,12 +91,7 @@ class ZmsApiClientService
             return $result->getEntity() ?? new Calendar();
 
         } catch (\Exception $e) {
-            $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
-            if ($exceptionName === 'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed') {
-                throw new \RuntimeException(ErrorMessages::get('noAppointmentsAtLocation')['errorCode'] . ": " . ErrorMessages::get('noAppointmentsAtLocation')['errorMessage'], ErrorMessages::get('noAppointmentsAtLocation')['statusCode'], $e);
-            } else {
-                throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
-            }
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -108,7 +112,7 @@ class ZmsApiClientService
 
             return $result->getCollection();
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -145,7 +149,7 @@ class ZmsApiClientService
 
             return $result->getEntity();
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -158,12 +162,7 @@ class ZmsApiClientService
             return $result->getEntity();
 
         } catch (\Exception $e) {
-            $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
-            if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
-                throw new \RuntimeException(ErrorMessages::get('tooManyAppointmentsWithSameMail')['errorCode'] . ": " . ErrorMessages::get('tooManyAppointmentsWithSameMail')['errorMessage'], ErrorMessages::get('tooManyAppointmentsWithSameMail')['statusCode'], $e);
-            } else {
-                throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
-            }
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -173,7 +172,7 @@ class ZmsApiClientService
             $url = '/process/status/preconfirmed/';
             return \App::$http->readPostResult($url, $process)->getEntity();
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -183,7 +182,7 @@ class ZmsApiClientService
             $url = '/process/status/confirmed/';
             return \App::$http->readPostResult($url, $process)->getEntity();
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -193,7 +192,7 @@ class ZmsApiClientService
             $url = "/process/{$process->id}/{$process->authKey}/";
             return \App::$http->readDeleteResult($url, $process)->getEntity();
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -203,7 +202,7 @@ class ZmsApiClientService
             $url = "/process/{$process->id}/{$process->authKey}/confirmation/mail/";
             return \App::$http->readPostResult($url, $process)->getEntity();
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -213,7 +212,7 @@ class ZmsApiClientService
             $url = "/process/{$process->id}/{$process->authKey}/preconfirmation/mail/";
             return \App::$http->readPostResult($url, $process)->getEntity();
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -223,7 +222,7 @@ class ZmsApiClientService
             $url = "/process/{$process->id}/{$process->authKey}/delete/mail/";
             return \App::$http->readPostResult($url, $process)->getEntity();
         } catch (\Exception $e) {
-            throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
@@ -237,29 +236,17 @@ class ZmsApiClientService
 
             return $process;
         } catch (\Exception $e) {
-            $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
-            if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound') {
-                throw new \RuntimeException(ErrorMessages::get('appointmentNotFound')['errorCode'] . ": " . ErrorMessages::get('appointmentNotFound')['errorMessage'], ErrorMessages::get('appointmentNotFound')['statusCode'], $e);
-            } else if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed') {
-                throw new \RuntimeException(ErrorMessages::get('authKeyMismatch')['errorCode'] . ": " . ErrorMessages::get('authKeyMismatch')['errorMessage'], ErrorMessages::get('authKeyMismatch')['statusCode'], $e);
-            } else {
-                throw new \RuntimeException(ErrorMessages::get('internalError')['errorMessage'], ErrorMessages::get('internalError')['statusCode'], $e);
-            }
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 
-    private static function fetchSourceData(): mixed
+    public static function getScopesByProviderId(string $source, string|int $providerId): ScopeList
     {
         try {
-            return \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-                'resolveReferences' => 2,
-            ])->getEntity();
+            $scopeList = self::getScopes() ?? new ScopeList();
+            return $scopeList->withProviderID($source, (string) $providerId);
         } catch (\Exception $e) {
-            throw new \RuntimeException(
-                ErrorMessages::get('internalError')['errorMessage'],
-                ErrorMessages::get('internalError')['statusCode'],
-                $e
-            );
+            ExceptionService::handleException($e, __FUNCTION__);
         }
     }
 

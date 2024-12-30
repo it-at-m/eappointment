@@ -47,4 +47,10 @@ class ThinnedScopeList extends Entity implements JsonSerializable
     {
         return $this->toArray();
     }
+
+    public function getScopes(): array
+    {
+        return $this->scopes;
+    }
+
 }

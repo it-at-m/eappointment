@@ -118,7 +118,7 @@ class AppointmentUpdateTest extends Base
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
-    public function testAppointmentNotFound()
+    public function testAppointmentNotFoundException()
     {
 
         $exception = new \BO\Zmsclient\Exception();
@@ -150,6 +150,44 @@ class AppointmentUpdateTest extends Base
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('appointmentNotFound')
+            ]
+        ];
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testAuthKeyMismatchException()
+    {
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101003/wrongKey/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'exception' => $exception
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101003',
+            'authKey' => 'wrongKey',
+            'familyName' => 'TEST_USER',
+            'email' => "test@muenchen.de",
+            'telephone' => '123456789',
+            'customTextfield' => "Some custom text",
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('authKeyMismatch')
             ]
         ];
         $this->assertEquals(404, $response->getStatusCode());

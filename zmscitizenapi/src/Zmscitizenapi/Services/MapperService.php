@@ -3,17 +3,19 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services;
 
+use BO\Zmscitizenapi\Services\ExceptionService;
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Combinable;
-use BO\Zmscitizenapi\Models\Collections\OfficeList;
 use BO\Zmscitizenapi\Models\OfficeServiceRelation;
-use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Service;
-use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedProvider;
 use BO\Zmscitizenapi\Models\ThinnedScope;
+use BO\Zmscitizenapi\Models\Collections\OfficeList;
+use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
+use BO\Zmscitizenapi\Models\Collections\ServiceList;
+use BO\Zmscitizenapi\Models\Collections\ThinnedScopeList;
 use BO\Zmsentities\Appointment;
 use BO\Zmsentities\Client;
 use BO\Zmsentities\Contact;
@@ -24,19 +26,44 @@ use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
-use BO\Zmsentities\Collection\ScopeList;
 
 class MapperService
 {
 
+    public static function mapScopeForProvider(int $providerId, ?ThinnedScopeList $scopes): ThinnedScope|array
+    {
+    
+        if (!$scopes) {
+            return ExceptionService::scopesNotFound();
+        }
+    
+        $matchingScope = null;
+        foreach ($scopes->getScopes() as $scope) {
+            if ($scope->provider && $scope->provider->id === $providerId) {
+                $matchingScope = $scope;
+                break;
+            }
+        }
+    
+        if (!$matchingScope) {
+            return ExceptionService::scopeNotFound();
+        }
+    
+        return $matchingScope;
+    }
+
     public static function mapOfficesWithScope(ProviderList $providerList): OfficeList
     {
         $offices = [];
-        $scopes = ZmsApiClientService::getScopes() ?? new ScopeList();
-
+        $scopes = ZmsApiFacadeService::getScopes();
+        
+        if (is_array($scopes)) {
+            return new OfficeList();
+        }
+    
         foreach ($providerList as $provider) {
-            $providerScope = ZmsApiFacadeService::getScopeForProvider((int) $provider->id, $scopes);
-
+            $providerScope = self::mapScopeForProvider((int) $provider->id, $scopes);
+    
             $offices[] = new Office(
                 id: isset($provider->id) ? (int) $provider->id : 0,
                 name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null),
@@ -56,7 +83,7 @@ class MapperService
                 ) : null
             );            
         }
-
+    
         return new OfficeList($offices);
     }
 
@@ -159,7 +186,6 @@ class MapperService
         $scopeEntity->id = $thinnedScope->id;
 
         if ($thinnedScope->provider) {
-            // Convert ThinnedProvider to Provider
             $scopeEntity->provider = self::thinnedProviderToProvider($thinnedScope->provider);
         }
 
@@ -310,7 +336,7 @@ class MapperService
     public static function thinnedProviderToProvider(ThinnedProvider $thinnedProvider): Provider
     {
         $provider = new Provider();
-        $provider->id = isset($thinnedProvider->id) ? (string) $thinnedProvider->id : null; // Convert int ID to string
+        $provider->id = isset($thinnedProvider->id) ? (string) $thinnedProvider->id : null;
         $provider->name = $thinnedProvider->name ?? null;
         $provider->source = $thinnedProvider->source ?? null;
 
