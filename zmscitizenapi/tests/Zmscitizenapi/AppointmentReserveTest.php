@@ -42,39 +42,48 @@ class AppointmentReserveTest extends Base
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
+        $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
-            'processId' => 101002,
-            'timestamp' => '32526616522',
-            'authKey' => 'fb43',
-            'familyName' => 'TEST_USER',
-            'customTextfield' => '',
-            'email' => 'test@muenchen.de',
-            'telephone' => '123456789',
-            'officeName' => null,
-            'officeId' => 10546,
-            'scope' => [
-                'id' => 58,
-                'provider' => [
-                    'id' => 10546,
-                    "name" => null,
+            "processId" => 101002,
+            "timestamp" => "32526616522",
+            "authKey" => "fb43",
+            "familyName" => "TEST_USER",
+            "customTextfield" => "",
+            "email" => "test@muenchen.de",
+            "telephone" => "123456789",
+            "officeName" => null,
+            "officeId" => 10546,
+            "scope" => [
+                "id" => 58,
+                "provider" => [
+                    "id" => 10546,
+                    "name" => "Gewerbeamt (KVR-III/21)",
+                    "lat" => null,
+                    "lon" => null,
                     "source" => "dldb",
-                    "contact" => null
+                    "contact" => [
+                        "city" => "Muenchen",
+                        "country" => "Germany",
+                        "name" => "Gewerbeamt (KVR-III/21)",
+                        "postalCode" => "81371",
+                        "region" => "Muenchen",
+                        "street" => "Implerstraße",
+                        "streetNumber" => "11"
+                    ]
                 ],
-                'shortName' => 'Gewerbemeldungen',
-                'telephoneActivated' => false,
-                'telephoneRequired' => true,
-                'customTextfieldActivated' => false,
-                'customTextfieldRequired' => true,
-                'customTextfieldLabel' => '',
-                'captchaActivatedRequired' => false,
-                'displayInfo' => null
+                "shortName" => "Gewerbemeldungen",
+                "telephoneActivated" => false,
+                "telephoneRequired" => true,
+                "customTextfieldActivated" => false,
+                "customTextfieldRequired" => true,
+                "customTextfieldLabel" => "",
+                "captchaActivatedRequired" => false,
+                "displayInfo" => null
             ],
-            'subRequestCounts' => [],
-            'serviceId' => null,
-            'serviceCount' => 0
-        ];
-    
+            "subRequestCounts" => [],
+            "serviceId" => 0,
+            "serviceCount" => 0
+        ];              
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }

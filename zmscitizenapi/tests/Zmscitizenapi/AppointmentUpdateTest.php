@@ -22,6 +22,14 @@ class AppointmentUpdateTest extends Base
                     'response' => $this->readFixture("GET_process.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/101002/fb43/',
                     'response' => $this->readFixture("POST_update_appointment.json")
@@ -51,12 +59,7 @@ class AppointmentUpdateTest extends Base
             "officeId" => 0,
             "scope" => [
                 "id" => 0,
-                "provider" => [
-                    "id" => null,
-                    "name" => null,
-                    "source" => null,
-                    "contact" => null
-                ],
+                "provider" => null,
                 "shortName" => null,
                 "telephoneActivated" => null,
                 "telephoneRequired" => null,
@@ -89,6 +92,14 @@ class AppointmentUpdateTest extends Base
                         'resolveReferences' => 2,
                     ],
                     'response' => $this->readFixture("GET_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
                 ],
                 [
                     'function' => 'readPostResult',

@@ -4,6 +4,7 @@ namespace BO\Zmscitizenapi\Models\Collections;
 
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmsentities\Schema\Entity;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class ThinnedScopeList extends Entity implements JsonSerializable
@@ -18,7 +19,7 @@ class ThinnedScopeList extends Entity implements JsonSerializable
         foreach ($scopes as $scope) {
             try {
                 if (!$scope instanceof ThinnedScope) {
-                    throw new \InvalidArgumentException("All elements must be instances of ThinnedScope.");
+                    throw new InvalidArgumentException("Element is not an instance of ThinnedScope.");
                 }
                 $this->scopes[] = $scope;
             } catch (\Exception $e) {
@@ -32,7 +33,7 @@ class ThinnedScopeList extends Entity implements JsonSerializable
     private function ensureValid()
     {
         if (!$this->testValid()) {
-            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+            throw new InvalidArgumentException("The provided data is invalid according to the schema.");
         }
     }
 

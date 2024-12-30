@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services;
 
-use BO\Zmscitizenapi\Services\ExceptionService;
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Combinable;
 use BO\Zmscitizenapi\Models\OfficeServiceRelation;
 use BO\Zmscitizenapi\Models\Service;
+use BO\Zmscitizenapi\Models\ThinnedContact;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedProvider;
 use BO\Zmscitizenapi\Models\ThinnedScope;
@@ -30,23 +30,15 @@ use BO\Zmsentities\Collection\RequestRelationList;
 class MapperService
 {
 
-    public static function mapScopeForProvider(int $providerId, ?ThinnedScopeList $scopes): ThinnedScope|array
+    public static function mapScopeForProvider(int $providerId, ?ThinnedScopeList $scopes): ThinnedScope
     {
     
-        if (!$scopes) {
-            return ExceptionService::scopesNotFound();
-        }
-    
-        $matchingScope = null;
+        $matchingScope = new ThinnedScope();
         foreach ($scopes->getScopes() as $scope) {
             if ($scope->provider && $scope->provider->id === $providerId) {
                 $matchingScope = $scope;
                 break;
             }
-        }
-    
-        if (!$matchingScope) {
-            return ExceptionService::scopeNotFound();
         }
     
         return $matchingScope;
@@ -151,54 +143,42 @@ class MapperService
         return new OfficeServiceRelationList($relations);
     }
 
-    public static function scopeToThinnedScope(Scope $myscope): ThinnedScope
+    public static function scopeToThinnedScope(Scope $scope): ThinnedScope
     {
-        if (!$myscope || !isset($myscope->id)) {
+        if (!$scope || !isset($scope->id)) {
             return new ThinnedScope();
         }
-
+    
         $provider = null;
-
-        if (isset($myscope->provider)) {
-            $provider = self::providerToThinnedProvider($myscope->provider);
+    
+        try {
+            if ($scope->getProvider()) {
+                $provider = $scope->getProvider();
+                $contact = $provider->getContact();
+    
+                $thinnedProvider = new ThinnedProvider(
+                    id: (int) $provider->id ?? null,
+                    name: $provider->getName() ?? null,
+                    source: $provider->getSource() ?? null,
+                    contact: self::contactToThinnedContact($contact ) ? new ThinnedContact() : null
+                );
+            }
+        } catch (\BO\Zmsentities\Exception\ScopeMissingProvider $e) {
+            $thinnedProvider = null;
         }
-
+    
         return new ThinnedScope(
-            id: isset($myscope->id) ? (int) $myscope->id : 0,
-            provider: isset($myscope->provider) ? self::providerToThinnedProvider($myscope->provider) : null,
-            shortName: $myscope->shortName ?? null,
-            telephoneActivated: isset($myscope->telephoneActivated) ? (bool) $myscope->telephoneActivated : null,
-            telephoneRequired: isset($myscope->telephoneRequired) ? (bool) $myscope->telephoneRequired : null,
-            customTextfieldActivated: isset($myscope->customTextfieldActivated) ? (bool) $myscope->customTextfieldActivated : null,
-            customTextfieldRequired: isset($myscope->customTextfieldRequired) ? (bool) $myscope->customTextfieldRequired : null,
-            captchaActivatedRequired: isset($myscope->captchaActivatedRequired) ? (bool) $myscope->captchaActivatedRequired : null,
-            displayInfo: $myscope->displayInfo ?? null
+            id: (int) ($scope->getId() ?? 0),
+            provider: $thinnedProvider,
+            shortName: $scope->getShortName() ?? null,
+            telephoneActivated: $scope->getTelephoneActivated() !== null ? (bool) $scope->getTelephoneActivated() : null,
+            telephoneRequired: $scope->getTelephoneRequired() !== null ? (bool) $scope->getTelephoneRequired() : null,
+            customTextfieldActivated: $scope->getCustomTextfieldActivated() !== null ? (bool) $scope->getCustomTextfieldActivated() : null,
+            customTextfieldRequired: $scope->getCustomTextfieldRequired() !== null ? (bool) $scope->getCustomTextfieldRequired() : null,
+            customTextfieldLabel: $scope->getCustomTextfieldLabel() ?? null,
+            captchaActivatedRequired: $scope->getCaptchaActivatedRequired() !== null ? (bool) $scope->getCaptchaActivatedRequired() : null,
+            displayInfo: $scope->getDisplayInfo() ?? null
         );
-    }
-
-    public static function thinnedScopeToScope(ThinnedScope $thinnedScope): Scope
-    {
-        if (!$thinnedScope || !isset($thinnedScope->id)) {
-            return new Scope();
-        }
-
-        $scopeEntity = new Scope();
-        $scopeEntity->id = $thinnedScope->id;
-
-        if ($thinnedScope->provider) {
-            $scopeEntity->provider = self::thinnedProviderToProvider($thinnedScope->provider);
-        }
-
-        $scopeEntity->shortName = $thinnedScope->shortName ?? null;
-        $scopeEntity->telephoneActivated = $thinnedScope->telephoneActivated ?? null;
-        $scopeEntity->telephoneRequired = $thinnedScope->telephoneRequired ?? null;
-        $scopeEntity->customTextfieldActivated = $thinnedScope->customTextfieldActivated ?? null;
-        $scopeEntity->customTextfieldRequired = $thinnedScope->customTextfieldRequired ?? null;
-        $scopeEntity->customTextfieldLabel = $thinnedScope->customTextfieldLabel ?? null;
-        $scopeEntity->captchaActivatedRequired = $thinnedScope->captchaActivatedRequired ?? null;
-        $scopeEntity->displayInfo = $thinnedScope->displayInfo ?? null;
-
-        return $scopeEntity;
     }
 
     public static function processToThinnedProcess(Process $myProcess): ThinnedProcess
@@ -312,6 +292,25 @@ class MapperService
     }
 
     /**
+     * Converts a raw or existing contact object/array into a ThinnedContact model.
+     *
+     * @param object|array $contact
+     * @return ThinnedContact
+     */
+    public static function contactToThinnedContact($contact): ThinnedContact
+    {
+        return new ThinnedContact(
+            $contact['city']         ?? $contact->city         ?? '',
+            $contact['country']      ?? $contact->country      ?? '',
+            $contact['name']         ?? $contact->name         ?? '',
+            $contact['postalCode']   ?? $contact->postalCode   ?? '',
+            $contact['region']       ?? $contact->region       ?? '',
+            $contact['street']       ?? $contact->street       ?? '',
+            $contact['streetNumber'] ?? $contact->streetNumber ?? ''
+        );
+    }
+
+    /**
      * Convert a Provider object to a ThinnedProvider.
      *
      * @param Provider $provider
@@ -321,38 +320,12 @@ class MapperService
     {
         return new ThinnedProvider(
             id: isset($provider->id) ? (int) $provider->id : null,
-            name: $provider->name ?? null,
-            source: $provider->source ?? null,
-            contact: $provider->contact ?? null,
+            name: isset($provider->name) ? $provider->name : null,
+            source: isset($provider->source) ? $provider->source : null,
+            lon: isset($provider->data['geo']['lon']) ? (float)$provider->data['geo']['lon'] : null,
+            lat: isset($provider->data['geo']['lat']) ? (float)$provider->data['geo']['lat'] : null,
+            contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null,
         );
     }
 
-    /**
-     * Convert a ThinnedProvider object to a Provider.
-     *
-     * @param ThinnedProvider $thinnedProvider
-     * @return Provider
-     */
-    public static function thinnedProviderToProvider(ThinnedProvider $thinnedProvider): Provider
-    {
-        $provider = new Provider();
-        $provider->id = isset($thinnedProvider->id) ? (string) $thinnedProvider->id : null;
-        $provider->name = $thinnedProvider->name ?? null;
-        $provider->source = $thinnedProvider->source ?? null;
-
-        if ($thinnedProvider->address || $thinnedProvider->geo) {
-            $provider->data = [
-                'address' => $thinnedProvider->address ?? null,
-                'geo' => $thinnedProvider->geo ?? null
-            ];
-        }
-
-        if ($thinnedProvider->telephone || $thinnedProvider->email) {
-            $provider->contact = new Contact();
-            $provider->contact->telephone = $thinnedProvider->telephone ?? null;
-            $provider->contact->email = $thinnedProvider->email ?? null;
-        }
-
-        return $provider;
-    }
 }

@@ -3,6 +3,7 @@
 namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmsentities\Schema\Entity;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class Combinable extends Entity implements JsonSerializable
@@ -30,7 +31,7 @@ class Combinable extends Entity implements JsonSerializable
     private function ensureValid()
     {
         if (!$this->testValid()) {
-            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+            throw new InvalidArgumentException("The provided data is invalid according to the schema.");
         }
     }
 

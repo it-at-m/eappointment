@@ -4,6 +4,7 @@ namespace BO\Zmscitizenapi\Models\Collections;
 
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmsentities\Schema\Entity;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class ServiceList extends Entity implements JsonSerializable
@@ -18,7 +19,7 @@ class ServiceList extends Entity implements JsonSerializable
         foreach ($services as $service) {
             try {
                 if (!$service instanceof Service) {
-                    throw new \InvalidArgumentException("All elements must be instances of Service.");
+                    throw new InvalidArgumentException("Element is not an instance of Service.");
                 }
                 $this->services[] = $service;
             } catch (\Exception $e) {
@@ -33,7 +34,7 @@ class ServiceList extends Entity implements JsonSerializable
     private function ensureValid()
     {
         if (!$this->testValid()) {
-            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+            throw new InvalidArgumentException("The provided data is invalid according to the schema.");
         }
     }
 

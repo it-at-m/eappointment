@@ -1,41 +1,97 @@
 {
-    "type": ["array", "object", "null"],
+    "title": "ThinnedProvider",
+    "type": [
+        "array",
+        "object",
+        "null"
+    ],
     "properties": {
         "id": {
             "type": "string",
             "description": "Provider ID"
         },
         "name": {
-            "type": ["string", "null"],
+            "type": [
+                "string",
+                "null"
+            ],
             "description": "Provider name"
+        },
+        "lat": {
+            "type": [
+                "number",
+                "null"
+            ],
+            "description": "Latitude in decimal degrees."
+        },
+        "lon": {
+            "type": [
+                "number",
+                "null"
+            ],
+            "description": "Longitude in decimal degrees."
         },
         "source": {
             "type": "string",
             "description": "Data source"
         },
         "contact": {
-            "type": ["array", "object", "null"],
+            "title": "ThinnedContact",
+            "description": "Represents a simplified contact object for the citizen API.",
+            "type": [
+                "array",
+                "object",
+                "null"
+            ],
             "properties": {
                 "city": {
-                    "type": ["string", "null"]
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "The city name."
                 },
                 "country": {
-                    "type": ["string", "null"]
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "The country name."
                 },
                 "name": {
-                    "type": ["string", "null"]
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Optional name field displayed for contact."
                 },
                 "postalCode": {
-                    "type": ["string", "null"]
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "The postal (ZIP) code."
                 },
                 "region": {
-                    "type": ["string", "null"]
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "The region or state name."
                 },
                 "street": {
-                    "type": ["string", "null"]
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "The street name."
                 },
                 "streetNumber": {
-                    "type": ["string", "null"]
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "The house/street number."
                 }
             }
         }
