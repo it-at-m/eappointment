@@ -12,7 +12,7 @@ class ProcessFreeSlots extends Entity implements JsonSerializable
     public static $schema = 'citizenapi/processFreeSlots.json';
 
     /** @var array|null */
-    public array $appointmentTimestamps = [];
+    public array|null $appointmentTimestamps = [];
 
     /**
      * @param array $appointmentTimestamps
