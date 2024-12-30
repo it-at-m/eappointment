@@ -28,12 +28,17 @@ class OfficesListTest extends Base
                     "id" => 9999998,
                     "name" => "Unittest Source Dienstleister",
                     "address" => null,
-                    "geo" => null,
+                    "geo" => [
+                        "lat" => "48.12750898398659",
+                        "lon" => "11.604317899956524"
+                    ],
                     "scope" => [
                         "id" => 1,
                         "provider" => [
                             "id" => 9999998,
                             "name" => "Unittest Source Dienstleister",
+                            "lat" => 48.12750898398659,
+                            "lon" => 11.604317899956524,
                             "source" => "unittest",
                             "contact" => [
                                 "city" => "Berlin",
@@ -59,12 +64,17 @@ class OfficesListTest extends Base
                     "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
                     "address" => null,
-                    "geo" => null,
+                    "geo" => [
+                        "lat" => "48.12750898398659",
+                        "lon" => "11.604317899956524"
+                    ],
                     "scope" => [
                         "id" => 2,
                         "provider" => [
                             "id" => 9999999,
                             "name" => "Unittest Source Dienstleister 2",
+                            "lat" => 48.12750898398659,
+                            "lon" => 11.604317899956524,
                             "source" => "unittest",
                             "contact" => [
                                 "city" => "Berlin",
@@ -87,7 +97,8 @@ class OfficesListTest extends Base
                     ]
                 ]
             ]
-        ];        
+        ];
+              
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }

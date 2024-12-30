@@ -4,6 +4,7 @@ namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmsentities\Schema\Entity;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class ThinnedProcess extends Entity implements JsonSerializable
@@ -108,7 +109,7 @@ class ThinnedProcess extends Entity implements JsonSerializable
     private function ensureValid()
     {
         if (!$this->testValid()) {
-            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+            throw new InvalidArgumentException("The provided data is invalid according to the schema.");
         }
     }
 

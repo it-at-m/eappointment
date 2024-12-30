@@ -68,13 +68,11 @@ class ZmsApiClientService
 
     public static function getRequestRelationList(): RequestRelationList
     {
-
             $sources = self::fetchSourceData();
 
             $requestRelationList = $sources->getRequestRelationList() ?? new RequestRelationList();
 
             return $requestRelationList;
-
     }
 
     public static function getFreeDays(ProviderList $providers, RequestList $requests, array $firstDay, array $lastDay): Calendar
@@ -153,7 +151,7 @@ class ZmsApiClientService
         }
     }
 
-    public static function submitClientData(Process $process): Process|array
+    public static function submitClientData(Process $process): Process
     {
         $url = "/process/{$process->id}/{$process->authKey}/";
 
@@ -166,7 +164,7 @@ class ZmsApiClientService
         }
     }
 
-    public function preconfirmProcess(?Process $process): ?Process
+    public function preconfirmProcess(Process $process): Process
     {
         try {
             $url = '/process/status/preconfirmed/';
@@ -176,7 +174,7 @@ class ZmsApiClientService
         }
     }
 
-    public function confirmProcess(?Process $process): ?Process
+    public function confirmProcess(Process $process): Process
     {
         try {
             $url = '/process/status/confirmed/';
@@ -186,7 +184,7 @@ class ZmsApiClientService
         }
     }
 
-    public function cancelAppointment(?Process $process): ?Process
+    public function cancelAppointment(Process $process): Process
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/";
@@ -196,7 +194,7 @@ class ZmsApiClientService
         }
     }
 
-    public function sendConfirmationEmail(?Process $process): ?Process
+    public function sendConfirmationEmail(Process $process): Process
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/confirmation/mail/";
@@ -206,7 +204,7 @@ class ZmsApiClientService
         }
     }
 
-    public function sendPreconfirmationEmail(?Process $process): ?Process
+    public function sendPreconfirmationEmail(Process $process): Process
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/preconfirmation/mail/";
@@ -216,7 +214,7 @@ class ZmsApiClientService
         }
     }
 
-    public function sendCancelationEmail(?Process $process): ?Process
+    public function sendCancelationEmail(Process $process): Process
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/delete/mail/";
@@ -226,7 +224,7 @@ class ZmsApiClientService
         }
     }
 
-    public static function getProcessById(?int $processId, ?string $authKey): Process|array
+    public static function getProcessById(int $processId, string $authKey): Process
     {
         try {
             $resolveReferences = 2;

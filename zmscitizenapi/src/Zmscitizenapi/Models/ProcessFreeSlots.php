@@ -6,24 +6,29 @@ use BO\Zmsentities\Schema\Entity;
 use InvalidArgumentException;
 use JsonSerializable;
 
-class AvailableAppointments extends Entity implements JsonSerializable
+class ProcessFreeSlots extends Entity implements JsonSerializable
 {
-    public static $schema = 'citizenapi/availableAppointments.json';
 
-    /** @var array */
+    public static $schema = 'citizenapi/processFreeSlots.json';
+
+    /** @var array|null */
     public array $appointmentTimestamps = [];
 
+    /**
+     * @param array $appointmentTimestamps
+     */
     public function __construct(array $appointmentTimestamps = [])
     {
+
         $this->appointmentTimestamps = array_map('intval', $appointmentTimestamps);
 
         $this->ensureValid();
     }
 
-    private function ensureValid()
+    private function ensureValid(): void
     {
         if (!$this->testValid()) {
-            throw new InvalidArgumentException("The provided data is invalid according to the schema.");
+            throw new InvalidArgumentException('The provided data is invalid according to the schema.');
         }
     }
 
@@ -39,6 +44,9 @@ class AvailableAppointments extends Entity implements JsonSerializable
         ];
     }
 
+    /**
+     * Implementation of JsonSerializable.
+     */
     public function jsonSerialize(): mixed
     {
         return $this->toArray();

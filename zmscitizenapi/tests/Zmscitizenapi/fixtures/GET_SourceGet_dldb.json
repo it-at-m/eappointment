@@ -20,7 +20,11 @@
         "name": "Unittest Source Dienstleister",
         "source": "unittest",
         "data": {
-          "json": "data"
+          "json": "data",
+          "geo": {
+            "lat": "48.12750898398659",
+            "lon": "11.604317899956524"
+          }
         },
         "contact": {
           "city": "Berlin",
@@ -39,7 +43,10 @@
         "source": "unittest",
         "data": {
           "json": "data",
-          "key": "value"
+          "geo": {
+            "lat": "48.12750898398659",
+            "lon": "11.604317899956524"
+          }
         },
         "contact": {
           "city": "Berlin",
@@ -81,7 +88,14 @@
         "id": "1",
         "provider": {
           "id": "9999998",
-          "source": "unittest"
+          "source": "unittest",
+          "data": {
+            "json": "data",
+            "geo": {
+              "lat": "48.12750898398659",
+              "lon": "11.604317899956524"
+            }
+          }
         },
         "shortName": "Scope 1",
         "preferences": {
@@ -100,7 +114,14 @@
         "id": "2",
         "provider": {
           "id": "9999999",
-          "source": "unittest"
+          "source": "unittest",
+          "data": {
+            "json": "data",
+            "geo": {
+              "lat": "48.12750898398659",
+              "lon": "11.604317899956524"
+            }
+          }
         },
         "shortName": "Scope 2",
         "preferences": {

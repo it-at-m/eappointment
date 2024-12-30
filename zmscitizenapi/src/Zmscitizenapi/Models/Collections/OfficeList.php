@@ -4,6 +4,7 @@ namespace BO\Zmscitizenapi\Models\Collections;
 
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmsentities\Schema\Entity;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class OfficeList extends Entity implements JsonSerializable
@@ -18,7 +19,7 @@ class OfficeList extends Entity implements JsonSerializable
         foreach ($offices as $office) {
             try {
                 if (!$office instanceof Office) {
-                    throw new \InvalidArgumentException("Element is not an instance of Office.");
+                    throw new InvalidArgumentException("Element is not an instance of Office.");
                 }
                 $this->offices[] = $office;
             } catch (\Exception $e) {
@@ -32,7 +33,7 @@ class OfficeList extends Entity implements JsonSerializable
     private function ensureValid()
     {
         if (!$this->testValid()) {
-            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+            throw new InvalidArgumentException("The provided data is invalid according to the schema.");
         }
     }
 

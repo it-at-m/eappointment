@@ -3,6 +3,7 @@
 namespace BO\Zmscitizenapi\Models;
 
 use BO\Zmsentities\Schema\Entity;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class ThinnedProvider extends Entity implements JsonSerializable
@@ -18,17 +19,27 @@ class ThinnedProvider extends Entity implements JsonSerializable
     /** @var string|null */
     public ?string $source;
 
-    /** @var array|null */
-    public ?array $contact;
+    /** @var float|null */
+    public ?float  $lat;
+
+    /** @var float|null */
+    public ?float  $lon;
+
+    /** @var ThinnedContact|null */
+    public ?ThinnedContact $contact;
 
     public function __construct(
         ?int $id = null,
         ?string $name = null,
+        ?float $lat = null,
+        ?float $lon = null,
         ?string $source = null,
-        ?array $contact = null,
+        ?ThinnedContact $contact = null,
     ) {
         $this->id = $id;
         $this->name = $name;
+        $this->lat = $lat;
+        $this->lon = $lon;
         $this->source = $source;
         $this->contact = $contact;
 
@@ -38,7 +49,7 @@ class ThinnedProvider extends Entity implements JsonSerializable
     private function ensureValid()
     {
         if (!$this->testValid()) {
-            throw new \InvalidArgumentException("The provided data is invalid according to the schema.");
+            throw new InvalidArgumentException("The provided data is invalid according to the schema.");
         }
     }
 
@@ -52,6 +63,8 @@ class ThinnedProvider extends Entity implements JsonSerializable
         return [
             'id' => $this->id ?? null,
             'name' => $this->name ?? null,
+            'lat' => $this->lat ?? null,
+            'lon' => $this->lon ?? null,
             'source' => $this->source ?? null,
             'contact' => $this->contact ?? null,
         ];

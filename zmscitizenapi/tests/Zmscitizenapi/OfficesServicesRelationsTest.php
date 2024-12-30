@@ -27,14 +27,27 @@ class OfficesServicesRelationsTest extends Base
                     "id" => 9999998,
                     "name" => "Unittest Source Dienstleister",
                     "address" => null,
-                    "geo" => null,
+                    "geo" => [
+                        "lat" => "48.12750898398659",
+                        "lon" => "11.604317899956524"
+                    ],
                     "scope" => [
                         "id" => 1,
                         "provider" => [
-                            "id" => "9999998",
-                            "name" => null,
+                            "id" => 9999998,
+                            "name" => "Unittest Source Dienstleister",
+                            "lat" => 48.12750898398659,
+                            "lon" => 11.604317899956524,
                             "source" => "unittest",
-                            "contact" => null
+                            "contact" => [
+                                "city" => "Berlin",
+                                "country" => "Germany",
+                                "name" => "Unittest Source Dienstleister",
+                                "postalCode" => "10178",
+                                "region" => "Berlin",
+                                "street" => "Alte Jakobstraße",
+                                "streetNumber" => "105"
+                            ]
                         ],
                         "shortName" => "Scope 1",
                         "telephoneActivated" => true,
@@ -50,14 +63,27 @@ class OfficesServicesRelationsTest extends Base
                     "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
                     "address" => null,
-                    "geo" => null,
+                    "geo" => [
+                        "lat" => "48.12750898398659",
+                        "lon" => "11.604317899956524"
+                    ],
                     "scope" => [
                         "id" => 2,
                         "provider" => [
-                            "id" => "9999999",
-                            "name" => null,
+                            "id" => 9999999,
+                            "name" => "Unittest Source Dienstleister 2",
+                            "lat" => 48.12750898398659,
+                            "lon" => 11.604317899956524,
                             "source" => "unittest",
-                            "contact" => null
+                            "contact" => [
+                                "city" => "Berlin",
+                                "country" => "Germany",
+                                "name" => "Unittest Source Dienstleister 2",
+                                "postalCode" => "10178",
+                                "region" => "Berlin",
+                                "street" => "Alte Jakobstraße",
+                                "streetNumber" => "106"
+                            ]
                         ],
                         "shortName" => "Scope 2",
                         "telephoneActivated" => false,
@@ -82,8 +108,8 @@ class OfficesServicesRelationsTest extends Base
                     "name" => "Unittest Source Dienstleistung 2",
                     "maxQuantity" => 1,
                     "combinable" => [
-                        1 => [9999999],
-                        2 => [9999999]
+                        "1" => [9999999],
+                        "2" => [9999999]
                     ]
                 ]
             ],
