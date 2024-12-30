@@ -68,11 +68,15 @@ class ZmsApiClientService
 
     public static function getRequestRelationList(): RequestRelationList
     {
+        try {
             $sources = self::fetchSourceData();
 
             $requestRelationList = $sources->getRequestRelationList() ?? new RequestRelationList();
 
             return $requestRelationList;
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e, __FUNCTION__);
+        }
     }
 
     public static function getFreeDays(ProviderList $providers, RequestList $requests, array $firstDay, array $lastDay): Calendar

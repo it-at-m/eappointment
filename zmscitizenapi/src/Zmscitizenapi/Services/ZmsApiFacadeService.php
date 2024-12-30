@@ -69,7 +69,13 @@ class ZmsApiFacadeService
 
             return new OfficeList($offices);
         } catch (\RuntimeException $e) {
-            return ExceptionService::officesNotFound();
+            if (strpos($e->getMessage(), 'officesNotFound') !== false) {
+                return ExceptionService::officesNotFound();
+            }
+            if (strpos($e->getMessage(), 'scopeNotFound') !== false) {
+                return ExceptionService::scopeNotFound();
+            }
+            return ExceptionService::internalError();
         }
     }
 
@@ -110,7 +116,13 @@ class ZmsApiFacadeService
     
             return new ThinnedScopeList($scopesProjectionList);
         } catch (\RuntimeException $e) {
-            return ExceptionService::scopesNotFound();
+            if (strpos($e->getMessage(), 'officesNotFound') !== false) {
+                return ExceptionService::officesNotFound();
+            }
+            if (strpos($e->getMessage(), 'scopeNotFound') !== false) {
+                return ExceptionService::scopeNotFound();
+            }
+            return ExceptionService::internalError();
         }
     }
 
@@ -149,6 +161,15 @@ class ZmsApiFacadeService
 
             return new OfficeServiceAndRelationList($offices, $services, $relations);
         } catch (\RuntimeException $e) {
+            if (strpos($e->getMessage(), 'officesNotFound') !== false) {
+                return ExceptionService::officesNotFound();
+            }
+            if (strpos($e->getMessage(), 'scopeNotFound') !== false) {
+                return ExceptionService::scopeNotFound();
+            }
+            if (strpos($e->getMessage(), 'servicesNotFound') !== false) {
+                return ExceptionService::servicesNotFound();
+            }
             return ExceptionService::internalError();
         }
     }
@@ -213,7 +234,13 @@ class ZmsApiFacadeService
                  displayInfo:             $result['displayInfo']
              );
          } catch (\RuntimeException $e) {
-             return ExceptionService::scopeNotFound();
+            if (strpos($e->getMessage(), 'officesNotFound') !== false) {
+                return ExceptionService::officesNotFound();
+            }
+            if (strpos($e->getMessage(), 'scopeNotFound') !== false) {
+                return ExceptionService::scopeNotFound();
+            }
+            return ExceptionService::internalError();
          }
      }
 
@@ -289,7 +316,13 @@ class ZmsApiFacadeService
 
             return new OfficeList($offices);
         } catch (\RuntimeException $e) {
-            return ExceptionService::officesNotFound();
+            if (strpos($e->getMessage(), 'officesNotFound') !== false) {
+                return ExceptionService::officesNotFound();
+            }
+            if (strpos($e->getMessage(), 'scopeNotFound') !== false) {
+                return ExceptionService::scopeNotFound();
+            }
+            return ExceptionService::internalError();
         }
     }
 
@@ -346,7 +379,13 @@ class ZmsApiFacadeService
                 displayInfo:             $matchingScope->getDisplayInfo() ?? null
             );
         } catch (\RuntimeException $e) {
-            return ExceptionService::scopeNotFound();
+            if (strpos($e->getMessage(), 'officesNotFound') !== false) {
+                return ExceptionService::officesNotFound();
+            }
+            if (strpos($e->getMessage(), 'scopeNotFound') !== false) {
+                return ExceptionService::scopeNotFound();
+            }
+            return ExceptionService::internalError();
         }
     }
 
@@ -700,6 +739,9 @@ class ZmsApiFacadeService
             }
             if (strpos($e->getMessage(), 'authKeyMismatch') !== false) {
                 return ExceptionService::authKeyMismatch();
+            }
+            if (strpos($e->getMessage(), 'officesNotFound') !== false) {
+                return ExceptionService::officesNotFound();
             }
             return ExceptionService::internalError();
         }
