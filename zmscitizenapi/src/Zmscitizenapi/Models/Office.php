@@ -61,22 +61,11 @@ class Office extends Entity implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'id'      => $this->id,
-            'name'    => $this->name,
+            'id' => $this->id,
+            'name' => $this->name,
             'address' => $this->address,
-            'geo'     => $this->geo,
-            'scope'   => $this->scope ? [
-                'id' => $this->scope->id,
-                'provider' => $this->scope->getProvider(),
-                'shortName' => $this->scope->getShortName(),
-                'telephoneActivated' => $this->scope->getTelephoneActivated(),
-                'telephoneRequired' => $this->scope->getTelephoneRequired(),
-                'customTextfieldActivated' => $this->scope->getCustomTextfieldActivated(),
-                'customTextfieldRequired' => $this->scope->getCustomTextfieldRequired(),
-                'customTextfieldLabel' => $this->scope->getCustomTextfieldLabel(),
-                'captchaActivatedRequired' => $this->scope->getCaptchaActivatedRequired(),
-                'displayInfo' => $this->scope->getDisplayInfo(),
-            ] : null,
+            'geo' => $this->geo,
+            'scope' => $this->scope?->toArray(),
         ];
     }
 
