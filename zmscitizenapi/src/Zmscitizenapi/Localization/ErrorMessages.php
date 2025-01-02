@@ -27,6 +27,11 @@ class ErrorMessages
     // English messages
     public const EN = [
 
+        'invalidRequest' => [
+            'errorCode' => 'invalidRequest',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Invalid request.'
+        ],
         'captchaVerificationFailed' => [
             'errorCode' => 'captchaVerificationFailed',
             'statusCode' => self::HTTP_BAD_REQUEST,
@@ -260,6 +265,11 @@ class ErrorMessages
     // German messages
     public const DE = [
 
+        'invalidRequest' => [
+            'errorCode' => 'invalidRequest',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Ungültige Anfrage.'
+        ],
         'captchaVerificationFailed' => [
             'errorCode' => 'captchaVerificationFailed',
             'statusCode' => self::HTTP_BAD_REQUEST,
