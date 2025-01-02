@@ -19,7 +19,14 @@ class AppointmentReserve extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $request = $request instanceof ServerRequestInterface ? $request : null;
+        if (!($request instanceof ServerRequestInterface)) {
+            return $this->createJsonResponse(
+                $response, 
+                ['errors' => [ErrorMessages::get('invalidRequest')]], 
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
+        }
+        
         $body = $request->getParsedBody();
 
         $clientData = $this->extractClientData($body);
@@ -32,7 +39,7 @@ class AppointmentReserve extends BaseController
 
         try {
             if (!$this->verifyCaptcha($clientData->officeId, $clientData->captchaSolution)) {
-                return $this->createJsonResponse($response, ErrorMessages::get('captchaVerificationFailed'), 400);
+                return $this->createJsonResponse($response, ErrorMessages::get('captchaVerificationFailed'), ErrorMessages::get('captchaVerificationFailed')['statusCode']);
             }
 
             $errors = ValidationService::validateServiceLocationCombination(

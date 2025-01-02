@@ -17,8 +17,17 @@ class AppointmentUpdate extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $request = $request instanceof ServerRequestInterface ? $request : null;
-        $clientData = $this->extractClientData($request->getParsedBody());
+        if (!($request instanceof ServerRequestInterface)) {
+            return $this->createJsonResponse(
+                $response, 
+                ['errors' => [ErrorMessages::get('invalidRequest')]], 
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
+        }
+        
+        $body = $request->getParsedBody();
+
+        $clientData = $this->extractClientData($body);
         
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
