@@ -251,70 +251,52 @@ class ZmsApiFacadeService
      * 
      */
 
-    public static function getOfficesByServiceIds(array $serviceIds): OfficeList|array
-    {
+     public static function getOfficesByServiceId(int $serviceId): OfficeList|array
+     {
         try {
-            $serviceIds = array_unique($serviceIds);
-
-            $errors = ValidationService::validateGetOfficesByServiceIds($serviceIds);
-            if (!empty($errors['errors'])) {
-                return $errors;
-            }
-
+     
             $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
             $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-
+     
             $providerMap = [];
             foreach ($providerList as $provider) {
-                $providerMap[$provider->id] = $provider;
+                $providerMap[$provider->id] = $provider; 
             }
-
-            $relationMap = [];
-            foreach ($requestRelationList as $relation) {
-                $requestId = $relation->request->id;
-                $providerId = $relation->provider->id;
-                $relationMap[$requestId][] = $providerId;
-            }
-
-            $addedOfficeIds = [];
+     
             $offices = [];
-
-            foreach ($serviceIds as $serviceId) {
-                if (!isset($relationMap[$serviceId])) {
-                    continue;
-                }
-
-                foreach ($relationMap[$serviceId] as $providerId) {
-                    if (isset($addedOfficeIds[$providerId]) || !isset($providerMap[$providerId])) {
+            foreach ($requestRelationList as $relation) {
+                if ((int)$relation->request->id === $serviceId) {
+                    $providerId = $relation->provider->id;
+                    
+                    if (!isset($providerMap[$providerId])) {
                         continue;
                     }
-
+     
                     $provider = $providerMap[$providerId];
                     $scope = null;
-
-                    $scopeData = self::getScopeByOfficeId((int) $provider->id);
+     
+                    $scopeData = self::getScopeByOfficeId((int)$provider->id);
                     if ($scopeData instanceof ThinnedScope) {
                         $scope = $scopeData;
                     }
-
+     
                     $offices[] = new Office(
-                        id: (int) $provider->id,
+                        id: (int)$provider->id,  
                         name: $provider->name,
                         address: $provider->address ?? null,
                         geo: $provider->geo ?? null,
                         scope: $scope
                     );
-
-                    $addedOfficeIds[$provider->id] = true;
                 }
             }
-
+     
             $errors = ValidationService::validateOfficesNotFound($offices);
             if (!empty($errors['errors'])) {
                 return $errors;
             }
-
+     
             return new OfficeList($offices);
+     
         } catch (\RuntimeException $e) {
             if (strpos($e->getMessage(), 'officesNotFound') !== false) {
                 return ExceptionService::officesNotFound();
@@ -324,15 +306,11 @@ class ZmsApiFacadeService
             }
             return ExceptionService::internalError();
         }
-    }
+     }
 
     public static function getScopeById(?int $scopeId): ThinnedScope|array
     {
         try {
-            $errors = ValidationService::validateGetScopeById($scopeId);
-            if (!empty($errors['errors'])) {
-                return $errors;
-            }
     
             $scopeList    = ZmsApiClientService::getScopes() ?? new ScopeList();
             $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
