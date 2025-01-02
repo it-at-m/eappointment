@@ -17,6 +17,8 @@ class ErrorMessages
 
     private const HTTP_INTERNAL_SERVER_ERROR = 500;
 
+    private const HTTP_NOT_IMPLEMENTED = 501;
+
     private const HTTP_UNAVAILABLE = 503;
 
     private const HTTP_UNKNOWN = 520;
@@ -27,6 +29,11 @@ class ErrorMessages
     // English messages
     public const EN = [
 
+        'notImplemented' => [
+            'errorCode' => 'notImplemented',
+            'statusCode' => self::HTTP_NOT_IMPLEMENTED,
+            'errorMessage' => 'Feature not implemented yet.',
+        ],        
         'invalidRequest' => [
             'errorCode' => 'invalidRequest',
             'statusCode' => self::HTTP_BAD_REQUEST,
@@ -265,6 +272,11 @@ class ErrorMessages
     // German messages
     public const DE = [
 
+        'notImplemented' => [
+            'errorCode' => 'notImplemented',
+            'statusCode' => self::HTTP_NOT_IMPLEMENTED,
+            'errorMessage' => 'Funktion ist noch nicht implementiert.',
+        ],
         'invalidRequest' => [
             'errorCode' => 'invalidRequest',
             'statusCode' => self::HTTP_BAD_REQUEST,
