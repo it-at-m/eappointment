@@ -5,37 +5,62 @@ namespace BO\Zmscitizenapi\Controllers;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Services\ValidationService;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
-use BO\Zmscitizenapi\Services\ValidationService;
 
 class OfficesByServiceList extends BaseController
 {
-
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-
-        $serviceIdParam = $request->getQueryParams()['serviceId'] ?? [];
-
-        if (is_string($serviceIdParam)) {
-            $serviceIdParam = explode(',', $serviceIdParam);
-        }
-    
-        $errors = ValidationService::validateServiceIdParam($serviceIdParam);
-        if (!empty($errors)) {
-            return $this->createJsonResponse($response, $errors, 400);
+        $clientData = $this->extractClientData($request->getQueryParams());
+        
+        $errors = $this->validateClientData($clientData);
+        if (!empty($errors['errors'])) {
+            $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
+            return $this->createJsonResponse($response, $errors, $statusCode);
         }
 
-        $result = ZmsApiFacadeService::getOfficesByServiceIds($serviceIdParam);
-        if (!empty($result['errors'])) {
-            $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
-            return $this->createJsonResponse($response, $result, $statusCode);
+        try {
+            $result = $this->getOfficesByService($clientData);
+            
+            if (!empty($result['errors'])) {
+                $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
+                return $this->createJsonResponse($response, $result, $statusCode);
+            }
+
+            return $this->createJsonResponse($response, $result->toArray(), 200);
+            
+        } catch (\Exception $e) {
+            return $this->createJsonResponse(
+                $response,
+                ['errors' => [ErrorMessages::get('internalError')]],
+                500
+            );
         }
-    
-        return $this->createJsonResponse($response, $result->toArray(), 200);
     }
-    
-    
 
+    private function extractClientData(array $queryParams): object
+    {
+        $serviceId = $queryParams['serviceId'] ?? [];
+        
+        if (is_string($serviceId)) {
+            $serviceId = array_map('trim', explode(',', $serviceId));
+        }
+
+        return (object) [
+            'serviceIds' => $serviceId
+        ];
+    }
+
+    private function validateClientData(object $data): array
+    {
+        return ValidationService::validateServiceIdParam($data->serviceIds);
+    }
+
+    private function getOfficesByService(object $data): mixed
+    {
+        return ZmsApiFacadeService::getOfficesByServiceIds($data->serviceIds);
+    }
 }

@@ -4,25 +4,37 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Controllers;
 
 use BO\Zmscitizenapi\BaseController;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
 
 class Captcha extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
-            $captcha = new FriendlyCaptcha();
-            $captchaDetails = $captcha->getCaptchaDetails();
+            $result = $this->getCaptchaDetails();
+            
+            if (!empty($result['errors'])) {
+                $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
+                return $this->createJsonResponse($response, $result, $statusCode);
+            }
 
-            return $this->createJsonResponse($response, $captchaDetails, statusCode: 200);
+            return $this->createJsonResponse($response, $result, 200);
+            
         } catch (\Exception $e) {
             return $this->createJsonResponse(
                 $response,
-                ['error' => 'Captcha verification failed', 'message' => $e->getMessage()],
-                statusCode: 500
+                ['errors' => [ErrorMessages::get('captchaVerificationError')]],
+                500
             );
         }
+    }
+
+    private function getCaptchaDetails(): array
+    {
+        $captcha = new FriendlyCaptcha();
+        return $captcha->getCaptchaDetails();
     }
 }

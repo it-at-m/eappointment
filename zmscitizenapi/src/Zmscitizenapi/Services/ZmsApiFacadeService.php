@@ -329,7 +329,7 @@ class ZmsApiFacadeService
     public static function getScopeById(?int $scopeId): ThinnedScope|array
     {
         try {
-            $errors = ValidationService::validateGetScopeByIds($scopeId);
+            $errors = ValidationService::validateGetScopeById($scopeId);
             if (!empty($errors['errors'])) {
                 return $errors;
             }
@@ -389,59 +389,38 @@ class ZmsApiFacadeService
         }
     }
 
-    public static function getServicesByOfficeIds(array $officeIds): ServiceList|array
+    public static function getServicesByOfficeId(int $officeId): ServiceList|array 
     {
         try {
-            $officeIds = array_unique($officeIds);
-
-            $errors = ValidationService::validateGetServicesByOfficeIds($officeIds);
-            if (!empty($errors['errors'])) {
-                return $errors;
-            }
-
             $requestList = ZmsApiClientService::getServices() ?? new RequestList();
             $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-
+    
             $requestMap = [];
             foreach ($requestList as $request) {
                 $requestMap[$request->id] = $request;
             }
-
-            $relationMap = [];
-            foreach ($requestRelationList as $relation) {
-                $providerId = $relation->provider->id;
-                $requestId = $relation->request->id;
-
-                if (!isset($relationMap[$providerId])) {
-                    $relationMap[$providerId] = [];
-                }
-                $relationMap[$providerId][] = $requestId;
-            }
-
+    
             $services = [];
-            $addedServiceIds = [];
-
-            foreach ($officeIds as $officeId) {
-                if (isset($relationMap[$officeId])) {
-                    foreach ($relationMap[$officeId] as $requestId) {
-                        if (!in_array($requestId, $addedServiceIds) && isset($requestMap[$requestId])) {
-                            $request = $requestMap[$requestId];
-                            $services[] = new Service(
-                                id: (int) $request->id,
-                                name: $request->name,
-                                maxQuantity: $request->getAdditionalData()['maxQuantity'] ?? 1
-                            );
-                            $addedServiceIds[] = $request->id;
-                        }
+            foreach ($requestRelationList as $relation) {
+                if ((int)$relation->provider->id === $officeId) {
+                    $requestId = $relation->request->id;
+                    
+                    if (isset($requestMap[$requestId])) {
+                        $request = $requestMap[$requestId];
+                        $services[] = new Service(
+                            id: (int) $request->id,
+                            name: $request->name,
+                            maxQuantity: $request->getAdditionalData()['maxQuantity'] ?? 1
+                        );
                     }
                 }
             }
-
+    
             $errors = ValidationService::validateServicesNotFound($services);
             if (!empty($errors['errors'])) {
                 return $errors;
             }
-
+    
             return new ServiceList($services);
         } catch (\RuntimeException $e) {
             return ExceptionService::servicesNotFound();
@@ -494,19 +473,8 @@ class ZmsApiFacadeService
         }
     }
 
-    public static function getBookableFreeDays(array $queryParams): AvailableDays|array
+    public static function getBookableFreeDays(int $officeId, int $serviceId, array $serviceCounts, string $startDate, string $endDate): AvailableDays|array
     {
-        $officeId = $queryParams['officeId'] ?? null;
-        $serviceId = $queryParams['serviceId'] ?? null;
-        $serviceCounts = isset($queryParams['serviceCount']) ? explode(',', $queryParams['serviceCount']) : [];
-        $startDate = $queryParams['startDate'] ?? null;
-        $endDate = $queryParams['endDate'] ?? null;
-
-        $errors = ValidationService::validateGetBookableFreeDays((int) $officeId, (int) $serviceId, $startDate, $endDate, $serviceCounts);
-        if (!empty($errors['errors'])) {
-            return $errors;
-        }
-
         try {
             $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
             $lastDay = DateTimeFormatHelper::getInternalDateFromISO($endDate);
@@ -583,10 +551,6 @@ class ZmsApiFacadeService
         ?array $serviceIds,
         ?array $serviceCounts
     ): AvailableAppointments|array {
-        $errors = ValidationService::validateGetAvailableAppointments($date, $officeId, $serviceIds, $serviceCounts);
-        if (!empty($errors['errors'])) {
-            return $errors;
-        }
 
         try {
             $requests = [];
