@@ -4,16 +4,36 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Controllers;
 
 use BO\Zmscitizenapi\BaseController;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 
 class ServicesList extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $services = ZmsApiFacadeService::getServices();
+        try {
+            $result = $this->getServices();
+            
+            if (!empty($result['errors'])) {
+                $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
+                return $this->createJsonResponse($response, $result, $statusCode);
+            }
 
-        return $this->createJsonResponse($response, $services->toArray(), statusCode: 200);
+            return $this->createJsonResponse($response, $result->toArray(), 200);
+            
+        } catch (\Exception $e) {
+            return $this->createJsonResponse(
+                $response,
+                ['errors' => [ErrorMessages::get('internalError')]],
+                500
+            );
+        }
+    }
+
+    private function getServices(): mixed
+    {
+        return ZmsApiFacadeService::getServices();
     }
 }

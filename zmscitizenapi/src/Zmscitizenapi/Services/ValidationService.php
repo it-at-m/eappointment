@@ -129,7 +129,7 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateGetScopeByIds(?int $scopeId): array
+    public static function validateGetScopeById(?int $scopeId): array
     {
         $errors = [];
         if (empty($scopeId) || $scopeId === '') {
@@ -139,21 +139,14 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateGetServicesByOfficeIds(?array $officeIds): array
+    public static function validateGetServicesByOfficeId(?int $officeId): array
     {
-
         $errors = [];
-
-        if (empty($officeIds) || !is_array($officeIds)) {
+    
+        if ($officeId === null || !is_numeric($officeId)) {
             $errors[] = ErrorMessages::get('invalidOfficeId');
         }
-
-        foreach ($officeIds as $id) {
-            if (!is_numeric($id)) {
-                $errors[] = ErrorMessages::get('invalidOfficeId');
-            }
-        }
-
+    
         return ['errors' => $errors];
     }
 

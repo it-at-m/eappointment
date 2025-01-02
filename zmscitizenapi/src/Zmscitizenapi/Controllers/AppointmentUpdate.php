@@ -18,54 +18,91 @@ class AppointmentUpdate extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $request = $request instanceof ServerRequestInterface ? $request : null;
-    
-        $body = $request->getParsedBody();
-        $processId = $body['processId'] ?? null;
-        $authKey = $body['authKey'] ?? null;
-        $familyName = $body['familyName'] ?? null;
-        $email = $body['email'] ?? null;
-        $telephone = $body['telephone'] ?? null;
-        $customTextfield = $body['customTextfield'] ?? null;
-    
-        $errors = ValidationService::validateUpdateAppointmentInputs(
-            isset($processId) ? (int) $processId : 0,
-            isset($authKey) ? (string) $authKey : null,
-            isset($familyName) ? (string) $familyName : null,
-            isset($email) ? (string) $email : null,
-            isset($telephone) ? (string) $telephone : null,
-            isset($customTextfield) ? (string) $customTextfield : null
-        );
+        $clientData = $this->extractClientData($request->getParsedBody());
         
+        $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
-            return $this->createJsonResponse($response, $errors, 400);
+            $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
+            return $this->createJsonResponse($response, $errors, $statusCode);
         }
-    
+
         try {
-            $reservedProcess = new ThinnedProcess();
-            $reservedProcess = ZmsApiFacadeService::getThinnedProcessById((int)$processId, $authKey);
+            $reservedProcess = $this->getReservedProcess(
+                $clientData->processId,
+                $clientData->authKey
+            );
+            
             if (!empty($reservedProcess['errors'])) {
                 return $this->createJsonResponse($response, $reservedProcess, 404);
             }
-    
-            $reservedProcess->familyName = $familyName ?? $reservedProcess->familyName ?? null;
-            $reservedProcess->email = $email ?? $reservedProcess->email ?? null;
-            $reservedProcess->telephone = $telephone ?? $reservedProcess->telephone ?? null;
-            $reservedProcess->customTextfield = $customTextfield ?? $reservedProcess->customTextfield ?? null;
-    
-            $processEntity = MapperService::thinnedProcessToProcess($reservedProcess);
-    
-            $result = ZmsApiFacadeService::updateClientData($processEntity);       
+
+            $updatedProcess = $this->updateProcessWithClientData($reservedProcess, $clientData);
+            
+            $result = $this->saveProcessUpdate($updatedProcess);
             if (!empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
 
-            $thinnedProcess = MapperService::processToThinnedProcess($result);
-            return $this->createJsonResponse($response, $thinnedProcess->toArray(), 200);
-    
+            return $this->createJsonResponse($response, $result->toArray(), 200);
+
         } catch (\Exception $e) {
-            throw $e;
+            return $this->createJsonResponse(
+                $response,
+                ['errors' => [ErrorMessages::get('internalError')]],
+                500
+            );
         }
     }
-    
+
+    private function extractClientData(array $body): object
+    {
+        return (object) [
+            'processId' => isset($body['processId']) ? (int) $body['processId'] : 0,
+            'authKey' => isset($body['authKey']) ? (string) $body['authKey'] : null,
+            'familyName' => isset($body['familyName']) ? (string) $body['familyName'] : null,
+            'email' => isset($body['email']) ? (string) $body['email'] : null,
+            'telephone' => isset($body['telephone']) ? (string) $body['telephone'] : null,
+            'customTextfield' => isset($body['customTextfield']) ? (string) $body['customTextfield'] : null,
+        ];
+    }
+
+    private function validateClientData(object $data): array
+    {
+        return ValidationService::validateUpdateAppointmentInputs(
+            $data->processId,
+            $data->authKey,
+            $data->familyName,
+            $data->email,
+            $data->telephone,
+            $data->customTextfield
+        );
+    }
+
+    private function getReservedProcess(int $processId, string $authKey): ThinnedProcess|array
+    {
+        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey);
+    }
+
+    private function updateProcessWithClientData(ThinnedProcess $process, object $data): ThinnedProcess
+    {
+        $process->familyName = $data->familyName ?? $process->familyName ?? null;
+        $process->email = $data->email ?? $process->email ?? null;
+        $process->telephone = $data->telephone ?? $process->telephone ?? null;
+        $process->customTextfield = $data->customTextfield ?? $process->customTextfield ?? null;
+
+        return $process;
+    }
+
+    private function saveProcessUpdate(ThinnedProcess $process): ThinnedProcess|array
+    {
+        $processEntity = MapperService::thinnedProcessToProcess($process);
+        $result = ZmsApiFacadeService::updateClientData($processEntity);
+        
+        if (!empty($result['errors'])) {
+            return $result;
+        }
+
+        return MapperService::processToThinnedProcess($result);
+    }
 }

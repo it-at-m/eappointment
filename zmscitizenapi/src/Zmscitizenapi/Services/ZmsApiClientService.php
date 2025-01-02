@@ -15,7 +15,7 @@ use BO\Zmsentities\Collection\ScopeList;
 
 class ZmsApiClientService
 {
-    
+
     private static function fetchSourceData(): mixed
     {
         try {
@@ -31,10 +31,7 @@ class ZmsApiClientService
     {
         try {
             $sources = self::fetchSourceData();
-
-            $providerList = $sources->getProviderList() ?? new ProviderList();
-
-            return $providerList;
+            return $sources->getProviderList() ?? new ProviderList();
         } catch (\Exception $e) {
             ExceptionService::handleException($e, __FUNCTION__);
         }
@@ -44,10 +41,7 @@ class ZmsApiClientService
     {
         try {
             $sources = self::fetchSourceData();
-
-            $scopeList = $sources->getScopeList() ?? new ScopeList();
-
-            return $scopeList;
+            return $sources->getScopeList() ?? new ScopeList();
         } catch (\Exception $e) {
             ExceptionService::handleException($e, __FUNCTION__);
         }
@@ -57,10 +51,7 @@ class ZmsApiClientService
     {
         try {
             $sources = self::fetchSourceData();
-
-            $requestList = $sources->getRequestList() ?? new RequestList();
-
-            return $requestList;
+            return $sources->getRequestList() ?? new RequestList();
         } catch (\Exception $e) {
             ExceptionService::handleException($e, __FUNCTION__);
         }
@@ -70,10 +61,7 @@ class ZmsApiClientService
     {
         try {
             $sources = self::fetchSourceData();
-
-            $requestRelationList = $sources->getRequestRelationList() ?? new RequestRelationList();
-
-            return $requestRelationList;
+            return $sources->getRequestRelationList() ?? new RequestRelationList();
         } catch (\Exception $e) {
             ExceptionService::handleException($e, __FUNCTION__);
         }
@@ -157,12 +145,9 @@ class ZmsApiClientService
 
     public static function submitClientData(Process $process): Process
     {
-        $url = "/process/{$process->id}/{$process->authKey}/";
-
         try {
-            $result = \App::$http->readPostResult($url, $process);
-            return $result->getEntity();
-
+            $url = "/process/{$process->id}/{$process->authKey}/";
+            return \App::$http->readPostResult($url, $process)->getEntity();
         } catch (\Exception $e) {
             ExceptionService::handleException($e, __FUNCTION__);
         }
@@ -232,11 +217,9 @@ class ZmsApiClientService
     {
         try {
             $resolveReferences = 2;
-            $process = \App::$http->readGetResult("/process/{$processId}/{$authKey}/", [
+            return \App::$http->readGetResult("/process/{$processId}/{$authKey}/", [
                 'resolveReferences' => $resolveReferences
             ])->getEntity();
-
-            return $process;
         } catch (\Exception $e) {
             ExceptionService::handleException($e, __FUNCTION__);
         }

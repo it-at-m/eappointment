@@ -49,7 +49,7 @@ class MapperService
         $offices = [];
         $scopes = ZmsApiFacadeService::getScopes();
         
-        if (is_array($scopes)) {
+        if (!$scopes instanceof ThinnedScopeList) {
             return new OfficeList();
         }
     
