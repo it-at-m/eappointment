@@ -119,20 +119,10 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateGetOfficesByServiceIds(?array $serviceIds): array
-    {
-        $errors = [];
-        if (empty($serviceIds) || $serviceIds == ['']) {
-            $errors[] = ErrorMessages::get('invalidServiceId');
-        }
-
-        return ['errors' => $errors];
-    }
-
     public static function validateGetScopeById(?int $scopeId): array
     {
         $errors = [];
-        if (empty($scopeId) || $scopeId === '') {
+        if (empty($scopeId) || $scopeId === '' || !is_numeric($scopeId)) {
             $errors[] = ErrorMessages::get('invalidScopeId');
         }
 
@@ -260,36 +250,13 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateServiceIdParam(array $serviceIds): array
+    public static function validateGetOfficesByServiceId(?int $serviceId): array
     {
-        $errors = [];
-
-        if (empty($serviceIds) || !is_array($serviceIds)) {
-            $errors[] = ErrorMessages::get('invalidServiceId');
-
-            return ['errors' => $errors];
-        }
-
-        foreach ($serviceIds as $id) {
-            if (!is_numeric($id)) {
-                $errors[] = ErrorMessages::get('invalidServiceId');
-            }
-        }
-
-        return empty($errors) ? [] : ['errors' => $errors];
-    }
-
-    public static function validateScopeIdParam(?int $scopeId): array
-    {
-        $errors = [];
-
-        if (empty($scopeId) || !is_numeric($scopeId)) {
-            $errors[] = ErrorMessages::get('invalidScopeId');
-
-            return ['errors' => $errors];
-        }
-
-        return empty($errors) ? [] : ['errors' => $errors];
+       if ($serviceId === null || !is_numeric($serviceId)) {
+           return ['errors' => [ErrorMessages::get('invalidServiceId')]];
+       }
+    
+       return [];
     }
 
 }

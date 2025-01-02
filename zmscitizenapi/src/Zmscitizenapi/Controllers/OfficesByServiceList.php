@@ -43,24 +43,20 @@ class OfficesByServiceList extends BaseController
 
     private function extractClientData(array $queryParams): object
     {
-        $serviceId = $queryParams['serviceId'] ?? [];
-        
-        if (is_string($serviceId)) {
-            $serviceId = array_map('trim', explode(',', $serviceId));
-        }
-
         return (object) [
-            'serviceIds' => $serviceId
+            'serviceId' => isset($queryParams['serviceId']) && is_numeric($queryParams['serviceId']) 
+                ? (int)$queryParams['serviceId'] 
+                : null
         ];
     }
 
     private function validateClientData(object $data): array
     {
-        return ValidationService::validateServiceIdParam($data->serviceIds);
+        return ValidationService::validateGetOfficesByServiceId($data->serviceId);
     }
 
     private function getOfficesByService(object $data): mixed
     {
-        return ZmsApiFacadeService::getOfficesByServiceIds($data->serviceIds);
+        return ZmsApiFacadeService::getOfficesByServiceId($data->serviceId);
     }
 }

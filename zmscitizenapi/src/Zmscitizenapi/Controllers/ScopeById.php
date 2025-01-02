@@ -52,7 +52,7 @@ class ScopeById extends BaseController
 
     private function validateClientData(object $clientData): array
     {
-        return ValidationService::validateScopeIdParam($clientData->scopeId);
+        return ValidationService::validateGetScopeById($clientData->scopeId);
     }
 
     private function getScope(object $clientData): mixed
