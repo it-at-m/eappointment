@@ -5,6 +5,7 @@ namespace BO\Zmscitizenapi\Controllers;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,12 +17,18 @@ class OfficesServicesRelations extends BaseController
         try {
             $result = $this->getServicesAndOffices();
             
-            if (!empty($result['errors'])) {
+            if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
 
-            return $this->createJsonResponse($response, $result->toArray(), 200);
+            return $result instanceof OfficeServiceAndRelationList
+            ? $this->createJsonResponse($response, $result->toArray(), 200)
+            : $this->createJsonResponse(
+                $response, 
+                ErrorMessages::get('invalidRequest'), 
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
             
         } catch (\Exception $e) {
             return $this->createJsonResponse(
@@ -32,7 +39,7 @@ class OfficesServicesRelations extends BaseController
         }
     }
 
-    private function getServicesAndOffices(): mixed
+    private function getServicesAndOffices(): array|OfficeServiceAndRelationList
     {
         return ZmsApiFacadeService::getServicesAndOffices();
     }

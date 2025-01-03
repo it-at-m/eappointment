@@ -8,6 +8,17 @@ class AvailableAppointmentsListTest extends Base
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\AvailableAppointmentsList";
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        
+        \App::$source_name = 'unittest';
+
+        if (\App::$cache) {
+            \App::$cache->clear();
+        }
+    }
+
     public function testRendering()
     {
         $this->setApiCalls(

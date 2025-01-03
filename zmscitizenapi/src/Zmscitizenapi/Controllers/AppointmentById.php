@@ -26,20 +26,18 @@ class AppointmentById extends BaseController
         try {
             $result = $this->getAppointment($clientData->processId, $clientData->authKey);
             
-            if (!empty($result['errors'])) {
+            if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
-            
-            if (!$result instanceof ThinnedProcess) {
-                return $this->createJsonResponse(
-                    $response, 
-                    ErrorMessages::get('invalidProcessResponse'), 
-                    400
-                );
-            }
 
-            return $this->createJsonResponse($response, $result->toArray(), 200);
+            return $result instanceof ThinnedProcess
+                ? $this->createJsonResponse($response, $result->toArray(), 200)
+                : $this->createJsonResponse(
+                    $response, 
+                    ErrorMessages::get('invalidRequest'), 
+                    ErrorMessages::get('invalidRequest')['statusCode']
+                );
             
         } catch (\Exception $e) {
             return $this->createJsonResponse(
@@ -67,7 +65,7 @@ class AppointmentById extends BaseController
         return ValidationService::validateGetProcessById($data->processId, $data->authKey);
     }
 
-    private function getAppointment(int $processId, string $authKey): ThinnedProcess|array
+    private function getAppointment(?int $processId, ?string $authKey): ThinnedProcess|array
     {
         return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey);
     }

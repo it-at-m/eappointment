@@ -5,6 +5,7 @@ namespace BO\Zmscitizenapi\Controllers;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Services\ValidationService;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use Psr\Http\Message\RequestInterface;
@@ -25,12 +26,18 @@ class AvailableAppointmentsList extends BaseController
         try {
             $result = $this->getAvailableAppointments($clientData);
             
-            if (!empty($result['errors'])) {
+            if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
 
-            return $this->createJsonResponse($response, $result->toArray(), 200);
+            return $result instanceof AvailableAppointments
+            ? $this->createJsonResponse($response, $result->toArray(), 200)
+            : $this->createJsonResponse(
+                $response, 
+                ErrorMessages::get('invalidRequest'), 
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
             
         } catch (\Exception $e) {
             return $this->createJsonResponse(
@@ -44,7 +51,7 @@ class AvailableAppointmentsList extends BaseController
     private function extractClientData(array $queryParams): object
     {
         return (object) [
-            'date' => $queryParams['date'] ?? null,
+            'date' => isset($queryParams['date']) ? (string)$queryParams['date'] : null,
             'officeId' => isset($queryParams['officeId']) ? (int)$queryParams['officeId'] : null,
             'serviceIds' => isset($queryParams['serviceId']) 
                 ? array_map('trim', explode(',', $queryParams['serviceId'])) 
@@ -65,7 +72,7 @@ class AvailableAppointmentsList extends BaseController
         );
     }
 
-    private function getAvailableAppointments(object $data): mixed
+    private function getAvailableAppointments(object $data): array|AvailableAppointments
     {
         return ZmsApiFacadeService::getAvailableAppointments(
             $data->date,

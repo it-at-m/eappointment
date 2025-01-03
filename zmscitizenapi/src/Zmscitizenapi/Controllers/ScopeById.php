@@ -5,6 +5,7 @@ namespace BO\Zmscitizenapi\Controllers;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\ValidationService;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use Psr\Http\Message\RequestInterface;
@@ -25,12 +26,18 @@ class ScopeById extends BaseController
         try {
             $result = $this->getScope($clientData);
             
-            if (!empty($result['errors'])) {
+            if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
 
-            return $this->createJsonResponse($response, $result->toArray(), 200);
+            return $result instanceof ThinnedScope
+            ? $this->createJsonResponse($response, $result->toArray(), 200)
+            : $this->createJsonResponse(
+                $response, 
+                ErrorMessages::get('invalidRequest'), 
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
             
         } catch (\Exception $e) {
             return $this->createJsonResponse(
@@ -55,7 +62,7 @@ class ScopeById extends BaseController
         return ValidationService::validateGetScopeById($clientData->scopeId);
     }
 
-    private function getScope(object $clientData): mixed
+    private function getScope(object $clientData): array|ThinnedScope
     {
         return ZmsApiFacadeService::getScopeById($clientData->scopeId);
     }

@@ -7,6 +7,7 @@ use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\ValidationService;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
@@ -65,14 +66,20 @@ class AppointmentReserve extends BaseController
                 return $this->createJsonResponse($response, $errors, $statusCode);
             }
 
-            $reservedProcess = $this->reserveAppointment(
+            $result = $this->reserveAppointment(
                 $selectedProcess,
                 $clientData->serviceIds,
                 $clientData->serviceCounts,
                 $clientData->officeId
             );
 
-            return $this->createJsonResponse($response, $reservedProcess, 200);
+            return $result instanceof ThinnedProcess
+            ? $this->createJsonResponse($response, $result->toArray(), 200)
+            : $this->createJsonResponse(
+                $response, 
+                ErrorMessages::get('invalidRequest'), 
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
 
         } catch (\Exception $e) {
             return $this->createJsonResponse(
@@ -173,7 +180,7 @@ class AppointmentReserve extends BaseController
         array $serviceIds,
         array $serviceCounts,
         int $officeId
-    ): array {
+    ): ThinnedProcess {
         $process->clients = [
             [
                 'email' => 'test@muenchen.de'
@@ -188,9 +195,10 @@ class AppointmentReserve extends BaseController
 
             if (!isset($scope['errors']) && isset($scope) && !empty($scope)) {
                 $reservedProcess->scope = $scope;
+                $reservedProcess->officeId = $officeId;
             }
         }
 
-        return array_merge($reservedProcess->toArray(), ['officeId' => $officeId]);
+        return $reservedProcess;
     }
 }

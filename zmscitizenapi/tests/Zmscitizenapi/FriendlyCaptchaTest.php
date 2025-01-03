@@ -13,6 +13,12 @@ class FriendlyCaptchaTest extends Base
     {
         parent::setUp();
 
+        \App::$source_name = 'unittest';
+
+        if (\App::$cache) {
+            \App::$cache->clear();
+        }
+
         putenv('FRIENDLY_CAPTCHA_SITE_KEY=FAKE_SITE_KEY');
         putenv('FRIENDLY_CAPTCHA_ENDPOINT=https://api.friendlycaptcha.com/api/v1/siteverify');
         putenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE=https://api.friendlycaptcha.com/api/v1/puzzle');
