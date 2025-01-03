@@ -517,9 +517,12 @@ class ZmsApiFacadeService
                 new RequestList($requests),
                 $date,
                 $date
-            ) ?? new ProcessList();
+            );
         } catch (\RuntimeException $e) {
-            return ExceptionService::noAppointmentsAtLocation();
+            if (strpos($e->getMessage(), 'noAppointmentsAtLocation') !== false) {
+                return ExceptionService::noAppointmentsAtLocation();
+            }
+            return ExceptionService::internalError();
         }
     }
 
@@ -560,7 +563,10 @@ class ZmsApiFacadeService
                 : new AvailableAppointments();
 
         } catch (\RuntimeException $e) {
-            return ExceptionService::noAppointmentsAtLocation();
+            if (strpos($e->getMessage(), 'noAppointmentsAtLocation') !== false) {
+                return ExceptionService::noAppointmentsAtLocation();
+            }
+            return ExceptionService::internalError();
         }
     }
 
