@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models\Captcha;
 
@@ -80,7 +81,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
                 ]
             ]);
 
-            $responseBody = json_decode($response->getBody(), true);
+            $responseBody = json_decode((string)$response->getBody(), true);
 
             if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['valid'])) {
                 return false;

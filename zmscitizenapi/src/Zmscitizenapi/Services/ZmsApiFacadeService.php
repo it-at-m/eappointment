@@ -575,7 +575,7 @@ class ZmsApiFacadeService
 
         $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
         if (!empty($errors['errors'])) {
-            return $errors;  // returns array with error info
+            return $errors;
         }
 
         $currentTimestamp = time();

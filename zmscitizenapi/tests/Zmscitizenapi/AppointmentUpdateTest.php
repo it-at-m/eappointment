@@ -213,7 +213,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -266,7 +266,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -317,7 +317,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -368,7 +368,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -417,7 +417,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -468,7 +468,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -517,7 +517,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -566,7 +566,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -613,7 +613,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -664,7 +664,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -713,7 +713,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -762,7 +762,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -809,7 +809,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -858,7 +858,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -905,7 +905,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -952,7 +952,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -997,7 +997,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1048,7 +1048,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1097,7 +1097,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1146,7 +1146,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1193,7 +1193,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1242,7 +1242,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1289,7 +1289,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1336,7 +1336,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1381,7 +1381,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1430,7 +1430,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1477,7 +1477,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1524,7 +1524,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => '',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1569,7 +1569,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1616,7 +1616,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'invalid-email',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1661,7 +1661,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -1706,7 +1706,7 @@ class AppointmentUpdateTest extends Base
             'familyName' => 'TEST_USER',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
-            'customTextfield' => 123
+            'customTextfield' => ''
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);

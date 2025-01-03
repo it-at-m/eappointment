@@ -54,20 +54,10 @@ class ErrorMessages
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'startDate is required and must be a valid date.'
         ],
-        'invalidStartDateFormat' => [
-            'errorCode' => 'invalidStartDateFormat',
-            'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorMessage' => 'startDate must be in YYYY-MM-DD format.'
-        ],
         'invalidEndDate' => [
             'errorCode' => 'invalidEndDate',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'endDate is required and must be a valid date.'
-        ],
-        'invalidEndDateFormat' => [
-            'errorCode' => 'invalidEndDateFormat',
-            'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorMessage' => 'endDate must be in YYYY-MM-DD format.'
         ],
         'invalidOfficeId' => [
             'errorCode' => 'invalidOfficeId',
@@ -297,20 +287,10 @@ class ErrorMessages
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'startDate ist erforderlich und muss ein gültiges Datum sein.'
         ],
-        'invalidStartDateFormat' => [
-            'errorCode' => 'invalidStartDateFormat',
-            'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorMessage' => 'startDate muss im Format YYYY-MM-DD vorliegen.'
-        ],
         'invalidEndDate' => [
             'errorCode' => 'invalidEndDate',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'endDate ist erforderlich und muss ein gültiges Datum sein.'
-        ],
-        'invalidEndDateFormat' => [
-            'errorCode' => 'invalidEndDateFormat',
-            'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorMessage' => 'endDate muss im Format YYYY-MM-DD vorliegen.'
         ],
         'invalidOfficeId' => [
             'errorCode' => 'invalidOfficeId',
