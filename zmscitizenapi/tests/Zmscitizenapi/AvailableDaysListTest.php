@@ -83,8 +83,8 @@ class AvailableDaysListTest extends Base
         $responseBody = json_decode((string)$response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ErrorMessages::get('invalidStartDateFormat'),
-                ErrorMessages::get('invalidEndDateFormat')
+                ErrorMessages::get('invalidStartDate'),
+                ErrorMessages::get('invalidEndDate')
             ],
         ];
         $this->assertEquals(400, $response->getStatusCode());
