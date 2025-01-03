@@ -8,6 +8,17 @@ class AppointmentConfirmTest extends Base
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\AppointmentConfirm";
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        
+        \App::$source_name = 'unittest';
+
+        if (\App::$cache) {
+            \App::$cache->clear();
+        }
+    }
+
     public function testRendering() 
     {
         $responseData = $this->renderJson(

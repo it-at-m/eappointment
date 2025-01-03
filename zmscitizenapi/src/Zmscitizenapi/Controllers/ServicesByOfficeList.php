@@ -5,6 +5,7 @@ namespace BO\Zmscitizenapi\Controllers;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Services\ValidationService;
 use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use Psr\Http\Message\RequestInterface;
@@ -25,12 +26,18 @@ class ServicesByOfficeList extends BaseController
         try {
             $result = $this->getServicesByOffice($clientData);
             
-            if (!empty($result['errors'])) {
+            if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
 
-            return $this->createJsonResponse($response, $result->toArray(), 200);
+            return $result instanceof ServiceList
+            ? $this->createJsonResponse($response, $result->toArray(), 200)
+            : $this->createJsonResponse(
+                $response, 
+                ErrorMessages::get('invalidRequest'), 
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
             
         } catch (\Exception $e) {
             return $this->createJsonResponse(
@@ -55,7 +62,7 @@ class ServicesByOfficeList extends BaseController
         return ValidationService::validateGetServicesByOfficeId($clientData->officeId);
     }
 
-    private function getServicesByOffice(object $clientData): mixed
+    private function getServicesByOffice(object $clientData): array|ServiceList
     {
         return ZmsApiFacadeService::getServicesByOfficeId($clientData->officeId);
     }

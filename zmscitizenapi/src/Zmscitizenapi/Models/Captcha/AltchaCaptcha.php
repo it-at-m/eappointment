@@ -6,7 +6,6 @@ namespace BO\Zmscitizenapi\Models\Captcha;
 use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
 use BO\Zmsentities\Schema\Entity;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
 class AltchaCaptcha extends Entity implements CaptchaInterface

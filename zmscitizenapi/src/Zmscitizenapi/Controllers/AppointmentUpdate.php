@@ -48,12 +48,18 @@ class AppointmentUpdate extends BaseController
             $updatedProcess = $this->updateProcessWithClientData($reservedProcess, $clientData);
             
             $result = $this->saveProcessUpdate($updatedProcess);
-            if (!empty($result['errors'])) {
+            if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
 
-            return $this->createJsonResponse($response, $result->toArray(), 200);
+            return $result instanceof ThinnedProcess
+            ? $this->createJsonResponse($response, $result->toArray(), 200)
+            : $this->createJsonResponse(
+                $response, 
+                ErrorMessages::get('invalidRequest'), 
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
 
         } catch (\Exception $e) {
             return $this->createJsonResponse(
@@ -108,7 +114,7 @@ class AppointmentUpdate extends BaseController
         $processEntity = MapperService::thinnedProcessToProcess($process);
         $result = ZmsApiFacadeService::updateClientData($processEntity);
         
-        if (!empty($result['errors'])) {
+        if (is_array($result) && !empty($result['errors'])) {
             return $result;
         }
 

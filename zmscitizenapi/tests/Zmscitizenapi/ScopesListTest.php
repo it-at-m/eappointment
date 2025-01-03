@@ -7,6 +7,17 @@ class ScopesListTest extends Base
 
     protected $classname = "\BO\Zmscitizenapi\Controllers\ScopesList";
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        
+        \App::$source_name = 'unittest';
+
+        if (\App::$cache) {
+            \App::$cache->clear();
+        }
+    }
+
     public function testRendering()
     {
         $this->setApiCalls([

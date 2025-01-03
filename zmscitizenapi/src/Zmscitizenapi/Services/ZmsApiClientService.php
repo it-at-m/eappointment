@@ -5,8 +5,9 @@ namespace BO\Zmscitizenapi\Services;
 
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Services\ExceptionService;
-use BO\Zmsentities\Calendar as Calendar;
-use BO\Zmsentities\Process as Process;
+use BO\Zmsentities\Calendar;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Source;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
@@ -16,16 +17,34 @@ use BO\Zmsentities\Collection\ScopeList;
 class ZmsApiClientService
 {
 
-    private static function fetchSourceData(): mixed
+    private static function fetchSourceData(): Source
     {
-       try {
-           $result = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-               'resolveReferences' => 2,
-           ]);
-           return $result?->getEntity() ?? null;
-       } catch (\Exception $e) {
-           ExceptionService::handleException($e, __FUNCTION__);
-       }
+        $cacheKey = 'source_' . \App::$source_name;
+
+        if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
+            return $data;
+        }
+
+        try {
+            $result = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+                'resolveReferences' => 2,
+            ]);
+
+            $entity = $result?->getEntity();
+            if (!$entity instanceof Source) {
+                return new Source();
+            }
+
+            if (\App::$cache) {
+                \App::$cache->set($cacheKey, $entity, 3600);
+                error_log("Cache is set at: " . date("Y-m-d H:i:s"));
+            }
+
+            return $entity;
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e, __FUNCTION__);
+        }
+
     }
     
     public static function getOffices(): ProviderList

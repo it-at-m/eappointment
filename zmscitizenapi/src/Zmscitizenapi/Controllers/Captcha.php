@@ -16,12 +16,18 @@ class Captcha extends BaseController
         try {
             $result = $this->getCaptchaDetails();
             
-            if (!empty($result['errors'])) {
+            if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
 
-            return $this->createJsonResponse($response, $result, 200);
+            return $result instanceof FriendlyCaptcha
+            ? $this->createJsonResponse($response, $result->getCaptchaDetails(), 200)
+            : $this->createJsonResponse(
+                $response, 
+                ErrorMessages::get('invalidRequest'), 
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
             
         } catch (\Exception $e) {
             return $this->createJsonResponse(
@@ -32,9 +38,8 @@ class Captcha extends BaseController
         }
     }
 
-    private function getCaptchaDetails(): array
+    private function getCaptchaDetails(): FriendlyCaptcha
     {
-        $captcha = new FriendlyCaptcha();
-        return $captcha->getCaptchaDetails();
+        return new FriendlyCaptcha();;
     }
 }

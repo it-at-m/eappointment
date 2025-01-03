@@ -14,7 +14,7 @@
     ],
     "config": {
         "platform": {
-            "php": "8.0"
+            "php": "8.0.2"
         },
         "allow-plugins": {
             "php-http/discovery": true
@@ -31,7 +31,9 @@
         "eappointment/mellon": "@dev",
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
-        "eappointment/zmsentities": "@dev"
+        "eappointment/zmsentities": "@dev",
+        "symfony/cache": "^6.0",
+        "psr/simple-cache": "^3.0"
     },
     "scripts": {
         "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
