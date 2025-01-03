@@ -20,16 +20,13 @@ class Application extends \BO\Slim\Application
     public static string $CACHE_DIR;
     public static int $CACHE_LIFETIME;
     
-    // CAPTCHA configuration
     public static bool $CAPTCHA_ENABLED;
     
-    // Friendly CAPTCHA settings
     public static string $FRIENDLY_CAPTCHA_SECRET_KEY;
     public static string $FRIENDLY_CAPTCHA_SITE_KEY;
     public static string $FRIENDLY_CAPTCHA_ENDPOINT;
     public static string $FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
     
-    // Altcha CAPTCHA settings
     public static string $ALTCHA_CAPTCHA_SECRET_KEY;
     public static string $ALTCHA_CAPTCHA_SITE_KEY;
     public static string $ALTCHA_CAPTCHA_ENDPOINT;
