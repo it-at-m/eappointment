@@ -40,6 +40,6 @@ class Captcha extends BaseController
 
     private function getCaptchaDetails(): FriendlyCaptcha
     {
-        return new FriendlyCaptcha();;
+        return new FriendlyCaptcha();
     }
 }

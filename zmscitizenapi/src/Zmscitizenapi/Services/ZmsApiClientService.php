@@ -20,32 +20,34 @@ class ZmsApiClientService
     private static function fetchSourceData(): Source
     {
         $cacheKey = 'source_' . \App::$source_name;
-
+    
         if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
             return $data;
         }
-
+    
         try {
             $result = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
                 'resolveReferences' => 2,
             ]);
-
+    
             $entity = $result?->getEntity();
             if (!$entity instanceof Source) {
                 return new Source();
             }
-
+    
             if (\App::$cache) {
                 \App::$cache->set($cacheKey, $entity, 3600);
-                error_log("Cache is set at: " . date("Y-m-d H:i:s"));
+                openlog(\App::IDENTIFIER, LOG_PID | LOG_PERROR, LOG_LOCAL0);
+                syslog(LOG_INFO, "Cache is set at: " . date("Y-m-d H:i:s"));
+                closelog();
             }
-
+    
             return $entity;
         } catch (\Exception $e) {
             ExceptionService::handleException($e, __FUNCTION__);
         }
-
     }
+    
     
     public static function getOffices(): ProviderList
     {
