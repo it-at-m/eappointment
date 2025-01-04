@@ -147,7 +147,7 @@ class ZmsApiClientService
         }
     }
 
-    public static function reserveTimeslot(Process $process, array $serviceIds, array $serviceCounts): Process
+    public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): Process
     {
         try {
             $requests = [];
@@ -161,23 +161,19 @@ class ZmsApiClientService
                 }
             }
 
-            //error_log(json_encode($process->status));
-
             $processEntity = new Process();
-            $processEntity->appointments = $process->appointments ?? [];
-            $processEntity->authKey = $process->authKey ?? null;
-            $processEntity->clients = $process->clients ?? [];
-            $processEntity->scope = $process->scope ?? null;
+            $processEntity->appointments = $appointmentProcess->appointments ?? [];
+            $processEntity->authKey = $appointmentProcess->authKey ?? null;
+            $processEntity->clients = $appointmentProcess->clients ?? [];
+            $processEntity->scope = $appointmentProcess->scope ?? null;
             $processEntity->requests = $requests;
-            $process->lastChange = $process->lastChange ?? time();
-            $process->createIP = ClientIpHelper::getClientIp();
-            $process->createTimestamp = time();
+            $processEntity->lastChange = $appointmentProcess->lastChange ?? time();
+            $processEntity->createIP = ClientIpHelper::getClientIp();
+            $processEntity->createTimestamp = time();
 
-            if (isset($process->queue)) {
-                $processEntity->queue = $process->queue;
+            if (isset($appointmentProcess->queue)) {
+                $processEntity->queue = $appointmentProcess->queue;
             }
-
-            ///error_log(json_encode($processEntity));
 
             $result = \App::$http->readPostResult('/process/status/reserved/', $processEntity);
             $entity = $result?->getEntity();
@@ -192,10 +188,6 @@ class ZmsApiClientService
 
     public static function submitClientData(Process $process): Process
     {
-        $chunks = str_split(json_encode($process), 1024);
-        foreach ($chunks as $chunk) {
-            error_log($chunk);
-        }
         try {
             $url = "/process/{$process->id}/{$process->authKey}/";
             $result = \App::$http->readPostResult($url, $process);
