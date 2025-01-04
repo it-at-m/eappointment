@@ -20,10 +20,11 @@ class AppointmentReserve extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        if (!($request instanceof ServerRequestInterface)) {
+        $requestErrors = ValidationService::validateServerRequest($request);
+        if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse(
-                $response, 
-                ['errors' => [ErrorMessages::get('invalidRequest')]], 
+                $response,
+                $requestErrors,
                 ErrorMessages::get('invalidRequest')['statusCode']
             );
         }
@@ -33,7 +34,7 @@ class AppointmentReserve extends BaseController
         $clientData = $this->extractClientData($body);
 
         $errors = $this->validateClientData($clientData);
-        if (!empty($errors['errors'])) {
+        if (is_array($errors) && !empty($errors['errors'])) {
             $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
             return $this->createJsonResponse($response, $errors, $statusCode);
         }
@@ -48,7 +49,7 @@ class AppointmentReserve extends BaseController
                 $clientData->serviceIds
             );
             
-            if (!empty($errors['errors'])) {
+            if (is_array($errors) && !empty($errors['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
                 return $this->createJsonResponse($response, $errors, $statusCode);
             }
@@ -60,8 +61,10 @@ class AppointmentReserve extends BaseController
                 $clientData->timestamp
             );
 
+            //error_log(json_encode($selectedProcess->status));
+
             $errors = ValidationService::validateGetProcessNotFound($selectedProcess);
-            if (!empty($errors['errors'])) {
+            if (is_array($errors) && !empty($errors['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
                 return $this->createJsonResponse($response, $errors, $statusCode);
             }
@@ -186,7 +189,6 @@ class AppointmentReserve extends BaseController
                 'email' => 'test@muenchen.de'
             ]
         ];
-
         $reservedProcess = ZmsApiFacadeService::reserveTimeslot($process, $serviceIds, $serviceCounts);
 
         if ($reservedProcess && $reservedProcess->scope && $reservedProcess->scope->id) {

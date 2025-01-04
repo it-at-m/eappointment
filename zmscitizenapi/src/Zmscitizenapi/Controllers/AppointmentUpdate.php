@@ -17,20 +17,20 @@ class AppointmentUpdate extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        if (!($request instanceof ServerRequestInterface)) {
+        $requestErrors = ValidationService::validateServerRequest($request);
+        if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse(
-                $response, 
-                ['errors' => [ErrorMessages::get('invalidRequest')]], 
+                $response,
+                $requestErrors,
                 ErrorMessages::get('invalidRequest')['statusCode']
             );
         }
         
         $body = $request->getParsedBody();
-
         $clientData = $this->extractClientData($body);
         
         $errors = $this->validateClientData($clientData);
-        if (!empty($errors['errors'])) {
+        if (is_array($errors) && !empty($errors['errors'])) {
             $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
             return $this->createJsonResponse($response, $errors, $statusCode);
         }
@@ -41,7 +41,7 @@ class AppointmentUpdate extends BaseController
                 $clientData->authKey
             );
             
-            if (!empty($reservedProcess['errors'])) {
+            if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
                 return $this->createJsonResponse($response, $reservedProcess, 404);
             }
 

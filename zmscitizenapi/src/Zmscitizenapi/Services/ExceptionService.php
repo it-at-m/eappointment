@@ -217,9 +217,15 @@ class ExceptionService
                 if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed') {
                     return ErrorMessages::get('authKeyMismatch');
                 }
+                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore') {
+                    return ErrorMessages::get('processNotReservedAnymore');
+                }
                 break;
     
             case 'preconfirmProcess':
+                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
+                    return ErrorMessages::get('tooManyAppointmentsWithSameMail');
+                }
                 if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound') {
                     return ErrorMessages::get('appointmentNotFound');
                 }
@@ -235,11 +241,17 @@ class ExceptionService
                 break;
     
             case 'confirmProcess':
+                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
+                    return ErrorMessages::get('tooManyAppointmentsWithSameMail');
+                }
                 if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound') {
                     return ErrorMessages::get('appointmentNotFound');
                 }
                 if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed') {
                     return ErrorMessages::get('authKeyMismatch');
+                }
+                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore') {
+                    return ErrorMessages::get('processNotReservedAnymore');
                 }
                 if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotPreconfirmedAnymore') {
                     return ErrorMessages::get('processNotPreconfirmedAnymore');
@@ -258,6 +270,12 @@ class ExceptionService
                 }
                 if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessDeleteFailed') {
                     return ErrorMessages::get('processDeleteFailed');
+                }
+                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore') {
+                    return ErrorMessages::get('processNotReservedAnymore');
+                }
+                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotPreconfirmedAnymore') {
+                    return ErrorMessages::get('processNotPreconfirmedAnymore');
                 }
                 if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled') {
                     return ErrorMessages::get('processAlreadyCalled');
