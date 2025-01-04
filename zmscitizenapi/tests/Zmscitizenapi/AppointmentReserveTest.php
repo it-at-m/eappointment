@@ -64,6 +64,7 @@ class AppointmentReserveTest extends Base
             "telephone" => "123456789",
             "officeName" => null,
             "officeId" => 10546,
+            "status" => "reserved",
             "scope" => [
                 "id" => 58,
                 "provider" => [

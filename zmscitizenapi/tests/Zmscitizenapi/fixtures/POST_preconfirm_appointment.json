@@ -85,7 +85,7 @@
             "waitingTimeOptimistic": 0,
             "waitingTime": null,
             "wayTime": null,
-            "status": "reserved",
+            "status": "preconfirmed",
             "lastCallTime": 0,
             "destination": null,
             "destinationHint": null,

@@ -80,6 +80,7 @@ class AppointmentUpdateTest extends Base
                 "captchaActivatedRequired" => null,
                 "displayInfo" => null
             ],
+            "status" => "reserved",
             "subRequestCounts" => [],
             "serviceId" => 10242339,
             "serviceCount" => 1

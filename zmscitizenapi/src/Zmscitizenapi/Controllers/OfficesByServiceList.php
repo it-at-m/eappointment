@@ -18,7 +18,7 @@ class OfficesByServiceList extends BaseController
         $clientData = $this->extractClientData($request->getQueryParams());
         
         $errors = $this->validateClientData($clientData);
-        if (!empty($errors['errors'])) {
+        if (is_array($errors) && !empty($errors['errors'])) {
             $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
             return $this->createJsonResponse($response, $errors, $statusCode);
         }

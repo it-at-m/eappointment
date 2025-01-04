@@ -186,11 +186,11 @@ class MapperService
         if (!$myProcess || !isset($myProcess->id)) {
             return new ThinnedProcess();
         }
-
+    
         $subRequestCounts = [];
         $mainServiceId = null;
         $mainServiceCount = 0;
-
+    
         $requests = $myProcess->getRequests() ?? [];
         if ($requests) {
             $requests = is_array($requests) ? $requests : iterator_to_array($requests);
@@ -211,7 +211,7 @@ class MapperService
                 }
             }
         }
-
+    
         return new ThinnedProcess(
             processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
             timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null,
@@ -225,32 +225,33 @@ class MapperService
             scope: isset($myProcess->scope) ? self::scopeToThinnedScope($myProcess->scope) : null,
             subRequestCounts: isset($subRequestCounts) ? array_values($subRequestCounts) : [],
             serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0,
-            serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0
+            serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
+            status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null
         );        
     }
-
+    
     public static function thinnedProcessToProcess(ThinnedProcess $thinnedProcess): Process
     {
         if (!$thinnedProcess || !isset($thinnedProcess->processId)) {
             return new Process();
         }
-
+    
         $processEntity = new Process();
         $processEntity->id = $thinnedProcess->processId;
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
-
+    
         $client = new Client();
         $client->familyName = $thinnedProcess->familyName ?? null;
         $client->email = $thinnedProcess->email ?? null;
         $client->telephone = $thinnedProcess->telephone ?? null;
         $client->customTextfield = $thinnedProcess->customTextfield ?? null;
-
+    
         $processEntity->clients = [$client];
-
+    
         $appointment = new Appointment();
         $appointment->date = $thinnedProcess->timestamp ?? null;
         $processEntity->appointments = [$appointment];
-
+    
         $scope = new Scope();
         if (isset($thinnedProcess->officeName)) {
             $scope->contact = new Contact();
@@ -262,11 +263,17 @@ class MapperService
             $scope->provider->source = \App::$source_name;
         }
         $processEntity->scope = $scope;
-
+    
+        if (isset($thinnedProcess->status)) {
+            $processEntity->queue = new \stdClass();
+            $processEntity->queue->status = $thinnedProcess->status;
+            $processEntity->status = $thinnedProcess->status;
+        }
+    
         $mainServiceId = $thinnedProcess->serviceId ?? null;
         $mainServiceCount = $thinnedProcess->serviceCount ?? 0;
         $subRequestCounts = $thinnedProcess->subRequestCounts ?? [];
-
+    
         $requests = [];
         for ($i = 0; $i < $mainServiceCount; $i++) {
             $request = new Request();
@@ -283,11 +290,11 @@ class MapperService
             }
         }
         $processEntity->requests = $requests;
-
+    
         $processEntity->lastChange = time();
         $processEntity->createIP = ClientIpHelper::getClientIp();
         $processEntity->createTimestamp = time();
-
+    
         return $processEntity;
     }
 

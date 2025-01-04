@@ -51,6 +51,9 @@ class ThinnedProcess extends Entity implements JsonSerializable
     /** @var int */
     public int $serviceCount;
 
+    /** @var string|null */
+    public ?string $status;
+
     public function __construct(
         ?int $processId = null,
         ?string $timestamp = null,
@@ -64,7 +67,8 @@ class ThinnedProcess extends Entity implements JsonSerializable
         ?ThinnedScope $scope = null,
         array $subRequestCounts = [],
         ?int $serviceId = null,
-        int $serviceCount = 0
+        int $serviceCount = 0,
+        ?string $status = null
     ) {
         $this->processId = $processId;
         $this->timestamp = $timestamp;
@@ -79,6 +83,7 @@ class ThinnedProcess extends Entity implements JsonSerializable
         $this->subRequestCounts = $subRequestCounts;
         $this->serviceId = $serviceId;
         $this->serviceCount = $serviceCount;
+        $this->status = $status;
 
         $this->ensureValid();
     }
@@ -104,6 +109,7 @@ class ThinnedProcess extends Entity implements JsonSerializable
             'subRequestCounts' => $this->subRequestCounts,
             'serviceId' => $this->serviceId ?? null,
             'serviceCount' => $this->serviceCount,
+            'status' => $this->status ?? null,
         ];
     }
 

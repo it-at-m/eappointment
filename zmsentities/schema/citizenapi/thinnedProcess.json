@@ -130,6 +130,29 @@
         }
       }
     },
+    "status": {
+      "type": ["string", "null"],
+      "enum": [
+        "free",
+        "reserved",
+        "preconfirmed",
+        "confirmed",
+        "queued",
+        "called",
+        "processing",
+        "pending",
+        "pickup",
+        "finished",
+        "missed",
+        "parked",
+        "archived",
+        "deleted",
+        "anonymized",
+        "blocked",
+        "conflict"
+      ],
+      "description": "Status of the process"
+    },
     "subRequestCounts": {
       "type": ["array", "null"],
       "description": "Counts of sub-requests in the process",

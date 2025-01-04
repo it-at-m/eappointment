@@ -57,6 +57,7 @@ class AppointmentByIdTest extends Base
             "telephone" => "0123456789",
             "officeName" => "Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)",
             "officeId" => 102522,
+            "status" => "confirmed",
             "scope" => [
                 "id" => 64,
                 "provider" => [

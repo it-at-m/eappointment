@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services;
 
+use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ScopeList;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
-use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use DateTime;
+use Psr\Http\Message\ServerRequestInterface;
 
 class ValidationService
 {
@@ -17,6 +18,19 @@ class ValidationService
     private const PHONE_PATTERN = '/^\+?[1-9]\d{6,14}$/';
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
     private const MAX_FUTURE_DAYS = 365; // Maximum days in the future for appointments
+
+    public static function validateServerRequest(?ServerRequestInterface $request): array
+    {
+        if (!$request instanceof ServerRequestInterface) {
+            return ['errors' => [ErrorMessages::get('invalidRequest')]];
+        }
+    
+        if ($request->getMethod() !== 'POST' || $request->getParsedBody() === null) {
+            return ['errors' => [ErrorMessages::get('invalidRequest')]];
+        }
+    
+        return [];
+    }
 
     public static function validateServiceLocationCombination(int $officeId, array $serviceIds): array
     {
