@@ -14,7 +14,6 @@ use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
 use BO\Zmsentities\Process;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 class AppointmentReserve extends BaseController
 {
