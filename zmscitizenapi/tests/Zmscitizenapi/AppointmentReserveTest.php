@@ -54,6 +54,7 @@ class AppointmentReserveTest extends Base
     
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string)$response->getBody(), true);
+        
         $expectedResponse = [
             "processId" => 101002,
             "timestamp" => "32526616522",
@@ -95,7 +96,8 @@ class AppointmentReserveTest extends Base
             "subRequestCounts" => [],
             "serviceId" => 0,
             "serviceCount" => 0
-        ];              
+        ];
+                  
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }

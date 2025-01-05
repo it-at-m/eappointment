@@ -6,6 +6,7 @@ namespace BO\Zmscitizenapi\Controllers;
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
+use BO\Zmscitizenapi\Services\ValidationService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -14,21 +15,30 @@ class Captcha extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
+            $requestErrors = ValidationService::validateServerGetRequest($request);
+            if (!empty($requestErrors['errors'])) {
+                return $this->createJsonResponse(
+                    $response,
+                    $requestErrors,
+                    ErrorMessages::get('invalidRequest')['statusCode']
+                );
+            }
+
             $result = $this->getCaptchaDetails();
-            
+
             if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
 
             return $result instanceof FriendlyCaptcha
-            ? $this->createJsonResponse($response, $result->getCaptchaDetails(), 200)
-            : $this->createJsonResponse(
-                $response, 
-                ErrorMessages::get('invalidRequest'), 
-                ErrorMessages::get('invalidRequest')['statusCode']
-            );
-            
+                ? $this->createJsonResponse($response, $result->getCaptchaDetails(), 200)
+                : $this->createJsonResponse(
+                    $response,
+                    ErrorMessages::get('invalidRequest'),
+                    ErrorMessages::get('invalidRequest')['statusCode']
+                );
+
         } catch (\Exception $e) {
             return $this->createJsonResponse(
                 $response,

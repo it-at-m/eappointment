@@ -15,8 +15,17 @@ class ScopeById extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $requestErrors = ValidationService::validateServerGetRequest($request);
+        if (!empty($requestErrors['errors'])) {
+            return $this->createJsonResponse(
+                $response,
+                $requestErrors,
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
+        }
+
         $clientData = $this->extractClientData($request->getQueryParams());
-        
+
         $errors = $this->validateClientData($clientData);
         if (is_array($errors) && !empty($errors['errors'])) {
             $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
@@ -25,20 +34,20 @@ class ScopeById extends BaseController
 
         try {
             $result = $this->getScope($clientData);
-            
+
             if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
 
             return $result instanceof ThinnedScope
-            ? $this->createJsonResponse($response, $result->toArray(), 200)
-            : $this->createJsonResponse(
-                $response, 
-                ErrorMessages::get('invalidRequest'), 
-                ErrorMessages::get('invalidRequest')['statusCode']
-            );
-            
+                ? $this->createJsonResponse($response, $result->toArray(), 200)
+                : $this->createJsonResponse(
+                    $response,
+                    ErrorMessages::get('invalidRequest'),
+                    ErrorMessages::get('invalidRequest')['statusCode']
+                );
+
         } catch (\Exception $e) {
             return $this->createJsonResponse(
                 $response,
@@ -51,8 +60,8 @@ class ScopeById extends BaseController
     private function extractClientData(array $queryParams): object
     {
         return (object) [
-            'scopeId' => isset($queryParams['scopeId']) && is_numeric($queryParams['scopeId']) 
-                ? (int)$queryParams['scopeId'] 
+            'scopeId' => isset($queryParams['scopeId']) && is_numeric($queryParams['scopeId'])
+                ? (int) $queryParams['scopeId']
                 : null
         ];
     }
