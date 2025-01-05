@@ -41,10 +41,6 @@ class ErrorMessages
             'statusCode' => self::HTTP_INVALID_REQUEST_METHOD,
             'errorMessage' => 'Request method not allowed.',
         ],
-        'methodNotAllowed' => [
-            'message' => 'Method not allowed.',
-            'statusCode' => self::HTTP_INVALID_REQUEST_METHOD
-        ],
         'captchaVerificationFailed' => [
             'errorCode' => 'captchaVerificationFailed',
             'statusCode' => self::HTTP_BAD_REQUEST,
