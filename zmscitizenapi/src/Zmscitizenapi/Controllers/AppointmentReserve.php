@@ -180,7 +180,7 @@ class AppointmentReserve extends BaseController
         array $serviceIds,
         array $serviceCounts,
         int $officeId
-    ): ThinnedProcess {
+    ): array|ThinnedProcess {
         $process->clients = [
             [
                 'email' => 'test@muenchen.de'
