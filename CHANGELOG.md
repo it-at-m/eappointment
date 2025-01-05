@@ -1,3 +1,35 @@
+## Release Muc-18 (13.12.2024)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1268'>ZMS-1268</a>] -         Cursor Fokus auf Anzahl der DL wird im Screenreader als &quot;Überschrift - Ebene - 3 - 1&quot; ausgegeben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2670'>ZMS-2670</a>] -         [zms-admin] Aktion &quot;wieder aufrufen&quot; aus Geparkten Termine &amp; &quot;wieder aufnehmen&quot; aus  Verpasste Termine ist ohne Platzauswahl möglich 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3436'>ZMS-3436</a>] -         Mehrfachklick auf Termin führt zu mehrfachen Reservierungen und Überbuchung der Öffnungszeiten
+</li>
+</ul>
+                                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2872'>ZMS-2872</a>] -         Fehlt der Standortname?
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3152'>ZMS-3152</a>] -         Ampelsystem für die Wartezeit
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3377'>ZMS-3377</a>] -         Labelanpassungen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3401'>ZMS-3401</a>] -         Neues Layout für Aufrufanlage erstellen - Tisch/Desk
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3418'>ZMS-3418</a>] -         Zwei Standorte Ekiosk - keine OU Angabe
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3420'>ZMS-3420</a>] -         &quot;Kundenservice geschlossen&quot; nicht anzeigen wenn es Öffnungszeigen von anderem Standort vorhanden sind 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3433'>ZMS-3433</a>] -         Folgeanforderungen aus Innenrevision
+</li>
+</ul>
+
 ## Release Muc-17 (29.11.2024)
                         
 <h2>        Aufgabe
