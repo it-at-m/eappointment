@@ -14,11 +14,12 @@ class Dldb extends \BO\Zmsdb\Base
     public static function getFixturesImportPath()
     {
         $dir = dirname(__FILE__);
-        $importPath = realpath($dir.'/../../../tests/Zmsdb/fixtures/');
+        $importPath = realpath($dir . '/../../../tests/Zmsdb/fixtures/');
         return $importPath;
     }
 
-    public static function setImportPath($path) {
+    public static function setImportPath($path)
+    {
         self::$importPath = $path;
     }
 
@@ -29,19 +30,21 @@ class Dldb extends \BO\Zmsdb\Base
         }
         if ($verbose) {
             self::$verbose = $verbose;
-            print("Use source-path for dldb: ". static::$importPath . "\n\n");
+            print("Use source-path for dldb: " . static::$importPath . "\n\n");
         }
         self::$repository = new \BO\Dldb\FileAccess();
         self::$repository->loadFromPath(static::$importPath);
 
         \BO\Zmsdb\Connection\Select::setTransaction();
-
         $this->writeRequestList();
-        $this->writeProviderList($updateAvailability);
+        $providers = $this->writeProviderList();
         $this->writeRequestRelationList();
         $this->writeLastUpdate($verbose);
-
         \BO\Zmsdb\Connection\Select::writeCommit();
+
+        if ($updateAvailability) {
+            $this->updateAvailability($providers);
+        }
     }
 
     protected function writeRequestList()
@@ -62,44 +65,39 @@ class Dldb extends \BO\Zmsdb\Base
         }
     }
 
-    protected function writeProviderList($updateAvailability = true)
+    protected function writeProviderList()
     {
         $startTime = microtime(true);
         (new \BO\Zmsdb\Provider())->writeDeleteListBySource('dldb');
         $providers = (new \BO\Zmsdb\Provider())->writeImportList(self::$repository->fromLocation()->fetchList());
 
+        $time = round(microtime(true) - $startTime, 3);
+        if (self::$verbose) {
+            print("Provider: Took $time seconds\n\n");
+        }
+
+        return $providers;
+    }
+
+    protected function updateAvailability($providers)
+    {
         foreach ($providers as $provider) {
             $providerData = $provider->data;
-
-            if (!$updateAvailability) {
-                continue;
-            }
 
             $scopes = (new \BO\Zmsdb\Scope())->readByProviderId($provider->getId());
             foreach ($scopes as $scope) {
                 $availabilities = (new \BO\Zmsdb\Availability())->readList($scope->getId());
 
                 foreach ($availabilities as $availability) {
-                    if ($availability->slotTimeInMinutes === $providerData['slotTimeInMinutes']) {
+                    if ((int) $availability->slotTimeInMinutes === (int) $providerData['slotTimeInMinutes']) {
                         continue;
                     }
 
                     $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
-                    $updatedEntity = (new \BO\Zmsdb\Availability())
+                    (new \BO\Zmsdb\Availability())
                         ->updateEntity($availability->getId(), $availability, 2);
-
-                    //if (isset($providerData['forceSlotTimeUpdate']) && $providerData['forceSlotTimeUpdate']) {
-                    //    (new \BO\Zmsdb\Slot)->writeByAvailability($updatedEntity, \App::$now);
-                    //    (new \BO\Zmsdb\Helper\CalculateSlots(\App::DEBUG))
-                    //        ->writePostProcessingByScope($updatedEntity->scope, \App::$now);
-                    //}
                 }
             }
-        }
-        
-        $time = round(microtime(true) - $startTime, 3);
-        if (self::$verbose) {
-            print("Provider: Took $time seconds\n\n");
         }
     }
 
