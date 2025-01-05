@@ -11,7 +11,6 @@ use BO\Zmscitizenapi\Services\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\MapperService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 class AppointmentPreconfirm extends BaseController
 {
