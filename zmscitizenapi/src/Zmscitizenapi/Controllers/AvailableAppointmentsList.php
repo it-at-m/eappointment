@@ -15,8 +15,17 @@ class AvailableAppointmentsList extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $requestErrors = ValidationService::validateServerGetRequest($request);
+        if (!empty($requestErrors['errors'])) {
+            return $this->createJsonResponse(
+                $response,
+                $requestErrors,
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
+        }
+
         $clientData = $this->extractClientData($request->getQueryParams());
-        
+
         $errors = $this->validateClientData($clientData);
         if (is_array($errors) && !empty($errors['errors'])) {
             $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
@@ -25,20 +34,20 @@ class AvailableAppointmentsList extends BaseController
 
         try {
             $result = $this->getAvailableAppointments($clientData);
-            
+
             if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
             }
 
             return $result instanceof AvailableAppointments
-            ? $this->createJsonResponse($response, $result->toArray(), 200)
-            : $this->createJsonResponse(
-                $response, 
-                ErrorMessages::get('invalidRequest'), 
-                ErrorMessages::get('invalidRequest')['statusCode']
-            );
-            
+                ? $this->createJsonResponse($response, $result->toArray(), 200)
+                : $this->createJsonResponse(
+                    $response,
+                    ErrorMessages::get('invalidRequest'),
+                    ErrorMessages::get('invalidRequest')['statusCode']
+                );
+
         } catch (\Exception $e) {
             return $this->createJsonResponse(
                 $response,
@@ -51,13 +60,13 @@ class AvailableAppointmentsList extends BaseController
     private function extractClientData(array $queryParams): object
     {
         return (object) [
-            'date' => isset($queryParams['date']) ? (string)$queryParams['date'] : null,
-            'officeId' => isset($queryParams['officeId']) ? (int)$queryParams['officeId'] : null,
-            'serviceIds' => isset($queryParams['serviceId']) 
-                ? array_map('trim', explode(',', $queryParams['serviceId'])) 
+            'date' => isset($queryParams['date']) ? (string) $queryParams['date'] : null,
+            'officeId' => isset($queryParams['officeId']) ? (int) $queryParams['officeId'] : null,
+            'serviceIds' => isset($queryParams['serviceId'])
+                ? array_map('trim', explode(',', $queryParams['serviceId']))
                 : [],
-            'serviceCounts' => isset($queryParams['serviceCount']) 
-                ? array_map('trim', explode(',', $queryParams['serviceCount'])) 
+            'serviceCounts' => isset($queryParams['serviceCount'])
+                ? array_map('trim', explode(',', $queryParams['serviceCount']))
                 : []
         ];
     }

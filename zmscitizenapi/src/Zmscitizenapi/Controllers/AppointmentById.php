@@ -15,8 +15,17 @@ class AppointmentById extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $requestErrors = ValidationService::validateServerGetRequest($request);
+        if (!empty($requestErrors['errors'])) {
+            return $this->createJsonResponse(
+                $response,
+                $requestErrors,
+                ErrorMessages::get('invalidRequest')['statusCode']
+            );
+        }
+
         $clientData = $this->extractClientData($request->getQueryParams());
-        
+
         $errors = $this->validateClientData($clientData);
         if (is_array($errors) && !empty($errors['errors'])) {
             $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
@@ -25,7 +34,7 @@ class AppointmentById extends BaseController
 
         try {
             $result = $this->getAppointment($clientData->processId, $clientData->authKey);
-            
+
             if (is_array($result) && !empty($result['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
                 return $this->createJsonResponse($response, $result, $statusCode);
@@ -34,11 +43,11 @@ class AppointmentById extends BaseController
             return $result instanceof ThinnedProcess
                 ? $this->createJsonResponse($response, $result->toArray(), 200)
                 : $this->createJsonResponse(
-                    $response, 
-                    ErrorMessages::get('invalidRequest'), 
+                    $response,
+                    ErrorMessages::get('invalidRequest'),
                     ErrorMessages::get('invalidRequest')['statusCode']
                 );
-            
+
         } catch (\Exception $e) {
             return $this->createJsonResponse(
                 $response,
@@ -51,11 +60,11 @@ class AppointmentById extends BaseController
     private function extractClientData(array $queryParams): object
     {
         return (object) [
-            'processId' => isset($queryParams['processId']) && is_numeric($queryParams['processId']) 
-                ? (int) $queryParams['processId'] 
+            'processId' => isset($queryParams['processId']) && is_numeric($queryParams['processId'])
+                ? (int) $queryParams['processId']
                 : null,
-            'authKey' => isset($queryParams['authKey']) && is_string($queryParams['authKey']) && trim($queryParams['authKey']) !== '' 
-                ? $queryParams['authKey'] 
+            'authKey' => isset($queryParams['authKey']) && is_string($queryParams['authKey']) && trim($queryParams['authKey']) !== ''
+                ? $queryParams['authKey']
                 : null
         ];
     }

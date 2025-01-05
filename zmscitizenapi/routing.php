@@ -158,9 +158,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/services-by-office/',
-    '\BO\Zmscitizenapi\Controllers\ServicesByOfficeList'
+    '\BO\Zmscitizenapi\Controllers\ServiceListByOffice'
 )
-    ->setName("ServicesByOfficeList");
+    ->setName("ServiceListByOffice");
 
 /**
  * @swagger
@@ -188,9 +188,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/offices-by-service/',
-    '\BO\Zmscitizenapi\Controllers\OfficesByServiceList'
+    '\BO\Zmscitizenapi\Controllers\OfficeListByService'
 )
-    ->setName("OfficesByServiceList");
+    ->setName("OfficeListByService");
 
 /**
  * @swagger

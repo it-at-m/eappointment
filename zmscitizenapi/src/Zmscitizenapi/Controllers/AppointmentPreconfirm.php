@@ -17,7 +17,7 @@ class AppointmentPreconfirm extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $requestErrors = ValidationService::validateServerRequest($request);
+        $requestErrors = ValidationService::validateServerPostRequest($request);
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse(
                 $response,
@@ -45,18 +45,23 @@ class AppointmentPreconfirm extends BaseController
                 return $this->createJsonResponse($response, $reservedProcess, 404);
             }
 
-            $confirmedProcess = $this->preconfirmProcess($reservedProcess);
-            if (is_array($confirmedProcess) && !empty($confirmedProcess['errors'])) {
-                $statusCode = ErrorMessages::getHighestStatusCode($confirmedProcess['errors']);
-                return $this->createJsonResponse($response, $confirmedProcess, $statusCode);
+            $result = $this->preconfirmProcess($reservedProcess);
+            if (is_array($result) && !empty($result['errors'])) {
+                $statusCode = ErrorMessages::getHighestStatusCode($result['errors']);
+                return $this->createJsonResponse($response, $result, $statusCode);
             }
 
-            
-            if ($confirmedProcess->status === 'preconfirmed') {
-                $this->sendPreconfirmationEmail($confirmedProcess);
+            if ($result->status === 'preconfirmed') {
+                $this->sendPreconfirmationEmail($result);
             }
 
-            return $this->createJsonResponse($response, $confirmedProcess->toArray(), 200);
+            return $result instanceof ThinnedProcess
+                ? $this->createJsonResponse($response, $result->toArray(), 200)
+                : $this->createJsonResponse(
+                    $response,
+                    ErrorMessages::get('invalidRequest'),
+                    ErrorMessages::get('invalidRequest')['statusCode']
+                );
 
         } catch (\Exception $e) {
             return $this->createJsonResponse(
@@ -92,7 +97,7 @@ class AppointmentPreconfirm extends BaseController
     {
         $processEntity = MapperService::thinnedProcessToProcess($process);
         $result = ZmsApiFacadeService::preconfirmAppointment($processEntity);
-        
+
         if (is_array($result) && !empty($result['errors'])) {
             return $result;
         }

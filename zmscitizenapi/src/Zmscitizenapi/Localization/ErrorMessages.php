@@ -11,6 +11,8 @@ class ErrorMessages
 
     private const HTTP_NOT_FOUND = 404;
 
+    private const HTTP_INVALID_REQUEST_METHOD = 405;
+
     private const HTTP_NOT_ACCEPTABLE = 406;
 
     private const HTTP_CONFLICT = 409;
@@ -33,11 +35,15 @@ class ErrorMessages
             'errorCode' => 'notImplemented',
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
             'errorMessage' => 'Feature not implemented yet.',
-        ],        
-        'invalidRequest' => [
-            'errorCode' => 'invalidRequest',
-            'statusCode' => self::HTTP_BAD_REQUEST,
-            'errorMessage' => 'Invalid request.'
+        ],
+        'requestMethodNotAllowed' => [
+            'errorCode' => 'requestMethodNotAllowed',
+            'statusCode' => self::HTTP_INVALID_REQUEST_METHOD,
+            'errorMessage' => 'Request method not allowed.',
+        ],
+        'methodNotAllowed' => [
+            'message' => 'Method not allowed.',
+            'statusCode' => self::HTTP_INVALID_REQUEST_METHOD
         ],
         'captchaVerificationFailed' => [
             'errorCode' => 'captchaVerificationFailed',
@@ -272,6 +278,11 @@ class ErrorMessages
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'Ungültige Anfrage.'
         ],
+        'requestMethodNotAllowed' => [
+            'errorCode' => 'requestMethodNotAllowed',
+            'statusCode' => self::HTTP_INVALID_REQUEST_METHOD,
+            'errorMessage' => 'Anfragemethode nicht zulässig.',
+        ],
         'captchaVerificationFailed' => [
             'errorCode' => 'captchaVerificationFailed',
             'statusCode' => self::HTTP_BAD_REQUEST,
@@ -502,14 +513,14 @@ class ErrorMessages
     public static function get(string $key, ?string $language = null): array
     {
         $language = $language ?? self::DEFAULT_LANGUAGE;
-    
+
         // Attempt to get messages for the specified language
         $messages = match ($language) {
             'DE' => self::DE,
             'EN' => self::EN,
             default => self::EN,
         };
-    
+
         if (isset($messages[$key])) {
             return $messages[$key];
         }
@@ -519,11 +530,11 @@ class ErrorMessages
             'EN' => self::EN,
             default => self::EN,
         };
-    
+
         if (isset($fallbackMessages[$key])) {
             return $fallbackMessages[$key];
         }
-    
+
         $genericErrorMessage = match ($language) {
             'DE' => [
                 'errorCode' => 'unknownError',
@@ -539,11 +550,11 @@ class ErrorMessages
 
         return $genericErrorMessage;
     }
-    
+
     public static function getHighestStatusCode(array $errors): int
     {
         if (empty($errors)) {
-               return self::HTTP_OK;
+            return self::HTTP_OK;
         }
         $errorCodes = array_column($errors, 'statusCode');
         return max($errorCodes);

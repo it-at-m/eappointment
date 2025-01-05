@@ -20,7 +20,7 @@ class AppointmentReserve extends BaseController
 {
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $requestErrors = ValidationService::validateServerRequest($request);
+        $requestErrors = ValidationService::validateServerPostRequest($request);
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse(
                 $response,
@@ -28,7 +28,7 @@ class AppointmentReserve extends BaseController
                 ErrorMessages::get('invalidRequest')['statusCode']
             );
         }
-        
+
         $body = $request->getParsedBody();
 
         $clientData = $this->extractClientData($body);
@@ -48,7 +48,7 @@ class AppointmentReserve extends BaseController
                 $clientData->officeId,
                 $clientData->serviceIds
             );
-            
+
             if (is_array($errors) && !empty($errors['errors'])) {
                 $statusCode = ErrorMessages::getHighestStatusCode($errors['errors']);
                 return $this->createJsonResponse($response, $errors, $statusCode);
@@ -60,8 +60,6 @@ class AppointmentReserve extends BaseController
                 $clientData->serviceCounts,
                 $clientData->timestamp
             );
-
-            //error_log(json_encode($selectedProcess->status));
 
             $errors = ValidationService::validateGetProcessNotFound($selectedProcess);
             if (is_array($errors) && !empty($errors['errors'])) {
@@ -77,12 +75,12 @@ class AppointmentReserve extends BaseController
             );
 
             return $result instanceof ThinnedProcess
-            ? $this->createJsonResponse($response, $result->toArray(), 200)
-            : $this->createJsonResponse(
-                $response, 
-                ErrorMessages::get('invalidRequest'), 
-                ErrorMessages::get('invalidRequest')['statusCode']
-            );
+                ? $this->createJsonResponse($response, $result->toArray(), 200)
+                : $this->createJsonResponse(
+                    $response,
+                    ErrorMessages::get('invalidRequest'),
+                    ErrorMessages::get('invalidRequest')['statusCode']
+                );
 
         } catch (\Exception $e) {
             return $this->createJsonResponse(
@@ -117,8 +115,8 @@ class AppointmentReserve extends BaseController
     private function verifyCaptcha(?int $officeId, ?string $captchaSolution): bool|array
     {
         $providerScope = ZmsApiFacadeService::getScopeByOfficeId($officeId);
-        $captchaRequired = Application::$CAPTCHA_ENABLED === true && 
-            isset($providerScope->captchaActivatedRequired) && 
+        $captchaRequired = Application::$CAPTCHA_ENABLED === true &&
+            isset($providerScope->captchaActivatedRequired) &&
             $providerScope->captchaActivatedRequired === "1";
 
         if (!$captchaRequired) {
@@ -152,7 +150,7 @@ class AppointmentReserve extends BaseController
             }
 
             foreach ($process->appointments as $appointment) {
-                if ((int)$appointment->date === $timestamp) {
+                if ((int) $appointment->date === $timestamp) {
                     $requestIds = [];
                     if ($process->requests) {
                         foreach ($process->requests as $request) {

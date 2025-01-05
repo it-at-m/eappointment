@@ -30,5 +30,29 @@ require(APP_PATH . '/config.php');
 $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
 $errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Helper\ErrorHandler());
 
+// Add handler for Method Not Allowed
+$errorMiddleware->setErrorHandler(
+    \Slim\Exception\HttpMethodNotAllowedException::class,
+    function (
+        \Psr\Http\Message\ServerRequestInterface $request,
+        \Throwable $exception
+    ) {
+        $response = \App::$slim->getResponseFactory()->createResponse();
+        $response = $response->withStatus(405)
+            ->withHeader('Content-Type', 'application/json');
+
+        $responseBody = json_encode([
+            'errors' => [
+                \BO\Zmscitizenapi\Localization\ErrorMessages::get('requestMethodNotAllowed')
+            ]
+        ]);
+
+        error_log(json_encode($responseBody));
+        
+        $response->getBody()->write($responseBody);
+        return $response;
+    }
+);
+
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');

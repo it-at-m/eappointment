@@ -59,8 +59,36 @@ class AppointmentPreconfirmTest extends Base
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
         
+        $expectedResponse = [
+            'processId' => 101002,
+            'timestamp' => '1727865900',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'customTextfield' => 'Some custom text',
+            'email' => 'test@muenchen.de',
+            'telephone' => '123456789',
+            'officeName' => null,
+            'officeId' => 0,
+            'scope' => [
+                'id' => 0,
+                'provider' => null,
+                'shortName' => null,
+                'telephoneActivated' => null,
+                'telephoneRequired' => null,
+                'customTextfieldActivated' => null,
+                'customTextfieldRequired' => null,
+                'customTextfieldLabel' => null,
+                'captchaActivatedRequired' => null,
+                'displayInfo' => null
+            ],
+            'subRequestCounts' => [],
+            'serviceId' => 10242339,
+            'serviceCount' => 1,
+            'status' => 'preconfirmed'
+        ];
+    
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('preconfirmed', $responseBody['status']);
+        $this->assertEquals($expectedResponse, $responseBody);
     }
 
     public function testAppointmentNotFoundException()

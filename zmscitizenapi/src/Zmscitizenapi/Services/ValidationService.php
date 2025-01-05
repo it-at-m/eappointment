@@ -19,13 +19,30 @@ class ValidationService
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
     private const MAX_FUTURE_DAYS = 365; // Maximum days in the future for appointments
 
-    public static function validateServerRequest(?ServerRequestInterface $request): array
+    public static function validateServerGetRequest(?ServerRequestInterface $request): array
     {
         if (!$request instanceof ServerRequestInterface) {
             return ['errors' => [ErrorMessages::get('invalidRequest')]];
         }
+
+        if ($request->getMethod() !== "GET") {
+            return ['errors' => [ErrorMessages::get('invalidRequest')]];
+        }
     
-        if ($request->getMethod() !== 'POST' || $request->getParsedBody() === null) {
+        return [];
+    }
+
+    public static function validateServerPostRequest(?ServerRequestInterface $request): array
+    {
+        if (!$request instanceof ServerRequestInterface) {
+            return ['errors' => [ErrorMessages::get('invalidRequest')]];
+        }
+
+        if ($request->getMethod() !== "POST") {
+            return ['errors' => [ErrorMessages::get('invalidRequest')]];
+        }
+    
+        if ($request->getParsedBody() === null) {
             return ['errors' => [ErrorMessages::get('invalidRequest')]];
         }
     
@@ -217,7 +234,7 @@ class ValidationService
             : [];
     }
 
-    public static function validateGetOfficesByServiceId(?int $serviceId): array
+    public static function validateGetOfficeListByServiceId(?int $serviceId): array
     {
         return !self::isValidServiceId($serviceId)
             ? ['errors' => [ErrorMessages::get('invalidServiceId')]]

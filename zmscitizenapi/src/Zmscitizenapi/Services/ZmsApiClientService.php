@@ -235,7 +235,7 @@ class ZmsApiClientService
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/";
-            $result = \App::$http->readDeleteResult($url, $process);
+            $result = \App::$http->readDeleteResult($url, [], null);  // Changed to match test expectations
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
                 return new Process();

@@ -4,10 +4,10 @@ namespace BO\Zmscitizenapi\Tests;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 
-class ServicesByOfficeListTest extends Base
+class ServiceListByOfficeTest extends Base
 {
 
-    protected $classname = "\BO\Zmscitizenapi\Controllers\ServicesByOfficeList";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\ServiceListByOffice";
 
     public function setUp(): void
     {

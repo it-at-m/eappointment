@@ -245,13 +245,13 @@ class ZmsApiFacadeService
     }
 
     /* Todo add method
-     * getOfficeByIds
+     * getOfficeById
      * 
      * 
      * 
      */
 
-    public static function getOfficesByServiceId(int $serviceId): OfficeList|array
+    public static function getOfficeListByServiceId(int $serviceId): OfficeList|array
     {
         try {
 
@@ -405,12 +405,55 @@ class ZmsApiFacadeService
         }
     }
 
-    /* Todo add method
-     * getOfficesThatProvideService
-     * 
-     * 
-     * 
-     */
+    public static function getOfficesThatProvideService(int $serviceId): OfficeList|array
+    {
+        try {
+            $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
+            $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
+
+            $providerIds = [];
+            foreach ($requestRelationList as $relation) {
+                if ((int) $relation->request->id === $serviceId) {
+                    $providerIds[] = $relation->provider->id;
+                }
+            }
+
+            $offices = [];
+            foreach ($providerList as $provider) {
+                if (in_array($provider->id, $providerIds) && 
+                    isset($provider->data['public']) && 
+                    $provider->data['public'] === true
+                ) {
+                    $scope = self::getScopeByOfficeId((int) $provider->id);
+                    if (!is_array($scope)) {
+                        $offices[] = new Office(
+                            id: (int) $provider->id,
+                            name: $provider->displayName ?? $provider->name,
+                            address: $provider->data['address'] ?? null,
+                            geo: $provider->data['geo'] ?? null,
+                            scope: $scope instanceof ThinnedScope ? $scope : null
+                        );
+                    }
+                }
+            }
+    
+            $errors = ValidationService::validateOfficesNotFound($offices);
+            if (is_array($errors) && !empty($errors['errors'])) {
+                return $errors;
+            }
+    
+            return new OfficeList($offices);
+    
+        } catch (\RuntimeException $e) {
+            if (strpos($e->getMessage(), 'officesNotFound') !== false) {
+                return ExceptionService::officesNotFound();
+            }
+            if (strpos($e->getMessage(), 'scopeNotFound') !== false) {
+                return ExceptionService::scopeNotFound();
+            }
+            return ExceptionService::internalError();
+        }
+    }
 
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
     {
