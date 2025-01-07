@@ -43,8 +43,8 @@ class AppointmentConfirmService
     private function extractClientData(array $body): object
     {
         return (object) [
-            'processId' => isset($body['processId']) ? (int) $body['processId'] : 0,
-            'authKey' => isset($body['authKey']) ? (string) $body['authKey'] : null,
+            'processId' => isset($body['processId']) && is_numeric($body['processId']) ? (int) $body['processId'] : 0,
+            'authKey' => isset($body['authKey']) && is_string($body['authKey']) ? (string) $body['authKey'] : null
         ];
     }
 

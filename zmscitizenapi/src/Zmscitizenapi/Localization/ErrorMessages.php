@@ -36,6 +36,11 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
             'errorMessage' => 'Feature not implemented yet.',
         ],
+        'invalidRequest' => [
+            'errorCode' => 'invalidRequest',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Invalid request.'
+        ],
         'requestMethodNotAllowed' => [
             'errorCode' => 'requestMethodNotAllowed',
             'statusCode' => self::HTTP_INVALID_REQUEST_METHOD,
