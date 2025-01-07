@@ -36,12 +36,12 @@ class AppointmentUpdateService
     private function extractClientData(array $body): object
     {
         return (object) [
-            'processId' => isset($body['processId']) ? (int) $body['processId'] : 0,
-            'authKey' => isset($body['authKey']) ? (string) $body['authKey'] : null,
-            'familyName' => isset($body['familyName']) ? (string) $body['familyName'] : null,
-            'email' => isset($body['email']) ? (string) $body['email'] : null,
-            'telephone' => isset($body['telephone']) ? (string) $body['telephone'] : null,
-            'customTextfield' => isset($body['customTextfield']) ? (string) $body['customTextfield'] : null,
+            'processId' => isset($body['processId']) && is_numeric($body['processId']) ? (int) $body['processId'] : 0,
+            'authKey' => isset($body['authKey']) && is_string($body['authKey']) ? (string) $body['authKey'] : null,
+            'familyName' => isset($body['familyName']) && is_string($body['familyName']) ? (string) $body['familyName'] : null,
+            'email' => isset($body['email']) && is_string($body['email']) ? (string) $body['email'] : null,
+            'telephone' => isset($body['telephone']) && is_string($body['telephone']) ? (string) $body['telephone'] : null,
+            'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield'])  ? (string) $body['customTextfield'] : null,
         ];
     }
 
