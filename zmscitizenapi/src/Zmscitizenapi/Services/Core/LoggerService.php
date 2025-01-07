@@ -14,7 +14,7 @@ class LoggerService
     private const LOG_OPTIONS = LOG_PID | LOG_PERROR;
 
     private const MAX_RESPONSE_LENGTH = 1024 * 1024; // 1MB limit
-    
+
     public static function logError(
         \Throwable $exception,
         ?RequestInterface $request = null,
@@ -37,54 +37,50 @@ class LoggerService
     ): void {
         $uri = $request->getUri();
         $path = $uri->getPath();
-        
-        // Get query params and filter out path-like parameters
+
         $queryParams = array_filter(
             $request->getQueryParams(),
-            function($key) {
+            function ($key) {
                 return !str_starts_with($key, '/');
             },
             ARRAY_FILTER_USE_KEY
         );
-        
-        // Build query string manually to avoid encoding asterisks
+
         $queryParts = [];
         foreach ($queryParams as $key => $value) {
             $encodedKey = urlencode($key);
-            $encodedValue = in_array(strtolower($key), ['authkey', 'auth_key', 'key']) 
-                ? '****' 
+            $encodedValue = in_array(strtolower($key), ['authkey', 'auth_key', 'key'])
+                ? '****'
                 : urlencode($value);
             $queryParts[] = "$encodedKey=$encodedValue";
         }
         $queryString = implode('&', $queryParts);
-        
+
         $data = [
             'timestamp' => date('Y-m-d H:i:s'),
             'method' => $request->getMethod(),
             'path' => $path . ($queryString ? '?' . $queryString : ''),
             'status' => $response->getStatusCode()
         ];
-    
-        // Only include response body for errors
+
         if ($response->getStatusCode() >= 400) {
             $body = '';
             $stream = $response->getBody();
-            
+
             if ($stream->isSeekable()) {
-                // Check response size before reading
                 $stream->seek(0, SEEK_END);
                 $size = $stream->tell();
                 $stream->rewind();
-                
+
                 if ($size > self::MAX_RESPONSE_LENGTH) {
                     $data['response'] = [
                         'error' => 'Response body too large to log',
                         'size' => $size
                     ];
                 } else {
-                    $body = (string)$stream;
+                    $body = (string) $stream;
                     $stream->rewind();
-                    
+
                     try {
                         $decodedBody = json_decode($body, true);
                         if (json_last_error() === JSON_ERROR_NONE) {
@@ -108,8 +104,11 @@ class LoggerService
                 ];
             }
         }
-    
-        self::log(LOG_ERR, json_encode($data, JSON_UNESCAPED_SLASHES));
+
+        self::log(
+            $response->getStatusCode() >= 400 ? LOG_ERR : LOG_INFO,
+            json_encode($data, JSON_UNESCAPED_SLASHES)
+        );
     }
 
     private static function formatErrorMessage(
@@ -131,9 +130,9 @@ class LoggerService
         if ($request) {
             $data['request'] = [
                 'method' => $request->getMethod(),
-                'uri' => (string)$request->getUri(),
+                'uri' => (string) $request->getUri(),
                 'headers' => $request->getHeaders(),
-                'body' => (string)$request->getBody()
+                'body' => (string) $request->getBody()
             ];
         }
 
@@ -141,7 +140,7 @@ class LoggerService
             $data['response'] = [
                 'status' => $response->getStatusCode(),
                 'headers' => $response->getHeaders(),
-                'body' => (string)$response->getBody()
+                'body' => (string) $response->getBody()
             ];
         }
 
