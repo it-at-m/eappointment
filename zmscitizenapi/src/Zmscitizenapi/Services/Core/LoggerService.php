@@ -128,6 +128,7 @@ class LoggerService
             'headers' => self::filterSensitiveHeaders($request->getHeaders())
         ];
 
+
         if ($response->getStatusCode() >= 400) {
             $body = '';
             $stream = $response->getBody();
@@ -154,22 +155,13 @@ class LoggerService
 
                         try {
                             $decodedBody = json_decode($body, true);
-                            if (json_last_error() === JSON_ERROR_NONE) {
-                                // Check estimated JSON size after re-encoding
-                                $estimatedSize = strlen(json_encode($decodedBody));
-                                if ($estimatedSize > $maxSafeSize) {
-                                    $data['response'] = [
-                                        'error' => 'Response JSON too large after processing',
-                                        'size' => $estimatedSize
-                                    ];
-                                } else {
-                                    $data['response'] = $decodedBody;
-                                }
-                            } else {
-                                $data['response'] = [
-                                    'error' => 'Invalid JSON response',
-                                    'raw' => mb_substr($body, 0, 1000)
-                                ];
+                            if (
+                                json_last_error() === JSON_ERROR_NONE &&
+                                isset($decodedBody['errors']) &&
+                                is_array($decodedBody['errors'])
+                            ) {
+                                // Only log if response contains an errors array
+                                $data['response'] = $decodedBody;
                             }
                         } catch (\Throwable $e) {
                             $data['response'] = [
@@ -223,11 +215,6 @@ class LoggerService
                 'uri' => (string) $request->getUri(),
                 'headers' => self::filterSensitiveHeaders($request->getHeaders())
             ];
-
-            // Only include request body for non-GET requests
-            if ($request->getMethod() !== 'GET') {
-                $data['request']['body'] = (string) $request->getBody();
-            }
         }
 
         if ($response) {
