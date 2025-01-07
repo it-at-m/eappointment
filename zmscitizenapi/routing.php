@@ -24,9 +24,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/services/',
-    '\BO\Zmscitizenapi\Controllers\ServicesList'
+    '\BO\Zmscitizenapi\Controllers\Service\ServicesListController'
 )
-    ->setName("ServicesList");
+    ->setName("ServicesListController");
 
 /**
  * @swagger
@@ -48,9 +48,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/scopes/',
-    '\BO\Zmscitizenapi\Controllers\ScopesList'
+    '\BO\Zmscitizenapi\Controllers\Scope\ScopesListController'
 )
-    ->setName("ScopesList");
+    ->setName("ScopesListController");
 
 /**
  * @swagger
@@ -72,9 +72,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/offices/',
-    '\BO\Zmscitizenapi\Controllers\OfficesList'
+    '\BO\Zmscitizenapi\Controllers\Office\OfficesListController'
 )
-    ->setName("OfficesList");
+    ->setName("OfficesListController");
 
 /**
  * @swagger
@@ -96,9 +96,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/offices-and-services/',
-    '\BO\Zmscitizenapi\Controllers\OfficesServicesRelations'
+    '\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController'
 )
-    ->setName("OfficesServicesRelations");
+    ->setName("OfficesServicesRelationsController");
 
 /**
  * @swagger
@@ -128,9 +128,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/scope-by-id/',
-    '\BO\Zmscitizenapi\Controllers\ScopeById'
+    '\BO\Zmscitizenapi\Controllers\Scope\ScopeByIdController'
 )
-    ->setName("ScopeById");
+    ->setName("ScopeByIdController");
 
 /**
  * @swagger
@@ -158,9 +158,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/services-by-office/',
-    '\BO\Zmscitizenapi\Controllers\ServiceListByOffice'
+    '\BO\Zmscitizenapi\Controllers\Service\ServiceListByOfficeController'
 )
-    ->setName("ServiceListByOffice");
+    ->setName("ServiceListByOfficeController");
 
 /**
  * @swagger
@@ -188,9 +188,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/offices-by-service/',
-    '\BO\Zmscitizenapi\Controllers\OfficeListByService'
+    '\BO\Zmscitizenapi\Controllers\Office\OfficeListByServiceController'
 )
-    ->setName("OfficeListByService");
+    ->setName("OfficeListByServiceController");
 
 /**
  * @swagger
@@ -223,9 +223,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/available-days/',
-    '\BO\Zmscitizenapi\Controllers\AvailableDaysList'
+    '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListController'
 )
-    ->setName("AvailableDaysList");
+    ->setName("AvailableDaysListController");
 
 /**
  * @swagger
@@ -263,9 +263,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/available-appointments/',
-    '\BO\Zmscitizenapi\Controllers\AvailableAppointmentsList'
+    '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListController'
 )
-    ->setName("AvailableAppointmentsList");
+    ->setName("AvailableAppointmentsListController");
 
 /**
  * @swagger
@@ -318,9 +318,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/appointment/',
-    '\BO\Zmscitizenapi\Controllers\AppointmentById'
+    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController'
 )
-    ->setName("AppointmentById");
+    ->setName("AppointmentByIdController");
 
 /**
  * @swagger
@@ -342,9 +342,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/captcha-details/',
-    '\BO\Zmscitizenapi\Controllers\Captcha'
+    '\BO\Zmscitizenapi\Controllers\Security\CaptchaController'
 )
-    ->setName("Captcha");
+    ->setName("CaptchaController");
 
 /**
  * @swagger
@@ -393,9 +393,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post(
     '/reserve-appointment/',
-    '\BO\Zmscitizenapi\Controllers\AppointmentReserve'
+    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController'
 )
-    ->setName("AppointmentReserve");
+    ->setName("AppointmentReserveController");
 
 /**
  * @swagger
@@ -444,9 +444,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post(
     '/update-appointment/',
-    '\BO\Zmscitizenapi\Controllers\AppointmentUpdate'
+    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController'
 )
-    ->setName("AppointmentUpdate");
+    ->setName("AppointmentUpdateController");
 
 /**
  * @swagger
@@ -495,9 +495,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post(
     '/confirm-appointment/',
-    '\BO\Zmscitizenapi\Controllers\AppointmentConfirm'
+    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController'
 )
-    ->setName("AppointmentConfirm");
+    ->setName("AppointmentConfirmController");
 
 /**
  * @swagger
@@ -546,9 +546,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post(
     '/preconfirm-appointment/',
-    '\BO\Zmscitizenapi\Controllers\AppointmentPreconfirm'
+    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController'
 )
-    ->setName("AppointmentPreconfirm");
+    ->setName("AppointmentPreconfirmController");
 
 /**
  * @swagger
@@ -597,6 +597,6 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post(
     '/cancel-appointment/',
-    '\BO\Zmscitizenapi\Controllers\AppointmentCancel'
+    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController'
 )
-    ->setName("AppointmentCancel");
+    ->setName("AppointmentCancelController");

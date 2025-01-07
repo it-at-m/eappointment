@@ -121,6 +121,11 @@ class ErrorMessages
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'customTextfield should be a string.'
         ],
+        'appointmentCanNotBeCanceled' => [
+            'errorCode' => 'appointmentCanNotBeCanceled',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE,
+            'errorMessage' => 'The selected appointment cannot be canceled.'
+        ],
         'appointmentNotAvailable' => [
             'errorCode' => 'appointmentNotAvailable',
             'statusCode' => self::HTTP_NOT_FOUND,
@@ -363,6 +368,11 @@ class ErrorMessages
             'errorCode' => 'appointmentNotAvailable',
             'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.'
+        ],
+        'appointmentCanNotBeCanceled' => [
+            'errorCode' => 'appointmentCanNotBeCanceled',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE,
+            'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr gelöscht werden.'
         ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',

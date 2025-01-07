@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models\Captcha;
 
-use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
 use BO\Zmsentities\Schema\Entity;
 use GuzzleHttp\Exception\RequestException;
@@ -33,10 +32,10 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
     public function __construct()
     {
         $this->service = 'AltchaCaptcha';
-        $this->siteKey = Application::$ALTCHA_CAPTCHA_SITE_KEY;
-        $this->apiUrl = Application::$ALTCHA_CAPTCHA_ENDPOINT;
-        $this->secretKey = Application::$ALTCHA_CAPTCHA_SECRET_KEY;
-        $this->puzzle = Application::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
+        $this->siteKey = \App::$ALTCHA_CAPTCHA_SITE_KEY;
+        $this->apiUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT;
+        $this->secretKey = \App::$ALTCHA_CAPTCHA_SECRET_KEY;
+        $this->puzzle = \App::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
 
         $this->ensureValid();
     }
@@ -59,7 +58,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
             'siteKey' => $this->siteKey,
             'captchaEndpoint' => $this->apiUrl,
             'puzzle' => $this->puzzle,
-            'captchaEnabled' => Application::$CAPTCHA_ENABLED
+            'captchaEnabled' => \App::$CAPTCHA_ENABLED
         ];
     }
 
