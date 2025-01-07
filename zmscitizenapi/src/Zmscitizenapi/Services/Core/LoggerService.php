@@ -225,12 +225,54 @@ class LoggerService
 
             // Only include response body for errors
             if ($response->getStatusCode() >= 400) {
-                $body = (string) $response->getBody();
-                $data['response']['body'] = mb_substr($body, 0, 1000); // Limit body size
+                $body = '';
+                $stream = $response->getBody();
+
+                if ($stream->isSeekable()) {
+                    try {
+                        $stream->seek(0, SEEK_END);
+                        $size = $stream->tell();
+                        $stream->rewind();
+
+                        $maxSafeSize = min(
+                            self::MAX_RESPONSE_LENGTH,
+                            (int) (self::MAX_MESSAGE_SIZE * 0.75)
+                        );
+
+                        if ($size > $maxSafeSize) {
+                            $data['response']['body'] = [
+                                'error' => 'Response body too large to log',
+                                'size' => $size
+                            ];
+                        } else {
+                            $body = (string) $stream;
+                            $stream->rewind();
+
+                            $decodedBody = json_decode($body, true);
+                            if (
+                                json_last_error() === JSON_ERROR_NONE &&
+                                isset($decodedBody['errors']) &&
+                                is_array($decodedBody['errors'])
+                            ) {
+                                // Only log if response contains an errors array
+                                $data['response']['body'] = $decodedBody;
+                            }
+                        }
+                    } catch (\Throwable $e) {
+                        $data['response']['body'] = [
+                            'error' => 'Failed to decode response body',
+                            'message' => $e->getMessage()
+                        ];
+                    }
+                } else {
+                    $data['response']['body'] = [
+                        'error' => 'Response body not seekable'
+                    ];
+                }
             }
         }
 
-        if ($context) {
+        if (!empty($context)) {
             $data['context'] = $context;
         }
 
