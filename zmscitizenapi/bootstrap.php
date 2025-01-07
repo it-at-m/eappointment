@@ -30,6 +30,9 @@ require(APP_PATH . '/config.php');
 $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
 $errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Helper\ErrorHandler());
 
+// After creating App::$slim
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware());
+
 // Add handler for Method Not Allowed
 $errorMiddleware->setErrorHandler(
     \Slim\Exception\HttpMethodNotAllowedException::class,

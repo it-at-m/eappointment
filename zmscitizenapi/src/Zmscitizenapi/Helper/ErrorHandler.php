@@ -1,82 +1,91 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BO\Zmscitizenapi\Helper;
 
+use BO\Zmscitizenapi\Services\Core\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use BO\Slim\Response;
 use Slim\Exception\HttpException;
 use Slim\Interfaces\ErrorHandlerInterface;
-use Throwable;
 
 class ErrorHandler implements ErrorHandlerInterface
 {
-   /**
-    * Handle errors and exceptions in a standardized way.
-    *
-    * @param ServerRequestInterface $request           The current request
-    * @param Throwable             $exception         The exception that was thrown
-    * @param bool                  $displayErrorDetails Whether to display error details
-    * @param bool                  $logErrors         Whether to log errors
-    * @param bool                  $logErrorDetails   Whether to log error details
-    */
-   public function __invoke(
-       ServerRequestInterface $request,
-       Throwable $exception,
-       bool $displayErrorDetails,
-       bool $logErrors,
-       bool $logErrorDetails
-   ): ResponseInterface {
-       $statusCode = 500;
-       if ($exception instanceof HttpException) {
-           $statusCode = $exception->getCode();
-       }
+    public function __invoke(
+        ServerRequestInterface $request,
+        \Throwable $exception,
+        bool $displayErrorDetails,
+        bool $logErrors,
+        bool $logErrorDetails
+    ): ResponseInterface {
+        $statusCode = $this->getStatusCode($exception);
+        
+        if ($logErrors) {
+            $this->logError($exception, $request, $displayErrorDetails, $logErrorDetails);
+        }
 
-       $error = [
-           'message' => $this->getErrorMessage($exception, $displayErrorDetails),
-           'code' => $statusCode,
-       ];
+        $response = new \Slim\Psr7\Response();
+        $payload = $this->formatErrorPayload($exception, $displayErrorDetails);
+        
+        $response->getBody()->write(json_encode($payload));
 
-       if ($displayErrorDetails) {
-           $error['trace'] = $exception->getTraceAsString();
-       }
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus($statusCode);
+    }
 
-       if ($logErrors) {
-           $this->logError($exception, $logErrorDetails);
-       }
+    private function getStatusCode(\Throwable $exception): int
+    {
+        if ($exception instanceof HttpException) {
+            return $exception->getCode();
+        }
 
-       $payload = json_encode($error, JSON_PRETTY_PRINT);
+        return 500;
+    }
 
-       $response = new Response();
-       $response->getBody()->write($payload);
+    private function formatErrorPayload(\Throwable $exception, bool $displayErrorDetails): array
+    {
+        $error = [
+            'message' => $this->getErrorMessage($exception, $displayErrorDetails),
+            'code' => $exception->getCode()
+        ];
 
-       return $response
-           ->withStatus($statusCode)
-           ->withHeader('Content-Type', 'application/json');
-   }
+        if ($displayErrorDetails) {
+            $error['type'] = get_class($exception);
+            $error['file'] = $exception->getFile();
+            $error['line'] = $exception->getLine();
+            $error['trace'] = $exception->getTrace();
+        }
 
-   /**
-    * Get appropriate error message based on environment.
-    */
-   private function getErrorMessage(Throwable $exception, bool $displayErrorDetails): string
-   {
-       if ($displayErrorDetails) {
-           return $exception->getMessage();
-       }
+        return ['error' => $error];
+    }
 
-       // Generic message in production
-       return 'An error has occurred. Please try again later.';
-   }
+    private function getErrorMessage(\Throwable $exception, bool $displayErrorDetails): string
+    {
+        if ($displayErrorDetails) {
+            return $exception->getMessage();
+        }
 
-   /**
-    * Log the error with appropriate detail level.
-    */
-   private function logError(Throwable $exception, bool $logErrorDetails): void
-   {
-       $message = $exception->getMessage();
-       if ($logErrorDetails) {
-           $message .= "\n" . $exception->getTraceAsString();
-       }
-       error_log($message);
-   }
+        if ($exception instanceof HttpException) {
+            return $exception->getMessage();
+        }
+
+        return 'An internal error has occurred.';
+    }
+
+    private function logError(
+        \Throwable $exception,
+        ServerRequestInterface $request,
+        bool $displayErrorDetails,
+        bool $logErrorDetails
+    ): void {
+        LoggerService::logError($exception, $request, null, [
+            'displayErrorDetails' => $displayErrorDetails,
+            'logErrorDetails' => $logErrorDetails,
+            'uri' => (string)$request->getUri(),
+            'method' => $request->getMethod(),
+            'ip' => ClientIpHelper::getClientIp()
+        ]);
+    }
 }

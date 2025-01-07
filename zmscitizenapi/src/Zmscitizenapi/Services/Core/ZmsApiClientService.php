@@ -37,9 +37,11 @@ class ZmsApiClientService
 
             if (\App::$cache) {
                 \App::$cache->set($cacheKey, $entity, 3600);
-                openlog(\App::IDENTIFIER, LOG_PID | LOG_PERROR, LOG_LOCAL0);
-                syslog(LOG_INFO, "Cache is set at: " . date("Y-m-d H:i:s"));
-                closelog();
+                LoggerService::logInfo('Cache set', [
+                    'key' => $cacheKey,
+                    'ttl' => 3600,
+                    'entity_type' => get_class($entity)
+                ]);
             }
 
             return $entity;

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi;
 
+use BO\Zmscitizenapi\Services\Core\LoggerService;
 use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Psr16Cache;
@@ -37,6 +38,12 @@ class Application extends \BO\Slim\Application
         self::initializeMaintenanceMode();
         self::initializeCaptcha();
         self::initializeCache();
+
+        /*LoggerService::logInfo('Application initialized', [
+            'cache_enabled' => (bool)self::$cache,
+            'maintenance_mode' => self::$MAINTENANCE_MODE_ENABLED,
+            'captcha_enabled' => self::$CAPTCHA_ENABLED
+        ]);*/
     }
 
     private static function initializeMaintenanceMode(): void 
