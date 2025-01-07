@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models\Captcha;
 
-use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
 use BO\Zmsentities\Schema\Entity;
 use GuzzleHttp\Exception\RequestException;
@@ -33,10 +32,10 @@ class FriendlyCaptcha extends Entity implements CaptchaInterface
     public function __construct()
     {
         $this->service = 'FriendlyCaptcha';
-        $this->siteKey = Application::$FRIENDLY_CAPTCHA_SITE_KEY;
-        $this->apiUrl = Application::$FRIENDLY_CAPTCHA_ENDPOINT;
-        $this->secretKey = Application::$FRIENDLY_CAPTCHA_SECRET_KEY;
-        $this->puzzle = Application::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
+        $this->siteKey = \App::$FRIENDLY_CAPTCHA_SITE_KEY;
+        $this->apiUrl = \App::$FRIENDLY_CAPTCHA_ENDPOINT;
+        $this->secretKey = \App::$FRIENDLY_CAPTCHA_SECRET_KEY;
+        $this->puzzle = \App::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
 
         $this->ensureValid();
     }
@@ -59,7 +58,7 @@ class FriendlyCaptcha extends Entity implements CaptchaInterface
             'siteKey' => $this->siteKey,
             'captchaEndpoint' => $this->apiUrl,
             'puzzle' => $this->puzzle,
-            'captchaEnabled' => Application::$CAPTCHA_ENABLED
+            'captchaEnabled' => \App::$CAPTCHA_ENABLED
         ];
     }
 
