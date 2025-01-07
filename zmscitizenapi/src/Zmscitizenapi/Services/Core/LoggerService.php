@@ -12,6 +12,8 @@ class LoggerService
 {
     private const LOG_FACILITY = LOG_LOCAL0;
     private const LOG_OPTIONS = LOG_PID | LOG_PERROR;
+
+    private const MAX_RESPONSE_LENGTH = 1024 * 1024; // 1MB limit
     
     public static function logError(
         \Throwable $exception,
@@ -65,12 +67,46 @@ class LoggerService
     
         // Only include response body for errors
         if ($response->getStatusCode() >= 400) {
-            $body = (string)$response->getBody();
-            // Rewind body stream after reading
-            if ($response->getBody()->isSeekable()) {
-                $response->getBody()->rewind();
+            $body = '';
+            $stream = $response->getBody();
+            
+            if ($stream->isSeekable()) {
+                // Check response size before reading
+                $stream->seek(0, SEEK_END);
+                $size = $stream->tell();
+                $stream->rewind();
+                
+                if ($size > self::MAX_RESPONSE_LENGTH) {
+                    $data['response'] = [
+                        'error' => 'Response body too large to log',
+                        'size' => $size
+                    ];
+                } else {
+                    $body = (string)$stream;
+                    $stream->rewind();
+                    
+                    try {
+                        $decodedBody = json_decode($body, true);
+                        if (json_last_error() === JSON_ERROR_NONE) {
+                            $data['response'] = $decodedBody;
+                        } else {
+                            $data['response'] = [
+                                'error' => 'Invalid JSON response',
+                                'raw' => $body
+                            ];
+                        }
+                    } catch (\Throwable $e) {
+                        $data['response'] = [
+                            'error' => 'Failed to decode response body',
+                            'message' => $e->getMessage()
+                        ];
+                    }
+                }
+            } else {
+                $data['response'] = [
+                    'error' => 'Response body not seekable'
+                ];
             }
-            $data['response'] = json_decode($body, true);
         }
     
         self::log(LOG_ERR, json_encode($data, JSON_UNESCAPED_SLASHES));
