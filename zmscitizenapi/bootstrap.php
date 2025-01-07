@@ -1,4 +1,6 @@
 <?php
+
+use BO\Zmscitizenapi\Services\Core\LoggerService;
 // @codingStandardsIgnoreFile
 chdir(__DIR__);
 
@@ -31,7 +33,7 @@ $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
 $errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Helper\ErrorHandler());
 
 // After creating App::$slim
-App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware());
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware(new LoggerService()));
 
 // Add handler for Method Not Allowed
 $errorMiddleware->setErrorHandler(
