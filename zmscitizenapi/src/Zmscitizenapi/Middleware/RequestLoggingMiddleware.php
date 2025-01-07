@@ -13,23 +13,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 class RequestLoggingMiddleware implements MiddlewareInterface
 {
     public function process(
-        ServerRequestInterface $request, 
+        ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
 
         $response = $handler->handle($request);
-        
-        if ($response->getStatusCode() >= 400) {
 
-            LoggerService::logRequest($request, $response);
-        } else {
-            LoggerService::logRequest($request, $response);
-            /*LoggerService::logInfo('Processing request', [
-                'path' => $request->getUri()->getPath(),
-                'method' => $request->getMethod()
-            ]);*/
-        }
-        
+        LoggerService::logRequest($request, $response);
+
         return $response;
     }
 }
