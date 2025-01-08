@@ -4,8 +4,7 @@
 
     <rule ref="cleancode.xml" />
     <rule ref="codesize.xml" />
-    <rule ref="naming.xml">
-        <exclude name="LongVariable" />
-    </rule>
+    <rule ref="naming.xml" />
+    <rule ref="unusedcode.xml" />
 
 </ruleset>
