@@ -2,9 +2,14 @@
 <ruleset name="Custom PHPMD RuleSet">
     <description>Mein PHPMD-Konfigurations-File</description>
 
-    <rule ref="cleancode.xml" />
-    <rule ref="codesize.xml" />
-    <rule ref="naming.xml" />
-    <rule ref="unusedcode.xml" />
+    <rule ref="rulesets/unusedcode.xml" />
+
+    <rule ref="rulesets/codesize.xml" />
+
+    <rule ref="rulesets/unusedcode.xml" />
+
+    <rule ref="rulesets/naming.xml">
+        <exclude name="LongVariable" />
+    </rule>
 
 </ruleset>
