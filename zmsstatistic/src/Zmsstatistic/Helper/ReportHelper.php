@@ -2,7 +2,6 @@
 
 namespace BO\Zmsstatistic\Helper;
 
-
 class ReportHelper
 {
     public static function withMaxAndAverage($entity, $targetKey)
@@ -27,6 +26,4 @@ class ReportHelper
         }
         return $entity;
     }
-
 }
-
