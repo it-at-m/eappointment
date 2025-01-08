@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Process;
 
 class ProcessSearch extends BaseController
 {
@@ -30,7 +31,7 @@ class ProcessSearch extends BaseController
         unset($parameters['resolveReferences']);
         unset($parameters['lessResolvedData']);
         unset($parameters['limit']);
-        $processList = (new Process)->readSearch($parameters, $resolveReferences, $limit);
+        $processList = (new Process())->readSearch($parameters, $resolveReferences, $limit);
         if ($lessResolvedData) {
             $processList = $processList->withLessData();
         }

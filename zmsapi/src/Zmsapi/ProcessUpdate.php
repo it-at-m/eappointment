@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,12 +7,12 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Config;
+use BO\Slim\Render;
+use BO\Zmsdb\Config;
 use BO\Zmsdb\Log;
-use \BO\Zmsdb\Mail;
+use BO\Zmsdb\Mail;
 use BO\Mellon\Validator;
-use \BO\Zmsdb\Process;
+use BO\Zmsdb\Process;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -53,12 +54,12 @@ class ProcessUpdate extends BaseController
             );
             Helper\Matching::testCurrentScopeHasRequest($process);
         } elseif ($clientKey) {
-            $apiClient = (new \BO\Zmsdb\Apiclient)->readEntity($clientKey);
+            $apiClient = (new \BO\Zmsdb\Apiclient())->readEntity($clientKey);
             if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
                 throw new Exception\Process\ApiclientInvalid();
             }
             $entity->apiclient = $apiClient;
-            $process = (new Process)->updateEntity(
+            $process = (new Process())->updateEntity(
                 $entity,
                 \App::$now,
                 $resolveReferences,
@@ -66,7 +67,7 @@ class ProcessUpdate extends BaseController
                 $workstation->getUseraccount()
             );
         } else {
-            $process = (new Process)->updateEntity(
+            $process = (new Process())->updateEntity(
                 $entity,
                 \App::$now,
                 $resolveReferences,
@@ -81,7 +82,7 @@ class ProcessUpdate extends BaseController
                 $workstation->getUseraccount()
             );
         }
-       
+
         if ($initiator && $process->hasScopeAdmin() && $process->sendAdminMailOnUpdated()) {
             $config = (new Config())->readEntity();
 
@@ -92,7 +93,7 @@ class ProcessUpdate extends BaseController
         }
         $message = Response\Message::create($request);
         $message->data = $process;
-        
+
         $response = Render::withLastModified($response, time(), '0');
 
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

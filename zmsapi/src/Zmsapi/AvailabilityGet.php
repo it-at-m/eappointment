@@ -4,15 +4,15 @@
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Availability as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Availability as Query;
 
 class AvailabilityGet extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,13 +7,13 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process as ProcessRepository;
-use \BO\Zmsdb\Config;
-use \BO\Zmsdb\Department;
-use \BO\Zmsentities\Process;
-use \BO\Zmsentities\Collection\ProcessList as Collection;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Process as ProcessRepository;
+use BO\Zmsdb\Config;
+use BO\Zmsdb\Department;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Collection\ProcessList as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -47,18 +48,18 @@ class ProcessConfirmationMail extends BaseController
 
     protected static function writeMail(Process $process)
     {
-        $config = (new Config)->readEntity();
+        $config = (new Config())->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
         $collection = static::getProcessListOverview($process, $config);
 
-        $status = ($process->isWithAppointment())? 'appointment': 'queued';
-        $mail = (new \BO\Zmsentities\Mail)
+        $status = ($process->isWithAppointment()) ? 'appointment' : 'queued';
+        $mail = (new \BO\Zmsentities\Mail())
             ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
             ->toResolvedEntity($collection, $config, $status)
             ->withDepartment($department);
         $mail->testValid();
         if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
-            $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now, false);
+            $mail = (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now, false);
             \App::$log->debug("Send mail", [$mail]);
         }
         return $mail;
@@ -71,7 +72,8 @@ class ProcessConfirmationMail extends BaseController
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
-        } elseif ($process->toProperty()->scope->preferences->client->emailRequired->get() &&
+        } elseif (
+            $process->toProperty()->scope->preferences->client->emailRequired->get() &&
             ! $process->getFirstClient()->hasEmail()
         ) {
             throw new Exception\Process\EmailRequired();
@@ -81,10 +83,11 @@ class ProcessConfirmationMail extends BaseController
     public static function getProcessListOverview($process, $config)
     {
         $collection  = (new Collection())->addEntity($process);
-        if (in_array(
-            getenv('ZMS_ENV'),
-            explode(',', $config->getPreference('appointments', 'enableSummaryByMail'))
-        ) && $process->getFirstClient()->hasEmail()
+        if (
+            in_array(
+                getenv('ZMS_ENV'),
+                explode(',', $config->getPreference('appointments', 'enableSummaryByMail'))
+            ) && $process->getFirstClient()->hasEmail()
         ) {
             $processList = (new ProcessRepository())->readListByMailAndStatusList(
                 $process->getFirstClient()->email,

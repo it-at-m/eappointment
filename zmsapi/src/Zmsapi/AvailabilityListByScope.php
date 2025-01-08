@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Availability as Query;
-use \BO\Zmsentities\Collection\AvailabilityList as Collection;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Availability as Query;
+use BO\Zmsentities\Collection\AvailabilityList as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -32,10 +33,10 @@ class AvailabilityListByScope extends BaseController
         $startDate = ($startDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($startDateFormatted) : null;
         $endDate = ($endDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($endDateFormatted) : null;
 
-        $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], $resolveReferences);
+        $scope = (new \BO\Zmsdb\Scope())->readEntity($args['id'], $resolveReferences);
         $this->testScope($scope);
         $this->testAccessRights($request, $scope);
-        
+
         $message = Response\Message::create($request);
         $message->meta->reducedData = $graphQl ? true : false;
         $message->data = $this->getAvailabilityList($scope, $startDate, $endDate);

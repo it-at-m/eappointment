@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope as Query;
 
 class DepartmentAddScope extends BaseController
 {
@@ -21,7 +22,7 @@ class DepartmentAddScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $department = (new \BO\Zmsdb\Department)->readEntity($args['id'], 1);
+        $department = (new \BO\Zmsdb\Department())->readEntity($args['id'], 1);
         (new Helper\User($request, 2))->checkRights(
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
