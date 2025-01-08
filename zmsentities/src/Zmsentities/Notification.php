@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 class Notification extends Schema\Entity
 {
@@ -92,14 +92,15 @@ class Notification extends Schema\Entity
 
     public function getRecipient()
     {
-        if (! isset($this->client['telephone'])
+        if (
+            ! isset($this->client['telephone'])
             || "" == $this->client['telephone']
             || strlen($this->client['telephone']) < 7
         ) {
             throw new Exception\NotificationMissedNumber();
         }
         $telephone = $this->getParsedTelephoneNumber();
-        $recipient = 'SMS='. $telephone .'@sms.verwalt-berlin.de';
+        $recipient = 'SMS=' . $telephone . '@sms.verwalt-berlin.de';
         return $recipient;
     }
 
@@ -108,7 +109,7 @@ class Notification extends Schema\Entity
         $number = ($number) ? $number : $this->client['telephone'];
         $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
         $phoneNumberObject = $phoneNumberUtil->parse($number, 'DE');
-        return '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+        return '+' . $phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
     }
 
     public function toResolvedEntity(Process $process, Config $config, Department $department, $status)
@@ -127,7 +128,8 @@ class Notification extends Schema\Entity
     public function toCustomMessageEntity(Process $process, $collection, Department $department)
     {
         $entity = new self();
-        if (Property::__keyExists('message', $collection) &&
+        if (
+            Property::__keyExists('message', $collection) &&
             '' != $collection['message']->getValue()
         ) {
             $entity->message = html_entity_decode($collection['message']->getValue(), ENT_QUOTES);
@@ -156,9 +158,9 @@ class Notification extends Schema\Entity
     {
         $string = "notification#";
         $string .= ($this->hasId()) ? $this->getId() : 0;
-        $string .= " recipient:". $this->getRecipient();
-        $string .= " identification:". $this->getIdentification();
-        $string .= " process:". $this->getProcessId();
+        $string .= " recipient:" . $this->getRecipient();
+        $string .= " identification:" . $this->getIdentification();
+        $string .= " process:" . $this->getProcessId();
         return $string;
     }
 }

@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 /**
  * @SuppressWarnings(Complexity)
@@ -151,7 +152,7 @@ class Process extends Schema\Entity
     {
         return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnAppointment->get());
     }
-    
+
     public function sendAdminMailOnDeleted()
     {
         return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnDeleted->get());
@@ -190,7 +191,7 @@ class Process extends Schema\Entity
             $dateTime->setTime($time[0], $time[1]);
         }
 
-        $appointment = (new Appointment)
+        $appointment = (new Appointment())
             ->addDate($dateTime->getTimestamp())
             ->addScope($this->scope['id']);
         if (isset($requestData['slotCount'])) {
@@ -513,23 +514,27 @@ class Process extends Schema\Entity
 
         if ($entity->status == 'free') {
             // delete keys
-            foreach ([
+            foreach (
+                [
                 'authKey',
                 'queue',
                 'requests',
-            ] as $key) {
+                ] as $key
+            ) {
                 if (! in_array($key, $keepArray) && $entity->toProperty()->$key->isAvailable()) {
                     unset($entity[$key]);
                 }
             }
             // delete if empty
-            foreach ([
+            foreach (
+                [
                 'amendment',
                 'id',
                 'authKey',
                 'archiveId',
                 'reminderTimestamp',
-            ] as $key) {
+                ] as $key
+            ) {
                 if (! in_array($key, $keepArray) && $entity->toProperty()->$key->isAvailable() && !$entity[$key]) {
                     unset($entity[$key]);
                 }
@@ -627,7 +632,7 @@ class Process extends Schema\Entity
 
     public function toDerefencedAmendment()
     {
-        $lastChange = (new \DateTimeImmutable)->setTimestamp($this->createTimestamp)->format('c');
+        $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
         return var_export(
             array(
                 'BuergerID' => $this->id,
@@ -642,7 +647,7 @@ class Process extends Schema\Entity
 
     public function toDerefencedCustomTextfield()
     {
-        $lastChange = (new \DateTimeImmutable)->setTimestamp($this->createTimestamp)->format('c');
+        $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
         return var_export(
             array(
                 'BuergerID' => $this->id,
@@ -659,11 +664,11 @@ class Process extends Schema\Entity
     {
         $string = "process#";
         $string .= $this->id ?: $this->archiveId;
-        $string .= ":".$this->authKey;
+        $string .= ":" . $this->authKey;
         $string .= " (" . $this->status . ")";
         $string .= " " . $this->getFirstAppointment()->toDateTime()->format('c');
         $string .= " " . ($this->isWithAppointment() ? "appoint" : "arrival:" . $this->getArrivalTime()->format('c'));
-        $string .= " " . $this->getFirstAppointment()->slotCount."slots";
+        $string .= " " . $this->getFirstAppointment()->slotCount . "slots";
         $string .= "*" . count($this->appointments);
         foreach ($this->getRequests() as $request) {
             $string .= " " . $request['source'] . "." . $request['id'];

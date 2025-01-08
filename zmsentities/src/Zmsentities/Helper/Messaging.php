@@ -1,16 +1,18 @@
 <?php
+
 /**
  *
  * @package Zmsentities
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsentities\Helper;
 
 use BO\Zmsentities\Client;
-use \BO\Zmsentities\Process;
-use \BO\Zmsentities\Collection\ProcessList;
-use \BO\Zmsentities\Config;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Config;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
@@ -33,11 +35,10 @@ class Messaging
     ];
 
     public static function isIcsRequired(
-        \BO\Zmsentities\Config  $config,
+        \BO\Zmsentities\Config $config,
         \BO\Zmsentities\Process $process,
-                                $status
-    )
-    {
+        $status
+    ) {
         $client = $process->getFirstClient();
         $noAttachmentDomains = $config->toProperty()->notifications->noAttachmentDomains->get();
         $noAttachmentDomains = explode(',', (string)$noAttachmentDomains);
@@ -124,12 +125,12 @@ class Messaging
         $twig->addExtension(new TranslationExtension());
         $twig->addExtension(new IntlExtension());
         return $twig;
-
     }
 
     public static function getMailContentPreview($templateContent, $process)
     {
-        $parameters = self::generateMailParameters($process,
+        $parameters = self::generateMailParameters(
+            $process,
             new Config(),
             null,
             'appointment',
@@ -148,7 +149,7 @@ class Messaging
     ) {
         $parameters = self::generateMailParameters($processList, $config, $initiator, $status);
 
-        $collection = (new ProcessList)->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
+        $collection = (new ProcessList())->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
         $mainProcess = $collection->getFirst();
         $template = self::getTemplate('mail', $status, $mainProcess);
         if ($initiator) {
@@ -171,7 +172,7 @@ class Messaging
 
     public static function generateMailParameters($processList, $config, $initiator, $status)
     {
-        $collection = (new ProcessList)->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
+        $collection = (new ProcessList())->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
         $mainProcess = $collection->getFirst();
         $date = (new \DateTimeImmutable())->setTimestamp(0);
         $client = (new Client());
@@ -313,15 +314,15 @@ class Messaging
             'initiator' => $initiator,
             'status' => $status
         ];
-    
+
         $template = 'subjects.twig';
-    
+
         if ($templateProvider) {
             $subject = self::dbTwigView($templateProvider)->render($template, $parameters);
         } else {
             $subject = self::twigView()->render('messaging/' . $template, $parameters);
         }
-    
+
         return trim($subject);
     }
 
@@ -372,20 +373,20 @@ class Messaging
         if (empty($message)) {
             $message = self::getMailContent($process, $config, null, $status, $templateProvider);
         }
-    
+
         // Convert the email message to plain text for the ICS description
         $plainTextDescription = self::getPlainText($message);
-    
+
         // Get the ICS template for the process status dynamically
         $template = self::getTemplate('ics', $status, $process);
         if (!$template) {
             throw new \Exception("ICS template for status $status not found");
         }
-    
+
         // Extract the first appointment details
         $appointment = $process->getFirstAppointment();
         $currentYear = $appointment->getStartTime()->format('Y');
-    
+
         // Prepare parameters for ICS rendering, including the plain text description
         $parameters = [
             'date' => $appointment->toDateTime()->format('U'),
@@ -397,25 +398,25 @@ class Messaging
             'timestamp' => (!$now) ? time() : $now,
             'message' => $plainTextDescription // Pass the plain text email content to the ICS template
         ];
-    
+
         // Render the ICS content using Twig and the fetched template
         if ($templateProvider) {
             $icsString = self::dbTwigView($templateProvider)->render($template, $parameters);
         } else {
             $icsString = self::twigView()->render('messaging/' . $template, $parameters);
         }
-    
+
         // Decode HTML entities to plain text and ensure lines follow ICS standards
         $icsString = html_entity_decode($icsString);
         return self::getTextWithFoldedLines($icsString);
     }
-    
-    
-    
-    
-    
-    
-        
+
+
+
+
+
+
+
 
     public static function getPlainText($content, $lineBreak = "\n")
     {
@@ -440,7 +441,7 @@ class Messaging
             while (strlen($text) > 75) {
                 $line = mb_substr($text, 0, 72);
                 $llength = mb_strlen($line);
-                $subline .= $line.chr(13).chr(10).chr(32);
+                $subline .= $line . chr(13) . chr(10) . chr(32);
                 $text = mb_substr($text, $llength);
             }
             if (!empty($text) && 0 < strlen($subline)) {
@@ -453,6 +454,6 @@ class Messaging
                 $newLines[] = $text;
             }
         }
-        return implode(chr(13).chr(10), $newLines);
+        return implode(chr(13) . chr(10), $newLines);
     }
 }
