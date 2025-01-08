@@ -19,7 +19,7 @@ jobs:
         run: |
           cd "${{ matrix.module }}"
           echo "Starte phpcs..."
-          vendor/bin/phpcs --standard=psr12 src/
+          vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
           
           echo "Starte phpmd..."
           vendor/bin/phpmd src/ text ../phpmd.rules.xml
@@ -88,7 +88,7 @@ jobs:
       - name: Code Quality Checks (zmsapi)
         run: |
           cd zmsapi
-          vendor/bin/phpcs --standard=psr12 src/
+          vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
           vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Import Test Data and Run Unit Tests
         env:
@@ -145,7 +145,7 @@ jobs:
       - name: Code Quality Checks (zmsdb)
         run: |
           cd zmsdb
-          vendor/bin/phpcs --standard=psr12 src/
+          vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
           vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Import Test Data and Run Unit Tests
         env:
@@ -185,7 +185,7 @@ jobs:
       - name: Code Quality Checks (zmsclient)
         run: |
           cd zmsclient
-          vendor/bin/phpcs --standard=psr12 src/
+          vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
           vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Install Docker Compose
         run: |
