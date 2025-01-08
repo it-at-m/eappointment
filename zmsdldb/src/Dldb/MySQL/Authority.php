@@ -1,18 +1,19 @@
 <?php
+
 /**
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\MySQL\Collection\Authorities as Collection;
-use \BO\Dldb\Elastic\Authority as Base;
+use BO\Dldb\MySQL\Collection\Authorities as Collection;
+use BO\Dldb\Elastic\Authority as Base;
 
 /**
  */
 class Authority extends Base
 {
-
     /**
      * fetch locations for a list of service and group by authority
      *
@@ -24,7 +25,7 @@ class Authority extends Base
             $authorityList = new Collection();
 
             $sqlArgs = [];
-            
+
             if (!empty($servicelist)) {
                 $sqlArgs = ['de',$this->locale];
                 $questionMarks = array_fill(0, count($servicelist), '?');
@@ -33,9 +34,9 @@ class Authority extends Base
                 FROM authority_service AS aservice
                 LEFT JOIN authority AS a ON a.id = aservice.authority_id AND a.locale = ?
                 WHERE aservice.locale = ? AND aservice.service_id IN (" . implode(', ', $questionMarks) . ")";
-                
+
                 array_push($sqlArgs, ...$servicelist);
-               
+
                 $stm = $this->access()->prepare($sql);
                 $stm->execute($sqlArgs);
                 $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($authorityList) {
@@ -56,7 +57,7 @@ class Authority extends Base
                     ";
 
                 array_push($sqlArgs, ...$servicelist);
-                
+
                 $stm = $this->access()->prepare($sql);
                 $stm->setFetchMode(\PDO::FETCH_OBJ);
                 $stm->execute($sqlArgs);
@@ -67,10 +68,10 @@ class Authority extends Base
                 foreach ($locations as $location) {
                     $locationsIds[] = $location->id;
                 }
- 
+
                 $locations = $this->access()->fromLocation($this->locale)
                     ->fetchFromCsv(implode(',', $locationsIds), true);
-                
+
                 foreach ($locations as $location) {
                     $authorityList[$location['authority']['id']]->addLocation($location);
                 }
@@ -87,7 +88,7 @@ class Authority extends Base
                 });
 
                 $locations = $this->access()->fromLocation($this->locale)->fetchList(false, true);
-                
+
                 foreach ($locations as $location) {
                     $authorityList[$location['authority']['id']]->addLocation($location);
                 }
@@ -108,10 +109,10 @@ class Authority extends Base
         try {
             $sqlArgs = [$this->locale, $authorityid];
             $sqlArgs = ['de', $authorityid];
-            
+
             $sql = 'SELECT data_json FROM authority WHERE locale = ? AND id = ?';
             $stm = $this->access()->prepare($sql);
-            $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Authority');
+            $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Authority');
             $stm->execute($sqlArgs);
 
             $stm->execute($sqlArgs);

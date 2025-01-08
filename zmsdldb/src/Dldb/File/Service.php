@@ -1,12 +1,14 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\File;
 
-use \BO\Dldb\Entity\Service as Entity;
-use \BO\Dldb\Collection\Services as Collection;
+use BO\Dldb\Entity\Service as Entity;
+use BO\Dldb\Collection\Services as Collection;
 
 /**
  * Common methods shared by access classes
@@ -36,9 +38,9 @@ class Service extends Base
         if ($querystring) {
             $serviceList = new Collection(array_filter((array) $serviceList, function ($item) use ($querystring) {
                 $length = (3 < strlen($querystring)) ? strlen($querystring) : 3;
-                $nameMatch = preg_match('/['. $querystring .']{'. $length .',}/i', $item['name']);
-                $keywordMatch = preg_match('/['. $querystring .']{'. $length .',}/i', $item['meta']['keywords']);
-                return ($nameMatch ||$keywordMatch);
+                $nameMatch = preg_match('/[' . $querystring . ']{' . $length . ',}/i', $item['name']);
+                $keywordMatch = preg_match('/[' . $querystring . ']{' . $length . ',}/i', $item['meta']['keywords']);
+                return ($nameMatch || $keywordMatch);
             }));
         }
         $serviceList = $serviceList->sortByName();
