@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,8 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsclient\Auth;
-
-use \BO\Mellon\Validator;
+use BO\Zmsclient\Auth;
+use BO\Mellon\Validator;
 
 class LogoutBySuperuser extends BaseController
 {
@@ -25,11 +25,12 @@ class LogoutBySuperuser extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
         $workstationToLogout = $validator->getParameter('workstation')->isArray()->getValue();
 
-        if (array_key_exists('useraccount', $workstationToLogout) &&
+        if (
+            array_key_exists('useraccount', $workstationToLogout) &&
             isset($workstationToLogout['useraccount']['id']) &&
             $workstation->hasSuperUseraccount()
         ) {
-                \App::$http->readDeleteResult('/workstation/login/'. $workstationToLogout['useraccount']['id'] .'/');
+                \App::$http->readDeleteResult('/workstation/login/' . $workstationToLogout['useraccount']['id'] . '/');
         }
 
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();

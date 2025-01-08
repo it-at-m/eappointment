@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -27,10 +28,10 @@ class PickupSpreadSheet extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
         $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
-        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', [
+        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', [
             'resolveReferences' => 1
         ])->getEntity();
-        $department = \App::$http->readGetResult('/scope/'. $scopeId .'/department/')->getEntity();
+        $department = \App::$http->readGetResult('/scope/' . $scopeId . '/department/')->getEntity();
 
         $providerName = $scope['provider']['name'];
 
@@ -48,14 +49,14 @@ class PickupSpreadSheet extends BaseController
         $writer->setDelimiter(';');
         $writer->addFormatter(new EscapeFormula());
         $writer->insertOne(['Abholer','','','','','','','','']);
-        $writer->insertOne([$department->name .' - '. $providerName,'','','','','','','','']);
+        $writer->insertOne([$department->name . ' - ' . $providerName,'','','','','','','','']);
         $writer->insertOne(['','Datum','Nr.','Name','Telefonnr.','eMail','Dienstleistung','Anmerkung']);
         $writer->setOutputBOM(Reader::BOM_UTF8);
         $writer->insertAll($rows);
 
         $response->getBody()->write($writer->toString());
 
-        $fileName = 'abholer_'. $providerName;
+        $fileName = 'abholer_' . $providerName;
 
         return $response
             ->withHeader('Content-Type', 'text/csv; charset=UTF-8')
@@ -73,7 +74,7 @@ class PickupSpreadSheet extends BaseController
         } catch (\BO\Zmsclient\Exception\ApiFailed $exception) {
             if ($retry < 3) {
                 sleep(1); // Let the other request complete his transaction
-                return $this->readProcessList($scopeId, $loop, $retry+1);
+                return $this->readProcessList($scopeId, $loop, $retry + 1);
             }
             throw $exception;
         }
@@ -104,7 +105,7 @@ class PickupSpreadSheet extends BaseController
                     join(', ', $requestNameList),
                     $processItem->amendment
                 ];
-                $rowCount ++;
+                $rowCount++;
             }
         }
         return $rows;
@@ -112,7 +113,7 @@ class PickupSpreadSheet extends BaseController
 
     protected function convertspecialchars($string)
     {
-    
+
         $convert = array (
             array ('ä','ae',),
             array ('ö','oe',),
@@ -120,8 +121,8 @@ class PickupSpreadSheet extends BaseController
             array ('ß','ss',),
             array (' ','_',),
         );
-        
-        
+
+
         foreach ($convert as $array) {
             $string = str_replace($array[0], $array[1], $string);
         }

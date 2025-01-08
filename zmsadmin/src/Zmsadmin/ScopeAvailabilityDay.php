@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -38,7 +39,8 @@ class ScopeAvailabilityDay extends BaseController
         ])->getEntity();
     }
 
-    protected static function getSlotBuckets($availabilityList, $processList) {
+    protected static function getSlotBuckets($availabilityList, $processList)
+    {
         $availability = $availabilityList->getFirst();
 
         if (!$availability) {
@@ -50,14 +52,14 @@ class ScopeAvailabilityDay extends BaseController
         $slotTimeInMinutes = $availability->getSlotTimeInMinutes();
 
         foreach ($availabilityList->getSlotListByType('appointment') as $slot) {
-            $time = $slot->time; 
+            $time = $slot->time;
             $buckets[$time] = [
                 'time' => $time,
                 'timeString' => $slot->getTimeString(),
-                'public' => $slot->public, 
-                'intern' => $slot->intern, 
+                'public' => $slot->public,
+                'intern' => $slot->intern,
                 'callcenter' => $slot->callcenter,
-                'occupiedCount' => 0, 
+                'occupiedCount' => 0,
             ];
         }
 
@@ -67,7 +69,7 @@ class ScopeAvailabilityDay extends BaseController
 
             $startDateTime = new \DateTime($startTime);
             $endDateTime = new \DateTime($endTime);
-            
+
             foreach ($buckets as $time => $value) {
                 $slotDateTime = new \DateTime($time);
                 // Check if the appointment overlaps with the slot time
@@ -80,7 +82,7 @@ class ScopeAvailabilityDay extends BaseController
         uksort($buckets, function ($time1, $time2) {
             return strtotime($time1) <=> strtotime($time2);
         });
-        
+
         return $buckets;
     }
 
@@ -99,8 +101,8 @@ class ScopeAvailabilityDay extends BaseController
         if (!$processList->count()) {
             $processList = new \BO\Zmsentities\Collection\ProcessList();
         }
-        
-        
+
+
         $conflictList = static::readConflictList($scopeId, $dateWithTime);
         $maxSlots = $availabilityList->getSummerizedSlotCount();
         $busySlots = $availabilityList->getCalculatedSlotCount($processList);
