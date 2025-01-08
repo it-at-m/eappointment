@@ -76,6 +76,16 @@ class ErrorMessages
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'serviceId should be a 32-bit integer.'
         ],
+        'emptyServiceArrays' => [
+            'errorCode' => 'EMPTY_SERVICE_ARRAYS',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Service IDs and counts cannot be empty'
+        ],
+        'mismatchedArrays' => [
+            'errorCode' => 'MISMATCHED_ARRAYS',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Service IDs and counts must have same length'
+        ],
         'invalidServiceCount' => [
             'errorCode' => 'invalidServiceCount',
             'statusCode' => self::HTTP_BAD_REQUEST,
@@ -267,6 +277,11 @@ class ErrorMessages
             'errorCode' => 'scopesNotFound',
             'errorMessage' => 'No scopes found.',
             'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'preconfirmationExpired' => [
+            'errorCode' => 'preconfirmationExpired',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'The preconfirmation has expired. Please make a new appointment.'
         ]
 
     ];
@@ -323,6 +338,16 @@ class ErrorMessages
             'errorCode' => 'invalidServiceCount',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'serviceCounts muss ein Array aus numerischen Werten sein.'
+        ],
+        'emptyServiceArrays' => [
+            'errorCode' => 'EMPTY_SERVICE_ARRAYS',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Service-IDs und Anzahl dürfen nicht leer sein'
+        ],
+        'mismatchedArrays' => [
+            'errorCode' => 'MISMATCHED_ARRAYS',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Service-IDs und Anzahl müssen gleiche Länge haben'
         ],
         'invalidProcessId' => [
             'errorCode' => 'invalidProcessId',
@@ -510,6 +535,11 @@ class ErrorMessages
             'errorCode' => 'scopesNotFound',
             'errorMessage' => 'Keine Bereiche gefunden.',
             'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'preconfirmationExpired' => [
+            'errorCode' => 'preconfirmationExpired',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Die Vorbestätigung ist abgelaufen. Bitte vereinbaren Sie einen neuen Termin.'
         ]
 
     ];

@@ -655,6 +655,10 @@ class ZmsApiFacadeService
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
     {
         try {
+            $errors = ValidationService::validateServiceArrays($serviceIds, $serviceCounts);
+            if (!empty($errors)) {
+                return $errors;
+            }
             $process = ZmsApiClientService::reserveTimeslot($appointmentProcess, $serviceIds, $serviceCounts);
             return MapperService::processToThinnedProcess($process);
         } catch (\RuntimeException $e) {
@@ -786,6 +790,9 @@ class ZmsApiFacadeService
             if (strpos($e->getMessage(), 'authKeyMismatch') !== false) {
                 return ExceptionService::authKeyMismatch();
             }
+            if (strpos($e->getMessage(), 'preconfirmationExpired') !== false) {
+                return ExceptionService::preconfirmationExpired();
+            }
             return ExceptionService::internalError();
         }
     }
@@ -870,6 +877,9 @@ class ZmsApiFacadeService
             if (strpos($e->getMessage(), 'authKeyMismatch') !== false) {
                 return ExceptionService::authKeyMismatch();
             }
+            if (strpos($e->getMessage(), 'mailNotFound') !== false) {
+                return ExceptionService::mailNotFound();
+            }
             return ExceptionService::internalError();
         }
     }
@@ -898,6 +908,9 @@ class ZmsApiFacadeService
             if (strpos($e->getMessage(), 'authKeyMismatch') !== false) {
                 return ExceptionService::authKeyMismatch();
             }
+            if (strpos($e->getMessage(), 'mailNotFound') !== false) {
+                return ExceptionService::mailNotFound();
+            }
             return ExceptionService::internalError();
         }
     }
@@ -925,6 +938,9 @@ class ZmsApiFacadeService
             }
             if (strpos($e->getMessage(), 'authKeyMismatch') !== false) {
                 return ExceptionService::authKeyMismatch();
+            }
+            if (strpos($e->getMessage(), 'mailNotFound') !== false) {
+                return ExceptionService::mailNotFound();
             }
             return ExceptionService::internalError();
         }
