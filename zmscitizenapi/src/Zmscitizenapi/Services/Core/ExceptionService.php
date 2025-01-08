@@ -23,6 +23,11 @@ class ExceptionService
         return ['errors' => [ErrorMessages::get('authKeyMismatch')]];
     }
 
+    public static function preconfirmationExpired(): array
+    {
+        return ['errors' => [ErrorMessages::get('preconfirmationExpired')]];
+    }
+
     public static function tooManyAppointmentsWithSameMail(): array
     {
         return ['errors' => [ErrorMessages::get('tooManyAppointmentsWithSameMail')]];
@@ -223,6 +228,9 @@ class ExceptionService
                 break;
     
             case 'preconfirmProcess':
+                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired') {
+                    return ErrorMessages::get('preconfirmationExpired');
+                }
                 if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
                     return ErrorMessages::get('tooManyAppointmentsWithSameMail');
                 }

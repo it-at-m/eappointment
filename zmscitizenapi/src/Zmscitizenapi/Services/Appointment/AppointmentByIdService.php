@@ -28,7 +28,7 @@ class AppointmentByIdService
                 ? (int) $queryParams['processId']
                 : null,
             'authKey' => isset($queryParams['authKey']) && is_string($queryParams['authKey']) && trim($queryParams['authKey']) !== ''
-                ? $queryParams['authKey']
+                ? htmlspecialchars(trim($queryParams['authKey']), ENT_QUOTES, 'UTF-8')
                 : null
         ];
     }

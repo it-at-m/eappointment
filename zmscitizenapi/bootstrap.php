@@ -52,7 +52,7 @@ $errorMiddleware->setErrorHandler(
             ]
         ]);
 
-        error_log(json_encode($responseBody));
+        error_log($responseBody);
         
         $response->getBody()->write($responseBody);
         return $response;

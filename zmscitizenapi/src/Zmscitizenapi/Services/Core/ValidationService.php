@@ -295,6 +295,35 @@ class ValidationService
         return ['errors' => [ErrorMessages::get('noAppointmentsAtLocation')]];
     }
 
+    public static function validateServiceArrays(array $serviceIds, array $serviceCounts): array
+    {
+        $errors = [];
+        
+        if (empty($serviceIds) || empty($serviceCounts)) {
+            $errors[] = ErrorMessages::get('emptyServiceArrays');
+        }
+        
+        if (count($serviceIds) !== count($serviceCounts)) {
+            $errors[] = ErrorMessages::get('mismatchedArrays');
+        }
+        
+        foreach ($serviceIds as $id) {
+            if (!is_numeric($id)) {
+                $errors[] = ErrorMessages::get('invalidServiceId');
+                break;
+            }
+        }
+        
+        foreach ($serviceCounts as $count) {
+            if (!is_numeric($count) || $count < 0) {
+                $errors[] = ErrorMessages::get('invalidServiceCount');
+                break;
+            }
+        }
+        
+        return $errors;
+    }
+
     /*  Helper methods for validation */
     private static function isValidDate(string $date): bool
     {

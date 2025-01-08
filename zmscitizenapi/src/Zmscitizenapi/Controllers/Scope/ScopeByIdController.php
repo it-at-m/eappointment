@@ -44,8 +44,8 @@ class ScopeByIdController extends BaseController
         } catch (\Exception $e) {
             return $this->createJsonResponse(
                 $response,
-                ['errors' => [ErrorMessages::get('internalError')]],
-                500
+                ErrorMessages::get('internalError'),
+                ErrorMessages::get('internalError')['statusCode']
             );
         }
     }
