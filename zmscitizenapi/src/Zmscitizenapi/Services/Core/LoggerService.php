@@ -19,6 +19,9 @@ class LoggerService
     private const MAX_MESSAGE_SIZE = 8192; // 8KB limit for syslog messages
     private const MAX_LOGS_PER_MINUTE = 1000; // Rate limit
 
+    private const CACHE_KEY_PREFIX = 'logger.';
+    private const CACHE_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'counter';
+
     private const SENSITIVE_HEADERS = [
         'authorization',
         'cookie',
@@ -57,6 +60,7 @@ class LoggerService
             }
         }
     }
+
 
     public static function shutdown(): void
     {
@@ -337,21 +341,35 @@ class LoggerService
 
     private static function checkRateLimit(): bool
     {
-        $now = time();
-
-        // Reset counter every minute
-        if ($now - self::$lastCounterReset >= 60) {
-            self::$logCount = 0;
-            self::$lastCounterReset = $now;
+        // If cache is not available, allow logging but log a warning
+        if (\App::$cache === null) {
+            error_log('Cache not available for rate limiting');
+            return true;
         }
 
-        if (self::$logCount >= self::MAX_LOGS_PER_MINUTE) {
-            error_log('Log rate limit exceeded');
-            return false;
+        try {
+            $key = self::CACHE_COUNTER_KEY;
+            
+            // Get current counter
+            $count = \App::$cache->get($key, 0);
+            
+            // Increment counter
+            $count++;
+            
+            // Store updated counter with 1-minute TTL
+            \App::$cache->set($key, $count, 60);
+            
+            if ($count > self::MAX_LOGS_PER_MINUTE) {
+                error_log('Log rate limit exceeded');
+                return false;
+            }
+            
+            return true;
+        } catch (InvalidArgumentException $e) {
+            error_log('Cache rate limiting failed: ' . $e->getMessage());
+            // Allow logging on cache failures
+            return true;
         }
-
-        self::$logCount++;
-        return true;
     }
 
     private static function getTimestamp(): string
