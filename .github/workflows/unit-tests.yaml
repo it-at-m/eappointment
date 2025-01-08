@@ -15,6 +15,14 @@ jobs:
         run: |
           cd "${{ matrix.module }}"
           composer install --no-progress --prefer-dist --optimize-autoloader
+      - name: Code Quality Checks
+        run: |
+          cd "${{ matrix.module }}"
+          echo "Starte phpcs..."
+          vendor/bin/phpcs --standard=psr12 src/
+          
+          echo "Starte phpmd..."
+          vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Run Unit Tests
         run: |
           cd "${{ matrix.module }}"
@@ -77,6 +85,11 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
+      - name: Code Quality Checks (zmsapi)
+        run: |
+          cd zmsapi
+          vendor/bin/phpcs --standard=psr12 src/
+          vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
@@ -129,6 +142,11 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
+      - name: Code Quality Checks (zmsdb)
+        run: |
+          cd zmsdb
+          vendor/bin/phpcs --standard=psr12 src/
+          vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
@@ -164,6 +182,11 @@ jobs:
             echo "Installing Composer dependencies for $module"
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
+      - name: Code Quality Checks (zmsclient)
+        run: |
+          cd zmsclient
+          vendor/bin/phpcs --standard=psr12 src/
+          vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Install Docker Compose
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose

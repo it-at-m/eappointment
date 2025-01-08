@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="Custom PHPMD RuleSet">
+    <description>Mein PHPMD-Konfigurations-File</description>
+
+    <rule ref="cleancode.xml" />
+    <rule ref="codesize.xml" />
+    <rule ref="naming.xml">
+        <exclude name="LongVariable" />
+    </rule>
+
+</ruleset>
