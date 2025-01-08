@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Useraccount as Entity;
-use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Zmsentities\Useraccount as Entity;
+use BO\Zmsentities\Collection\UseraccountList as Collection;
 
 /**
  * @SuppressWarnings(Public)
@@ -302,5 +302,4 @@ class Useraccount extends Base
         $statement = $this->fetchStatement($query);
         return $this->readListStatement($statement, $resolveReferences);
     }
-    
 }

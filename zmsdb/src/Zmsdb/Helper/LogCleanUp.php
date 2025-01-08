@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -13,7 +14,7 @@ use BO\Zmsdb\Log;
 class LogCleanUp
 {
     protected $verbose = false;
-    
+
     public function __construct($verbose = false)
     {
         if ($verbose) {

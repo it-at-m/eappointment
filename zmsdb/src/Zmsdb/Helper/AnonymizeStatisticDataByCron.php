@@ -14,10 +14,10 @@ class AnonymizeStatisticDataByCron
     public function __construct($verbose = false)
     {
         $this->verbose = $verbose;
-        
+
         // Fetching the configuration setting
         $config = (new ConfigRepository())->readEntity();
-        
+
         // Extracting the retention setting and converting it to an integer
         $envValue = getenv('ZMS_ENV');
         $retentionSetting = explode(',', $config->getPreference('buergerarchiv', 'setRetentionPeriodDays'));

@@ -12,11 +12,11 @@ class ExchangeWaitingorganisation extends Base
     const QUERY_READ_DAY = '
         SELECT
             w.`datum`,
-            '. ExchangeWaitingscope::WAITING_VALUES .'
+            ' . ExchangeWaitingscope::WAITING_VALUES . '
         FROM ' . self::TABLE . ' as w
-            LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
-            LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-            LEFT JOIN ' . Organisation::TABLE .' AS o ON o.`OrganisationsID` = d.`OrganisationsID`
+            LEFT JOIN ' . Scope::TABLE . ' AS s ON w.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Department::TABLE . ' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+            LEFT JOIN ' . Organisation::TABLE . ' AS o ON o.`OrganisationsID` = d.`OrganisationsID`
         WHERE
             o.`OrganisationsID` = :organisationid
             AND `datum` BETWEEN :datestart AND :dateend
@@ -28,11 +28,11 @@ class ExchangeWaitingorganisation extends Base
     const QUERY_READ_MONTH = '
         SELECT
       		DATE_FORMAT(w.`datum`, "%Y-%m") as datum,
-      		'. ExchangeWaitingscope::WAITING_VALUES .'
-        FROM '. self::TABLE .' as w
-            LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
-            LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-            LEFT JOIN ' . Organisation::TABLE .' AS o ON o.`OrganisationsID` = d.`OrganisationsID`
+      		' . ExchangeWaitingscope::WAITING_VALUES . '
+        FROM ' . self::TABLE . ' as w
+            LEFT JOIN ' . Scope::TABLE . ' AS s ON w.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Department::TABLE . ' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+            LEFT JOIN ' . Organisation::TABLE . ' AS o ON o.`OrganisationsID` = d.`OrganisationsID`
       	WHERE
       		o.`OrganisationsID` = :organisationid AND
       		w.`datum` BETWEEN :datestart AND :dateend
@@ -43,11 +43,11 @@ class ExchangeWaitingorganisation extends Base
     const QUERY_READ_QUARTER = '
         SELECT
           CONCAT(YEAR(w.`datum`),"-",QUARTER(w.`datum`)) as datum,
-          '. ExchangeWaitingscope::WAITING_VALUES .'
-        FROM '. self::TABLE .' as w
-              LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
-              LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-              LEFT JOIN ' . Organisation::TABLE .' AS o ON o.`OrganisationsID` = d.`OrganisationsID`
+          ' . ExchangeWaitingscope::WAITING_VALUES . '
+        FROM ' . self::TABLE . ' as w
+              LEFT JOIN ' . Scope::TABLE . ' AS s ON w.`standortid` = s.`StandortID`
+              LEFT JOIN ' . Department::TABLE . ' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+              LEFT JOIN ' . Organisation::TABLE . ' AS o ON o.`OrganisationsID` = d.`OrganisationsID`
         WHERE
             o.`OrganisationsID` = :organisationid AND
             w.`datum` BETWEEN :datestart AND :dateend
@@ -62,9 +62,9 @@ class ExchangeWaitingorganisation extends Base
             MAX(`datum`) AS periodend,
             o.`Organisationsname` AS description
         FROM ' . self::TABLE . ' AS w
-            LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
-            LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-            LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
+            LEFT JOIN ' . Scope::TABLE . ' AS s ON w.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Department::TABLE . ' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+            LEFT JOIN ' . Organisation::TABLE . ' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
         GROUP BY o.`OrganisationsID`
         ORDER BY o.`OrganisationsID` ASC, periodstart DESC
     ';
@@ -73,9 +73,9 @@ class ExchangeWaitingorganisation extends Base
         SELECT
             `datum`
         FROM ' . self::TABLE . ' AS w
-            LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
-            LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-            LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
+            LEFT JOIN ' . Scope::TABLE . ' AS s ON w.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Department::TABLE . ' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+            LEFT JOIN ' . Organisation::TABLE . ' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
         WHERE
             o.`OrganisationsID` = :organisationid
         ORDER BY `datum` ASC
@@ -85,9 +85,9 @@ class ExchangeWaitingorganisation extends Base
         SELECT DISTINCT
             DATE_FORMAT(`datum`,"%Y-%m") AS date
         FROM ' . self::TABLE . ' AS w
-            LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
-            LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-            LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
+            LEFT JOIN ' . Scope::TABLE . ' AS s ON w.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Department::TABLE . ' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+            LEFT JOIN ' . Organisation::TABLE . ' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
         WHERE
             o.`OrganisationsID` = :organisationid
         ORDER BY `datum` ASC
