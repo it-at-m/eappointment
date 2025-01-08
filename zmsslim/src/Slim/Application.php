@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Slim;
 
 define(
@@ -8,7 +9,6 @@ define(
 
 class Application
 {
-
     /**
      * Root directory for the project
      */
@@ -25,7 +25,7 @@ class Application
      */
     const DEBUG = false;
     const DEBUGLEVEL = 'WARNING';
-    
+
     const SESSION_DURATION = ZMS_SESSION_DURATION;
 
     const LOG_ERRORS = true;
@@ -110,7 +110,7 @@ class Application
      *
      */
     const MULTILANGUAGE = true;
-    
+
     public static $languagesource = 'json';
 
     public static $language = null;
