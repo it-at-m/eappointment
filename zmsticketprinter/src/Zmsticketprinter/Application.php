@@ -1,15 +1,16 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 class Application extends \BO\Slim\Application
 {
-
     /**
      * Name of the application
      */

@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Mellon\Unvalidated;
@@ -17,7 +19,6 @@ use Psr\Http\Message\ResponseInterface;
 
 class Index extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
@@ -72,7 +73,7 @@ class Index extends BaseController
         $ticketprinter = $ticketprinterHelper->getEntity();
         $ticketprinter->testValid();
         $scope = $ticketprinter->getScopeList()->getFirst();
-        $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
+        $department = \App::$http->readGetResult('/scope/' . $scope->id . '/department/')->getEntity();
         $organisation = $ticketprinterHelper->getOrganisation();
 
 
