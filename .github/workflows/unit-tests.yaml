@@ -22,7 +22,7 @@ jobs:
           vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
           
           echo "Starte phpmd..."
-          vendor/bin/phpmd src/ text phpmd.rules.xml
+          vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Run Unit Tests
         run: |
           cd "${{ matrix.module }}"
@@ -89,7 +89,7 @@ jobs:
         run: |
           cd zmsapi
           vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
-          vendor/bin/phpmd src/ text phpmd.rules.xml
+          vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
@@ -146,7 +146,7 @@ jobs:
         run: |
           cd zmsdb
           vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
-          vendor/bin/phpmd src/ text phpmd.rules.xml
+          vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
@@ -186,7 +186,7 @@ jobs:
         run: |
           cd zmsclient
           vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
-          vendor/bin/phpmd src/ text phpmd.rules.xml
+          vendor/bin/phpmd src/ text ../phpmd.rules.xml
       - name: Install Docker Compose
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
