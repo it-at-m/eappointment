@@ -230,7 +230,7 @@ class Base extends \ArrayObject implements \JsonSerializable
     public function getAsArray()
     {
         $array = [];
-        foreach ($this as $key => $item) {
+        foreach ($this as $item) {
             $array[] = $item;
         }
 
