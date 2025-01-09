@@ -289,7 +289,6 @@ class Useraccount extends Base
 
     public function readListByRoleAndDepartment($roleLevel, $departmentId, $resolveReferences = 0)
     {
-        $collection = new Collection();
         $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addResolvedReferences($resolveReferences)
               ->addEntityMapping();
