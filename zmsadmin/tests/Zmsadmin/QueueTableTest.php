@@ -17,15 +17,7 @@ class QueueTableTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => [
-                        'resolveReferences' => 1,
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
-                    ],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
+
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
