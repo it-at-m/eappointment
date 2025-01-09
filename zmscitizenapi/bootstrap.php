@@ -32,8 +32,22 @@ require(APP_PATH . '/config.php');
 $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
 $errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Helper\ErrorHandler());
 
-// After creating App::$slim
-App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware(new LoggerService()));
+// Initialize cache for rate limiting
+$cache = new \Symfony\Component\Cache\Psr16Cache(
+    new \Symfony\Component\Cache\Adapter\FilesystemAdapter()
+);
+
+
+$logger = new LoggerService();
+// Security middleware (order is important)
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware($logger));
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\SecurityHeadersMiddleware($logger));
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\CorsMiddleware($logger));
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\CsrfMiddleware($logger));
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\RateLimitingMiddleware($cache, $logger));
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSanitizerMiddleware($logger));
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSizeLimitMiddleware($logger));
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\IpFilterMiddleware($logger));
 
 // Add handler for Method Not Allowed
 $errorMiddleware->setErrorHandler(

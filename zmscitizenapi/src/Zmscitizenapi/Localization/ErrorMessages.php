@@ -9,6 +9,8 @@ class ErrorMessages
 
     private const HTTP_BAD_REQUEST = 400;
 
+    private const HTTP_FORBIDDEN = 403;
+
     private const HTTP_NOT_FOUND = 404;
 
     private const HTTP_INVALID_REQUEST_METHOD = 405;
@@ -16,6 +18,10 @@ class ErrorMessages
     private const HTTP_NOT_ACCEPTABLE = 406;
 
     private const HTTP_CONFLICT = 409;
+
+    private const HTTP_REQUEST_ENTITY_TOO_LARGE = 413;
+
+    private const HTTP_TOO_MANY_REQUESTS = 429;
 
     private const HTTP_INTERNAL_SERVER_ERROR = 500;
 
@@ -30,7 +36,6 @@ class ErrorMessages
 
     // English messages
     public const EN = [
-
         'notImplemented' => [
             'errorCode' => 'notImplemented',
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
@@ -282,13 +287,49 @@ class ErrorMessages
             'errorCode' => 'preconfirmationExpired',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'The preconfirmation has expired. Please make a new appointment.'
+        ],
+    
+        //Middleware exceptions
+        'ipBlacklisted' => [
+            'errorCode' => 'IP_BLACKLISTED',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Access denied - IP address is blacklisted.'
+        ],
+        'corsOriginNotAllowed' => [
+            'errorCode' => 'corsOriginNotAllowed',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Origin not allowed by CORS policy.'  // DE: 'Ursprung durch CORS-Richtlinie nicht erlaubt.'
+        ],
+        'csrfTokenMissing' => [
+            'errorCode' => 'csrfTokenMissing',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'CSRF token is missing.'  // DE: 'CSRF-Token fehlt.'
+        ],
+        'csrfTokenInvalid' => [
+            'errorCode' => 'csrfTokenInvalid',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Invalid CSRF token.'  // DE: 'Ungültiger CSRF-Token.'
+        ],
+        'rateLimitExceeded' => [
+            'errorCode' => 'rateLimitExceeded',
+            'statusCode' => self::HTTP_TOO_MANY_REQUESTS,
+            'errorMessage' => 'Rate limit exceeded. Please try again later.'  // DE: 'Anfragelimit überschritten. Bitte versuchen Sie es später erneut.'
+        ],
+        'requestEntityTooLarge' => [
+            'errorCode' => 'requestEntityTooLarge',
+            'statusCode' => self::HTTP_REQUEST_ENTITY_TOO_LARGE,
+            'errorMessage' => 'Request entity too large.'  // DE: 'Anfrage zu groß.'
+        ],
+        'securityHeaderViolation' => [
+            'errorCode' => 'securityHeaderViolation',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Security policy violation.'  // DE: 'Verstoß gegen Sicherheitsrichtlinien.'
         ]
 
     ];
 
     // German messages
     public const DE = [
-
         'notImplemented' => [
             'errorCode' => 'notImplemented',
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
@@ -540,6 +581,43 @@ class ErrorMessages
             'errorCode' => 'preconfirmationExpired',
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'Die Vorbestätigung ist abgelaufen. Bitte vereinbaren Sie einen neuen Termin.'
+        ],
+
+        //Middleware exceptions
+        'ipBlacklisted' => [
+            'errorCode' => 'IP_BLACKLISTED',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Zugriff verweigert - IP-Adresse ist auf der schwarzen Liste.'
+        ],
+        'corsOriginNotAllowed' => [
+            'errorCode' => 'corsOriginNotAllowed',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Ursprung durch CORS-Richtlinie nicht erlaubt.'  // DE: 'Ursprung durch CORS-Richtlinie nicht erlaubt.'
+        ],
+        'csrfTokenMissing' => [
+            'errorCode' => 'csrfTokenMissing',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'CSRF-Token fehlt.'  // DE: 'CSRF-Token fehlt.'
+        ],
+        'csrfTokenInvalid' => [
+            'errorCode' => 'csrfTokenInvalid',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Ungültiger CSRF-Token.'  // DE: 'Ungültiger CSRF-Token.'
+        ],
+        'rateLimitExceeded' => [
+            'errorCode' => 'rateLimitExceeded',
+            'statusCode' => self::HTTP_TOO_MANY_REQUESTS,
+            'errorMessage' => 'Anfragelimit überschritten. Bitte versuchen Sie es später erneut.'  // DE: 'Anfragelimit überschritten. Bitte versuchen Sie es später erneut.'
+        ],
+        'requestEntityTooLarge' => [
+            'errorCode' => 'requestEntityTooLarge',
+            'statusCode' => self::HTTP_REQUEST_ENTITY_TOO_LARGE,
+            'errorMessage' => 'Anfrage zu groß.'  // DE: 'Anfrage zu groß.'
+        ],
+        'securityHeaderViolation' => [
+            'errorCode' => 'securityHeaderViolation',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Verstoß gegen Sicherheitsrichtlinien.'  // DE: 'Verstoß gegen Sicherheitsrichtlinien.'
         ]
 
     ];

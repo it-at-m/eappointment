@@ -346,10 +346,11 @@ class AppointmentPreconfirmTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true); 
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(ErrorMessages::get('preconfirmationExpired')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing(
             ['errors' => [ErrorMessages::get('preconfirmationExpired')]],
             $responseBody
         );
     }
+
 }

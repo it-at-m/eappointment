@@ -41,14 +41,14 @@ class AppointmentConfirmService
     }
 
 
-    private function extractClientData(array $queryParams): object
+    private function extractClientData(array $body): object
     {
         return (object) [
-            'processId' => isset($queryParams['processId']) && is_numeric($queryParams['processId'])
-                ? (int) $queryParams['processId']
+            'processId' => isset($body['processId']) && is_numeric($body['processId'])
+                ? (int) $body['processId']
                 : null,
-            'authKey' => isset($queryParams['authKey']) && is_string($queryParams['authKey']) && trim($queryParams['authKey']) !== ''
-                ? htmlspecialchars(trim($queryParams['authKey']), ENT_QUOTES, 'UTF-8')
+            'authKey' => isset($body['authKey']) && is_string($body['authKey']) && trim($body['authKey']) !== ''
+                ? htmlspecialchars(trim($body['authKey']), ENT_QUOTES, 'UTF-8')
                 : null
         ];
     }
