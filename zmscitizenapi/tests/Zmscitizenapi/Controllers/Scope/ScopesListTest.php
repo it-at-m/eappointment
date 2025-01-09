@@ -1,10 +1,10 @@
 <?php
 
-namespace BO\Zmscitizenapi\Tests\Scope;
+namespace BO\Zmscitizenapi\Tests\Controllers\Scope;
 
-use BO\Zmscitizenapi\Tests\Base;
+use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
-class ScopesListTest extends Base
+class ScopesListTest extends ControllerTestCase
 {
 
     protected $classname = "\BO\Zmscitizenapi\Controllers\Scope\ScopesListController";

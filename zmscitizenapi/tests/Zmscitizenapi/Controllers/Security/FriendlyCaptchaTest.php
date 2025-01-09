@@ -1,12 +1,12 @@
 <?php
 
-namespace BO\Zmscitizenapi\Tests\Security;
+namespace BO\Zmscitizenapi\Tests\Controllers\Security;
 
-use BO\Zmscitizenapi\Tests\Base;
+use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
 
-class FriendlyCaptchaTest extends Base
+class FriendlyCaptchaTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Security\CaptchaController";
 

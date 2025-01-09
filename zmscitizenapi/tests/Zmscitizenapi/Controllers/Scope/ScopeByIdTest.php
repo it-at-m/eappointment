@@ -1,11 +1,11 @@
 <?php
 
-namespace BO\Zmscitizenapi\Tests\Scope;
+namespace BO\Zmscitizenapi\Tests\Controllers\Scope;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
-use BO\Zmscitizenapi\Tests\Base;
+use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
-class ScopeByIdTest extends Base
+class ScopeByIdTest extends ControllerTestCase
 {
 
     protected $classname = "\BO\Zmscitizenapi\Controllers\Scope\ScopeByIdController";
