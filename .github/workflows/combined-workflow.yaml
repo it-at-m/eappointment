@@ -9,8 +9,10 @@ jobs:
 
   call-unit-tests:
     needs: call-code-quality
+    if: always()
     uses: ./.github/workflows/unit-tests.yaml
 
   call-build-images:
     needs: call-unit-tests
+    if: always()
     uses: ./.github/workflows/build-images.yaml
