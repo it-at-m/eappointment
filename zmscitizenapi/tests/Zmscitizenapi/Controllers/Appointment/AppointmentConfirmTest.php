@@ -1,13 +1,13 @@
 <?php
 
-namespace BO\Zmscitizenapi\Tests\Appointment;
+namespace BO\Zmscitizenapi\Tests\Controllers\Appointment;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
-use BO\Zmscitizenapi\Tests\Base;
+use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
-class AppointmentPreconfirmTest extends Base
+class AppointmentConfirmTest extends ControllerTestCase
 {
-    protected $classname = "\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController";
 
     public function setUp(): void
     {
@@ -42,13 +42,13 @@ class AppointmentPreconfirmTest extends Base
                 ],
                 [
                     'function' => 'readPostResult',
-                    'url' => '/process/status/preconfirmed/',
-                    'response' => $this->readFixture("POST_preconfirm_appointment.json")
+                    'url' => '/process/status/confirmed/',
+                    'response' => $this->readFixture("POST_confirm_appointment.json")
                 ],
                 [
                     'function' => 'readPostResult',
-                    'url' => '/process/101002/fb43/preconfirmation/mail/',
-                    'response' => $this->readFixture("POST_preconfirm_appointment.json")
+                    'url' => '/process/101002/fb43/confirmation/mail/',
+                    'response' => $this->readFixture("POST_confirm_appointment.json")
                 ]
             ]
         );
@@ -59,7 +59,7 @@ class AppointmentPreconfirmTest extends Base
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-        
+
         $expectedResponse = [
             'processId' => 101002,
             'timestamp' => '1727865900',
@@ -85,7 +85,7 @@ class AppointmentPreconfirmTest extends Base
             'subRequestCounts' => [],
             'serviceId' => 10242339,
             'serviceCount' => 1,
-            'status' => 'preconfirmed'
+            'status' => 'confirmed'
         ];
     
         $this->assertEquals(200, $response->getStatusCode());
@@ -152,49 +152,6 @@ class AppointmentPreconfirmTest extends Base
         );
     }
 
-    public function testTooManyEmailsAtLocation()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail';
-
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_process.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/source/unittest/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_SourceGet_dldb.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/preconfirmed/',
-                'exception' => $exception
-            ]
-        ]);
-
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43'
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(406, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('tooManyAppointmentsWithSameMail')]],
-            $responseBody
-        );
-    }
-
     public function testInvalidProcessId()
     {
         $parameters = [
@@ -257,11 +214,11 @@ class AppointmentPreconfirmTest extends Base
         );
     }
 
-    public function testNoEmailSendingWhenStatusNotPreconfirmed()
+    public function testNoEmailSendingWhenStatusNotConfirmed()
     {
-        $processResponse = $this->readFixture("POST_preconfirm_appointment.json");
+        $processResponse = $this->readFixture("POST_confirm_appointment.json");
         $processData = json_decode($processResponse, true);
-        $processData['data']['queue']['status'] = 'confirmed'; // Change status to something else
+        $processData['data']['queue']['status'] = 'reserved'; // Change status to something else
         
         $this->setApiCalls([
             [
@@ -282,7 +239,7 @@ class AppointmentPreconfirmTest extends Base
             ],
             [
                 'function' => 'readPostResult',
-                'url' => '/process/status/preconfirmed/',
+                'url' => '/process/status/confirmed/',
                 'response' => json_encode($processData)
             ]
             // Note: No email API call should be made
@@ -296,7 +253,7 @@ class AppointmentPreconfirmTest extends Base
         $responseBody = json_decode((string) $response->getBody(), true);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('confirmed', $responseBody['status']);
+        $this->assertEquals('reserved', $responseBody['status']);
     }
 
     public function testInvalidRequest()
@@ -310,47 +267,4 @@ class AppointmentPreconfirmTest extends Base
             $responseBody
         );
     }
-
-    public function testPreconfirmationExpired()
-    {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired';
-    
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_process.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/source/unittest/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_SourceGet_dldb.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/preconfirmed/',
-                'exception' => $exception
-            ]
-        ]);
-    
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43'
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true); 
-        $this->assertEquals(ErrorMessages::get('preconfirmationExpired')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('preconfirmationExpired')]],
-            $responseBody
-        );
-    }
-
 }

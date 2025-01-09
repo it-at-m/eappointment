@@ -1,9 +1,9 @@
 <?php
 
-namespace BO\Zmscitizenapi\Tests\Office;
+namespace BO\Zmscitizenapi\Tests\Controllers\Office;
 
-use BO\Zmscitizenapi\Tests\Base;
-class OfficesListTest extends Base
+use BO\Zmscitizenapi\Tests\ControllerTestCase;
+class OfficesListTest extends ControllerTestCase
 {
 
     protected $classname = "\BO\Zmscitizenapi\Controllers\Office\OfficesListController";

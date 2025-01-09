@@ -2,7 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests;
 
-abstract class Base extends \BO\Zmsclient\PhpUnit\Base
+abstract class ControllerTestCase extends \BO\Zmsclient\PhpUnit\Base
 {
     protected $namespace = '\\BO\\Zmscitizenapi\\';
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace BO\Zmscitizenapi\Tests\Office;
+namespace BO\Zmscitizenapi\Tests\Controllers\Office;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
-use BO\Zmscitizenapi\Tests\Base;
+use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
-class OfficeListByServiceTest extends Base
+class OfficeListByServiceTest extends ControllerTestCase
 {
 
     protected $classname = "\BO\Zmscitizenapi\Controllers\Office\OfficeListByServiceController";

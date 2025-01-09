@@ -21,7 +21,14 @@ class CorsMiddlewareTest extends MiddlewareTestCase
         if (\App::$cache) {
             \App::$cache->clear();
         }
+        putenv('CORS=http://localhost:8080');
         $this->middleware = new CorsMiddleware($this->logger);
+    }
+
+    protected function tearDown(): void
+    {
+        putenv('CORS');  // Clear environment variable
+        parent::tearDown();
     }
 
     public function testAllowsRequestWithoutOrigin(): void

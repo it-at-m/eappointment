@@ -1,11 +1,11 @@
 <?php
 
-namespace BO\Zmscitizenapi\Tests\Appointment;
+namespace BO\Zmscitizenapi\Tests\Controllers\Appointment;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
-use BO\Zmscitizenapi\Tests\Base;
+use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
-class AppointmentCancelTest extends Base
+class AppointmentCancelTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController";
 
