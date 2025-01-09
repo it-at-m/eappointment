@@ -43,9 +43,9 @@ class RequestSanitizerMiddlewareTest extends MiddlewareTestCase
         $response = new Response();
         $handler = $this->createHandler($response);
 
-        $this->logger->expectLogInfo('Request sanitized', [
+        /*$this->logger->expectLogInfo('Request sanitized', [
             'uri' => 'http://localhost/test'
-        ]);
+        ]);*/
 
         $result = $this->middleware->process($request, $handler);
         $this->assertSame($response, $result);

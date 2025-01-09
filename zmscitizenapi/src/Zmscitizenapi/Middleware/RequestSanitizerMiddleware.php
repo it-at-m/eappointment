@@ -29,9 +29,9 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
         try {
             $request = $this->sanitizeRequest($request);
 
-            $this->logger->logInfo('Request sanitized', [
+            /*$this->logger->logInfo('Request sanitized', [
                 'uri' => (string) $request->getUri()
-            ]);
+            ]);*/
 
             return $handler->handle($request);
         } catch (\Throwable $e) {

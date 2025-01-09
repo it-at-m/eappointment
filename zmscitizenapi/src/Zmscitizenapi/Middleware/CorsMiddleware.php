@@ -35,10 +35,10 @@ class CorsMiddleware implements MiddlewareInterface
             
             // Allow requests without Origin header (direct browser access)
             if (empty($origin)) {
-                $this->logger->logInfo('Direct browser request - no Origin header', [
+                /*$this->logger->logInfo('Direct browser request - no Origin header', [
                     'uri' => (string)$request->getUri(),
                     'headers' => $request->getHeaders()
-                ]);
+                ]);*/
                 return $handler->handle($request);
             }
             
