@@ -247,7 +247,7 @@ class Messaging
         return $message;
     }
 
-    protected static function getTemplate($type, $status, ?Process $process = null)
+    protected static function getTemplate($type, $status)
     {
         $template = null;
         if (Property::__keyExists($type, self::$templates)) {
@@ -255,26 +255,6 @@ class Messaging
                 $template = self::$templates[$type][$status];
             }
         }
-
-        /*
-
-        // temporarily disable until we have all the customized templates in the database
-
-        if ($process) {
-            $provider = $process->scope->provider;
-            //error_log($provider);
-            //print_r($provider, true);
-            $providerName = $provider->displayName;
-            $providerTemplateName = self::getProviderTemplateName($providerName);
-            $providerTemplateFolder = 'custom/' . $providerTemplateName . '/';
-
-            if (file_exists(TemplateFinder::getTemplatePath() . '/messaging/' . $providerTemplateFolder . $template)) {
-                return $providerTemplateFolder . $template;
-            }
-        }
-
-        */
-
         return $template;
     }
 
