@@ -3,7 +3,6 @@ name: Combined Workflow
 on: [push]
 
 jobs:
-
   call-code-quality:
     uses: ./.github/workflows/code-quality.yaml
 
@@ -14,5 +13,7 @@ jobs:
 
   call-build-images:
     needs: call-unit-tests
-    if: ${{ !contains(needs.call-unit-tests.result, 'failure') }}
+    if: |
+      always() &&
+      needs.call-unit-tests.result == 'success'
     uses: ./.github/workflows/build-images.yaml
