@@ -76,11 +76,7 @@ class Index extends BaseController
         $department = \App::$http->readGetResult('/scope/' . $scope->id . '/department/')->getEntity();
         $organisation = $ticketprinterHelper->getOrganisation();
 
-
-        /*
-         *Check whether at least one button is not active (no opening hours stored or location deactivated)
-         *the value will be transferd to the template.
-        */
+        //Check whether at least one button is not active (no opening hours stored or location deactivated)
         $hasDisabledButton = false;
         foreach ($ticketprinter->buttons as $button) {
             if (!isset($button['enabled']) || $button['enabled'] != 1) {
