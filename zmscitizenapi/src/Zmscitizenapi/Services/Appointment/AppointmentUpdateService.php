@@ -33,19 +33,19 @@ class AppointmentUpdateService
         return $this->saveProcessUpdate($updatedProcess);
     }
 
-    private function extractClientData(array $queryParams): object
+    private function extractClientData(array $body): object
     {
         return (object) [
-            'processId' => isset($queryParams['processId']) && is_numeric($queryParams['processId'])
-                ? (int) $queryParams['processId']
+            'processId' => isset($body['processId']) && is_numeric($body['processId'])
+                ? (int) $body['processId']
                 : null,
-            'authKey' => isset($queryParams['authKey']) && is_string($queryParams['authKey']) && trim($queryParams['authKey']) !== ''
-                ? htmlspecialchars(trim($queryParams['authKey']), ENT_QUOTES, 'UTF-8')
+            'authKey' => isset($body['authKey']) && is_string($body['authKey']) && trim($body['authKey']) !== ''
+                ? htmlspecialchars(trim($body['authKey']), ENT_QUOTES, 'UTF-8')
                 : null,
-            'familyName' => isset($queryParams['familyName']) && is_string($queryParams['familyName']) ? (string) $queryParams['familyName'] : null,
-            'email' => isset($queryParams['email']) && is_string($queryParams['email']) ? (string) $queryParams['email'] : null,
-            'telephone' => isset($queryParams['telephone']) && is_string($queryParams['telephone']) ? (string) $queryParams['telephone'] : null,
-            'customTextfield' => isset($queryParams['customTextfield']) && is_string($queryParams['customTextfield']) ? (string) $queryParams['customTextfield'] : null,
+            'familyName' => isset($body['familyName']) && is_string($body['familyName']) ? (string) $body['familyName'] : null,
+            'email' => isset($body['email']) && is_string($body['email']) ? (string) $body['email'] : null,
+            'telephone' => isset($body['telephone']) && is_string($body['telephone']) ? (string) $body['telephone'] : null,
+            'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield']) ? (string) $body['customTextfield'] : null,
         ];
     }
 
