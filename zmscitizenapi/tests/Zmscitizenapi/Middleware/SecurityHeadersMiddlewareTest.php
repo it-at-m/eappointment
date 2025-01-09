@@ -36,8 +36,8 @@ class SecurityHeadersMiddlewareTest extends MiddlewareTestCase
 
         $result = $this->middleware->process($request, $handler);
         
-        $this->assertContains('DENY', $result->getHeader('X-Frame-Options'));
-        $this->assertContains('nosniff', $result->getHeader('X-Content-Type-Options'));
+        $this->assertContainsEquals('DENY', $result->getHeader('X-Frame-Options'));
+        $this->assertContainsEquals('nosniff', $result->getHeader('X-Content-Type-Options'));
     }
 
     public function testHandlesHeaderException(): void
