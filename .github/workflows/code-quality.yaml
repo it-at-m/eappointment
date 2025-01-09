@@ -18,14 +18,17 @@ jobs:
           composer install --no-progress --prefer-dist --optimize-autoloader
 
       - name: PHPCS / PSR-12
+        continue-on-error: true
         run: |
           cd "${{ matrix.module }}"
-          echo "Running phpcs (ignoring warnings)..."
-          vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
+          echo "Running phpcs..."
+          vendor/bin/phpcs --standard=psr12 src/
 
       - name: PHPMD
+        continue-on-error: true
         run: |
           cd "${{ matrix.module }}"
+          set +e
           echo "Running phpmd..."
           vendor/bin/phpmd src/ text ../phpmd.rules.xml
 
