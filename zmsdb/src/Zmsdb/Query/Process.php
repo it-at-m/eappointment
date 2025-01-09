@@ -3,15 +3,13 @@
 namespace BO\Zmsdb\Query;
 
 /**
- *
  * @SuppressWarnings(Methods)
  * @SuppressWarnings(Complexity)
  */
 class Process extends Base implements MappingInterface
 {
     /**
-     *
-     * @var String TABLE mysql table reference
+     *     * @var String TABLE mysql table reference
      */
     const TABLE = 'buerger';
 
@@ -417,7 +415,6 @@ class Process extends Base implements MappingInterface
 
     /**
      * Identify processes between two dates
-     *
      */
     public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
@@ -601,7 +598,6 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-
     public function addConditionCustomTextfield($customText, $exactMatching = false)
     {
         if ($exactMatching) {
@@ -652,7 +648,6 @@ class Process extends Base implements MappingInterface
         $this->query->orderBy('process.IPTimeStamp', 'ASC');
         return $this;
     }
-
 
     public function addValuesNewProcess(\BO\Zmsentities\Process $process, $parentProcess = 0, $childProcessCount = 0)
     {
@@ -884,7 +879,6 @@ class Process extends Base implements MappingInterface
 
         $this->addValues($data);
     }
-
 
     protected function addValuesQueueData($process)
     {
