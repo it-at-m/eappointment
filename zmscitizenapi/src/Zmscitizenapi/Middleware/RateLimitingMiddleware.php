@@ -64,7 +64,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
                     // Exponential backoff with jitter
                     $backoffMs = min(
                         self::BACKOFF_MAX,
-                        (int)(self::BACKOFF_MIN * pow(2, $attempt))
+                        (int)(self::BACKOFF_MIN * min(pow(2, $attempt), PHP_INT_MAX / self::BACKOFF_MIN))
                     );
                     $jitterMs = random_int(0, (int)($backoffMs * 0.1));
                     $sleepMs = $backoffMs + $jitterMs;
@@ -124,6 +124,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
         
         // Update the counter atomically
         $requestData['count'] = $count + 1;
+        $requestData['timestamp'] = time();
         $this->cache->set($key, $requestData, self::TIME_WINDOW);
         
         return false;

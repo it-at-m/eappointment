@@ -29,7 +29,7 @@ abstract class ControllerTestCase extends \BO\Zmsclient\PhpUnit\Base
         array  $assertStatusCodes = [ 200 ],
     ): array {
         $response = $this->render($arguments, $parameters, $sessionData, $method);
-        $this->assertContains($response->getStatusCode(), $assertStatusCodes);
+        $this->assertContainsEquals($response->getStatusCode(), $assertStatusCodes);
         return json_decode($response->getBody(), true);
     }
 }

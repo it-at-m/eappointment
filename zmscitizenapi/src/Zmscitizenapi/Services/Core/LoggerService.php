@@ -375,7 +375,7 @@ class LoggerService
             }
             
             return true;
-        } catch (\InvalidArgumentException $e) {
+        } catch (\Psr\SimpleCache\InvalidArgumentException $e) {
             error_log('Cache rate limiting failed: ' . $e->getMessage());
             // Allow logging on cache failures
             return true;
