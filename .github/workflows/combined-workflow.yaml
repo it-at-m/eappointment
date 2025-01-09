@@ -14,5 +14,4 @@ jobs:
 
   call-build-images:
     needs: call-unit-tests
-    if: ${{ success() }}
     uses: ./.github/workflows/build-images.yaml
