@@ -70,9 +70,8 @@ class ScopeAvailabilityDay extends BaseController
             $startDateTime = new \DateTime($startTime);
             $endDateTime = new \DateTime($endTime);
 
-            foreach ($buckets as $time => $value) {
+            foreach (array_keys($buckets) as $time) {
                 $slotDateTime = new \DateTime($time);
-                // Check if the appointment overlaps with the slot time
                 if ($slotDateTime >= $startDateTime && $slotDateTime < $endDateTime) {
                     $buckets[$time]['occupiedCount']++;
                 }
