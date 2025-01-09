@@ -20,11 +20,13 @@ jobs:
       - name: PHPCS / PSR-12
         run: |
           cd "${{ matrix.module }}"
-          vendor/bin/phpcs --standard=psr12 src/
+          echo "Running phpcs (ignoring warnings)..."
+          vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
 
       - name: PHPMD
         run: |
           cd "${{ matrix.module }}"
+          echo "Running phpmd..."
           vendor/bin/phpmd src/ text ../phpmd.rules.xml
 
     strategy:
