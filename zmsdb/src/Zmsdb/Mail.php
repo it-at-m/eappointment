@@ -38,7 +38,7 @@ class Mail extends Base
         $query->addEntityMapping()
               ->addResolvedReferences($resolveReferences)
               ->addWhereIn('id', $itemIds)
-              ->addOrderBy('createTimestamp', 'ASC')
+              ->addOrderBy('createTimestamp', $order)
               ->addLimit($limit);
         $result = $this->fetchList($query, new Entity());
 
