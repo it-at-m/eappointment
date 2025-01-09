@@ -59,9 +59,9 @@ class IpFilterMiddleware implements MiddlewareInterface
                 return $response;
             }
             
-            $this->logger->logInfo('Request processed successfully', [
+            /*$this->logger->logInfo('Request processed successfully', [
                 'uri' => $uri
-            ]);
+            ]);*/
             return $handler->handle($request);
             
         } catch (\Throwable $e) {

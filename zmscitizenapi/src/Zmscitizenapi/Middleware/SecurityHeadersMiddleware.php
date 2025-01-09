@@ -43,9 +43,9 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
                 $response = $response->withHeader($header, $value);
             }
             
-            $this->logger->logInfo('Security headers added', [
+            /*$this->logger->logInfo('Security headers added', [
                 'uri' => (string)$request->getUri()
-            ]);
+            ]);*/
             
             return $response;
         } catch (\Throwable $e) {

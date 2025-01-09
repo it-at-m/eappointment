@@ -30,9 +30,9 @@ class SecurityHeadersMiddlewareTest extends MiddlewareTestCase
         $response = new Response();
         $handler = $this->createHandler($response);
 
-        $this->logger->expectLogInfo('Security headers added', [
+        /*$this->logger->expectLogInfo('Security headers added', [
             'uri' => 'http://localhost/test'
-        ]);
+        ]);*/
 
         $result = $this->middleware->process($request, $handler);
         
