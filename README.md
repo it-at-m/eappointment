@@ -135,7 +135,7 @@ To run Checks locally in your local docker container:
   - phpcs --standard=psr12 --fix src/
   ```
 4. Run PHPMD (using the phpmd.rules.xml in the project root):
-- `vendor/bin/phpmd src/ text phpmd.rules.xml`
+- `vendor/bin/phpmd src/ text ../phpmd.rules.xml`
 
 ## Unit Testing
 To run unit tests locally refer to the Github Workflows: https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml and in your local docker container run:

@@ -3,7 +3,12 @@ name: Combined Workflow
 on: [push]
 
 jobs:
+
+  call-code-quality:
+    uses: ./.github/workflows/code-quality.yaml
+
   call-unit-tests:
+    needs: call-code-quality
     uses: ./.github/workflows/unit-tests.yaml
 
   call-build-images:
