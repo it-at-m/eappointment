@@ -288,7 +288,7 @@ class ErrorMessages
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'The preconfirmation has expired. Please make a new appointment.'
         ],
-    
+
         //Middleware exceptions
         'ipBlacklisted' => [
             'errorCode' => 'IP_BLACKLISTED',
@@ -670,12 +670,27 @@ class ErrorMessages
         return $genericErrorMessage;
     }
 
+    /**
+     * Get the highest status code from an array of errors.
+     * 
+     * @param array $errors Array of error messages
+     * @return int The highest status code found, or HTTP_OK (200) if no errors
+     * @throws \InvalidArgumentException If any error has an invalid structure
+     */
     public static function getHighestStatusCode(array $errors): int
     {
         if (empty($errors)) {
             return self::HTTP_OK;
         }
-        $errorCodes = array_column($errors, 'statusCode');
+
+        $errorCodes = [];
+        foreach ($errors as $error) {
+            if (!is_array($error) || !isset($error['statusCode']) || !is_int($error['statusCode'])) {
+                throw new \InvalidArgumentException('Invalid error structure. Each error must have a statusCode.');
+            }
+            $errorCodes[] = $error['statusCode'];
+        }
+
         return max($errorCodes);
     }
 

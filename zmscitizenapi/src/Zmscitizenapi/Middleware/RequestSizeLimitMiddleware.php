@@ -28,7 +28,11 @@ class RequestSizeLimitMiddleware implements MiddlewareInterface
         RequestHandlerInterface $handler
     ): ResponseInterface {
         try {
-            $contentLength = (int)$request->getHeaderLine('Content-Length');
+            $contentLength = $request->getHeaderLine('Content-Length');
+            if ($contentLength === '') {
+                return $handler->handle($request);
+            }
+            $contentLength = (int)$contentLength;
             
             if ($contentLength > self::MAX_SIZE) {
                 $this->logger->logInfo(sprintf(

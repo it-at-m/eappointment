@@ -25,11 +25,11 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
     ): ResponseInterface {
         try {
             $request = $this->sanitizeRequest($request);
-            
+
             $this->logger->logInfo('Request sanitized', [
-                'uri' => (string)$request->getUri()
+                'uri' => (string) $request->getUri()
             ]);
-            
+
             return $handler->handle($request);
         } catch (\Throwable $e) {
             $this->logger->logError($e, $request);
@@ -43,14 +43,17 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
         $queryParams = $request->getQueryParams();
         $sanitizedQueryParams = $this->sanitizeData($queryParams);
         $request = $request->withQueryParams($sanitizedQueryParams);
-        
+
         // Sanitize parsed body
         $parsedBody = $request->getParsedBody();
         if (is_array($parsedBody)) {
             $sanitizedParsedBody = $this->sanitizeData($parsedBody);
             $request = $request->withParsedBody($sanitizedParsedBody);
+        } elseif (is_object($parsedBody)) {
+            $sanitizedParsedBody = $this->sanitizeObject($parsedBody);
+            $request = $request->withParsedBody($sanitizedParsedBody);
         }
-        
+
         return $request;
     }
 
@@ -69,12 +72,29 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
         return $sanitized;
     }
 
+    private function sanitizeObject(object $data): object
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data->$key = $this->sanitizeData($value);
+            } elseif (is_object($value)) {
+                $data->$key = $this->sanitizeObject($value);
+            } elseif (is_string($value)) {
+                $data->$key = $this->sanitizeString($value);
+            }
+        }
+        return $data;
+    }
+
     private function sanitizeString(string $value): string
     {
-        // Remove invisible characters
         $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value);
-        
-        // Convert special characters to HTML entities
-        return htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        $value = trim($value);
+        if (!mb_check_encoding($value, 'UTF-8')) {
+            $this->logger->logWarning('Invalid string encoding detected.', ['value' => $value]);
+            $value = mb_convert_encoding($value, 'UTF-8', 'auto');
+        }
+        return $value;
     }
 }

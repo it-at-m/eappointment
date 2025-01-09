@@ -32,26 +32,33 @@ abstract class MiddlewareTestCase extends TestCase
         parent::tearDown();
     }
 
-    protected function createRequest(array $headers = []): ServerRequestInterface
+    protected function createRequest(array $headerValues = []): ServerRequestInterface
     {
+        // Normalize headers to PSR-7 format: header name => array of values
+        $headers = [];
+        foreach ($headerValues as $name => $value) {
+            $headers[$name] = (array)$value;
+        }
+
         $request = $this->createMock(ServerRequestInterface::class);
         $request->method('getHeaders')->willReturn($headers);
         $request->method('getHeaderLine')->willReturnCallback(
             function ($name) use ($headers) {
-                return $headers[$name] ?? '';
+                if (isset($headers[$name])) {
+                    return implode(', ', $headers[$name]);
+                } else {
+                    return '';
+                }
             }
         );
         $request->method('getUri')->willReturn(new Uri('http://localhost/test'));
         return $request;
     }
 
-    protected function createHandler(ResponseInterface $response = null): RequestHandlerInterface
+    protected function createHandler(ResponseInterface $response): RequestHandlerInterface
     {
         $handler = $this->createMock(RequestHandlerInterface::class);
-        if ($response) {
-            $handler->method('handle')->willReturn($response);
-        }
+        $handler->method('handle')->willReturn($response);
         return $handler;
     }
-
 }

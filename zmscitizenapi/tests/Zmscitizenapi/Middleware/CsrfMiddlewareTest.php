@@ -79,10 +79,11 @@ class CsrfMiddlewareTest extends MiddlewareTestCase
         $request->expects($this->once())
             ->method('getMethod')
             ->willReturn('POST');
-        $request->expects($this->once())
-            ->method('getHeaderLine')
-            ->with('X-CSRF-Token')
-            ->willReturn('invalid');
+        $request->method('getHeaderLine')
+            ->willReturnCallback(function(string $header) {
+                $this->assertEquals('X-CSRF-Token', $header);
+                return 'invalid';
+            });
         $request->expects($this->any())
             ->method('getUri')
             ->willReturn(new \BO\Zmsclient\Psr7\Uri('http://localhost/test'));
