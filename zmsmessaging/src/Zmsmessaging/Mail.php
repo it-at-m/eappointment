@@ -16,8 +16,6 @@ class Mail extends BaseController
 {
     protected $messagesQueue = null;
     protected $startTime;
-    private $cpuLimit;
-    private $ramLimit;
 
     public function __construct($verbose = false, $maxRunTime = 50)
     {
