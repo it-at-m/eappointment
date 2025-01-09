@@ -78,4 +78,31 @@ class CorsMiddlewareTest extends MiddlewareTestCase
         $this->assertEquals('http://localhost:8080', $result->getHeaderLine('Access-Control-Allow-Origin'));
         $this->assertNotEmpty($result->getHeaderLine('Access-Control-Allow-Methods'));
     }
+
+    public function testHandlesPreflightRequest(): void
+    {
+        $headers = new \Slim\Psr7\Headers([
+            'Origin' => 'http://localhost:8080',
+            'Access-Control-Request-Method' => 'POST',
+            'Access-Control-Request-Headers' => 'content-type'
+        ]);
+        
+        $request = new \Slim\Psr7\Request(
+            'OPTIONS',
+            new \Slim\Psr7\Uri('http', 'localhost/test'),
+            $headers,
+            [],
+            [],
+            new \Slim\Psr7\Stream(fopen('php://temp', 'r+'))
+        );
+        
+        $response = new Response();
+        $handler = $this->createHandler($response);
+    
+        $result = $this->middleware->process($request, $handler);
+        
+        $this->assertEquals('http://localhost:8080', $result->getHeaderLine('Access-Control-Allow-Origin'));
+        $this->assertNotEmpty($result->getHeaderLine('Access-Control-Allow-Methods'));
+        $this->assertNotEmpty($result->getHeaderLine('Access-Control-Allow-Headers'));
+    }
 }

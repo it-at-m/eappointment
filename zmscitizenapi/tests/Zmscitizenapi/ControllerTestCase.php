@@ -6,12 +6,18 @@ abstract class ControllerTestCase extends \BO\Zmsclient\PhpUnit\Base
 {
     protected $namespace = '\\BO\\Zmscitizenapi\\';
 
-    public function readFixture($filename)
+    public function readFixture(string $filename): string
     {
-        $path = dirname(__FILE__) . '/fixtures/' . $filename;
-        if (! is_readable($path) || ! is_file($path)) {
+        if (!preg_match('/^[a-zA-Z0-9_-]+\.json$/', $filename)) {
+            throw new \InvalidArgumentException('Invalid fixture filename. Must be alphanumeric with .json extension');
+        }
+    
+        $path = dirname(__FILE__) . '/fixtures/' . basename($filename);
+    
+        if (!is_readable($path) || !is_file($path)) {
             throw new \Exception("Fixture $path is not readable");
         }
+    
         return file_get_contents($path);
     }
 

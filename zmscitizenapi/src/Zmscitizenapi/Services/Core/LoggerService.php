@@ -84,6 +84,16 @@ class LoggerService
         self::writeLog(LOG_ERR, $message);
     }
 
+    public static function logWarning(string $message, array $context = []): void
+    {
+        if (!self::checkRateLimit()) {
+            return;
+        }
+    
+        $message = self::formatMessage($message, $context);
+        self::writeLog(LOG_WARNING, $message);
+    }
+
     public static function logInfo(string $message, array $context = []): void
     {
         if (!self::checkRateLimit()) {
