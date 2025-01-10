@@ -536,7 +536,7 @@ sequenceDiagram
     end
 ```
 
-### Rate Limiting
+### IP Rate Limiting
 
 ```mermaid
 sequenceDiagram
