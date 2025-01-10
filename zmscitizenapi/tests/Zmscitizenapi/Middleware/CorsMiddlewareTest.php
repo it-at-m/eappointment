@@ -22,6 +22,7 @@ class CorsMiddlewareTest extends MiddlewareTestCase
             \App::$cache->clear();
         }
         putenv('CORS=http://localhost:8080');
+        \App::reinitializeMiddlewareConfig();
         $this->middleware = new CorsMiddleware($this->logger);
     }
 
