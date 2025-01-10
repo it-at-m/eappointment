@@ -48,6 +48,14 @@ sequenceDiagram
 | ZMS_API_URL | Backend API URL | https://localhost/terminvereinbarung/api/2 |
 | MAINTENANCE_MODE_ENABLED | Enable maintenance mode | false |
 | CORS | Allowed CORS origins | http://localhost:8080,... |
+| CAPTCHA_ENABLED | Global enable captcha | true, false |
+| FRIENDLY_CAPTCHA_SECRET_KEY | Friendly Captcha | **** |
+| FRIENDLY_CAPTCHA_SITE_KEY | Friendly Captcha | **** |
+| FRIENDLY_CAPTCHA_ENDPOINT | Friendly Captcha | https://eu-api.friendlycaptcha.eu/api/v1/siteverify |
+| FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE | https://eu-api.friendlycaptcha.eu/api/v1/puzzle | **** |
+| CACHE_LIFETIME | Cache lifetime limit | 3600 |
+| CACHE_DIR | Store cache | /cache |
+
 
 ## Appointment State Machine:
 
