@@ -52,7 +52,7 @@ sequenceDiagram
 | FRIENDLY_CAPTCHA_SECRET_KEY | Friendly Captcha | **** |
 | FRIENDLY_CAPTCHA_SITE_KEY | Friendly Captcha | **** |
 | FRIENDLY_CAPTCHA_ENDPOINT | Friendly Captcha | https://eu-api.friendlycaptcha.eu/api/v1/siteverify |
-| FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE | https://eu-api.friendlycaptcha.eu/api/v1/puzzle | **** |
+| FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE | Friendly Captcha | https://eu-api.friendlycaptcha.eu/api/v1/puzzle |
 | CACHE_LIFETIME | Cache lifetime limit | 3600 |
 | CACHE_DIR | Store cache | /cache |
 
