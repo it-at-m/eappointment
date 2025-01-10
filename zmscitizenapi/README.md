@@ -558,6 +558,18 @@ Headers returned:
 - `X-RateLimit-Remaining`: Requests remaining in window
 - `X-RateLimit-Reset`: Timestamp when limit resets
 
+Response when rateLimitExceeded:
+```json
+{
+  "errors": [
+    {
+      "errorCode": "rateLimitExceeded",
+      "statusCode": 429,
+      "errorMessage": "Rate limit exceeded. Please try again later."
+    }
+  ]
+}
+```
 
 ## Caching
 The PSR-16 Simple Cache is the core caching interface in zmscitizenapi. What I labeled as "File System Cache" is actually just the storage backend for PSR-16, implemented using Symfony's FilesystemAdapter.
