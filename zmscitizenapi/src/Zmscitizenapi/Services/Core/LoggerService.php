@@ -21,6 +21,10 @@ class LoggerService
 
     private const CACHE_KEY_PREFIX = 'logger.';
     private const CACHE_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'counter';
+    private const LOCK_TIMEOUT = 5; // 1 second
+    private const MAX_RETRIES = 3;
+    private const BACKOFF_MIN = 100; // milliseconds
+    private const BACKOFF_MAX = 1000; // milliseconds
 
     private const SENSITIVE_HEADERS = [
         'authorization',
@@ -31,20 +35,10 @@ class LoggerService
     ];
 
     private const IMPORTANT_HEADERS = [
-        //'host',
-        //'x-forwarded-host',
-        //'x-forwarded-proto',
-        //'x-forwarded-for',
-        //'content-type',
-        //'content-length',
         'user-agent'
     ];
 
-    private static bool $logOpened = false;
-    private static string $cachedTimestamp = '';
-    private static int $lastTimestampUpdate = 0;
-    private static int $logCount = 0;
-    private static int $lastCounterReset = 0;
+    protected static bool $logOpened = false;
 
     public static function init(): void
     {
@@ -60,7 +54,6 @@ class LoggerService
             }
         }
     }
-
 
     public static function shutdown(): void
     {
@@ -134,14 +127,13 @@ class LoggerService
         $queryString = implode('&', $queryParts);
 
         $data = [
-            'timestamp' => self::getTimestamp(),
+            'timestamp' => date('Y-m-d H:i:s'),
             'method' => $request->getMethod(),
             'path' => $path . ($queryString ? '?' . $queryString : ''),
             'status' => $response->getStatusCode(),
             'ip' => ClientIpHelper::getClientIp(),
             'headers' => self::filterSensitiveHeaders($request->getHeaders())
         ];
-
 
         if ($response->getStatusCode() >= 400) {
             $body = '';
@@ -203,6 +195,115 @@ class LoggerService
         );
     }
 
+    private static function checkRateLimit(): bool
+    {
+        if (\App::$cache === null) {
+            error_log('Cache not available for rate limiting');
+            return true;
+        }
+
+        $attempt = 0;
+        $key = self::CACHE_COUNTER_KEY;
+        $lockKey = $key . '_lock';
+
+        while ($attempt < self::MAX_RETRIES) {
+            try {
+                if (self::acquireLock($lockKey)) {
+                    try {
+                        $data = \App::$cache->get($key);
+                        
+                        if ($data === null) {
+                            // First log in this window
+                            \App::$cache->set($key, [
+                                'count' => 1,
+                                'timestamp' => time()
+                            ], 60);
+                            return true;
+                        }
+
+                        if (!is_array($data) || !isset($data['count'], $data['timestamp'])) {
+                            // Handle corrupted data
+                            \App::$cache->delete($key);
+                            return true;
+                        }
+
+                        $count = (int)$data['count'];
+                        
+                        if ($count >= self::MAX_LOGS_PER_MINUTE) {
+                            error_log('Log rate limit exceeded');
+                            return false;
+                        }
+
+                        // Update the counter atomically
+                        $data['count'] = $count + 1;
+                        \App::$cache->set($key, $data, 60);
+                        
+                        return true;
+                    } finally {
+                        self::releaseLock($lockKey);
+                    }
+                }
+            } catch (\Throwable $e) {
+                error_log('Rate limiting error: ' . $e->getMessage());
+            }
+            
+            $attempt++;
+            if ($attempt < self::MAX_RETRIES) {
+                $backoffMs = min(
+                    self::BACKOFF_MAX,
+                    (int)(self::BACKOFF_MIN * pow(2, $attempt))
+                );
+                $jitterMs = random_int(0, (int)($backoffMs * 0.1));
+                usleep(($backoffMs + $jitterMs) * 1000);
+            }
+        }
+
+        // If we can't acquire the lock after retries, allow logging
+        error_log('Failed to acquire rate limit lock after retries');
+        return true;
+    }
+
+    private static function acquireLock(string $lockKey): bool
+    {
+        if (!\App::$cache->has($lockKey)) {
+            return \App::$cache->set($lockKey, true, self::LOCK_TIMEOUT);
+        }
+        return false;
+    }
+
+    private static function releaseLock(string $lockKey): void
+    {
+        \App::$cache->delete($lockKey);
+    }
+
+    private static function writeLog(int $priority, string $message): void
+    {
+        // Initialize syslog connection if needed
+        self::init();
+
+        if (!self::$logOpened) {
+            error_log('Syslog not available, falling back to error_log');
+            error_log($message);
+            return;
+        }
+
+        // Truncate message if too large
+        if (strlen($message) > self::MAX_MESSAGE_SIZE) {
+            $message = mb_substr($message, 0, self::MAX_MESSAGE_SIZE - 64)
+                . ' ... [truncated, full length: ' . strlen($message) . ']';
+        }
+
+        try {
+            if (@syslog($priority, $message) === false) {
+                error_log('Failed to write to syslog');
+                error_log($message);
+            }
+        } catch (\Throwable $e) {
+            error_log('Logging failed: ' . $e->getMessage());
+            error_log($message);
+        }
+    }
+
     private static function formatErrorMessage(
         \Throwable $exception,
         ?RequestInterface $request,
@@ -210,7 +311,7 @@ class LoggerService
         array $context
     ): string {
         $data = [
-            'timestamp' => self::getTimestamp(),
+            'timestamp' => date('Y-m-d H:i:s'),
             'exception' => get_class($exception),
             'message' => $exception->getMessage(),
             'code' => $exception->getCode(),
@@ -296,7 +397,7 @@ class LoggerService
     private static function formatMessage(string $message, array $context): string
     {
         $data = [
-            'timestamp' => self::getTimestamp(),
+            'timestamp' => date('Y-m-d H:i:s'),
             'message' => $message
         ];
 
@@ -319,80 +420,6 @@ class LoggerService
             }
         }
         return $filtered;
-    }
-
-    private static function writeLog(int $priority, string $message): void
-    {
-        // Initialize syslog connection if needed
-        self::init();
-
-        if (!self::$logOpened) {
-            error_log('Syslog not available, falling back to error_log');
-            error_log($message);
-            return;
-        }
-
-        // Truncate message if too large
-        if (strlen($message) > self::MAX_MESSAGE_SIZE) {
-            $message = mb_substr($message, 0, self::MAX_MESSAGE_SIZE - 64)
-                . ' ... [truncated, full length: ' . strlen($message) . ']';
-        }
-
-        try {
-            if (@syslog($priority, $message) === false) {
-                error_log('Failed to write to syslog');
-                error_log($message);
-            }
-        } catch (\Throwable $e) {
-            error_log('Logging failed: ' . $e->getMessage());
-            error_log($message);
-        }
-    }
-
-    private static function checkRateLimit(): bool
-    {
-        // If cache is not available, allow logging but log a warning
-        if (\App::$cache === null) {
-            error_log('Cache not available for rate limiting');
-            return true;
-        }
-
-        try {
-            $key = self::CACHE_COUNTER_KEY;
-            
-            // Get current counter
-            $count = \App::$cache->get($key, 0);
-            
-            // Increment counter
-            $count++;
-            
-            // Store updated counter with 1-minute TTL
-            \App::$cache->set($key, $count, 60);
-            
-            if ($count > self::MAX_LOGS_PER_MINUTE) {
-                error_log('Log rate limit exceeded');
-                return false;
-            }
-            
-            return true;
-        } catch (\Psr\SimpleCache\InvalidArgumentException $e) {
-            error_log('Cache rate limiting failed: ' . $e->getMessage());
-            // Allow logging on cache failures
-            return true;
-        }
-    }
-
-    private static function getTimestamp(): string
-    {
-        $now = time();
-
-        // Cache timestamp for 1 second
-        if ($now - self::$lastTimestampUpdate >= 1) {
-            self::$cachedTimestamp = date('Y-m-d H:i:s');
-            self::$lastTimestampUpdate = $now;
-        }
-
-        return self::$cachedTimestamp;
     }
 
     private static function encodeJson(array $data): string
