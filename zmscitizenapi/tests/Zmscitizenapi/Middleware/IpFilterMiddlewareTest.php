@@ -18,14 +18,16 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
         if (\App::$cache) {
             \App::$cache->clear();
         }
-        putenv('IP_BLACKLIST'); // Clear any existing blacklist
-        $_SERVER = []; // Reset server variables
+        putenv('IP_BLACKLIST');
+        \App::reinitializeMiddlewareConfig();
+        $_SERVER = [];
     }
 
     protected function tearDown(): void
     {
         putenv('IP_BLACKLIST');
-        $_SERVER = []; // Reset server variables
+        \App::reinitializeMiddlewareConfig();
+        $_SERVER = [];
         parent::tearDown();
     }
 
@@ -49,6 +51,7 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
     public function testAllowsNonBlacklistedIPv4(): void
     {
         putenv('IP_BLACKLIST=192.168.1.1,10.0.0.0/8');
+        \App::reinitializeMiddlewareConfig();
         $_SERVER['REMOTE_ADDR'] = '192.168.2.1';
         $middleware = new IpFilterMiddleware($this->logger);
         
@@ -67,6 +70,7 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
     public function testAllowsNonBlacklistedIPv6(): void
     {
         putenv('IP_BLACKLIST=2001:db8::/32,::1');
+        \App::reinitializeMiddlewareConfig();
         $_SERVER['REMOTE_ADDR'] = '2001:db9::1';
         $middleware = new IpFilterMiddleware($this->logger);
         
@@ -85,6 +89,7 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
     public function testBlocksBlacklistedIPv4(): void
     {
         putenv('IP_BLACKLIST=192.168.1.0/24');
+        \App::reinitializeMiddlewareConfig();
         $_SERVER['REMOTE_ADDR'] = '192.168.1.1';
         $middleware = new IpFilterMiddleware($this->logger);
         
@@ -110,6 +115,7 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
     public function testBlocksBlacklistedIPv6(): void
     {
         putenv('IP_BLACKLIST=2001:db8::/32');
+        \App::reinitializeMiddlewareConfig();
         $_SERVER['REMOTE_ADDR'] = '2001:db8:1::1';
         $middleware = new IpFilterMiddleware($this->logger);
         
@@ -135,6 +141,7 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
     public function testHandlesInvalidIP(): void
     {
         putenv('IP_BLACKLIST=192.168.1.1');
+        \App::reinitializeMiddlewareConfig();
         $_SERVER['REMOTE_ADDR'] = 'invalid-ip';
         $middleware = new IpFilterMiddleware($this->logger);
         
@@ -154,6 +161,7 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
     public function testHandlesInvalidBlacklistEntry(): void
     {
         putenv('IP_BLACKLIST=invalid-ip,192.168.1.1');
+        \App::reinitializeMiddlewareConfig();
         $_SERVER['REMOTE_ADDR'] = '192.168.1.2';
         $middleware = new IpFilterMiddleware($this->logger);
         

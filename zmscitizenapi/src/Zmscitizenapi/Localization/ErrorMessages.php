@@ -298,32 +298,32 @@ class ErrorMessages
         'corsOriginNotAllowed' => [
             'errorCode' => 'corsOriginNotAllowed',
             'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'Origin not allowed by CORS policy.'  // DE: 'Ursprung durch CORS-Richtlinie nicht erlaubt.'
+            'errorMessage' => 'Origin not allowed by CORS policy.'
         ],
         'csrfTokenMissing' => [
             'errorCode' => 'csrfTokenMissing',
             'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'CSRF token is missing.'  // DE: 'CSRF-Token fehlt.'
+            'errorMessage' => 'CSRF token is missing.'
         ],
         'csrfTokenInvalid' => [
             'errorCode' => 'csrfTokenInvalid',
             'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'Invalid CSRF token.'  // DE: 'Ungültiger CSRF-Token.'
+            'errorMessage' => 'Invalid CSRF token.'
         ],
         'rateLimitExceeded' => [
             'errorCode' => 'rateLimitExceeded',
             'statusCode' => self::HTTP_TOO_MANY_REQUESTS,
-            'errorMessage' => 'Rate limit exceeded. Please try again later.'  // DE: 'Anfragelimit überschritten. Bitte versuchen Sie es später erneut.'
+            'errorMessage' => 'Rate limit exceeded. Please try again later.'
         ],
         'requestEntityTooLarge' => [
             'errorCode' => 'requestEntityTooLarge',
             'statusCode' => self::HTTP_REQUEST_ENTITY_TOO_LARGE,
-            'errorMessage' => 'Request entity too large.'  // DE: 'Anfrage zu groß.'
+            'errorMessage' => 'Request entity too large.'
         ],
         'securityHeaderViolation' => [
             'errorCode' => 'securityHeaderViolation',
             'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'Security policy violation.'  // DE: 'Verstoß gegen Sicherheitsrichtlinien.'
+            'errorMessage' => 'Security policy violation.'
         ]
 
     ];

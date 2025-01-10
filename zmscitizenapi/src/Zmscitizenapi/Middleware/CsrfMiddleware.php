@@ -15,14 +15,18 @@ class CsrfMiddleware implements MiddlewareInterface
     private const ERROR_TOKEN_MISSING = 'csrfTokenMissing';
     private const ERROR_TOKEN_INVALID = 'csrfTokenInvalid';
     private const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS'];
-    private const TOKEN_LENGTH = 32;
-    private const SESSION_TOKEN_KEY = 'csrf_token';
-
+    
+    private int $tokenLength;
+    private string $sessionKey;
     private LoggerService $logger;
 
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
+        $config = \App::getCsrfConfig();
+        $this->tokenLength = $config['tokenLength'];
+        $this->sessionKey = $config['sessionKey'];
+        
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -80,7 +84,7 @@ class CsrfMiddleware implements MiddlewareInterface
 
     private function validateToken(string $token): bool
     {
-        if (strlen($token) !== self::TOKEN_LENGTH || !ctype_xdigit($token)) {
+        if (strlen($token) !== $this->tokenLength || !ctype_xdigit($token)) {
             return false;
         }
         
@@ -101,14 +105,14 @@ class CsrfMiddleware implements MiddlewareInterface
 
     private function generateNewToken(): string
     {
-        $token = bin2hex(random_bytes(self::TOKEN_LENGTH / 2));
-        $_SESSION[self::SESSION_TOKEN_KEY] = $token;
+        $token = bin2hex(random_bytes($this->tokenLength / 2));
+        $_SESSION[$this->sessionKey] = $token;
         return $token;
     }
 
     private function getStoredToken(): string
     {
-        return $_SESSION[self::SESSION_TOKEN_KEY] ?? '';
+        return $_SESSION[$this->sessionKey] ?? '';
     }
 
     public function getToken(): string

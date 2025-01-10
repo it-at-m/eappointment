@@ -45,16 +45,48 @@ sequenceDiagram
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| **Core Configuration** |
 | ZMS_API_URL | Backend API URL | https://localhost/terminvereinbarung/api/2 |
+| **Cache & Maintenance** |
+| CACHE_DIR | Cache storage directory | /cache |
+| SOURCE_CACHE_TTL | Cache lifetime in seconds | 3600 |
 | MAINTENANCE_MODE_ENABLED | Enable maintenance mode | false |
-| CORS | Allowed CORS origins | http://localhost:8080,... |
-| CAPTCHA_ENABLED | Global enable captcha | true, false |
-| FRIENDLY_CAPTCHA_SECRET_KEY | Friendly Captcha | **** |
-| FRIENDLY_CAPTCHA_SITE_KEY | Friendly Captcha | **** |
-| FRIENDLY_CAPTCHA_ENDPOINT | Friendly Captcha | https://eu-api.friendlycaptcha.eu/api/v1/siteverify |
-| FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE | Friendly Captcha | https://eu-api.friendlycaptcha.eu/api/v1/puzzle |
-| CACHE_LIFETIME | Cache lifetime limit | 3600 |
-| CACHE_DIR | Store cache | /cache |
+| **Logger Configuration** |
+| LOGGER_MAX_REQUESTS | Maximum log requests per minute | 1000 |
+| LOGGER_RESPONSE_LENGTH | Maximum response length to log in bytes | 1048576 (1MB) |
+| LOGGER_STACK_LINES | Maximum stack trace lines to log | 20 |
+| LOGGER_MESSAGE_SIZE | Maximum log message size in bytes | 8192 (8KB) |
+| LOGGER_CACHE_TTL | Logger cache TTL in seconds | 60 |
+| LOGGER_MAX_RETRIES | Maximum retry attempts | 3 |
+| LOGGER_BACKOFF_MIN | Minimum backoff time in milliseconds | 100 |
+| LOGGER_BACKOFF_MAX | Maximum backoff time in milliseconds | 1000 |
+| LOGGER_LOCK_TIMEOUT | Lock timeout in seconds | 5 |
+| **Captcha Configuration** |
+| CAPTCHA_ENABLED | Enable captcha globally | false |
+| FRIENDLY_CAPTCHA_SECRET_KEY | FriendlyCaptcha secret key | "" |
+| FRIENDLY_CAPTCHA_SITE_KEY | FriendlyCaptcha site key | "" |
+| FRIENDLY_CAPTCHA_ENDPOINT | FriendlyCaptcha verification endpoint | https://eu-api.friendlycaptcha.eu/api/v1/siteverify |
+| FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE | FriendlyCaptcha puzzle endpoint | https://eu-api.friendlycaptcha.eu/api/v1/puzzle |
+| ALTCHA_CAPTCHA_SECRET_KEY | Altcha secret key | "" |
+| ALTCHA_CAPTCHA_SITE_KEY | Altcha site key | "" |
+| ALTCHA_CAPTCHA_ENDPOINT | Altcha verification endpoint | https://eu.altcha.org/form/ |
+| ALTCHA_CAPTCHA_ENDPOINT_PUZZLE | Altcha puzzle endpoint | https://eu.altcha.org/ |
+| **Rate Limiting** |
+| RATE_LIMIT_MAX_REQUESTS | Maximum requests per window | 60 |
+| RATE_LIMIT_CACHE_TTL | Rate limit cache TTL in seconds | 60 |
+| RATE_LIMIT_MAX_RETRIES | Maximum retry attempts | 3 |
+| RATE_LIMIT_BACKOFF_MIN | Minimum backoff time in milliseconds | 10 |
+| RATE_LIMIT_BACKOFF_MAX | Maximum backoff time in milliseconds | 50 |
+| RATE_LIMIT_LOCK_TIMEOUT | Lock timeout in seconds | 1 |
+| **Request Limits** |
+| MAX_REQUEST_SIZE | Maximum request size in bytes | 10485760 (10MB) |
+| MAX_STRING_LENGTH | Maximum string length in bytes | 32768 (32KB) |
+| MAX_RECURSION_DEPTH | Maximum recursion depth | 10 |
+| **Security Configuration** |
+| CSRF_TOKEN_LENGTH | CSRF token length in bytes | 32 |
+| CSRF_SESSION_KEY | CSRF session key name | csrf_token |
+| CORS | Allowed CORS origins (comma-separated) | http://localhost:8080,... |
+| IP_BLACKLIST | Blacklisted IPs/CIDR ranges (comma-separated) | "" |
 
 
 ## Appointment State Machine:

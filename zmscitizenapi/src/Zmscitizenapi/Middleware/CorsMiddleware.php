@@ -19,10 +19,7 @@ class CorsMiddleware implements MiddlewareInterface
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
-        $corsEnv = getenv('CORS');
-        if ($corsEnv) {
-            $this->whitelist = array_map('trim', explode(',', $corsEnv));
-        }
+        $this->whitelist = \App::getCorsAllowedOrigins();
     }
 
     public function process(
