@@ -3,6 +3,7 @@
 A REST-like interface that provides appointment booking and management capabilities for citizens. Part of the eAppointment system.
 
 ## Walkthrough
+<hr>
 
 This pull request introduces a comprehensive new module called `zmscitizenapi` to the project, which provides a streamlined REST-like interface for citizen interactions with a queuing management system. The changes span multiple configuration files, middleware, controllers, services, models, and test cases, establishing a robust and secure API for appointment-related functionalities.
 
@@ -12,20 +13,6 @@ The ZMS Citizen API offers endpoints for:
 * Checking appointment availability
 * Booking, confirming, and canceling appointments
 * Managing appointment details
-
-
-## Changes
-
-| File | Change Summary |
-|------|----------------|
-| `.ddev/.env.template` | Added `CORS` environment variable with multiple localhost and domain origins |
-| `.ddev/config.yaml` | Updated host HTTPS and web server ports from `59002`/`59001` to `8091`/`8090` |
-| `.github/workflows/build-images.yaml` | Added `zmscitizenapi` module with PHP 8.0 |
-| `.github/workflows/unit-tests.yaml` | Added `zmscitizenapi` module to matrix configuration |
-| `.htaccess` | Added routing rules for `zmscitizenapi` module |
-| `cli` | Added `zmscitizenapi` to modules list |
-
-## Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -44,7 +31,21 @@ sequenceDiagram
     ZMSCitizenAPI-->>Client: Respond with available appointments
 ```
 
-### Environment Variables
+## Changes
+<hr>
+
+| File | Change Summary |
+|------|----------------|
+| `.ddev/.env.template` | Added `CORS` environment variable with multiple localhost and domain origins |
+| `.ddev/config.yaml` | Updated host HTTPS and web server ports from `59002`/`59001` to `8091`/`8090` |
+| `.github/workflows/build-images.yaml` | Added `zmscitizenapi` module with PHP 8.0 |
+| `.github/workflows/unit-tests.yaml` | Added `zmscitizenapi` module to matrix configuration |
+| `.htaccess` | Added routing rules for `zmscitizenapi` module |
+| `cli` | Added `zmscitizenapi` to modules list |
+
+
+## Environment Variables
+<hr>
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -52,7 +53,8 @@ sequenceDiagram
 | MAINTENANCE_MODE_ENABLED | Enable maintenance mode | false |
 | CORS | Allowed CORS origins | http://localhost:8080,... |
 
-### Appointment State Machine:
+## Appointment State Machine:
+<hr>
 ```mermaid
 stateDiagram-v2
     [*] --> Reserved: reserve-appointment
@@ -65,6 +67,9 @@ stateDiagram-v2
     Preconfirmed --> [*]: timeout
     Cancelled --> [*]
 ```
+
+## Core Logic
+<hr>
 
 ### Domain Models
 ```mermaid
@@ -378,6 +383,9 @@ Key aspects of the architecture:
    - Domain-specific exceptions
    - Standardized error responses
 
+## Security
+<hr>
+
 ### Middleware Security Models
 
 ```mermaid
@@ -526,7 +534,7 @@ sequenceDiagram
     end
 ```
 
-#### Rate Limiting
+### Rate Limiting
 
 ```mermaid
 sequenceDiagram
@@ -549,7 +557,40 @@ Headers returned:
 - `X-RateLimit-Reset`: Timestamp when limit resets
 
 
-### Caching
+## Caching
+<hr>
+
+The PSR-16 Simple Cache is the core caching interface in zmscitizenapi. What I labeled as "File System Cache" is actually just the storage backend for PSR-16, implemented using Symfony's FilesystemAdapter.
+
+Here's how it works:
+
+1. **PSR-16 Setup**:
+   - Application initializes one PSR-16 cache instance using Symfony's FilesystemAdapter
+   - Cache directory and lifetime (default 3600s) configurable via env vars
+   - All services use this single cache instance through `App::$cache`
+
+2. **How the three caches use PSR-16**:
+   - **Rate Limiting Cache**:
+     - Key pattern: `rate_limit_{md5(ip)}`
+     - TTL: 60 seconds
+     - Stores request counts per IP
+     - The rate limit cache tracks request counts per IP address using a distributed locking mechanism to prevent race conditions. Each IP is allowed 60 requests per minute, with the counter auto-resetting after the TTL expires.
+   
+   - **Logger Cache**:
+     - Key pattern: Uses counter key
+     - TTL: 60 seconds
+     - Tracks log rate limiting
+     - The rate limit cache tracks request counts per IP address using a distributed locking mechanism to prevent race conditions. Each IP is allowed 60 requests per minute, with the counter auto-resetting after the TTL expires.
+   
+   - **DLDB Source Cache**:
+     - Key pattern: `source_{source_name}`
+     - TTL: 3600 seconds (1 hour)
+     - Caches API responses
+     - The DLDB source cache stores API responses for source data with a 1-hour TTL. 
+
+Each "cache" is really just a different usage pattern of the same PSR-16 interface, with its own key namespace and TTL, but all data is stored in the same filesystem backend.
+
+
 ```mermaid
 graph TB
     subgraph "Application Initialization"
