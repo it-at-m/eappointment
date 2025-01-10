@@ -3,8 +3,6 @@
 A REST-like interface that provides appointment booking and management capabilities for citizens. Part of the eAppointment system.
 
 ## Walkthrough
-<hr>
-
 This pull request introduces a comprehensive new module called `zmscitizenapi` to the project, which provides a streamlined REST-like interface for citizen interactions with a queuing management system. The changes span multiple configuration files, middleware, controllers, services, models, and test cases, establishing a robust and secure API for appointment-related functionalities.
 
 The ZMS Citizen API offers endpoints for:
@@ -32,7 +30,6 @@ sequenceDiagram
 ```
 
 ## Changes
-<hr>
 
 | File | Change Summary |
 |------|----------------|
@@ -45,7 +42,6 @@ sequenceDiagram
 
 
 ## Environment Variables
-<hr>
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -54,7 +50,7 @@ sequenceDiagram
 | CORS | Allowed CORS origins | http://localhost:8080,... |
 
 ## Appointment State Machine:
-<hr>
+
 ```mermaid
 stateDiagram-v2
     [*] --> Reserved: reserve-appointment
@@ -69,7 +65,6 @@ stateDiagram-v2
 ```
 
 ## Core Logic
-<hr>
 
 ### Domain Models
 ```mermaid
@@ -384,7 +379,6 @@ Key aspects of the architecture:
    - Standardized error responses
 
 ## Security
-<hr>
 
 ### Middleware Security Models
 
@@ -558,8 +552,6 @@ Headers returned:
 
 
 ## Caching
-<hr>
-
 The PSR-16 Simple Cache is the core caching interface in zmscitizenapi. What I labeled as "File System Cache" is actually just the storage backend for PSR-16, implemented using Symfony's FilesystemAdapter.
 
 Here's how it works:
