@@ -526,6 +526,29 @@ sequenceDiagram
     end
 ```
 
+#### Rate Limiting
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant API as ZMSCitizenAPI
+    
+    C->>API: Request
+    API->>API: Check Rate Limit
+    alt Under Limit
+        API-->>C: 200 OK + Headers
+    else Over Limit
+        API-->>C: 429 Too Many Requests
+        Note over C,API: X-RateLimit-Limit: 60<br>X-RateLimit-Remaining: 0<br>X-RateLimit-Reset: timestamp
+    end
+```
+
+Headers returned:
+- `X-RateLimit-Limit`: Requests allowed per minute
+- `X-RateLimit-Remaining`: Requests remaining in window
+- `X-RateLimit-Reset`: Timestamp when limit resets
+
+
 ### Caching
 ```mermaid
 graph TB
