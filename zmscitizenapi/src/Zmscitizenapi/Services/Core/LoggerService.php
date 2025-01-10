@@ -1,9 +1,9 @@
 <?php
-
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
+use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -11,21 +11,12 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class LoggerService
 {
+    // Internal implementation constants
     private const LOG_FACILITY = LOG_LOCAL0;
     private const LOG_OPTIONS = LOG_PID | LOG_PERROR;
-
-    private const MAX_RESPONSE_LENGTH = 1024 * 1024; // 1MB limit
-    private const MAX_STACK_LINES = 20; // Limit stack trace length
-    private const MAX_MESSAGE_SIZE = 8192; // 8KB limit for syslog messages
-    private const MAX_LOGS_PER_MINUTE = 1000; // Rate limit
-
     private const CACHE_KEY_PREFIX = 'logger.';
     private const CACHE_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'counter';
-    private const LOCK_TIMEOUT = 5; // 1 second
-    private const MAX_RETRIES = 3;
-    private const BACKOFF_MIN = 100; // milliseconds
-    private const BACKOFF_MAX = 1000; // milliseconds
-
+    
     private const SENSITIVE_HEADERS = [
         'authorization',
         'cookie',
@@ -39,12 +30,21 @@ class LoggerService
     ];
 
     protected static bool $logOpened = false;
+    private static ?array $config = null;
+
+    private static function ensureConfigLoaded(): void
+    {
+        if (self::$config === null) {
+            self::$config = \App::getLoggerConfig();
+        }
+    }
 
     public static function init(): void
     {
         if (!self::$logOpened) {
+            self::ensureConfigLoaded();
             self::$logOpened = @openlog(
-                \App::IDENTIFIER,
+                Application::IDENTIFIER,
                 self::LOG_OPTIONS,
                 self::LOG_FACILITY
             ) !== false;
@@ -69,6 +69,7 @@ class LoggerService
         ?ResponseInterface $response = null,
         array $context = []
     ): void {
+        self::ensureConfigLoaded();
         if (!self::checkRateLimit()) {
             return;
         }
@@ -79,6 +80,7 @@ class LoggerService
 
     public static function logWarning(string $message, array $context = []): void
     {
+        self::ensureConfigLoaded();
         if (!self::checkRateLimit()) {
             return;
         }
@@ -89,6 +91,7 @@ class LoggerService
 
     public static function logInfo(string $message, array $context = []): void
     {
+        self::ensureConfigLoaded();
         if (!self::checkRateLimit()) {
             return;
         }
@@ -101,6 +104,7 @@ class LoggerService
         ServerRequestInterface $request,
         ResponseInterface $response
     ): void {
+        self::ensureConfigLoaded();
         if (!self::checkRateLimit()) {
             return;
         }
@@ -146,8 +150,8 @@ class LoggerService
                     $stream->rewind();
 
                     $maxSafeSize = min(
-                        self::MAX_RESPONSE_LENGTH,
-                        (int) (self::MAX_MESSAGE_SIZE * 0.75)
+                        self::$config['responseLength'],
+                        (int)(self::$config['messageSize'] * 0.75)
                     );
 
                     if ($size > $maxSafeSize) {
@@ -156,7 +160,7 @@ class LoggerService
                             'size' => $size
                         ];
                     } else {
-                        $body = (string) $stream;
+                        $body = (string)$stream;
                         $stream->rewind();
 
                         try {
@@ -197,7 +201,7 @@ class LoggerService
 
     private static function checkRateLimit(): bool
     {
-        if (\App::$cache === null) {
+        if (Application::$cache === null) {
             error_log('Cache not available for rate limiting');
             return true;
         }
@@ -206,37 +210,37 @@ class LoggerService
         $key = self::CACHE_COUNTER_KEY;
         $lockKey = $key . '_lock';
 
-        while ($attempt < self::MAX_RETRIES) {
+        while ($attempt < self::$config['maxRetries']) {
             try {
                 if (self::acquireLock($lockKey)) {
                     try {
-                        $data = \App::$cache->get($key);
+                        $data = Application::$cache->get($key);
                         
                         if ($data === null) {
                             // First log in this window
-                            \App::$cache->set($key, [
+                            Application::$cache->set($key, [
                                 'count' => 1,
                                 'timestamp' => time()
-                            ], 60);
+                            ], self::$config['cacheTtl']);
                             return true;
                         }
 
                         if (!is_array($data) || !isset($data['count'], $data['timestamp'])) {
                             // Handle corrupted data
-                            \App::$cache->delete($key);
+                            Application::$cache->delete($key);
                             return true;
                         }
 
                         $count = (int)$data['count'];
                         
-                        if ($count >= self::MAX_LOGS_PER_MINUTE) {
+                        if ($count >= self::$config['maxRequests']) {
                             error_log('Log rate limit exceeded');
                             return false;
                         }
 
                         // Update the counter atomically
                         $data['count'] = $count + 1;
-                        \App::$cache->set($key, $data, 60);
+                        Application::$cache->set($key, $data, self::$config['cacheTtl']);
                         
                         return true;
                     } finally {
@@ -248,10 +252,10 @@ class LoggerService
             }
             
             $attempt++;
-            if ($attempt < self::MAX_RETRIES) {
+            if ($attempt < self::$config['maxRetries']) {
                 $backoffMs = min(
-                    self::BACKOFF_MAX,
-                    (int)(self::BACKOFF_MIN * pow(2, $attempt))
+                    self::$config['backoffMax'],
+                    (int)(self::$config['backoffMin'] * pow(2, $attempt))
                 );
                 $jitterMs = random_int(0, (int)($backoffMs * 0.1));
                 usleep(($backoffMs + $jitterMs) * 1000);
@@ -265,15 +269,15 @@ class LoggerService
 
     private static function acquireLock(string $lockKey): bool
     {
-        if (!\App::$cache->has($lockKey)) {
-            return \App::$cache->set($lockKey, true, self::LOCK_TIMEOUT);
+        if (!Application::$cache->has($lockKey)) {
+            return Application::$cache->set($lockKey, true, self::$config['lockTimeout']);
         }
         return false;
     }
 
     private static function releaseLock(string $lockKey): void
     {
-        \App::$cache->delete($lockKey);
+        Application::$cache->delete($lockKey);
     }
 
     private static function writeLog(int $priority, string $message): void
@@ -288,8 +292,8 @@ class LoggerService
         }
 
         // Truncate message if too large
-        if (strlen($message) > self::MAX_MESSAGE_SIZE) {
-            $message = mb_substr($message, 0, self::MAX_MESSAGE_SIZE - 64)
+        if (strlen($message) > self::$config['messageSize']) {
+            $message = mb_substr($message, 0, self::$config['messageSize'] - 64)
                 . ' ... [truncated, full length: ' . strlen($message) . ']';
         }
 
@@ -320,14 +324,14 @@ class LoggerService
             'trace' => implode("\n", array_slice(
                 explode("\n", $exception->getTraceAsString()),
                 0,
-                self::MAX_STACK_LINES
+                self::$config['stackLines']
             ))
         ];
 
         if ($request) {
             $data['request'] = [
                 'method' => $request->getMethod(),
-                'uri' => (string) $request->getUri(),
+                'uri' => (string)$request->getUri(),
                 'headers' => self::filterSensitiveHeaders($request->getHeaders())
             ];
         }
@@ -350,8 +354,8 @@ class LoggerService
                         $stream->rewind();
 
                         $maxSafeSize = min(
-                            self::MAX_RESPONSE_LENGTH,
-                            (int) (self::MAX_MESSAGE_SIZE * 0.75)
+                            self::$config['responseLength'],
+                            (int)(self::$config['messageSize'] * 0.75)
                         );
 
                         if ($size > $maxSafeSize) {
@@ -360,7 +364,7 @@ class LoggerService
                                 'size' => $size
                             ];
                         } else {
-                            $body = (string) $stream;
+                            $body = (string)$stream;
                             $stream->rewind();
 
                             $decodedBody = json_decode($body, true);

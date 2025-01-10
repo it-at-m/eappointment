@@ -13,13 +13,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 class RequestSizeLimitMiddleware implements MiddlewareInterface
 {
     private const ERROR_TOO_LARGE = 'requestEntityTooLarge';
-    private const MAX_SIZE = 10485760; // 10MB
-
+    private int $maxSize;
     private LoggerService $logger;
 
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
+        $config = \App::getRequestLimits();
+        $this->maxSize = $config['maxSize'];
     }
 
     public function process(
@@ -33,7 +34,7 @@ class RequestSizeLimitMiddleware implements MiddlewareInterface
             }
             $contentLength = (int)$contentLength;
             
-            if ($contentLength > self::MAX_SIZE) {
+            if ($contentLength > $this->maxSize) {
                 $this->logger->logInfo(sprintf(
                     'Request too large: %d bytes. URI: %s',
                     $contentLength,

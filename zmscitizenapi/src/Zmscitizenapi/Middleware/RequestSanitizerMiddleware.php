@@ -11,14 +11,16 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class RequestSanitizerMiddleware implements MiddlewareInterface
 {
-    private const MAX_RECURSION_DEPTH = 10;
-    private const MAX_STRING_LENGTH = 32768; // 32KB
-
+    private int $maxRecursionDepth;
+    private int $maxStringLength;
     private LoggerService $logger;
 
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
+        $config = \App::getRequestLimits();
+        $this->maxRecursionDepth = $config['maxRecursionDepth'];
+        $this->maxStringLength = $config['maxStringLength'];
     }
 
     public function process(
@@ -66,7 +68,7 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
 
     private function sanitizeDataWithDepth(array $data, int $depth): array
     {
-        if ($depth >= self::MAX_RECURSION_DEPTH) {
+        if ($depth >= $this->maxRecursionDepth) {
             throw new \RuntimeException('Maximum recursion depth exceeded');
         }
 
@@ -90,7 +92,7 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
 
     private function sanitizeObjectWithDepth(object $data, int $depth): object
     {
-        if ($depth >= self::MAX_RECURSION_DEPTH) {
+        if ($depth >= $this->maxRecursionDepth) {
             throw new \RuntimeException('Maximum recursion depth exceeded');
         }
 
@@ -108,7 +110,7 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
 
     private function sanitizeString(string $value): string
     {
-        if (strlen($value) > self::MAX_STRING_LENGTH) {
+        if (strlen($value) > $this->maxStringLength) {
             throw new \RuntimeException('String exceeds maximum length');
         }
 

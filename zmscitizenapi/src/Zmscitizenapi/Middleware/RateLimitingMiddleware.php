@@ -15,13 +15,13 @@ use Psr\SimpleCache\CacheInterface;
 class RateLimitingMiddleware implements MiddlewareInterface
 {
     private const ERROR_RATE_LIMIT = 'rateLimitExceeded';
-    private const MAX_REQUESTS = 60;
-    private const TIME_WINDOW = 60;
-    private const MAX_RETRIES = 3;
-    private const BACKOFF_MIN = 10; // milliseconds
-    private const BACKOFF_MAX = 50; // milliseconds
-    private const LOCK_TIMEOUT = 1; // seconds
     
+    private int $maxRequests;
+    private int $cacheExpiry;
+    private int $maxRetries;
+    private int $backoffMin;
+    private int $backoffMax;
+    private int $lockTimeout;
     private CacheInterface $cache;
     private LoggerService $logger;
     
@@ -29,6 +29,14 @@ class RateLimitingMiddleware implements MiddlewareInterface
     {
         $this->cache = $cache;
         $this->logger = $logger;
+        
+        $config = \App::getRateLimit();
+        $this->maxRequests = $config['maxRequests'];
+        $this->cacheExpiry = $config['cacheExpiry'];
+        $this->maxRetries = $config['maxRetries'];
+        $this->backoffMin = $config['backoffMin'];
+        $this->backoffMax = $config['backoffMax'];
+        $this->lockTimeout = $config['lockTimeout'];
     }
     
     public function process(
@@ -44,7 +52,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
             $attempt = 0;
             $limited = false;
             
-            while ($attempt < self::MAX_RETRIES) {
+            while ($attempt < $this->maxRetries) {
                 try {
                     if ($this->acquireLock($lockKey)) {
                         try {
@@ -59,11 +67,11 @@ class RateLimitingMiddleware implements MiddlewareInterface
                 }
                 
                 $attempt++;
-                if ($attempt < self::MAX_RETRIES) {
+                if ($attempt < $this->maxRetries) {
                     // Exponential backoff with jitter
                     $backoffMs = min(
-                        self::BACKOFF_MAX,
-                        (int)(self::BACKOFF_MIN * min(pow(2, $attempt), PHP_INT_MAX / self::BACKOFF_MIN))
+                        $this->backoffMax,
+                        (int)($this->backoffMin * min(pow(2, $attempt), PHP_INT_MAX / $this->backoffMin))
                     );
                     $jitterMs = random_int(0, (int)($backoffMs * 0.1));
                     $sleepMs = $backoffMs + $jitterMs;
@@ -83,10 +91,10 @@ class RateLimitingMiddleware implements MiddlewareInterface
             
             $response = $handler->handle($request);
             // Subtract one extra to account for the current request
-            $remaining = max(0, self::MAX_REQUESTS - $this->getCurrentRequestCount($key) - 1);
+            $remaining = max(0, $this->maxRequests - $this->getCurrentRequestCount($key) - 1);
             
             return $response
-                ->withHeader('X-RateLimit-Limit', (string)self::MAX_REQUESTS)
+                ->withHeader('X-RateLimit-Limit', (string)$this->maxRequests)
                 ->withHeader('X-RateLimit-Remaining', (string)max(0, $remaining))
                 ->withHeader('X-RateLimit-Reset', (string)$this->getResetTime($key));
                 
@@ -105,7 +113,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
             $this->cache->set($key, [
                 'count' => 1,
                 'timestamp' => time()
-            ], self::TIME_WINDOW);
+            ], $this->cacheExpiry);
             return false;
         }
         
@@ -117,14 +125,14 @@ class RateLimitingMiddleware implements MiddlewareInterface
         
         $count = (int)($requestData['count'] ?? 0);
         
-        if ($count >= self::MAX_REQUESTS) {
+        if ($count >= $this->maxRequests) {
             return true;
         }
         
         // Update the counter atomically
         $requestData['count'] = $count + 1;
         $requestData['timestamp'] = time();
-        $this->cache->set($key, $requestData, self::TIME_WINDOW);
+        $this->cache->set($key, $requestData, $this->cacheExpiry);
         
         return false;
     }
@@ -142,9 +150,9 @@ class RateLimitingMiddleware implements MiddlewareInterface
     {
         $requestData = $this->cache->get($key);
         if (!is_array($requestData)) {
-            return time() + self::TIME_WINDOW;
+            return time() + $this->cacheExpiry;
         }
-        return (int)($requestData['timestamp'] ?? time()) + self::TIME_WINDOW;
+        return (int)($requestData['timestamp'] ?? time()) + $this->cacheExpiry;
     }
     
     private function createRateLimitResponse(): ResponseInterface
@@ -164,7 +172,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
     {
         // Try to acquire lock by setting it only if it doesn't exist
         if (!$this->cache->has($lockKey)) {
-            return $this->cache->set($lockKey, true, self::LOCK_TIMEOUT);
+            return $this->cache->set($lockKey, true, $this->lockTimeout);
         }
         return false;
     }

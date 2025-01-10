@@ -16,12 +16,14 @@ class IpFilterMiddleware implements MiddlewareInterface
     private const ERROR_BLACKLISTED = 'ipBlacklisted';
     private const IPV4_BITS = 32;
     private const IPV6_BITS = 128;
-
+    
+    private string $blacklist;
     private LoggerService $logger;
 
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
+        $this->blacklist = \App::getIpBlacklist();
     }
 
     public function process(
@@ -39,7 +41,7 @@ class IpFilterMiddleware implements MiddlewareInterface
                 return $handler->handle($request);
             }
             
-            $blacklist = $this->parseIpList(getenv('IP_BLACKLIST') ?: null);
+            $blacklist = $this->parseIpList($this->blacklist ?: null);
             if ($this->isIpInList($ip, $blacklist)) {
                 $this->logger->logInfo('Access denied - IP blacklisted', [
                     'ip' => $ip,
