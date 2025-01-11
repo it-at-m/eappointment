@@ -7,7 +7,6 @@ use BO\Zmscitizenapi\Localization\ErrorMessages;
 
 class ExceptionService
 {
-    // Common error response methods
     public static function noAppointmentsAtLocation(): array
     {
         return ['errors' => [ErrorMessages::get('noAppointmentsAtLocation')]];
@@ -131,12 +130,59 @@ class ExceptionService
     public static function handleException(\Exception $e, string $method): never
     {
         $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
-        
-        // Common exceptions across all methods
+        $error = null;
+
         switch ($exceptionName) {
+            // Process exceptions
+            case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound':
+                $error = ErrorMessages::get('appointmentNotFound');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed':
+                $error = ErrorMessages::get('authKeyMismatch');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled':
+                $error = ErrorMessages::get('processAlreadyCalled');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore':
+                $error = ErrorMessages::get('processNotReservedAnymore');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotPreconfirmedAnymore':
+                $error = ErrorMessages::get('processNotPreconfirmedAnymore');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\ProcessDeleteFailed':
+                $error = ErrorMessages::get('processDeleteFailed');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid':
+                $error = ErrorMessages::get('processInvalid');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyExists':
+                $error = ErrorMessages::get('processAlreadyExists');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\EmailRequired':
+                $error = ErrorMessages::get('emailIsRequired');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired':
+                $error = ErrorMessages::get('telephoneIsRequired');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail':
+                $error = ErrorMessages::get('tooManyAppointmentsWithSameMail');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired':
+                $error = ErrorMessages::get('preconfirmationExpired');
+                break;
             case 'BO\\Zmsapi\\Exception\\Process\\ApiclientInvalid':
                 $error = ErrorMessages::get('invalidApiClient');
                 break;
+
+            // Calendar exceptions
+            case 'BO\\Zmsapi\\Exception\\Calendar\\InvalidFirstDay':
+                $error = ErrorMessages::get('invalidDateRange');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed':
+                $error = ErrorMessages::get('noAppointmentsAtLocation');
+                break;
+
+            // Other entity exceptions
             case 'BO\\Zmsapi\\Exception\\Department\\DepartmentNotFound':
                 $error = ErrorMessages::get('departmentNotFound');
                 break;
@@ -155,163 +201,20 @@ class ExceptionService
             case 'BO\\Zmsapi\\Exception\\Scope\\ScopeNotFound':
                 $error = ErrorMessages::get('scopeNotFound');
                 break;
-            case 'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid':
-                $error = ErrorMessages::get('processInvalid');
-                break;
-            
-            // Method-specific exceptions
+
+            // Use original message for unmapped exceptions
             default:
-                $error = self::handleMethodSpecificException($exceptionName, $method);
-                break;
+                $error = [
+                    'errorCode' => $exceptionName ?? 'unknown',
+                    'errorMessage' => $e->getMessage(),
+                    'statusCode' => $e->getCode() ?: 500
+                ];
         }
-    
+
         throw new \RuntimeException(
             $error['errorCode'] . ': ' . $error['errorMessage'],
             $error['statusCode'],
             $e
         );
-    }
-    
-    private static function handleMethodSpecificException(?string $exceptionName, string $method): array
-    {
-        switch ($method) {
-            case 'getOffices':
-            case 'getScopes':
-            case 'getServices':
-            case 'getRequestRelationList':
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound') {
-                    return ErrorMessages::get('internalError');
-                }
-                break;
-
-            case 'getFreeDays':
-            case 'getFreeTimeslots':
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Calendar\\InvalidFirstDay') {
-                    return ErrorMessages::get('invalidDateRange');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed') {
-                    return ErrorMessages::get('noAppointmentsAtLocation');
-                }
-                break;
-    
-            case 'reserveTimeslot':
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyExists') {
-                    return ErrorMessages::get('processAlreadyExists');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\EmailRequired') {
-                    return ErrorMessages::get('emailIsRequired');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired') {
-                    return ErrorMessages::get('telephoneIsRequired');
-                }
-                break;
-    
-            case 'submitClientData':
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
-                    return ErrorMessages::get('tooManyAppointmentsWithSameMail');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\EmailRequired') {
-                    return ErrorMessages::get('emailIsRequired');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired') {
-                    return ErrorMessages::get('telephoneIsRequired');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound') {
-                    return ErrorMessages::get('appointmentNotFound');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed') {
-                    return ErrorMessages::get('authKeyMismatch');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore') {
-                    return ErrorMessages::get('processNotReservedAnymore');
-                }
-                break;
-    
-            case 'preconfirmProcess':
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired') {
-                    return ErrorMessages::get('preconfirmationExpired');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
-                    return ErrorMessages::get('tooManyAppointmentsWithSameMail');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound') {
-                    return ErrorMessages::get('appointmentNotFound');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed') {
-                    return ErrorMessages::get('authKeyMismatch');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore') {
-                    return ErrorMessages::get('processNotReservedAnymore');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled') {
-                    return ErrorMessages::get('processAlreadyCalled');
-                }
-                break;
-    
-            case 'confirmProcess':
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail') {
-                    return ErrorMessages::get('tooManyAppointmentsWithSameMail');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound') {
-                    return ErrorMessages::get('appointmentNotFound');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed') {
-                    return ErrorMessages::get('authKeyMismatch');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore') {
-                    return ErrorMessages::get('processNotReservedAnymore');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotPreconfirmedAnymore') {
-                    return ErrorMessages::get('processNotPreconfirmedAnymore');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled') {
-                    return ErrorMessages::get('processAlreadyCalled');
-                }
-                break;
-    
-            case 'cancelAppointment':
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound') {
-                    return ErrorMessages::get('appointmentNotFound');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed') {
-                    return ErrorMessages::get('authKeyMismatch');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessDeleteFailed') {
-                    return ErrorMessages::get('processDeleteFailed');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore') {
-                    return ErrorMessages::get('processNotReservedAnymore');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotPreconfirmedAnymore') {
-                    return ErrorMessages::get('processNotPreconfirmedAnymore');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled') {
-                    return ErrorMessages::get('processAlreadyCalled');
-                }
-                break;
-    
-            case 'getProcessById':
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound') {
-                    return ErrorMessages::get('appointmentNotFound');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed') {
-                    return ErrorMessages::get('authKeyMismatch');
-                }
-            case 'sendConfirmationEmail':
-            case 'sendPreconfirmationEmail':
-            case 'sendCancelationEmail':
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound') {
-                    return ErrorMessages::get('appointmentNotFound');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed') {
-                    return ErrorMessages::get('authKeyMismatch');
-                }
-                if ($exceptionName === 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled') {
-                    return ErrorMessages::get('processAlreadyCalled');
-                }
-                break;
-        }
-    
-        return ErrorMessages::get('internalError');
     }
 }

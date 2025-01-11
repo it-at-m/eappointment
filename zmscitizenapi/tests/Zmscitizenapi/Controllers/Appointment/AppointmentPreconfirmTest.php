@@ -92,6 +92,163 @@ class AppointmentPreconfirmTest extends ControllerTestCase
         $this->assertEquals($expectedResponse, $responseBody);
     }
 
+    public function testInvalidProcessId()
+    {
+        $parameters = [
+            'processId' => null,
+            'authKey' => 'fb43'
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('invalidProcessId')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('invalidProcessId')]],
+            $responseBody
+        );
+    }
+
+    public function testInvalidAuthKey()
+    {
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => ''
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('invalidAuthKey')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('invalidAuthKey')]],
+            $responseBody
+        );
+    }
+
+    public function testMissingProcessId()
+    {
+        $parameters = [
+            'authKey' => 'fb43'
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('invalidProcessId')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('invalidProcessId')]],
+            $responseBody
+        );
+    }
+
+    public function testMissingAuthKey()
+    {
+        $parameters = [
+            'processId' => '101002'
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('invalidAuthKey')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('invalidAuthKey')]],
+            $responseBody
+        );
+    }
+
+    public function testNoEmailSendingWhenStatusNotPreconfirmed()
+    {
+        $processResponse = $this->readFixture("POST_preconfirm_appointment.json");
+        $processData = json_decode($processResponse, true);
+        $processData['data']['queue']['status'] = 'confirmed'; // Change status to something else
+        
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/process/status/preconfirmed/',
+                'response' => json_encode($processData)
+            ]
+        ]);
+
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43'
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('confirmed', $responseBody['status']);
+    }
+
+    public function testInvalidRequest()
+    {
+        $response = $this->render([], [], [], 'GET'); // Using GET instead of POST
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('invalidRequest')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('invalidRequest')]],
+            $responseBody
+        );
+    }
+
+    public function testPreconfirmationExpired()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired';
+    
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/process/status/preconfirmed/',
+                'exception' => $exception
+            ]
+        ]);
+    
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43'
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true); 
+        $this->assertEquals(ErrorMessages::get('preconfirmationExpired')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('preconfirmationExpired')]],
+            $responseBody
+        );
+    }
+
     public function testAppointmentNotFoundException()
     {
         $exception = new \BO\Zmsclient\Exception();
@@ -188,133 +345,17 @@ class AppointmentPreconfirmTest extends ControllerTestCase
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
 
-        $this->assertEquals(406, $response->getStatusCode());
+        $this->assertEquals(ErrorMessages::get('tooManyAppointmentsWithSameMail')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing(
             ['errors' => [ErrorMessages::get('tooManyAppointmentsWithSameMail')]],
             $responseBody
         );
     }
 
-    public function testInvalidProcessId()
-    {
-        $parameters = [
-            'processId' => null,
-            'authKey' => 'fb43'
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(ErrorMessages::get('invalidProcessId')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('invalidProcessId')]],
-            $responseBody
-        );
-    }
-
-    public function testInvalidAuthKey()
-    {
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => ''
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(ErrorMessages::get('invalidAuthKey')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('invalidAuthKey')]],
-            $responseBody
-        );
-    }
-
-    public function testMissingProcessId()
-    {
-        $parameters = [
-            'authKey' => 'fb43'
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(ErrorMessages::get('invalidProcessId')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('invalidProcessId')]],
-            $responseBody
-        );
-    }
-
-    public function testMissingAuthKey()
-    {
-        $parameters = [
-            'processId' => '101002'
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(ErrorMessages::get('invalidAuthKey')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('invalidAuthKey')]],
-            $responseBody
-        );
-    }
-
-    public function testNoEmailSendingWhenStatusNotPreconfirmed()
-    {
-        $processResponse = $this->readFixture("POST_preconfirm_appointment.json");
-        $processData = json_decode($processResponse, true);
-        $processData['data']['queue']['status'] = 'confirmed'; // Change status to something else
-        
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/process/101002/fb43/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_process.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/source/unittest/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'response' => $this->readFixture("GET_SourceGet_dldb.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/process/status/preconfirmed/',
-                'response' => json_encode($processData)
-            ]
-            // Note: No email API call should be made
-        ]);
-
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43'
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('confirmed', $responseBody['status']);
-    }
-
-    public function testInvalidRequest()
-    {
-        $response = $this->render([], [], [], 'GET'); // Using GET instead of POST
-        $responseBody = json_decode((string) $response->getBody(), true);
-
-        $this->assertEquals(ErrorMessages::get('invalidRequest')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('invalidRequest')]],
-            $responseBody
-        );
-    }
-
-    public function testPreconfirmationExpired()
+    public function testEmailRequired()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired';
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\EmailRequired';
     
         $this->setApiCalls([
             [
@@ -339,16 +380,103 @@ class AppointmentPreconfirmTest extends ControllerTestCase
                 'exception' => $exception
             ]
         ]);
-    
+
         $parameters = [
             'processId' => '101002',
             'authKey' => 'fb43'
         ];
         $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true); 
-        $this->assertEquals(ErrorMessages::get('preconfirmationExpired')['statusCode'], $response->getStatusCode());
+        $responseBody = json_decode((string) $response->getBody(), true);
+    
+        $this->assertEquals(ErrorMessages::get('emailIsRequired')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing(
-            ['errors' => [ErrorMessages::get('preconfirmationExpired')]],
+            ['errors' => [ErrorMessages::get('emailIsRequired')]],
+            $responseBody
+        );
+    }
+
+    public function testTelephoneRequired()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired';
+    
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/process/status/preconfirmed/',
+                'exception' => $exception
+            ]
+        ]);
+
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43'
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+    
+        $this->assertEquals(ErrorMessages::get('telephoneIsRequired')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('telephoneIsRequired')]],
+            $responseBody
+        );
+    }
+
+    public function testProcessNotReservedAnymore()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore';
+    
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_process.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/process/status/preconfirmed/',
+                'exception' => $exception
+            ]
+        ]);
+
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43'
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+    
+        $this->assertEquals(ErrorMessages::get('processNotReservedAnymore')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('processNotReservedAnymore')]],
             $responseBody
         );
     }

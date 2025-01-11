@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi;
 
+use BO\Zmscitizenapi\Services\Core\ExceptionService;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 
@@ -10,9 +11,34 @@ abstract class BaseController extends \BO\Slim\Controller
 {
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $request = $this->initRequest($request);
-        $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
-        return $this->readResponse($request, $noCacheResponse, $args);
+        try {
+            $request = $this->initRequest($request);
+            $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
+            return $this->readResponse($request, $noCacheResponse, $args);
+        } catch (\RuntimeException $e) {
+            // Extract error details from the exception message
+            [$errorCode, $errorMessage] = explode(': ', $e->getMessage(), 2);
+            return $this->createJsonResponse(
+                $response,
+                [
+                    'errors' => [
+                        [
+                            'errorCode' => $errorCode,
+                            'errorMessage' => $errorMessage,
+                            'statusCode' => $e->getCode()
+                        ]
+                    ]
+                ],
+                $e->getCode() ?: 500
+            );
+        }
+    }
+
+    protected function getExceptionContext(): string
+    {
+        $className = (new \ReflectionClass($this))->getShortName();
+        error_log("***********" . json_encode( $className));
+        return str_replace('Controller', '', $className);
     }
 
     /**

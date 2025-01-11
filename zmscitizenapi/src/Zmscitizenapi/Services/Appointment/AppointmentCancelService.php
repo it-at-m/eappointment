@@ -67,8 +67,7 @@ class AppointmentCancelService
     private function canBeCancelled(ThinnedProcess $process): bool
     {
         $appointmentTime = new \DateTimeImmutable("@{$process->timestamp}");
-        $now = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Berlin'));
-        return $appointmentTime > $now;
+        return $appointmentTime > \App::$now;
     }
 
     private function cancelProcess(ThinnedProcess $process): ThinnedProcess|array
