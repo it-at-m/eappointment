@@ -37,7 +37,6 @@ abstract class BaseController extends \BO\Slim\Controller
     protected function getExceptionContext(): string
     {
         $className = (new \ReflectionClass($this))->getShortName();
-        error_log("***********" . json_encode( $className));
         return str_replace('Controller', '', $className);
     }
 
