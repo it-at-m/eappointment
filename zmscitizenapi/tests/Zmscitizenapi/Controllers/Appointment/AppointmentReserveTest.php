@@ -457,4 +457,48 @@ class AppointmentReserveTest extends ControllerTestCase
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
+    public function testProcessAlreadyExists()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyExists';
+        
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_reserve_SourceGet_dldb.json"),
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/process/status/free/',
+                'response' => $this->readFixture("GET_appointments_free.json")
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/process/status/reserved/',
+                'exception' => $exception
+            ]
+        ]);
+    
+        $parameters = [
+            'officeId' => 10546,
+            'serviceId' => ['1063423'],
+            'serviceCount' => [0],
+            'timestamp' => "32526616522",
+            'captchaSolution' => null
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('processAlreadyExists')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('processAlreadyExists')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
 }
