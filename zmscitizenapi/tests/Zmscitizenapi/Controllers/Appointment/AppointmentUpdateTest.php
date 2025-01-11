@@ -13,7 +13,7 @@ class AppointmentUpdateTest extends ControllerTestCase
     public function setUp(): void
     {
         parent::setUp();
-        
+
         \App::$source_name = 'unittest';
 
         if (\App::$cache) {
@@ -87,134 +87,6 @@ class AppointmentUpdateTest extends ControllerTestCase
             "serviceCount" => 1
         ];
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }
-
-    public function testTooManyEmailsAtLocation()
-    {
-
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail';
-
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/101002/fb43/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'response' => $this->readFixture("GET_process.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/source/unittest/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/101002/fb43/',
-                    'exception' => $exception
-                ]
-            ]
-        );
-
-        $parameters = [
-            'processId' => '101002',
-            'authKey' => 'fb43',
-            'familyName' => 'TEST_USER',
-            'email' => "test@muenchen.de",
-            'telephone' => '123456789',
-            'customTextfield' => "Some custom text",
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('tooManyAppointmentsWithSameMail')
-            ]
-        ];
-
-        $this->assertEquals(ErrorMessages::get('tooManyAppointmentsWithSameMail')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }
-
-    public function testAppointmentNotFoundException()
-    {
-
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound';
-
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/101003/fb43/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'exception' => $exception
-                ]
-            ]
-        );
-
-        $parameters = [
-            'processId' => '101003',
-            'authKey' => 'fb43',
-            'familyName' => 'TEST_USER',
-            'email' => "test@muenchen.de",
-            'telephone' => '123456789',
-            'customTextfield' => "Some custom text",
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('appointmentNotFound')
-            ]
-        ];
-        $this->assertEquals(ErrorMessages::get('appointmentNotFound')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }
-
-    public function testAuthKeyMismatchException()
-    {
-
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed';
-
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/101003/wrongKey/',
-                    'parameters' => [
-                        'resolveReferences' => 2,
-                    ],
-                    'exception' => $exception
-                ]
-            ]
-        );
-
-        $parameters = [
-            'processId' => '101003',
-            'authKey' => 'wrongKey',
-            'familyName' => 'TEST_USER',
-            'email' => "test@muenchen.de",
-            'telephone' => '123456789',
-            'customTextfield' => "Some custom text",
-        ];
-        $response = $this->render([], $parameters, [], 'POST');
-        $responseBody = json_decode((string) $response->getBody(), true);
-        $expectedResponse = [
-            'errors' => [
-                ErrorMessages::get('authKeyMismatch')
-            ]
-        ];
-        $this->assertEquals(ErrorMessages::get('authKeyMismatch')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
@@ -1859,6 +1731,324 @@ class AppointmentUpdateTest extends ControllerTestCase
         ];
 
         $this->assertEquals(ErrorMessages::get('invalidCustomTextfield')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testTooManyEmailsAtLocation()
+    {
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/101002/fb43/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'email' => "test@muenchen.de",
+            'telephone' => '123456789',
+            'customTextfield' => "Some custom text",
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('tooManyAppointmentsWithSameMail')
+            ]
+        ];
+
+        $this->assertEquals(ErrorMessages::get('tooManyAppointmentsWithSameMail')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testAppointmentNotFoundException()
+    {
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101003/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'exception' => $exception
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101003',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'email' => "test@muenchen.de",
+            'telephone' => '123456789',
+            'customTextfield' => "Some custom text",
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('appointmentNotFound')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('appointmentNotFound')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testAuthKeyMismatchException()
+    {
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101003/wrongKey/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'exception' => $exception
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101003',
+            'authKey' => 'wrongKey',
+            'familyName' => 'TEST_USER',
+            'email' => "test@muenchen.de",
+            'telephone' => '123456789',
+            'customTextfield' => "Some custom text",
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('authKeyMismatch')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('authKeyMismatch')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testProcessInvalid()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid';
+        
+    
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'exception' => $exception
+            ]
+        ]);
+    
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'email' => 'test@muenchen.de',
+            'telephone' => '123456789',
+            'customTextfield' => 'Some custom text'
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('processInvalid')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('processInvalid')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testProcessNotReservedAnymore()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore';
+    
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/101002/fb43/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+    
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'email' => 'test@muenchen.de',
+            'telephone' => '123456789',
+            'customTextfield' => 'Some custom text'
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('processNotReservedAnymore')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('processNotReservedAnymore')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testEmailRequired()
+    {
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\EmailRequired';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/101002/fb43/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'email' => "test@muenchen.de",
+            'telephone' => '123456789',
+            'customTextfield' => "Some custom text",
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('emailIsRequired')
+            ]
+        ];
+
+        $this->assertEquals(ErrorMessages::get('emailIsRequired')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testTelephoneRequired()
+    {
+
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/101002/fb43/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+
+        $parameters = [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'TEST_USER',
+            'email' => "test@muenchen.de",
+            'telephone' => '123456789',
+            'customTextfield' => "Some custom text",
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('telephoneIsRequired')
+            ]
+        ];
+
+        $this->assertEquals(ErrorMessages::get('telephoneIsRequired')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 

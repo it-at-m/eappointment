@@ -443,7 +443,7 @@ class ErrorMessages
         'appointmentCanNotBeCanceled' => [
             'errorCode' => 'appointmentCanNotBeCanceled',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE,
-            'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr gelöscht werden.'
+            'errorMessage' => 'Der von Ihnen gewählte Termin kann leider nicht mehr gelöscht werden.'
         ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',
