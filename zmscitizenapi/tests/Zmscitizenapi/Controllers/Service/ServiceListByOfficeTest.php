@@ -70,11 +70,11 @@ class ServiceListByOfficeTest extends ControllerTestCase
 
         $expectedResponse = [
             'errors' => [
-                ErrorMessages::get('servicesNotFound')
+                ErrorMessages::get('requestNotFound')
             ]
         ];
 
-        $this->assertEquals(ErrorMessages::get('servicesNotFound')['statusCode'], $response->getStatusCode());
+        $this->assertEquals(ErrorMessages::get('requestNotFound')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
 
     }
@@ -91,6 +91,21 @@ class ServiceListByOfficeTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string) $response->getBody(), true));
 
+    }
+
+    public function testInvalidOfficeIdFormat()
+    {
+        $response = $this->render([], [
+            'officeId' => 'invalid'
+        ], []);
+    
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('invalidOfficeId')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
     
 }

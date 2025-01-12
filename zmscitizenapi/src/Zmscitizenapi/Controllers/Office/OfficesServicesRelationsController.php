@@ -21,7 +21,6 @@ class OfficesServicesRelationsController extends BaseController
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        try {
             $requestErrors = ValidationService::validateServerGetRequest($request);
             if (!empty($requestErrors['errors'])) {
                 return $this->createJsonResponse(
@@ -41,12 +40,5 @@ class OfficesServicesRelationsController extends BaseController
                 )
                 : $this->createJsonResponse($response, $result->toArray(), 200);
 
-        } catch (\Exception $e) {
-            return $this->createJsonResponse(
-                $response,
-                ErrorMessages::get('internalError'),
-                ErrorMessages::get('internalError')['statusCode']
-            );
-        }
     }
 }

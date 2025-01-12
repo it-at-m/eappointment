@@ -32,6 +32,9 @@ class MapperService
 
     public static function mapScopeForProvider(int $providerId, ?ThinnedScopeList $scopes): ThinnedScope
     {
+        if (!$scopes) {
+            return new ThinnedScope();
+        }
     
         $matchingScope = new ThinnedScope();
         foreach ($scopes->getScopes() as $scope) {
@@ -95,19 +98,27 @@ class MapperService
     {
         /** @var array<string, array<int>> $servicesProviderIds */
         $servicesProviderIds = [];
+
         foreach ($relationList as $relation) {
             $serviceId = $relation->request->id;
             $servicesProviderIds[$serviceId] ??= [];
             $servicesProviderIds[$serviceId][] = $relation->provider->id;
         }
-
+    
         /** @var Service[] $services */
         $services = [];
-        foreach ($requestList as $service) {
+
+        $requestArray = iterator_to_array($requestList);
+        usort($requestArray, function ($a, $b) {
+            return $a->getId() <=> $b->getId();  // Sorting by service ID (ascending order)
+        });
+    
+        foreach ($requestArray as $service) {
+    
             /** @var array<string, array<int>> $serviceCombinations */
             $serviceCombinations = [];
             $combinableData = $service->getAdditionalData()['combinable'] ?? [];
-
+    
             foreach ($combinableData as $combinationServiceId) {
                 $commonProviders = array_intersect(
                     $servicesProviderIds[$service->getId()] ?? [],
@@ -115,9 +126,9 @@ class MapperService
                 );
                 $serviceCombinations[$combinationServiceId] = !empty($commonProviders) ? array_values($commonProviders) : [];
             }
-
+    
             $combinable = self::mapCombinable($serviceCombinations);
-
+    
             $services[] = new Service(
                 id: (int) $service->getId(),
                 name: $service->getName(),
@@ -128,6 +139,7 @@ class MapperService
 
         return new ServiceList($services);
     }
+    
 
     public static function mapRelations(RequestRelationList $relationList): OfficeServiceRelationList
     {
@@ -149,18 +161,16 @@ class MapperService
             return new ThinnedScope();
         }
     
-        $provider = null;
-    
+        $thinnedProvider = null;
         try {
-            if ($scope->getProvider()) {
-                $provider = $scope->getProvider();
-                $contact = $provider->getContact();
-    
+            if (isset($scope->provider)) {
+                $provider = $scope->provider;
+                $contact = $provider->contact ?? null;
                 $thinnedProvider = new ThinnedProvider(
-                    id: (int) $provider->id ?? null,
-                    name: $provider->getName() ?? null,
-                    source: $provider->getSource() ?? null,
-                    contact: self::contactToThinnedContact($contact ) ? new ThinnedContact() : null
+                    id: isset($provider->id) ? (int) $provider->id : null,
+                    name: $provider->name ?? null,
+                    source: $provider->source ?? null,
+                    contact: $contact ? self::contactToThinnedContact($contact) : null
                 );
             }
         } catch (\BO\Zmsentities\Exception\ScopeMissingProvider $e) {
@@ -168,16 +178,16 @@ class MapperService
         }
     
         return new ThinnedScope(
-            id: (int) ($scope->getId() ?? 0),
+            id: (int) ($scope->id ?? 0),
             provider: $thinnedProvider,
-            shortName: $scope->getShortName() ?? null,
-            telephoneActivated: $scope->getTelephoneActivated() !== null ? (bool) $scope->getTelephoneActivated() : null,
-            telephoneRequired: $scope->getTelephoneRequired() !== null ? (bool) $scope->getTelephoneRequired() : null,
-            customTextfieldActivated: $scope->getCustomTextfieldActivated() !== null ? (bool) $scope->getCustomTextfieldActivated() : null,
-            customTextfieldRequired: $scope->getCustomTextfieldRequired() !== null ? (bool) $scope->getCustomTextfieldRequired() : null,
-            customTextfieldLabel: $scope->getCustomTextfieldLabel() ?? null,
-            captchaActivatedRequired: $scope->getCaptchaActivatedRequired() !== null ? (bool) $scope->getCaptchaActivatedRequired() : null,
-            displayInfo: $scope->getDisplayInfo() ?? null
+            shortName: $scope->shortName ?? null,
+            telephoneActivated: isset($scope->data['telephoneActivated']) ? (bool) $scope->data['telephoneActivated'] : null,
+            telephoneRequired: isset($scope->data['telephoneRequired']) ? (bool) $scope->data['telephoneRequired'] : null,
+            customTextfieldActivated: isset($scope->data['customTextfieldActivated']) ? (bool) $scope->data['customTextfieldActivated'] : null,
+            customTextfieldRequired: isset($scope->data['customTextfieldRequired']) ? (bool) $scope->data['customTextfieldRequired'] : null,
+            customTextfieldLabel: $scope->data['customTextfieldLabel'] ?? null,
+            captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
+            displayInfo: $scope->data['displayInfo'] ?? null
         );
     }
 
@@ -306,14 +316,26 @@ class MapperService
      */
     public static function contactToThinnedContact($contact): ThinnedContact
     {
+        if (is_array($contact)) {
+            return new ThinnedContact(
+                city: $contact['city'] ?? null,
+                country: $contact['country'] ?? null,
+                name: $contact['name'] ?? null,
+                postalCode: $contact['postalCode'] ?? null,
+                region: $contact['region'] ?? null,
+                street: $contact['street'] ?? null,
+                streetNumber: $contact['streetNumber'] ?? null
+            );
+        }
+    
         return new ThinnedContact(
-            $contact['city']         ?? $contact->city         ?? '',
-            $contact['country']      ?? $contact->country      ?? '',
-            $contact['name']         ?? $contact->name         ?? '',
-            $contact['postalCode']   ?? $contact->postalCode   ?? '',
-            $contact['region']       ?? $contact->region       ?? '',
-            $contact['street']       ?? $contact->street       ?? '',
-            $contact['streetNumber'] ?? $contact->streetNumber ?? ''
+            city: $contact->city ?? null,
+            country: $contact->country ?? null,
+            name: $contact->name ?? null,
+            postalCode: $contact->postalCode ?? null,
+            region: $contact->region ?? null,
+            street: $contact->street ?? null,
+            streetNumber: $contact->streetNumber ?? null
         );
     }
 

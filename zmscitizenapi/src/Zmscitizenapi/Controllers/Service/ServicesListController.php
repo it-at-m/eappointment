@@ -21,32 +21,23 @@ class ServicesListController extends BaseController
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        try {
-            $requestErrors = ValidationService::validateServerGetRequest($request);
-            if (!empty($requestErrors['errors'])) {
-                return $this->createJsonResponse(
-                    $response,
-                    $requestErrors,
-                    ErrorMessages::get('invalidRequest')['statusCode']
-                );
-            }
-
-            $result = $this->service->getServicesList();
-
-            return is_array($result) && isset($result['errors'])
-                ? $this->createJsonResponse(
-                    $response,
-                    $result,
-                    ErrorMessages::getHighestStatusCode($result['errors'])
-                )
-                : $this->createJsonResponse($response, $result->toArray(), 200);
-
-        } catch (\Exception $e) {
+        $requestErrors = ValidationService::validateServerGetRequest($request);
+        if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse(
                 $response,
-                ErrorMessages::get('internalError'),
-                ErrorMessages::get('internalError')['statusCode']
+                $requestErrors,
+                ErrorMessages::get('invalidRequest')['statusCode']
             );
         }
+
+        $result = $this->service->getServicesList();
+
+        return is_array($result) && isset($result['errors'])
+            ? $this->createJsonResponse(
+                $response,
+                $result,
+                ErrorMessages::getHighestStatusCode($result['errors'])
+            )
+            : $this->createJsonResponse($response, $result->toArray(), 200);
     }
 }

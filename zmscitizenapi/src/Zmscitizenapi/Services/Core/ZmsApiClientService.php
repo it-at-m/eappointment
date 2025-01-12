@@ -25,30 +25,26 @@ class ZmsApiClientService
         if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
             return $data;
         }
-    
-        try {
-            $result = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-                'resolveReferences' => 2,
-            ]);
-    
-            $entity = $result?->getEntity();
-            if (!$entity instanceof Source) {
-                return new Source();
-            }
-    
-            if (\App::$cache) {
-                \App::$cache->set($cacheKey, $entity, \App::$SOURCE_CACHE_TTL);
-                LoggerService::logInfo('Cache set', [
-                    'key' => $cacheKey,
-                    'ttl' => \App::$SOURCE_CACHE_TTL,
-                    'entity_type' => get_class($entity)
-                ]);
-            }
-    
-            return $entity;
-        } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+
+        $result = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
+            'resolveReferences' => 2,
+        ]);
+
+        $entity = $result?->getEntity();
+        if (!$entity instanceof Source) {
+            return new Source();
         }
+
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $entity, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL,
+                'entity_type' => get_class($entity)
+            ]);
+        }
+
+        return $entity;
     }
 
     public static function getOffices(): ProviderList

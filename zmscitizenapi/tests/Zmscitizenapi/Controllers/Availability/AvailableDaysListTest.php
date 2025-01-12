@@ -526,6 +526,80 @@ class AvailableDaysListTest extends ControllerTestCase
         ];
         $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
+    }
+    
+    public function testInvalidOfficeIdFormat()
+    {
+        $parameters = [
+            'startDate' => '2024-08-29',
+            'endDate' => '2024-09-04',
+            'officeId' => 'invalid',
+            'serviceId' => '1063424',
+            'serviceCount' => '1',
+        ];
+    
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('invalidOfficeId')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+    
+    public function testInvalidServiceIdFormat()
+    {
+        $parameters = [
+            'startDate' => '2024-08-29',
+            'endDate' => '2024-09-04',
+            'officeId' => '102522',
+            'serviceId' => 'invalid',
+            'serviceCount' => '1',
+        ];
+    
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('invalidServiceId')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('invalidServiceId')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testInvalidDateRange()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Calendar\\InvalidFirstDay';
+        
+        $this->setApiCalls([
+            [
+                'function' => 'readPostResult',
+                'url' => '/calendar/',
+                'exception' => $exception
+            ]
+        ]);
+    
+        $parameters = [
+            'startDate' => '2024-08-29',
+            'endDate' => '2024-09-04',
+            'officeId' => '102522',
+            'serviceId' => '1063424',
+            'serviceCount' => '1',
+        ];
+    
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('invalidDateRange')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('invalidDateRange')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
          
 }

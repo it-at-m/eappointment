@@ -2,6 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests\Controllers\Service;
 
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 class ServicesListTest extends ControllerTestCase
@@ -12,7 +13,7 @@ class ServicesListTest extends ControllerTestCase
     public function setUp(): void
     {
         parent::setUp();
-        
+
         \App::$source_name = 'unittest';
 
         if (\App::$cache) {
@@ -20,7 +21,8 @@ class ServicesListTest extends ControllerTestCase
         }
     }
 
-    public function testRendering() {
+    public function testRendering()
+    {
         $this->setApiCalls([
             [
                 'function' => 'readGetResult',
@@ -33,7 +35,7 @@ class ServicesListTest extends ControllerTestCase
         ]);
 
         $response = $this->render();
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             "services" => [
                 [
@@ -52,6 +54,33 @@ class ServicesListTest extends ControllerTestCase
         ];
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testServicesNotFound()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Request\\RequestNotFound';
+
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'exception' => $exception
+            ]
+        ]);
+
+        $response = $this->render();
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('requestNotFound')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('requestNotFound')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 }

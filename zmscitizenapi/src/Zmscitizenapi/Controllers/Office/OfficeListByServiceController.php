@@ -21,7 +21,6 @@ class OfficeListByServiceController extends BaseController
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        try {
             $requestErrors = ValidationService::validateServerGetRequest($request);
             if (!empty($requestErrors['errors'])) {
                 return $this->createJsonResponse(
@@ -40,13 +39,5 @@ class OfficeListByServiceController extends BaseController
                     ErrorMessages::getHighestStatusCode($result['errors'])
                 )
                 : $this->createJsonResponse($response, $result->toArray(), 200);
-
-        } catch (\Exception $e) {
-            return $this->createJsonResponse(
-                $response,
-                ErrorMessages::get('internalError'),
-                ErrorMessages::get('internalError')['statusCode']
-            );
-        }
     }
 }

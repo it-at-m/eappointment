@@ -34,12 +34,12 @@ class ExceptionService
 
     public static function officesNotFound(): array
     {
-        return ['errors' => [ErrorMessages::get('officesNotFound')]];
+        return ['errors' => [ErrorMessages::get('providerNotFound')]];
     }
 
     public static function servicesNotFound(): array
     {
-        return ['errors' => [ErrorMessages::get('servicesNotFound')]];
+        return ['errors' => [ErrorMessages::get('requestNotFound')]];
     }
 
     public static function scopesNotFound(): array
@@ -200,6 +200,9 @@ class ExceptionService
                 break;
             case 'BO\\Zmsapi\\Exception\\Scope\\ScopeNotFound':
                 $error = ErrorMessages::get('scopeNotFound');
+                break;
+            case 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound':
+                $error = ErrorMessages::get('sourceNotFound');
                 break;
 
             // Use original message for unmapped exceptions

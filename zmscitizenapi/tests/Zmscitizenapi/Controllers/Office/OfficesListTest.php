@@ -2,6 +2,7 @@
 
 namespace BO\Zmscitizenapi\Tests\Controllers\Office;
 
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 class OfficesListTest extends ControllerTestCase
 {
@@ -11,7 +12,7 @@ class OfficesListTest extends ControllerTestCase
     public function setUp(): void
     {
         parent::setUp();
-        
+
         \App::$source_name = 'unittest';
 
         if (\App::$cache) {
@@ -33,7 +34,7 @@ class OfficesListTest extends ControllerTestCase
         ]);
 
         $response = $this->render();
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             "offices" => [
                 [
@@ -110,8 +111,62 @@ class OfficesListTest extends ControllerTestCase
                 ]
             ]
         ];
-              
+
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testOfficesNotFound()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Provider\\ProviderNotFound';
+
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'exception' => $exception
+            ]
+        ]);
+
+        $response = $this->render();
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('providerNotFound')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('providerNotFound')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testInternalError()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound';
+
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'exception' => $exception
+            ]
+        ]);
+
+        $response = $this->render();
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('sourceNotFound')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('sourceNotFound')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 }

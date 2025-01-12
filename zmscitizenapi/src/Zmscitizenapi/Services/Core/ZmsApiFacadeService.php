@@ -108,24 +108,20 @@ class ZmsApiFacadeService
 
     public static function getServices(): ServiceList|array
     {
-        try {
-            $requestList = ZmsApiClientService::getServices() ?? new RequestList();
-            $services = [];
+        $requestList = ZmsApiClientService::getServices() ?? new RequestList();
+        $services = [];
 
-            foreach ($requestList as $request) {
-                $additionalData = $request->getAdditionalData();
+        foreach ($requestList as $request) {
+            $additionalData = $request->getAdditionalData();
 
-                $services[] = new Service(
-                    id: (int) $request->getId(),
-                    name: $request->getName(),
-                    maxQuantity: $additionalData['maxQuantity'] ?? 1
-                );
-            }
-
-            return new ServiceList($services);
-        } catch (\RuntimeException $e) {
-            return ExceptionService::servicesNotFound();
+            $services[] = new Service(
+                id: (int) $request->getId(),
+                name: $request->getName(),
+                maxQuantity: $additionalData['maxQuantity'] ?? 1
+            );
         }
+
+        return new ServiceList($services);
     }
 
     public static function getServicesAndOffices(): OfficeServiceAndRelationList|array
@@ -303,40 +299,36 @@ class ZmsApiFacadeService
 
     public static function getServicesByOfficeId(int $officeId): ServiceList|array
     {
-        try {
-            $requestList = ZmsApiClientService::getServices() ?? new RequestList();
-            $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
+        $requestList = ZmsApiClientService::getServices() ?? new RequestList();
+        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
 
-            $requestMap = [];
-            foreach ($requestList as $request) {
-                $requestMap[$request->id] = $request;
-            }
+        $requestMap = [];
+        foreach ($requestList as $request) {
+            $requestMap[$request->id] = $request;
+        }
 
-            $services = [];
-            foreach ($requestRelationList as $relation) {
-                if ((int) $relation->provider->id === $officeId) {
-                    $requestId = $relation->request->id;
+        $services = [];
+        foreach ($requestRelationList as $relation) {
+            if ((int) $relation->provider->id === $officeId) {
+                $requestId = $relation->request->id;
 
-                    if (isset($requestMap[$requestId])) {
-                        $request = $requestMap[$requestId];
-                        $services[] = new Service(
-                            id: (int) $request->id,
-                            name: $request->name,
-                            maxQuantity: $request->getAdditionalData()['maxQuantity'] ?? 1
-                        );
-                    }
+                if (isset($requestMap[$requestId])) {
+                    $request = $requestMap[$requestId];
+                    $services[] = new Service(
+                        id: (int) $request->id,
+                        name: $request->name,
+                        maxQuantity: $request->getAdditionalData()['maxQuantity'] ?? 1
+                    );
                 }
             }
-
-            $errors = ValidationService::validateServicesNotFound($services);
-            if (is_array($errors) && !empty($errors['errors'])) {
-                return $errors;
-            }
-
-            return new ServiceList($services);
-        } catch (\RuntimeException $e) {
-            return ExceptionService::servicesNotFound();
         }
+
+        $errors = ValidationService::validateServicesNotFound($services);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
+        }
+
+        return new ServiceList($services);
     }
 
     public static function getOfficesThatProvideService(int $serviceId): OfficeList|array
@@ -381,41 +373,37 @@ class ZmsApiFacadeService
 
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
     {
-        try {
-            $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
+        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
 
-            $requestRelationArray = [];
-            foreach ($requestRelationList as $relation) {
-                $requestRelationArray[] = $relation;
-            }
-
-            $serviceIds = array_filter($requestRelationArray, function ($relation) use ($officeId) {
-                return $relation->provider->id === $officeId || (string) $relation->provider->id === (string) $officeId;
-            });
-
-            $serviceIds = array_map(function ($relation) {
-                return $relation->request->id;
-            }, $serviceIds);
-
-            $requestList = ZmsApiClientService::getServices() ?? new RequestList();
-            $requestArray = [];
-            foreach ($requestList as $request) {
-                $requestArray[] = $request;
-            }
-
-            $filteredRequests = array_filter($requestArray, function ($request) use ($serviceIds) {
-                return in_array($request->id, $serviceIds);
-            });
-
-            $resultRequestList = new RequestList();
-            foreach ($filteredRequests as $request) {
-                $resultRequestList->addEntity($request);
-            }
-
-            return $resultRequestList;
-        } catch (\RuntimeException $e) {
-            return ExceptionService::servicesNotFound();
+        $requestRelationArray = [];
+        foreach ($requestRelationList as $relation) {
+            $requestRelationArray[] = $relation;
         }
+
+        $serviceIds = array_filter($requestRelationArray, function ($relation) use ($officeId) {
+            return $relation->provider->id === $officeId || (string) $relation->provider->id === (string) $officeId;
+        });
+
+        $serviceIds = array_map(function ($relation) {
+            return $relation->request->id;
+        }, $serviceIds);
+
+        $requestList = ZmsApiClientService::getServices() ?? new RequestList();
+        $requestArray = [];
+        foreach ($requestList as $request) {
+            $requestArray[] = $request;
+        }
+
+        $filteredRequests = array_filter($requestArray, function ($request) use ($serviceIds) {
+            return in_array($request->id, $serviceIds);
+        });
+
+        $resultRequestList = new RequestList();
+        foreach ($filteredRequests as $request) {
+            $resultRequestList->addEntity($request);
+        }
+
+        return $resultRequestList;
     }
 
     public static function getBookableFreeDays(int $officeId, int $serviceId, array $serviceCounts, string $startDate, string $endDate): AvailableDays|array

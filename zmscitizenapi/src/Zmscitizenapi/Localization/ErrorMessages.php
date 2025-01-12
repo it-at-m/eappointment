@@ -178,6 +178,11 @@ class ErrorMessages
             'errorMessage' => 'Invalid API client.',
             'statusCode' => self::HTTP_BAD_REQUEST
         ],
+        'sourceNotFound' => [
+            'errorCode' => 'sourceNotFound',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'Source not found.',
+        ],
         'departmentNotFound' => [
             'errorCode' => 'departmentNotFound',
             'errorMessage' => 'Department not found.',
@@ -200,7 +205,7 @@ class ErrorMessages
         ],
         'requestNotFound' => [
             'errorCode' => 'requestNotFound',
-            'errorMessage' => 'Request not found.',
+            'errorMessage' => 'Requested service not found.',
             'statusCode' => self::HTTP_NOT_FOUND
         ],
         'scopeNotFound' => [
@@ -267,16 +272,6 @@ class ErrorMessages
             'errorCode' => 'tooManyAppointmentsWithSameMail',
             'errorMessage' => 'Too many appointments with the same email address.',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE
-        ],
-        'officesNotFound' => [
-            'errorCode' => 'officesNotFound',
-            'errorMessage' => 'No offices found.',
-            'statusCode' => self::HTTP_NOT_FOUND
-        ],
-        'servicesNotFound' => [
-            'errorCode' => 'servicesNotFound',
-            'errorMessage' => 'No services found.',
-            'statusCode' => self::HTTP_NOT_FOUND
         ],
         'scopesNotFound' => [
             'errorCode' => 'scopesNotFound',
@@ -472,6 +467,11 @@ class ErrorMessages
             'errorMessage' => 'Ungültiger API-Client.',
             'statusCode' => self::HTTP_BAD_REQUEST
         ],
+        'sourceNotFound' => [
+            'errorCode' => 'sourceNotFound',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'Quelle nicht gefunden.',
+        ],
         'departmentNotFound' => [
             'errorCode' => 'departmentNotFound',
             'errorMessage' => 'Abteilung nicht gefunden.',
@@ -494,7 +494,7 @@ class ErrorMessages
         ],
         'requestNotFound' => [
             'errorCode' => 'requestNotFound',
-            'errorMessage' => 'Anfrage nicht gefunden.',
+            'errorMessage' => 'Angeforderter Dienst nicht gefunden.',
             'statusCode' => self::HTTP_NOT_FOUND
         ],
         'scopeNotFound' => [
@@ -561,16 +561,6 @@ class ErrorMessages
             'errorCode' => 'tooManyAppointmentsWithSameMail',
             'errorMessage' => 'Zu viele Termine mit derselben E-Mail-Adresse.',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE
-        ],
-        'officesNotFound' => [
-            'errorCode' => 'officesNotFound',
-            'errorMessage' => 'Keine Standorte gefunden.',
-            'statusCode' => self::HTTP_NOT_FOUND
-        ],
-        'servicesNotFound' => [
-            'errorCode' => 'servicesNotFound',
-            'errorMessage' => 'Keine Dienstleistungen gefunden.',
-            'statusCode' => self::HTTP_NOT_FOUND
         ],
         'scopesNotFound' => [
             'errorCode' => 'scopesNotFound',
