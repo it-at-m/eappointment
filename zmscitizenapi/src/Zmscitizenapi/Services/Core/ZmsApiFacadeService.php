@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Models\Office;
@@ -152,7 +153,7 @@ class ZmsApiFacadeService
         )->getIterator()->current();
 
         if (!$matchingScope instanceof Scope) {
-            return ExceptionService::scopeNotFound();
+            return ['errors' => [ErrorMessages::get('scopeNotFound')]];
         }
 
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
