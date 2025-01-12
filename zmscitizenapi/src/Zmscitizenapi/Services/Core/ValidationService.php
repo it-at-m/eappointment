@@ -272,14 +272,14 @@ class ValidationService
     public static function validateServicesNotFound(?array $services): array
     {
         return empty($services)
-            ? ['errors' => [ErrorMessages::get('servicesNotFound')]]
+            ? ['errors' => [ErrorMessages::get('requestNotFound')]]
             : [];
     }
 
     public static function validateOfficesNotFound(?array $offices): array
     {
         return empty($offices)
-            ? ['errors' => [ErrorMessages::get('officesNotFound')]]
+            ? ['errors' => [ErrorMessages::get('providerNotFound')]]
             : [];
     }
 

@@ -184,10 +184,10 @@ class OfficeListByServiceTest extends ControllerTestCase
         ], []);
         $expectedResponse = [
             'errors' => [
-                ErrorMessages::get('officesNotFound')
+                ErrorMessages::get('providerNotFound')
             ]
         ];
-        $this->assertEquals(ErrorMessages::get('officesNotFound')['statusCode'], $response->getStatusCode());
+        $this->assertEquals(ErrorMessages::get('providerNotFound')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
 
     }

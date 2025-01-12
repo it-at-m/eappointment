@@ -64,6 +64,8 @@ class AppointmentCancelTest extends ControllerTestCase
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
+
+        error_log(json_encode($responseBody));
         
         $expectedResponse = [
             'processId' => 101002,
@@ -77,7 +79,14 @@ class AppointmentCancelTest extends ControllerTestCase
             'officeId' => 0,
             'scope' => [
                 'id' => 0,
-                'provider' => null,
+                'provider' => [
+                    'contact'=> null,
+                    'id'=> null,
+                    'lat'=> null,
+                    'lon'=> null,
+                    'name'=> null,
+                    'source'=> null
+                ],
                 'shortName' => null,
                 'telephoneActivated' => null,
                 'telephoneRequired' => null,

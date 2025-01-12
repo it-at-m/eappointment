@@ -13,7 +13,7 @@ class OfficeServiceRelationList extends Entity implements JsonSerializable
     public static $schema = "citizenapi/collections/officeServiceRelationList.json";
 
     /** @var OfficeServiceRelation[] */
-    protected array $relations = [];
+    public array $relations = [];
 
     public function __construct(array $relations = [])
     {

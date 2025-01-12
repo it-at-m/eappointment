@@ -293,5 +293,44 @@ class AvailableAppointmentsListTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidDate')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
+  
+    public function testInvalidServiceIdFormat()
+    {
+        $parameters = [
+            'date' => '3000-09-21',
+            'officeId' => 10546,
+            'serviceId' => 'invalid',
+            'serviceCount' => '1',
+        ];
     
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('invalidServiceId')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('invalidServiceId')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+    
+    public function testInvalidOfficeIdFormat()
+    {
+        $parameters = [
+            'date' => '3000-09-21',
+            'officeId' => 'invalid',
+            'serviceId' => '1063423',
+            'serviceCount' => '1',
+        ];
+    
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('invalidOfficeId')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
 }

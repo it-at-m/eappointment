@@ -13,7 +13,7 @@ class ServiceList extends Entity implements JsonSerializable
     public static $schema = "citizenapi/collections/serviceList.json";
 
     /** @var Service[] */
-    protected array $services = [];
+    public array $services = [];
 
     public function __construct(array $services = [])
     {

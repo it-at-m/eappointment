@@ -21,32 +21,23 @@ class CaptchaController extends BaseController
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        try {
-            $requestErrors = ValidationService::validateServerGetRequest($request);
-            if (!empty($requestErrors['errors'])) {
-                return $this->createJsonResponse(
-                    $response,
-                    $requestErrors,
-                    ErrorMessages::get('invalidRequest')['statusCode']
-                );
-            }
-
-            $result = $this->service->getCaptcha();
-
-            return is_array($result) && isset($result['errors'])
-                ? $this->createJsonResponse(
-                    $response,
-                    $result,
-                    ErrorMessages::getHighestStatusCode($result['errors'])
-                )
-                : $this->createJsonResponse($response, $result, 200);
-
-        } catch (\Exception $e) {
+        $requestErrors = ValidationService::validateServerGetRequest($request);
+        if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse(
                 $response,
-                ['errors' => [ErrorMessages::get('captchaVerificationError')]],
-                500
+                $requestErrors,
+                ErrorMessages::get('invalidRequest')['statusCode']
             );
         }
+
+        $result = $this->service->getCaptcha();
+
+        return is_array($result) && isset($result['errors'])
+            ? $this->createJsonResponse(
+                $response,
+                $result,
+                ErrorMessages::getHighestStatusCode($result['errors'])
+            )
+            : $this->createJsonResponse($response, $result, 200);
     }
 }

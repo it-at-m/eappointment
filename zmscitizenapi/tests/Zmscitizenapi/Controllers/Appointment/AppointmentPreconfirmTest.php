@@ -72,7 +72,14 @@ class AppointmentPreconfirmTest extends ControllerTestCase
             'officeId' => 0,
             'scope' => [
                 'id' => 0,
-                'provider' => null,
+                'provider' => [
+                    'contact'=> null,
+                    'id'=> null,
+                    'lat'=> null,
+                    'lon'=> null,
+                    'name'=> null,
+                    'source'=> null
+                ],
                 'shortName' => null,
                 'telephoneActivated' => null,
                 'telephoneRequired' => null,
