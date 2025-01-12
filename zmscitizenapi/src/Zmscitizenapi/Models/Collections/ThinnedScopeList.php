@@ -13,7 +13,7 @@ class ThinnedScopeList extends Entity implements JsonSerializable
     public static $schema = "citizenapi/collections/thinnedScopeList.json";
 
     /** @var ThinnedScope[] */
-    protected array $scopes = [];
+    public array $scopes = [];
 
     public function __construct(array $scopes = [])
     {
