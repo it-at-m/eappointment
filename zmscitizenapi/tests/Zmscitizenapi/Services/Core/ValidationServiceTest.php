@@ -5,11 +5,8 @@ namespace BO\Zmscitizenapi\Tests\Services\Core;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
-use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
-use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Process;
-use BO\Zmsentities\Request;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 
