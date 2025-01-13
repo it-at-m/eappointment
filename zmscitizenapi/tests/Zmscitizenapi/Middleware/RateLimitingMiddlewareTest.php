@@ -209,4 +209,44 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
         $this->assertSame('59', $result->getHeaderLine('X-RateLimit-Remaining'));
         $this->assertSame('60', $result->getHeaderLine('X-RateLimit-Limit'));
     }
+    
+    public function testBackoffExponentialGrowth(): void
+    {
+        $request = $this->createRequest();
+        $response = new Response();
+        $handler = $this->createHandler($response);
+    
+        // Lock held for first two attempts
+        $this->cache->expects($this->exactly(3))
+            ->method('has')
+            ->willReturnOnConsecutiveCalls(true, true, false);
+    
+        $startTime = microtime(true);
+        $result = $this->middleware->process($request, $handler);
+        $endTime = microtime(true);
+    
+        // Second retry should have waited at least 4x backoffMin
+        $minExpectedDelay = \App::getRateLimit()['backoffMin'] * 4 / 1000;
+        $this->assertGreaterThan($minExpectedDelay, $endTime - $startTime);
+        $this->assertSame($response->getStatusCode(), $result->getStatusCode());
+    }
+    
+    public function testLockTimeout(): void
+    {
+        $request = $this->createRequest();
+        $response = new Response();
+        $handler = $this->createHandler($response);
+    
+        // Lock exists but times out
+        $this->cache->method('has')
+            ->willReturnCallback(function() {
+                static $calls = 0;
+                // Simulate lock timeout after lockTimeout seconds
+                sleep(\App::getRateLimit()['lockTimeout']);
+                return ++$calls === 1;
+            });
+    
+        $result = $this->middleware->process($request, $handler);
+        $this->assertSame($response->getStatusCode(), $result->getStatusCode());
+    }
 }
