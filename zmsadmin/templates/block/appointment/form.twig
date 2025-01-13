@@ -390,5 +390,15 @@
                 </div>
             </div>
         </form>
+        {#warningText if the number of slots is exceeded#}
+        <section id="exceeded-slot-count" style="margin-top: 20px; position: relative; border-color:#cccccc;" class="dialog message" role="alert">
+            <div style="position: absolute; top: -15px; left: 7px; background-color: #fcaa67; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center;">
+                <i class="fas fa-exclamation-circle" title="Wichtiger Hinweis" aria-hidden="true" style="color: white;"></i>
+            </div>
+            <h2 class="message__heading">Der Termin ist zu lang</h2>
+            <div class="message__body">
+                Bitte wählen Sie weniger Dienstleistungen.
+            </div>
+        </section>
     {% endblock %}
 {% endembed %}
