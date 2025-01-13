@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests\Services\Office;
 
 use BO\Zmscitizenapi\Models\Collections\OfficeList;
-use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Office\OfficesListService;
 use PHPUnit\Framework\TestCase;
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests\Services\Service;
 
 use BO\Zmscitizenapi\Models\Collections\ServiceList;
-use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Service\ServicesListService;
 use PHPUnit\Framework\TestCase;
 
@@ -24,30 +23,24 @@ class ServicesListServiceTest extends TestCase
 
     public function testGetServicesListReturnsServiceList(): void
     {
-        // Arrange
         $expectedServices = new ServiceList();
         
         $this->createMockFacade($expectedServices);
 
-        // Act
         $result = $this->servicesListService->getServicesList();
 
-        // Assert
         $this->assertInstanceOf(ServiceList::class, $result);
         $this->assertEquals($expectedServices, $result);
     }
 
     public function testGetServicesListReturnsEmptyServiceList(): void
     {
-        // Arrange
         $expectedServices = new ServiceList();
         
         $this->createMockFacade($expectedServices);
 
-        // Act
         $result = $this->servicesListService->getServicesList();
 
-        // Assert
         $this->assertInstanceOf(ServiceList::class, $result);
         $this->assertCount(0, $result);
     }
