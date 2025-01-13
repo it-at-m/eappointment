@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Tests\Middleware;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Middleware\IpFilterMiddleware;
 use BO\Zmscitizenapi\Tests\MiddlewareTestCase;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\Response;
 
 class IpFilterMiddlewareTest extends MiddlewareTestCase
@@ -176,4 +177,29 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
         $result = $middleware->process($request, $handler);
         $this->assertSame($response, $result);
     }
+
+    public function testParseIpListPerformance(): void
+    {
+        // Generate a large blacklist
+        $ips = array_map(function($i) {
+            return "192.168.{$i}.0/24";
+        }, range(0, 255));
+        
+        putenv('IP_BLACKLIST=' . implode(',', $ips));
+        \App::reinitializeMiddlewareConfig();
+        
+        $middleware = new IpFilterMiddleware($this->logger);
+        $request = $this->createRequest(['REMOTE_ADDR' => '10.0.0.1']);
+        $response = new Response();
+        $handler = $this->createHandler($response);
+    
+        $startTime = microtime(true);
+        $result = $middleware->process($request, $handler);
+        $endTime = microtime(true);
+    
+        // Should process request in under 100ms even with large blacklist
+        $this->assertLessThan(0.1, $endTime - $startTime);
+        $this->assertSame($response, $result);
+    }
+
 }
