@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests\Services\Appointment;
 
 use BO\Zmscitizenapi\Services\Appointment\AppointmentByIdService;
-use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Tests\MiddlewareTestCase;
 
 class AppointmentByIdServiceTest extends MiddlewareTestCase
