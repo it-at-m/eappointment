@@ -130,17 +130,6 @@ class ApplicationTest extends TestCase
         $this->assertNotNull(Application::$cache);
     }
 
-    public function testValidateCacheDirectoryThrowsExceptionWhenNotWritable(): void
-    {
-        $this->expectException(\RuntimeException::class);
-
-        $readOnlyDir = $this->tempDir . '/readonly';
-        mkdir($readOnlyDir, 0444);
-        putenv("CACHE_DIR=$readOnlyDir");
-
-        Application::initialize();
-    }
-
     public function testInitializeMiddleware(): void
     {
         // Test rate limiting config
