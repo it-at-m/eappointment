@@ -1,38 +1,81 @@
 <template>
-  <div v-if="!error">
-    <div class="m-content">
-      <h2 tabindex="0">{{ t("location") }}</h2>
-    </div>
-    <div
-      v-if="selectedProvider"
-      class="m-teaser-contained m-teaser-contained-contact"
-    >
-      <div class="m-teaser-contained-contact__body">
-        <div class="m-teaser-contained-contact__body__inner">
-          <div class="m-teaser-contained-contact__icon">
-            <svg
-              aria-hidden="true"
-              class="icon"
-            >
-              <use xlink:href="#icon-place"></use>
-            </svg>
+  <div v-if="selectedProvider && selectableProviders">
+    <div class="m-component slider-no-margin">
+      <div class="m-content">
+        <h2 tabindex="0">{{ t("location") }}</h2>
+      </div>
+      <muc-slider @change-slide="handleProviderSelection">
+        <muc-slider-item v-for="proverider in selectableProviders" :key="proverider.id">
+          <div class="m-teaser-contained m-teaser-contained-contact" >
+            <div class="m-teaser-contained-contact__body">
+              <div class="m-teaser-contained-contact__body__inner">
+                <div class="m-teaser-contained-contact__icon">
+                  <svg
+                    aria-hidden="true"
+                    class="icon"
+                  >
+                    <use xlink:href="#icon-place"></use>
+                  </svg>
+                </div>
+                <h3 class="m-teaser-contained-contact__headline">
+                  {{ proverider.name }}
+                </h3>
+                <p class="m-teaser-contained-contact__summary">
+                  Abteilung<br />Beschreibung<br />Weiter Beschreibung
+                </p>
+                <div class="m-teaser-contained-contact__details">
+                  <p class="m-teaser-contained-contact__detail">
+                    <svg
+                      aria-hidden="true"
+                      class="icon icon--before"
+                    >
+                      <use xlink:href="#icon-map-pin"></use>
+                    </svg>
+                    <span>Straße Hausnummer</span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-          <h3 class="m-teaser-contained-contact__headline">
-            {{ selectedProvider.name }}
-          </h3>
-          <p class="m-teaser-contained-contact__summary">
-            Abteilung<br />Beschreibung<br />Weiter Beschreibung
-          </p>
-          <div class="m-teaser-contained-contact__details">
-            <p class="m-teaser-contained-contact__detail">
-              <svg
-                aria-hidden="true"
-                class="icon icon--before"
-              >
-                <use xlink:href="#icon-map-pin"></use>
-              </svg>
-              <span>Straße Hausnummer</span>
-            </p>
+        </muc-slider-item>
+      </muc-slider>
+    </div>
+  </div>
+  <div v-if="!error">
+    <div v-if="selectedProvider && !selectableProviders">
+      <div class="m-component">
+        <div class="m-content">
+          <h2 tabindex="0">{{ t("location") }}</h2>
+        </div>
+        <div class="m-teaser-contained m-teaser-contained-contact">
+          <div class="m-teaser-contained-contact__body">
+            <div class="m-teaser-contained-contact__body__inner">
+              <div class="m-teaser-contained-contact__icon">
+                <svg
+                  aria-hidden="true"
+                  class="icon"
+                >
+                  <use xlink:href="#icon-place"></use>
+                </svg>
+              </div>
+              <h3 class="m-teaser-contained-contact__headline">
+                {{ selectedProvider.name }}
+              </h3>
+              <p class="m-teaser-contained-contact__summary">
+                Abteilung<br />Beschreibung<br />Weiter Beschreibung
+              </p>
+              <div class="m-teaser-contained-contact__details">
+                <p class="m-teaser-contained-contact__detail">
+                  <svg
+                    aria-hidden="true"
+                    class="icon icon--before"
+                  >
+                    <use xlink:href="#icon-map-pin"></use>
+                  </svg>
+                  <span>Straße Hausnummer</span>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -63,7 +106,7 @@
           <div class="grid">
             <div
               v-for="time in times"
-              :key="time.unix"
+              :key="time"
               class="grid-item"
             >
               <muc-button
@@ -109,6 +152,7 @@
   <div class="m-button-group">
     <muc-button
       v-if="!isRebooking"
+      icon="arrow-left"
       variant="secondary"
       @click="previousStep"
     >
@@ -116,6 +160,7 @@
     </muc-button>
     <muc-button
       :disabled="!selectedTimeslot"
+      icon="arrow-right"
       @click="nextStep"
     >
       <template #default>{{ t("next") }}</template>
@@ -128,6 +173,8 @@ import {
   MucButton,
   MucCalendar,
   MucCallout,
+  MucSlider,
+  MucSliderItem
 } from "@muenchen/muc-patternlab-vue";
 import { inject, onMounted, ref, watch } from "vue";
 
@@ -145,6 +192,8 @@ import {
 
 const props = defineProps<{
   isRebooking: boolean;
+  exclusiveLocation: string | undefined;
+  preselectedOfficeId: string | undefined;
   selectedServiceMap: Map<string, number>;
   t: any;
 }>();
@@ -294,6 +343,11 @@ watch(selectedDay, (newDate) => {
   }
 });
 
+const handleProviderSelection = (id: number) => {
+  showSelectionForProvider(selectableProviders.value[id]);
+};
+
+
 const handleTimeSlotSelection = (timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
 };
@@ -302,8 +356,14 @@ const nextStep = () => emit("next");
 const previousStep = () => emit("back");
 
 onMounted(() => {
-  if (selectedService.value) {
-    if (selectedService.value.providers && selectedService.value.subServices) {
+  if (selectedService.value && selectedService.value.providers ) {
+
+    let offices = selectedService.value.providers.filter((office) => {
+      if (props.preselectedOfficeId)
+        return office.id === props.preselectedOfficeId;
+    });
+
+    if (selectedService.value.subServices) {
       const choosenSubservices = selectedService.value.subServices.filter(
         (subservice) => subservice.count > 0
       );
@@ -316,11 +376,25 @@ onMounted(() => {
           });
         }
       );
-      if (selectableProviders.value.length > 0)
-        showSelectionForProvider(selectableProviders.value[0]);
     } else {
-      showSelectionForProvider(selectedService.value.providers[0]);
+      selectableProviders.value = selectedService.value.providers;
     }
+
+    if (!props.exclusiveLocation) {
+      const otherOffices = selectableProviders.value.filter((office) => {
+        if (props.preselectedOfficeId)
+          return office.id !== props.preselectedOfficeId;
+        else
+          return true;
+      });
+      offices = [...offices, ...otherOffices];
+    }
+
+    if(selectableProviders.value) {
+      selectableProviders.value = offices;
+    }
+
+    showSelectionForProvider(offices[0]);
   }
 });
 </script>
@@ -357,5 +431,11 @@ onMounted(() => {
   align-items: center;
   height: 100%;
   width: 100px;
+}
+</style>
+
+<style>
+.slider-no-margin .m-component__column {
+  margin: 0 !important;
 }
 </style>

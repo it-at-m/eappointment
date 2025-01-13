@@ -35,12 +35,13 @@
   </form>
   <div class="m-button-group">
     <muc-button
+      icon="arrow-left"
       variant="secondary"
       @click="previousStep"
     >
       <template #default>{{ t("back") }}</template>
     </muc-button>
-    <muc-button @click="nextStep">
+    <muc-button icon="arrow-right" @click="nextStep">
       <template #default>{{ t("next") }}</template>
     </muc-button>
   </div>
