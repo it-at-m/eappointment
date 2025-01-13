@@ -3,19 +3,19 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Tests\Services\Appointment;
 
-use BO\Zmscitizenapi\Services\Appointment\AppointmentConfirmService;
+use BO\Zmscitizenapi\Services\Appointment\AppointmentPreconfirmService;
 use BO\Zmscitizenapi\Tests\MiddlewareTestCase;
 
-class AppointmentConfirmServiceTest extends MiddlewareTestCase
+class AppointmentPreconfirmServiceTest extends MiddlewareTestCase
 {
-    private AppointmentConfirmService $service;
+    private AppointmentPreconfirmService $service;
     private \ReflectionClass $reflector;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new AppointmentConfirmService();
-        $this->reflector = new \ReflectionClass(AppointmentConfirmService::class);
+        $this->service = new AppointmentPreconfirmService();
+        $this->reflector = new \ReflectionClass(AppointmentPreconfirmService::class);
     }
 
     protected function tearDown(): void
@@ -93,14 +93,14 @@ class AppointmentConfirmServiceTest extends MiddlewareTestCase
         $this->assertArrayHasKey('errors', $result);
     }
 
-    public function testProcessConfirmWithValidationErrors(): void
+    public function testProcessPreconfirmWithValidationErrors(): void
     {
         $body = [
             'processId' => 'invalid',
             'authKey' => ''
         ];
 
-        $result = $this->service->processConfirm($body);
+        $result = $this->service->processPreconfirm($body);
 
         $this->assertArrayHasKey('errors', $result);
     }
