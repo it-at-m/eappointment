@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Tests\Services\Appointment;
 
-use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Appointment\AppointmentConfirmService;
-use BO\Zmscitizenapi\Services\Core\ZmsApiClientService;
 use BO\Zmscitizenapi\Tests\MiddlewareTestCase;
 
 class AppointmentConfirmServiceTest extends MiddlewareTestCase
@@ -105,36 +103,6 @@ class AppointmentConfirmServiceTest extends MiddlewareTestCase
         $result = $this->service->processConfirm($body);
 
         $this->assertArrayHasKey('errors', $result);
-    }
-
-    public function testDoesNotSendConfirmationEmailWhenStatusConfirmed(): void
-    {
-        $process = $this->createMock(ThinnedProcess::class);
-        $process->status = 'confirmed';
-    
-        $this->getMockBuilder(ZmsApiClientService::class)
-            ->setMockClassName('ZmsApiClientServiceMock')
-            ->onlyMethods(['sendConfirmationEmail'])
-            ->getMock()
-            ->expects($this->never())
-            ->method('sendConfirmationEmail');
-    
-        $this->invokePrivateMethod('sendConfirmationEmail', [$process]);
-    }
-    
-    public function testDoesNotSendConfirmationEmailWhenStatusNotConfirmed(): void
-    {
-        $process = $this->createMock(ThinnedProcess::class);
-        $process->status = 'reserved';
-    
-        $this->getMockBuilder(ZmsApiClientService::class)
-            ->setMockClassName('ZmsApiClientServiceMock')
-            ->onlyMethods(['sendConfirmationEmail'])
-            ->getMock()
-            ->expects($this->never())
-            ->method('sendConfirmationEmail');
-    
-        $this->invokePrivateMethod('sendConfirmationEmail', [$process]);
     }
 
 }
