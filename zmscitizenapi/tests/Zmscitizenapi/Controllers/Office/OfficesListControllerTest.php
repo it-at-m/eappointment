@@ -4,10 +4,10 @@ namespace BO\Zmscitizenapi\Tests\Controllers\Office;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
-
-class OfficesServicesRelationsTest extends ControllerTestCase
+class OfficesListControllerTest extends ControllerTestCase
 {
-    protected $classname = "\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController";
+
+    protected $classname = "\BO\Zmscitizenapi\Controllers\Office\OfficesListController";
 
     public function setUp(): void
     {
@@ -109,42 +109,9 @@ class OfficesServicesRelationsTest extends ControllerTestCase
                         "displayInfo" => null
                     ]
                 ]
-            ],
-            "services" => [
-                [
-                    "id" => 1,
-                    "name" => "Unittest Source Dienstleistung",
-                    "maxQuantity" => 1,
-                    "combinable" => []
-                ],
-                [
-                    "id" => 2,
-                    "name" => "Unittest Source Dienstleistung 2",
-                    "maxQuantity" => 1,
-                    "combinable" => [
-                        "1" => [9999999],
-                        "2" => [9999999]
-                    ]
-                ]
-            ],
-            "relations" => [
-                [
-                    "officeId" => 9999998,
-                    "serviceId" => 1,
-                    "slots" => 2
-                ],
-                [
-                    "officeId" => 9999999,
-                    "serviceId" => 1,
-                    "slots" => 1
-                ],
-                [
-                    "officeId" => 9999999,
-                    "serviceId" => 2,
-                    "slots" => 1
-                ]
             ]
         ];
+
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
@@ -176,10 +143,10 @@ class OfficesServicesRelationsTest extends ControllerTestCase
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 
-    public function testServicesNotFound()
+    public function testInternalError()
     {
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Request\\RequestNotFound';
+        $exception->template = 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound';
 
         $this->setApiCalls([
             [
@@ -196,10 +163,10 @@ class OfficesServicesRelationsTest extends ControllerTestCase
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ErrorMessages::get('requestNotFound')
+                ErrorMessages::get('sourceNotFound')
             ]
         ];
-        $this->assertEquals(ErrorMessages::get('requestNotFound')['statusCode'], $response->getStatusCode());
+        $this->assertEquals(ErrorMessages::get('sourceNotFound')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 }

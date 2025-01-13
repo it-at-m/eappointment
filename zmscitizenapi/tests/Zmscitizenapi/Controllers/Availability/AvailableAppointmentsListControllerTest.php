@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Tests\Controllers\Availability;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
-class AvailableAppointmentsListTest extends ControllerTestCase
+class AvailableAppointmentsListControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListController";
 

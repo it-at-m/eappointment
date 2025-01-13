@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Tests\Controllers\Scope;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
-class ScopeByIdTest extends ControllerTestCase
+class ScopeByIdControllerTest extends ControllerTestCase
 {
 
     protected $classname = "\BO\Zmscitizenapi\Controllers\Scope\ScopeByIdController";

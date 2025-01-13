@@ -4,7 +4,7 @@ namespace BO\Zmscitizenapi\Tests\Controllers\Scope;
 
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
-class ScopesListTest extends ControllerTestCase
+class ScopesListControllerTest extends ControllerTestCase
 {
 
     protected $classname = "\BO\Zmscitizenapi\Controllers\Scope\ScopesListController";

@@ -4,15 +4,16 @@ namespace BO\Zmscitizenapi\Tests\Controllers\Office;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
-class OfficesListTest extends ControllerTestCase
+
+class OfficeListByServiceControllerTest extends ControllerTestCase
 {
 
-    protected $classname = "\BO\Zmscitizenapi\Controllers\Office\OfficesListController";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\Office\OfficeListByServiceController";
 
     public function setUp(): void
     {
         parent::setUp();
-
+        
         \App::$source_name = 'unittest';
 
         if (\App::$cache) {
@@ -29,22 +30,75 @@ class OfficesListTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                'response' => $this->readFixture("GET_SourceGet_dldb.json"),
             ]
         ]);
+        $response = $this->render([], [
+            'serviceId' => '2'
+        ], []);
+        $expectedResponse = [
+            "offices" => [
+                [
+                    "id" => 9999999,
+                    "name" => "Unittest Source Dienstleister 2",
+                    "address" => null,
+                    "geo" => null,
+                    "scope" => [
+                        "id" => 2,
+                        "provider" => [
+                            "id" => 9999999,
+                            "name" => "Unittest Source Dienstleister 2",
+                            "lat" => 48.12750898398659,
+                            "lon" => 11.604317899956524,
+                            "source" => "unittest",
+                            "contact" => [
+                                "city" => "Berlin",
+                                "country" => "Germany",
+                                "name" => "Unittest Source Dienstleister 2",
+                                "postalCode" => "10178",
+                                "region" => "Berlin",
+                                "street" => "Alte Jakobstraße",
+                                "streetNumber" => "106"
+                            ]
+                        ],
+                        "shortName" => "Scope 2",
+                        "telephoneActivated" => false,
+                        "telephoneRequired" => true,
+                        "customTextfieldActivated" => false,
+                        "customTextfieldRequired" => true,
+                        "customTextfieldLabel" => "",
+                        "captchaActivatedRequired" => false,
+                        "displayInfo" => null
+                    ]
+                ]
+            ]
+        ];            
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+    }
 
-        $response = $this->render();
-        $responseBody = json_decode((string) $response->getBody(), true);
+    public function testRenderingRequestRelation()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_SourceGet_dldb.json"),
+            ]
+        ]);
+        $response = $this->render([], [
+            'serviceId' => '1'
+        ], []);
         $expectedResponse = [
             "offices" => [
                 [
                     "id" => 9999998,
                     "name" => "Unittest Source Dienstleister",
                     "address" => null,
-                    "geo" => [
-                        "lat" => "48.12750898398659",
-                        "lon" => "11.604317899956524"
-                    ],
+                    "geo" => null,
                     "scope" => [
                         "id" => 1,
                         "provider" => [
@@ -77,10 +131,7 @@ class OfficesListTest extends ControllerTestCase
                     "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
                     "address" => null,
-                    "geo" => [
-                        "lat" => "48.12750898398659",
-                        "lon" => "11.604317899956524"
-                    ],
+                    "geo" => null,
                     "scope" => [
                         "id" => 2,
                         "provider" => [
@@ -111,16 +162,12 @@ class OfficesListTest extends ControllerTestCase
                 ]
             ]
         ];
-
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
     }
-
-    public function testOfficesNotFound()
+    
+    public function testServiceNotFound()
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Provider\\ProviderNotFound';
-
         $this->setApiCalls([
             [
                 'function' => 'readGetResult',
@@ -128,45 +175,50 @@ class OfficesListTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'exception' => $exception
+                'response' => $this->readFixture("GET_SourceGet_dldb.json"),
             ]
         ]);
-
-        $response = $this->render();
-        $responseBody = json_decode((string) $response->getBody(), true);
+    
+        $response = $this->render([], [
+            'serviceId' => '99999999'
+        ], []);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('providerNotFound')
             ]
         ];
         $this->assertEquals(ErrorMessages::get('providerNotFound')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+
     }
 
-    public function testInternalError()
+    public function testNoServiceIdProvided()
     {
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound';
+        $response = $this->render([], [], []);
 
-        $this->setApiCalls([
-            [
-                'function' => 'readGetResult',
-                'url' => '/source/unittest/',
-                'parameters' => [
-                    'resolveReferences' => 2,
-                ],
-                'exception' => $exception
-            ]
-        ]);
-
-        $response = $this->render();
-        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
-                ErrorMessages::get('sourceNotFound')
+                ErrorMessages::get('invalidServiceId')
             ]
         ];
-        $this->assertEquals(ErrorMessages::get('sourceNotFound')['statusCode'], $response->getStatusCode());
-        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+        $this->assertEquals(ErrorMessages::get('invalidServiceId')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+    
     }
+
+    public function testInvalidServiceId()
+    {
+        $response = $this->render([], [
+            'serviceId' => 'blahblahblah'
+        ], []);
+    
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('invalidServiceId')
+            ]
+        ];
+        $this->assertEquals(ErrorMessages::get('invalidServiceId')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, json_decode((string)$response->getBody(), true));
+    }
+    
 }

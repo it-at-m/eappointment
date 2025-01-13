@@ -6,7 +6,7 @@ use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
 use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
 
-class FriendlyCaptchaTest extends ControllerTestCase
+class FriendlyCaptchaControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Security\CaptchaController";
 

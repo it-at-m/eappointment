@@ -5,7 +5,7 @@ namespace BO\Zmscitizenapi\Tests\Controllers\Service;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
-class ServiceListByOfficeTest extends ControllerTestCase
+class ServiceListByOfficeControllerTest extends ControllerTestCase
 {
 
     protected $classname = "\BO\Zmscitizenapi\Controllers\Service\ServiceListByOfficeController";
