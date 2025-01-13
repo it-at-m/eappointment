@@ -19,13 +19,6 @@ class AppointmentByIdServiceTest extends MiddlewareTestCase
         $this->reflector = new \ReflectionClass(AppointmentByIdService::class);
     }
 
-    private function mockStaticMethod($class, $method, $callback): void
-{
-    $mock = \Mockery::mock('alias:' . $class);
-    $mock->shouldReceive()
-        ->andReturnUsing($callback);
-}
-
     private function invokePrivateMethod(string $methodName, array $params = []): mixed
     {
         $method = $this->reflector->getMethod($methodName);
@@ -108,26 +101,4 @@ class AppointmentByIdServiceTest extends MiddlewareTestCase
         $this->assertArrayHasKey('errors', $result);
     }
 
-    private function mockStaticFacadeMethod(string $method, array $params, mixed $returnValue): void
-    {
-        $facadeReflection = new \ReflectionClass(ZmsApiFacadeService::class);
-        $mockMethod = $facadeReflection->getMethod($method);
-        $mockMethod->setAccessible(true);
-
-        // Create a mock that will return our expected value
-        $mock = $this->getMockBuilder(ZmsApiFacadeService::class)
-            ->disableOriginalConstructor()
-            ->addMethods([$method])
-            ->getMock();
-
-        $mock->expects($this->once())
-            ->method($method)
-            ->with(...$params)
-            ->willReturn($returnValue);
-
-        // Replace the original class with our mock
-        $mockProperty = $facadeReflection->getProperty('instance');
-        $mockProperty->setAccessible(true);
-        $mockProperty->setValue(null, $mock);
-    }
 }
