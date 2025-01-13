@@ -41,7 +41,10 @@
     >
       <template #default>{{ t("back") }}</template>
     </muc-button>
-    <muc-button icon="arrow-right" @click="nextStep">
+    <muc-button
+      icon="arrow-right"
+      @click="nextStep"
+    >
       <template #default>{{ t("next") }}</template>
     </muc-button>
   </div>

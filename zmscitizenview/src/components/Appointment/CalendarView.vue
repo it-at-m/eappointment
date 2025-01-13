@@ -5,8 +5,11 @@
         <h2 tabindex="0">{{ t("location") }}</h2>
       </div>
       <muc-slider @change-slide="handleProviderSelection">
-        <muc-slider-item v-for="proverider in selectableProviders" :key="proverider.id">
-          <div class="m-teaser-contained m-teaser-contained-contact" >
+        <muc-slider-item
+          v-for="proverider in selectableProviders"
+          :key="proverider.id"
+        >
+          <div class="m-teaser-contained m-teaser-contained-contact">
             <div class="m-teaser-contained-contact__body">
               <div class="m-teaser-contained-contact__body__inner">
                 <div class="m-teaser-contained-contact__icon">
@@ -174,7 +177,7 @@ import {
   MucCalendar,
   MucCallout,
   MucSlider,
-  MucSliderItem
+  MucSliderItem,
 } from "@muenchen/muc-patternlab-vue";
 import { inject, onMounted, ref, watch } from "vue";
 
@@ -347,7 +350,6 @@ const handleProviderSelection = (id: number) => {
   showSelectionForProvider(selectableProviders.value[id]);
 };
 
-
 const handleTimeSlotSelection = (timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
 };
@@ -356,8 +358,7 @@ const nextStep = () => emit("next");
 const previousStep = () => emit("back");
 
 onMounted(() => {
-  if (selectedService.value && selectedService.value.providers ) {
-
+  if (selectedService.value && selectedService.value.providers) {
     let offices = selectedService.value.providers.filter((office) => {
       if (props.preselectedOfficeId)
         return office.id === props.preselectedOfficeId;
@@ -384,13 +385,12 @@ onMounted(() => {
       const otherOffices = selectableProviders.value.filter((office) => {
         if (props.preselectedOfficeId)
           return office.id !== props.preselectedOfficeId;
-        else
-          return true;
+        else return true;
       });
       offices = [...offices, ...otherOffices];
     }
 
-    if(selectableProviders.value) {
+    if (selectableProviders.value) {
       selectableProviders.value = offices;
     }
 

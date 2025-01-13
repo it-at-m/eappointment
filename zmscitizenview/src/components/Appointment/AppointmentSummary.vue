@@ -131,7 +131,10 @@
     v-if="rebookOrCancelDialog"
     class="m-button-group"
   >
-    <muc-button icon="arrow-right" @click="rescheduleAppointment">
+    <muc-button
+      icon="arrow-right"
+      @click="rescheduleAppointment"
+    >
       <template #default>{{ t("rescheduleAppointment") }}</template>
     </muc-button>
     <muc-button
