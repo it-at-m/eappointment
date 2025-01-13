@@ -14,7 +14,7 @@ class CsrfMiddleware implements MiddlewareInterface
 {
     private const ERROR_TOKEN_MISSING = 'csrfTokenMissing';
     private const ERROR_TOKEN_INVALID = 'csrfTokenInvalid';
-    private const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS'];
+    private const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']; //Remove POST DELETE and PUT when in use
     
     private int $tokenLength;
     private string $sessionKey;
