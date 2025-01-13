@@ -4,110 +4,188 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests\Services\Availability;
 
 use BO\Zmscitizenapi\Models\AvailableDays;
-use BO\Zmscitizenapi\Services\Availability\AvailableDaysListService;
+use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
-use BO\Zmscitizenapi\Tests\MiddlewareTestCase;
+use BO\Zmscitizenapi\Services\Availability\AvailableDaysListService;
+use PHPUnit\Framework\TestCase;
 
-class AvailableDaysListServiceTest extends MiddlewareTestCase
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+class AvailableDaysListServiceTest extends TestCase
 {
     private AvailableDaysListService $service;
-    private \ReflectionClass $reflector;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->service = new AvailableDaysListService();
-        $this->reflector = new \ReflectionClass(AvailableDaysListService::class);
     }
 
-    private function invokePrivateMethod(string $methodName, array $params = []): mixed
+    public function testGetAvailableDaysListReturnsAvailableDays(): void
     {
-        $method = $this->reflector->getMethod($methodName);
-        $method->setAccessible(true);
-        return $method->invokeArgs($this->service, $params);
-    }
-
-    public function testExtractClientDataWithValidInput(): void
-    {
+        // Arrange
         $queryParams = [
-            'officeId' => '12345',
-            'serviceId' => '1',
-            'serviceCount' => '1,2,3',
-            'startDate' => '2024-01-01',
-            'endDate' => '2024-01-31'
+            'officeId' => '123',
+            'serviceId' => '456',
+            'serviceCount' => '1,2',
+            'startDate' => '2025-01-01',
+            'endDate' => '2025-01-31'
         ];
+        
+        $expectedDays = new AvailableDays(['2025-01-15', '2025-01-16']);
+        
+        $this->createMockValidationService([]);
+        $this->createMockFacade($expectedDays);
 
-        $result = $this->invokePrivateMethod('extractClientData', [$queryParams]);
-
-        $this->assertEquals(12345, $result->officeId);
-        $this->assertEquals(1, $result->serviceId);
-        $this->assertEquals(['1', '2', '3'], $result->serviceCounts);
-        $this->assertEquals('2024-01-01', $result->startDate);
-        $this->assertEquals('2024-01-31', $result->endDate);
-    }
-
-    public function testExtractClientDataWithInvalidInput(): void
-    {
-        $queryParams = [
-            'officeId' => 'invalid',
-            'serviceId' => 'invalid',
-            'serviceCount' => '',
-            'startDate' => '',
-            'endDate' => ''
-        ];
-
-        $result = $this->invokePrivateMethod('extractClientData', [$queryParams]);
-
-        $this->assertEmpty($result->officeId);
-        $this->assertEmpty($result->serviceId);
-        $this->assertEquals([], $result->serviceCounts);
-        $this->assertEmpty($result->startDate);
-        $this->assertEmpty($result->endDate);
-    }
-
-    public function testValidateClientDataWithValidData(): void
-    {
-        $data = (object)[
-            'officeId' => 12345,
-            'serviceId' => 1,
-            'serviceCounts' => ['1', '2', '3'],
-            'startDate' => '2024-01-01',
-            'endDate' => '2024-01-31'
-        ];
-    
-        $result = $this->invokePrivateMethod('validateClientData', [$data]);
-    
-        $this->assertEquals(['errors' => []], $result);
-    }
-
-    public function testValidateClientDataWithInvalidData(): void
-    {
-        $data = (object)[
-            'officeId' => null,
-            'serviceId' => null,
-            'serviceCounts' => null,
-            'startDate' => null,
-            'endDate' => null
-        ];
-
-        $result = $this->invokePrivateMethod('validateClientData', [$data]);
-
-        $this->assertArrayHasKey('errors', $result);
-    }
-
-    public function testGetAvailableDaysListWithValidationErrors(): void
-    {
-        $queryParams = [
-            'officeId' => 'invalid',
-            'serviceId' => 'invalid',
-            'serviceCount' => '',
-            'startDate' => '',
-            'endDate' => ''
-        ];
-
+        // Act
         $result = $this->service->getAvailableDaysList($queryParams);
 
-        $this->assertArrayHasKey('errors', $result);
+        // Assert
+        $this->assertInstanceOf(AvailableDays::class, $result);
+        $this->assertEquals($expectedDays, $result);
     }
 
+    public function testGetAvailableDaysListReturnsEmptyAvailableDays(): void
+    {
+        // Arrange
+        $queryParams = [
+            'officeId' => '123',
+            'serviceId' => '456',
+            'serviceCount' => '1',
+            'startDate' => '2025-01-01',
+            'endDate' => '2025-01-31'
+        ];
+        
+        $expectedDays = new AvailableDays([]);
+        
+        $this->createMockValidationService([]);
+        $this->createMockFacade($expectedDays);
+
+        // Act
+        $result = $this->service->getAvailableDaysList($queryParams);
+
+        // Assert
+        $this->assertInstanceOf(AvailableDays::class, $result);
+        $this->assertEmpty($result->toArray()['availableDays']);
+    }
+
+    public function testGetAvailableDaysListWithMissingParametersReturnsValidationError(): void
+    {
+        // Arrange
+        $queryParams = [];
+        $expectedError = ['errors' => ['Required parameters missing']];
+        
+        $this->createMockValidationService($expectedError);
+
+        // Act
+        $result = $this->service->getAvailableDaysList($queryParams);
+
+        // Assert
+        $this->assertIsArray($result);
+        $this->assertEquals($expectedError, $result);
+    }
+
+    public function testGetAvailableDaysListWithInvalidOfficeIdReturnsValidationError(): void
+    {
+        // Arrange
+        $queryParams = [
+            'officeId' => 'invalid',
+            'serviceId' => '456',
+            'serviceCount' => '1',
+            'startDate' => '2025-01-01',
+            'endDate' => '2025-01-31'
+        ];
+        $expectedError = ['errors' => ['Invalid office ID']];
+        
+        $this->createMockValidationService($expectedError);
+
+        // Act
+        $result = $this->service->getAvailableDaysList($queryParams);
+
+        // Assert
+        $this->assertIsArray($result);
+        $this->assertEquals($expectedError, $result);
+    }
+
+    public function testGetAvailableDaysListWithInvalidDateRangeReturnsValidationError(): void
+    {
+        // Arrange
+        $queryParams = [
+            'officeId' => '123',
+            'serviceId' => '456',
+            'serviceCount' => '1',
+            'startDate' => 'invalid',
+            'endDate' => '2025-01-31'
+        ];
+        $expectedError = ['errors' => ['Invalid date range']];
+        
+        $this->createMockValidationService($expectedError);
+
+        // Act
+        $result = $this->service->getAvailableDaysList($queryParams);
+
+        // Assert
+        $this->assertIsArray($result);
+        $this->assertEquals($expectedError, $result);
+    }
+
+    public function testGetAvailableDaysListWithInvalidServiceCountReturnsValidationError(): void
+    {
+        // Arrange
+        $queryParams = [
+            'officeId' => '123',
+            'serviceId' => '456',
+            'serviceCount' => 'invalid,counts',
+            'startDate' => '2025-01-01',
+            'endDate' => '2025-01-31'
+        ];
+        $expectedError = ['errors' => ['Invalid service count']];
+        
+        $this->createMockValidationService($expectedError);
+
+        // Act
+        $result = $this->service->getAvailableDaysList($queryParams);
+
+        // Assert
+        $this->assertIsArray($result);
+        $this->assertEquals($expectedError, $result);
+    }
+
+    private function createMockValidationService(array $returnValue): void
+    {
+        eval('
+            namespace BO\Zmscitizenapi\Services\Core;
+            class ValidationService {
+                public static function validateGetBookableFreeDays(
+                    ?int $officeId,
+                    ?int $serviceId,
+                    ?string $startDate,
+                    ?string $endDate,
+                    array $serviceCounts
+                ): array {
+                    return unserialize(\'' . serialize($returnValue) . '\');
+                }
+            }
+        ');
+    }
+
+    private function createMockFacade(AvailableDays $returnValue): void
+    {
+        eval('
+            namespace BO\Zmscitizenapi\Services\Core;
+            class ZmsApiFacadeService {
+                public static function getBookableFreeDays(
+                    int $officeId,
+                    int $serviceId,
+                    array $serviceCounts,
+                    string $startDate,
+                    string $endDate
+                ): \BO\Zmscitizenapi\Models\AvailableDays|array {
+                    return unserialize(\'' . serialize($returnValue) . '\');
+                }
+            }
+        ');
+    }
 }
