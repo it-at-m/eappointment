@@ -3,13 +3,12 @@
 /**
  *
  */
+
 namespace BO\Zmsmessaging\PhpUnit;
 
 use PHPUnit\Framework\TestCase;
-
-use \Prophecy\PhpUnit\ProphecyTrait;
-
-use \Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Argument;
 
 /**
  * @codeCoverageIgnore
@@ -26,7 +25,6 @@ abstract class Base extends TestCase
      * ],
      * ]
      */
-
     use ProphecyTrait;
 
     protected $apiCalls = array();

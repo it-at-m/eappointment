@@ -24,11 +24,11 @@ class Apiquota extends Base implements MappingInterface
         $timeStamp = $dateTime->getTimestamp();
         return '
         SELECT * FROM apiquota WHERE ts <= (CASE period
-            WHEN "month" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME('. $timeStamp .'), INTERVAL -1 MONTH))
-            WHEN "week" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME('. $timeStamp .'), INTERVAL -1 WEEK))
-            WHEN "day" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME('. $timeStamp .'), INTERVAL -1 DAY))
-            WHEN "hour" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME('. $timeStamp .'), INTERVAL -1 HOUR))
-            WHEN "minute" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME('. $timeStamp .'), INTERVAL -1 MINUTE))
+            WHEN "month" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME(' . $timeStamp . '), INTERVAL -1 MONTH))
+            WHEN "week" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME(' . $timeStamp . '), INTERVAL -1 WEEK))
+            WHEN "day" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME(' . $timeStamp . '), INTERVAL -1 DAY))
+            WHEN "hour" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME(' . $timeStamp . '), INTERVAL -1 HOUR))
+            WHEN "minute" THEN UNIX_TIMESTAMP(DATE_ADD(FROM_UNIXTIME(' . $timeStamp . '), INTERVAL -1 MINUTE))
         END)
         ';
     }

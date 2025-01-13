@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 class Calldisplay extends Schema\Entity
 {

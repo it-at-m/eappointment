@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Slim\Render;
@@ -14,7 +15,6 @@ use Psr\Http\Message\ResponseInterface;
 
 class RedirectOld extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * add params to session if valid and redirect to calendar

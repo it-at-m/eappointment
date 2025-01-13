@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Dldb\File;
 
-use \BO\Dldb\Exception;
+use BO\Dldb\Exception;
 
 /**
   * Common methods shared by access classes
@@ -66,7 +67,7 @@ abstract class Base
     {
         try {
             $data = $this->readDataFile();
-            
+
             return $data['data'];
         } catch (\Exception $e) {
             throw $e;
@@ -77,7 +78,7 @@ abstract class Base
     {
         try {
             $data = $this->readDataFile();
-            
+
             return $data['hash'];
         } catch (\Exception $e) {
             throw $e;
@@ -88,7 +89,7 @@ abstract class Base
     {
         try {
             $data = $this->readDataFile();
-            
+
             return $data;
         } catch (\Exception $e) {
             throw $e;

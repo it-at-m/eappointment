@@ -2,8 +2,8 @@
 
 namespace BO\Slim\Middleware\OAuth;
 
-use \Psr\Http\Message\ServerRequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use League\OAuth2\Client\Token\AccessToken;
 
 /**
@@ -119,7 +119,7 @@ class KeycloakInstance
         if (is_array($accessTokenPayload['resource_access'])) {
             $clientRoles = array_values($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles']);
         }
-            
+
         if (!in_array($realmData['accessRole'], $clientRoles)) {
             throw new \BO\Slim\Exception\OAuthFailed();
         }
@@ -151,7 +151,7 @@ class KeycloakInstance
     {
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
-        $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientId']);
+        $sessionHandler->open('/' . $realmData['realm'] . '/', $realmData['clientId']);
         $sessionHandler->write(\BO\Zmsclient\Auth::getKey(), serialize($token), ['oidc' => true]);
         return $sessionHandler->close();
     }
@@ -160,7 +160,7 @@ class KeycloakInstance
     {
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
-        $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientId']);
+        $sessionHandler->open('/' . $realmData['realm'] . '/', $realmData['clientId']);
         $sessionHandler->destroy(\BO\Zmsclient\Auth::getKey());
     }
 
@@ -168,7 +168,7 @@ class KeycloakInstance
     {
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
-        $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientId']);
+        $sessionHandler->open('/' . $realmData['realm'] . '/', $realmData['clientId']);
         $tokenData = unserialize($sessionHandler->read(\BO\Zmsclient\Auth::getKey(), ['oidc' => true]));
         return $tokenData;
     }

@@ -2,8 +2,8 @@
 
 namespace BO\Zmsentities;
 
-use \BO\Mellon\Validator;
-use \BO\Zmsentities\Helper\Property;
+use BO\Mellon\Validator;
+use BO\Zmsentities\Helper\Property;
 
 class Ticketprinter extends Schema\Entity
 {
@@ -95,7 +95,7 @@ class Ticketprinter extends Schema\Entity
         if ('link' == $button['type']) {
             $button = $this->getExternalLinkData($value, $button);
         } else {
-            $button['url'] = '/'. $button['type'] .'/'. $value .'/';
+            $button['url'] = '/' . $button['type'] . '/' . $value . '/';
             $button[$button['type']]['id'] = $value;
         }
 

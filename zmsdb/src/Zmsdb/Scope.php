@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Scope as Entity;
-use \BO\Zmsentities\Collection\ScopeList as Collection;
+use BO\Zmsentities\Scope as Entity;
+use BO\Zmsentities\Collection\ScopeList as Collection;
 
 /**
  *
@@ -112,7 +112,7 @@ class Scope extends Base
     {
         $scopeList = new Collection();
         $providerList = (new Provider())->readListBySource($source, 0, true, $requestId);
-        
+
         foreach ($providerList as $provider) {
             $scopeListByProvider = $this->readByProviderId($provider->getId(), $resolveReferences);
             if ($scopeListByProvider->count()) {
@@ -327,7 +327,7 @@ class Scope extends Base
     public function readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences = 0)
     {
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
-        $scope = (! $timeAverage) ? (new Scope)->readEntity($scope->id) : $scope;
+        $scope = (! $timeAverage) ? (new Scope())->readEntity($scope->id) : $scope;
         $queueList = $this->readQueueList($scope->id, $dateTime, $resolveReferences);
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         $workstationCount = $scope->getCalculatedWorkstationCount();
@@ -476,7 +476,7 @@ class Scope extends Base
             if ($extension == 'jpeg') {
                 $extension = 'jpg'; //compatibility ZMS1
             }
-            $imageName = 's_'. $scopeId .'_bild.'. $extension;
+            $imageName = 's_' . $scopeId . '_bild.' . $extension;
             $this->getWriter()->perform(
                 (new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData(),
                 array(
@@ -499,7 +499,7 @@ class Scope extends Base
      */
     public function readImageData($scopeId)
     {
-        $imageName = 's_'. $scopeId .'_bild';
+        $imageName = 's_' . $scopeId . '_bild';
         $imageData = new \BO\Zmsentities\Mimepart();
         $fileData = $this->getReader()->fetchAll(
             (new Query\Scope(Query\Base::SELECT))->getQueryReadImageData(),
@@ -522,7 +522,7 @@ class Scope extends Base
      */
     public function deleteImage($scopeId)
     {
-        $imageName = 's_'. $scopeId .'_bild';
+        $imageName = 's_' . $scopeId . '_bild';
         return $this->perform((new Query\Scope(Query\Base::DELETE))->getQueryDeleteImage(), array(
             'imagename' => "$imageName%"
         ));

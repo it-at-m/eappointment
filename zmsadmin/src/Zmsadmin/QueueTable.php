@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Collection\QueueList;
+use BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
 {
@@ -30,7 +31,7 @@ class QueueTable extends BaseController
         $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
 
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-        
+
         // HTTP requests
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
@@ -43,7 +44,7 @@ class QueueTable extends BaseController
             Helper\GraphDefaults::getProcess()
         );
         $changedProcess = ($selectedProcessId)
-          ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
+          ? \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
             'gql' => Helper\GraphDefaults::getProcess()
           ])->getEntity()
           : null;

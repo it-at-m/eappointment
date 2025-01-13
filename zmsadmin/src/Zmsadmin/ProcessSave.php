@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Condition;
@@ -31,16 +33,16 @@ class ProcessSave extends BaseController
 
         $validator = $request->getAttribute('validator');
         $input = $request->getParams();
-       
+
         $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
         $processId = $validator->value($args['id'])->isNumber()->getValue();
-        $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
+        $process = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
         $dateTime = ($process->isWithAppointment()) ?
             (new \DateTime())->setTimestamp($process->getFirstAppointment()->date) :
             \App::$now;
         $shouldNotify = $this->shouldSendNotifications($input, $process);
         $process->withUpdatedData($input, $dateTime, $scope);
-        
+
         $validatedForm = ($process->isWithAppointment()) ?
             ProcessReserve::getValidatedForm($validator, $process) :
             ProcessQueue::getValidatedForm($validator, $process);
@@ -94,7 +96,7 @@ class ProcessSave extends BaseController
     {
         $initiator = $validator->getParameter('initiator')->isString()->getValue();
         $process = \App::$http->readPostResult(
-            '/process/'. $process->id .'/'. $process->authKey .'/',
+            '/process/' . $process->id . '/' . $process->authKey . '/',
             $process,
             [
                 'initiator' => $initiator ?? 'admin',

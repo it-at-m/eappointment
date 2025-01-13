@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Cluster as Entity;
-use \BO\Zmsentities\Collection\ClusterList as Collection;
+use BO\Zmsentities\Cluster as Entity;
+use BO\Zmsentities\Collection\ClusterList as Collection;
 
 /**
  *
@@ -196,7 +196,8 @@ class Cluster extends Base
             $scope = (new Scope())->readWithWorkstationCount($nextScope->id, $dateTime);
             $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $dateTime);
             $data = $scope->getWaitingTimeFromQueueList($queueList, $dateTime);
-            if ($scope->getCalculatedWorkstationCount() > 0 &&
+            if (
+                $scope->getCalculatedWorkstationCount() > 0 &&
                 $data &&
                 ($data['waitingTimeEstimate'] <= $preferedWaitingTime || 0 == $preferedWaitingTime)
             ) {
@@ -254,7 +255,7 @@ class Cluster extends Base
             if ($extension == 'jpeg') {
                 $extension = 'jpg'; //compatibility ZMS1
             }
-            $imageName = 'c_'. $clusterId .'_bild.'. $extension;
+            $imageName = 'c_' . $clusterId . '_bild.' . $extension;
             $this->perform(
                 (new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData(),
                 array(
@@ -277,7 +278,7 @@ class Cluster extends Base
      */
     public function readImageData($clusterId)
     {
-        $imageName = 'c_'. $clusterId .'_bild';
+        $imageName = 'c_' . $clusterId . '_bild';
         $imageData = new \BO\Zmsentities\Mimepart();
         $fileData = $this->getReader()->fetchAll(
             (new Query\Scope(Query\Base::SELECT))->getQueryReadImageData(),
@@ -300,7 +301,7 @@ class Cluster extends Base
      */
     public function deleteImage($clusterId)
     {
-        $imageName = 'c_'. $clusterId .'_bild';
+        $imageName = 'c_' . $clusterId . '_bild';
         $result = $this->perform(
             (new Query\Scope(Query\Base::DELETE))->getQueryDeleteImage(),
             array(

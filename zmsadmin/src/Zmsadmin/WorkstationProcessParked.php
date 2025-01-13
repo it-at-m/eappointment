@@ -1,11 +1,13 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
 namespace BO\Zmsadmin;
-use \BO\Zmsentities\Process as Entity;
+
+use BO\Zmsentities\Process as Entity;
 
 /**
   * Init Controller to display next Button Template only

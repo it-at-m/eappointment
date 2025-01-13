@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Mailtemplate as Mailtemplate;
+use BO\Zmsentities\Mailtemplate as Mailtemplate;
 
 class MailTemplates extends Base
 {
@@ -51,14 +52,16 @@ class MailTemplates extends Base
     }
 
 
-    public function readTemplate($templateName) {
+    public function readTemplate($templateName)
+    {
         $query = new Query\Mailtemplate(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addConditionName($templateName);
         return $this->fetchOne($query, new Mailtemplate());
     }
 
-    public function readTemplateById($templateId) {
+    public function readTemplateById($templateId)
+    {
         $query = new Query\Mailtemplate(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addConditionId($templateId);
@@ -116,7 +119,7 @@ class MailTemplates extends Base
                 foreach ($item as $itemName => $itemValue) {
                     if ($itemValue && $compareEntity->getPreference($key, $itemName) != $itemValue) {
                         $query->addValues(array(
-                            'name' => $key .'__'. $itemName,
+                            'name' => $key . '__' . $itemName,
                             'value' => $this->getSpecifiedValue($itemValue),
                             'changeTimestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
                         ));
@@ -184,7 +187,8 @@ class MailTemplates extends Base
         return trim($value);
     }
 
-    function mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates) {
+    function mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates)
+    {
 
         $customTemplatesByName = [];
 
@@ -208,6 +212,4 @@ class MailTemplates extends Base
 
         return $mergedTemplates;
     }
-
-
 }

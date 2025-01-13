@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,11 +7,11 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Process;
-use \BO\Zmsdb\ProcessStatusArchived;
-use \BO\Zmsdb\Mail;
-use \BO\Zmsdb\Config;
+use BO\Slim\Render;
+use BO\Zmsdb\Process;
+use BO\Zmsdb\ProcessStatusArchived;
+use BO\Zmsdb\Mail;
+use BO\Zmsdb\Config;
 use BO\Mellon\Validator;
 
 class ProcessDeleteQuick extends ProcessDelete
@@ -26,13 +27,13 @@ class ProcessDeleteQuick extends ProcessDelete
     ) {
         $workstation = (new Helper\User($request, 2))->checkRights('basic');
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
+        $process = (new Process())->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
 
         $this->testProcess($workstation, $process);
 
         $process->status = 'blocked';
         $this->writeMails($request, $process);
-        $status = (new Process)->writeBlockedEntity($process, false, $workstation->getUseraccount());
+        $status = (new Process())->writeBlockedEntity($process, false, $workstation->getUseraccount());
         if (! $status) {
             throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
         }
@@ -50,9 +51,11 @@ class ProcessDeleteQuick extends ProcessDelete
             throw new Exception\Process\ProcessNotFound();
         }
 
-        if (! in_array(
-            $process->getCurrentScope()->getId(),
-            $workstation->getScopeListFromAssignedDepartments()->getIds())
+        if (
+            ! in_array(
+                $process->getCurrentScope()->getId(),
+                $workstation->getScopeListFromAssignedDepartments()->getIds()
+            )
         ) {
             throw new Exception\Process\ProcessNoAccess();
         }

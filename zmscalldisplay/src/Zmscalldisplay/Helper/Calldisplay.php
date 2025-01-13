@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmscalldisplay\Helper;
 
 use BO\Mellon\Validator;
@@ -65,7 +67,7 @@ class Calldisplay
         if (1 == $this->getEntity(false)->getScopeList()->count()) {
             $scopeId = $this->getEntity(false)->getScopeList()->getFirst()->getId();
             $scope = \App::$http
-                ->readGetResult('/scope/'. $scopeId .'/', ['keepLessData' => ['status']])
+                ->readGetResult('/scope/' . $scopeId . '/', ['keepLessData' => ['status']])
                 ->getEntity();
         }
         return $scope;

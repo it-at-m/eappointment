@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope as Query;
 
 class ScopeListByCluster extends BaseController
 {
@@ -23,7 +24,7 @@ class ScopeListByCluster extends BaseController
     ) {
         (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $cluster = (new \BO\Zmsdb\Cluster)->readEntity($args['id']);
+        $cluster = (new \BO\Zmsdb\Cluster())->readEntity($args['id']);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }

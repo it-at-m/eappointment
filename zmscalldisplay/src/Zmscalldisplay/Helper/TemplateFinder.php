@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmscalldisplay\Helper;
 
 use BO\Zmscalldisplay\Exception\TemplateNotFound;
@@ -88,7 +89,7 @@ class TemplateFinder
      */
     protected function getExistingTemplate(BaseEntity $entity)
     {
-        $path = $this->subPath .'/calldisplay_'. $entity->getEntityName() .'_'. $entity->getId() .'.twig';
+        $path = $this->subPath . '/calldisplay_' . $entity->getEntityName() . '_' . $entity->getId() . '.twig';
         if ($entity->hasId() && $this->isTemplateReadable($path)) {
             return $path;
         }
@@ -110,6 +111,6 @@ class TemplateFinder
      */
     public function getTemplatePath()
     {
-        return realpath(__DIR__) .'/../../../templates';
+        return realpath(__DIR__) . '/../../../templates';
     }
 }

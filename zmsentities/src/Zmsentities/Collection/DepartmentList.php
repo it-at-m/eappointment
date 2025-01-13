@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 class DepartmentList extends Base implements JsonUnindexed
 {

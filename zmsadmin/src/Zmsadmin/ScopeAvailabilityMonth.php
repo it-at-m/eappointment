@@ -35,7 +35,7 @@ class ScopeAvailabilityMonth extends BaseController
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
         ])->getEntity();
-        
+
         $dateTime = (isset($args['date'])) ? new \BO\Zmsentities\Helper\DateTime($args['date']) : \App::$now;
         $startDate = $dateTime->modify('first day of this month');
         $endDate = $dateTime->modify('last day of this month');
@@ -45,7 +45,7 @@ class ScopeAvailabilityMonth extends BaseController
             'resolveReferences' => 1
         ])->getEntity();
         $calendar = new Helper\Calendar($dateTime->format('Y-m-d'));
-        $scopeList = (new \BO\Zmsentities\Collection\ScopeList)->addEntity($scope);
+        $scopeList = (new \BO\Zmsentities\Collection\ScopeList())->addEntity($scope);
         $month = $calendar->readMonthListByScopeList($scopeList, 'intern', 0)->getFirst();
 
         $availabilityList = $this->getAvailabilityList($scope, $startDate, $endDate);
@@ -58,7 +58,7 @@ class ScopeAvailabilityMonth extends BaseController
         $processConflictList = $processConflictList ?
             $processConflictList->toConflictListByDay() :
             new \BO\Zmsentities\Collection\ProcessList();
-        
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/availabilityMonth.twig',

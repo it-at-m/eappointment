@@ -14,7 +14,6 @@ use Symfony\Component\OptionsResolver\Exception\InvalidArgumentException;
 
 class Client
 {
-
     /**
      * @var array $curlopt List of curl options like [CURLOPT_TIMEOUT => 10]
      *      defined with each component's bootstrap.php

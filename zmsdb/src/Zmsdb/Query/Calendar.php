@@ -8,7 +8,6 @@ namespace BO\Zmsdb\Query;
  */
 class Calendar extends Base
 {
-
     const QUERY_CALENDAR_BOOKABLEEND = "
         SELECT 
             MAX(CONCAT(slot.year, '-', LPAD(slot.month, 2, '0'), '-', LPAD(slot.day, 2, '0'))) as bookableEnd

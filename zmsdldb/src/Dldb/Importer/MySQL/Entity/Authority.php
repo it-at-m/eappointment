@@ -39,7 +39,7 @@ class Authority extends Base
                 'class' => 'BO\\Dldb\\Importer\\MySQL\\Entity\\AuthorityLocation',
                 'neededFields' => ['id' => 'authority_id', 'meta.locale' => 'locale'],
                 'addFields' => [
-                    
+
                 ],
                 'deleteFields' => [
                     'authority_id' => $this->get('id'),
@@ -85,7 +85,7 @@ class Authority extends Base
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool
+    public function clearEntity(array $addWhere = []): bool
     {
         try {
             return $this->deleteWith(

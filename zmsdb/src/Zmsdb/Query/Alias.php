@@ -5,6 +5,7 @@ namespace BO\Zmsdb\Query;
 class Alias implements \Solution10\SQL\ExpressionInterface
 {
     use \Solution10\SQL\Dialect\Quote;
+
     protected $name;
     protected $alias;
 

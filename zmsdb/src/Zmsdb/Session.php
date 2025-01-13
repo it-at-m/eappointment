@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Session as Entity;
+use BO\Zmsentities\Session as Entity;
 
 class Session extends Base
 {

@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use League\Csv\Writer;
@@ -16,7 +18,6 @@ use League\Csv\EscapeFormula;
  */
 class ScopeAppointmentsByDayXlsExport extends BaseController
 {
-
     /**
      *
      * @return String
@@ -34,7 +35,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         $selectedDateTime = ScopeAppointmentsByDay::readSelectedDateTime($args['date']);
         $scope = ScopeAppointmentsByDay::readSelectedScope($workstation, $workstationRequest, $args['id']);
         $processList = ScopeAppointmentsByDay::readProcessList($workstationRequest, $selectedDateTime);
-        
+
         $xlsSheetTitle = $selectedDateTime->format('d.m.Y');
         $clusterColumn = $workstation->isClusterEnabled() ? 'Kürzel' : 'Lfd. Nummer';
         $xlsHeaders = [
@@ -80,21 +81,21 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             ->withHeader('Content-Description', 'File Transfer')
             ->withHeader(
                 'Content-Disposition',
-                sprintf('download; filename="'. $this->convertspecialChars($fileName) .'"')
+                sprintf('download; filename="' . $this->convertspecialChars($fileName) . '"')
             );
     }
 
     protected function convertspecialchars($string)
     {
-    
+
         $convert = array (
             array ('ä','ae',),
             array ('ö','oe',),
             array ('ü','ue',),
             array ('ß','ss',),
         );
-        
-        
+
+
         foreach ($convert as $array) {
             $string = str_replace($array[0], $array[1], $string);
         }

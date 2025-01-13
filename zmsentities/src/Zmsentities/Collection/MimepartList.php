@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
 class MimepartList extends Base

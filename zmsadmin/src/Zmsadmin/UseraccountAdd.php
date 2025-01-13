@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -68,14 +69,15 @@ class UseraccountAdd extends BaseController
     {
         $entity = new Entity($input);
         if (isset($input['oidcProvider']) && '' != $input['oidcProvider']) {
-            $entity->id = $entity->id. '@' .$input['oidcProvider'];
+            $entity->id = $entity->id . '@' . $input['oidcProvider'];
         }
         $entity = $entity->withCleanedUpFormData(true);
         try {
             $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
-            if ('' != $exception->template
+            if (
+                '' != $exception->template
                 && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 return [

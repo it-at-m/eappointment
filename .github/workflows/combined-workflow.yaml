@@ -3,9 +3,17 @@ name: Combined Workflow
 on: [push]
 
 jobs:
+  call-code-quality:
+    uses: ./.github/workflows/code-quality.yaml
+
   call-unit-tests:
+    needs: call-code-quality
+    if: always()
     uses: ./.github/workflows/unit-tests.yaml
 
   call-build-images:
     needs: call-unit-tests
+    if: |
+      always() &&
+      needs.call-unit-tests.result == 'success'
     uses: ./.github/workflows/build-images.yaml

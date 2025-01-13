@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Session;
+use BO\Slim\Render;
+use BO\Zmsdb\Session;
 
 class SessionDelete extends BaseController
 {
@@ -20,8 +21,8 @@ class SessionDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $session = (new Session)->readEntity($args['name'], $args['id']);
-        if (! $session || ! (new Session)->deleteEntity($args['name'], $args['id'])) {
+        $session = (new Session())->readEntity($args['name'], $args['id']);
+        if (! $session || ! (new Session())->deleteEntity($args['name'], $args['id'])) {
             throw new Exception\Session\SessionDeleteFailed();
         }
 

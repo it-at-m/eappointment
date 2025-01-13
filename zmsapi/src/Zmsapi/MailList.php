@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Mail as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Mail as Query;
 
 class MailList extends BaseController
 {
@@ -27,11 +28,11 @@ class MailList extends BaseController
         $onlyIds = Validator::param('onlyIds')->isBool()->setDefault(false)->getValue();
         $ids = Validator::param('ids')->isString()->setDefault('')->getValue();
         $query = new Query();
-        
+
         if ($onlyIds) {
             if (!empty($ids)) {
                 $itemIds = array_map('intval', explode(',', $ids));
-                $result = $query->readEntitiesIds($itemIds, $resolveReferences,  $limit, 'ASC');
+                $result = $query->readEntitiesIds($itemIds, $resolveReferences, $limit, 'ASC');
             } else {
                 $result = $query->readListIds($resolveReferences, $limit, 'ASC');
             }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -29,14 +30,12 @@ class UseraccountSearch extends BaseController
             ->isString()
             ->getValue();
 
-        $useraccountList = new Collection;
+        $useraccountList = new Collection();
         if ($workstation->hasSuperUseraccount()) {
-
             $useraccountList = \App::$http->readGetResult('/useraccount/search/', [
                 'query' => $queryString,
                 'resolveReferences' => 1,
             ])->getCollection();
-
         } else {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
@@ -70,5 +69,4 @@ class UseraccountSearch extends BaseController
             )
         );
     }
-
 }

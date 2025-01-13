@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -7,8 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
-
-use \BO\Zmsdb\Request;
+use BO\Zmsdb\Request;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Department as DepartmentEntity;
 use BO\Zmsentities\Collection\DepartmentList;
@@ -28,7 +28,7 @@ class TicketprinterConfig extends BaseController
         $scopeId = Validator::value($workstation['scope']['id'])->isNumber()->getValue();
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $organisation = \App::$http->readGetResult(
-            '/scope/'. $scopeId .'/organisation/',
+            '/scope/' . $scopeId . '/organisation/',
             ['resolveReferences' => 5]
         )->getEntity();
 

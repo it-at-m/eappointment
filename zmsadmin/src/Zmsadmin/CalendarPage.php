@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Scope;
+use BO\Zmsentities\Scope;
 
 class CalendarPage extends BaseController
 {
@@ -32,7 +33,7 @@ class CalendarPage extends BaseController
         $calendar = new Helper\Calendar($selectedDate);
 
         $scopeList = ($selectedScopeId)
-            ? (new \BO\Zmsentities\Collection\ScopeList)->addEntity($scope)
+            ? (new \BO\Zmsentities\Collection\ScopeList())->addEntity($scope)
             : (new Helper\ClusterHelper($workstation))->getScopeList();
 
         $slotsRequired = ($scope && $scope->getPreference('appointment', 'multipleSlotsEnabled')) ? $slotsRequired : 0;

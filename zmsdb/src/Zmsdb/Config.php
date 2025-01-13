@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Config as Entity;
+use BO\Zmsentities\Config as Entity;
 
 class Config extends Base
 {
@@ -26,7 +27,7 @@ class Config extends Base
                 foreach ($item as $itemName => $itemValue) {
                     if ($itemValue && $compareEntity->getPreference($key, $itemName) != $itemValue) {
                         $query->addValues(array(
-                            'name' => $key .'__'. $itemName,
+                            'name' => $key . '__' . $itemName,
                             'value' => $this->getSpecifiedValue($itemValue),
                             'changeTimestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
                         ));

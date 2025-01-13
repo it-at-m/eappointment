@@ -11,8 +11,8 @@
  use Symfony\Bridge\Twig\Extension\TranslationExtension;
  use Twig\Extra\Intl\IntlExtension;
 
- class MailTemplatePreviewMail extends BaseController
- {
+class MailTemplatePreviewMail extends BaseController
+{
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -22,8 +22,8 @@
         $mailStatus = $args['mailStatus'];
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->getValue();
-        
-        $mainProcessExample = ((new \BO\Zmsentities\Process)->getExample());
+
+        $mainProcessExample = ((new \BO\Zmsentities\Process())->getExample());
         $mainProcessExample->id = 987654;
         $dateTime = new \DateTimeImmutable("2015-10-23 08:00:00", new \DateTimeZone('Europe/Berlin'));
         $mainProcessExample->getFirstAppointment()->setDateTime($dateTime);
@@ -44,12 +44,11 @@
             $mail = (new \BO\Zmsentities\Mail())
             ->setTemplateProvider($templateProvider)
             ->toResolvedEntity($mainProcessExample, $config, $mailStatus);
-        }
-        catch( \Exception $e) {
+        } catch (\Exception $e) {
             return \BO\Slim\Render::withJson(
                 $response,
                 array(
-                    'error'=>$e->getMessage()
+                    'error' => $e->getMessage()
                 )
             );
         }
@@ -57,10 +56,9 @@
         return \BO\Slim\Render::withJson(
             $response,
             array(
-                'previewHtml'=>$mail->getHtmlPart(),
-                'previewPlain'=>$mail->getPlainPart()
+                'previewHtml' => $mail->getHtmlPart(),
+                'previewPlain' => $mail->getPlainPart()
             )
         );
-
     }
- }
+}

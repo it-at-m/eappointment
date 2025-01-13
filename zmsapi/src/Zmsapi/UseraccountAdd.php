@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Useraccount;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Useraccount;
 
 class UseraccountAdd extends BaseController
 {
@@ -31,7 +32,7 @@ class UseraccountAdd extends BaseController
         $entity->password = $entity->getHash($entity->password);
 
         $message = Response\Message::create($request);
-        $message->data = (new Useraccount)->writeEntity($entity, $resolveReferences);
+        $message->data = (new Useraccount())->writeEntity($entity, $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
@@ -50,7 +51,7 @@ class UseraccountAdd extends BaseController
             throw $exception;
         }
 
-        if ((new Useraccount)->readIsUserExisting($entity->id)) {
+        if ((new Useraccount())->readIsUserExisting($entity->id)) {
             throw new Exception\Useraccount\UseraccountAlreadyExists();
         }
     }

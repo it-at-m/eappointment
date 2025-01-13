@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Source as Entity;
@@ -13,7 +14,6 @@ use BO\Mellon\Validator;
 
 class SourceEdit extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -31,10 +31,10 @@ class SourceEdit extends BaseController
 
         if ('add' != $args['name']) {
             $source = \App::$http
-                ->readGetResult('/source/'. $args['name'] .'/', ['resolveReferences' => 2])
+                ->readGetResult('/source/' . $args['name'] . '/', ['resolveReferences' => 2])
                 ->getEntity();
         }
-        
+
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $result = $this->testUpdateEntity($input);

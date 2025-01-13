@@ -7,7 +7,6 @@ namespace BO\Zmsdb\Query;
  */
 class ProcessStatusFree extends Base
 {
-
     /**
      * see also Day::QUERY_DAYLIST_JOIN
      */

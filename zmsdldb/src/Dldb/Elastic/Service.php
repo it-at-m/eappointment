@@ -1,20 +1,21 @@
 <?php
+
 /**
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\Elastic;
 
-use \BO\Dldb\Entity\Service as Entity;
-use \BO\Dldb\Collection\Services as Collection;
-use \BO\Dldb\File\Service as Base;
+use BO\Dldb\Entity\Service as Entity;
+use BO\Dldb\Collection\Services as Collection;
+use BO\Dldb\File\Service as Base;
 
 /**
  * @SuppressWarnings(Coupling)
  */
 class Service extends Base
 {
-
     /**
      *
      * @return Entity\Service

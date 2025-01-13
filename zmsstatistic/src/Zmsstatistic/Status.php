@@ -1,9 +1,11 @@
 <?php
+
 /**
  *
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
@@ -18,7 +20,7 @@ class Status extends BaseController
     protected $withAccess = false;
 
     //protected $resolveLevel = 3;
-    
+
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface

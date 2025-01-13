@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -22,7 +23,7 @@ class PickupDelete extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $deleteList = Validator::param('list')->isNumber()->getValue();
-        $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
+        $process = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
         $process->status = 'finished';
         \App::$http->readDeleteResult('/workstation/process/');
         $processArchived = \App::$http

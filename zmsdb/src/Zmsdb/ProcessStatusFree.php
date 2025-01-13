@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Process as Entity;
-use \BO\Zmsentities\Collection\ProcessList as Collection;
+use BO\Zmsentities\Process as Entity;
+use BO\Zmsentities\Collection\ProcessList as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -111,7 +112,7 @@ class ProcessStatusFree extends Process
         $process = clone $process;
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();
-        $slotList = (new Slot)->readByAppointment($appointment, $slotsRequired, (null !== $userAccount));
+        $slotList = (new Slot())->readByAppointment($appointment, $slotsRequired, (null !== $userAccount));
         $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now, $slotType, $slotsRequired);
 
         if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment) || ! $slotList) {

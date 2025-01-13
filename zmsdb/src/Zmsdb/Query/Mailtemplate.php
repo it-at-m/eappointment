@@ -31,25 +31,25 @@ class Mailtemplate extends Base
 
     public function addConditionName($itemName)
     {
-        $this->query->where(self::TABLE .'.name', '=', $itemName);
+        $this->query->where(self::TABLE . '.name', '=', $itemName);
         return $this;
     }
 
     public function addConditionWithoutProvider()
     {
-        $this->query->where(self::TABLE .'.provider', '=', '')->orWhere(self::TABLE .'.provider', 'IS', null);
+        $this->query->where(self::TABLE . '.provider', '=', '')->orWhere(self::TABLE . '.provider', 'IS', null);
         return $this;
     }
 
     public function addConditionProviderId($providerId)
     {
-        $this->query->where(self::TABLE .'.provider', '=', $providerId);
+        $this->query->where(self::TABLE . '.provider', '=', $providerId);
         return $this;
     }
 
     public function addConditionId($templateId)
     {
-        $this->query->where(self::TABLE .'.id', '=', $templateId);
+        $this->query->where(self::TABLE . '.id', '=', $templateId);
         return $this;
     }
 
@@ -57,7 +57,7 @@ class Mailtemplate extends Base
     {
         $this->query->values(array(
             'mailtemplate.value' => $templateContent
-        ));        
+        ));
         return $this;
     }
 
@@ -70,6 +70,4 @@ class Mailtemplate extends Base
             'provider' => 'mailtemplate.provider'
         ];
     }
-
-
 }

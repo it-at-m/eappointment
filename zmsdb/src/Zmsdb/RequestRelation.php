@@ -1,9 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\RequestRelation as Entity;
-
-use \BO\Zmsentities\Collection\RequestRelationList as Collection;
+use BO\Zmsentities\RequestRelation as Entity;
+use BO\Zmsentities\Collection\RequestRelationList as Collection;
 
 class RequestRelation extends Base
 {

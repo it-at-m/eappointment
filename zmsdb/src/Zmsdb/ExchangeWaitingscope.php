@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
+use BO\Zmsentities\Exchange;
 
 class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 {
@@ -33,7 +33,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $raw = $this
                 ->getReader()
                 ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_". strtoupper($period)),
+                    constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_" . strtoupper($period)),
                     [
                         'scopeid' => $subjectid,
                         'datestart' => $datestart->format('Y-m-d'),
@@ -153,7 +153,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         }
 
         $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $now);
-        
+
         $existingEntry = $this->readByDateTime($scope, $now, $isWithAppointment);
         $queueEntry = $queueList->getFakeOrLastWaitingnumber();
         $waitingCalculated = $existingEntry['waitingcalculated'] > $queueEntry['waitingTimeEstimate'] ?
@@ -204,7 +204,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
                 'waitingcalculated' => $existingEntry['waitingcalculated'],
                 'waitingcount' => $existingEntry['waitingcount'],
                 'waitingtime' => $waitingTime,
-                'waytime' => $wayTime,                
+                'waytime' => $wayTime,
                 'scopeid' => $process->scope->id,
                 'date' => $now->format('Y-m-d'),
                 'hour' => $now->format('H')
@@ -220,21 +220,21 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         if ($now > (new \DateTime())) {
             return $this;
         }
-    
+
         $newWaitingTime = $process->getWaitedMinutes($now);
         $newWayTime = $process->getWayMinutes($now);
-    
+
         $existingEntry = $this->readByDateTime(
             $process->scope,
             $process->getArrivalTime($now),
             $process->isWithAppointment()
         );
-    
+
         $waitingCount = $existingEntry['waitingcount'] + 1;
-    
+
         $averageWaitingTime = ($existingEntry['waitingtime'] * $existingEntry['waitingcount'] + $newWaitingTime) / $waitingCount;
         $averageWayTime = ($existingEntry['waytime'] * $existingEntry['waitingcount'] + $newWayTime) / $waitingCount;
-    
+
         $this->perform(
             Query\ExchangeWaitingscope::getQueryUpdateByDateTime(
                 $process->getArrivalTime($now),
@@ -250,8 +250,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
                 'hour' => $now->format('H')
             ]
         );
-    
+
         return $this;
     }
-
 }

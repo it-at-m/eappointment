@@ -1,16 +1,17 @@
 <?php
+
 /**
  *
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin\Helper;
 
-use \BO\Zmsentities\Collection\ProviderList as Collection;
+use BO\Zmsentities\Collection\ProviderList as Collection;
 
 class ProviderHandler extends \BO\Zmsadmin\BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return String
@@ -37,7 +38,7 @@ class ProviderHandler extends \BO\Zmsadmin\BaseController
     protected static function readProviderAssigned($source)
     {
         $providerAssigned = \App::$http->readGetResult(
-            '/provider/'. $source .'/',
+            '/provider/' . $source . '/',
             array(
                 'isAssigned' => true
             )
@@ -50,7 +51,7 @@ class ProviderHandler extends \BO\Zmsadmin\BaseController
     protected static function readProviderNotAssigned($source)
     {
         $providerNotAssigned = \App::$http->readGetResult(
-            '/provider/'. $source .'/',
+            '/provider/' . $source . '/',
             array(
                 'isAssigned' => false
             )

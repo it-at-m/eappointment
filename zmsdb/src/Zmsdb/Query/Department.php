@@ -140,7 +140,7 @@ class Department extends Base implements MappingInterface
         if (null !== $parentId) {
             $data['OrganisationsID'] = $parentId;
         }
-        $data['Adresse'] = (isset($entity->contact['street'])) ?$entity->contact['street'] : '';
+        $data['Adresse'] = (isset($entity->contact['street'])) ? $entity->contact['street'] : '';
         $data['Name'] = $entity->name;
         $data['Ansprechpartner'] = $entity->getContactPerson();
         $data = array_filter(

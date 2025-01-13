@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Session;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsdb\Session;
+use BO\Mellon\Validator;
 
 class SessionGet extends BaseController
 {
@@ -22,7 +23,7 @@ class SessionGet extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $session = (new Session)->readEntity($args['name'], $args['id']);
+        $session = (new Session())->readEntity($args['name'], $args['id']);
         if (! $session) {
             throw new Exception\Session\SessionNotFound();
         }

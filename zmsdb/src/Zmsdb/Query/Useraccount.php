@@ -128,7 +128,8 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionRoleLevel($roleLevel){
+    public function addConditionRoleLevel($roleLevel)
+    {
         $this->query->where('useraccount.Berechtigung', '=', $roleLevel);
         return $this;
     }

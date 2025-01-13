@@ -4,18 +4,18 @@
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Process;
 
 /**
  * @SuppressWarnings(Coupling)
  */
 class AppointmentUpdate extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -45,7 +45,7 @@ class AppointmentUpdate extends BaseController
             (new Helper\User($request))->checkRights();
             Helper\Matching::testCurrentScopeHasRequest($process);
         } elseif ($clientKey) {
-            $apiClient = (new \BO\Zmsdb\Apiclient)->readEntity($clientKey);
+            $apiClient = (new \BO\Zmsdb\Apiclient())->readEntity($clientKey);
             if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
                 throw new Exception\Process\ApiclientInvalid();
             }
@@ -53,13 +53,13 @@ class AppointmentUpdate extends BaseController
             if ($apiClient->accesslevel != 'intern') {
                 $slotsRequired = 0;
                 $slotType = $apiClient->accesslevel;
-                $process = (new Process)->readSlotCount($process);
+                $process = (new Process())->readSlotCount($process);
             }
             $process->apiclient = $apiClient;
         } else {
             $slotsRequired = 0;
             $slotType = 'public';
-            $process = (new Process)->readSlotCount($process);
+            $process = (new Process())->readSlotCount($process);
         }
 
         $process = Process::init()->writeEntityWithNewAppointment(

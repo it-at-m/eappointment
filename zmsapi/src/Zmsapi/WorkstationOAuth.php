@@ -2,11 +2,11 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Workstation;
-use \BO\Zmsdb\Useraccount;
-use \BO\Zmsentities\Useraccount as UseraccountEntity;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Workstation;
+use BO\Zmsdb\Useraccount;
+use BO\Zmsentities\Useraccount as UseraccountEntity;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -26,7 +26,7 @@ class WorkstationOAuth extends BaseController
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $state  = $validator->getParameter('state')->isString()->isSmallerThan(40)->isBiggerThan(30)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $entity = (new UseraccountEntity)->createFromOpenIdData($input);
+        $entity = (new UseraccountEntity())->createFromOpenIdData($input);
         $entity->testValid();
 
         if (null === $state || $request->getHeaderLine('X-Authkey') !== $state) {
@@ -51,12 +51,12 @@ class WorkstationOAuth extends BaseController
     protected function getLoggedInWorkstationByOidc($request, $entity, $resolveReferences)
     {
         Helper\UserAuth::testUseraccountExists($entity->getId());
-        
+
         $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
         Helper\User::testWorkstationIsOveraged($workstation);
-        
+
         WorkstationLogin::testLoginHash($workstation);
-        $workstation = (new Workstation)->writeEntityLoginByOidc(
+        $workstation = (new Workstation())->writeEntityLoginByOidc(
             $entity->id,
             $request->getHeaderLine('X-Authkey'),
             \App::getNow(),
@@ -68,7 +68,7 @@ class WorkstationOAuth extends BaseController
 
     protected function writeOAuthWorkstation(UseraccountEntity $entity, $state, $resolveReferences)
     {
-        $useraccount = (new Useraccount)->writeEntity($entity);
+        $useraccount = (new Useraccount())->writeEntity($entity);
         $query = new Workstation();
         $workstation = $query->writeEntityLoginByName(
             $useraccount->getId(),

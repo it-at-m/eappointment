@@ -6,7 +6,7 @@ class Authorities extends Base
 {
     protected $entityClass = '\\BO\\Dldb\\Importer\\MySQL\\Entity\\Authority';
 
-    public function runImport() : bool
+    public function runImport(): bool
     {
         try {
             if ($this->needsUpdate()) {
@@ -37,7 +37,7 @@ class Authorities extends Base
         } catch (\Exception $e) {
             throw $e;
         }
-    
+
         return true;
     }
 }

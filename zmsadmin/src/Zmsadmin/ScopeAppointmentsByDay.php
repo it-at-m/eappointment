@@ -1,15 +1,16 @@
 <?php
+
 /**
  *
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 class ScopeAppointmentsByDay extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String

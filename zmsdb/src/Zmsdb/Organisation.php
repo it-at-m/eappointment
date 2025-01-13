@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Organisation as Entity;
-use \BO\Zmsentities\Collection\OrganisationList as Collection;
+use BO\Zmsentities\Organisation as Entity;
+use BO\Zmsentities\Collection\OrganisationList as Collection;
 
 /**
  *

@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
-use \BO\Zmsentities\Day;
+use BO\Zmsentities\Day;
 
 class DayList extends Base implements JsonUnindexed
 {
@@ -61,7 +62,7 @@ class DayList extends Base implements JsonUnindexed
     {
         $dayList = new self();
         $lastDay = $currentDate->format('t');
-        for ($dayNumber = 1; $dayNumber <= $lastDay; $dayNumber ++) {
+        for ($dayNumber = 1; $dayNumber <= $lastDay; $dayNumber++) {
             $day = str_pad($dayNumber, 2, '0', STR_PAD_LEFT);
             $entity = $this->getDay($currentDate->format('Y'), $currentDate->format('m'), $day);
             $dayList->addEntity($entity);
@@ -137,7 +138,8 @@ class DayList extends Base implements JsonUnindexed
     {
         $list = new self();
         foreach ($this as $day) {
-            if ($day->toDateTime() >= $startDate->modify('00:00:00') &&
+            if (
+                $day->toDateTime() >= $startDate->modify('00:00:00') &&
                 $day->toDateTime() <= $endDate->modify('23:59:59')
             ) {
                 $list->addEntity($day);

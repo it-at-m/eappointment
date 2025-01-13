@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsstatistic;
 
-use \BO\Zmsclient\Auth;
+use BO\Zmsclient\Auth;
 
 class Oidc extends BaseController
 {

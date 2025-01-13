@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
 use BO\Zmsentities\Slot;
@@ -100,7 +101,7 @@ class SlotList extends Base
     public function extendList($slotList, $prevSlot, $appointment)
     {
         $startTime = \BO\Zmsentities\Helper\DateTime::create(
-            $appointment->toDateTime()->format('Y-m-d') .' '. $prevSlot->time
+            $appointment->toDateTime()->format('Y-m-d') . ' ' . $prevSlot->time
         )->modify('+' . $appointment->getAvailability()->slotTimeInMinutes . 'minute');
         $stopTime = $appointment->getEndTime();
         do {
@@ -112,7 +113,7 @@ class SlotList extends Base
         } while ($startTime->getTimestamp() < $stopTime->getTimestamp());
         return $slotList;
     }
-    
+
 
     /**
      * Reduce free appointments on slot matching appointment
@@ -187,7 +188,7 @@ class SlotList extends Base
         $referenceTime = $dateTime->getTimestamp() + 1800;
         foreach ($this as $index => $slot) {
             $slotTime = \BO\Zmsentities\Helper\DateTime::create(
-                $dateTime->format('Y-m-d') .' '. $slot->time
+                $dateTime->format('Y-m-d') . ' ' . $slot->time
             )->getTimeStamp();
             if ($referenceTime > $slotTime) {
                 $slotList->setEmptySlotValues($index);
@@ -221,7 +222,7 @@ class SlotList extends Base
             if ($slotsRequired > 1 && $slot->type != Slot::REDUCED) {
                 throw new \BO\Zmsentities\Exception\SlotRequiredWithoutReducing(
                     "With $slotsRequired slots required, "
-                    ."do not use SlotList::getFreeProcesses without reduced slots: $slot"
+                    . "do not use SlotList::getFreeProcesses without reduced slots: $slot"
                 );
             }
             if ($slot[$slotType] > 0) {
@@ -233,7 +234,7 @@ class SlotList extends Base
                 if (!$slot->hasTime()) {
                     throw new \BO\Zmsentities\Exception\SlotMissingTime("Time on slot not set: $slot");
                 }
-                $appointment->setDateByString($selectedDate .' '. $slot->getTimeString());
+                $appointment->setDateByString($selectedDate . ' ' . $slot->getTimeString());
                 $process = new \BO\Zmsentities\Process(array(
                     'scope' => $scope,
                     'requests' => $requests
@@ -252,9 +253,9 @@ class SlotList extends Base
         $slotList = clone $this;
         if ($slotsRequired > 1) {
             $slotLength = count($slotList);
-            for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex ++) {
+            for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex++) {
                 if ($slotIndex + $slotsRequired - 1 < $slotLength) {
-                    for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative ++) {
+                    for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative++) {
                         if ($slotIndex + $slotRelative < $slotLength) {
                             $slotList->takeLowerSlotValue($slotIndex, $slotIndex + $slotRelative);
                         }

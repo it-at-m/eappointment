@@ -22,12 +22,12 @@ class TicketprinterDeleteByCron
             );
             $this->verbose = true;
         }
-        $this->scopeList = (new \BO\Zmsdb\Scope)->readList();
+        $this->scopeList = (new \BO\Zmsdb\Scope())->readList();
     }
 
     public function startProcessing($commit)
     {
-        $ticketprinterList = (new \BO\Zmsdb\Ticketprinter)->readExpiredTicketprinterList($this->deleteDateTime);
+        $ticketprinterList = (new \BO\Zmsdb\Ticketprinter())->readExpiredTicketprinterList($this->deleteDateTime);
         foreach ($ticketprinterList as $entity) {
             if ($this->verbose) {
                 error_log("INFO: Processing $entity");

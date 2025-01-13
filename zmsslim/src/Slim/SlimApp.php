@@ -29,7 +29,8 @@ class SlimApp extends \Slim\App
                 return;
             }
 
-            while (min(strlen($serverParams['REQUEST_URI']), strlen($serverParams['SCRIPT_NAME'])) > strlen($basePath)
+            while (
+                min(strlen($serverParams['REQUEST_URI']), strlen($serverParams['SCRIPT_NAME'])) > strlen($basePath)
                 && strncmp($serverParams['REQUEST_URI'], $serverParams['SCRIPT_NAME'], strlen($basePath) + 1) === 0
             ) {
                 $basePath = substr($serverParams['REQUEST_URI'], 0, strlen($basePath) + 1);

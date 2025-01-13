@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Mellon\Validator;
+use BO\Mellon\Validator;
 
 class WorkstationProcessPreCall extends BaseController
 {
@@ -22,7 +23,7 @@ class WorkstationProcessPreCall extends BaseController
 
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
-        $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
+        $process = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
         $excludedIds = $validator->getParameter('exclude')->isString()->setDefault('')->getValue();
         if ($excludedIds) {
             $exclude = explode(',', $excludedIds);

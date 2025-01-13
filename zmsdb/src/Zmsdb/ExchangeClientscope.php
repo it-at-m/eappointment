@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
+use BO\Zmsentities\Exchange;
 
 class ExchangeClientscope extends Base
 {
@@ -18,7 +18,7 @@ class ExchangeClientscope extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
-        $config = (new Config)->readEntity();
+        $config = (new Config())->readEntity();
         $costs = $config->getNotificationPreferences()['costs'];
 
         $scope = (new Scope())->readEntity($subjectid);

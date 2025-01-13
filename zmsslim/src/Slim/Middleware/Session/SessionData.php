@@ -2,7 +2,7 @@
 
 namespace BO\Slim\Middleware\Session;
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class SessionData implements SessionInterface
 {
@@ -152,7 +152,7 @@ class SessionData implements SessionInterface
     public function clear()
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
-            setcookie(session_name(), '', time()-3600, '/');
+            setcookie(session_name(), '', time() - 3600, '/');
             $_SESSION = array();
             session_destroy();
         }

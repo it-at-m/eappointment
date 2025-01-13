@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -9,7 +10,6 @@ use App;
 use BO\Slim\Middleware\Validator;
 use Helmich\Psr7Assert\Psr7Assertions;
 use PHPUnit\Framework\TestCase;
-
 use BO\Slim\Middleware\SessionMiddleware;
 use BO\Slim\Middleware\Session\SessionHuman;
 use BO\Slim\Middleware\Session\SessionData;
@@ -103,7 +103,7 @@ abstract class Base extends TestCase
             $session->setEntityClass($this->sessionClass);
             return $session;
         });
-        
+
         return $request->withAttribute(SessionMiddleware::SESSION_ATTRIBUTE, $sessionContainer);
     }
 
@@ -135,7 +135,8 @@ abstract class Base extends TestCase
 
         $request = new Request($method, $uri, $headers, [], $env, $body, []);
 
-        if ($method === 'POST' &&
+        if (
+            $method === 'POST' &&
             in_array($headers->getHeader('Content-Type'), ['application/x-www-form-urlencoded', 'multipart/form-data'])
         ) {
             // parsed body must be $_POST

@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
+use BO\Zmsentities\Exchange;
 
 class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSubject
 {
@@ -33,7 +33,7 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
             $raw = $this
                 ->getReader()
                 ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_READ_". strtoupper($period)),
+                    constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_READ_" . strtoupper($period)),
                     [
                         'organisationid' => $subjectid,
                         'datestart' => $datestart->format('Y-m-d'),

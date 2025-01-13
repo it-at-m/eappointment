@@ -7,7 +7,6 @@ namespace BO\Zmsapi\Exception\Organisation;
  */
 class OrganisationNotFound extends \Exception
 {
-
     protected $code = 404;
 
     protected $message = 'Organisation id does not exists';

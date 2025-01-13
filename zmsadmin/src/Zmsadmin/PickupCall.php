@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Mellon\Validator;
+use BO\Mellon\Validator;
 
 /**
   *
@@ -43,12 +44,12 @@ class PickupCall extends BaseController
         try {
             if (4 <= strlen((string)$inputNumber)) {
                 $process = \App::$http
-                    ->readGetResult('/process/'. $inputNumber .'/')
+                    ->readGetResult('/process/' . $inputNumber . '/')
                     ->getEntity();
                 $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
             } else {
                 $process = \App::$http
-                    ->readGetResult('/scope/'. $workstation->scope['id'] .'/queue/'. $inputNumber .'/')
+                    ->readGetResult('/scope/' . $workstation->scope['id'] . '/queue/' . $inputNumber . '/')
                     ->getEntity();
             }
         } catch (\BO\Zmsclient\Exception $exception) {

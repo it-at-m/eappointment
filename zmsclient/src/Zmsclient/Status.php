@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsclient;
 
 use Fig\Http\Message\StatusCodeInterface;
@@ -43,15 +44,16 @@ class Status
                 $result[] = "WARN - DB connection is not part of a galera cluster";
             }
             if ($status['database']['locks'] > 10) {
-                $result[] = "WARN - High amount of DB-Locks: ".$status['database']['locks'];
+                $result[] = "WARN - High amount of DB-Locks: " . $status['database']['locks'];
             }
             if ($status['database']['threads'] > 30) {
-                $result[] = "WARN - High amount of DB-Threads: ".$status['database']['threads'];
+                $result[] = "WARN - High amount of DB-Threads: " . $status['database']['threads'];
             }
             if ($status['database']['nodeConnections'] > 50) {
                 $result[] = "WARN - DB connected thread over 50% of available connections";
             }
-            if (isset($status['processes'])
+            if (
+                isset($status['processes'])
                 && isset($status['processes']['lastCalculate'])
                 && time() - strtotime($status['processes']['lastCalculate']) > 600
             ) {
@@ -63,8 +65,8 @@ class Status
             if (!count($result)) {
                 $result = "OK - "
                     . "DB=" . $status['database']['nodeConnections'] . "%"
-                    . " Threads=".$status['database']['threads']
-                    . " Locks=".$status['database']['locks']
+                    . " Threads=" . $status['database']['threads']
+                    . " Locks=" . $status['database']['locks']
                     ;
             } else {
                 $result = implode('; ', $result);
@@ -90,7 +92,8 @@ class Status
         if (isset($status['sources'])) {
             $now = new \DateTimeImmutable();
             $lastDldbUpdate = new \DateTimeImmutable($status['sources']['dldb']['last']);
-            if (($lastDldbUpdate->getTimestamp() + 7200) < $now->getTimestamp() &&
+            if (
+                ($lastDldbUpdate->getTimestamp() + 7200) < $now->getTimestamp() &&
                 ($lastDldbUpdate->getTimestamp() + 14400) > $now->getTimestamp()
             ) {
                 $result = "WARN - Last DLDB Import is more then 2 hours ago";

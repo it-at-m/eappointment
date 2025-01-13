@@ -7,7 +7,6 @@ namespace BO\Zmsentities\Helper;
  */
 class Property implements \ArrayAccess
 {
-
     /**
      *
      * @var Mixed $access
@@ -68,8 +67,10 @@ class Property implements \ArrayAccess
 
     public function __get($property)
     {
-        if ((is_array($this->access) && array_key_exists($property, $this->access)) ||
-            ($this->access instanceof \ArrayAccess && $this->access->offsetExists($property))) {
+        if (
+            (is_array($this->access) && array_key_exists($property, $this->access)) ||
+            ($this->access instanceof \ArrayAccess && $this->access->offsetExists($property))
+        ) {
             return new self($this->access[$property]);
         }
         if (is_object($this->access) && isset($this->access->$property)) {

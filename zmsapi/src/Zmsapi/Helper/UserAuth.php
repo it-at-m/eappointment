@@ -2,8 +2,8 @@
 
 namespace BO\Zmsapi\Helper;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Useraccount;
+use BO\Slim\Render;
+use BO\Zmsdb\Useraccount;
 
 class UserAuth
 {

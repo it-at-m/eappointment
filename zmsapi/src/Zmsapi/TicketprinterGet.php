@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Ticketprinter as Query;
+use BO\Slim\Render;
+use BO\Zmsdb\Ticketprinter as Query;
 
 class TicketprinterGet extends BaseController
 {
@@ -20,7 +21,7 @@ class TicketprinterGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $ticketprinter = (new Query)->readByHash($args['hash']);
+        $ticketprinter = (new Query())->readByHash($args['hash']);
         Helper\TicketprinterAccess::testTicketprinter($ticketprinter);
 
         $message = Response\Message::create($request);

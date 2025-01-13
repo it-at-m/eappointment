@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
+use BO\Zmsentities\Exchange;
 
 class ExchangeRequestowner extends Base
 {
@@ -26,7 +26,7 @@ class ExchangeRequestowner extends Base
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('name', 'string', 'Name of request');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');
-        $entity->addDictionaryEntry('processingtime', 'number', 'Average processing time in minutes');        
+        $entity->addDictionaryEntry('processingtime', 'number', 'Average processing time in minutes');
         $subjectIdList = explode(',', $subjectid);
 
         foreach ($subjectIdList as $subjectid) {

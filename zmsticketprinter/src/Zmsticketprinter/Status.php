@@ -1,9 +1,11 @@
 <?php
+
 /**
  *
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Zmsticketprinter\Home;
@@ -14,7 +16,6 @@ use BO\Zmsticketprinter\Helper\Ticketprinter as Helper;
  */
 class Status extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return String
@@ -28,7 +29,7 @@ class Status extends BaseController
         $status['hash'] = Helper::getHashFromRequest($request);
         if ($status['hash']) {
             $status['ticketprinter'] = \App::$http
-                ->readGetResult('/ticketprinter/'. $status['hash'] . '/')
+                ->readGetResult('/ticketprinter/' . $status['hash'] . '/')
                 ->getEntity();
         }
 

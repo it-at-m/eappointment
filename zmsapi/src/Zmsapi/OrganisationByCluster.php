@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Organisation as Query;
-use \BO\Zmsdb\Cluster;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Organisation as Query;
+use BO\Zmsdb\Cluster;
 
 class OrganisationByCluster extends BaseController
 {

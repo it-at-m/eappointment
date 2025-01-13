@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
@@ -16,7 +17,6 @@ use BO\Slim\Render;
  */
 class UseraccountDelete extends BaseController
 {
-
     /**
      *
      * @return String

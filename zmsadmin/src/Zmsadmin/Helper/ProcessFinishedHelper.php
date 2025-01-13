@@ -1,9 +1,11 @@
 <?php
+
 /**
  *
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin\Helper;
 
 class ProcessFinishedHelper extends \BO\Zmsentities\Process

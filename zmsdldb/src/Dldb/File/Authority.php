@@ -1,12 +1,14 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\File;
 
-use \BO\Dldb\Entity\Authority as Entity;
-use \BO\Dldb\Collection\Authorities as Collection;
+use BO\Dldb\Entity\Authority as Entity;
+use BO\Dldb\Collection\Authorities as Collection;
 
 /**
  * Common methods shared by access classes

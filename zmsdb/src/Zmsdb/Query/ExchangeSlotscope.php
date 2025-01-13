@@ -32,7 +32,7 @@ class ExchangeSlotscope extends Base
           MIN(CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day, 2, 0))) AS periodstart,
           MAX(CONCAT(year, "-", LPAD(month, 2, 0), "-", LPAD(day, 2, 0))) AS periodend,
           CONCAT(scope.`Bezeichnung`, " ", scope.`standortinfozeile`) AS description
-      FROM '. Scope::TABLE .' AS scope
+      FROM ' . Scope::TABLE . ' AS scope
         LEFT JOIN slot AS s ON s.scopeID = scope.StandortID
         LEFT JOIN slot_process AS sp USING(slotID)
       WHERE sp.slotID IS NOT NULL

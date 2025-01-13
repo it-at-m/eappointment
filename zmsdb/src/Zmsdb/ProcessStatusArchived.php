@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Processarchived as Entity;
-use \BO\Zmsentities\Collection\ProcessList as Collection;
+use BO\Zmsentities\Processarchived as Entity;
+use BO\Zmsentities\Collection\ProcessList as Collection;
 
 /**
  *
@@ -189,7 +190,7 @@ class ProcessStatusArchived extends Process
         if ($calculateStatistic) {
             (new ExchangeWaitingscope())->updateWaitingStatistics($process, $now);
         }
-        
+
         return $this->readArchivedEntity($archiveId, $resolveReferences);
     }
 
@@ -213,12 +214,11 @@ class ProcessStatusArchived extends Process
     public function anonymizeNames(\DateTimeInterface $dateTime)
     {
         $query = new Query\ProcessStatusArchived(Query\Base::UPDATE);
-        $query->addConditionOlderThanDate($dateTime);  
+        $query->addConditionOlderThanDate($dateTime);
         $query->addValues([
             'name' => 'ANONYMIZED'
         ]);
-    
+
         return $this->writeItem($query);
     }
-        
 }

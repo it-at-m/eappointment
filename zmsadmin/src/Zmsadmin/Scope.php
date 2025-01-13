@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Scope as Entity;
@@ -12,7 +14,6 @@ use BO\Mellon\Validator;
 
 class Scope extends BaseController
 {
-
     /**
      *
      * @return String
@@ -41,10 +42,10 @@ class Scope extends BaseController
         $sourceList = $this->readSourceList();
         $providerList = Helper\ProviderHandler::readProviderList($entity->getSource());
         $currentSource = $this->readCurrentSource($entity->getSource());
-        
+
         $organisation = \App::$http->readGetResult('/scope/' . $entityId . '/organisation/')->getEntity();
         $department = \App::$http->readGetResult('/scope/' . $entityId . '/department/')->getEntity();
-        $callDisplayImage = \App::$http->readGetResult('/scope/'. $entityId .'/imagedata/calldisplay/')->getEntity();
+        $callDisplayImage = \App::$http->readGetResult('/scope/' . $entityId . '/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
         if ($request->getMethod() === 'POST') {
             $result = $this->testUpdateEntity($input, $entityId);
@@ -55,7 +56,7 @@ class Scope extends BaseController
                 ]);
             }
         }
-  
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/scope.twig',
@@ -85,7 +86,7 @@ class Scope extends BaseController
 
     protected function readCurrentSource($source)
     {
-        $source = \App::$http->readGetResult('/source/'. $source .'/')->getEntity();
+        $source = \App::$http->readGetResult('/source/' . $source . '/')->getEntity();
         return $source;
     }
 
@@ -101,12 +102,13 @@ class Scope extends BaseController
                 $entity->id = $entityId;
                 $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
             } else {
-                $entity = \App::$http->readPostResult('/department/'. $entityId .'/scope/', $entity)
+                $entity = \App::$http->readPostResult('/department/' . $entityId . '/scope/', $entity)
                                      ->getEntity();
             }
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
-            if ('' != $exception->template
+            if (
+                '' != $exception->template
                 && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 return [
@@ -122,7 +124,7 @@ class Scope extends BaseController
     protected function writeUploadedImage(\Psr\Http\Message\RequestInterface $request, $entityId, $input)
     {
         if (isset($input['removeImage']) && $input['removeImage']) {
-            \App::$http->readDeleteResult('/scope/'. $entityId .'/imagedata/calldisplay/');
+            \App::$http->readDeleteResult('/scope/' . $entityId . '/imagedata/calldisplay/');
         } else {
             (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToScope($entityId);
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -40,14 +41,14 @@ class ReportClientOrganisation extends BaseController
         $exchangeNotification = null;
         if (isset($args['period'])) {
             $exchangeClient = \App::$http
-            ->readGetResult('/warehouse/clientorganisation/' . $organisationId . '/'. $args['period']. '/')
+            ->readGetResult('/warehouse/clientorganisation/' . $organisationId . '/' . $args['period'] . '/')
             ->getEntity()
             ->withCalculatedTotals($this->totals, 'date')
             ->toHashed();
 
             $exchangeNotification = \App::$http
             ->readGetResult(
-                '/warehouse/notificationorganisation/' . $organisationId . '/'. $args['period']. '/',
+                '/warehouse/notificationorganisation/' . $organisationId . '/' . $args['period'] . '/',
                 ['groupby' => 'month']
             )
             ->getEntity()

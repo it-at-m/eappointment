@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Dldb\Importer;
 
 define('DEBUG', true);
@@ -9,7 +10,7 @@ class Timer
     protected $pause;
     protected $stop;
     protected $elapsed;# = 0;
-    
+
     public function __construct()
     {
         $this->start();

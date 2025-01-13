@@ -35,7 +35,7 @@ class ArchivedDataIntoStatisticByCron
             $this->logMessage("INFO: Processing $scope");
             $processList = $this->query->readListForStatistic($dateTime, $scope, $this->limit);
             if ($processList->count()) {
-                $this->logMessage("INFO: ".count($processList)." processes for $scope");
+                $this->logMessage("INFO: " . count($processList) . " processes for $scope");
                 $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($scope->getId());
                 $department = (new \BO\Zmsdb\Department())->readByScopeId($scope->getId());
                 if ($department) {
@@ -62,7 +62,7 @@ class ArchivedDataIntoStatisticByCron
                 $this->logMessage("INFO: No changes for scope $scope");
             }
         }
-        $this->logMessage("\nSUMMARY: number of archived processes: ".count($this->archivedList));
+        $this->logMessage("\nSUMMARY: number of archived processes: " . count($this->archivedList));
     }
 
     public function getArchivedList()
@@ -111,11 +111,11 @@ class ArchivedDataIntoStatisticByCron
                 );
             }
             if ($archived) {
-                $this->archivedList['scope_'. $scope->getId()][] = $process->archiveId;
+                $this->archivedList['scope_' . $scope->getId()][] = $process->archiveId;
                 $processDate = $process->getFirstAppointment()->toDateTime()->format('Y-m-d');
                 $this->logMessage(
                     "INFO: Process {$process->archiveId} with request {$request->getId()}"
-                    ." for scope {$scope->getId()} archived on $processDate"
+                    . " for scope {$scope->getId()} archived on $processDate"
                 );
             } else {
                 $this->logMessage(

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Workstation;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Workstation;
 
 class WorkstationUpdate extends BaseController
 {
@@ -31,7 +32,7 @@ class WorkstationUpdate extends BaseController
             throw new Exception\Workstation\WorkstationAccessFailed();
         }
         $entity->getUseraccount()->rights = $currentWorkstation->getUseraccount()->rights;
-        $workstation = (new Workstation)->updateEntity($entity, $resolveReferences);
+        $workstation = (new Workstation())->updateEntity($entity, $resolveReferences);
         $message = Response\Message::create($request);
         $message->data = $workstation;
 

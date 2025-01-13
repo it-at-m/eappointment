@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -24,13 +25,13 @@ class MailTemplateCreateCustomization extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->getValue();
-        
+
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $providerId = $workstation->scope['provider']['id'];
 
         if (isset($args['id']) && !empty($args['id'])) {
             $scope = \App::$http
-                ->readGetResult('/scope/'. $args['id'] .'/', ['resolveReferences' => 1])
+                ->readGetResult('/scope/' . $args['id'] . '/', ['resolveReferences' => 1])
                 ->getEntity();
 
             $providerId = $scope->provider->id;

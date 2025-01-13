@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Mail as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Mail as Query;
 
 class MailGet extends BaseController
 {
@@ -24,7 +25,7 @@ class MailGet extends BaseController
         (new Helper\User($request))->checkRights('superuser');
         $mailId = $args['id'];
         $mail = (new Query())->readEntity($mailId);
-        
+
         if (!$mail || !$mail->hasId()) {
             throw new Exception\Mail\MailNotFound();
         }

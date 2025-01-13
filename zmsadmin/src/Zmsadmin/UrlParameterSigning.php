@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -51,7 +52,7 @@ class UrlParameterSigning extends BaseController
 
         if (($hasScopeList || $hasClusterList) && $hasValidScopeId) {
             $organisation = \App::$http->readGetResult(
-                '/scope/'. $workstation['scope']['id'] .'/organisation/',
+                '/scope/' . $workstation['scope']['id'] . '/organisation/',
                 ['resolveReferences' => 3]
             )->getEntity();
 

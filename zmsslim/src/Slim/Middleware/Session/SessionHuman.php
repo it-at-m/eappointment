@@ -42,14 +42,14 @@ class SessionHuman extends SessionContainer
             foreach ($requiredSteps as $stepName) {
                 if (!$this->hasStep($stepName)) {
                     \App::$log->notice(
-                        "[Human " . session_id() . "] Missing step $stepName on ". $path ." (referer: ". $referer .")"
+                        "[Human " . session_id() . "] Missing step $stepName on " . $path . " (referer: " . $referer . ")"
                     );
                     $this->writeRedirectCaptcha($path, $stepName);
                     return true;
                 }
                 if ($this->hasStepMaxReload($stepName)) {
                     \App::$log->notice(
-                        "[Human " . session_id() . "] Exceeded max reload for step $stepName on ". $path
+                        "[Human " . session_id() . "] Exceeded max reload for step $stepName on " . $path
                     );
                     $this->writeRedirectCaptcha($path, ($referer) ? $referer : end($requiredSteps));
                     return true;
@@ -64,7 +64,7 @@ class SessionHuman extends SessionContainer
         }
         if (!$this->isVerified()) {
             \App::$log->error(
-                "[Human " . session_id() . "] Missing session on ". $path ." (referer: ". $referer .")"
+                "[Human " . session_id() . "] Missing session on " . $path . " (referer: " . $referer . ")"
             );
             $this->writeRedirectCaptcha($path, $referer);
             return true;
@@ -129,7 +129,8 @@ class SessionHuman extends SessionContainer
      */
     public function hasStepMaxReload($stepName)
     {
-        if ($this->has('step', 'human') &&
+        if (
+            $this->has('step', 'human') &&
             array_key_exists($stepName, $this->get('step', 'human')) &&
             $this->get('step', 'human')[$stepName] > self::MAX_RELOAD
         ) {

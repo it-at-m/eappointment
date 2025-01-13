@@ -2,10 +2,10 @@
 
 namespace BO\Zmsapi\Helper;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Useraccount;
-use \BO\Zmsdb\Workstation;
-use \BO\Zmsapi\Helper\UserAuth;
+use BO\Slim\Render;
+use BO\Zmsdb\Useraccount;
+use BO\Zmsdb\Workstation;
+use BO\Zmsapi\Helper\UserAuth;
 
 /**
  *
@@ -61,7 +61,8 @@ class User
                 $resolveReferences
             );
         }
-        if (static::$assignedWorkstation &&
+        if (
+            static::$assignedWorkstation &&
             static::$assignedWorkstation->id != $entity->id &&
             static::$assignedWorkstation->name == $entity->name &&
             static::$assignedWorkstation->scope['id'] == $entity->scope['id'] &&
@@ -77,7 +78,8 @@ class User
      */
     public static function testWorkstationAccessRights($useraccount)
     {
-        if ((
+        if (
+            (
                 ! static::$workstation->getUseraccount()->isSuperUser() &&
                 ! static::$workstation->hasAccessToUseraccount($useraccount)
             ) ||

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope as Query;
 
 class ScopeListByRequest extends BaseController
 {
@@ -23,7 +24,7 @@ class ScopeListByRequest extends BaseController
     ) {
         $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $requestEntity = (new \BO\Zmsdb\Request)->readEntity($args['source'], $args['id']);
+        $requestEntity = (new \BO\Zmsdb\Request())->readEntity($args['source'], $args['id']);
         if (! $requestEntity->hasId()) {
             throw new Exception\Request\RequestNotFound();
         }

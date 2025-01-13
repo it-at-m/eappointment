@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -11,7 +12,6 @@ namespace BO\Dldb;
  */
 class FileAccess extends AbstractAccess
 {
-
     /**
      * Parameters for json files are deprecated, try using loadFromPath() instead
      *

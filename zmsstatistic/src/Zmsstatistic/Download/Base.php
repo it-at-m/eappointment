@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -70,16 +71,16 @@ class Base extends \BO\Zmsstatistic\BaseController
             $infoData[] = $args['department']['name'];
         }
         if (isset($args['scope'])) {
-            $infoData[] = $args['scope']['contact']['name'] .' '. $args['scope']['shortName'];
+            $infoData[] = $args['scope']['contact']['name'] . ' ' . $args['scope']['shortName'];
         }
         $infoData = array_chunk($infoData, 1);
-        $sheet->fromArray($infoData, null, 'A'. $sheet->getHighestRow());
+        $sheet->fromArray($infoData, null, 'A' . $sheet->getHighestRow());
 
         if (isset($args['reports'][0]->firstDay)) {
             $firstDay = $args['reports'][0]->firstDay->toDateTime()->format('d.m.Y');
             $lastDay = $args['reports'][0]->lastDay->toDateTime()->format('d.m.Y');
             $range = array('Zeitraum:', $firstDay, 'bis', $lastDay);
-            $sheet->fromArray($range, null, 'A'. ($sheet->getHighestRow() + 1));
+            $sheet->fromArray($range, null, 'A' . ($sheet->getHighestRow() + 1));
         }
 
         return $spreadsheet;
@@ -89,12 +90,12 @@ class Base extends \BO\Zmsstatistic\BaseController
     {
         $dateArr = explode('-', $dateString);
         if (2 == count($dateArr)) {
-            $dateString = $dateString .'-01';
+            $dateString = $dateString . '-01';
         }
         /* ignore because not in use now */
         //@codeCoverageIgnoreStart
         if (1 == count($dateArr)) {
-            $dateString = $dateString .'-01-01';
+            $dateString = $dateString . '-01-01';
         }
         //@codeCoverageIgnoreEnd
         return new \DateTime($dateString);

@@ -2,12 +2,12 @@
 
 namespace BO\Zmsdb\Query;
 
-use \Solution10\SQL\Select;
-use \Solution10\SQL\Insert;
-use \Solution10\SQL\Update;
-use \Solution10\SQL\Delete;
-use \Solution10\SQL\Dialect\MySQL;
-use \Solution10\SQL\Expression;
+use Solution10\SQL\Select;
+use Solution10\SQL\Insert;
+use Solution10\SQL\Update;
+use Solution10\SQL\Delete;
+use Solution10\SQL\Dialect\MySQL;
+use Solution10\SQL\Expression;
 
 /**
  * Base class to construct entity specific queries
@@ -106,7 +106,7 @@ abstract class Base
             $this->addTable();
         } elseif (self::DELETE === $queryType) {
             $this->query = new Delete($dialect);
-            $this->query->queryBaseStatement('DELETE '. $this::getAlias() .' FROM');
+            $this->query->queryBaseStatement('DELETE ' . $this::getAlias() . ' FROM');
             $this->addTableAlias();
         } elseif ($queryType instanceof self) {
             $this->query = $queryType->query;
@@ -236,7 +236,7 @@ abstract class Base
     {
         $table = $this::getTablename();
         $alias = $this::getAlias();
-        $this->query->table(self::expression($table .' '. $alias));
+        $this->query->table(self::expression($table . ' ' . $alias));
         return $this;
     }
 

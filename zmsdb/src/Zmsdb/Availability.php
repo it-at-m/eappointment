@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Availability as Entity;
-use \BO\Zmsentities\Collection\AvailabilityList as Collection;
+use BO\Zmsentities\Availability as Entity;
+use BO\Zmsentities\Collection\AvailabilityList as Collection;
 
 /**
  * @SuppressWarnings(Public)
@@ -86,7 +87,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
                 $entity->workstationCount['public'] = 0;
                 if ($entity['type'] == 'appointment') {
                     $entity['description'] = '';
-                    $entity->id = '__spontan__'. $entity->id;
+                    $entity->id = '__spontan__' . $entity->id;
                     $entity['type'] = 'openinghours';
                 }
                 $entity['type'] = ($entity['type'] != 'appointment') ? 'openinghours' : $entity['type'];
@@ -114,7 +115,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         } elseif ($startDate) {
             $query->addConditionSkipOld($startDate);
         }
-    
+
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {

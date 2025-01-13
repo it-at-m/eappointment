@@ -8,13 +8,13 @@ trait PDOTrait
 {
     protected $pdoAccess;
 
-    public function setPDOAccess(PDOAccess $pdoAccess) : self
+    public function setPDOAccess(PDOAccess $pdoAccess): self
     {
         $this->pdoAccess = $pdoAccess;
         return $this;
     }
 
-    public function getPDOAccess() : PDOAccess
+    public function getPDOAccess(): PDOAccess
     {
         return $this->pdoAccess;
     }

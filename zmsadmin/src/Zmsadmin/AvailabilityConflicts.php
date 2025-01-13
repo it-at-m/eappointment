@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -7,7 +8,6 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Availability;
-
 use BO\Zmsentities\Collection\AvailabilityList;
 
 /**

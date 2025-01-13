@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -12,7 +13,6 @@ namespace BO\Dldb\Entity;
   */
 class Location extends Base
 {
-
     /**
      * @return Bool
      */
@@ -29,7 +29,7 @@ class Location extends Base
         }
         return count($servicecount) == count($servicecompare);
     }
-    
+
     /**
      * @return Bool
      */
@@ -66,7 +66,7 @@ class Location extends Base
         }
         $location = $this->getArrayCopy();
         $servicecompare = explode(',', $serviceCsv);
-        
+
         $serviceList = array();
         foreach ($location['services'] as $serviceinfo) {
             $service_id = $serviceinfo['service'];
@@ -90,7 +90,8 @@ class Location extends Base
         $serviceList = $this->getServiceInfoList($serviceCsv);
         $servicecount = array();
         foreach ($serviceList as $serviceinfo) {
-            if (true === static::hasValidOffset($serviceinfo, 'appointment')
+            if (
+                true === static::hasValidOffset($serviceinfo, 'appointment')
                 && $serviceinfo['appointment']['allowed']
                 && ($external || $serviceinfo['appointment']['external'] === false)
             ) {
@@ -111,7 +112,7 @@ class Location extends Base
     public function getAppointmentForService($service_id, $external = false)
     {
         $serviceList = $this->getServiceInfoList($service_id);
-        
+
         if (!empty($serviceList)) {
             $service = end($serviceList);
             return $service['appointment'];

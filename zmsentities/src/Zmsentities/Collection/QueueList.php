@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
 /**
@@ -224,7 +225,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $next = array_shift($queueList);
         $currentTime = $dateTime->getTimestamp();
         while ($next) {
-            if (! in_array($next->number, $excludeNumbers) &&
+            if (
+                ! in_array($next->number, $excludeNumbers) &&
                 (0 == $next->lastCallTime || ($next->lastCallTime + (5 * 60)) <= $currentTime)
             ) {
                 return $next->getProcess();
@@ -372,7 +374,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         foreach ($this as $entity) {
             $queueListArray[] = $entity;
         }
-        usort($queueListArray, function($a, $b) use ($order) {
+        usort($queueListArray, function ($a, $b) use ($order) {
             if ($order === 'ascending') {
                 return $a->callTime <=> $b->callTime;
             } elseif ($order === 'descending') {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -57,10 +58,10 @@ class ProcessListSummaryMail extends BaseController
             $limit
         );
 
-        $config = (new ConfigRepository)->readEntity();
+        $config = (new ConfigRepository())->readEntity();
         $department = $this->readDepartment($config, $collection->getFirst());
 
-        $mail = (new Mail)->toResolvedEntity($collection, $config, 'overview')->withDepartment($department);
+        $mail = (new Mail())->toResolvedEntity($collection, $config, 'overview')->withDepartment($department);
         $mail = $this->setWithProcessClient($mail, $mailAddress);
         $mail->testValid();
 

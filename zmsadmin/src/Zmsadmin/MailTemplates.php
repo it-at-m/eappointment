@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Config as Entity;
+use BO\Zmsentities\Config as Entity;
 
 class MailTemplates extends BaseController
 {
@@ -27,7 +28,7 @@ class MailTemplates extends BaseController
 
         if (isset($args['scopeId']) && !empty($args['scopeId'])) {
             $scope = \App::$http
-                ->readGetResult('/scope/'. $args['scopeId'] .'/', ['resolveReferences' => 1])
+                ->readGetResult('/scope/' . $args['scopeId'] . '/', ['resolveReferences' => 1])
                 ->getEntity();
 
             $scopeName = $scope->contact->name;
@@ -37,8 +38,8 @@ class MailTemplates extends BaseController
 
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
-        $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/'.$providerId.'/')->getCollection();
-        forEach($mergedMailTemplates as $template) {
+        $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/')->getCollection();
+        foreach ($mergedMailTemplates as $template) {
             if ($template['provider']) {
                 $template->isCustom = true;
             }
@@ -53,14 +54,14 @@ class MailTemplates extends BaseController
 
         $mergedMailTemplates->prioritizeByName($priorityNames);
 
-        $mainProcessExample = ((new \BO\Zmsentities\Process)->getExample());
+        $mainProcessExample = ((new \BO\Zmsentities\Process())->getExample());
         $mainProcessExample->id = 987654;
         $dateTime = new \DateTimeImmutable("2015-10-23 08:00:00", new \DateTimeZone('Europe/Berlin'));
         $mainProcessExample->getFirstAppointment()->setDateTime($dateTime);
         $mainProcessExample->requests[] = (new \BO\Zmsentities\Request())->getExample();
 
-        $processExample = ((new \BO\Zmsentities\Process)->getExample());
-        $processExample->scope = ((new \BO\Zmsentities\Scope)->getExample());
+        $processExample = ((new \BO\Zmsentities\Process())->getExample());
+        $processExample->scope = ((new \BO\Zmsentities\Scope())->getExample());
         $processExample2 = clone $processExample;
         $dateTime = new \DateTimeImmutable("2015-12-30 11:55:00", new \DateTimeZone('Europe/Berlin'));
         $processExample2->getFirstAppointment()->setDateTime($dateTime);
