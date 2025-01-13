@@ -131,10 +131,11 @@
     v-if="rebookOrCancelDialog"
     class="m-button-group"
   >
-    <muc-button @click="rescheduleAppointment">
+    <muc-button icon="arrow-right" @click="rescheduleAppointment">
       <template #default>{{ t("rescheduleAppointment") }}</template>
     </muc-button>
     <muc-button
+      icon="close"
       variant="secondary"
       @click="cancelAppointment"
     >
@@ -147,11 +148,13 @@
   >
     <muc-button
       :disabled="!validForm"
+      icon="check"
       @click="bookAppointment"
     >
       <template #default>{{ t("rescheduleAppointment") }}</template>
     </muc-button>
     <muc-button
+      icon="close"
       variant="secondary"
       @click="cancelReschedule"
     >
@@ -163,6 +166,7 @@
     class="m-button-group"
   >
     <muc-button
+      icon="arrow-left"
       variant="secondary"
       @click="previousStep"
     >
@@ -170,6 +174,7 @@
     </muc-button>
     <muc-button
       :disabled="!validForm"
+      icon="check"
       @click="bookAppointment"
     >
       <template #default>{{ t("bookAppointment") }}</template>

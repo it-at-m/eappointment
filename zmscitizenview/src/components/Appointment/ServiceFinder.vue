@@ -49,18 +49,21 @@
         </ul>
       </div>
     </div>
-    <div class="wrapper">
-      <clock-svg />
-      <div>
-        <b>{{ t("estimatedDuration") }}</b>
-        <br />
-        {{ t("minutes") }}
+    <div class="m-component">
+      <div class="wrapper">
+        <clock-svg />
+        <div>
+          <b>{{ t("estimatedDuration") }}</b>
+          <br />
+          {{ t("minutes") }}
+        </div>
       </div>
     </div>
   </div>
   <div class="m-button-group">
     <muc-button
       v-if="service"
+      icon="arrow-right"
       @click="nextStep"
     >
       <template #default>{{ t("next") }}</template>

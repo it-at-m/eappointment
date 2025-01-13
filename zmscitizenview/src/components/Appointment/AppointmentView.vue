@@ -22,6 +22,8 @@
             <div v-if="currentView === 1">
               <calendar-view
                 :is-rebooking="isRebooking"
+                :exclusive-location="exclusiveLocation"
+                :preselected-office-id="preselectedLocationId"
                 :selected-service-map="selectedServiceMap"
                 :t="t"
                 @back="decreaseCurrentView"
@@ -255,6 +257,8 @@ const confirmAppointmentError = ref<boolean>(false);
 
 const cancelAppointmentSuccess = ref<boolean>(false);
 const cancelAppointmentError = ref<boolean>(false);
+
+const preselectedLocationId = ref<string | undefined>(props.locationId);
 
 provide<SelectedServiceProvider>("selectedServiceProvider", {
   selectedService,
@@ -510,6 +514,8 @@ onMounted(() => {
               selectedService.value.id,
               null
             );
+
+            preselectedLocationId.value = appointment.value.officeId;
 
             if (appointment.value.subRequestCounts.length > 0) {
               appointment.value.subRequestCounts.forEach((subRequestCount) => {
