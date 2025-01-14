@@ -170,6 +170,7 @@
   >
     <muc-button
       icon="arrow-left"
+      icon-shown-left
       variant="secondary"
       @click="previousStep"
     >
