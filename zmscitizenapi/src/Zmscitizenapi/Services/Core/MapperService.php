@@ -249,12 +249,12 @@ class MapperService
         $processEntity = new Process();
         $processEntity->id = $thinnedProcess->processId;
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
+        $processEntity->customTextfield = $thinnedProcess->customTextfield ?? null; // Moved to Process level
     
         $client = new Client();
         $client->familyName = $thinnedProcess->familyName ?? null;
         $client->email = $thinnedProcess->email ?? null;
         $client->telephone = $thinnedProcess->telephone ?? null;
-        $client->customTextfield = $thinnedProcess->customTextfield ?? null;
     
         $processEntity->clients = [$client];
     
