@@ -5,6 +5,7 @@ namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Application;
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -139,22 +140,22 @@ class LoggerService
             'ip' => ClientIpHelper::getClientIp(),
             'headers' => self::filterSensitiveHeaders($request->getHeaders())
         ];    
-
+    
         if ($response->getStatusCode() >= 400) {
             $body = '';
             $stream = $response->getBody();
-
+    
             if ($stream->isSeekable()) {
                 try {
                     $stream->seek(0, SEEK_END);
                     $size = $stream->tell();
                     $stream->rewind();
-
+    
                     $maxSafeSize = min(
                         self::$config['responseLength'],
                         (int)(self::$config['messageSize'] * 0.75)
                     );
-
+    
                     if ($size > $maxSafeSize) {
                         $data['response'] = [
                             'error' => 'Response body too large to log',
@@ -163,7 +164,7 @@ class LoggerService
                     } else {
                         $body = (string)$stream;
                         $stream->rewind();
-
+    
                         try {
                             $decodedBody = json_decode($body, true);
                             if (
@@ -171,8 +172,15 @@ class LoggerService
                                 isset($decodedBody['errors']) &&
                                 is_array($decodedBody['errors'])
                             ) {
-                                // Only log if response contains an errors array
-                                $data['response'] = $decodedBody;
+                                $englishErrors = [];
+                                foreach ($decodedBody['errors'] as $error) {
+                                    if (isset($error['errorCode'])) {
+                                        $englishErrors[] = ErrorMessages::get($error['errorCode'], 'en');
+                                    } else {
+                                        $englishErrors[] = $error;
+                                    }
+                                }
+                                $data['response'] = ['errors' => $englishErrors];
                             }
                         } catch (\Throwable $e) {
                             $data['response'] = [
@@ -193,7 +201,7 @@ class LoggerService
                 ];
             }
         }
-
+    
         self::writeLog(
             $response->getStatusCode() >= 400 ? LOG_ERR : LOG_INFO,
             self::encodeJson($data)
@@ -430,18 +438,21 @@ class LoggerService
     private static function encodeJson(array $data): string
     {
         try {
-            $json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+            $json = json_encode($data, 
+                JSON_UNESCAPED_SLASHES | 
+                JSON_UNESCAPED_UNICODE | 
+                JSON_INVALID_UTF8_SUBSTITUTE
+            );
             if ($json === false) {
                 throw new \RuntimeException(json_last_error_msg(), json_last_error());
             }
             return $json;
         } catch (\Throwable $e) {
             error_log('JSON encoding failed: ' . $e->getMessage());
-            // Return simplified JSON with error
             return json_encode([
                 'error' => 'Failed to encode log data',
                 'message' => $e->getMessage()
-            ], JSON_UNESCAPED_SLASHES);
+            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
     }
 }
