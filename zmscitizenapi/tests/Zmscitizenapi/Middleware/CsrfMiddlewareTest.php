@@ -44,62 +44,65 @@ class CsrfMiddlewareTest extends MiddlewareTestCase
         $this->assertSame($response, $result);
     }
 
-    public function testBlocksPostWithoutToken(): void
-    {
-        /** @var ServerRequestInterface|MockObject $request */
-        $request = $this->createMock(ServerRequestInterface::class);
-        $request->expects($this->once())
-            ->method('getMethod')
-            ->willReturn('POST');
-        $request->expects($this->any())
-            ->method('getUri')
-            ->willReturn(new \BO\Zmsclient\Psr7\Uri('http://localhost/test'));
+    // Todo: Uncomment when CSRF is renabled
+    // public function testBlocksPostWithoutToken(): void
+    // {
+    //     // @var ServerRequestInterface|MockObject $request
+    //     $request = $this->createMock(ServerRequestInterface::class);
+    //     $request->expects($this->once())
+    //         ->method('getMethod')
+    //         ->willReturn('POST');
+    //     $request->expects($this->any())
+    //         ->method('getUri')
+    //         ->willReturn(new \BO\Zmsclient\Psr7\Uri('http://localhost/test'));
+    //         
+    //     $response = new Response();
+    //     $handler = $this->createHandler($response);
+
+    //     $this->logger->expectLogInfo('CSRF token missing', [
+    //         'uri' => 'http://localhost/test'
+    //     ]);
+
+    //     $result = $this->middleware->process($request, $handler);
+    //     $logBody = json_decode((string)$result->getBody(), true);
+
+    //     $this->assertEquals(ErrorMessages::get('csrfTokenMissing')['statusCode'], $result->getStatusCode());
+    //     $this->assertEquals(
+    //         ['errors' => [ErrorMessages::get('csrfTokenMissing')]],
+    //         $logBody
+    //     );
+    // }
+
+    // Todo: Uncomment when CSRF is renabled
+    // public function testBlocksInvalidToken(): void
+    // {
+    //     /** @var ServerRequestInterface|MockObject $request */
+    //     $request = $this->createMock(ServerRequestInterface::class);
+    //     $request->expects($this->once())
+    //         ->method('getMethod')
+    //         ->willReturn('POST');
+    //     $request->method('getHeaderLine')
+    //         ->willReturnCallback(function(string $header) {
+    //             $this->assertEquals('X-CSRF-Token', $header);
+    //             return 'invalid';
+    //         });
+    //     $request->expects($this->any())
+    //         ->method('getUri')
+    //         ->willReturn(new \BO\Zmsclient\Psr7\Uri('http://localhost/test'));
             
-        $response = new Response();
-        $handler = $this->createHandler($response);
+    //     $response = new Response();
+    //     $handler = $this->createHandler($response);
 
-        $this->logger->expectLogInfo('CSRF token missing', [
-            'uri' => 'http://localhost/test'
-        ]);
+    //     $this->logger->expectLogInfo('Invalid CSRF token');
 
-        $result = $this->middleware->process($request, $handler);
-        $logBody = json_decode((string)$result->getBody(), true);
+    //     $result = $this->middleware->process($request, $handler);
+    //     $logBody = json_decode((string)$result->getBody(), true);
 
-        $this->assertEquals(ErrorMessages::get('csrfTokenMissing')['statusCode'], $result->getStatusCode());
-        $this->assertEquals(
-            ['errors' => [ErrorMessages::get('csrfTokenMissing')]],
-            $logBody
-        );
-    }
+    //     $this->assertEquals(ErrorMessages::get('csrfTokenInvalid')['statusCode'], $result->getStatusCode());
+    //     $this->assertEquals(
+    //         ['errors' => [ErrorMessages::get('csrfTokenInvalid')]],
+    //         $logBody
+    //     );
+    // }
 
-    public function testBlocksInvalidToken(): void
-    {
-        /** @var ServerRequestInterface|MockObject $request */
-        $request = $this->createMock(ServerRequestInterface::class);
-        $request->expects($this->once())
-            ->method('getMethod')
-            ->willReturn('POST');
-        $request->method('getHeaderLine')
-            ->willReturnCallback(function(string $header) {
-                $this->assertEquals('X-CSRF-Token', $header);
-                return 'invalid';
-            });
-        $request->expects($this->any())
-            ->method('getUri')
-            ->willReturn(new \BO\Zmsclient\Psr7\Uri('http://localhost/test'));
-            
-        $response = new Response();
-        $handler = $this->createHandler($response);
-    
-        $this->logger->expectLogInfo('Invalid CSRF token');
-    
-        $result = $this->middleware->process($request, $handler);
-        $logBody = json_decode((string)$result->getBody(), true);
-    
-        $this->assertEquals(ErrorMessages::get('csrfTokenInvalid')['statusCode'], $result->getStatusCode());
-        $this->assertEquals(
-            ['errors' => [ErrorMessages::get('csrfTokenInvalid')]],
-            $logBody
-        );
-    }
 }
