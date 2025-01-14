@@ -901,40 +901,40 @@ class ErrorMessages
      * Get an error message by key with fallback logic.
      *
      * @param string $key The error message key.
-     * @param string|null $language Optional language (default is centralized DEFAULT_LANGUAGE).
+     * @param string|null $language Optional language (default is LanguageMiddleware's default).
      * @return array The error message array.
      */
     public static function get(string $key, ?string $language = null): array
     {
         $language = LanguageMiddleware::normalizeLanguage($language);
-        
-        // Get messages for the language
+
         $messages = match ($language) {
             'en' => self::EN,
             'de' => self::DE,
             'ua' => self::UA,
-            default => self::DE,
+            default => constant('self::' . strtoupper(LanguageMiddleware::getDefaultLanguage())),
         };
 
         if (isset($messages[$key])) {
             return $messages[$key];
         }
 
-        $fallbackMessages = match (self::FALLBACK_LANGUAGE) {
-            'DE' => self::DE,
-            'EN' => self::EN,
-            default => self::EN,
-        };
+        $fallbackMessages = constant('self::' . strtoupper(LanguageMiddleware::getFallbackLanguage()));
 
         if (isset($fallbackMessages[$key])) {
             return $fallbackMessages[$key];
         }
 
-        $genericErrorMessage = match ($language) {
-            'DE' => [
+        return match ($language) {
+            'de' => [
                 'errorCode' => 'unknownError',
                 'statusCode' => self::HTTP_UNKNOWN,
                 'errorMessage' => 'Ein unbekannter Fehler ist aufgetreten.'
+            ],
+            'ua' => [
+                'errorCode' => 'unknownError',
+                'statusCode' => self::HTTP_UNKNOWN,
+                'errorMessage' => 'Виникла невідома помилка.'
             ],
             default => [
                 'errorCode' => 'unknownError',
@@ -942,8 +942,6 @@ class ErrorMessages
                 'errorMessage' => 'An unknown error occurred.'
             ],
         };
-
-        return $genericErrorMessage;
     }
 
     /**

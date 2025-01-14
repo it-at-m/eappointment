@@ -44,7 +44,7 @@ class LoggerService
         if (!self::$logOpened) {
             self::ensureConfigLoaded();
             self::$logOpened = @openlog(
-                Application::IDENTIFIER,
+                \App::IDENTIFIER, 
                 self::LOG_OPTIONS,
                 self::LOG_FACILITY
             ) !== false;
@@ -100,26 +100,27 @@ class LoggerService
         self::writeLog(LOG_INFO, $message);
     }
 
-    public static function logRequest(
-        ServerRequestInterface $request,
-        ResponseInterface $response
-    ): void {
+    public static function logRequest(ServerRequestInterface $request, ResponseInterface $response): void 
+    {
         self::ensureConfigLoaded();
         if (!self::checkRateLimit()) {
             return;
         }
-
+    
         $uri = $request->getUri();
-        $path = $uri->getPath();
-
+        // Normalize path by removing double slashes
+        $path = preg_replace('#/+#', '/', $uri->getPath());
+    
+        // Filter out query params that look like paths
         $queryParams = array_filter(
             $request->getQueryParams(),
-            function ($key) {
-                return !str_starts_with($key, '/');
+            function ($key, $value) {
+                // Remove if key or value starts with slash or contains multiple slashes
+                return !preg_match('#^/|//#', $key) && !preg_match('#^/|//#', $value);
             },
-            ARRAY_FILTER_USE_KEY
+            ARRAY_FILTER_USE_BOTH
         );
-
+    
         $queryParts = [];
         foreach ($queryParams as $key => $value) {
             $encodedKey = urlencode($key);
@@ -129,7 +130,7 @@ class LoggerService
             $queryParts[] = "$encodedKey=$encodedValue";
         }
         $queryString = implode('&', $queryParts);
-
+    
         $data = [
             'timestamp' => date('Y-m-d H:i:s'),
             'method' => $request->getMethod(),
@@ -137,7 +138,7 @@ class LoggerService
             'status' => $response->getStatusCode(),
             'ip' => ClientIpHelper::getClientIp(),
             'headers' => self::filterSensitiveHeaders($request->getHeaders())
-        ];
+        ];    
 
         if ($response->getStatusCode() >= 400) {
             $body = '';

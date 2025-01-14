@@ -150,7 +150,7 @@ class ValidationService
         $errors = [];
 
         if (!$date || !self::isValidDate($date)) {
-            $errors[] = ErrorMessages::get('invalidDate');
+            $errors[] = self::getError('invalidDate');
         }
 
         if (!self::isValidOfficeId($officeId)) {

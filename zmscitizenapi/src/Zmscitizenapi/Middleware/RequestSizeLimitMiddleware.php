@@ -42,11 +42,12 @@ class RequestSizeLimitMiddleware implements MiddlewareInterface
                 ));
                 
                 $response = \App::$slim->getResponseFactory()->createResponse();
-                $response = $response->withStatus(ErrorMessages::get(self::ERROR_TOO_LARGE)['statusCode'])
+                $language = $request->getAttribute('language');
+                $response = $response->withStatus(ErrorMessages::get(self::ERROR_TOO_LARGE, $language)['statusCode'])
                     ->withHeader('Content-Type', 'application/json');
                 
                 $response->getBody()->write(json_encode([
-                    'errors' => [ErrorMessages::get(self::ERROR_TOO_LARGE)]
+                    'errors' => [ErrorMessages::get(self::ERROR_TOO_LARGE, $language)]
                 ]));
                 
                 return $response;

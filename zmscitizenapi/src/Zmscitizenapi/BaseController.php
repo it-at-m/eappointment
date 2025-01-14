@@ -5,6 +5,7 @@ namespace BO\Zmscitizenapi;
 
 use BO\Zmscitizenapi\Services\Core\ExceptionService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
+use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
@@ -19,6 +20,7 @@ abstract class BaseController extends \BO\Slim\Controller
             $this->language = $request->getAttribute('language');
             ValidationService::setLanguageContext($this->language);
             ExceptionService::setLanguageContext($this->language);
+            ZmsApiFacadeService::setLanguageContext($this->language);
             $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
             return $this->readResponse($request, $noCacheResponse, $args);
         } catch (\RuntimeException $e) {

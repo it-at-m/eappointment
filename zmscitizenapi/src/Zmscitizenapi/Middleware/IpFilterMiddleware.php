@@ -48,13 +48,10 @@ class IpFilterMiddleware implements MiddlewareInterface
                     'uri' => $uri
                 ]);
                 
-                // Get language from request attributes
                 $language = $request->getAttribute('language');
                 
-                // Get translated error message
                 $error = ErrorMessages::get(self::ERROR_BLACKLISTED, $language);
                 
-                // Create response
                 $response = \App::$slim->getResponseFactory()->createResponse();
                 $response = $response->withStatus($error['statusCode'])
                     ->withHeader('Content-Type', 'application/json');

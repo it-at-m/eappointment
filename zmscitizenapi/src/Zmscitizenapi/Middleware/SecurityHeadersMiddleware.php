@@ -51,11 +51,12 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
             $this->logger->logError($e, $request);
             
             $response = \App::$slim->getResponseFactory()->createResponse();
-            $response = $response->withStatus(ErrorMessages::get('securityHeaderViolation')['statusCode'])
+            $language = $request->getAttribute('language');
+            $response = $response->withStatus(ErrorMessages::get('securityHeaderViolation', $language)['statusCode'])
                 ->withHeader('Content-Type', 'application/json');
             
             $response->getBody()->write(json_encode([
-                'errors' => [ErrorMessages::get('securityHeaderViolation')]
+                'errors' => [ErrorMessages::get('securityHeaderViolation', $language)]
             ]));
             
             return $response;
