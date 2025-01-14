@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Middleware\LanguageMiddleware;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Collection\ProcessList;
@@ -13,20 +14,31 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class ValidationService
 {
+    private static ?string $currentLanguage = null;
     private const DATE_FORMAT = 'Y-m-d';
     private const MIN_PROCESS_ID = 1;
     private const PHONE_PATTERN = '/^\+?[1-9]\d{6,14}$/';
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
     private const MAX_FUTURE_DAYS = 365; // Maximum days in the future for appointments
 
+    public static function setLanguageContext(?string $language): void
+    {
+        self::$currentLanguage = $language;
+    }
+
+    private static function getError(string $key): array
+    {
+        return ErrorMessages::get($key, self::$currentLanguage);
+    }
+
     public static function validateServerGetRequest(?ServerRequestInterface $request): array
     {
         if (!$request instanceof ServerRequestInterface) {
-            return ['errors' => [ErrorMessages::get('invalidRequest')]];
+            return ['errors' => [self::getError('invalidRequest')]];
         }
 
         if ($request->getMethod() !== "GET") {
-            return ['errors' => [ErrorMessages::get('invalidRequest')]];
+            return ['errors' => [self::getError('invalidRequest')]];
         }
     
         return [];
@@ -35,15 +47,15 @@ class ValidationService
     public static function validateServerPostRequest(?ServerRequestInterface $request): array
     {
         if (!$request instanceof ServerRequestInterface) {
-            return ['errors' => [ErrorMessages::get('invalidRequest')]];
+            return ['errors' => [self::getError('invalidRequest')]];
         }
 
         if ($request->getMethod() !== "POST") {
-            return ['errors' => [ErrorMessages::get('invalidRequest')]];
+            return ['errors' => [self::getError('invalidRequest')]];
         }
     
         if ($request->getParsedBody() === null) {
-            return ['errors' => [ErrorMessages::get('invalidRequest')]];
+            return ['errors' => [self::getError('invalidRequest')]];
         }
     
         return [];
@@ -52,11 +64,11 @@ class ValidationService
     public static function validateServiceLocationCombination(int $officeId, array $serviceIds): array
     {
         if ($officeId <= 0) {
-            return ['errors' => [ErrorMessages::get('invalidOfficeId')]];
+            return ['errors' => [self::getError('invalidOfficeId')]];
         }
 
         if (empty($serviceIds) || !self::isValidNumericArray($serviceIds)) {
-            return ['errors' => [ErrorMessages::get('invalidServiceId')]];
+            return ['errors' => [self::getError('invalidServiceId')]];
         }
 
         $availableServices = ZmsApiFacadeService::getServicesProvidedAtOffice($officeId);
@@ -69,7 +81,7 @@ class ValidationService
         
         return empty($invalidServiceIds) 
             ? [] 
-            : ['errors' => [ErrorMessages::get('invalidLocationAndServiceCombination')]];
+            : ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
     }
 
     public static function validateGetBookableFreeDays(
@@ -82,33 +94,33 @@ class ValidationService
         $errors = [];
 
         if (!self::isValidOfficeId($officeId)) {
-            $errors[] = ErrorMessages::get('invalidOfficeId');
+            $errors[] = self::getError('invalidOfficeId');
         }
 
         if (!self::isValidServiceId($serviceId)) {
-            $errors[] = ErrorMessages::get('invalidServiceId');
+            $errors[] = self::getError('invalidServiceId');
         }
 
         if (!$startDate || !self::isValidDate($startDate)) {
-            $errors[] = ErrorMessages::get('invalidStartDate');
+            $errors[] = self::getError('invalidStartDate');
         }
 
         if (!$endDate || !self::isValidDate($endDate)) {
-            $errors[] = ErrorMessages::get('invalidEndDate');
+            $errors[] = self::getError('invalidEndDate');
         }
 
         if ($startDate && $endDate && self::isValidDate($startDate) && self::isValidDate($endDate)) {
             if (new DateTime($startDate) > new DateTime($endDate)) {
-                $errors[] = ErrorMessages::get('startDateAfterEndDate');
+                $errors[] = self::getError('startDateAfterEndDate');
             }
 
             if (!self::isDateRangeValid($startDate, $endDate)) {
-                $errors[] = ErrorMessages::get('dateRangeTooLarge');
+                $errors[] = self::getError('dateRangeTooLarge');
             }
         }
 
         if (!self::isValidServiceCounts($serviceCounts)) {
-            $errors[] = ErrorMessages::get('invalidServiceCount');
+            $errors[] = self::getError('invalidServiceCount');
         }
 
         return ['errors' => $errors];
@@ -119,11 +131,11 @@ class ValidationService
         $errors = [];
 
         if (!self::isValidProcessId($processId)) {
-            $errors[] = ErrorMessages::get('invalidProcessId');
+            $errors[] = self::getError('invalidProcessId');
         }
 
         if (!self::isValidAuthKey($authKey)) {
-            $errors[] = ErrorMessages::get('invalidAuthKey');
+            $errors[] = self::getError('invalidAuthKey');
         }
 
         return ['errors' => $errors];
@@ -142,15 +154,15 @@ class ValidationService
         }
 
         if (!self::isValidOfficeId($officeId)) {
-            $errors[] = ErrorMessages::get('invalidOfficeId');
+            $errors[] = self::getError('invalidOfficeId');
         }
 
         if (!self::isValidServiceIds($serviceIds)) {
-            $errors[] = ErrorMessages::get('invalidServiceId');
+            $errors[] = self::getError('invalidServiceId');
         }
 
         if (!self::isValidServiceCounts($serviceCounts)) {
-            $errors[] = ErrorMessages::get('invalidServiceCount');
+            $errors[] = self::getError('invalidServiceCount');
         }
 
         return ['errors' => $errors];
@@ -165,19 +177,19 @@ class ValidationService
         $errors = [];
 
         if (!self::isValidOfficeId($officeId)) {
-            $errors[] = ErrorMessages::get('invalidOfficeId');
+            $errors[] = self::getError('invalidOfficeId');
         }
 
         if (!self::isValidServiceIds($serviceIds)) {
-            $errors[] = ErrorMessages::get('invalidServiceId');
+            $errors[] = self::getError('invalidServiceId');
         }
 
         if (!self::isValidTimestamp($timestamp)) {
-            $errors[] = ErrorMessages::get('invalidTimestamp');
+            $errors[] = self::getError('invalidTimestamp');
         }
 
         if (!self::isValidServiceCounts($serviceCounts)) {
-            $errors[] = ErrorMessages::get('invalidServiceCount');
+            $errors[] = self::getError('invalidServiceCount');
         }
 
         return ['errors' => $errors];
@@ -194,27 +206,27 @@ class ValidationService
         $errors = [];
 
         if (!self::isValidProcessId($processId)) {
-            $errors[] = ErrorMessages::get('invalidProcessId');
+            $errors[] = self::getError('invalidProcessId');
         }
 
         if (!self::isValidAuthKey($authKey)) {
-            $errors[] = ErrorMessages::get('invalidAuthKey');
+            $errors[] = self::getError('invalidAuthKey');
         }
 
         if (!self::isValidFamilyName($familyName)) {
-            $errors[] = ErrorMessages::get('invalidFamilyName');
+            $errors[] = self::getError('invalidFamilyName');
         }
 
         if (!self::isValidEmail($email)) {
-            $errors[] = ErrorMessages::get('invalidEmail');
+            $errors[] = self::getError('invalidEmail');
         }
 
         if (!self::isValidTelephone($telephone)) {
-            $errors[] = ErrorMessages::get('invalidTelephone');
+            $errors[] = self::getError('invalidTelephone');
         }
 
         if (!self::isValidCustomTextfield($customTextfield)) {
-            $errors[] = ErrorMessages::get('invalidCustomTextfield');
+            $errors[] = self::getError('invalidCustomTextfield');
         }
 
         return ['errors' => $errors];
@@ -223,76 +235,76 @@ class ValidationService
     public static function validateGetScopeById(?int $scopeId): array
     {
         return !self::isValidScopeId($scopeId)
-            ? ['errors' => [ErrorMessages::get('invalidScopeId')]]
+            ? ['errors' => [self::getError('invalidScopeId')]]
             : [];
     }
 
     public static function validateGetServicesByOfficeId(?int $officeId): array
     {
         return !self::isValidOfficeId($officeId)
-            ? ['errors' => [ErrorMessages::get('invalidOfficeId')]]
+            ? ['errors' => [self::getError('invalidOfficeId')]]
             : [];
     }
 
     public static function validateGetOfficeListByServiceId(?int $serviceId): array
     {
         return !self::isValidServiceId($serviceId)
-            ? ['errors' => [ErrorMessages::get('invalidServiceId')]]
+            ? ['errors' => [self::getError('invalidServiceId')]]
             : [];
     }
 
     public static function validateGetProcessFreeSlots(?ProcessList $freeSlots): array
     {
         return empty($freeSlots) || !is_iterable($freeSlots)
-            ? ['errors' => [ErrorMessages::get('appointmentNotAvailable')]]
+            ? ['errors' => [self::getError('appointmentNotAvailable')]]
             : [];
     }
 
     public static function validateGetProcessByIdTimestamps(?array $appointmentTimestamps): array
     {
         return empty($appointmentTimestamps)
-            ? ['errors' => [ErrorMessages::get('appointmentNotAvailable')]]
+            ? ['errors' => [self::getError('appointmentNotAvailable')]]
             : [];
     }
 
     public static function validateGetProcessNotFound(?Process $process): array
     {
         return !$process
-            ? ['errors' => [ErrorMessages::get('appointmentNotAvailable')]]
+            ? ['errors' => [self::getError('appointmentNotAvailable')]]
             : [];
     }
 
     public static function validateScopesNotFound(?ScopeList $scopes): array
     {
         return empty($scopes) || $scopes === null || $scopes->count() === 0
-            ? ['errors' => [ErrorMessages::get('scopesNotFound')]]
+            ? ['errors' => [self::getError('scopesNotFound')]]
             : [];
     }
 
     public static function validateServicesNotFound(?array $services): array
     {
         return empty($services)
-            ? ['errors' => [ErrorMessages::get('requestNotFound')]]
+            ? ['errors' => [self::getError('requestNotFound')]]
             : [];
     }
 
     public static function validateOfficesNotFound(?array $offices): array
     {
         return empty($offices)
-            ? ['errors' => [ErrorMessages::get('providerNotFound')]]
+            ? ['errors' => [self::getError('providerNotFound')]]
             : [];
     }
 
     public static function validateAppointmentDaysNotFound(?array $formattedDays): array
     {
         return empty($formattedDays)
-            ? ['errors' => [ErrorMessages::get('noAppointmentForThisDay')]]
+            ? ['errors' => [self::getError('noAppointmentForThisDay')]]
             : [];
     }
 
     public static function validateNoAppointmentsAtLocation(): array
     {
-        return ['errors' => [ErrorMessages::get('noAppointmentsAtLocation')]];
+        return ['errors' => [self::getError('noAppointmentsAtLocation')]];
     }
 
     public static function validateServiceArrays(array $serviceIds, array $serviceCounts): array
@@ -300,23 +312,23 @@ class ValidationService
         $errors = [];
         
         if (empty($serviceIds) || empty($serviceCounts)) {
-            $errors[] = ErrorMessages::get('emptyServiceArrays');
+            $errors[] = self::getError('emptyServiceArrays');
         }
         
         if (count($serviceIds) !== count($serviceCounts)) {
-            $errors[] = ErrorMessages::get('mismatchedArrays');
+            $errors[] = self::getError('mismatchedArrays');
         }
         
         foreach ($serviceIds as $id) {
             if (!is_numeric($id)) {
-                $errors[] = ErrorMessages::get('invalidServiceId');
+                $errors[] = self::getError('invalidServiceId');
                 break;
             }
         }
         
         foreach ($serviceCounts as $count) {
             if (!is_numeric($count) || $count < 0) {
-                $errors[] = ErrorMessages::get('invalidServiceCount');
+                $errors[] = self::getError('invalidServiceCount');
                 break;
             }
         }

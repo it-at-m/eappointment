@@ -40,6 +40,7 @@ $cache = new \Symfony\Component\Cache\Psr16Cache(
 
 $logger = new LoggerService();
 // Security middleware (order is important)
+App::$slim->add(new \BO\Zmscitizenapi\Middleware\LanguageMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\SecurityHeadersMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\CorsMiddleware($logger));

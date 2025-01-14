@@ -26,18 +26,28 @@ class AppointmentReserveController extends BaseController
             return $this->createJsonResponse(
                 $response,
                 $requestErrors,
-                ErrorMessages::get('invalidRequest')['statusCode']
+                ErrorMessages::get('invalidRequest', $this->language)['statusCode']
             );
         }
 
         $result = $this->service->processReservation($request->getParsedBody());
 
-        return is_array($result) && isset($result['errors'])
-            ? $this->createJsonResponse(
+        // Handle array errors from validation
+        if (is_array($result) && isset($result['errors'])) {
+            // Translate each error message
+            foreach ($result['errors'] as &$error) {
+                if (isset($error['errorCode'])) {
+                    $error = ErrorMessages::get($error['errorCode'], $this->language);
+                }
+            }
+            return $this->createJsonResponse(
                 $response,
                 $result,
                 ErrorMessages::getHighestStatusCode($result['errors'])
-            )
-            : $this->createJsonResponse($response, $result->toArray(), 200);
+            );
+        }
+
+        // Handle successful response
+        return $this->createJsonResponse($response, $result->toArray(), 200);
     }
 }

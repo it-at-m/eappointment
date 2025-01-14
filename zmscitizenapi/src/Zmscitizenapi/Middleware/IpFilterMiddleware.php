@@ -48,21 +48,26 @@ class IpFilterMiddleware implements MiddlewareInterface
                     'uri' => $uri
                 ]);
                 
+                // Get language from request attributes
+                $language = $request->getAttribute('language');
+                
+                // Get translated error message
+                $error = ErrorMessages::get(self::ERROR_BLACKLISTED, $language);
+                
+                // Create response
                 $response = \App::$slim->getResponseFactory()->createResponse();
-                $error = ErrorMessages::get(self::ERROR_BLACKLISTED);
                 $response = $response->withStatus($error['statusCode'])
                     ->withHeader('Content-Type', 'application/json');
                 
-                $response->getBody()->write(json_encode([
+                // Write JSON response
+                $responseBody = json_encode([
                     'errors' => [$error]
-                ]));
+                ]);
+                $response->getBody()->write($responseBody);
                 
                 return $response;
             }
             
-            /*$this->logger->logInfo('Request processed successfully', [
-                'uri' => $uri
-            ]);*/
             return $handler->handle($request);
             
         } catch (\Throwable $e) {

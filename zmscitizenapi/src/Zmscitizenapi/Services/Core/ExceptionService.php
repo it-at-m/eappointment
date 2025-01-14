@@ -7,6 +7,22 @@ use BO\Zmscitizenapi\Localization\ErrorMessages;
 
 class ExceptionService
 {
+    private static ?string $currentLanguage = null;
+
+    public static function setLanguageContext(?string $language): void
+    {
+        self::$currentLanguage = $language;
+    }
+
+    public static function getLanguageContext(): ?string
+    {
+        return self::$currentLanguage;
+    }
+
+    private static function getError(string $key): array
+    {
+        return  ErrorMessages::get($key, self::$currentLanguage);
+    }
 
     public static function handleException(\Exception $e, string $method): never
     {
@@ -16,74 +32,74 @@ class ExceptionService
         switch ($exceptionName) {
             // Process exceptions
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound':
-                $error = ErrorMessages::get('appointmentNotFound');
+                $error = self::getError('appointmentNotFound');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed':
-                $error = ErrorMessages::get('authKeyMismatch');
+                $error = self::getError('authKeyMismatch');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled':
-                $error = ErrorMessages::get('processAlreadyCalled');
+                $error = self::getError('processAlreadyCalled');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore':
-                $error = ErrorMessages::get('processNotReservedAnymore');
+                $error = self::getError('processNotReservedAnymore');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotPreconfirmedAnymore':
-                $error = ErrorMessages::get('processNotPreconfirmedAnymore');
+                $error = self::getError('processNotPreconfirmedAnymore');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessDeleteFailed':
-                $error = ErrorMessages::get('processDeleteFailed');
+                $error = self::getError('processDeleteFailed');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid':
-                $error = ErrorMessages::get('processInvalid');
+                $error = self::getError('processInvalid');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyExists':
-                $error = ErrorMessages::get('processAlreadyExists');
+                $error = self::getError('processAlreadyExists');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\EmailRequired':
-                $error = ErrorMessages::get('emailIsRequired');
+                $error = self::getError('emailIsRequired');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired':
-                $error = ErrorMessages::get('telephoneIsRequired');
+                $error = self::getError('telephoneIsRequired');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail':
-                $error = ErrorMessages::get('tooManyAppointmentsWithSameMail');
+                $error = self::getError('tooManyAppointmentsWithSameMail');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired':
-                $error = ErrorMessages::get('preconfirmationExpired');
+                $error = self::getError('preconfirmationExpired');
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ApiclientInvalid':
-                $error = ErrorMessages::get('invalidApiClient');
+                $error = self::getError('invalidApiClient');
                 break;
 
             // Calendar exceptions
             case 'BO\\Zmsapi\\Exception\\Calendar\\InvalidFirstDay':
-                $error = ErrorMessages::get('invalidDateRange');
+                $error = self::getError('invalidDateRange');
                 break;
             case 'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed':
-                $error = ErrorMessages::get('noAppointmentsAtLocation');
+                $error = self::getError('noAppointmentsAtLocation');
                 break;
 
             // Other entity exceptions
             case 'BO\\Zmsapi\\Exception\\Department\\DepartmentNotFound':
-                $error = ErrorMessages::get('departmentNotFound');
+                $error = self::getError('departmentNotFound');
                 break;
             case 'BO\\Zmsapi\\Exception\\Mail\\MailNotFound':
-                $error = ErrorMessages::get('mailNotFound');
+                $error = self::getError('mailNotFound');
                 break;
             case 'BO\\Zmsapi\\Exception\\Organisation\\OrganisationNotFound':
-                $error = ErrorMessages::get('organisationNotFound');
+                $error = self::getError('organisationNotFound');
                 break;
             case 'BO\\Zmsapi\\Exception\\Provider\\ProviderNotFound':
-                $error = ErrorMessages::get('providerNotFound');
+                $error = self::getError('providerNotFound');
                 break;
             case 'BO\\Zmsapi\\Exception\\Request\\RequestNotFound':
-                $error = ErrorMessages::get('requestNotFound');
+                $error = self::getError('requestNotFound');
                 break;
             case 'BO\\Zmsapi\\Exception\\Scope\\ScopeNotFound':
-                $error = ErrorMessages::get('scopeNotFound');
+                $error = self::getError('scopeNotFound');
                 break;
             case 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound':
-                $error = ErrorMessages::get('sourceNotFound');
+                $error = self::getError('sourceNotFound');
                 break;
 
             // Use original message for unmapped exceptions
