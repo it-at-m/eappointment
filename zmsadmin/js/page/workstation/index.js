@@ -121,7 +121,13 @@ class View extends BaseView {
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
-        this.loadAppointmentForm(true, false);
+        if (this.selectedProcess) {
+            // Editing an existing appointment -> full reload
+            this.loadAppointmentForm(true, false);
+        } else {
+            // Creating a new appointment -> partial reload
+            this.loadAppointmentForm(true, true);
+        }
     }
 
     addFocusTrap(elem) {
@@ -426,10 +432,10 @@ class View extends BaseView {
     onPrintProcessMail(event) {
         stopEvent(event);
         this.selectedProcess = $(event.currentTarget).data('id');
-    
+
         // URL for mail_confirmation.twig
         const url = `${this.includeUrl}/process/queue/?print=1&printType=mail&selectedprocess=${this.selectedProcess}`;
-        
+
         // Ajax request to get content from mail_confirmation.twig
         $.ajax({
             url: url,
