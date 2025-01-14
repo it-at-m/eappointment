@@ -46,11 +46,12 @@ class CorsMiddleware implements MiddlewareInterface
                 ));
                 
                 $response = \App::$slim->getResponseFactory()->createResponse();
-                $response = $response->withStatus(ErrorMessages::get(self::ERROR_CORS)['statusCode'])
+                $language = $request->getAttribute('language');
+                $response = $response->withStatus(ErrorMessages::get(self::ERROR_CORS, $language)['statusCode'])
                     ->withHeader('Content-Type', 'application/json');
                 
                 $response->getBody()->write(json_encode([
-                    'errors' => [ErrorMessages::get(self::ERROR_CORS)]
+                    'errors' => [ErrorMessages::get(self::ERROR_CORS, $language)]
                 ]));
                 
                 return $response;

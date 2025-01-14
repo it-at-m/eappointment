@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Appointment;
 
-use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -30,7 +29,12 @@ class AppointmentCancelService
         }
 
         if (!$this->canBeCancelled($process)) {
-            return ['errors' => [ErrorMessages::get('appointmentCanNotBeCanceled')]];
+            return ['errors' => [
+                [
+                    'errorCode' => 'appointmentCanNotBeCanceled',
+                    'statusCode' => 406
+                ]
+            ]];
         }
 
         // Send cancellation email before cancelling the appointment

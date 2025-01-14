@@ -17,7 +17,6 @@ use BO\Zmscitizenapi\Models\Collections\OfficeServiceRelationList;
 use BO\Zmscitizenapi\Models\Collections\OfficeServiceAndRelationList;
 use BO\Zmscitizenapi\Models\Collections\ServiceList;
 use BO\Zmscitizenapi\Models\Collections\ThinnedScopeList;
-use BO\Zmscitizenapi\Services\Core\ExceptionService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiClientService;
 use BO\Zmsentities\Calendar;
 use BO\Zmsentities\Collection\RequestRelationList;
@@ -30,6 +29,17 @@ use BO\Zmsentities\Collection\ProcessList;
 
 class ZmsApiFacadeService
 {
+    private static ?string $currentLanguage = null;
+
+    public static function setLanguageContext(?string $language): void
+    {
+        self::$currentLanguage = $language;
+    }
+
+    private static function getError(string $key): array
+    {
+        return ErrorMessages::get($key, self::$currentLanguage);
+    }
 
     public static function getOffices(): OfficeList|array
     {
@@ -153,7 +163,7 @@ class ZmsApiFacadeService
         )->getIterator()->current();
 
         if (!$matchingScope instanceof Scope) {
-            return ['errors' => [ErrorMessages::get('scopeNotFound')]];
+            return ['errors' => [self::getError('scopeNotFound')]];
         }
 
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();

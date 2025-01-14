@@ -86,7 +86,7 @@ class RateLimitingMiddleware implements MiddlewareInterface
                     $request->getUri()
                 ));
                 
-                return $this->createRateLimitResponse();
+                return $this->createRateLimitResponse($request);
             }
             
             $response = $handler->handle($request);
@@ -155,14 +155,15 @@ class RateLimitingMiddleware implements MiddlewareInterface
         return (int)($requestData['timestamp'] ?? time()) + $this->cacheExpiry;
     }
     
-    private function createRateLimitResponse(): ResponseInterface
+    private function createRateLimitResponse($request): ResponseInterface
     {
         $response = \App::$slim->getResponseFactory()->createResponse();
-        $response = $response->withStatus(ErrorMessages::get(self::ERROR_RATE_LIMIT)['statusCode'])
+        $language = $request->getAttribute('language');
+        $response = $response->withStatus(ErrorMessages::get(self::ERROR_RATE_LIMIT, $language )['statusCode'])
             ->withHeader('Content-Type', 'application/json');
         
         $response->getBody()->write(json_encode([
-            'errors' => [ErrorMessages::get(self::ERROR_RATE_LIMIT)]
+            'errors' => [ErrorMessages::get(self::ERROR_RATE_LIMIT, $language )]
         ]));
         
         return $response;

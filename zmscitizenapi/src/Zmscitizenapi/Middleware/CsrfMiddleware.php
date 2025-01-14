@@ -49,11 +49,12 @@ class CsrfMiddleware implements MiddlewareInterface
                 ]);
                 
                 $response = \App::$slim->getResponseFactory()->createResponse();
-                $response = $response->withStatus(ErrorMessages::get(self::ERROR_TOKEN_MISSING)['statusCode'])
+                $language = $request->getAttribute('language');
+                $response = $response->withStatus(ErrorMessages::get(self::ERROR_TOKEN_MISSING, $language)['statusCode'])
                     ->withHeader('Content-Type', 'application/json');
                 
                 $response->getBody()->write(json_encode([
-                    'errors' => [ErrorMessages::get(self::ERROR_TOKEN_MISSING)]
+                    'errors' => [ErrorMessages::get(self::ERROR_TOKEN_MISSING, $language)]
                 ]));
                 
                 return $response;
@@ -65,11 +66,12 @@ class CsrfMiddleware implements MiddlewareInterface
                 ]);
                 
                 $response = \App::$slim->getResponseFactory()->createResponse();
-                $response = $response->withStatus(ErrorMessages::get(self::ERROR_TOKEN_INVALID)['statusCode'])
+                $language = $request->getAttribute('language');
+                $response = $response->withStatus(ErrorMessages::get(self::ERROR_TOKEN_INVALID, $language)['statusCode'])
                     ->withHeader('Content-Type', 'application/json');
                 
                 $response->getBody()->write(json_encode([
-                    'errors' => [ErrorMessages::get(self::ERROR_TOKEN_INVALID)]
+                    'errors' => [ErrorMessages::get(self::ERROR_TOKEN_INVALID, $language)]
                 ]));
                 
                 return $response;

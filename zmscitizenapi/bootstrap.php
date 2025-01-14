@@ -61,9 +61,10 @@ $errorMiddleware->setErrorHandler(
         $response = $response->withStatus(405)
             ->withHeader('Content-Type', 'application/json');
 
+        $currentLanguage = $request->getAttribute('language');
         $responseBody = json_encode([
             'errors' => [
-                \BO\Zmscitizenapi\Localization\ErrorMessages::get('requestMethodNotAllowed')
+                \BO\Zmscitizenapi\Localization\ErrorMessages::get('requestMethodNotAllowed', $currentLanguage)
             ]
         ]);
 
