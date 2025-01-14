@@ -273,7 +273,7 @@ class MapperServiceTest extends TestCase
         $this->assertEquals('Doe', $result->clients[0]->familyName);
         $this->assertEquals('john@example.com', $result->clients[0]->email);
         $this->assertEquals('123456789', $result->clients[0]->telephone);
-        $this->assertEquals('Custom Text', $result->clients[0]->customTextfield);
+        $this->assertEquals('Custom Text', $result->customTextfield);
         $this->assertEquals('1724907600', $result->appointments[0]->date);
         $this->assertEquals('Test Office', $result->scope->contact->name);
         $this->assertEquals(100, $result->scope->provider->id);
