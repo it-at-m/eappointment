@@ -430,7 +430,8 @@ createLanguageRoutes(
     \App::$slim,
     '/reserve-appointment/',
     '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController',
-    "AppointmentReserveController"
+    "AppointmentReserveController",
+    "post"
 );
 
 /**
@@ -482,7 +483,8 @@ createLanguageRoutes(
     \App::$slim,
     '/update-appointment/',
     '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController',
-    "AppointmentUpdateController"
+    "AppointmentUpdateController",
+    "post"
 );
 
 /**
@@ -534,7 +536,8 @@ createLanguageRoutes(
     \App::$slim,
     '/confirm-appointment/',
     '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController',
-    "AppointmentConfirmController"
+    "AppointmentConfirmController",
+    "post"
 );
 
 /**
@@ -586,7 +589,8 @@ createLanguageRoutes(
     \App::$slim,
     '/preconfirm-appointment/',
     '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController',
-    "AppointmentPreconfirmController"
+    "AppointmentPreconfirmController",
+    "post"
 );
 
 /**
@@ -638,5 +642,6 @@ createLanguageRoutes(
     \App::$slim,
     '/cancel-appointment/',
     '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController',
-    "AppointmentCancelController"
+    "AppointmentCancelController",
+    "post"
 );

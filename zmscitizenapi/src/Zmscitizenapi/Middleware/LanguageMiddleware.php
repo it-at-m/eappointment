@@ -27,18 +27,18 @@ class LanguageMiddleware implements MiddlewareInterface
         $uri = $request->getUri()->getPath();
         $parts = explode('/', trim($uri, '/'));
         
-        // URL structure is always /terminvereinbarung/api/citizen/{lang}/...
-        // So language code is always at index 3 if it exists
-        $language = strtolower($parts[3] ?? '');
-    
-        if (in_array($language, self::SUPPORTED_LANGUAGES)) {
-            // Only store language attribute, don't modify the path
+        if (count($parts) >= 3 && 
+            $parts[0] === 'terminvereinbarung' && 
+            $parts[1] === 'api' && 
+            $parts[2] === 'citizen') {
+            
+            $language = isset($parts[3]) && in_array($parts[3], self::SUPPORTED_LANGUAGES)
+                ? $parts[3]
+                : self::DEFAULT_LANGUAGE;
+                
             $request = $request->withAttribute('language', $language);
-        } else {
-            // Set default language
-            $request = $request->withAttribute('language', self::DEFAULT_LANGUAGE);
         }
-    
+        
         return $handler->handle($request);
     }
 
