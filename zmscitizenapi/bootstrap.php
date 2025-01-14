@@ -44,7 +44,7 @@ App::$slim->add(new \BO\Zmscitizenapi\Middleware\LanguageMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\SecurityHeadersMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\CorsMiddleware($logger));
-App::$slim->add(new \BO\Zmscitizenapi\Middleware\CsrfMiddleware($logger));
+//App::$slim->add(new \BO\Zmscitizenapi\Middleware\CsrfMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RateLimitingMiddleware($cache, $logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSanitizerMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSizeLimitMiddleware($logger));
