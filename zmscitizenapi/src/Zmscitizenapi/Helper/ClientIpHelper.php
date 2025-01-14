@@ -23,15 +23,13 @@ class ClientIpHelper
                 $ips = array_map('trim', explode(',', $_SERVER[$header]));
                 $ip = $ips[0];
                 
-                // If it's a valid IP, return it
                 if (filter_var($ip, FILTER_VALIDATE_IP)) {
                     return $ip;
                 }
-                // If invalid, return as-is for logging
                 return $ip;
             }
         }
         
-        return '127.0.0.1'; // Keep default fallback
+        return '127.0.0.1';
     }
 }
