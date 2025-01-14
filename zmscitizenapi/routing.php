@@ -50,7 +50,8 @@ createLanguageRoutes(
     \App::$slim,
     '/services/',
     '\BO\Zmscitizenapi\Controllers\Service\ServicesListController',
-    "ServicesListController"
+    "ServicesListController",
+    "get"
 );
 
 /**
@@ -75,7 +76,8 @@ createLanguageRoutes(
     \App::$slim,
     '/scopes/',
     '\BO\Zmscitizenapi\Controllers\Scope\ScopesListController',
-    "ScopesListController"
+    "ScopesListController",
+    "get"
 );
 
 /**
@@ -100,7 +102,8 @@ createLanguageRoutes(
     \App::$slim,
     '/offices/',
     '\BO\Zmscitizenapi\Controllers\Office\OfficesListController',
-    "OfficesListController"
+    "OfficesListController",
+    "get"
 );
 
 /**
@@ -125,7 +128,8 @@ createLanguageRoutes(
     \App::$slim,
     '/offices-and-services/',
     '\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController',
-    "OfficesServicesRelationsController"
+    "OfficesServicesRelationsController",
+    "get"
 );
 
 /**
@@ -158,7 +162,8 @@ createLanguageRoutes(
     \App::$slim,
     '/scope-by-id/',
     '\BO\Zmscitizenapi\Controllers\Scope\ScopeByIdController',
-    "ScopeByIdController"
+    "ScopeByIdController",
+    "get"
 );
 
 /**
@@ -189,7 +194,8 @@ createLanguageRoutes(
     \App::$slim,
     '/services-by-office/',
     '\BO\Zmscitizenapi\Controllers\Service\ServiceListByOfficeController',
-    "ServiceListByOfficeController"
+    "ServiceListByOfficeController",
+    "get"
 );
 
 /**
@@ -220,7 +226,8 @@ createLanguageRoutes(
     \App::$slim,
     '/offices-by-service/',
     '\BO\Zmscitizenapi\Controllers\Office\OfficeListByServiceController',
-    "OfficeListByServiceController"
+    "OfficeListByServiceController",
+    "get"
 );
 
 /**
@@ -256,7 +263,8 @@ createLanguageRoutes(
     \App::$slim,
     '/available-days/',
     '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListController',
-    "AvailableDaysListController"
+    "AvailableDaysListController",
+    "get"
 );
 
 /**
@@ -297,7 +305,8 @@ createLanguageRoutes(
     \App::$slim,
     '/available-appointments/',
     '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListController',
-    "AvailableAppointmentsListController"
+    "AvailableAppointmentsListController",
+    "get"
 );
 
 /**
@@ -353,7 +362,8 @@ createLanguageRoutes(
     \App::$slim,
     '/appointment/',
     '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController',
-    "AppointmentByIdController"
+    "AppointmentByIdController",
+    "get"
 );
 
 /**
@@ -378,7 +388,8 @@ createLanguageRoutes(
     \App::$slim,
     '/captcha-details/',
     '\BO\Zmscitizenapi\Controllers\Security\CaptchaController',
-    "CaptchaController"
+    "CaptchaController",
+    "get"
 );
 
 /**
