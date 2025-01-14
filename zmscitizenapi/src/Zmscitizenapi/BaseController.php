@@ -4,15 +4,21 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi;
 
 use BO\Zmscitizenapi\Services\Core\ExceptionService;
+use BO\Zmscitizenapi\Services\Core\ValidationService;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
+use BO\Zmscitizenapi\Localization\ErrorMessages;
 
 abstract class BaseController extends \BO\Slim\Controller
 {
+    protected ?string $language = null;
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         try {
             $request = $this->initRequest($request);
+            $this->language = $request->getAttribute('language');
+            ValidationService::setLanguageContext($this->language);
+            ExceptionService::setLanguageContext($this->language);
             $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
             return $this->readResponse($request, $noCacheResponse, $args);
         } catch (\RuntimeException $e) {
@@ -63,8 +69,16 @@ abstract class BaseController extends \BO\Slim\Controller
         $response = $response->withStatus($statusCode)
             ->withHeader('Content-Type', 'application/json; charset=utf-8');
     
+        // Translate any errors using the stored language
+        if (isset($content['errors'])) {
+            foreach ($content['errors'] as &$error) {
+                if (isset($error['errorCode'])) {
+                    $error = ErrorMessages::get($error['errorCode'], $this->language);
+                }
+            }
+        }
+    
         try {
-            // Add JSON_UNESCAPED_SLASHES to ensure slashes in HTML are not escaped
             $json = json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         } catch (\JsonException $e) {
             throw new \RuntimeException('Failed to encode JSON response: ' . $e->getMessage(), 0, $e);

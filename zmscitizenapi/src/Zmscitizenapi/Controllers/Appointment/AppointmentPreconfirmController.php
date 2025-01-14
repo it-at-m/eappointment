@@ -26,7 +26,7 @@ class AppointmentPreconfirmController extends BaseController
             return $this->createJsonResponse(
                 $response,
                 $requestErrors,
-                ErrorMessages::get('invalidRequest')['statusCode']
+                ErrorMessages::get('invalidRequest', $this->language)['statusCode']
             );
         }
 

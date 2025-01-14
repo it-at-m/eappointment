@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Localization;
 
+use BO\Zmscitizenapi\Middleware\LanguageMiddleware;
+
 class ErrorMessages
 {
     private const HTTP_OK = 200;
@@ -612,6 +614,289 @@ class ErrorMessages
 
     ];
 
+    public const UA = [
+        'notImplemented' => [
+            'errorCode' => 'notImplemented',
+            'statusCode' => self::HTTP_NOT_IMPLEMENTED,
+            'errorMessage' => 'Функцію ще не реалізовано.',
+        ],
+        'invalidRequest' => [
+            'errorCode' => 'invalidRequest',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Недійсний запит.'
+        ],
+        'requestMethodNotAllowed' => [
+            'errorCode' => 'requestMethodNotAllowed',
+            'statusCode' => self::HTTP_INVALID_REQUEST_METHOD,
+            'errorMessage' => 'Метод запиту не дозволено.',
+        ],
+        'captchaVerificationFailed' => [
+            'errorCode' => 'captchaVerificationFailed',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Перевірка капчі не вдалася.'
+        ],
+        'invalidLocationAndServiceCombination' => [
+            'errorCode' => 'invalidLocationAndServiceCombination',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Вказані послуги не існують у цьому місці.'
+        ],
+        'invalidStartDate' => [
+            'errorCode' => 'invalidStartDate',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Потрібна дійсна дата початку.'
+        ],
+        'invalidEndDate' => [
+            'errorCode' => 'invalidEndDate',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Потрібна дійсна дата завершення.'
+        ],
+        'invalidOfficeId' => [
+            'errorCode' => 'invalidOfficeId',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'officeId має бути 32-бітним цілим числом.'
+        ],
+        'invalidServiceId' => [
+            'errorCode' => 'invalidServiceId',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'serviceId має бути 32-бітним цілим числом.'
+        ],
+        'emptyServiceArrays' => [
+            'errorCode' => 'EMPTY_SERVICE_ARRAYS',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Ідентифікатори та кількість послуг не можуть бути порожніми'
+        ],
+        'mismatchedArrays' => [
+            'errorCode' => 'MISMATCHED_ARRAYS',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Ідентифікатори та кількість послуг повинні мати однакову довжину'
+        ],
+        'invalidServiceCount' => [
+            'errorCode' => 'invalidServiceCount',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'serviceCounts має бути масивом числових значень.'
+        ],
+        'invalidProcessId' => [
+            'errorCode' => 'invalidProcessId',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'processId має бути додатним 32-бітним цілим числом.'
+        ],
+        'invalidScopeId' => [
+            'errorCode' => 'invalidScopeId',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'scopeId має бути додатним 32-бітним цілим числом.'
+        ],
+        'invalidAuthKey' => [
+            'errorCode' => 'invalidAuthKey',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'authKey має бути рядком.'
+        ],
+        'invalidDate' => [
+            'errorCode' => 'invalidDate',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Потрібна дійсна дата.'
+        ],
+        'invalidTimestamp' => [
+            'errorCode' => 'invalidTimestamp',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Відсутня або недійсна мітка часу. Має бути додатним числовим значенням.'
+        ],
+        'invalidFamilyName' => [
+            'errorCode' => 'invalidFamilyName',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Прізвище не може бути порожнім.'
+        ],
+        'invalidEmail' => [
+            'errorCode' => 'invalidEmail',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Потрібна дійсна електронна адреса.'
+        ],
+        'invalidTelephone' => [
+            'errorCode' => 'invalidTelephone',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Номер телефону має містити від 7 до 15 цифр.'
+        ],
+        'invalidCustomTextfield' => [
+            'errorCode' => 'invalidCustomTextfield',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'customTextfield має бути рядком.'
+        ],
+        'appointmentCanNotBeCanceled' => [
+            'errorCode' => 'appointmentCanNotBeCanceled',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE,
+            'errorMessage' => 'Обраний запис не може бути скасовано.'
+        ],
+        'appointmentNotAvailable' => [
+            'errorCode' => 'appointmentNotAvailable',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'На жаль, обраний запис більше недоступний.'
+        ],
+        'noAppointmentForThisDay' => [
+            'errorCode' => 'noAppointmentForThisDay',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'Немає доступних днів за вказаними критеріями.'
+        ],
+        'captchaVerificationError' => [
+            'errorCode' => 'captchaVerificationError',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Виникла помилка під час перевірки капчі.'
+        ],
+        'serviceUnavailable' => [
+            'errorCode' => 'serviceUnavailable',
+            'statusCode' => self::HTTP_UNAVAILABLE,
+            'errorMessage' => 'Сервіс недоступний: Додаток перебуває на технічному обслуговуванні.'
+        ],
+        'internalError' => [
+            'errorCode' => 'internalError',
+            'errorMessage' => 'Виникла внутрішня помилка. Спробуйте пізніше.',
+            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR
+        ],
+        'invalidApiClient' => [
+            'errorCode' => 'invalidApiClient',
+            'errorMessage' => 'Недійсний API клієнт.',
+            'statusCode' => self::HTTP_BAD_REQUEST
+        ],
+        'sourceNotFound' => [
+            'errorCode' => 'sourceNotFound',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'Джерело не знайдено.',
+        ],
+        'departmentNotFound' => [
+            'errorCode' => 'departmentNotFound',
+            'errorMessage' => 'Відділ не знайдено.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'mailNotFound' => [
+            'errorCode' => 'mailNotFound',
+            'errorMessage' => 'Шаблон листа не знайдено.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'organisationNotFound' => [
+            'errorCode' => 'organisationNotFound',
+            'errorMessage' => 'Організацію не знайдено.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'providerNotFound' => [
+            'errorCode' => 'providerNotFound',
+            'errorMessage' => 'Постачальника не знайдено.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'requestNotFound' => [
+            'errorCode' => 'requestNotFound',
+            'errorMessage' => 'Запитану послугу не знайдено.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'scopeNotFound' => [
+            'errorCode' => 'scopeNotFound',
+            'errorMessage' => 'Область не знайдено.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'processInvalid' => [
+            'errorCode' => 'processInvalid',
+            'errorMessage' => 'Дані процесу недійсні.',
+            'statusCode' => self::HTTP_BAD_REQUEST
+        ],
+        'processAlreadyExists' => [
+            'errorCode' => 'processAlreadyExists',
+            'errorMessage' => 'Процес запису вже існує.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'processDeleteFailed' => [
+            'errorCode' => 'processDeleteFailed',
+            'errorMessage' => 'Не вдалося видалити запис.',
+            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR
+        ],
+        'processAlreadyCalled' => [
+            'errorCode' => 'processAlreadyCalled',
+            'errorMessage' => 'Запис вже викликано.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'processNotReservedAnymore' => [
+            'errorCode' => 'processNotReservedAnymore',
+            'errorMessage' => 'Запис більше не зарезервовано.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'processNotPreconfirmedAnymore' => [
+            'errorCode' => 'processNotPreconfirmedAnymore',
+            'errorMessage' => 'Запис більше не попередньо підтверджено.',
+            'statusCode' => self::HTTP_CONFLICT
+        ],
+        'emailIsRequired' => [
+            'errorCode' => 'emailIsRequired',
+            'errorMessage' => 'Потрібна електронна адреса.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'telephoneIsRequired' => [
+            'errorCode' => 'telephoneIsRequired',
+            'errorMessage' => 'Потрібен номер телефону.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'appointmentNotFound' => [
+            'errorCode' => 'appointmentNotFound',
+            'errorMessage' => 'Запитаний запис не знайдено.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'authKeyMismatch' => [
+            'errorCode' => 'authKeyMismatch',
+            'errorMessage' => 'Недійсний ключ автентифікації.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'noAppointmentsAtLocation' => [
+            'errorCode' => 'noAppointmentsAtLocation',
+            'errorMessage' => 'Немає доступних записів у вказаному місці.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'tooManyAppointmentsWithSameMail' => [
+            'errorCode' => 'tooManyAppointmentsWithSameMail',
+            'errorMessage' => 'Забагато записів з однією електронною адресою.',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE
+        ],
+        'scopesNotFound' => [
+            'errorCode' => 'scopesNotFound',
+            'errorMessage' => 'Області не знайдено.',
+            'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'preconfirmationExpired' => [
+            'errorCode' => 'preconfirmationExpired',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Попереднє підтвердження закінчилося. Будь ласка, створіть новий запис.'
+        ],
+        'ipBlacklisted' => [
+            'errorCode' => 'IP_BLACKLISTED',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Доступ заборонено - IP-адресу заблоковано.'
+        ],
+        'corsOriginNotAllowed' => [
+            'errorCode' => 'corsOriginNotAllowed',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Джерело не дозволено політикою CORS.'
+        ],
+        'csrfTokenMissing' => [
+            'errorCode' => 'csrfTokenMissing',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Відсутній CSRF токен.'
+        ],
+        'csrfTokenInvalid' => [
+            'errorCode' => 'csrfTokenInvalid',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Недійсний CSRF токен.'
+        ],
+        'rateLimitExceeded' => [
+            'errorCode' => 'rateLimitExceeded',
+            'statusCode' => self::HTTP_TOO_MANY_REQUESTS,
+            'errorMessage' => 'Перевищено ліміт запитів. Спробуйте пізніше.'
+        ],
+        'requestEntityTooLarge' => [
+            'errorCode' => 'requestEntityTooLarge',
+            'statusCode' => self::HTTP_REQUEST_ENTITY_TOO_LARGE,
+            'errorMessage' => 'Тіло запиту занадто велике.'
+        ],
+        'securityHeaderViolation' => [
+            'errorCode' => 'securityHeaderViolation',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Порушення політики безпеки.'
+        ]
+    ];
+
     /**
      * Get an error message by key with fallback logic.
      *
@@ -621,13 +906,14 @@ class ErrorMessages
      */
     public static function get(string $key, ?string $language = null): array
     {
-        $language = $language ?? self::DEFAULT_LANGUAGE;
-
-        // Attempt to get messages for the specified language
+        $language = LanguageMiddleware::normalizeLanguage($language);
+        
+        // Get messages for the language
         $messages = match ($language) {
-            'DE' => self::DE,
-            'EN' => self::EN,
-            default => self::EN,
+            'en' => self::EN,
+            'de' => self::DE,
+            'ua' => self::UA,
+            default => self::DE,
         };
 
         if (isset($messages[$key])) {

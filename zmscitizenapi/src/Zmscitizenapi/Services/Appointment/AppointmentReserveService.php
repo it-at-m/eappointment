@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Appointment;
 
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
-use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
@@ -22,15 +21,15 @@ class AppointmentReserveService
             return $errors;
         }
 
-        if (!$this->verifyCaptcha($clientData->officeId, $clientData->captchaSolution)) {
-            return ErrorMessages::get('captchaVerificationFailed');
+        $captchaErrors = $this->verifyCaptcha($clientData->officeId, $clientData->captchaSolution);
+        if (!empty($captchaErrors['errors'])) {
+            return $captchaErrors;
         }
 
         $errors = ValidationService::validateServiceLocationCombination(
             $clientData->officeId,
             $clientData->serviceIds
         );
-
         if (!empty($errors['errors'])) {
             return $errors;
         }
@@ -76,7 +75,7 @@ class AppointmentReserveService
         );
     }
 
-    private function verifyCaptcha(?int $officeId, ?string $captchaSolution): bool|array
+    private function verifyCaptcha(?int $officeId, ?string $captchaSolution): array
     {
         $providerScope = ZmsApiFacadeService::getScopeByOfficeId($officeId);
         $captchaRequired = \App::$CAPTCHA_ENABLED === true &&
@@ -84,15 +83,29 @@ class AppointmentReserveService
             $providerScope->captchaActivatedRequired === "1";
 
         if (!$captchaRequired) {
-            return true;
+            return [];
         }
 
         try {
             $captcha = new FriendlyCaptcha();
-            return $captcha->verifyCaptcha($captchaSolution);
+            if (!$captcha->verifyCaptcha($captchaSolution)) {
+                return ['errors' => [
+                    [
+                        'errorCode' => 'captchaVerificationFailed',
+                        'statusCode' => 400
+                    ]
+                ]];
+            }
         } catch (\Exception $e) {
-            return ErrorMessages::get('captchaVerificationError');
+            return ['errors' => [
+                [
+                    'errorCode' => 'captchaVerificationError',
+                    'statusCode' => 400
+                ]
+            ]];
         }
+
+        return [];
     }
 
     private function findMatchingProcess(
