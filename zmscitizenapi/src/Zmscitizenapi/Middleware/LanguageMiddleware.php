@@ -1,7 +1,6 @@
 <?php
+declare(strict_types=1);
 
-// src/Zmscitizenapi/Middleware/LanguageMiddleware.php
-// src/Zmscitizenapi/Middleware/LanguageMiddleware.php
 namespace BO\Zmscitizenapi\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
