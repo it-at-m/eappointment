@@ -26,23 +26,24 @@ class CsrfMiddlewareTest extends MiddlewareTestCase
         $this->middleware = new CsrfMiddleware($this->logger);
     }
 
-    public function testAllowsGetRequest(): void
-    {
-        /** @var ServerRequestInterface|MockObject $request */
-        $request = $this->createMock(ServerRequestInterface::class);
-        $request->expects($this->once())
-            ->method('getMethod')
-            ->willReturn('GET');
-        $request->expects($this->any())
-            ->method('getUri')
-            ->willReturn(new \BO\Zmsclient\Psr7\Uri('http://localhost/test'));
-            
-        $response = new Response();
-        $handler = $this->createHandler($response);
-
-        $result = $this->middleware->process($request, $handler);
-        $this->assertSame($response, $result);
-    }
+    // Todo: Uncomment when CSRF is renabled
+    // public function testAllowsGetRequest(): void
+    // {
+    //     /** @var ServerRequestInterface|MockObject $request */
+    //     $request = $this->createMock(ServerRequestInterface::class);
+    //     $request->expects($this->once())
+    //         ->method('getMethod')
+    //         ->willReturn('GET');
+    //     $request->expects($this->any())
+    //         ->method('getUri')
+    //         ->willReturn(new \BO\Zmsclient\Psr7\Uri('http://localhost/test'));
+    //         
+    //     $response = new Response();
+    //     $handler = $this->createHandler($response);
+    // 
+    //     $result = $this->middleware->process($request, $handler);
+    //     $this->assertSame($response, $result);
+    // }
 
     // Todo: Uncomment when CSRF is renabled
     // public function testBlocksPostWithoutToken(): void
