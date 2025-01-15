@@ -24,8 +24,7 @@
           "geo": {
             "lat": "48.12750898398659",
             "lon": "11.604317899956524"
-          },
-          "showAlternativeLocations": false
+          }
         },
         "contact": {
           "city": "Berlin",
@@ -47,8 +46,7 @@
           "geo": {
             "lat": "48.12750898398659",
             "lon": "11.604317899956524"
-          },
-          "showAlternativeLocations": true
+          }
         },
         "contact": {
           "city": "Berlin",
