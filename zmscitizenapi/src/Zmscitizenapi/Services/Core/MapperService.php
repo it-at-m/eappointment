@@ -62,7 +62,6 @@ class MapperService
             $offices[] = new Office(
                 id: isset($provider->id) ? (int) $provider->id : 0,
                 name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null),
-                showAlternativeLocations: isset($provider->data['showAlternativeLocations']) ? $provider->data['showAlternativeLocations'] : null,
                 address: isset($provider->data['address']) ? $provider->data['address'] : null,
                 geo: isset($provider->data['geo']) ? $provider->data['geo'] : null,
                 scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(

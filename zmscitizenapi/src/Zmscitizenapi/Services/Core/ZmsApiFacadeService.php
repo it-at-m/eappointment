@@ -60,7 +60,6 @@ class ZmsApiFacadeService
             $offices[] = new Office(
                 id: (int) $provider->id,
                 name: $provider->displayName ?? $provider->name,
-                showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null,
                 address: $provider->data['address'] ?? null,
                 geo: $provider->data['geo'] ?? null,
                 scope: $matchingScope ? new ThinnedScope(
@@ -246,7 +245,6 @@ class ZmsApiFacadeService
                 $offices[] = new Office(
                     id: (int) $provider->id,
                     name: $provider->name,
-                    showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null,
                     address: $provider->address ?? null,
                     geo: $provider->geo ?? null,
                     scope: $scope
@@ -368,7 +366,6 @@ class ZmsApiFacadeService
                     $offices[] = new Office(
                         id: (int) $provider->id,
                         name: $provider->displayName ?? $provider->name,
-                        showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null,
                         address: $provider->data['address'] ?? null,
                         geo: $provider->data['geo'] ?? null,
                         scope: $scope instanceof ThinnedScope ? $scope : null
