@@ -18,6 +18,9 @@ class Office extends Entity implements JsonSerializable
     /** @var string */
     public string $name;
 
+    /** @var bool|null */
+    public ?bool $showAlternativeLocations;
+
     /** @var array|null */
     public ?array $address = null;
 
@@ -32,14 +35,16 @@ class Office extends Entity implements JsonSerializable
      *
      * @param int $id
      * @param string $name
+     * @param bool $showAlternativeLocations
      * @param array|null $address
      * @param array|null $geo
      * @param ThinnedScope|null $scope
      */
-    public function __construct(int $id, string $name, ?array $address = null, ?array $geo = null, ?ThinnedScope $scope = null)
+    public function __construct(int $id, string $name, bool $showAlternativeLocations, ?array $address = null, ?array $geo = null, ?ThinnedScope $scope = null)
     {
         $this->id = $id;
         $this->name = $name;
+        $this->showAlternativeLocations = $showAlternativeLocations;
         $this->address = $address;
         $this->geo = $geo;
         $this->scope = $scope;
@@ -64,6 +69,7 @@ class Office extends Entity implements JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'showAlternativeLocations' => $this->showAlternativeLocations,
             'address' => $this->address,
             'geo' => $this->geo,
             'scope' => $this->scope?->toArray(),

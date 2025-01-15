@@ -26,6 +26,13 @@
             ],
             "description": "The name of the office"
           },
+          "showAlternativeLocations": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Show alternative office locations in the citizen calendar"
+          },
           "address": {
             "type": [
               "array",
