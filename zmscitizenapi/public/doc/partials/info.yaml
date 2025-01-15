@@ -1,0 +1,20 @@
+info:
+  title: ZMSCitizenAPI
+  x-logo:
+    url: "./logo.png"
+  description: |
+      The ZMSCitizenAPI builds upon the ZMSApi to provide an interface specifically designed for external citizens. Its key features include:
+
+      * Citizens can select services and providers (locations) from ZMS sources.
+      * Citizens can book ZMS appointments via an integrated calendar and email system, enabling a seamless process for managing appointments.
+      * Citizens can modify or reschedule ZMS appointments through the same calendar and email functionality.
+
+      This documentation provides detailed API-level guidance for accessing the Citizen Frontend (Bürgeransicht) features.       
+  termsOfService: 'http://service.berlin.de/terminvereinbarung/'
+  contact:
+    name: ''
+    email: 'example@example.com'
+    url: 'https://opensource.muenchen.de/software/zeitmanagementsystem.html'
+  license:
+    name: 'MIT'
+    url: ''
