@@ -41,6 +41,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                 [
                     "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
+                    "showAlternativeLocations" => true,
                     "address" => null,
                     "geo" => null,
                     "scope" => [
@@ -97,6 +98,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                 [
                     "id" => 9999998,
                     "name" => "Unittest Source Dienstleister",
+                    "showAlternativeLocations" => false,
                     "address" => null,
                     "geo" => null,
                     "scope" => [
@@ -130,6 +132,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                 [
                     "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
+                    "showAlternativeLocations" => true,
                     "address" => null,
                     "geo" => null,
                     "scope" => [
