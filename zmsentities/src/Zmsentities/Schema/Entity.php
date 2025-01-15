@@ -87,7 +87,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * This method is private, because the used library should not be used outside of this class!
      */
-    private function getValidator($locale = 'de_DE', $resolveLevel = 0)
+    public function getValidator($locale = 'de_DE', $resolveLevel = 0)
     {
         $jsonSchema = self::readJsonSchema()->withResolvedReferences($resolveLevel);
         $data = (new Schema($this))->withoutRefs();
@@ -101,9 +101,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Check if the given data validates against the given jsonSchema
      *
-     * @return Boolean
+     * @return bool
      */
-    public function isValid($resolveLevel = 0)
+    public function isValid($resolveLevel = 0): bool
     {
         $validator = $this->getValidator('de_DE', $resolveLevel = 0);
         return $validator->isValid();
@@ -113,9 +113,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * Check if the given data validates against the given jsonSchema
      *
      * @throws \BO\Zmsentities\Expcetion\SchemaValidation
-     * @return Boolean
+     * @return bool
      */
-    public function testValid($locale = 'de_DE', $resolveLevel = 0)
+    public function testValid($locale = 'de_DE', $resolveLevel = 0): bool
     {
         $validator = $this->getValidator($locale, $resolveLevel);
         $validator = $this->registerExtensions($validator);
