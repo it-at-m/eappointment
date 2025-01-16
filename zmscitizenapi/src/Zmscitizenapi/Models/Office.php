@@ -22,25 +22,36 @@ class Office extends Entity implements JsonSerializable
     public ?array $address = null;
 
     /** @var array|null */
+    public ?array $displayNameAlternatives = null;
+
+    /** @var string|null */
+    public ?string $organization = null;
+
+    /** @var array|null */
+    public ?string $organizationUnit = null;
+
+    /** @var array|null */
     public ?array $geo = null;
 
     /** @var ThinnedScope|null */
     public ?ThinnedScope $scope = null;
 
-    /**
-     * Constructor.
-     *
-     * @param int $id
-     * @param string $name
-     * @param array|null $address
-     * @param array|null $geo
-     * @param ThinnedScope|null $scope
-     */
-    public function __construct(int $id, string $name, ?array $address = null, ?array $geo = null, ?ThinnedScope $scope = null)
-    {
+    public function __construct(
+        int $id,
+        string $name,
+        ?array $address = null,
+        ?array $displayNameAlternatives = null,
+        ?array $organization = null,
+        ?array $organizationUnit = null,
+        ?array $geo = null,
+        ?ThinnedScope $scope = null
+    ) {
         $this->id = $id;
         $this->name = $name;
         $this->address = $address;
+        $this->displayNameAlternatives = $displayNameAlternatives;
+        $this->organization = $organization;
+        $this->organizationUnit = $organizationUnit;
         $this->geo = $geo;
         $this->scope = $scope;
 
