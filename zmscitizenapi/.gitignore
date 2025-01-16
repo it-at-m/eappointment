@@ -1,0 +1,17 @@
+node_modules
+vendor
+vendor.zmsbase
+config.php
+tags
+.DS_*
+public/_tests
+public/doc/assets/redoc.min.js
+public/doc/swagger.*
+public/_test/assets/swagger-ui-bundle.js
+public/_test/assets/swagger-ui.css
+public/_test/assets/swagger-ui-standalone-preset.js
+cache
+vendor.old
+vendor.update
+VERSION
+.phpunit.result.cache

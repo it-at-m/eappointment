@@ -26,7 +26,7 @@ class ValidationTest extends Base
             $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             foreach ($exception->data as $error) {
-                $this->assertContains(
+                $this->assertContainsEquals(
                     'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
                     $error['messages']
                 );
@@ -44,7 +44,7 @@ class ValidationTest extends Base
             $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             foreach ($exception->data as $error) {
-                $this->assertContains(
+                $this->assertContainsEquals(
                     'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
                     $error['messages']
                 );
