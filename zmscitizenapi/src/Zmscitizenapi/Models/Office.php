@@ -76,6 +76,9 @@ class Office extends Entity implements JsonSerializable
             'id' => $this->id,
             'name' => $this->name,
             'address' => $this->address,
+            'displayNameAlternatives' => $this->displayNameAlternatives,
+            'organization' => $this->organization,
+            'organizationUnit' => $this->organizationUnit,
             'geo' => $this->geo,
             'scope' => $this->scope?->toArray(),
         ];
