@@ -699,3 +699,55 @@ graph TB
     class CacheDir,Files storage
 ```
 
+## Logger Service
+```mermaid
+flowchart TD
+    subgraph Log Types
+        A[LoggerService] --> B[Error Logs]
+        A --> C[Warning Logs]
+        A --> D[Info Logs]
+        A --> E[Request Logs]
+    end
+
+    subgraph Error Logs
+        B --> B1[Exception Details]
+        B1 --> B2[Stack Trace]
+        B2 --> B3[File & Line]
+        B3 --> B4[Request Context]
+    end
+
+    subgraph Warning & Info Logs
+        C & D --> CD1[Message]
+        CD1 --> CD2[Context Array]
+        CD2 --> CD3[Timestamp]
+    end
+
+    subgraph Request Logs
+        E --> E1[HTTP Method]
+        E1 --> E2[Path & Query]
+        E2 --> E3[Status Code]
+        E3 --> E4[Headers]
+        E4 --> E5[Response Body]
+        E5 --> E6[Client IP]
+    end
+
+    subgraph Processing
+        F[Rate Limiting]
+        G[Size Check]
+        H[Sensitive Data Filter]
+        I[JSON Encoding]
+        J[Write to Syslog]
+    end
+
+    B4 & CD3 & E6 --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+```
+
+The diagram shows:
+1. Four main log types (Error, Warning, Info, Request)
+2. Data included in each log type
+3. Common processing steps for all logs
+4. Special handling for sensitive data and size limits
