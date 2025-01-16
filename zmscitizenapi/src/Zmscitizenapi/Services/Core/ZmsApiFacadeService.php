@@ -370,6 +370,9 @@ class ZmsApiFacadeService
                         id: (int) $provider->id,
                         name: $provider->displayName ?? $provider->name,
                         address: $provider->data['address'] ?? null,
+                        displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
+                        organization: $provider->data['organization'] ?? null,
+                        organizationUnit: $provider->data['organizationUnit'] ?? null,
                         geo: $provider->data['geo'] ?? null,
                         scope: $scope instanceof ThinnedScope ? $scope : null
                     );
