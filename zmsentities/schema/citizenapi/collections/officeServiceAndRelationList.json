@@ -1,0 +1,222 @@
+{
+  "type": [
+    "array",
+    "object",
+    "null"
+  ],
+  "description": "Contains information about offices, services, and their relations. Includes details about each office, available services, and how they are related.",
+  "properties": {
+    "offices": {
+      "type": "array",
+      "items": {
+        "title": "Office",
+        "type": [
+          "array",
+          "object"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the office"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The name of the office"
+          },
+          "address": {
+            "type": [
+              "array",
+              "object",
+              "null"
+            ],
+            "description": "The address of the office",
+            "items": {
+              "type": [
+                "array",
+                "object",
+                "null"
+              ],
+              "properties": {
+                "house_number": {
+                  "type": "string",
+                  "description": "House number of the address"
+                },
+                "city": {
+                  "type": "string",
+                  "description": "City of the address"
+                },
+                "postal_code": {
+                  "type": "string",
+                  "description": "Postal code of the address"
+                },
+                "street": {
+                  "type": "string",
+                  "description": "Street name of the address"
+                },
+                "hint": {
+                  "type": "boolean",
+                  "description": "Additional hint about the address"
+                }
+              }
+            }
+          },
+          "geo": {
+            "type": [
+              "array",
+              "object",
+              "null"
+            ],
+            "description": "Geographical coordinates of the office",
+            "properties": {
+              "lat": {
+                "type": "number",
+                "description": "Latitude of a geo coordinate as wgs84 or etrs89",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "lon": {
+                "type": "number",
+                "description": "Longitude of a geo coordinate as wgs84 or etrs89",
+                "minimum": -180,
+                "maximum": 180
+              }
+            }
+          },
+          "scope": {}
+        },
+        "required": [
+          "id"
+        ],
+        "description": "Schema definition for the Office entity"
+      }
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": [
+          "array",
+          "object",
+          "null"
+        ],
+        "properties": {
+          "services": {
+            "type": "array",
+            "items": {
+              "title": "Service",
+              "type": [
+                "array",
+                "object",
+                "null"
+              ],
+              "properties": {
+                "id": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Unique identifier for the service"
+                },
+                "name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Name of the service"
+                },
+                "maxQuantity": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Maximum quantity of the service"
+                },
+                "combinable": {
+                  "type": [
+                    "object",
+                    "array",
+                    "null"
+                  ],
+                  "description": "Combinable services",
+                  "additionalProperties": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  },
+                  "items": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "name"
+              ],
+              "description": "Schema definition for the Service entity"
+            }
+          }
+        },
+        "required": [
+          "services"
+        ]
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "title": "OfficeServiceRelation",
+        "type": [
+          "array",
+          "object",
+          "null"
+        ],
+        "properties": {
+          "officeId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Unique identifier for the office"
+          },
+          "serviceId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Unique identifier for the service"
+          },
+          "slots": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Number of slots available for the relation"
+          }
+        },
+        "required": [
+          "officeId",
+          "serviceId",
+          "slots"
+        ],
+        "description": "Schema definition for the Office-Service relation"
+      }
+    }
+  },
+  "required": [
+    "offices",
+    "services",
+    "relations"
+  ]
+}
