@@ -124,7 +124,10 @@
         </div>
       </div>
     </div>
-    <div ref="summary" tabindex="0">
+    <div
+      ref="summary"
+      tabindex="0"
+    >
       <muc-callout
         v-if="selectedTimeslot !== 0"
         type="info"
@@ -357,8 +360,7 @@ const handleProviderSelection = (id: number) => {
 
 const handleTimeSlotSelection = (timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
-  if(summary.value)
-    summary.value.focus();
+  if (summary.value) summary.value.focus();
 };
 
 const nextStep = () => emit("next");
