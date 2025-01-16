@@ -41,6 +41,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "id" => 9999998,
                     "name" => "Unittest Source Dienstleister",
                     "address" => null,
+                    "displayNameAlternatives" => null,
+                    "organization" => null,
+                    "organizationUnit" => null,
                     "geo" => [
                         "lat" => "48.12750898398659",
                         "lon" => "11.604317899956524"
@@ -77,6 +80,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
                     "address" => null,
+                    "displayNameAlternatives" => null,
+                    "organization" => null,
+                    "organizationUnit" => null,
                     "geo" => [
                         "lat" => "48.12750898398659",
                         "lon" => "11.604317899956524"
