@@ -24,6 +24,7 @@
       v-model="customerData.telephoneNumber"
       :error-msg="showErrorMessage ? errorMessageTelephoneNumber : undefined"
       :label="t('telephoneNumber')"
+      :required="appointment.scope.telephoneRequired == '1'"
       placeholder="+49 151 1234567"
     />
     <muc-text-area
