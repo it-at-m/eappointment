@@ -41,8 +41,8 @@ class Office extends Entity implements JsonSerializable
         string $name,
         ?array $address = null,
         ?array $displayNameAlternatives = null,
-        ?array $organization = null,
-        ?array $organizationUnit = null,
+        ?string $organization = null,
+        ?string $organizationUnit = null,
         ?array $geo = null,
         ?ThinnedScope $scope = null
     ) {
