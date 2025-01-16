@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "081a28bb42348afcfeb3908f7a84c0bd",
+    "content-hash": "83e577f19cea26a1371db39fbe7d5e6f",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -122,11 +122,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-feature-MPDZBS-877-zmscitizenapi",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "faff0b320f53873e8ba4716a8d5b07c931c15c8b"
+                "reference": "3b53777853798ec388f9fa2f2d42b1310ff3062c"
             },
             "require": {
                 "ext-json": ">=0",
@@ -170,7 +170,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-feature-MPDZBS-877-zmscitizenapi",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -228,11 +228,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-feature-MPDZBS-877-zmscitizenapi",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "faff0b320f53873e8ba4716a8d5b07c931c15c8b"
+                "reference": "6d50c616376c01caa495318e4a4c3825703dd24b"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -286,11 +286,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-feature-MPDZBS-877-zmscitizenapi",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "faff0b320f53873e8ba4716a8d5b07c931c15c8b"
+                "reference": "13a59e7a34592936e535a28e485c504f8719b5f0"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -6624,16 +6624,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.9.2",
+            "version": "3.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "aac1f6f347a5c5ac6bc98ad395007df00990f480"
+                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/aac1f6f347a5c5ac6bc98ad395007df00990f480",
-                "reference": "aac1f6f347a5c5ac6bc98ad395007df00990f480",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/1368f4a58c3c52114b86b1abe8f4098869cb0079",
+                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079",
                 "shasum": ""
             },
             "require": {
@@ -6700,7 +6700,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-04-23T20:25:34+00:00"
+            "time": "2024-12-11T16:04:26+00:00"
         },
         {
             "name": "symfony/config",
