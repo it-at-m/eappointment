@@ -41,7 +41,7 @@ class ZmsApiFacadeService
         return ErrorMessages::get($key, self::$currentLanguage);
     }
 
-    public static function getOffices(): OfficeList|array
+    public static function getOffices(): OfficeList
     {
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
@@ -61,6 +61,9 @@ class ZmsApiFacadeService
                 id: (int) $provider->id,
                 name: $provider->displayName ?? $provider->name,
                 address: $provider->data['address'] ?? null,
+                displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
+                organization: $provider->data['organization'] ?? null,
+                organizationUnit: $provider->data['organizationUnit'] ?? null,
                 geo: $provider->data['geo'] ?? null,
                 scope: $matchingScope ? new ThinnedScope(
                     id: (int) $matchingScope->id,
@@ -367,6 +370,9 @@ class ZmsApiFacadeService
                         id: (int) $provider->id,
                         name: $provider->displayName ?? $provider->name,
                         address: $provider->data['address'] ?? null,
+                        displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
+                        organization: $provider->data['organization'] ?? null,
+                        organizationUnit: $provider->data['organizationUnit'] ?? null,
                         geo: $provider->data['geo'] ?? null,
                         scope: $scope instanceof ThinnedScope ? $scope : null
                     );
