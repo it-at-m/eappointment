@@ -124,21 +124,23 @@
         </div>
       </div>
     </div>
-    <muc-callout
-      v-if="selectedTimeslot !== 0"
-      type="info"
-    >
-      <template #content>
-        <b>{{ t("location") }}</b>
-        <br />
-        <b>{{ t("time") }}</b>
-        <br />
-        {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
-        {{ t("clock") }}
-      </template>
+    <div ref="summary" tabindex="0">
+      <muc-callout
+        v-if="selectedTimeslot !== 0"
+        type="info"
+      >
+        <template #content>
+          <b>{{ t("location") }}</b>
+          <br />
+          <b>{{ t("time") }}</b>
+          <br />
+          {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
+          {{ t("clock") }}
+        </template>
 
-      <template #header>{{ t("selectedAppointment") }}</template>
-    </muc-callout>
+        <template #header>{{ t("selectedAppointment") }}</template>
+      </muc-callout>
+    </div>
   </div>
   <div
     v-if="error"
@@ -219,6 +221,8 @@ const appointmentTimestamps = ref<number[]>();
 
 const selectedDay = ref<Date>();
 const error = ref<boolean>(false);
+
+const summary = ref(null);
 
 const TODAY = new Date();
 const MAXDATE = new Date(
@@ -353,6 +357,8 @@ const handleProviderSelection = (id: number) => {
 
 const handleTimeSlotSelection = (timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
+  if(summary.value)
+    summary.value.focus();
 };
 
 const nextStep = () => emit("next");
