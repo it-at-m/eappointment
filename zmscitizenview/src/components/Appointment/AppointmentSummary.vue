@@ -7,10 +7,10 @@
             <h2>{{ t("your") }} {{ t("appointment") }}</h2>
           </div>
           <div class="m-content">
-            <h3>{{ t("service") }}</h3>
+            <h3 tabindex="0">{{ t("service") }}</h3>
           </div>
           <div class="m-content border-bottom">
-            <p>
+            <p tabindex="0">
               {{ selectedService.count }}x {{ selectedService.name }}
               <br />
             </p>
@@ -19,25 +19,25 @@
                 v-for="subService in selectedService.subServices"
                 :key="subService.id"
               >
-                <p v-if="subService.count > 0">
+                <p v-if="subService.count > 0" tabindex="0">
                   {{ subService.count }}x {{ subService.name }} <br />
                 </p>
               </div>
             </div>
           </div>
           <div class="m-content">
-            <h3>{{ t("location") }}</h3>
+            <h3 tabindex="0">{{ t("location") }}</h3>
           </div>
           <div class="m-content border-bottom">
-            <p>
+            <p tabindex="0">
               <strong>Landeshauptstadt München</strong><br />
               {{ appointment.scope.provider.contact.name }}<br />
             </p>
-            <p>
+            <p tabindex="0">
               <strong>{{ t("address") }}</strong>
               <br />
             </p>
-            <p>
+            <p tabindex="0">
               {{ appointment.scope.provider.contact.street }}
               {{ appointment.scope.provider.contact.streetNumber }}<br />
               {{ appointment.scope.provider.contact.postalCode }}
@@ -45,26 +45,26 @@
             </p>
           </div>
           <div class="m-content">
-            <h3>{{ t("time") }}</h3>
+            <h3 tabindex="0">{{ t("time") }}</h3>
           </div>
           <div class="m-content border-bottom">
-            <p>
+            <p tabindex="0">
               {{ formatTime(appointment.timestamp) }} <br />
               {{ t("estimatedDuration") }} {{ t("minutes") }}<br />
             </p>
           </div>
           <div class="m-content">
-            <h3>{{ t("contact") }}</h3>
+            <h3 tabindex="0">{{ t("contact") }}</h3>
           </div>
           <div class="m-content border-bottom">
-            <p>
+            <p tabindex="0">
               {{ appointment.familyName }}
               <br />
               {{ appointment.email }}<br />
               {{ appointment.telephone }}<br />
             </p>
-            <div v-if="appointment.customTextfield">
-              <strong>{{ t("remarks") }}</strong
+            <div v-if="appointment.customTextfield" tabindex="0">
+              <strong >{{ t("remarks") }}</strong
               ><br />
               <p>{{ appointment.customTextfield }}</p>
               <br />
@@ -72,10 +72,10 @@
           </div>
           <div v-if="!rebookOrCancelDialog">
             <div class="m-content">
-              <h3>{{ t("termsOfUse") }}</h3>
+              <h3 tabindex="0">{{ t("termsOfUse") }}</h3>
             </div>
             <div class="m-content">
-              <p>
+              <p tabindex="0">
                 <strong>{{ t("privacyCheckboxLabel") }}</strong
                 ><br />
               </p>
@@ -99,7 +99,7 @@
               </div>
             </div>
             <div class="m-content">
-              <p>
+              <p tabindex="0">
                 <strong>{{ t("communicationCheckboxLabel") }}</strong
                 ><br />
               </p>
