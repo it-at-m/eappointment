@@ -19,7 +19,10 @@
                 v-for="subService in selectedService.subServices"
                 :key="subService.id"
               >
-                <p v-if="subService.count > 0" tabindex="0">
+                <p
+                  v-if="subService.count > 0"
+                  tabindex="0"
+                >
                   {{ subService.count }}x {{ subService.name }} <br />
                 </p>
               </div>
@@ -63,8 +66,11 @@
               {{ appointment.email }}<br />
               {{ appointment.telephone }}<br />
             </p>
-            <div v-if="appointment.customTextfield" tabindex="0">
-              <strong >{{ t("remarks") }}</strong
+            <div
+              v-if="appointment.customTextfield"
+              tabindex="0"
+            >
+              <strong>{{ t("remarks") }}</strong
               ><br />
               <p>{{ appointment.customTextfield }}</p>
               <br />
