@@ -45,6 +45,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                     "displayNameAlternatives" => null,
                     "organization" => null,
                     "organizationUnit" => null,
+                    "slotTimeInMinutes" => null,
                     "geo" => null,
                     "scope" => [
                         "id" => 2,
@@ -104,6 +105,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                     "displayNameAlternatives" => null,
                     "organization" => null,
                     "organizationUnit" => null,
+                    "slotTimeInMinutes" => null,
                     "geo" => null,
                     "scope" => [
                         "id" => 1,
@@ -140,6 +142,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                     "displayNameAlternatives" => null,
                     "organization" => null,
                     "organizationUnit" => null,
+                    "slotTimeInMinutes" => null,
                     "geo" => null,
                     "scope" => [
                         "id" => 2,
