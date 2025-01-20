@@ -30,6 +30,9 @@ class Office extends Entity implements JsonSerializable
     /** @var string|null */
     public ?string $organizationUnit = null;
 
+    /** @var int|null */
+    public ?int $slotTimeInMinutes = null;
+
     /** @var array|null */
     public ?array $geo = null;
 
@@ -43,6 +46,7 @@ class Office extends Entity implements JsonSerializable
         ?array $displayNameAlternatives = null,
         ?string $organization = null,
         ?string $organizationUnit = null,
+        ?int $slotTimeInMinutes = null,
         ?array $geo = null,
         ?ThinnedScope $scope = null
     ) {
@@ -52,6 +56,7 @@ class Office extends Entity implements JsonSerializable
         $this->displayNameAlternatives = $displayNameAlternatives;
         $this->organization = $organization;
         $this->organizationUnit = $organizationUnit;
+        $this->slotTimeInMinutes = $slotTimeInMinutes;
         $this->geo = $geo;
         $this->scope = $scope;
 
@@ -79,6 +84,7 @@ class Office extends Entity implements JsonSerializable
             'displayNameAlternatives' => $this->displayNameAlternatives,
             'organization' => $this->organization,
             'organizationUnit' => $this->organizationUnit,
+            'slotTimeInMinutes' => $this->slotTimeInMinutes,
             'geo' => $this->geo,
             'scope' => $this->scope?->toArray(),
         ];

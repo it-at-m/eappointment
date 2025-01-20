@@ -51,6 +51,10 @@
             "type": ["string", "null"],
             "description": "The name of the organization"
         },
+        "slotTimeInMinutes": {
+            "type": ["integer", "null"],
+            "description": "Slot time in minutes"
+        },
         "geo": {
             "type": ["array", "object", "null"],
             "description": "Geographical coordinates of the office",

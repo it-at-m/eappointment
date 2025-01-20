@@ -44,6 +44,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "displayNameAlternatives" => [],
                     "organization" => null,
                     "organizationUnit" => null,
+                    "slotTimeInMinutes" => null,
                     "geo" => [
                         "lat" => "48.12750898398659",
                         "lon" => "11.604317899956524"
@@ -83,6 +84,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "displayNameAlternatives" => [],
                     "organization" => null,
                     "organizationUnit" => null,
+                    "slotTimeInMinutes" => null,
                     "geo" => [
                         "lat" => "48.12750898398659",
                         "lon" => "11.604317899956524"
