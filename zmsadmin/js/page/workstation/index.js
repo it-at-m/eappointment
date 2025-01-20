@@ -85,7 +85,7 @@ class View extends BaseView {
         }
         window.onblur = () => {
             //console.log("lost Focus");
-            clearTimeout(this.reloadTimer);
+            // clearTimeout(this.reloadTimer);
         }
         this.$main.find('[data-queue-table]').on("mouseenter", () => {
             //console.log("stop Reload on mouse enter");
