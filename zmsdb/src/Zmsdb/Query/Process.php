@@ -857,7 +857,7 @@ class Process extends Base implements MappingInterface
             $minutes = intdiv($totalSeconds % 3600, 60);
             $seconds = $totalSeconds % 60;
         
-            //$data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+            $data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         
         } elseif (isset($timeoutTime) && isset($process->showUpTime)) {
             $showUpDateTime = new \DateTime($process->showUpTime);
@@ -880,7 +880,7 @@ class Process extends Base implements MappingInterface
             $minutes = intdiv($totalSeconds % 3600, 60);
             $seconds = $totalSeconds % 60;
         
-            //$data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+            $data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
 
         $this->addValues($data);
