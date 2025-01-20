@@ -33,6 +33,7 @@
     </div>
     <div v-if="service.subServices">
       <h3 tabindex="0">{{ t("combinableServices") }}</h3>
+      <p class="visually-hidden" tabindex="0" @click="skipSubservices">{{ t("skipCombinableServices") }}</p>
       <div class="m-listing">
         <ul class="m-listing__list">
           <template
@@ -52,7 +53,7 @@
     <div class="m-component">
       <div class="wrapper">
         <clock-svg />
-        <div>
+        <div ref="durationInfo" tabindex="0">
           <b>{{ t("estimatedDuration") }}</b>
           <br />
           {{ t("minutes") }}
@@ -107,6 +108,8 @@ const service = ref<ServiceImpl>(selectedService.value);
 const maxSlotsPerAppointment = ref<number>(25);
 const currentSlots = ref<number>(0);
 const countOfService = ref<number>(1);
+
+const durationInfo = ref<HTMLElement | null>(null);
 
 watch(service, (newService) => {
   if (!newService) {
@@ -247,6 +250,10 @@ const getMaxSlotsPerAppointementOfProvider = (provider: OfficeImpl[]) => {
 };
 
 const nextStep = () => emit("next");
+
+const skipSubservices = () => {
+  if(durationInfo.value) durationInfo.value.focus();
+};
 
 onMounted(() => {
   fetchServicesAndProviders(

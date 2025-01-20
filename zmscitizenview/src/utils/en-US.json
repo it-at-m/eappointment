@@ -47,6 +47,7 @@
   "selectedDateNoLongerAvailableText": "Unfortunately, another person has now booked your desired appointment. Please select a new date.",
   "service": "Service",
   "serviceSearch": "Search for citizen services",
+  "skipCombinableServices": "Skip combinable services",
   "telephoneNumber": "Telephone number",
   "termsOfUse": "Terms of Use",
   "time": "Zeit",

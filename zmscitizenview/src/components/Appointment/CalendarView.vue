@@ -225,7 +225,7 @@ const appointmentTimestamps = ref<number[]>();
 const selectedDay = ref<Date>();
 const error = ref<boolean>(false);
 
-const summary = ref(null);
+const summary = ref<HTMLElement | null>(null);
 
 const TODAY = new Date();
 const MAXDATE = new Date(
