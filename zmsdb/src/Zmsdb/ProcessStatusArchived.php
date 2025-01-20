@@ -161,7 +161,7 @@ class ProcessStatusArchived extends Process
                 'date' => $process->getFirstAppointment()->toDateTime()->format('Y-m-d'),
                 'withAppointment' => ($process->toQueue($dateTime)->withAppointment) ? 1 : 0,
                 'requestId' => $requestId,
-                'processingTime' => $processingTime
+                'processingTime' => null
             ]
         );
     }
