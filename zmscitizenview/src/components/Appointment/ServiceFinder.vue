@@ -33,7 +33,13 @@
     </div>
     <div v-if="service.subServices">
       <h3 tabindex="0">{{ t("combinableServices") }}</h3>
-      <p class="visually-hidden" tabindex="0" @click="skipSubservices">{{ t("skipCombinableServices") }}</p>
+      <p
+        class="visually-hidden"
+        tabindex="0"
+        @click="skipSubservices"
+      >
+        {{ t("skipCombinableServices") }}
+      </p>
       <div class="m-listing">
         <ul class="m-listing__list">
           <template
@@ -53,7 +59,10 @@
     <div class="m-component">
       <div class="wrapper">
         <clock-svg />
-        <div ref="durationInfo" tabindex="0">
+        <div
+          ref="durationInfo"
+          tabindex="0"
+        >
           <b>{{ t("estimatedDuration") }}</b>
           <br />
           {{ t("minutes") }}
@@ -252,7 +261,7 @@ const getMaxSlotsPerAppointementOfProvider = (provider: OfficeImpl[]) => {
 const nextStep = () => emit("next");
 
 const skipSubservices = () => {
-  if(durationInfo.value) durationInfo.value.focus();
+  if (durationInfo.value) durationInfo.value.focus();
 };
 
 onMounted(() => {
