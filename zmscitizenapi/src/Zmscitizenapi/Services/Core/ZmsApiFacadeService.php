@@ -64,6 +64,7 @@ class ZmsApiFacadeService
                 displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
                 organization: $provider->data['organization'] ?? null,
                 organizationUnit: $provider->data['organizationUnit'] ?? null,
+                slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
                 geo: $provider->data['geo'] ?? null,
                 scope: $matchingScope ? new ThinnedScope(
                     id: (int) $matchingScope->id,
@@ -373,6 +374,7 @@ class ZmsApiFacadeService
                         displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
                         organization: $provider->data['organization'] ?? null,
                         organizationUnit: $provider->data['organizationUnit'] ?? null,
+                        slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
                         geo: $provider->data['geo'] ?? null,
                         scope: $scope instanceof ThinnedScope ? $scope : null
                     );
