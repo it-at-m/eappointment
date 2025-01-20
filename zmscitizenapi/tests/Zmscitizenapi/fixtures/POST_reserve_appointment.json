@@ -1,0 +1,100 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2024-09-24T16:48:37+02:00",
+        "server": "Zmsapi-ENV ()"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": "",
+        "customTextfield": "",
+        "appointments": [
+            {
+                "date": 32526616522,
+                "scope": {
+                    "id": "58",
+                    "source": "dldb"
+                },
+                "availability": {
+                    "id": 0,
+                    "weekday": {
+                        "sunday": 0,
+                        "monday": 0,
+                        "tuesday": 0,
+                        "wednesday": 0,
+                        "thursday": 0,
+                        "friday": 0,
+                        "saturday": 0
+                    },
+                    "repeat": {
+                        "afterWeeks": 1,
+                        "weekOfMonth": 0
+                    },
+                    "bookable": {
+                        "startInDays": 1,
+                        "endInDays": 60
+                    },
+                    "workstationCount": {
+                        "public": 0,
+                        "callcenter": 0,
+                        "intern": 0
+                    },
+                    "lastChange": 0,
+                    "multipleSlotsAllowed": true,
+                    "slotTimeInMinutes": 10,
+                    "startDate": 0,
+                    "endDate": 0,
+                    "startTime": "0:00",
+                    "endTime": "23:59",
+                    "type": "appointment"
+                },
+                "slotCount": "4"
+            }
+        ],
+        "apiclient": {
+            "shortname": "default"
+        },
+        "authKey": "fb43",
+        "displayInfo": "Infos zum Standort.",
+        "clients": [
+            {
+                "familyName": "TEST_USER",
+                "email": "test@muenchen.de",
+                "emailSendCount": "0",
+                "notificationsSendCount": "0",
+                "surveyAccepted": "0",
+                "telephone": "123456789"
+            }
+        ],
+        "createIP": "",
+        "createTimestamp": 1727189317,
+        "id": "101002",
+        "serviceCount": 1,
+        "archiveId": 0,
+        "queue": {
+            "$schema": "https:\/\/schema.berlin.de\/queuemanagement\/queue.json",
+            "arrivalTime": 1727691300,
+            "callCount": "0",
+            "callTime": 0,
+            "number": "101002",
+            "waitingTimeEstimate": 0,
+            "waitingTimeOptimistic": 0,
+            "waitingTime": null,
+            "wayTime": null,
+            "status": "reserved",
+            "lastCallTime": 0,
+            "destination": null,
+            "destinationHint": null,
+            "withAppointment": "1"
+        },
+        "reminderTimestamp": "0",
+        "scope": {
+            "id": "58",
+            "source": "dldb"
+        },
+        "status": "reserved",
+        "lastChange": 1727189317
+    }
+}
