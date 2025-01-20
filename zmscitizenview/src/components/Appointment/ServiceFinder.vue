@@ -4,7 +4,7 @@
   </div>
   <div
     v-if="!service"
-    :hidden="preselectedServiceId"
+    :hidden="!!preselectedServiceId"
     class="m-component"
     style="background-color: var(--color-neutrals-blue-xlight)"
   >
