@@ -103,8 +103,8 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         startTime: '07:00:00',
         endTime: '20:00:00',
         bookable: {
-            startInDays: "0",
-            endInDays: "0"
+            startInDays: scope.preferences.appointment.startInDaysDefault ?? 0,
+            endInDays: scope.preferences.appointment.endInDaysDefault ?? 0
         },
         multipleSlotsAllowed: 1,
         slotTimeInMinutes: scope.provider.data['slotTimeInMinutes'],
@@ -191,10 +191,11 @@ export const cleanupAvailabilityForSave = availability => {
 }
 
 export const getDataValuesFromForm = (form, scope) => {
+
     return Object.assign({}, getFirstLevelValues(form), {
         bookable: {
-            startInDays: form.open_from === "" ? scope.preferences.appointment.startInDaysDefault : form.open_from,
-            endInDays: form.open_to === "" ? scope.preferences.appointment.endInDaysDefault : form.open_to
+            startInDays: (!form.open_from || form.open_from === "" || form.open_from === "0") ? scope.preferences.appointment.startInDaysDefault : form.open_from,
+            endInDays: (!form.open_to || form.open_to === "" || form.open_to === "0") ? scope.preferences.appointment.endInDaysDefault : form.open_to
         },
         workstationCount: {
             intern: form.workstationCount_intern,
@@ -220,8 +221,8 @@ export const cleanupFormData = data => {
     return Object.assign({}, data, {
         workstationCount_callcenter: callcenterCount,
         workstationCount_public: publicCount,
-        open_from: (data.open_from === data.openFromDefault) ? "" : data.open_from,
-        open_to: (data.open_to === data.openToDefault) ? "" : data.open_to
+        open_from: (!data.open_from || data.open_from === data.openFromDefault) ? "" : data.open_from,
+        open_to: (!data.open_to || data.open_to === data.openToDefault) ? "" : data.open_to
     })
 }
 
