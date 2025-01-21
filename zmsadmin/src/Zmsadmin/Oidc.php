@@ -23,40 +23,49 @@ class Oidc extends BaseController
             $state = $request->getParam("state");
             $authKey = \BO\Zmsclient\Auth::getKey();
             
-            // Log state validation attempt
+            // Get the instance and username first
+            $instance = new \BO\Slim\Middleware\OAuth\KeycloakInstance();
+            $accessToken = $instance->getAccessToken($request->getParam("code"));
+            $ownerData = $instance->getProvider()->getResourceOwnerData($accessToken);
+            $username = $ownerData['username'] ?? 'unknown';
+            
+            // Log state validation attempt with username
             error_log(json_encode([
                 'event' => 'oauth_state_validation',
                 'timestamp' => date('c'),
                 'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
                 'application' => 'zmsadmin',
+                'username' => $username,
                 'state_match' => ($state == $authKey)
             ]));
-
+    
             if ($state == $authKey) {
                 try {
                     $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
                     
-                    // Log workstation access
+                    // Log workstation access with username
                     error_log(json_encode([
                         'event' => 'oauth_workstation_access',
                         'timestamp' => date('c'),
                         'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
                         'application' => 'zmsadmin',
+                        'username' => $username,
                         'workstation_id' => $workstation->id ?? 'unknown'
                     ]));
-
+    
                     $departmentCount = $workstation->getUseraccount()->getDepartmentList()->count();
                     
-                    // Log department check
+                    // Log department check with username
                     error_log(json_encode([
                         'event' => 'oauth_department_check',
                         'timestamp' => date('c'),
                         'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
                         'application' => 'zmsadmin',
+                        'username' => $username,
                         'department_count' => $departmentCount,
                         'has_departments' => ($departmentCount > 0)
                     ]));
-
+    
                     if (0 == $departmentCount) {
                         return \BO\Slim\Render::redirect(
                             'index',
@@ -72,12 +81,13 @@ class Oidc extends BaseController
                         []
                     );
                 } catch (\Exception $e) {
-                    // Log workstation access error
+                    // Log workstation access error with username
                     error_log(json_encode([
                         'event' => 'oauth_workstation_error',
                         'timestamp' => date('c'),
                         'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
                         'application' => 'zmsadmin',
+                        'username' => $username,
                         'error' => $e->getMessage(),
                         'code' => $e->getCode()
                     ]));
@@ -85,11 +95,13 @@ class Oidc extends BaseController
                 }
             }
             
-            // Log invalid state
+            // Log invalid state with username
             error_log(json_encode([
                 'event' => 'oauth_invalid_state',
                 'timestamp' => date('c'),
-                'provider' => \BO\Zmsclient\Auth::getOidcProvider()
+                'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                'username' => $username,
+                'application' => 'zmsadmin'
             ]));
             
             throw new \BO\Slim\Exception\OAuthInvalid();
