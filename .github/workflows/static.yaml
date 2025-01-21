@@ -65,14 +65,20 @@ jobs:
 
       - name: Generate Swagger documentation
         run: |
-          # Generate zmsapi documentation
+          # Generate and copy zmsapi documentation
           cd zmsapi
+          # First copy all doc files
+          cp -r public/doc/* ../_site/zmsapi/public/doc/
+          # Then generate swagger.json
           PUBLIC_DOC_DIR="../_site/zmsapi/public/doc" npm run doc || exit 1
           npx swagger-cli bundle -o ../_site/zmsapi/public/doc/swagger.json public/doc/swagger.yaml || exit 1
           cd ..
           
-          # Generate zmscitizenapi documentation
+          # Generate and copy zmscitizenapi documentation
           cd zmscitizenapi
+          # First copy all doc files
+          cp -r public/doc/* ../_site/zmscitizenapi/public/doc/
+          # Then generate swagger.json
           PUBLIC_DOC_DIR="../_site/zmscitizenapi/public/doc" npm run doc || exit 1
           npx swagger-cli bundle -o ../_site/zmscitizenapi/public/doc/swagger.json public/doc/swagger.yaml || exit 1
           cd ..
