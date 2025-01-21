@@ -60,21 +60,21 @@ jobs:
 
       - name: Create site structure
         run: |
-          mkdir -p ./_site/eappointment/zmsapi/public/doc
-          mkdir -p ./_site/eappointment/zmscitizenapi/public/doc
+          mkdir -p ./_site/zmsapi/public/doc
+          mkdir -p ./_site/zmscitizenapi/public/doc
 
       - name: Generate Swagger documentation
         run: |
           # Generate zmsapi documentation
           cd zmsapi
-          PUBLIC_DOC_DIR="../_site/eappointment/zmsapi/public/doc" npm run doc || exit 1
-          npx swagger-cli bundle -o ../_site/eappointment/zmsapi/public/doc/swagger.json public/doc/swagger.yaml || exit 1
+          PUBLIC_DOC_DIR="../_site/zmsapi/public/doc" npm run doc || exit 1
+          npx swagger-cli bundle -o ../_site/zmsapi/public/doc/swagger.json public/doc/swagger.yaml || exit 1
           cd ..
           
           # Generate zmscitizenapi documentation
           cd zmscitizenapi
-          PUBLIC_DOC_DIR="../_site/eappointment/zmscitizenapi/public/doc" npm run doc || exit 1
-          npx swagger-cli bundle -o ../_site/eappointment/zmscitizenapi/public/doc/swagger.json public/doc/swagger.yaml || exit 1
+          PUBLIC_DOC_DIR="../_site/zmscitizenapi/public/doc" npm run doc || exit 1
+          npx swagger-cli bundle -o ../_site/zmscitizenapi/public/doc/swagger.json public/doc/swagger.yaml || exit 1
           cd ..
 
       - name: Setup Pages
