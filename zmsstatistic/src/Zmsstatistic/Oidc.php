@@ -14,7 +14,7 @@ class Oidc extends BaseController
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function readResponse(
+public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
@@ -23,19 +23,12 @@ class Oidc extends BaseController
             $state = $request->getParam("state");
             $authKey = \BO\Zmsclient\Auth::getKey();
             
-            // Get the instance and username first
-            $instance = new \BO\Slim\Middleware\OAuth\KeycloakInstance();
-            $accessToken = $instance->getAccessToken($request->getParam("code"));
-            $ownerData = $instance->getProvider()->getResourceOwnerData($accessToken);
-            $username = $ownerData['username'] ?? 'unknown';
-            
-            // Log state validation attempt with username
+            // Log state validation attempt
             error_log(json_encode([
                 'event' => 'oauth_state_validation',
                 'timestamp' => date('c'),
                 'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
                 'application' => 'zmsstatistic',
-                'username' => $username,
                 'state_match' => ($state == $authKey)
             ]));
     
@@ -82,13 +75,12 @@ class Oidc extends BaseController
                         []
                     );
                 } catch (\Exception $e) {
-                    // Log workstation access error with username
+                    // Log workstation access error
                     error_log(json_encode([
                         'event' => 'oauth_workstation_error',
                         'timestamp' => date('c'),
                         'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
                         'application' => 'zmsstatistic',
-                        'username' => $username,
                         'error' => $e->getMessage(),
                         'code' => $e->getCode()
                     ]));
@@ -96,12 +88,11 @@ class Oidc extends BaseController
                 }
             }
             
-            // Log invalid state with username
+            // Log invalid state
             error_log(json_encode([
                 'event' => 'oauth_invalid_state',
                 'timestamp' => date('c'),
                 'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
-                'username' => $username,
                 'application' => 'zmsstatistic'
             ]));
             
