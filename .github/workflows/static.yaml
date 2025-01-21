@@ -81,14 +81,23 @@ jobs:
           npm run doc
           npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
           cd ..
-
       # Step 9: Prepare static content
       - name: Prepare static content
         run: |
-          mkdir -p ./_site/zmsapi
-          mkdir -p ./_site/zmscitizenapi
-          cp -r zmsapi/public/doc/* ./_site/zmsapi/
-          cp -r zmscitizenapi/public/doc/* ./_site/zmscitizenapi/
+          # Create full directory structure
+          mkdir -p ./_site/eappointment/zmsapi/public/doc
+          mkdir -p ./_site/eappointment/zmscitizenapi/public/doc
+          
+          # Copy files with proper structure
+          cp -r zmsapi/public/doc/* ./_site/eappointment/zmsapi/public/doc/
+          cp -r zmscitizenapi/public/doc/* ./_site/eappointment/zmscitizenapi/public/doc/
+          
+          # Ensure all files are written to disk
+          sync
+          
+          # List contents for verification
+          ls -la ./_site/eappointment/zmsapi/public/doc/
+          ls -la ./_site/eappointment/zmscitizenapi/public/doc/
 
       # Step 10: Set up GitHub Pages for deployment
       - name: Setup Pages
