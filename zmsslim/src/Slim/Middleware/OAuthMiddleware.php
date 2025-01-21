@@ -72,72 +72,26 @@ class OAuthMiddleware
     private function handleLogin(ServerRequestInterface $request, ResponseInterface $response, $instance, $next)
     {
         if (! $request->getParam("code") && '' == \BO\Zmsclient\Auth::getKey()) {
-            // Log initial OAuth request
-            \App::$log->info('OAuth login initiated', [
-                'provider' => $request->getQueryParams()['provider'] ?? \BO\Zmsclient\Auth::getOidcProvider(),
-                'event' => 'oauth_login_start'
-            ]);
             return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
         } elseif ($request->getParam("state") !== \BO\Zmsclient\Auth::getKey()) {
-            // Log invalid state parameter
-            \App::$log->warning('OAuth state mismatch', [
-                'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
-                'event' => 'oauth_state_mismatch'
-            ]);
             \BO\Zmsclient\Auth::removeKey();
             \BO\Zmsclient\Auth::removeOidcProvider();
             return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
         }
-    
         if ('login' == $request->getAttribute('authentificationHandler')) {
-            try {
-                // Attempt login
-                $instance->doLogin($request, $response);
-                
-                // Log successful login with username
-                $resourceOwner = $instance->getProvider()->getResourceOwner($instance->getAccessToken());
-                \App::$log->info('OAuth login successful', [
-                    'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
-                    'username' => $resourceOwner->getUsername(),
-                    'event' => 'oauth_login_success'
-                ]);
-                
-                $response = $next->handle($request);
-                return $response;
-            } catch (\Exception $e) {
-                // Log login failures with details
-                \App::$log->error('OAuth login failed', [
-                    'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
-                    'error' => $e->getMessage(),
-                    'error_code' => $e->getCode(),
-                    'event' => 'oauth_login_error'
-                ]);
-                throw $e;
-            }
+            $instance->doLogin($request, $response);
+            $response = $next->handle($request);
+            return $response;
         }
         return $response;
     }
 
     private function handleLogout(ServerRequestInterface $request, ResponseInterface $response, $instance)
     {
-        if ('logout' == $request->getAttribute('authentificationHandler') && ! $request->getParam('state')) {
-            try {
-                // Log logout event
-                $resourceOwner = $instance->getProvider()->getResourceOwner($instance->getAccessToken());
-                \App::$log->info('OAuth logout', [
-                    'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
-                    'username' => $resourceOwner->getUsername(),
-                    'event' => 'oauth_logout'
-                ]);
-                return $instance->doLogout($response);
-            } catch (\Exception $e) {
-                \App::$log->error('OAuth logout failed', [
-                    'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
-                    'error' => $e->getMessage(),
-                    'event' => 'oauth_logout_error'
-                ]);
-                throw $e;
-            }
+        if ('logout' == $request->getAttribute('authentificationHandler') &&
+            ! $request->getParam('state')
+        ) {
+            return $instance->doLogout($response);
         }
         return $response;
     }
