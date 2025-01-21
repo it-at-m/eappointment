@@ -2,31 +2,23 @@
 
 namespace BO\Zmsentities\Schema\Extensions;
 
-use League\JsonGuard;
-use League\JsonGuard\Validator;
-use League\JsonGuard\ValidationError;
-use League\JsonGuard\Pointer;
+use Opis\JsonSchema\KeywordValidator;
+use Opis\JsonSchema\ValidationContext;
+use Opis\JsonSchema\Errors\ValidationError;
 
-/**
- * @codeCoverageIgnore
- */
-class SameValues implements \League\JsonGuard\Constraint\DraftFour\Format\FormatExtensionInterface
+class SameValues implements KeywordValidator
 {
-    public function validate($value, Validator $validator = null)
+    public function validate($value, $schemaKeyword, ValidationContext $context)
     {
-        if (0 === strcmp($value[0], $value[1])) {
+        if (is_array($value) && $value[0] === $value[1]) {
             return null;
         }
-        $message = 'Strings does not match';
 
         return new ValidationError(
-            $message,
-            $validator->getCurrentKeyword(),
-            $validator->getCurrentParameter(),
-            $value,
-            $validator->getDataPath(),
-            $validator->getSchema(),
-            $validator->getSchemaPath()
+            $context,
+            $context->schema(),
+            "Strings do not match",
+            $value
         );
     }
 }

@@ -16,12 +16,12 @@
         "ext-pcre": ">=0",
         "eappointment/mellon": "@dev",
         "twig/twig": "3.*",
-        "league/json-guard": "^1.0",
         "league/html-to-markdown": "^5.0",
         "giggsey/libphonenumber-for-php": "^8.8.4",
         "twig/intl-extra": "^3.4",
         "symfony/translation": "^5.4",
-        "symfony/twig-bridge": "^5.4"
+        "symfony/twig-bridge": "^5.4",
+        "opis/json-schema": "^2.4"
     },
     "scripts": {
         "command": "bin/configure"
@@ -45,8 +45,6 @@
         "phpunit/phpunit": "^9.6",
         "helmich/phpunit-psr7-assert": "^4.3.0",
         "phpmd/phpmd": "@stable",
-        "squizlabs/php_codesniffer": "^3.5.8",
-        "league/json-reference": "^1.0",
-        "yuloh/json-guard-cli": "^0.3.0"
+        "squizlabs/php_codesniffer": "^3.5.8"
     }
 }
