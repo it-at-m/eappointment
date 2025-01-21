@@ -94,7 +94,11 @@ class Entity extends \ArrayObject implements \JsonSerializable
         if (Property::__keyExists('$schema', $data)) {
             unset($data['$schema']);
         }
-        $validator = new Validator($data->toJsonObject(true), $jsonSchema, $locale);
+        
+        $schemaData = $jsonSchema->toJsonObject(true);
+        $opisSchema = new \Opis\JsonSchema\Schema($schemaData);
+        
+        $validator = new Validator($data->toJsonObject(true), $opisSchema, $locale);
         return $validator;
     }
 

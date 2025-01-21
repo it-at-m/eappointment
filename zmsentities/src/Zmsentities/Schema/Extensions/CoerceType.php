@@ -24,20 +24,20 @@ final class CoerceType implements KeywordValidator
     private function coerceType($value, $type)
     {
         if ($type === 'number') {
-            return $this->toNumber($value);
+            return $this->toFloat($value);
         } elseif ($type === 'string') {
             return $this->toString($value);
         } elseif ($type === 'integer' && !is_int($value)) {
-            return $this->toNumber($value);
+            return $this->toInteger($value);
         } elseif ($type === 'boolean') {
             return $this->toBoolean($value);
         }
         return $value;
     }
 
-    private function toNumber($value)
+    private function toFloat($value)
     {
-        return is_numeric($value) ? (int)$value : $value;
+        return is_numeric($value) ? (float)$value : $value;
     }
 
     private function toString($value)
@@ -45,8 +45,18 @@ final class CoerceType implements KeywordValidator
         return (string)$value;
     }
 
+    private function toInteger($value)
+    {
+        return is_numeric($value) ? (int)$value : $value;
+    }
+
     private function toBoolean($value)
     {
-        return (bool)$value;
+        if (is_bool($value)) {
+                return $value;
+            } elseif (is_string($value)) {
+                return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $value;
+            }
+            return (bool)$value;
     }
 }

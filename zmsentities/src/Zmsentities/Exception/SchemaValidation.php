@@ -3,10 +3,8 @@
 namespace BO\Zmsentities\Exception;
 
 use \BO\Zmsentities\Schema\Validator;
+use Opis\JsonSchema\ValidationError;
 
-/**
- * example class to generate an exception
- */
 class SchemaValidation extends \Exception
 {
     protected $code = 400;
@@ -32,12 +30,12 @@ class SchemaValidation extends \Exception
     {
         foreach ($validationErrorList as $error) {
             $pointer = Validator::getOriginPointer($error);
-            $this->data[$pointer]['messages'][$error->getKeyword()] = $error->getMessage();
-            $this->data[$pointer]['headline'] = $error->getDataPath();
+            $this->data[$pointer]['messages'][$error->keyword()] = $error->message();
+            $this->data[$pointer]['headline'] = $error->dataPointer();
             $this->data[$pointer]['failed'] = 1;
-            $this->data[$pointer]['data'] = $error->getData();
+            $this->data[$pointer]['data'] = $error->data();
         }
-        $message = '[property '. $error->getDataPath() .'] '. json_encode($this->data[$pointer]['messages'], 1);
+        $message = '[property '. $error->dataPointer() .'] '. json_encode($this->data[$pointer]['messages'], 1);
         $this->message = (! $this->message) ? $message : $this->message;
         return $this;
     }
