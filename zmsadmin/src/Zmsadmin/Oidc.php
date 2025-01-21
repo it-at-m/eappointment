@@ -23,12 +23,19 @@ class Oidc extends BaseController
             $state = $request->getParam("state");
             $authKey = \BO\Zmsclient\Auth::getKey();
             
-            // Log state validation attempt
+            // Get the instance and username first
+            $instance = new \BO\Slim\Middleware\OAuth\KeycloakInstance();
+            $accessToken = $instance->getAccessToken($request->getParam("code"));
+            $ownerData = $instance->getProvider()->getResourceOwnerData($accessToken);
+            $username = $ownerData['username'] ?? 'unknown';
+            
+            // Log state validation attempt with username
             error_log(json_encode([
                 'event' => 'oauth_state_validation',
                 'timestamp' => date('c'),
                 'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
                 'application' => 'zmsadmin',
+                'username' => $username,
                 'state_match' => ($state == $authKey)
             ]));
     
@@ -75,12 +82,13 @@ class Oidc extends BaseController
                         []
                     );
                 } catch (\Exception $e) {
-                    // Log workstation access error
+                    // Log workstation access error with username
                     error_log(json_encode([
                         'event' => 'oauth_workstation_error',
                         'timestamp' => date('c'),
                         'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
                         'application' => 'zmsadmin',
+                        'username' => $username,
                         'error' => $e->getMessage(),
                         'code' => $e->getCode()
                     ]));
@@ -88,11 +96,12 @@ class Oidc extends BaseController
                 }
             }
             
-            // Log invalid state
+            // Log invalid state with username
             error_log(json_encode([
                 'event' => 'oauth_invalid_state',
                 'timestamp' => date('c'),
                 'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                'username' => $username,
                 'application' => 'zmsadmin'
             ]));
             
