@@ -1,0 +1,143 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2019-02-08T14:45:15+01:00",
+    "server": "Zmsapi"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/source.json",
+    "source": "unittest",
+    "contact": {
+      "name": "BerlinOnline Stadtportal GmbH",
+      "email": "test@example.com"
+    },
+    "providers": [
+      {
+        "id": 10546,
+        "source": "dldb",
+        "contact": {
+          "city": "Muenchen",
+          "country": "Germany",
+          "name": "Gewerbeamt (KVR-III\/21)",
+          "postalCode": "81371",
+          "region": "Muenchen",
+          "street": "Implerstra\u00dfe",
+          "streetNumber": "11"
+        },
+        "link": "https:\/\/service.berlin.de\/standort\/10546\/",
+        "name": "Gewerbeamt (KVR-III\/21)",
+        "displayName": "Gewerbeamt"
+      }
+    ],
+    "requests": [
+      {
+        "id": "1063423",
+        "link": "https:\/\/service.berlin.de\/dienstleistung\/1063423\/",
+        "name": "Gewerbe anmelden \/ Zweitschrift beantragen",
+        "group": "Sonstiges",
+        "source": "dldb"
+      }
+    ],
+    "scopes": [
+      {
+        "id": "58",
+        "source": "dldb",
+        "contact": {
+          "name": "Gewerbeamt (KVR-III\/21)",
+          "street": "Implerstra\u00dfe 11",
+          "email": "",
+          "country": "Germany"
+        },
+        "provider": {
+          "id": 10546,
+          "source": "dldb"
+        },
+        "hint": "",
+        "lastChange": 1724192287,
+        "shortName": "Gewerbemeldungen",
+        "displayInfo": "Infos zum Standort.",
+        "preferences": {
+          "client": {
+            "telephoneActivated": "0",
+            "telephoneRequired": "1",
+            "customTextfieldActivated": "0",
+            "customTextfieldRequired": "1",
+            "customTextfieldLabel": "",
+            "captchaActivatedRequired": "0"
+          }
+        }
+      }
+    ],
+    "days": [
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+        "year": "2024",
+        "month": "08",
+        "day": "21",
+        "status": "bookable",
+        "freeAppointments": {
+          "public": 10,
+          "intern": 5,
+          "callcenter": 0,
+          "type": "sum"
+        }
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+        "year": "2024",
+        "month": "08",
+        "day": "22",
+        "status": "bookable",
+        "freeAppointments": {
+          "public": 15,
+          "intern": 10,
+          "callcenter": 0,
+          "type": "sum"
+        }
+      },
+      {
+        "$schema": "https://schema.berlin.de/queuemanagement/day.json",
+        "year": "2024",
+        "month": "08",
+        "day": "23",
+        "status": "bookable",
+        "freeAppointments": {
+          "public": 12,
+          "intern": 7,
+          "callcenter": 0,
+          "type": "sum"
+        }
+      }
+    ],
+    "firstDay": {
+      "year": "2024",
+      "month": "08",
+      "day": "21"
+    },
+    "lastDay": {
+      "year": "2024",
+      "month": "08",
+      "day": "23"
+    },
+    "freeProcesses": [],
+    "label": "Unittest Source",
+    "editable": "1",
+    "lastChange": 1549546997,
+    "requestrelation": [
+      {
+        "provider": {
+          "id": 10546,
+          "source": "unittest"
+        },
+        "request": {
+          "id": "1063423",
+          "$ref": "/request/unittest/1/"
+        },
+        "source": "unittest",
+        "slots": "2"
+      }
+    ]
+  }
+}

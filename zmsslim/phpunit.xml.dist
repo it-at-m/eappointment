@@ -10,7 +10,7 @@
   convertNoticesToExceptions="true" 
   convertWarningsToExceptions="true" 
   forceCoversAnnotation="false" 
-  stopOnFailure="true" 
+  stopOnFailure="false" 
   verbose="true"
   processIsolation="true"
 >
