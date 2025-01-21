@@ -92,8 +92,17 @@ jobs:
           cp -r public/doc/* ../_site/zmscitizenapi/public/doc/ || exit 1
           cd ..
 
-          # Clean up any temporary files
+          # Clean up any temporary files (specifically in _site directory)
+          cd _site
           find . -name "schema" -type f -delete
+          cd ..
+
+          # Verify no schema files exist
+          echo "=== Verifying no schema files exist ==="
+          if find _site -name "schema" -type f | grep -q .; then
+            echo "Error: Schema files still exist"
+            exit 1
+          fi
 
           # List contents to verify
           echo "=== Verifying deployed files ==="
