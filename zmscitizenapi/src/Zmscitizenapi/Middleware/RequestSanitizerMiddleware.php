@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Middleware;
@@ -14,7 +15,6 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
     private int $maxRecursionDepth;
     private int $maxStringLength;
     private LoggerService $logger;
-
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
@@ -23,14 +23,11 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
         $this->maxStringLength = $config['maxStringLength'];
     }
 
-    public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $handler
-    ): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
         try {
             $request = $this->sanitizeRequest($request);
-
-            /*$this->logger->logInfo('Request sanitized', [
+/*$this->logger->logInfo('Request sanitized', [
                 'uri' => (string) $request->getUri()
             ]);*/
 
@@ -47,8 +44,7 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
         $queryParams = $request->getQueryParams();
         $sanitizedQueryParams = $this->sanitizeData($queryParams);
         $request = $request->withQueryParams($sanitizedQueryParams);
-
-        // Sanitize parsed body
+// Sanitize parsed body
         $parsedBody = $request->getParsedBody();
         if (is_array($parsedBody)) {
             $sanitizedParsedBody = $this->sanitizeData($parsedBody);
@@ -115,7 +111,6 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
         }
 
         $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value);
-
         $value = trim($value);
         if (!mb_check_encoding($value, 'UTF-8')) {
             $this->logger->logWarning('Invalid string encoding detected.', ['value' => $value]);

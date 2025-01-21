@@ -21,14 +21,14 @@ class ErrorHandler implements ErrorHandlerInterface
         bool $logErrorDetails
     ): ResponseInterface {
         $statusCode = $this->getStatusCode($exception);
-        
+
         if ($logErrors) {
             $this->logError($exception, $request, $displayErrorDetails, $logErrorDetails);
         }
 
         $response = new \Slim\Psr7\Response();
         $payload = $this->formatErrorPayload($exception, $displayErrorDetails);
-        
+
         $response->getBody()->write(json_encode($payload));
 
         return $response

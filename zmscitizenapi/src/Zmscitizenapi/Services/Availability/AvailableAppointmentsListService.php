@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Availability;
@@ -12,7 +13,6 @@ class AvailableAppointmentsListService
     public function getAvailableAppointmentsList(array $queryParams): AvailableAppointments|array
     {
         $clientData = $this->extractClientData($queryParams);
-
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
@@ -37,21 +37,11 @@ class AvailableAppointmentsListService
 
     private function validateClientData(object $data): array
     {
-        return ValidationService::validateGetAvailableAppointments(
-            $data->date,
-            $data->officeId,
-            $data->serviceIds,
-            $data->serviceCounts
-        );
+        return ValidationService::validateGetAvailableAppointments($data->date, $data->officeId, $data->serviceIds, $data->serviceCounts);
     }
 
     private function getAvailableAppointments(object $data): array|AvailableAppointments
     {
-        return ZmsApiFacadeService::getAvailableAppointments(
-            $data->date,
-            $data->officeId,
-            $data->serviceIds,
-            $data->serviceCounts
-        );
+        return ZmsApiFacadeService::getAvailableAppointments($data->date, $data->officeId, $data->serviceIds, $data->serviceCounts);
     }
 }
