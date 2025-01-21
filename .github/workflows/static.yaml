@@ -2,20 +2,15 @@
 name: Deploy API Documentation to Pages
 
 on:
-  # Runs on pushes targeting the default branch (main)
   push:
     branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -28,11 +23,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 2: Set up PHP environment
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -40,76 +33,58 @@ jobs:
           extensions: mbstring, json
           tools: composer
 
-      # Step 3: Install PHP dependencies for both services
       - name: Install PHP dependencies
         run: |
           composer install --working-dir=zmsapi
           composer install --working-dir=zmscitizenapi
 
-      # Step 4: Run PHP post-install scripts for both services
       - name: Run PHP post-install scripts
         run: |
           cd zmsapi && bin/configure && composer run-script post-install-cmd && cd ..
           cd zmscitizenapi && bin/configure && composer run-script post-install-cmd && cd ..
 
-      # Step 5: Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # Step 6: Install Node.js dependencies for both services
       - name: Install Node.js dependencies
         run: |
           cd zmsapi && npm install && cd ..
           cd zmscitizenapi && npm install && cd ..
 
-      # Step 7: Build both projects
       - name: Build projects
         run: |
           cd zmsapi && npm run build && cd ..
           cd zmscitizenapi && npm run build && cd ..
 
-      # Step 8: Generate Swagger documentation for both services
-      - name: Generate Swagger documentation
+      - name: Create site structure
         run: |
-          cd zmsapi
-          npm run doc
-          npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
-          cd ..
-          cd zmscitizenapi
-          npm run doc
-          npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
-          cd ..
-      # Step 9: Prepare static content
-      - name: Prepare static content
-        run: |
-          # Create full directory structure
           mkdir -p ./_site/eappointment/zmsapi/public/doc
           mkdir -p ./_site/eappointment/zmscitizenapi/public/doc
-          
-          # Copy files with proper structure
-          cp -r zmsapi/public/doc/* ./_site/eappointment/zmsapi/public/doc/
-          cp -r zmscitizenapi/public/doc/* ./_site/eappointment/zmscitizenapi/public/doc/
-          
-          # Ensure all files are written to disk
-          sync
-          
-          # List contents for verification
-          ls -la ./_site/eappointment/zmsapi/public/doc/
-          ls -la ./_site/eappointment/zmscitizenapi/public/doc/
 
-      # Step 10: Set up GitHub Pages for deployment
+      - name: Generate Swagger documentation
+        run: |
+          # Generate zmsapi documentation
+          cd zmsapi
+          PUBLIC_DOC_DIR="../_site/eappointment/zmsapi/public/doc" npm run doc || exit 1
+          npx swagger-cli bundle -o ../_site/eappointment/zmsapi/public/doc/swagger.json public/doc/swagger.yaml || exit 1
+          cd ..
+          
+          # Generate zmscitizenapi documentation
+          cd zmscitizenapi
+          PUBLIC_DOC_DIR="../_site/eappointment/zmscitizenapi/public/doc" npm run doc || exit 1
+          npx swagger-cli bundle -o ../_site/eappointment/zmscitizenapi/public/doc/swagger.json public/doc/swagger.yaml || exit 1
+          cd ..
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Step 11: Upload the static content to GitHub Pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '_site'
 
-      # Step 12: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
