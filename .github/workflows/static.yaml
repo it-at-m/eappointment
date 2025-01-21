@@ -70,39 +70,25 @@ jobs:
           mkdir -p _site/zmsapi/public/doc
           mkdir -p _site/zmscitizenapi/public/doc
 
-          # Generate and copy zmsapi documentation
+          # Generate zmsapi documentation
           cd zmsapi
+          # Run doc script which includes build
           npm run doc || exit 1
-          # Ensure files exist before copying
-          if [ ! -d "public/doc" ]; then
-            echo "Error: public/doc directory not found in zmsapi"
-            exit 1
-          fi
+          # Clean up any schema files before copying
+          find public/doc -name "schema" -type f -delete
+          # Copy files
           cp -r public/doc/* ../_site/zmsapi/public/doc/ || exit 1
           cd ..
           
-          # Generate and copy zmscitizenapi documentation
+          # Generate zmscitizenapi documentation
           cd zmscitizenapi
+          # Run doc script which includes build
           npm run doc || exit 1
-          # Ensure files exist before copying
-          if [ ! -d "public/doc" ]; then
-            echo "Error: public/doc directory not found in zmscitizenapi"
-            exit 1
-          fi
+          # Clean up any schema files before copying
+          find public/doc -name "schema" -type f -delete
+          # Copy files
           cp -r public/doc/* ../_site/zmscitizenapi/public/doc/ || exit 1
           cd ..
-
-          # Clean up any temporary files (specifically in _site directory)
-          cd _site
-          find . -name "schema" -type f -delete
-          cd ..
-
-          # Verify no schema files exist
-          echo "=== Verifying no schema files exist ==="
-          if find _site -name "schema" -type f | grep -q .; then
-            echo "Error: Schema files still exist"
-            exit 1
-          fi
 
           # List contents to verify
           echo "=== Verifying deployed files ==="
