@@ -19,22 +19,87 @@ class Oidc extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        if ($request->getParam("state") == \BO\Zmsclient\Auth::getKey()) {
-            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-            if (0 == $workstation->getUseraccount()->getDepartmentList()->count()) {
-                return \BO\Slim\Render::redirect(
-                    'index',
-                    [],
-                    [
-                        'oidclogin' => true
-                    ]
-                );
+        try {
+            $state = $request->getParam("state");
+            $authKey = \BO\Zmsclient\Auth::getKey();
+            
+            // Log state validation attempt
+            error_log(json_encode([
+                'event' => 'oauth_state_validation',
+                'timestamp' => date('c'),
+                'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                'state_match' => ($state == $authKey)
+            ]));
+
+            if ($state == $authKey) {
+                try {
+                    $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+                    
+                    // Log workstation access
+                    error_log(json_encode([
+                        'event' => 'oauth_workstation_access',
+                        'timestamp' => date('c'),
+                        'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                        'workstation_id' => $workstation->id ?? 'unknown'
+                    ]));
+
+                    $departmentCount = $workstation->getUseraccount()->getDepartmentList()->count();
+                    
+                    // Log department check
+                    error_log(json_encode([
+                        'event' => 'oauth_department_check',
+                        'timestamp' => date('c'),
+                        'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                        'department_count' => $departmentCount,
+                        'has_departments' => ($departmentCount > 0)
+                    ]));
+
+                    if (0 == $departmentCount) {
+                        return \BO\Slim\Render::redirect(
+                            'index',
+                            [],
+                            [
+                                'oidclogin' => true
+                            ]
+                        );
+                    }
+                    return \BO\Slim\Render::redirect(
+                        'workstationSelect',
+                        [],
+                        []
+                    );
+                } catch (\Exception $e) {
+                    // Log workstation access error
+                    error_log(json_encode([
+                        'event' => 'oauth_workstation_error',
+                        'timestamp' => date('c'),
+                        'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                        'error' => $e->getMessage(),
+                        'code' => $e->getCode()
+                    ]));
+                    throw $e;
+                }
             }
-            return \BO\Slim\Render::redirect(
-                'workstationSelect',
-                [],
-                []
-            );
+            
+            // Log invalid state
+            error_log(json_encode([
+                'event' => 'oauth_invalid_state',
+                'timestamp' => date('c'),
+                'provider' => \BO\Zmsclient\Auth::getOidcProvider()
+            ]));
+            
+            throw new \BO\Slim\Exception\OAuthInvalid();
+            
+        } catch (\Exception $e) {
+            // Log any uncaught exceptions
+            error_log(json_encode([
+                'event' => 'oauth_error',
+                'timestamp' => date('c'),
+                'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                'error' => $e->getMessage(),
+                'code' => $e->getCode()
+            ]));
+            throw $e;
         }
     }
 }
