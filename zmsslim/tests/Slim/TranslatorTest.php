@@ -23,7 +23,7 @@ class TranslatorTest extends TestCase
         );
         $translator = new \BO\Slim\LanguageTranslator('de_DE', 'en_GB', 'de');
         $this->assertEquals('en_GB', $translator->getInstance()->getLocale());
-        $this->assertContains('de_DE', $translator->getInstance()->getFallbackLocales());
+        $this->assertContainsEquals('de_DE', $translator->getInstance()->getFallbackLocales());
         
         // does not work because the default language is not accepted when loading the languages in zmsslim language translator
         /*
@@ -55,7 +55,7 @@ class TranslatorTest extends TestCase
         );
         $translator = new \BO\Slim\LanguageTranslator('de_DE', 'en_GB', 'de');
         $this->assertEquals('en_GB', $translator->getInstance()->getLocale());
-        $this->assertContains('de_DE', $translator->getInstance()->getFallbackLocales());
+        $this->assertContainsEquals('de_DE', $translator->getInstance()->getFallbackLocales());
         $this->assertEquals(
             'das ist ein json Test',
             $translator->getInstance()->getCatalogue('de_DE')->get('unittest')

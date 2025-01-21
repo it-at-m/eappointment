@@ -1,0 +1,55 @@
+{
+    "name": "eappointment/zmscitizenapi",
+    "description": "This application offers a REST-like interface for citizens on the internet.",
+    "license": "EUPL-1.2",
+    "authors": [],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "8.0.2"
+        },
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "require-dev": {
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "^3.7",
+        "phpunit/phpunit": "^9.5.4",
+        "helmich/phpunit-psr7-assert": "^4.3.0",
+        "phpspec/prophecy-phpunit": "^2.0.0"
+    },
+    "require": {
+        "eappointment/mellon": "@dev",
+        "eappointment/zmsslim": "@dev",
+        "eappointment/zmsclient": "@dev",
+        "eappointment/zmsentities": "@dev",
+        "symfony/cache": "^6.0",
+        "psr/simple-cache": "^3.0"
+    },
+    "scripts": {
+        "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
+        "command": "bin/configure",
+        "post-install-cmd": [
+            "@wget-files"
+        ],
+        "post-update-cmd": [
+            "@wget-files"
+        ]
+    },
+    "bin": [],
+    "autoload": {
+        "psr-4": {
+            "BO\\Zmscitizenapi\\": "src/Zmscitizenapi/",
+            "BO\\Zmscitizenapi\\Tests\\": "tests/Zmscitizenapi/"
+        }
+    }
+}

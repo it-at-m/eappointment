@@ -1,0 +1,13 @@
+{
+    "type": ["object", "array", "null"],
+    "description": "Combinable services",
+    "additionalProperties": {
+      "type": ["array", "null"],
+      "items": {
+        "type": ["integer", "null"]
+      }
+    },
+    "items": {
+      "type": ["integer", "null"]
+    }
+}
