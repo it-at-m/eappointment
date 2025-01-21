@@ -1,3 +1,31 @@
+## Release Muc-19 (17.01.2025)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2871'>ZMS-2871</a>] -         [Orthographie] Standort löschen: Löschtext hat ein Bindestrich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2874'>ZMS-2874</a>] -         [Orthographie] Mail-Popup Warteschlange: Button-Beschriftungen klein- statt großgeschrieben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3399'>ZMS-3399</a>] -         Bug Deadlock Daily Cronjob Prod writeCanceledByTime
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3463'>ZMS-3463</a>] -         Alte Betreff-Texte in den Mail-Templates
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3500'>ZMS-3500</a>] -         Die ausgewählte Dienstleistung wird nach Tagänderung nicht mehr angezeigt - NEUBUCHUNG
+</li>
+</ul>
+                                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2375'>ZMS-2375</a>] -         Webseiten Titel (Tab) von Admin/Statistik anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3268'>ZMS-3268</a>] -         Visuelles Unterscheidungsmerkmal  einer ZMS-Admin-Umgebung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3434'>ZMS-3434</a>] -         Ausdruck aus dem Kiosk ist pro Standort anpassbar
+</li>
+</ul>
+
 ## Release Muc-18 (13.12.2024)
 
 <h2>        Bug
