@@ -28,6 +28,7 @@ class Oidc extends BaseController
                 'event' => 'oauth_state_validation',
                 'timestamp' => date('c'),
                 'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                'application' => 'zmsadmin',
                 'state_match' => ($state == $authKey)
             ]));
 
@@ -40,6 +41,7 @@ class Oidc extends BaseController
                         'event' => 'oauth_workstation_access',
                         'timestamp' => date('c'),
                         'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                        'application' => 'zmsadmin',
                         'workstation_id' => $workstation->id ?? 'unknown'
                     ]));
 
@@ -50,6 +52,7 @@ class Oidc extends BaseController
                         'event' => 'oauth_department_check',
                         'timestamp' => date('c'),
                         'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                        'application' => 'zmsadmin',
                         'department_count' => $departmentCount,
                         'has_departments' => ($departmentCount > 0)
                     ]));
@@ -74,6 +77,7 @@ class Oidc extends BaseController
                         'event' => 'oauth_workstation_error',
                         'timestamp' => date('c'),
                         'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                        'application' => 'zmsadmin',
                         'error' => $e->getMessage(),
                         'code' => $e->getCode()
                     ]));
@@ -96,6 +100,7 @@ class Oidc extends BaseController
                 'event' => 'oauth_error',
                 'timestamp' => date('c'),
                 'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                'application' => 'zmsadmin',
                 'error' => $e->getMessage(),
                 'code' => $e->getCode()
             ]));
