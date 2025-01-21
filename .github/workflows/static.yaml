@@ -65,23 +65,40 @@ jobs:
 
       - name: Generate Swagger documentation
         run: |
+          # Clean up _site directory first
+          rm -rf _site
+          mkdir -p _site/zmsapi/public/doc
+          mkdir -p _site/zmscitizenapi/public/doc
+
           # Generate and copy zmsapi documentation
           cd zmsapi
-          # First copy all doc files
-          cp -r public/doc/* ../_site/zmsapi/public/doc/
-          # Then generate swagger.json
-          PUBLIC_DOC_DIR="../_site/zmsapi/public/doc" npm run doc || exit 1
-          npx swagger-cli bundle -o ../_site/zmsapi/public/doc/swagger.json public/doc/swagger.yaml || exit 1
+          npm run doc || exit 1
+          # Ensure files exist before copying
+          if [ ! -d "public/doc" ]; then
+            echo "Error: public/doc directory not found in zmsapi"
+            exit 1
+          fi
+          cp -r public/doc/* ../_site/zmsapi/public/doc/ || exit 1
           cd ..
           
           # Generate and copy zmscitizenapi documentation
           cd zmscitizenapi
-          # First copy all doc files
-          cp -r public/doc/* ../_site/zmscitizenapi/public/doc/
-          # Then generate swagger.json
-          PUBLIC_DOC_DIR="../_site/zmscitizenapi/public/doc" npm run doc || exit 1
-          npx swagger-cli bundle -o ../_site/zmscitizenapi/public/doc/swagger.json public/doc/swagger.yaml || exit 1
+          npm run doc || exit 1
+          # Ensure files exist before copying
+          if [ ! -d "public/doc" ]; then
+            echo "Error: public/doc directory not found in zmscitizenapi"
+            exit 1
+          fi
+          cp -r public/doc/* ../_site/zmscitizenapi/public/doc/ || exit 1
           cd ..
+
+          # Clean up any temporary files
+          find . -name "schema" -type f -delete
+
+          # List contents to verify
+          echo "=== Verifying deployed files ==="
+          ls -la _site/zmsapi/public/doc/
+          ls -la _site/zmscitizenapi/public/doc/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
