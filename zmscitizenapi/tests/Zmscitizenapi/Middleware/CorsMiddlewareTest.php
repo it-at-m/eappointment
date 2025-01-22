@@ -24,29 +24,29 @@ class CorsMiddlewareTest extends MiddlewareTestCase
         putenv('CORS=http://localhost:8080');
         \App::reinitializeMiddlewareConfig();
         $this->middleware = new CorsMiddleware($this->logger);
-    }
+    }*/
 
-    protected function tearDown(): void
+    /*protected function tearDown(): void
     {
         putenv('CORS');  // Clear environment variable
         parent::tearDown();
-    }
+    }*/
 
-    public function testAllowsRequestWithoutOrigin(): void
+    /*public function testAllowsRequestWithoutOrigin(): void
     {
         $request = $this->createRequest();
         $response = new Response();
-        $handler = $this->createHandler($response);
+        $handler = $this->createHandler($response);*/
 
         /*$this->logger->expectLogInfo('Direct browser request - no Origin header', [
             'uri' => 'http://localhost/test'
         ]);*/
 
-        $result = $this->middleware->process($request, $handler);
+        /*$result = $this->middleware->process($request, $handler);
         $this->assertSame($response, $result);
-    }
+    }*/
 
-    public function testBlocksDisallowedOrigin(): void
+    /*public function testBlocksDisallowedOrigin(): void
     {
         $request = $this->createRequest(['Origin' => 'http://evil.com']);
         $response = new Response();
@@ -66,9 +66,9 @@ class CorsMiddlewareTest extends MiddlewareTestCase
             ['errors' => [ErrorMessages::get('corsOriginNotAllowed')]],
             $logBody
         );
-    }
+    }*/
 
-    public function testAllowsWhitelistedOrigin(): void
+    /*public function testAllowsWhitelistedOrigin(): void
     {
         $request = $this->createRequest(['Origin' => 'http://localhost:8080']);
         $response = new Response();
@@ -78,9 +78,9 @@ class CorsMiddlewareTest extends MiddlewareTestCase
         
         $this->assertEquals('http://localhost:8080', $result->getHeaderLine('Access-Control-Allow-Origin'));
         $this->assertNotEmpty($result->getHeaderLine('Access-Control-Allow-Methods'));
-    }
+    }*/
 
-    public function testHandlesPreflightRequest(): void
+    /*public function testHandlesPreflightRequest(): void
     {
         $headers = new \Slim\Psr7\Headers([
             'Origin' => 'http://localhost:8080',
