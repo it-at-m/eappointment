@@ -17,7 +17,7 @@
   "communicationCheckboxLabel": "Elektronische Kommunikation",
   "communicationCheckboxText": "Ich habe die <a href=\"https://stadt.muenchen.de/infos/elektronische-kommunikation.html\" target='_blank'>Hinweise zur elektronischen Kommunikation</a> zur Kenntnis genommen und stimme zu, über E-Mail zu meinem Termin benachrichtigt zu werden.",
   "confirmAppointmentHeader": "Aktivieren Sie Ihren Termin.",
-  "confirmAppointmentText": "Sie erhalten nun eine E-Mail mit einem Aktivierungslink. Klicken Sie auf den Link, um die Reservierung abzuschließen. Wenn Sie den Termin nicht innerhalb einer Stunde aktivieren, verfällt Ihre Reservierung.",
+  "confirmAppointmentText": "Sie erhalten in den nächsten Minuten eine E-Mail mit einem Aktivierungslink. Klicken Sie auf den Link, um die Reservierung abzuschließen. Wenn Sie den Termin nicht innerhalb einer Stunde aktivieren, verfällt Ihre Reservierung.",
   "errorMessageFirstName": "Bitte geben Sie Ihren Vornamen an.",
   "errorMessageLastName": "Bitte geben Sie Ihren Nachnamen an.",
   "errorMessageMailAddressRequired": "Bitte geben Sie Ihre E-Mail-Adresse an.",
