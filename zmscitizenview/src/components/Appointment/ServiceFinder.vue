@@ -11,6 +11,7 @@
     <div class="container">
       <form class="m-form m-form--default">
         <muc-select
+          id="service-search"
           v-model="service"
           :items="services"
           item-title="name"

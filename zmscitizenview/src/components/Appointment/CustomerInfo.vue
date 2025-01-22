@@ -1,19 +1,27 @@
 <template>
-  <h2 class="m-component-form__title">Kontaktdaten</h2>
+  <h2
+    class="m-component-form__title"
+    tabindex="0"
+  >
+    Kontaktdaten
+  </h2>
   <form class="m-form m-form--default">
     <muc-input
+      id="firstname"
       v-model="customerData.firstName"
       :error-msg="showErrorMessage ? errorMessageFirstName : undefined"
       :label="t('firstName')"
       required
     />
     <muc-input
+      id="lastname"
       v-model="customerData.lastName"
       :error-msg="showErrorMessage ? errorMessageLastName : undefined"
       :label="t('lastName')"
       required
     />
     <muc-input
+      id="mailaddress"
       v-model="customerData.mailAddress"
       :error-msg="showErrorMessage ? errorMessageMailAddress : undefined"
       :label="t('mailAddress')"
@@ -21,6 +29,7 @@
     />
     <muc-input
       v-if="telephoneActivated"
+      id="telephonenumber"
       v-model="customerData.telephoneNumber"
       :error-msg="showErrorMessage ? errorMessageTelephoneNumber : undefined"
       :label="t('telephoneNumber')"
@@ -29,6 +38,7 @@
     />
     <muc-text-area
       v-if="customTextfieldActivated"
+      id="remarks"
       v-model="customerData.remarks"
       :label="t('remarks')"
       :hint="t('remarkCompletionInstructions')"
