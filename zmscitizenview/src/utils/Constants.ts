@@ -2,23 +2,23 @@
  * Endpoints
  */
 export const VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT =
-  "/api/backend/offices-and-services";
-export const VUE_APP_ZMS_API_CALENDAR_ENDPOINT = "/api/backend/available-days";
+  "/api/backend/offices-and-services/";
+export const VUE_APP_ZMS_API_CALENDAR_ENDPOINT = "/api/backend/available-days/";
 export const VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT =
-  "/api/backend/available-appointments";
+  "/api/backend/available-appointments/";
 export const VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT =
-  "/api/backend/reserve-appointment";
-export const VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT = "/api/backend/appointment";
+  "/api/backend/reserve-appointment/";
+export const VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT = "/api/backend/appointment/";
 export const VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT =
-  "/api/backend/update-appointment";
+  "/api/backend/update-appointment/";
 export const VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT =
-  "/api/backend/confirm-appointment";
+  "/api/backend/confirm-appointment/";
 export const VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT =
-  "/api/backend/cancel-appointment";
+  "/api/backend/cancel-appointment/";
 export const VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT =
-  "/api/backend/preconfirm-appointment";
+  "/api/backend/preconfirm-appointment/";
 export const VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT =
-  "/api/backend/captcha-details";
+  "/api/backend/captcha-details/";
 
 export function getServiceBaseURL(): string {
   return import.meta.env.VITE_VUE_APP_SERVICE_BASE_URL;
