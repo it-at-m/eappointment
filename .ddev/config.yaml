@@ -143,13 +143,13 @@ timezone: Europe/Berlin
 # fail_on_hook_fail: False
 # Decide whether 'ddev start' should be interrupted by a failing hook
 
-# host_https_port: "59002"
+host_https_port: "8091"
 # The host port binding for https can be explicitly specified. It is
 # dynamic unless otherwise specified.
 # This is not used by most people, most people use the *router* instead
 # of the localhost port.
 
-# host_webserver_port: "59001"
+host_webserver_port: "8090"
 # The host port binding for the ddev-webserver can be explicitly specified. It is
 # dynamic unless otherwise specified.
 # This is not used by most people, most people use the *router* instead

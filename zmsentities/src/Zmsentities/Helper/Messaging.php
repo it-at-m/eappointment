@@ -301,23 +301,28 @@ class Messaging
         Process $process,
         Config $config,
         $initiator = null,
-        $status = 'appointment'
+        $status = 'appointment',
+        $templateProvider = null
     ) {
         $appointment = $process->getFirstAppointment();
+        $parameters = [
+            'date' => $appointment ? $appointment->toDateTime()->format('U') : null,
+            'client' => $process->getFirstClient(),
+            'process' => $process,
+            'config' => $config,
+            'initiator' => $initiator,
+            'status' => $status
+        ];
+    
         $template = 'subjects.twig';
-        $subject = self::twigView()->render(
-            'messaging/' . $template,
-            array(
-                'date' => $appointment->toDateTime()->format('U'),
-                'client' => $process->getFirstClient(),
-                'process' => $process,
-                'config' => $config,
-                'initiator' => $initiator,
-                'status' => $status
-            )
-        );
-        $subject = trim($subject);
-        return $subject;
+    
+        if ($templateProvider) {
+            $subject = self::dbTwigView($templateProvider)->render($template, $parameters);
+        } else {
+            $subject = self::twigView()->render('messaging/' . $template, $parameters);
+        }
+    
+        return trim($subject);
     }
 
     public static function getMailIcs(

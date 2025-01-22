@@ -2,9 +2,6 @@
 
 namespace BO\Zmsapi\Exception\Process;
 
-/**
- * example class to generate an exception
- */
 class ProcessNotFound extends \Exception
 {
     protected $code = 404;
