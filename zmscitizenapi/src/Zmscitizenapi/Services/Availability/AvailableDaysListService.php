@@ -18,14 +18,7 @@ class AvailableDaysListService
             return $errors;
         }
 
-        $result = $this->getAvailableDays($clientData);
-        $errors = ValidationService::validateAppointmentDaysNotFound($result->toArray());
-
-        if (!empty($errors)) {
-            return $errors;
-        }
-
-        return $result;
+        return $this->getAvailableDays($clientData);
     }
 
     private function extractClientData(array $queryParams): object

@@ -431,7 +431,7 @@ class ZmsApiFacadeService
         array $serviceCounts,
         string $startDate,
         string $endDate
-    ): AvailableDays {
+    ): AvailableDays|array {
         $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
         $lastDay = DateTimeFormatHelper::getInternalDateFromISO($endDate);
         $services = [];
@@ -465,6 +465,11 @@ class ZmsApiFacadeService
         $formattedDays = [];
         foreach ($daysCollection as $day) {
             $formattedDays[] = sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day);
+        }
+
+        $errors = ValidationService::validateAppointmentDaysNotFound($formattedDays);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
         }
 
         return new AvailableDays($formattedDays);
