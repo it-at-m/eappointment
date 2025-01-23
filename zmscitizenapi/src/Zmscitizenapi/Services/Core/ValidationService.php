@@ -421,4 +421,14 @@ class ValidationService
     {
         return $customTextfield === null || (is_string($customTextfield) && strlen(trim($customTextfield)) > 0);
     }
+
+    private static function isValidOfficeId(?int $officeId): bool
+    {
+        return !empty($officeId) && $officeId > 0;
+    }
+
+    private static function isValidServiceId(?int $serviceId): bool
+    {
+        return !empty($serviceId) && $serviceId > 0;
+    }
 }
