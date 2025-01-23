@@ -111,7 +111,7 @@ class ValidationServiceTest extends TestCase
         // Test invalid office ID
         $result = ValidationService::validateGetAvailableAppointments(
             '2025-01-01',
-            [0],
+            [''],
             [1],
             [1]
         );
