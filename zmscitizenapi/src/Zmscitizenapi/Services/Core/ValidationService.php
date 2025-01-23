@@ -85,19 +85,19 @@ class ValidationService
     }
 
     public static function validateGetBookableFreeDays(
-        ?int $officeId, 
-        ?int $serviceId, 
+        ?array $officeIds,
+        ?array $serviceIds,
         ?string $startDate, 
         ?string $endDate, 
         ?array $serviceCounts
     ): array {
         $errors = [];
 
-        if (!self::isValidOfficeId($officeId)) {
+        if (!self::isValidOfficeIds($officeIds)) {
             $errors[] = self::getError('invalidOfficeId');
         }
 
-        if (!self::isValidServiceId($serviceId)) {
+        if (!self::isValidServiceIds($serviceIds)) {
             $errors[] = self::getError('invalidServiceId');
         }
 
@@ -143,7 +143,7 @@ class ValidationService
 
     public static function validateGetAvailableAppointments(
         ?string $date, 
-        ?int $officeId, 
+        ?array $officeIds,
         ?array $serviceIds, 
         ?array $serviceCounts
     ): array {
@@ -153,7 +153,7 @@ class ValidationService
             $errors[] = self::getError('invalidDate');
         }
 
-        if (!self::isValidOfficeId($officeId)) {
+        if (!self::isValidOfficeIds($officeIds)) {
             $errors[] = self::getError('invalidOfficeId');
         }
 
@@ -357,14 +357,9 @@ class ValidationService
         return !empty($array) && array_filter($array, 'is_numeric') === $array;
     }
 
-    private static function isValidOfficeId(?int $officeId): bool
+    private static function isValidOfficeIds(?array $officeIds): bool
     {
-        return !empty($officeId) && $officeId > 0;
-    }
-
-    private static function isValidServiceId(?int $serviceId): bool
-    {
-        return !empty($serviceId) && $serviceId > 0;
+        return !empty($officeIds) && self::isValidNumericArray($officeIds);
     }
 
     private static function isValidScopeId(?int $scopeId): bool

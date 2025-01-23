@@ -18,7 +18,14 @@ class AvailableDaysListService
             return $errors;
         }
 
-        return $this->getAvailableDays($clientData);
+        $result = $this->getAvailableDays($clientData);
+        $errors = ValidationService::validateAppointmentDaysNotFound($result->toArray());
+
+        if (!empty($errors)) {
+            return $errors;
+        }
+
+        return $result;
     }
 
     private function extractClientData(array $queryParams): object
@@ -29,12 +36,8 @@ class AvailableDaysListService
             : [];
 
         return (object) [
-            'officeId' => isset($queryParams['officeId']) && is_numeric($queryParams['officeId'])
-                ? (int)$queryParams['officeId']
-                : null,
-            'serviceId' => isset($queryParams['serviceId']) && is_numeric($queryParams['serviceId'])
-                ? (int)$queryParams['serviceId']
-                : null,
+            'officeIds' => array_map('trim', explode(',', $queryParams['officeId'] ?? '')),
+            'serviceIds' => array_map('trim', explode(',', $queryParams['serviceId'] ?? '')),
             'serviceCounts' => $serviceCounts,
             'startDate' => $queryParams['startDate'] ?? null,
             'endDate' => $queryParams['endDate'] ?? null
@@ -44,19 +47,19 @@ class AvailableDaysListService
     private function validateClientData(object $data): array
     {
         return ValidationService::validateGetBookableFreeDays(
-            $data->officeId,
-            $data->serviceId,
+            $data->officeIds,
+            $data->serviceIds,
             $data->startDate,
             $data->endDate,
             $data->serviceCounts
         );
     }
 
-    private function getAvailableDays(object $data): array|AvailableDays
+    private function getAvailableDays(object $data): AvailableDays
     {
         return ZmsApiFacadeService::getBookableFreeDays(
-            $data->officeId,
-            $data->serviceId,
+            $data->officeIds,
+            $data->serviceIds,
             $data->serviceCounts,
             $data->startDate,
             $data->endDate
