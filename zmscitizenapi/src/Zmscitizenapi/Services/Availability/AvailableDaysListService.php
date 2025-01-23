@@ -23,14 +23,16 @@ class AvailableDaysListService
 
     private function extractClientData(array $queryParams): object
     {
+        $queryParams['officeId'] = $queryParams['officeId'] ? (string) $queryParams['officeId'] ? : '';
+        $queryParams['serviceId'] = $queryParams['serviceId'] ? (string) $queryParams['serviceId'] : '';
         $serviceCount = $queryParams['serviceCount'] ?? '';
         $serviceCounts = !empty($serviceCount)
             ? array_map('trim', explode(',', (string) $serviceCount))
             : [];
 
         return (object) [
-            'officeIds' => array_map('trim', explode(',', (string) $queryParams['officeId'] ?? '')),
-            'serviceIds' => array_map('trim', explode(',', (string) $queryParams['serviceId'] ?? '')),
+            'officeIds' => array_map('trim', explode(',', $queryParams['officeId'])),
+            'serviceIds' => array_map('trim', explode(',', $queryParams['serviceId'])),
             'serviceCounts' => $serviceCounts,
             'startDate' => $queryParams['startDate'] ?? null,
             'endDate' => $queryParams['endDate'] ?? null
