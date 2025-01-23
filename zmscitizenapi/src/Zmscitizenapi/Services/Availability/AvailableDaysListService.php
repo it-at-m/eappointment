@@ -25,12 +25,12 @@ class AvailableDaysListService
     {
         $serviceCount = $queryParams['serviceCount'] ?? '';
         $serviceCounts = !empty($serviceCount)
-            ? array_map('trim', explode(',', $serviceCount))
+            ? array_map('trim', explode(',', (string) $serviceCount))
             : [];
 
         return (object) [
-            'officeIds' => array_map('trim', explode(',', $queryParams['officeId'] ?? '')),
-            'serviceIds' => array_map('trim', explode(',', $queryParams['serviceId'] ?? '')),
+            'officeIds' => array_map('trim', explode(',', (string) $queryParams['officeId'] ?? '')),
+            'serviceIds' => array_map('trim', explode(',', (string) $queryParams['serviceId'] ?? '')),
             'serviceCounts' => $serviceCounts,
             'startDate' => $queryParams['startDate'] ?? null,
             'endDate' => $queryParams['endDate'] ?? null

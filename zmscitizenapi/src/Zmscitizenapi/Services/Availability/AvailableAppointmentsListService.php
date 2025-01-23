@@ -26,13 +26,13 @@ class AvailableAppointmentsListService
         return (object) [
             'date' => isset($queryParams['date']) ? (string) $queryParams['date'] : null,
             'officeIds' => isset($queryParams['officeId'])
-                ? array_map('trim', explode(',', $queryParams['officeId']))
+                ? array_map('trim', explode(',', (string) $queryParams['officeId']))
                 : [],
             'serviceIds' => isset($queryParams['serviceId'])
-                ? array_map('trim', explode(',', $queryParams['serviceId']))
+                ? array_map('trim', explode(',', (string) $queryParams['serviceId']))
                 : [],
             'serviceCounts' => isset($queryParams['serviceCount'])
-                ? array_map('trim', explode(',', $queryParams['serviceCount']))
+                ? array_map('trim', explode(',', (string) $queryParams['serviceCount']))
                 : []
         ];
     }
