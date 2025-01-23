@@ -159,8 +159,8 @@ class AvailableDaysListServiceTest extends TestCase
             namespace BO\Zmscitizenapi\Services\Core;
             class ValidationService {
                 public static function validateGetBookableFreeDays(
-                    ?int $officeId,
-                    ?int $serviceId,
+                    ?array $officeIds,
+                    ?array $serviceIds,
                     ?string $startDate,
                     ?string $endDate,
                     array $serviceCounts

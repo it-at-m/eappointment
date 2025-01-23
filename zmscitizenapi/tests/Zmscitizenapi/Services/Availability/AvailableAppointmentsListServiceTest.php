@@ -155,7 +155,7 @@ class AvailableAppointmentsListServiceTest extends TestCase
             class ValidationService {
                 public static function validateGetAvailableAppointments(
                     ?string $date,
-                    ?int $officeId,
+                    ?array $officeIds,
                     array $serviceIds,
                     array $serviceCounts
                 ): array {
