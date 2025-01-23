@@ -177,8 +177,8 @@ class AvailableDaysListServiceTest extends TestCase
             namespace BO\Zmscitizenapi\Services\Core;
             class ZmsApiFacadeService {
                 public static function getBookableFreeDays(
-                    int $officeId,
-                    int $serviceId,
+                    array $officeIds,
+                    array $serviceIds,
                     array $serviceCounts,
                     string $startDate,
                     string $endDate
