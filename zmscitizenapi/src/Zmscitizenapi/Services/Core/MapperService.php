@@ -63,6 +63,10 @@ class MapperService
                 id: isset($provider->id) ? (int) $provider->id : 0,
                 name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null),
                 address: isset($provider->data['address']) ? $provider->data['address'] : null,
+                displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
+                organization: $provider->data['organization'] ?? null,
+                organizationUnit: $provider->data['organizationUnit'] ?? null,
+                slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
                 geo: isset($provider->data['geo']) ? $provider->data['geo'] : null,
                 scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(
                     id: isset($providerScope->id) ? (int) $providerScope->id : 0,
