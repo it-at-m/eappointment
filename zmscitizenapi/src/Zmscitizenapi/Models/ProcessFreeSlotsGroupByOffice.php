@@ -10,18 +10,18 @@ use JsonSerializable;
 class ProcessFreeSlotsGroupByOffice extends Entity implements JsonSerializable
 {
 
-    public static $schema = 'citizenapi/processFreeSlots.json';
+    public static $schema = 'citizenapi/processFreeSlotsGroupByOffice.json';
 
     /** @var array|null */
-    public array|null $appointmentTimestamps = [];
+    public array|null $officeAppointments = [];
 
     /**
-     * @param array $appointmentTimestamps
+     * @param array $officeAppointments
      */
-    public function __construct(array $appointmentTimestamps = [])
+    public function __construct(array $officeAppointments = [])
     {
 
-        $this->appointmentTimestamps = array_map('intval', $appointmentTimestamps);
+        $this->officeAppointments = $officeAppointments;
 
         $this->ensureValid();
     }
@@ -41,7 +41,12 @@ class ProcessFreeSlotsGroupByOffice extends Entity implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'appointmentTimestamps' => $this->appointmentTimestamps,
+            'offices' => array_map(function($appointments, $officeId) {
+                return [
+                    'officeId' => $officeId,
+                    'appointments' => $appointments
+                ];
+            }, $this->officeAppointments, array_keys($this->officeAppointments))
         ];
     }
 

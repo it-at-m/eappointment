@@ -50,7 +50,7 @@ class AvailableDaysListService
         );
     }
 
-    private function getAvailableDays(object $data): AvailableDays
+    private function getAvailableDays(object $data): AvailableDays|array
     {
         return ZmsApiFacadeService::getBookableFreeDays(
             $data->officeIds,

@@ -1,5 +1,5 @@
 {
-  "title": "ProcessFreeSlots",
+  "title": "ProcessFreeSlotsGroupByOffice",
   "description": "Defines a list of free appointment timestamps returned by processFreeSlots method.",
   "type": ["array", "object"],
   "properties": {

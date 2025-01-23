@@ -9,6 +9,7 @@ use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\ProcessFreeSlots;
+use BO\Zmscitizenapi\Models\ProcessFreeSlotsGroupByOffice;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;
@@ -548,8 +549,10 @@ class ZmsApiFacadeService
 
     }
 
-    private static function processFreeSlots(ProcessList $freeSlots, bool $groupByOffice): ProcessFreeSlots|array
-    {
+    private static function processFreeSlots(
+        ProcessList $freeSlots,
+        bool $groupByOffice
+    ): ProcessFreeSlots|ProcessFreeSlotsGroupByOffice|array {
         $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
@@ -587,7 +590,11 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        return new ProcessFreeSlots($appointmentTimestamps);
+        if ($groupByOffice) {
+            return new ProcessFreeSlotsGroupByOffice($appointmentTimestamps);
+        }
+
+        return new ProcessFreeSlots(array_values($appointmentTimestamps)[0]);
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
