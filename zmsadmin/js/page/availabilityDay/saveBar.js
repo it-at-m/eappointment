@@ -11,12 +11,12 @@ const SaveBar = (props) => {
     const [isVisible, setIsVisible] = useState(true)
 
     useEffect(() => {
+        setIsVisible(true) // Reset visibility when lastSave changes
         const timer = setTimeout(() => {
             setIsVisible(false)
-        }, 5000)
-
+        }, 6000)
         return () => clearTimeout(timer)
-    }, [])
+    }, [props.lastSave]) // Add lastSave as dependency
 
     if (!isVisible) return null
 
@@ -26,15 +26,16 @@ const SaveBar = (props) => {
             className={`message ${props.success ? 'message--success' : 'message--error'}`}
         >
             {props.success 
-                ? <b><i class="fas fa-check-circle" aria-hidden="true" aria-label="Erfolg"></i> Öffnungszeiten gespeichert, {formatDate(props.lastSave)}</b>
-                : <b><i class="fas fa-times-circle" aria-hidden="true" aria-label="Fehler"></i> Fehler beim Speichern der Öffnungszeiten. Bitte versuchen Sie es erneut.</b>}
+                ? <b><i className="fas fa-check-circle" aria-hidden="true" aria-label="Erfolg"></i> Öffnungszeiten gespeichert, {formatDate(props.lastSave)}</b>
+                : <b><i className="fas fa-times-circle" aria-hidden="true" aria-label="Fehler"></i> Fehler beim Speichern der Öffnungszeiten. Bitte versuchen Sie es erneut.</b>}
         </div>
     )
 }
 
 SaveBar.propTypes = {
     lastSave: PropTypes.oneOfType([
-        PropTypes.number, PropTypes.string
+        PropTypes.number, 
+        PropTypes.string
     ]).isRequired,
     success: PropTypes.bool.isRequired,
     setSuccessRef: PropTypes.func
