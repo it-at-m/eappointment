@@ -23,7 +23,7 @@ class AvailableDaysListService
 
     private function extractClientData(array $queryParams): object
     {
-        $queryParams['officeId'] = $queryParams['officeId'] ? (string) $queryParams['officeId'] ? : '';
+        $queryParams['officeId'] = $queryParams['officeId'] ? (string) $queryParams['officeId'] : '';
         $queryParams['serviceId'] = $queryParams['serviceId'] ? (string) $queryParams['serviceId'] : '';
         $serviceCount = $queryParams['serviceCount'] ?? '';
         $serviceCounts = !empty($serviceCount)
