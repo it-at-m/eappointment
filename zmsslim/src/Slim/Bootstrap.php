@@ -77,14 +77,25 @@ class Bootstrap
         App::$log = new Logger($identifier);
         $level = $this->parseDebugLevel($level);
         $handler = new StreamHandler('php://stderr', $level);
-        $handler->setFormatter(new JsonFormatter());
         
-        // Add processor to include application name
+        $formatter = new JsonFormatter();
+        
+        // Add processor to format time_local first
         App::$log->pushProcessor(function ($record) {
-            $record['extra']['application'] = 'zmsslim';
-            return $record;
+            return array(
+                'time_local' => (new \DateTime())->format('Y-m-d\TH:i:sP'),
+                'client_ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+                'remote_addr' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '',
+                'remote_user' => '',
+                'application' => 'zmsslim',
+                'message' => $record['message'],
+                'level' => $record['level_name'],
+                'context' => $record['context'],
+                'extra' => $record['extra']
+            );
         });
         
+        $handler->setFormatter($formatter);
         App::$log->pushHandler($handler);
     }
 
