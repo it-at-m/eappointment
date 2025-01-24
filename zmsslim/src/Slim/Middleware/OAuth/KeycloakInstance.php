@@ -27,7 +27,7 @@ class KeycloakInstance
 
     public function doLogin(ServerRequestInterface $request, ResponseInterface $response)
     {
-        \App::$log->error('OIDC login attempt', [
+        \App::$log->info('OIDC login attempt', [
             'event' => 'oauth_login_start',
             'timestamp' => date('c')
         ]);
@@ -39,7 +39,7 @@ class KeycloakInstance
             $this->testOwnerData($ownerInputData);
 
             if (\BO\Zmsclient\Auth::getKey()) {
-                \App::$log->error('Clearing existing session', [
+                \App::$log->info('Clearing existing session', [
                     'event' => 'oauth_session_clear',
                     'timestamp' => date('c')
                 ]);
@@ -51,7 +51,7 @@ class KeycloakInstance
                 ->readPostResult('/workstation/oauth/', $ownerInputData, ['state' => \BO\Zmsclient\Auth::getKey()])
                 ->getEntity();
 
-            \App::$log->error('OIDC login successful', [
+            \App::$log->info('OIDC login successful', [
                 'event' => 'oauth_login_success',
                 'timestamp' => date('c')
             ]);
@@ -97,7 +97,7 @@ class KeycloakInstance
 
     private function testAccess(AccessToken $token)
     {
-        \App::$log->error('Validating OIDC token', [
+        \App::$log->info('Validating OIDC token', [
             'event' => 'oauth_token_validation',
             'timestamp' => date('c')
         ]);
@@ -194,7 +194,7 @@ class KeycloakInstance
             throw new \BO\Slim\Exception\OAuthFailed();
         }
 
-        \App::$log->error('Token validation successful', [
+        \App::$log->info('Token validation successful', [
             'event' => 'oauth_token_validation_success',
             'timestamp' => date('c')
         ]);
@@ -210,14 +210,14 @@ class KeycloakInstance
 
     private function getAccessToken($code)
     {
-        \App::$log->error('Getting access token', [
+        \App::$log->info('Getting access token', [
             'event' => 'oauth_get_token',
             'timestamp' => date('c')
         ]);
 
         try {
             $accessToken = $this->provider->getAccessToken('authorization_code', ['code' => $code]);
-            \App::$log->error('Access token obtained', [
+            \App::$log->info('Access token obtained', [
                 'event' => 'oauth_get_token_success',
                 'timestamp' => date('c')
             ]);
@@ -238,7 +238,7 @@ class KeycloakInstance
 
     private function writeTokenToSession($token)
     {
-        \App::$log->error('Writing token to session', [
+        \App::$log->info('Writing token to session', [
             'event' => 'oauth_write_token',
             'timestamp' => date('c')
         ]);
@@ -252,7 +252,7 @@ class KeycloakInstance
 
     private function writeDeleteSession()
     {
-        \App::$log->error('Deleting session', [
+        \App::$log->info('Deleting session', [
             'event' => 'oauth_delete_session',
             'timestamp' => date('c')
         ]);
@@ -265,7 +265,7 @@ class KeycloakInstance
 
     private function readTokenDataFromSession()
     {
-        \App::$log->error('Reading token from session', [
+        \App::$log->info('Reading token from session', [
             'event' => 'oauth_read_token',
             'timestamp' => date('c')
         ]);
