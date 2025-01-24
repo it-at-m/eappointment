@@ -79,12 +79,11 @@ class Bootstrap
         $handler = new StreamHandler('php://stderr', $level);
         
         $formatter = new JsonFormatter();
-        $formatter->setDateFormat('Y-m-d\TH:i:sP');
         
         // Add processor to format time_local first
         App::$log->pushProcessor(function ($record) {
             return array(
-                'time_local' => $record['datetime']->format('Y-m-d\TH:i:sP'),
+                'time_local' => (new \DateTime())->format('Y-m-d\TH:i:sP'),
                 'client_ip' => $_SERVER['REMOTE_ADDR'] ?? '',
                 'remote_addr' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '',
                 'remote_user' => '',
