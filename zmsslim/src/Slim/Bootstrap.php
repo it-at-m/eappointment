@@ -3,7 +3,7 @@ namespace BO\Slim;
 
 use App;
 use Monolog\Formatter\JsonFormatter;
-use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Slim\HttpCache\CacheProvider;
 use BO\Slim\Factory\ResponseFactory;
@@ -76,8 +76,7 @@ class Bootstrap
     {
         App::$log = new Logger($identifier);
         $level = $this->parseDebugLevel($level);
-        // Change from ErrorLogHandler to StreamHandler
-        $handler = new \Monolog\Handler\StreamHandler('php://stderr', $level);
+        $handler = StreamHandler('php://stderr', $level);
         $handler->setFormatter(new JsonFormatter());
         App::$log->pushHandler($handler);
     }
