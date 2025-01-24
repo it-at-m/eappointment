@@ -20,6 +20,11 @@ class KeycloakInstance
         return $this;
     }
 
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
     public function doLogin(ServerRequestInterface $request, ResponseInterface $response)
     {
         \App::$log->error('OIDC login attempt', [
@@ -62,6 +67,32 @@ class KeycloakInstance
             throw $exception;
         }
         return $response;
+    }
+
+    public function doLogout(ResponseInterface $response)
+    {
+        $this->writeDeleteSession();
+        $realmData = $this->provider->getBasicOptionsFromJsonFile();
+        return $response->withRedirect($realmData['logoutUri'], 301);
+    }
+
+    public function writeNewAccessTokenIfExpired()
+    {
+        try {
+            $accessTokenData = $this->readTokenDataFromSession();
+            $accessTokenData = (is_array($accessTokenData)) ? $accessTokenData : [];
+            $existingAccessToken = new AccessToken($accessTokenData);
+            if ($existingAccessToken && $existingAccessToken->hasExpired()) {
+                $newAccessToken = $this->provider->getAccessToken('refresh_token', [
+                    'refresh_token' => $existingAccessToken->getRefreshToken()
+                ]);
+                $this->writeDeleteSession();
+                $this->writeTokenToSession($newAccessToken);
+            }
+        } catch (\Exception $exception) {
+            return false;
+        }
+        return true;
     }
 
     private function testAccess(AccessToken $token)
@@ -167,6 +198,14 @@ class KeycloakInstance
             'event' => 'oauth_token_validation_success',
             'timestamp' => date('c')
         ]);
+    }
+
+    private function testOwnerData(array $ownerInputData)
+    {
+        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        if (! \array_key_exists('email', $ownerInputData) && 1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {
+            throw new \BO\Slim\Exception\OAuthPreconditionFailed();
+        }
     }
 
     private function getAccessToken($code)
