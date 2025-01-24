@@ -78,6 +78,13 @@ class Bootstrap
         $level = $this->parseDebugLevel($level);
         $handler = new StreamHandler('php://stderr', $level);
         $handler->setFormatter(new JsonFormatter());
+        
+        // Add processor to include application name
+        App::$log->pushProcessor(function ($record) {
+            $record['extra']['application'] = 'zmsslim';
+            return $record;
+        });
+        
         App::$log->pushHandler($handler);
     }
 
