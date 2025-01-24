@@ -76,7 +76,7 @@ class Bootstrap
     {
         App::$log = new Logger($identifier);
         $level = $this->parseDebugLevel($level);
-        $handler = StreamHandler('php://stderr', $level);
+        $handler = new StreamHandler('php://stderr', $level);
         $handler->setFormatter(new JsonFormatter());
         App::$log->pushHandler($handler);
     }
