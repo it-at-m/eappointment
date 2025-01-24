@@ -56,9 +56,11 @@
             "sha256sum --status -c checksums.txt"
         ],
         "post-install-cmd": [
+            "@prepare-dirs",
             "@wget-files"
         ],
         "post-update-cmd": [
+            "@prepare-dirs",
             "@wget-files"
         ]
     },
