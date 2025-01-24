@@ -80,12 +80,27 @@ class KeycloakInstance
 
         // Ensure header, payload, and signature exist
         if (empty($header)) {
+            error_log(json_encode([
+                'event' => 'oauth_token_validation_failed',
+                'timestamp' => date('c'),
+                'reason' => 'missing_header'
+            ]));
             throw new \BO\Slim\Exception\OAuthFailed();
         }
         if (empty($payload)) {
+            error_log(json_encode([
+                'event' => 'oauth_token_validation_failed',
+                'timestamp' => date('c'),
+                'reason' => 'missing_payload'
+            ]));
             throw new \BO\Slim\Exception\OAuthFailed();
         }
         if (empty($signature)) {
+            error_log(json_encode([
+                'event' => 'oauth_token_validation_failed',
+                'timestamp' => date('c'),
+                'reason' => 'missing_signature'
+            ]));
             throw new \BO\Slim\Exception\OAuthFailed();
         }
 
@@ -95,16 +110,36 @@ class KeycloakInstance
 
         // Ensure that the payload is correctly decoded
         if ($accessTokenPayload === null) {
+            error_log(json_encode([
+                'event' => 'oauth_token_validation_failed',
+                'timestamp' => date('c'),
+                'reason' => 'invalid_payload_json',
+                'error' => json_last_error_msg()
+            ]));
             throw new \BO\Slim\Exception\OAuthFailed();
         }
-
+    
         // Checking for 'resource_access' and ensuring it's an array
         if (!isset($accessTokenPayload['resource_access']) || !is_array($accessTokenPayload['resource_access'])) {
+            error_log(json_encode([
+                'event' => 'oauth_token_validation_failed',
+                'timestamp' => date('c'),
+                'reason' => 'invalid_resource_access',
+                'has_resource_access' => isset($accessTokenPayload['resource_access']),
+                'resource_access_type' => gettype($accessTokenPayload['resource_access'] ?? null)
+            ]));
             throw new \BO\Slim\Exception\OAuthFailed();
         }
-
+    
         // Checking if App Identifier exists
         if (!isset($accessTokenPayload['resource_access'][\App::IDENTIFIER])) {
+            error_log(json_encode([
+                'event' => 'oauth_token_validation_failed',
+                'timestamp' => date('c'),
+                'reason' => 'missing_app_identifier',
+                'app_identifier' => \App::IDENTIFIER,
+                'available_resources' => array_keys($accessTokenPayload['resource_access'])
+            ]));
             throw new \BO\Slim\Exception\OAuthFailed();
         }
 
@@ -113,14 +148,28 @@ class KeycloakInstance
         $appIdentifierRoles = $resourceAccess[\App::IDENTIFIER]['roles'] ?? null;
 
         if (!$appIdentifierRoles || !is_array($appIdentifierRoles)) {
+            error_log(json_encode([
+                'event' => 'oauth_token_validation_failed',
+                'timestamp' => date('c'),
+                'reason' => 'invalid_roles',
+                'has_roles' => isset($resourceAccess[\App::IDENTIFIER]['roles']),
+                'roles_type' => gettype($appIdentifierRoles)
+            ]));
             throw new \BO\Slim\Exception\OAuthFailed();
         }
-
+    
         if (is_array($accessTokenPayload['resource_access'])) {
             $clientRoles = array_values($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles']);
         }
             
         if (!in_array($realmData['accessRole'], $clientRoles)) {
+            error_log(json_encode([
+                'event' => 'oauth_token_validation_failed',
+                'timestamp' => date('c'),
+                'reason' => 'missing_required_role',
+                'required_role' => $realmData['accessRole'],
+                'available_roles' => $clientRoles
+            ]));
             throw new \BO\Slim\Exception\OAuthFailed();
         }
     }
