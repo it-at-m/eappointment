@@ -346,8 +346,8 @@ createLanguageRoutes(
 createLanguageRoutes(
     \App::$slim,
     '/available-appointments-by-office/',
-    '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListController',
-    "AvailableAppointmentsListController",
+    '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListByOfficeController',
+    "AvailableAppointmentsListByOfficeController",
     "get"
 );
 
