@@ -3,7 +3,7 @@ namespace BO\Slim;
 
 use App;
 use Monolog\Formatter\JsonFormatter;
-use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Slim\HttpCache\CacheProvider;
 use BO\Slim\Factory\ResponseFactory;
@@ -76,8 +76,15 @@ class Bootstrap
     {
         App::$log = new Logger($identifier);
         $level = $this->parseDebugLevel($level);
-        $handler = new ErrorLogHandler(ErrorLogHandler::OPERATING_SYSTEM, $level);
+        $handler = new StreamHandler('php://stderr', $level);
         $handler->setFormatter(new JsonFormatter());
+        
+        // Add processor to include application name
+        App::$log->pushProcessor(function ($record) {
+            $record['extra']['application'] = 'zmsslim';
+            return $record;
+        });
+        
         App::$log->pushHandler($handler);
     }
 
