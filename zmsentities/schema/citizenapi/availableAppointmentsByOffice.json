@@ -1,7 +1,6 @@
 {
-  "title": "ProcessFreeSlotsGroupByOffice",
-  "description": "Defines a list of free appointment timestamps returned by processFreeSlots method.",
-  "type": ["array", "object"],
+  "title": "AvailableAppointmentsByOffice",
+  "type": ["array", "object", "null"],
   "properties": {
     "offices": {
       "type": ["array", "object", "null"],
@@ -25,5 +24,6 @@
       }
     }
   },
-  "required": ["offices"]
+  "required": ["appointmentTimestamps"],
+  "description": "Schema defining the available appointments for a specific date, office, and service"
 }

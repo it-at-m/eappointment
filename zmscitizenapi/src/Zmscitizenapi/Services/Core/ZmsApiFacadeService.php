@@ -5,6 +5,7 @@ namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Models\Office;
@@ -511,7 +512,7 @@ class ZmsApiFacadeService
         array $serviceIds,
         array $serviceCounts,
         ?bool $groupByOffice = false
-    ): AvailableAppointments|array {
+    ): AvailableAppointments|AvailableAppointmentsByOffice|array {
         $requests = [];
         $providers = [];
         foreach ($serviceIds as $index => $serviceId) {
@@ -538,21 +539,19 @@ class ZmsApiFacadeService
             DateTimeFormatHelper::getInternalDateFromISO($date)
         ) ?? new ProcessList();
 
-        $timestamps = self::processFreeSlots($freeSlots, $groupByOffice);
+        $timestamps = self::processFreeSlots($freeSlots);
         if (!empty($timestamps['errors'])) {
             return $timestamps;
         }
 
-        return isset($timestamps->toArray()['appointmentTimestamps'])
-            ? new AvailableAppointments($timestamps->toArray()['appointmentTimestamps'])
-            : new AvailableAppointments();
+        if ($groupByOffice) {
+            return new AvailableAppointmentsByOffice($timestamps);
+        }
 
+        return new AvailableAppointments(array_values($timestamps)[0]);
     }
 
-    private static function processFreeSlots(
-        ProcessList $freeSlots,
-        bool $groupByOffice
-    ): ProcessFreeSlots|ProcessFreeSlotsGroupByOffice|array {
+    private static function processFreeSlots(ProcessList $freeSlots): array {
         $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
@@ -590,11 +589,7 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        if ($groupByOffice) {
-            return new ProcessFreeSlotsGroupByOffice($appointmentTimestamps);
-        }
-
-        return new ProcessFreeSlots(array_values($appointmentTimestamps)[0]);
+        return $appointmentTimestamps;
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array

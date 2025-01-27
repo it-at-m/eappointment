@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Availability;
 
 use BO\Zmscitizenapi\Models\AvailableAppointments;
+use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
@@ -47,8 +48,10 @@ class AvailableAppointmentsListService
         );
     }
 
-    private function getAvailableAppointments(object $data, ?bool $groupByOffice = false): array|AvailableAppointments
-    {
+    private function getAvailableAppointments(
+        object $data,
+        ?bool $groupByOffice = false
+    ): array|AvailableAppointments|AvailableAppointmentsByOffice {
         return ZmsApiFacadeService::getAvailableAppointments(
             $data->date,
             $data->officeIds,
@@ -58,7 +61,7 @@ class AvailableAppointmentsListService
         );
     }
 
-    public function getAvailableAppointmentsListByOffice($queryParams)
+    public function getAvailableAppointmentsListByOffice($queryParams): AvailableAppointmentsByOffice|array
     {
         $clientData = $this->extractClientData($queryParams);
 

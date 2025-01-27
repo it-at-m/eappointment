@@ -7,10 +7,10 @@ use BO\Zmsentities\Schema\Entity;
 use InvalidArgumentException;
 use JsonSerializable;
 
-class ProcessFreeSlotsGroupByOffice extends Entity implements JsonSerializable
+class AvailableAppointmentsByOffice extends Entity implements JsonSerializable
 {
 
-    public static $schema = 'citizenapi/processFreeSlotsGroupByOffice.json';
+    public static $schema = 'citizenapi/availableAppointmentsByOffice.json';
 
     /** @var array|null */
     public array|null $officeAppointments = [];
