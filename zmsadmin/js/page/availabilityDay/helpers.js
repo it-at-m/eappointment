@@ -102,12 +102,21 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
     })
 
     const currentTime = moment()
-    let startTime = moment('05:00:00', 'HH:mm:ss')
-    if (currentTime.isAfter(startTime)) {
+    const dayEndTime = moment('22:00:00', 'HH:mm:ss')
+    let startTime = moment('07:00:00', 'HH:mm:ss')
+    
+    // Only use current time if the selected date is today
+    if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && currentTime.isAfter(startTime)) {
         // Round up to next half hour
         startTime = moment(currentTime).add(30 - (currentTime.minutes() % 30), 'minutes')
     }
     let endTime = moment(startTime).add(1, 'hour')
+
+    // Adjust if end time would exceed 22:00
+    if (endTime.isAfter(dayEndTime)) {
+        startTime = moment(dayEndTime).subtract(1, 'hour')
+        endTime = moment(dayEndTime)
+    }
 
     const hasOverlap = (start, end) => {
         return todayAvailabilities.some(availability => {
@@ -125,10 +134,17 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
         } else {
             const lastAvail = todayAvailabilities[todayAvailabilities.length - 1]
             startTime = moment(lastAvail.endTime, 'HH:mm:ss')
-            if (startTime.isBefore(currentTime)) {
+            // Only check current time if it's today
+            if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && startTime.isBefore(currentTime)) {
                 startTime = moment(currentTime).add(30 - (currentTime.minutes() % 30), 'minutes')
             }
             endTime = moment(startTime).add(1, 'hour')
+            
+            // Check end time limit again after adjusting for overlaps
+            if (endTime.isAfter(dayEndTime)) {
+                startTime = moment(dayEndTime).subtract(1, 'hour')
+                endTime = moment(dayEndTime)
+            }
         }
     }
 
