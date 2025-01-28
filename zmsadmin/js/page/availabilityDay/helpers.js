@@ -79,7 +79,7 @@ export const getInitialState = (props) => Object.assign({}, {
     selectedTab: 'table',
 }, getStateFromProps(props))
 
-export const getNewAvailability = (timestamp, tempId, scope) => {
+export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilities = []) => {
     const now = moment(timestamp, 'X')
     const weekday = [
         'monday',
@@ -91,17 +91,56 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         'sunday'
     ][now.isoWeekday() - 1]
 
-    console.log(scope)
+    const todayAvailabilities = existingAvailabilities.filter(a => 
+        moment(a.startDate, 'X').format('YYYY-MM-DD') === now.format('YYYY-MM-DD')
+    )
 
-    const newAvailability = {
+    todayAvailabilities.sort((a, b) => {
+        const aTime = moment(a.startTime, 'HH:mm:ss')
+        const bTime = moment(b.startTime, 'HH:mm:ss') 
+        return aTime.diff(bTime)
+    })
+
+    const currentTime = moment()
+    let startTime = moment('05:00:00', 'HH:mm:ss')
+    if (currentTime.isAfter(startTime)) {
+        // Round up to next half hour
+        startTime = moment(currentTime).add(30 - (currentTime.minutes() % 30), 'minutes')
+    }
+    let endTime = moment(startTime).add(1, 'hour')
+
+    const hasOverlap = (start, end) => {
+        return todayAvailabilities.some(availability => {
+            const availStart = moment(availability.startTime, 'HH:mm:ss')
+            const availEnd = moment(availability.endTime, 'HH:mm:ss')
+            return !(end.isSameOrBefore(availStart) || start.isSameOrAfter(availEnd))
+        })
+    }
+
+    if (todayAvailabilities.length > 0) {
+        const firstAvail = todayAvailabilities[0]
+        const firstStart = moment(firstAvail.startTime, 'HH:mm:ss')
+        
+        if (!hasOverlap(startTime, endTime) && endTime.isSameOrBefore(firstStart)) {
+        } else {
+            const lastAvail = todayAvailabilities[todayAvailabilities.length - 1]
+            startTime = moment(lastAvail.endTime, 'HH:mm:ss')
+            if (startTime.isBefore(currentTime)) {
+                startTime = moment(currentTime).add(30 - (currentTime.minutes() % 30), 'minutes')
+            }
+            endTime = moment(startTime).add(1, 'hour')
+        }
+    }
+
+    return {
         id: null,
         tempId,
         scope: Object.assign({}, scope),
         description: 'Neue Öffnungszeit',
         startDate: timestamp,
         endDate: timestamp,
-        startTime: '07:00:00',
-        endTime: '20:00:00',
+        startTime: startTime.format('HH:mm:ss'),
+        endTime: endTime.format('HH:mm:ss'),
         bookable: {
             startInDays: scope.preferences.appointment.startInDaysDefault ?? 0,
             endInDays: scope.preferences.appointment.endInDaysDefault ?? 0
@@ -123,8 +162,6 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         type: null,
         kind: "new"
     }
-
-    return newAvailability
 }
 
 export const availabilityTypes = [

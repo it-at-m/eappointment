@@ -446,15 +446,27 @@ class AvailabilityPage extends Component {
 
     onNewAvailability() {
         let state = {};
-        const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
-        newAvailability.type = "appointment"
+        const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope, this.state.availabilitylist);
+        newAvailability.type = "appointment";
+        
         state = Object.assign(
             state, 
-            updateAvailabilityInState(this.state, newAvailability), 
-            { selectedAvailability: null, stateChanged: true }
+            updateAvailabilityInState(this.state, newAvailability)
         );
-        this.setState(state);
-        $('body').scrollTop(0);
+        
+        state.selectedAvailability = newAvailability;
+        state.stateChanged = false;
+        
+        this.setState(state, () => {
+            Promise.all([
+                this.getValidationList(),
+                this.getConflictList()
+            ]).then(() => {
+                this.setState({ selectedAvailability: null });
+            });
+            
+            $('body').scrollTop(0);
+        });
     }
 
     onTabSelect(tab) {
