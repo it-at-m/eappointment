@@ -458,12 +458,8 @@ class AvailabilityPage extends Component {
         state.stateChanged = false;
         
         this.setState(state, () => {
-            Promise.all([
-                this.getValidationList(),
-                this.getConflictList()
-            ]).then(() => {
-                this.setState({ selectedAvailability: null });
-            });
+            this.getValidationList();
+            this.getConflictList();
             
             $('body').scrollTop(0);
         });
