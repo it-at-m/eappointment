@@ -256,13 +256,19 @@ class AvailabilityDatePicker extends Component
             return className;
         }
 
-        /*
         const filterPassedTime = (time) => {
-            const currentDate = this.state.selectedDate;
-            const selectedDate = new Date(time);
-            return currentDate.getTime() < selectedDate.getTime();
-          };
+            if (!moment(this.state.selectedDate).isSame(moment.unix(this.props.attributes.today), 'day')) {
+                return true;
+            }
+
+            const currentTime = moment();
+            const timeToCheck = moment(time);
+            
+            return timeToCheck.hour() > currentTime.hour() || 
+                   (timeToCheck.hour() === currentTime.hour() && timeToCheck.minute() > currentTime.minute());
+        };
         
+        /*
         const isWeekday = date => {
             const day = date.getDay();
             return day !== 0 && day !== 6;
@@ -337,7 +343,7 @@ class AvailabilityDatePicker extends Component
                                 minTime={this.state.minTime}
                                 maxTime={this.state.maxTime}
                                 excludeTimes={this.state.excludeTimeList}
-                                //filterTime={filterPassedTime}
+                                filterTime={filterPassedTime}
                                 disabled={this.props.attributes.disabled}
                                 onInputClick={this.openTimePicker}
                                 onKeyDown={this.tpKeyDownHandler}

@@ -21,7 +21,7 @@ const FormButtons = (props) => {
                     className="button button--diamond" disabled={disabled || data.startDate == selectedDate}>Ab diesem Tag ändern</button> 
                 <button onClick={onUpdateSingle}
                     title="Öffnungszeit aktualisieren"
-                    className="button button--diamond" disabled={(data && !data.id) || hasConflicts || hasSlotCountError || props.isCreatingExclusion}>Aktualisieren</button>
+                    className="button button--diamond" disabled={disabled || props.isCreatingExclusion}>Aktualisieren</button>
             </div>
         </div>
     )
