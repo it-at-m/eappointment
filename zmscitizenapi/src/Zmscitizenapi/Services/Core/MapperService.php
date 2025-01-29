@@ -47,7 +47,7 @@ class MapperService
         return $matchingScope;
     }
 
-    public static function mapOfficesWithScope(ProviderList $providerList): OfficeList
+    public static function mapOfficesWithScope(ProviderList $providerList, bool $showUnpublished = false): OfficeList
     {
         $offices = [];
         $scopes = ZmsApiFacadeService::getScopes();
@@ -58,7 +58,11 @@ class MapperService
     
         foreach ($providerList as $provider) {
             $providerScope = self::mapScopeForProvider((int) $provider->id, $scopes);
-    
+
+            if (! $showUnpublished && ! (bool) $provider->data['public']) {
+                continue;
+            }
+
             $offices[] = new Office(
                 id: isset($provider->id) ? (int) $provider->id : 0,
                 name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null),
@@ -98,7 +102,10 @@ class MapperService
      * @param RequestRelationList $relationList
      * @return ServiceList
      */
-    public static function mapServicesWithCombinations(RequestList $requestList, RequestRelationList $relationList): ServiceList
+    public static function mapServicesWithCombinations(
+        RequestList $requestList,
+        RequestRelationList $relationList,
+        bool $showUnpublished = false): ServiceList
     {
         /** @var array<string, array<int>> $servicesProviderIds */
         $servicesProviderIds = [];
@@ -118,7 +125,10 @@ class MapperService
         });
     
         foreach ($requestArray as $service) {
-    
+            if (! $showUnpublished && ! (bool) $service->getAdditionalData()['public']) {
+                continue;
+            }
+
             /** @var array<string, array<int>> $serviceCombinations */
             $serviceCombinations = [];
             $combinableData = $service->getAdditionalData()['combinable'] ?? [];
