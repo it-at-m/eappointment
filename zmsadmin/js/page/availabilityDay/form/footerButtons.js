@@ -2,12 +2,41 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const FooterButtons = (props) => {
-    const { hasConflicts, stateChanged, data, onNew, onPublish, onAbort, hasSlotCountError } = props
+    const { hasConflicts, stateChanged, data, onNew, onPublish, onAbort, hasSlotCountError, availabilitylist } = props;
+    
+    // Check if there are any new availabilities (with tempId)
+    const hasNewAvailabilities = availabilitylist && availabilitylist.some(
+        availability => availability.tempId && availability.tempId.includes('__temp__')
+    );
+    
     return (
         <div className="form-actions" style={{ "marginTop": "0", "padding": "0.75em" }}>
-            <button title="Neue Öffnungszeit anlegen und bearbeiten" className="button button--diamond button-new" onClick={onNew} disabled={(stateChanged || hasConflicts || data)}>neue Öffnungszeit</button>
-            <button title="Alle Änderungen werden zurückgesetzt" className="button btn" type="abort" onClick={onAbort} disabled={(!stateChanged && !hasConflicts && !data)}>Abbrechen</button>
-            <button title="Alle Änderungen werden gespeichert" className="button button--positive button-save" type="save" value="publish" onClick={onPublish} disabled={(!stateChanged || hasSlotCountError || hasConflicts)}>Alle Änderungen aktivieren
+            <button 
+                title="Neue Öffnungszeit anlegen und bearbeiten" 
+                className="button button--diamond button-new" 
+                onClick={onNew} 
+                disabled={(stateChanged || hasConflicts || data)}
+            >
+                neue Öffnungszeit
+            </button>
+            <button 
+                title="Alle Änderungen werden zurückgesetzt" 
+                className="button btn" 
+                type="abort" 
+                onClick={onAbort} 
+                disabled={!stateChanged && !hasNewAvailabilities && !hasConflicts}
+            >
+                Abbrechen
+            </button>
+            <button 
+                title="Alle Änderungen werden gespeichert" 
+                className="button button--positive button-save" 
+                type="save" 
+                value="publish" 
+                onClick={onPublish} 
+                disabled={(!stateChanged && !hasNewAvailabilities) || hasSlotCountError || hasConflicts}
+            >
+                Alle Änderungen aktivieren
             </button>
         </div>
     )
@@ -19,7 +48,9 @@ FooterButtons.propTypes = {
     stateChanged: PropTypes.bool,
     onNew: PropTypes.func,
     onPublish: PropTypes.func,
-    onAbort: PropTypes.func
+    onAbort: PropTypes.func,
+    hasSlotCountError: PropTypes.bool,
+    availabilitylist: PropTypes.array
 }
 
 export default FooterButtons
