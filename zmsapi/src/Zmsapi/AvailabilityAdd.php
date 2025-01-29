@@ -178,6 +178,7 @@ class AvailabilityAdd extends BaseController
             foreach ($collection as $availability2) {
                 if ($availability1 !== $availability2 && 
                     $availability1->type == $availability2->type &&
+                    $availability1->scope->id == $availability2->scope->id &&
                     $availability1->hasSharedWeekdayWith($availability2)) {
                     
                     $start1 = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)
@@ -188,7 +189,7 @@ class AvailabilityAdd extends BaseController
                         ->modify($availability2->startTime);
                     $end2 = (new \DateTimeImmutable())->setTimestamp($availability2->endDate)
                         ->modify($availability2->endTime);
-    
+        
                     if ($start1 < $end2 && $start2 < $end1) {
                         throw new AvailabilityAddFailed('Neue Öffnungszeiten überschneiden sich.');
                     }
