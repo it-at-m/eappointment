@@ -63,7 +63,6 @@ class AvailabilityAdd extends BaseController
         $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
 
-        // First check overlaps within new availabilities being added
         $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
         $this->checkNewVsNewConflicts($newCollection, $selectedDate);
 
@@ -174,6 +173,13 @@ class AvailabilityAdd extends BaseController
 
     protected function checkNewVsNewConflicts(Collection $collection, \DateTimeImmutable $selectedDate): void
     {
+        $newAvailabilities = new Collection();
+        foreach ($collection as $availability) {
+            if (isset($availability->tempId) && strpos($availability->tempId, '__temp__') !== false) {
+                $newAvailabilities->addEntity($availability);
+            }
+        }
+
         foreach ($collection as $availability1) {
             foreach ($collection as $availability2) {
                 $scope1Id = is_array($availability1->scope) ? ($availability1->scope['id'] ?? null) : ($availability1->scope->id ?? null);
