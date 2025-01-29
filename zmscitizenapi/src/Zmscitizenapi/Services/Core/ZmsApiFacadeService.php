@@ -139,14 +139,18 @@ class ZmsApiFacadeService
         return new ServiceList($services);
     }
 
-    public static function getServicesAndOffices(): OfficeServiceAndRelationList|array
+    public static function getServicesAndOffices(bool $showUnpublished = false): OfficeServiceAndRelationList|array
     {
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $relationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
 
-        $offices = MapperService::mapOfficesWithScope($providerList) ?? new OfficeList;
-        $services = MapperService::mapServicesWithCombinations($requestList, $relationList) ?? new ServiceList();
+        $offices = MapperService::mapOfficesWithScope($providerList, $showUnpublished) ?? new OfficeList;
+        $services = MapperService::mapServicesWithCombinations(
+            $requestList,
+            $relationList,
+            $showUnpublished
+            ) ?? new ServiceList();
         $relations = MapperService::mapRelations($relationList) ?? new OfficeServiceRelationList();
 
         return new OfficeServiceAndRelationList($offices, $services, $relations);
