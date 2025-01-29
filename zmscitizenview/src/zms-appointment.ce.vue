@@ -1,4 +1,8 @@
 <template>
+  <link
+    href="https://assets.muenchen.de/mde/1.0.6/css/muenchende-style.css"
+    rel="stylesheet"
+  />
   <main>
     <div>
       <div v-html="mucIconsSprite"></div>
@@ -17,8 +21,8 @@
 </template>
 
 <script lang="ts" setup>
-import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/temporary/custom-icons.svg?raw";
-import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/temporary/muc-icons.svg?raw";
+import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
+import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
 import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
@@ -60,8 +64,7 @@ const { t } = useI18n();
 </script>
 
 <style>
-@import "@muenchen/muc-patternlab-vue/assets/temporary/muenchende-style.css";
-@import "@muenchen/muc-patternlab-vue/assets/temporary/custom-style.css";
+@import "@muenchen/muc-patternlab-vue/assets/css/custom-style.css";
 @import "@muenchen/muc-patternlab-vue/style.css";
 
 :host {
