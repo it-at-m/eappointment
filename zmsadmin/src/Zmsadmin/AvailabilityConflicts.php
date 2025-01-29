@@ -46,7 +46,6 @@ class AvailabilityConflicts extends BaseController
     
         $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
 
-        // First check overlaps between new availabilities
         $overlapConflicts = self::checkNewVsNewConflicts($availabilityList, $selectedDateTime);
         $conflictList->addList($overlapConflicts);
     
@@ -107,8 +106,15 @@ class AvailabilityConflicts extends BaseController
     {
         $conflicts = new \BO\Zmsentities\Collection\ProcessList();
         
-        foreach ($collection as $availability1) {
-            foreach ($collection as $availability2) {
+        $newAvailabilities = new AvailabilityList();
+        foreach ($collection as $availability) {
+            if (isset($availability->tempId) && strpos($availability->tempId, '__temp__') !== false) {
+                $newAvailabilities->addEntity($availability);
+            }
+        }
+        
+        foreach ($newAvailabilities as $availability1) {
+            foreach ($newAvailabilities as $availability2) {
                 $scope1Id = is_array($availability1->scope) ? ($availability1->scope['id'] ?? null) : ($availability1->scope->id ?? null);
                 $scope2Id = is_array($availability2->scope) ? ($availability2->scope['id'] ?? null) : ($availability2->scope->id ?? null);
                 
@@ -117,12 +123,10 @@ class AvailabilityConflicts extends BaseController
                     $scope1Id == $scope2Id &&
                     $availability1->hasSharedWeekdayWith($availability2)) {
                     
-                    // First check if dates are the same
                     $date1 = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)->format('Y-m-d');
                     $date2 = (new \DateTimeImmutable())->setTimestamp($availability2->startDate)->format('Y-m-d');
                     
                     if ($date1 === $date2) {
-                        // Compare times as strings for exact boundary handling
                         $time1Start = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)
                             ->modify($availability1->startTime)->format('H:i');
                         $time1End = (new \DateTimeImmutable())->setTimestamp($availability1->endDate)
@@ -134,6 +138,16 @@ class AvailabilityConflicts extends BaseController
     
                         if ($time2Start < $time1End && $time1Start < $time2End) {
                             $process = new Process();
+                            
+                            $dateRange1 = date('d.m.Y', $availability1->startDate) . ' - ' . date('d.m.Y', $availability1->endDate);
+                            $dateRange2 = date('d.m.Y', $availability2->startDate) . ' - ' . date('d.m.Y', $availability2->endDate);
+                            $timeRange1 = $time1Start . ' - ' . $time1End;
+                            $timeRange2 = $time2Start . ' - ' . $time2End;
+    
+                            $process->amendment = "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n"
+                                . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$dateRange1, $timeRange1]\n"
+                                . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$dateRange2, $timeRange2]";
+                            
                             $appointment = new \BO\Zmsentities\Appointment();
                             $appointment->date = $availability1->startDate;
                             $appointment->availability = $availability1;
@@ -163,7 +177,7 @@ class AvailabilityConflicts extends BaseController
                     '/scope/' . $scope->getId() . '/availability/',
                     [
                         'resolveReferences' => 0,
-                        'startDate' => $dateTime->format('Y-m-d') // Only fetch availabilities from this date onward
+                        'startDate' => $dateTime->format('Y-m-d')
                     ]
                 )
                 ->getCollection();

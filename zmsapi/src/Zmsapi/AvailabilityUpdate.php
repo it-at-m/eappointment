@@ -101,7 +101,6 @@ class AvailabilityUpdate extends BaseController
         }
 
         if (count($validations) > 0) {
-            //error_log(json_encode($validations));
             throw new AvailabilityUpdateFailed();
         }        
     
@@ -126,7 +125,6 @@ class AvailabilityUpdate extends BaseController
         );
         $conflicts = $mergedCollectionWithoutExclusions->checkAllVsExistingConflicts($earliestStartDateTime, $latestEndDateTime);
         if ($conflicts->count() > 0) {
-            //error_log(json_encode($conflicts));
             throw new AvailabilityUpdateFailed();
         }
 
@@ -183,6 +181,13 @@ class AvailabilityUpdate extends BaseController
 
     protected function checkNewVsNewConflicts(Collection $collection, \DateTimeImmutable $selectedDate): void
     {
+        $newAvailabilities = new Collection();
+        foreach ($collection as $availability) {
+            if (isset($availability->tempId) && strpos($availability->tempId, '__temp__') !== false) {
+                $newAvailabilities->addEntity($availability);
+            }
+        }
+
         foreach ($collection as $availability1) {
             foreach ($collection as $availability2) {
                 $scope1Id = is_array($availability1->scope) ? ($availability1->scope['id'] ?? null) : ($availability1->scope->id ?? null);
