@@ -160,8 +160,9 @@ class Accordion extends Component
                     hasConflicts={Object.keys(this.props.conflictList.itemList).length || Object.keys(this.props.errorList).length ? true : false}
                     hasSlotCountError={hasSlotCountError(this.props)}
                     stateChanged={this.props.stateChanged} 
-                    data={this.props.data} 
-                    {...{onNew, onPublish, onAbort }} 
+                    data={this.props.data}
+                    availabilitylist={this.props.availabilityList}
+                    {...{onNew, onPublish, onAbort }}
                 />}
             />
         )
