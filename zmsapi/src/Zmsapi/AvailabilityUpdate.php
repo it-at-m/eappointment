@@ -71,6 +71,9 @@ class AvailabilityUpdate extends BaseController
         $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
 
+        $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
+        $this->checkForOverlaps($newCollection, $selectedDate);
+
         $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
 
         $mergedCollection = new Collection();
@@ -82,9 +85,6 @@ class AvailabilityUpdate extends BaseController
         foreach ($newCollection as $newAvailability) {
             $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate)->format('Y-m-d');
             $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate)->format('Y-m-d');
-            
-            $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
-            
             $startDateTime = new \DateTimeImmutable("{$startDate} {$newAvailability->startTime}");
             $endDateTime = new \DateTimeImmutable("{$endDate} {$newAvailability->endTime}");
             
@@ -178,6 +178,31 @@ class AvailabilityUpdate extends BaseController
             $doubleTypesEntity['description'] = '';
             $doubleTypesEntity['type'] = 'openinghours';
             (new AvailabilityRepository())->writeEntity($doubleTypesEntity);
+        }
+    }
+
+    protected function checkForOverlaps(Collection $collection, \DateTimeImmutable $selectedDate): void
+    {
+        foreach ($collection as $availability1) {
+            foreach ($collection as $availability2) {
+                if ($availability1 !== $availability2 && 
+                    $availability1->type == $availability2->type &&
+                    $availability1->hasSharedWeekdayWith($availability2)) {
+                    
+                    $start1 = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)
+                        ->modify($availability1->startTime);
+                    $end1 = (new \DateTimeImmutable())->setTimestamp($availability1->endDate)
+                        ->modify($availability1->endTime);
+                    $start2 = (new \DateTimeImmutable())->setTimestamp($availability2->startDate)
+                        ->modify($availability2->startTime);
+                    $end2 = (new \DateTimeImmutable())->setTimestamp($availability2->endDate)
+                        ->modify($availability2->endTime);
+    
+                    if ($start1 < $end2 && $start2 < $end1) {
+                        throw new AvailabilityUpdateFailed('Die zu aktualisierenden Öffnungszeiten überschneiden sich.');
+                    }
+                }
+            }
         }
     }
 }

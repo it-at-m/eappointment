@@ -22,7 +22,6 @@ use BO\Zmsapi\AvailabilitySlotsUpdate;
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
 use BO\Zmsapi\Exception\Availability\AvailabilityAddFailed;
 
-
 /**
  * @SuppressWarnings(Coupling)
  */
@@ -43,16 +42,17 @@ class AvailabilityAdd extends BaseController
         if (!$input || count($input) === 0) {
             throw new BadRequestException();
         }
-    
+
         DbConnection::getWriteConnection();
 
         if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
             throw new BadRequestException('Missing or invalid availabilityList.');
-        } else if(!isset($input['availabilityList'][0]['scope'])){
+        } else if (!isset($input['availabilityList'][0]['scope'])) {
             throw new BadRequestException('Missing or invalid scope.');
         } else if (!isset($input['selectedDate'])) {
             throw new BadRequestException("'selectedDate' is required.");
         }
+
         $newCollection = new Collection();
         foreach ($input['availabilityList'] as $item) {
             $entity = new Entity($item);
@@ -62,12 +62,14 @@ class AvailabilityAdd extends BaseController
 
         $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
-    
-        $startDate = new \DateTimeImmutable('now');
-        $endDate = (new \DateTimeImmutable('now'))->modify('+1 month');
+
+        // First check overlaps within new availabilities being added
+        $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
+        $this->checkForOverlaps($newCollection, $selectedDate);
+
         $availabilityRepo = new AvailabilityRepository();
         $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
-    
+
         $mergedCollection = new Collection();
         foreach ($existingCollection as $existingAvailability) {
             $mergedCollection->addEntity($existingAvailability);
@@ -75,13 +77,11 @@ class AvailabilityAdd extends BaseController
 
         $validations = [];
         foreach ($newCollection as $newAvailability) {
-        
             $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate);
             $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate);
-            $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
             $startDateTime = new \DateTimeImmutable("{$startDate->format('Y-m-d')} {$newAvailability->startTime}");
             $endDateTime = new \DateTimeImmutable("{$endDate->format('Y-m-d')} {$newAvailability->endTime}");
-        
+
             $validations = $mergedCollection->validateInputs(
                 $startDateTime,
                 $endDateTime,
@@ -95,10 +95,9 @@ class AvailabilityAdd extends BaseController
         }
 
         if (count($validations) > 0) {
-            //error_log(json_encode($validations));
             throw new AvailabilityAddFailed();
-        }        
-    
+        }
+
         $originId = null;
         foreach ($mergedCollection as $availability) {
             if (isset($availability->kind) && $availability->kind === 'origin' && isset($availability->id)) {
@@ -106,21 +105,22 @@ class AvailabilityAdd extends BaseController
                 break;
             }
         }
-        
+
         $mergedCollectionWithoutExclusions = new Collection();
         foreach ($mergedCollection as $availability) {
-            if ((!isset($availability->kind) || $availability->kind !== 'exclusion') && 
-                (!isset($availability->id) || $availability->id !== $originId)) {
+            if (
+                (!isset($availability->kind) || $availability->kind !== 'exclusion') &&
+                (!isset($availability->id) || $availability->id !== $originId)
+            ) {
                 $mergedCollectionWithoutExclusions->addEntity($availability);
             }
         }
-        
+
         [$earliestStartDateTime, $latestEndDateTime] = $mergedCollectionWithoutExclusions->getDateTimeRangeFromList(
             \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00')
         );
         $conflicts = $mergedCollectionWithoutExclusions->getConflicts($earliestStartDateTime, $latestEndDateTime);
         if ($conflicts->count() > 0) {
-            //error_log(json_encode($conflicts));
             throw new AvailabilityAddFailed();
         }
 
@@ -130,10 +130,10 @@ class AvailabilityAdd extends BaseController
             AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
             $updatedCollection->addEntity($updatedEntity);
         }
-    
+
         $message = Response\Message::create($request);
         $message->data = $updatedCollection->getArrayCopy();
-    
+
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
@@ -169,6 +169,31 @@ class AvailabilityAdd extends BaseController
             $doubleTypesEntity['description'] = '';
             $doubleTypesEntity['type'] = 'openinghours';
             (new AvailabilityRepository())->writeEntity($doubleTypesEntity);
+        }
+    }
+
+    protected function checkForOverlaps(Collection $collection, \DateTimeImmutable $selectedDate): void
+    {
+        foreach ($collection as $availability1) {
+            foreach ($collection as $availability2) {
+                if ($availability1 !== $availability2 && 
+                    $availability1->type == $availability2->type &&
+                    $availability1->hasSharedWeekdayWith($availability2)) {
+                    
+                    $start1 = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)
+                        ->modify($availability1->startTime);
+                    $end1 = (new \DateTimeImmutable())->setTimestamp($availability1->endDate)
+                        ->modify($availability1->endTime);
+                    $start2 = (new \DateTimeImmutable())->setTimestamp($availability2->startDate)
+                        ->modify($availability2->startTime);
+                    $end2 = (new \DateTimeImmutable())->setTimestamp($availability2->endDate)
+                        ->modify($availability2->endTime);
+    
+                    if ($start1 < $end2 && $start2 < $end1) {
+                        throw new AvailabilityAddFailed('Neue Öffnungszeiten überschneiden sich.');
+                    }
+                }
+            }
         }
     }
 }
