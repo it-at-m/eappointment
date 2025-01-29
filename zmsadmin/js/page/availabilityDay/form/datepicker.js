@@ -124,34 +124,61 @@ class AvailabilityDatePicker extends Component
         if (this.state.kind === 'exclusion') {
             return;
         }
-        var times = []
-        this.state.availabilityList.map(availability => {
-            if (availability.id !== this.state.availability.id &&
+        var times = [];
+        const availabilities = [...this.state.availabilityList]
+            .filter(availability => 
+                availability.id !== this.state.availability.id &&
                 availability.type == this.state.availability.type &&
                 this.isWeekDaySelected(this.state.selectedDate, availability)
-            ) {
-                const startTime = moment(availability.startTime, 'hh:mm')
-                    .add(this.state.availability.slotTimeInMinutes, "m");
-                const startOnDay = moment(this.state.selectedDate)
-                    .set({"h": startTime.hours(), "m": startTime.minutes()})
-                    .toDate()
-                
-                const endTime = moment(availability.endTime, 'hh:mm')
-                    .subtract(this.state.availability.slotTimeInMinutes, "m");
-                const endOnDay = moment(this.state.selectedDate)
-                    .set({"h": endTime.hours(), "m": endTime.minutes()})
-                    .toDate()
-               
-                var currentTime = new Date(startOnDay)
-                while (currentTime < endOnDay) {
-                    times = [...times, new Date(currentTime)]
-                    currentTime = moment(currentTime)
-                        .add(this.state.availability.slotTimeInMinutes, "m")
-                        .toDate()
-                }
-                times = [...times, endOnDay]
+            )
+            .sort((a, b) => {
+                const timeA = moment(a.startTime, 'HH:mm');
+                const timeB = moment(b.startTime, 'HH:mm');
+                return timeA.diff(timeB);
+            });
+    
+        // First add regular excluded times
+        availabilities.forEach(availability => {
+            const startTime = moment(availability.startTime, 'hh:mm')
+                .add(this.state.availability.slotTimeInMinutes, "m");
+            const startOnDay = moment(this.state.selectedDate)
+                .set({"h": startTime.hours(), "m": startTime.minutes()})
+                .toDate();
+            
+            const endTime = moment(availability.endTime, 'hh:mm')
+                .subtract(this.state.availability.slotTimeInMinutes, "m");
+            const endOnDay = moment(this.state.selectedDate)
+                .set({"h": endTime.hours(), "m": endTime.minutes()})
+                .toDate();
+            
+            var currentTime = new Date(startOnDay);
+            while (currentTime < endOnDay) {
+                times.push(new Date(currentTime));
+                currentTime = moment(currentTime)
+                    .add(this.state.availability.slotTimeInMinutes, "m")
+                    .toDate();
             }
+            times.push(endOnDay);
         });
+    
+        // Then check for and add boundary timestamps between adjacent availabilities
+        for (let i = 0; i < availabilities.length - 1; i++) {
+            const current = availabilities[i];
+            const next = availabilities[i + 1];
+            
+            const currentEnd = moment(current.endTime, 'HH:mm');
+            const nextStart = moment(next.startTime, 'HH:mm');
+            
+            // If they're adjacent (end time of one equals start time of next)
+            if (currentEnd.format('HH:mm') === nextStart.format('HH:mm')) {
+                // Add the boundary timestamp to excluded times
+                const boundaryTime = moment(this.state.selectedDate)
+                    .set({"h": currentEnd.hours(), "m": currentEnd.minutes()})
+                    .toDate();
+                times.push(boundaryTime);
+            }
+        }
+    
         this.setState({excludeTimeList: times});
     }
 

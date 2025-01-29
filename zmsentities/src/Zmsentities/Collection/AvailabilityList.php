@@ -233,7 +233,7 @@ class AvailabilityList extends Base
         return [$earliestStartDateTime, $latestEndDateTime];
     }
 
-    public function getConflicts($startDate, $endDate)
+    public function checkAllVsExistingConflicts($startDate, $endDate)
     {
         $processList = new ProcessList();
         foreach ($this as $availability) {

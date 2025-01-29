@@ -867,7 +867,7 @@ class AvailabilityTest extends EntityCommonTests
         ]);
         $startDate = new \DateTimeImmutable('2016-04-19 09:00');
         $endDate = new \DateTimeImmutable('2016-04-19 16:00');
-        $conflicts = $availabilityList->getConflicts($startDate, $startDate);
+        $conflicts = $availabilityList->checkAllVsExistingConflicts($startDate, $startDate);
         $list = [];
         foreach ($conflicts as $conflict) {
             /*error_log(
@@ -892,7 +892,7 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertEquals(
             1,
             $list[
-                "Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n" .
+                "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n" .
                 "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00]\n" .
                 "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]"
             ][1]
@@ -901,7 +901,7 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertEquals(
             1,
             $list[
-                "Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n" .
+                "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n" .
                 "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00]\n" .
                 "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]"
             ][5]
@@ -911,7 +911,7 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertEquals(
             2,
             $list[
-                "Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n" .
+                "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n" .
                 "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]\n" .
                 "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00]"
             ][2]
@@ -920,7 +920,7 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertEquals(
             2,
             $list[
-                "Konflikt: Eine neue Öffnungszeit überschneidet sich mit einer bestehenden Öffnungszeit.\n" .
+                "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n" .
                 "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]\n" .
                 "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 15:00 - 17:00]"
             ][4]

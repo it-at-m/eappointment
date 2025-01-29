@@ -7,8 +7,8 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
-use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
+use BO\Zmsentities\Process;
 
 /**
  * Check if new Availability is in conflict with existing availability
@@ -32,7 +32,6 @@ class AvailabilityConflicts extends BaseController
 
     protected static function getAvailabilityData($input)
     {
-
         if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
             throw new BadRequestException('Missing or invalid availabilityList.');
         } else if(!isset($input['availabilityList'][0]['scope'])){
@@ -40,11 +39,16 @@ class AvailabilityConflicts extends BaseController
         } else if (!isset($input['selectedDate'])) {
             throw new BadRequestException("'selectedDate' is required.");
         }
+
         $conflictList = new \BO\Zmsentities\Collection\ProcessList();
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];
     
         $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
+
+        // First check overlaps between new availabilities
+        $overlapConflicts = self::checkNewVsNewConflicts($availabilityList, $selectedDateTime);
+        $conflictList->addList($overlapConflicts);
     
         $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
@@ -74,7 +78,8 @@ class AvailabilityConflicts extends BaseController
         [$earliestStartDateTime, $latestEndDateTime] = $filteredAvailabilityList->getDateTimeRangeFromList($selectedDateTime);
     
         $filteredAvailabilityList = $filteredAvailabilityList->sortByCustomStringKey('endTime');
-        $conflictList = $filteredAvailabilityList->getConflicts($earliestStartDateTime, $latestEndDateTime);
+        $existingConflicts = $filteredAvailabilityList->checkAllVsExistingConflicts($earliestStartDateTime, $latestEndDateTime);
+        $conflictList->addList($existingConflicts);
     
         foreach ($conflictList as $conflict) {
             $availabilityId = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
@@ -89,6 +94,58 @@ class AvailabilityConflicts extends BaseController
             'conflictList' => $conflictList->toConflictListByDay(),
             'conflictIdList' => (count($conflictedList)) ? $conflictedList : []
         ];
+    }
+
+    /**
+     * Check for overlaps between availabilities in the collection
+     * 
+     * @param AvailabilityList $collection
+     * @param \DateTimeImmutable $selectedDateTime
+     * @return \BO\Zmsentities\Collection\ProcessList
+     */
+    protected static function checkNewVsNewConflicts(AvailabilityList $collection, \DateTimeImmutable $selectedDateTime)
+    {
+        $conflicts = new \BO\Zmsentities\Collection\ProcessList();
+        
+        foreach ($collection as $availability1) {
+            foreach ($collection as $availability2) {
+                $scope1Id = is_array($availability1->scope) ? ($availability1->scope['id'] ?? null) : ($availability1->scope->id ?? null);
+                $scope2Id = is_array($availability2->scope) ? ($availability2->scope['id'] ?? null) : ($availability2->scope->id ?? null);
+                
+                if ($availability1 !== $availability2 && 
+                    $availability1->type == $availability2->type &&
+                    $scope1Id == $scope2Id &&
+                    $availability1->hasSharedWeekdayWith($availability2)) {
+                    
+                    // First check if dates are the same
+                    $date1 = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)->format('Y-m-d');
+                    $date2 = (new \DateTimeImmutable())->setTimestamp($availability2->startDate)->format('Y-m-d');
+                    
+                    if ($date1 === $date2) {
+                        // Compare times as strings for exact boundary handling
+                        $time1Start = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)
+                            ->modify($availability1->startTime)->format('H:i');
+                        $time1End = (new \DateTimeImmutable())->setTimestamp($availability1->endDate)
+                            ->modify($availability1->endTime)->format('H:i');
+                        $time2Start = (new \DateTimeImmutable())->setTimestamp($availability2->startDate)
+                            ->modify($availability2->startTime)->format('H:i');
+                        $time2End = (new \DateTimeImmutable())->setTimestamp($availability2->endDate)
+                            ->modify($availability2->endTime)->format('H:i');
+    
+                        if ($time2Start < $time1End && $time1Start < $time2End) {
+                            $process = new Process();
+                            $appointment = new \BO\Zmsentities\Appointment();
+                            $appointment->date = $availability1->startDate;
+                            $appointment->availability = $availability1;
+                            $process->addAppointment($appointment);
+                            $conflicts->addEntity($process);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return $conflicts;
     }
 
     /**
@@ -118,5 +175,4 @@ class AvailabilityConflicts extends BaseController
         }
         return $availabilityList->withScope($scope);
     }
-
 }
