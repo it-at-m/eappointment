@@ -203,7 +203,7 @@ class AvailabilityUpdate extends BaseController
                         ->modify($availability2->endTime);
     
                     if ($start1 < $end2 && $start2 < $end1) {
-                        throw new AvailabilityAddFailed('Neue Öffnungszeiten überschneiden sich.');
+                        throw new AvailabilityUpdateFailed('Neue Öffnungszeiten überschneiden sich.');
                     }
                 }
             }
