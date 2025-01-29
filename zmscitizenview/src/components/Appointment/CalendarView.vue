@@ -88,8 +88,12 @@
     </div>
     <muc-calendar
       v-model="selectedDay"
+      disable-view-change
       variant="single"
       :allowed-dates="allowedDates"
+      :min="minDate"
+      :max="maxDate"
+      :view-month="minDate"
     />
     <div class="m-component">
       <div class="m-content">
@@ -224,6 +228,8 @@ const appointmentTimestamps = ref<number[]>();
 
 const selectedDay = ref<Date>();
 const error = ref<boolean>(false);
+const minDate = ref<Date>();
+const maxDate = ref<Date>();
 
 const summary = ref<HTMLElement | null>(null);
 
@@ -303,6 +309,8 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
     if ((data as AvailableDaysDTO).availableDays !== undefined) {
       availableDays.value = (data as AvailableDaysDTO).availableDays;
       selectedDay.value = new Date(availableDays.value[0]);
+      minDate.value = new Date(availableDays.value[0]);
+      maxDate.value = new Date(availableDays.value[availableDays.value.length-1]);
       getAppointmentsOfDay(availableDays.value[0]);
     } else {
       error.value = true;
