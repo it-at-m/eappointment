@@ -59,7 +59,7 @@ class MapperService
         foreach ($providerList as $provider) {
             $providerScope = self::mapScopeForProvider((int) $provider->id, $scopes);
 
-            if (! $showUnpublished && ! (bool) $provider->data['public']) {
+            if (! $showUnpublished && isset($provider->data['public']) && ! (bool) $provider->data['public']) {
                 continue;
             }
 
@@ -125,7 +125,10 @@ class MapperService
         });
     
         foreach ($requestArray as $service) {
-            if (! $showUnpublished && ! (bool) $service->getAdditionalData()['public']) {
+            if (! $showUnpublished
+                && isset($service->getAdditionalData()['public'])
+                && ! (bool) $service->getAdditionalData()['public'])
+            {
                 continue;
             }
 
