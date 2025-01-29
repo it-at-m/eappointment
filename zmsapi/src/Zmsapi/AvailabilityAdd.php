@@ -65,7 +65,7 @@ class AvailabilityAdd extends BaseController
 
         // First check overlaps within new availabilities being added
         $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
-        $this->checkForOverlaps($newCollection, $selectedDate);
+        $this->checkNewVsNewConflicts($newCollection, $selectedDate);
 
         $availabilityRepo = new AvailabilityRepository();
         $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
@@ -119,7 +119,7 @@ class AvailabilityAdd extends BaseController
         [$earliestStartDateTime, $latestEndDateTime] = $mergedCollectionWithoutExclusions->getDateTimeRangeFromList(
             \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00')
         );
-        $conflicts = $mergedCollectionWithoutExclusions->getConflicts($earliestStartDateTime, $latestEndDateTime);
+        $conflicts = $mergedCollectionWithoutExclusions->checkAllVsExistingConflicts($earliestStartDateTime, $latestEndDateTime);
         if ($conflicts->count() > 0) {
             throw new AvailabilityAddFailed();
         }
@@ -172,7 +172,7 @@ class AvailabilityAdd extends BaseController
         }
     }
 
-    protected function checkForOverlaps(Collection $collection, \DateTimeImmutable $selectedDate): void
+    protected function checkNewVsNewConflicts(Collection $collection, \DateTimeImmutable $selectedDate): void
     {
         foreach ($collection as $availability1) {
             foreach ($collection as $availability2) {
