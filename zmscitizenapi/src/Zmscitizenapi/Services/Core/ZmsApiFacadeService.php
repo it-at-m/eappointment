@@ -563,10 +563,10 @@ class ZmsApiFacadeService
             iterator_to_array($freeSlots),
             function ($timestamps, $slot) use ($currentTimestamp) {
                 if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                    $providerId = (int) $slot->scope->provider->id;
                     foreach ($slot->appointments as $appointment) {
-                        if (isset($appointment->date) && isset($appointment->scope->provider->id)) {
+                        if (isset($appointment->date)) {
                             $timestamp = (int) $appointment->date;
-                            $providerId = (int) $appointment->scope->provider->id;
 
                             if ($timestamp > $currentTimestamp) {
                                 $timestamps[$providerId][$timestamp] = true;
