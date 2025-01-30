@@ -402,7 +402,7 @@ class MapperServiceTest extends TestCase
         $request1->id = 1;
         $request1->name = 'Service 1';
         $request1->additionalData = [
-            'maxQuantity' => 2,
+            'maxQuantity' => 22,
             'public' => false
         ];
 
