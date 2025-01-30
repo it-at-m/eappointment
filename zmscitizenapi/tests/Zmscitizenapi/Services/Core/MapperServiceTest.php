@@ -398,9 +398,10 @@ class MapperServiceTest extends TestCase
 
     public function testDontReturnNotPublicServices()
     {
+        var_dump('here');
         $request1 = new Request();
         $request1->id = 1;
-        $request1->name = 'Service 1';
+        $request1->name = 'Service 111';
         $request1->additionalData = [
             'maxQuantity' => 22,
             'public' => false
