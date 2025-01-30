@@ -506,20 +506,27 @@ class AvailabilityPage extends Component {
                 }
                 return [];
             };
-
+    
             const list = this.state.availabilitylist
                 .map(validateData)
                 .flat();
-
+    
             console.log("Validation list:", list);
-
+    
             this.setState(
                 {
                     errorList: list.length ? list : [],
                 },
                 () => {
                     if (list.length > 0) {
-                        console.warn("Validation failed with errors:", list);
+                        // Filter out endTimePast errors for console warning
+                        const nonPastTimeErrors = list.filter(error => 
+                            !error.itemList?.flat(2).some(item => item?.type === 'endTimePast')
+                        );
+                        
+                        if (nonPastTimeErrors.length > 0) {
+                            console.warn("Validation failed with errors:", nonPastTimeErrors);
+                        }
                         this.errorElement?.scrollIntoView();
                     } else {
                         console.log("Validation passed.");
