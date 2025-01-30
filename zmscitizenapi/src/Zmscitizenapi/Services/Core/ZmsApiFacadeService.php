@@ -564,12 +564,12 @@ class ZmsApiFacadeService
             function ($timestamps, $slot) use ($currentTimestamp) {
                 if (isset($slot->appointments) && is_iterable($slot->appointments)) {
                     foreach ($slot->appointments as $appointment) {
-                        if (isset($appointment->date) && isset($appointment->scope->id)) {
+                        if (isset($appointment->date) && isset($appointment->scope->provider->id)) {
                             $timestamp = (int) $appointment->date;
-                            $scopeId = (int) $appointment->scope->id;
+                            $providerId = (int) $appointment->scope->provider->id;
 
                             if ($timestamp > $currentTimestamp) {
-                                $timestamps[$scopeId][$timestamp] = true;
+                                $timestamps[$providerId][$timestamp] = true;
                             }
                         }
                     }
@@ -579,7 +579,7 @@ class ZmsApiFacadeService
             []
         );
 
-        foreach ($appointmentTimestamps as $scopeId => &$timestamps) {
+        foreach ($appointmentTimestamps as $providerId => &$timestamps) {
             $timestamps = array_keys($timestamps);
             asort($timestamps);
         }
