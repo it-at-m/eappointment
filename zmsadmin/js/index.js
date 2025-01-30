@@ -26,6 +26,7 @@ import PickupKeyboardHandheldView from "./page/pickup/keyboard-handheld"
 import StatisticView from './page/statistic'
 
 import LoginScopeSelectView from './block/scope/loginselectform'
+import EmergencyEnd from './block/scope/emergencyend'
 //import AvailabilityDayPage from './page/availabilityDay'
 import WeekCalendarPage from './page/weekCalendar'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
@@ -108,6 +109,10 @@ $('[data-scope-select-form]').each(function () {
     new LoginScopeSelectView(this, getDataAttributes(this));
 })
 
+$('.emergency-end').each(function () {
+    new EmergencyEnd(this, getDataAttributes(this));
+})
+
 $('.pickup-view').each(function () {
     new PickupView(this, getDataAttributes(this));
 })
@@ -139,6 +144,7 @@ DialogHandler.hideMessages();
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");
+console.log("Hello")
 
 
 // hook up react components
