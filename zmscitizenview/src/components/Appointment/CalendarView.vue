@@ -310,7 +310,9 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
       availableDays.value = (data as AvailableDaysDTO).availableDays;
       selectedDay.value = new Date(availableDays.value[0]);
       minDate.value = new Date(availableDays.value[0]);
-      maxDate.value = new Date(availableDays.value[availableDays.value.length-1]);
+      maxDate.value = new Date(
+        availableDays.value[availableDays.value.length - 1]
+      );
       getAppointmentsOfDay(availableDays.value[0]);
     } else {
       error.value = true;
