@@ -27,6 +27,9 @@ class OfficesServicesRelationsController extends BaseController
         $domain = $request->getUri()->getHost();
         $showUnpublished = !empty($this->showUnpublishedOnDomain)
             && strpos($domain, $this->showUnpublishedOnDomain) !== false;
+        var_dump('----');
+        var_dump($domain);
+        var_dump($this->showUnpublishedOnDomain);
         $requestErrors = ValidationService::validateServerGetRequest($request);
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse(
