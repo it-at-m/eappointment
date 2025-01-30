@@ -14,7 +14,7 @@ const FooterButtons = (props) => {
                 title="Neue Öffnungszeit anlegen und bearbeiten"
                 className="button button--diamond button-new"
                 onClick={onNew}
-                disabled={(stateChanged || data || hasConflicts)}
+                disabled={( data || hasConflicts)}
             >
                 neue Öffnungszeit
             </button>

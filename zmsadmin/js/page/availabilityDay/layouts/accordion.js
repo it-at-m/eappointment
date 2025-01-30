@@ -152,7 +152,6 @@ class Accordion extends Component
                 )
             })
         }
-        console.log(this.props.errorList);
         return (
             <Board className="accordion js-accordion"
                 title=""

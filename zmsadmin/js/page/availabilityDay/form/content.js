@@ -25,21 +25,83 @@ const FormContent = (props) => {
 
     const isUnsafedSpontaneous = data.id == 0;
 
+    const filteredErrorList = Object.values(errorList)
+        .filter(error => error.itemList?.[0]?.[0]?.type !== 'endTimePast')
+        .reduce((acc, error) => {
+            acc[error.id] = error;
+            return acc;
+        }, {});
+
     return (
         <div>
-            <ErrorBar errorList={errorList} conflictList={conflictList} setErrorRef={setErrorRef} />
             <form className="form--base">
+                <ErrorBar errorList={filteredErrorList} conflictList={conflictList} setErrorRef={setErrorRef} />
                 <fieldset>
                     {isUnsafedSpontaneous ?
-                        <div className="message message-info">
-                            Diese Öffnungszeit ist eine mit einer Termin-Öffnungszeit verbundenen Spontankunden-Öffnungszeit und hat noch keine eigene ID. Sie können diese Öffnungszeit erst einzeln aktualisieren, wenn sie die dazugehörige Termin-Öffnungszeit mit einmal initial aktualisiert haben.
-                        </div> : null
+                        <section
+                            style={{
+                                position: 'relative',
+                                borderColor: '#cccccc',
+                                margin: '20px auto'
+                            }}
+                            className="dialog message"
+                            role="alert"
+                        >
+                            <div style={{
+                                position: 'absolute',
+                                top: '-15px',
+                                left: '7px',
+                                backgroundColor: '#fcaa67',
+                                width: '30px',
+                                height: '30px',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                                <i className="fas fa-exclamation-circle" title="Wichtiger Hinweis" aria-hidden="true" style={{ color: 'white' }} />
+                            </div>
+                            <h2 className="message__heading">Hinweis zur Termin-Öffnungszeit</h2>
+                            <div className="message__body">
+                                Diese Öffnungszeit ist eine mit einer Termin-Öffnungszeit verbundenen Spontankunden-Öffnungszeit und hat noch keine eigene ID. Sie können diese Öffnungszeit erst einzeln aktualisieren, wenn sie die dazugehörige Termin-Öffnungszeit mit einmal initial aktualisiert haben.
+                            </div>
+                        </section> : null
                     }
-                    {hasEndTimePastError && (
-                        <div className="message message-info">
-                            Diese Öffnungszeit liegt in der Vergangenheit und kann nicht mehr bearbeitet werden.
-                        </div>
-                    )}
+                    {hasEndTimePastError && Object.values(errorList).map(error => {
+                        const endTimePastError = error.itemList?.[0]?.[0];
+                        if (endTimePastError?.type === 'endTimePast') {
+                            return (
+                                <section
+                                    key={error.id}
+                                    style={{
+                                        position: 'relative',
+                                        borderColor: '#cccccc',
+                                        margin: '20px auto'
+                                    }}
+                                    className="dialog message"
+                                    role="alert"
+                                >
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '-15px',
+                                        left: '7px',
+                                        backgroundColor: '#fcaa67',
+                                        width: '30px',
+                                        height: '30px',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}>
+                                        <i className="fas fa-exclamation-circle" title="Wichtiger Hinweis" aria-hidden="true" style={{ color: 'white' }} />
+                                    </div>
+                                    <h2 className="message__heading">Öffnungszeit liegt in der Vergangenheit</h2>
+                                    <div className="message__body">
+                                        {endTimePastError.message}
+                                    </div>
+                                </section>
+                            );
+                        }
+                        return null;
+                    })}
                     <div className="panel--heavy">
                         <FormGroup>
                             <Label attributes={{ "htmlFor": "AvDayDescription" }}>Anmerkung</Label>

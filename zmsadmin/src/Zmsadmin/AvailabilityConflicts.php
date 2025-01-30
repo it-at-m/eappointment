@@ -158,7 +158,7 @@ class AvailabilityConflicts extends BaseController
                 }
             }
         }
-        
+        error_log(json_encode("Conflicts: " . $conflicts));
         return $conflicts;
     }
 
