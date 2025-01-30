@@ -144,7 +144,6 @@ DialogHandler.hideMessages();
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");
-console.log("Hello")
 
 
 // hook up react components
