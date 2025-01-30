@@ -127,7 +127,7 @@ class MapperService
         foreach ($requestArray as $service) {
             if (! $showUnpublished
                 && isset($service->getAdditionalData()['public'])
-                && ! (bool) $service->getAdditionalData()['public'])
+                && !$service->getAdditionalData()['public'])
             {
                 continue;
             }
