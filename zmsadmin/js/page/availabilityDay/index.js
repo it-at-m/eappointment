@@ -150,7 +150,13 @@ class AvailabilityPage extends Component {
                     lastSave: new Date().getTime(),
                     saveSuccess: true,
                 }, () => {
-                    this.successElement.scrollIntoView();
+                    // Attempt to scroll immediately after state update, before the 6-second timer expires
+                    if (this.successElement) {
+                        this.successElement.scrollIntoView();
+                    } else {
+                        // Fallback to bottom scroll if the element isn't available
+                        this.handleScrollToBottom();
+                    }
                 });
                 hideSpinner();
                 this.handleScrollToBottom();
@@ -168,7 +174,11 @@ class AvailabilityPage extends Component {
                 }
                 this.setState({
                     lastSave: new Date().getTime(),
-                    saveSuccess: false,
+                    saveSuccess: true,
+                }, () => {
+                    if (this.successElement) {
+                        this.successElement.scrollIntoView();
+                    }
                 });
                 this.getValidationList();
                 hideSpinner();

@@ -120,7 +120,7 @@ const FormContent = (props) => {
                             <Label attributes={{ "htmlFor": "AvDayType" }}>Typ</Label>
                             <Controls>
                                 <Inputs.Select name="type"
-                                    attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType", "disabled": inputDisabled }}
+                                    attributes={{ disabled: data.id ? 'disabled' : null, "id": "AvDayType" }}
                                     value={data.type ? data.type : "appointment"} {...{ onChange }}
                                     options={availabilityTypes} />
                                 <Description attributes={{ "id": "help_AvDayTypDescription" }}>Typ der Öffnungszeit.
@@ -165,7 +165,7 @@ const FormContent = (props) => {
                                 <Inputs.Text name="slotTimeInMinutes"
                                     value={data.slotTimeInMinutes}
                                     width="2"
-                                    attributes={{ disabled: 'disabled', maxLength: 3, "id": "AvDaySlottime", "disabled": inputDisabled }}
+                                    attributes={{ disabled: 'disabled', maxLength: 3, "id": "AvDaySlottime" }}
                                     {...{ onChange }} />
                                 <Label attributes={{ "htmlFor": "AvDaySlottime", "className": "light" }}>&nbsp;Minuten Abstand zweier aufeinander folgender Termine</Label>
                             </Controls>
