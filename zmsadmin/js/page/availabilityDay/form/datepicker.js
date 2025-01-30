@@ -125,6 +125,17 @@ class AvailabilityDatePicker extends Component
             return;
         }
         var times = [];
+        
+        // Add maintenance window times (23:00-01:00)
+        const selectedDate = moment(this.state.selectedDate);
+        for (let minute = 1; minute < 60; minute++) {
+            times.push(selectedDate.clone().hour(23).minute(minute).toDate());
+        }
+        for (let minute = 0; minute < 59; minute++) {
+            times.push(selectedDate.clone().hour(0).minute(minute).toDate());
+        }
+    
+        // Filter and sort availabilities
         const availabilities = [...this.state.availabilityList]
             .filter(availability => 
                 availability.id !== this.state.availability.id &&
@@ -137,7 +148,7 @@ class AvailabilityDatePicker extends Component
                 return timeA.diff(timeB);
             });
     
-        // First add regular excluded times
+        // Add regular excluded times
         availabilities.forEach(availability => {
             const startTime = moment(availability.startTime, 'hh:mm')
                 .add(this.state.availability.slotTimeInMinutes, "m");
@@ -161,7 +172,7 @@ class AvailabilityDatePicker extends Component
             times.push(endOnDay);
         });
     
-        // Then check for and add boundary timestamps between adjacent availabilities
+        // Add boundary timestamps between adjacent availabilities
         for (let i = 0; i < availabilities.length - 1; i++) {
             const current = availabilities[i];
             const next = availabilities[i + 1];
@@ -287,12 +298,16 @@ class AvailabilityDatePicker extends Component
             if (!moment(this.state.selectedDate).isSame(moment.unix(this.props.attributes.today), 'day')) {
                 return true;
             }
-
+        
+            const BUFFER_MINUTES = 60; // Minimum minutes needed between current time and next slot
             const currentTime = moment();
             const timeToCheck = moment(time);
             
-            return timeToCheck.hour() > currentTime.hour() || 
-                   (timeToCheck.hour() === currentTime.hour() && timeToCheck.minute() > currentTime.minute());
+            // Calculate minutes difference between times
+            const minutesDiff = timeToCheck.diff(currentTime, 'minutes');
+            
+            // Disable if time is in past or too close to current time
+            return minutesDiff >= BUFFER_MINUTES;
         };
         
         /*
