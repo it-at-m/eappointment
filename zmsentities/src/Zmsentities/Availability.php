@@ -472,10 +472,10 @@ class Availability extends Schema\Entity
             ];
         }
         
-        if (($startHour == 0 && $startMinute == 0) || ($endHour == 0 && $endMinute == 0)) {
+        if ($startHour >= 23 || $startHour === 0 || $endHour >= 23 || $endHour === 0) {
             $errorList[] = [
                 'type' => 'startOfDay',
-                'message' => 'Die Uhrzeit darf nicht "00:00" sein.'
+                'message' => 'Die Uhrzeit darf nicht zwischen 23:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
             ];
         }
         

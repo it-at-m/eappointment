@@ -168,9 +168,9 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
     const isFuture = (data.kind && 'future' == data.kind);
     //const isOrigin = (data.kind && 'origin' == data.kind);
 
-    if (! isFuture && selectedDate.unix() > today.unix() && startTime.isAfter(selectedDate.startOf('day'), 'day')) {
+    if (!isFuture && selectedDate.unix() > today.unix() && startTime.isAfter(selectedDate.startOf('day'), 'day')) {
         errorList.push({
-            type: 'startTimeFuture', 
+            type: 'startTimeFuture',
             message: `Das Startdatum der Öffnungszeit muss vor dem ${tomorrow.format('DD.MM.YYYY')} liegen.`
         })
     }
@@ -183,11 +183,12 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
             })
         }
     */
-
-    if ((startHour == "00" && startMinute == "00") || (endHour == "00" && endMinute == "00")) {
+    const startHourInt = parseInt(startHour);
+    const endHourInt = parseInt(endHour);
+    if (startHourInt >= 23 || startHourInt === 0 || endHourInt >= 23 || endHourInt === 0) {
         errorList.push({
             type: 'startOfDay',
-            message: 'Die Uhrzeit darf nicht "00:00" sein.'
+            message: 'Die Uhrzeit darf nicht zwischen 23:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
         })
     }
     return errorList;
@@ -208,14 +209,14 @@ function validateEndTime(today, yesterday, selectedDate, data) {
 
     if (dayMinutesEnd <= dayMinutesStart) {
         errorList.push({
-            type: 'endTime', 
+            type: 'endTime',
             message: 'Die Endzeit darf nicht vor der Startzeit liegen.'
         })
-    } 
-    
+    }
+
     if (startTimestamp >= endTimestamp) {
         errorList.push({
-            type: 'endTime', 
+            type: 'endTime',
             message: 'Das Enddatum darf nicht vor dem Startdatum liegen.'
         })
     }
@@ -232,7 +233,7 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
     const endTimestamp = endTime.clone().set({ h: endHour, m: endMinute }).unix();
     const isOrigin = (data.kind && 'origin' == data.kind)
 
-    if (! isOrigin && selectedDate.unix() > today.unix() && endTime.isBefore(selectedDate.startOf('day'), 'day')) {
+    if (!isOrigin && selectedDate.unix() > today.unix() && endTime.isBefore(selectedDate.startOf('day'), 'day')) {
         errorList.push({
             type: 'endTimeFuture',
             message: `Das Enddatum der Öffnungszeit muss nach dem ${yesterday.format('DD.MM.YYYY')} liegen.`
@@ -240,12 +241,12 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
     }
 
     if (
-        (! isOrigin && endTimestamp < today.unix()) 
+        (!isOrigin && endTimestamp < today.unix())
     ) {
         errorList.push({
-            type: 'endTimePast', 
+            type: 'endTimePast',
             message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
-            + '(Die aktuelle Zeit "'+today.format('DD.MM.YYYY HH:mm')+' Uhr" liegt nach dem Terminende am "'+endDateTime.format('DD.MM.YYYY HH:mm')+' Uhr").'
+                + '(Die aktuelle Zeit "' + today.format('DD.MM.YYYY HH:mm') + ' Uhr" liegt nach dem Terminende am "' + endDateTime.format('DD.MM.YYYY HH:mm') + ' Uhr").'
         })
     }
     return errorList;
@@ -262,7 +263,7 @@ function validateType(data) {
     return errorList;
 }
 
-function validateSlotTime (data) {
+function validateSlotTime(data) {
     let errorList = []
     const startTime = moment(data.startDate, 'X');
     const startHour = data.startTime.split(':')[0]
