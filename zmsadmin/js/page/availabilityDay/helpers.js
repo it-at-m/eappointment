@@ -102,8 +102,8 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
     })
 
     const currentTime = moment()
-    const dayEndTime = moment('22:00:00', 'HH:mm:ss')
-    let startTime = moment('07:00:00', 'HH:mm:ss')
+    const dayEndTime = moment('23:00:00', 'HH:mm:ss')
+    let startTime = moment('06:00:00', 'HH:mm:ss')
     
     if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && currentTime.isAfter(startTime)) {
         startTime = moment(currentTime).add(5 - (currentTime.minutes() % 5), 'minutes')
