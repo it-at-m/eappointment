@@ -22,15 +22,6 @@ class View extends BaseView {
 
         this.bindPublicMethods( 'endEmergency')
         this.$.find('.emergency__button-end').on('click', this.endEmergency)
-        this.$.on('keydown', function exitKeyEventListener (ev){
-            var key = ev.key;
-            switch(key) {
-                case 'Escape': // ESC
-                console.log('ESC'); 
-                this.minimize; // ToDo: Don't work yet
-                break;
-            }
-        })
         
 
         // )
