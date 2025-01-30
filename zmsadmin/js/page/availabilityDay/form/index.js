@@ -39,37 +39,40 @@ class AvailabilityForm extends Component {
         }
 
         const hasConflicts = ((
-                this.props.conflictList.itemList && 
-                Object.keys(this.props.conflictList.itemList).length
-            ) || 
+            this.props.conflictList.itemList &&
+            Object.keys(this.props.conflictList.itemList).length
+        )) ? true : false
+
+        const hasErrors = (
             (
                 this.props.errorList &&
                 Object.keys(this.props.errorList).length
-        )) ? true : false
+            )) ? true : false
 
         return (
             <div>
-                {<FormContent 
-                    today = {this.props.today} 
+                {<FormContent
+                    today={this.props.today}
                     availabilityList={this.props.availabilityList}
                     setErrorRef={this.props.setErrorRef}
                     errorList={this.props.errorList}
                     conflictList={this.props.conflictList}
                     {... { data, onChange }} />}
-                {<FormButtons 
-                    data = {data}
-                    onCopy={this.props.onCopy} 
+                {<FormButtons
+                    data={data}
+                    onCopy={this.props.onCopy}
                     onExclusion={this.props.onExclusion}
-                    onEditInFuture={this.props.onEditInFuture} 
+                    onEditInFuture={this.props.onEditInFuture}
                     onDelete={this.props.onDelete}
                     onUpdateSingle={this.props.onUpdateSingle}
                     selectedDate={this.props.selectedDate}
                     hasConflicts={hasConflicts}
+                    hasErrors={hasErrors}
                     hasSlotCountError={hasSlotCountError(this.props)}
                     isCreatingExclusion={this.props.isCreatingExclusion}
                 />}
             </div>
-        )   
+        )
     }
 }
 

@@ -152,12 +152,18 @@ class Accordion extends Component
                 )
             })
         }
+        console.log(this.props.errorList);
         return (
             <Board className="accordion js-accordion"
                 title=""
                 body={renderAccordionBody()}
                 footer={<FooterButtons 
-                    hasConflicts={Object.keys(this.props.conflictList.itemList).length || Object.keys(this.props.errorList).length ? true : false}
+                    hasConflicts={Object.keys(this.props.conflictList.itemList).length ? true : false}
+                    hasErrors={Object.values(this.props.errorList).some(error => {
+                        const hasPastTimeError = error.itemList?.flat(2)
+                            .some(item => item?.type === 'endTimePast');
+                        return !hasPastTimeError;
+                    })}
                     hasSlotCountError={hasSlotCountError(this.props)}
                     stateChanged={this.props.stateChanged} 
                     data={this.props.data}

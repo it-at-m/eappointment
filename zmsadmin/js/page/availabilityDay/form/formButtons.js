@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const FormButtons = (props) => {
-    const { data, onCopy, onExclusion, onEditInFuture, onUpdateSingle, onDelete, selectedDate, hasConflicts, hasSlotCountError } = props
-    const disabled = ((data && (! data.id || data.__modified === true)) || hasConflicts || hasSlotCountError);
+    const { data, onCopy, onExclusion, onEditInFuture, onUpdateSingle, onDelete, selectedDate, hasConflicts, hasErrors, hasSlotCountError } = props
+    const disabled = ((data && (! data.id || data.__modified === true)) || hasConflicts || hasErrors || hasSlotCountError);
     return (
         <div className="body">
             <div className="form-actions">
@@ -30,6 +30,7 @@ const FormButtons = (props) => {
 FormButtons.propTypes = {
     data: PropTypes.object,
     hasConflicts: PropTypes.bool,
+    hasErrors: PropTypes.bool,
     onCopy: PropTypes.func,
     onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
