@@ -129,7 +129,8 @@ class MapperService
             var_dump($service->getAdditionalData());
             var_dump(! $showUnpublished);
             var_dump(isset($service->getAdditionalData()['public']));
-            var_dump(!$service->getAdditionalData()['public']);
+            var_dump(isset($service->getAdditionalData()['public'])
+                && !$service->getAdditionalData()['public']);
             if (! $showUnpublished
                 && isset($service->getAdditionalData()['public'])
                 && !$service->getAdditionalData()['public'])
