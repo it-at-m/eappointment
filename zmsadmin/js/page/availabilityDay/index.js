@@ -448,20 +448,23 @@ class AvailabilityPage extends Component {
         let state = {};
         const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope, this.state.availabilitylist);
         newAvailability.type = "appointment";
-
+    
         state = Object.assign(
             state,
             updateAvailabilityInState(this.state, newAvailability)
         );
-
+    
         state.selectedAvailability = newAvailability;
         state.stateChanged = false;
-
+    
         this.setState(state, () => {
-            this.getValidationList();
-            this.getConflictList();
-
-            $('body').scrollTop(0);
+            Promise.all([
+                this.getValidationList(),
+                this.getConflictList()
+            ])
+            .then(() => {
+                $('body').scrollTop(0);
+            })
         });
     }
 
@@ -497,46 +500,6 @@ class AvailabilityPage extends Component {
         return hasError || hasConflict;
     }
 
-    getValidationList() {
-        return new Promise((resolve, reject) => {
-            const validateData = (data) => {
-                const validationResult = validate(data, this.props);
-                if (!validationResult.valid) {
-                    return validationResult.errorList;
-                }
-                return [];
-            };
-    
-            const list = this.state.availabilitylist
-                .map(validateData)
-                .flat();
-    
-            console.log("Validation list:", list);
-    
-            this.setState(
-                {
-                    errorList: list.length ? list : [],
-                },
-                () => {
-                    if (list.length > 0) {
-                        // Filter out endTimePast errors for console warning
-                        const nonPastTimeErrors = list.filter(error => 
-                            !error.itemList?.flat(2).some(item => item?.type === 'endTimePast')
-                        );
-                        
-                        if (nonPastTimeErrors.length > 0) {
-                            console.warn("Validation failed with errors:", nonPastTimeErrors);
-                        }
-                        this.errorElement?.scrollIntoView();
-                    } else {
-                        console.log("Validation passed.");
-                        resolve();
-                    }
-                }
-            );
-        });
-    }
-
     validateAvailabilityList(availabilitylist) {
         const timeRegex = /^\d{2}:\d{2}(:\d{2})?$/;
 
@@ -558,64 +521,94 @@ class AvailabilityPage extends Component {
         return invalidAvailabilities;
     }
 
-    getConflictList() {
-        this.getValidationList()
-            .then(() => {
-                const { availabilitylist, selectedAvailability } = this.state;
-                const { timestamp } = this.props;
-
-                // Add null check for selectedAvailability
-                if (!selectedAvailability) {
-                    console.log("No availability selected, skipping conflict check");
-                    return;
+    getValidationList() {
+        return new Promise((resolve, reject) => {
+            const validateData = (data) => {
+                const validationResult = validate(data, this.props);
+                if (!validationResult.valid) {
+                    return validationResult.errorList;
                 }
-
-                if (selectedAvailability.kind === 'exclusion') {
-                    console.log("Skipping exclusion..");
-                    return;
-                }
-
-                const nonExclusionAvailabilities = availabilitylist.filter(a => a.kind !== 'exclusion');
-
-                selectedAvailability.startTime = moment(selectedAvailability.startTime, ['HH:mm:ss', 'HH:mm']).format('HH:mm');
-                selectedAvailability.endTime = moment(selectedAvailability.endTime, ['HH:mm:ss', 'HH:mm']).format('HH:mm');
-
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        availabilityList: nonExclusionAvailabilities,
-                        selectedDate: formatTimestampDate(timestamp),
-                        selectedAvailability,
-                    }),
-                };
-
-                const url = `${this.props.links.includeurl}/availability/conflicts/`;
-
-                fetch(url, requestOptions)
-                    .then((res) => res.json())
-                    .then(
-                        (data) => {
-                            console.log("Conflicts fetched successfully:", data);
-                            this.setState({
-                                conflictList: {
-                                    itemList: { ...data.conflictList },
-                                    conflictIdList: data.conflictIdList,
-                                },
-                            });
-                            if (data.conflictIdList.length > 0) {
+                return [];
+            };
+    
+            try {
+                const list = this.state.availabilitylist
+                    .map(validateData)
+                    .flat();
+    
+                console.log("Validations fetched successfully:", list);
+    
+                this.setState(
+                    {
+                        errorList: list.length ? list : [],
+                    },
+                    () => {
+                        if (list.length > 0) {
+                            const nonPastTimeErrors = list.filter(error => 
+                                !error.itemList?.flat(2).some(item => item?.type === 'endTimePast')
+                            );
+                            
+                            if (nonPastTimeErrors.length > 0) {
+                                console.warn("Validation failed with errors:", nonPastTimeErrors);
                                 this.errorElement?.scrollIntoView();
+                            } else {
+                                console.log("Validation passed with only past time errors.");
                             }
-                        },
-                        (err) => {
-                            console.error("Conflict fetch error:", err);
-                            hideSpinner();
+                        } else {
+                            console.log("Validation passed successfully.");
+                            resolve();
                         }
-                    );
-            })
-            .catch((error) => {
-                console.warn("Validation failed. Conflict fetch aborted.", error);
-            });
+                    }
+                );
+            } catch (error) {
+                console.error("Validation error:", error);
+                reject(error);
+            }
+        });
+    }
+
+    getConflictList() {
+        return new Promise((resolve, reject) => {
+            const { availabilitylist } = this.state;
+            const { timestamp } = this.props;
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    availabilityList: availabilitylist.filter(a => a.kind !== 'exclusion'),
+                    selectedDate: formatTimestampDate(timestamp)
+                }),
+            };
+    
+            const url = `${this.props.links.includeurl}/availability/conflicts/`;
+    
+            fetch(url, requestOptions)
+                .then((res) => res.json())
+                .then(
+                    (data) => {
+                        console.log("Conflicts fetched successfully:", data);
+                        this.setState({
+                            conflictList: {
+                                itemList: { ...data.conflictList },
+                                conflictIdList: data.conflictIdList,
+                            },
+                        });
+                        if (data.conflictIdList.length > 0) {
+                            this.errorElement?.scrollIntoView();
+                        }
+                        resolve();
+                    },
+                    (err) => {
+                        console.error("Conflict fetch error:", err);
+                        hideSpinner();
+                        reject(err);
+                    }
+                )
+                .catch((error) => {
+                    console.warn("Conflict fetch failed:", error);
+                    reject(error);
+                });
+        });
     }
 
     renderTimeTable() {
