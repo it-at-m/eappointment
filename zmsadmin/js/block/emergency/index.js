@@ -9,12 +9,10 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element)
-        console.log("Options received:", options);
         this.includeUrl = options.includeurl
         this.returnTarget = options.returnTarget
         this.workstationName = ""+options.workstationname
         this.scope = options.scope
-        console.log("Scope received:", this.scope);
         this.data = Object.assign({}, deepGet(this, ['scope', 'status', 'emergency']))
         this.minimized = false
         this.refreshTimer = null
