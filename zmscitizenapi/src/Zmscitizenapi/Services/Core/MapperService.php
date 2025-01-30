@@ -125,21 +125,12 @@ class MapperService
         });
     
         foreach ($requestArray as $service) {
-            var_dump('-----');
-            var_dump($service->getName());
-            var_dump($service->getAdditionalData());
-            var_dump(! $showUnpublished);
-            var_dump(isset($service->getAdditionalData()['public']));
-            var_dump(isset($service->getAdditionalData()['public'])
-                && !$service->getAdditionalData()['public']);
             if (! $showUnpublished
                 && isset($service->getAdditionalData()['public'])
                 && !$service->getAdditionalData()['public'])
             {
                 continue;
             }
-
-            var_dump('-');
 
             /** @var array<string, array<int>> $serviceCombinations */
             $serviceCombinations = [];

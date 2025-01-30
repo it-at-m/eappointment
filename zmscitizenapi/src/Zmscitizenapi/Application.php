@@ -156,7 +156,7 @@ class Application extends \BO\Slim\Application
         // IP Filter
         self::$IP_BLACKLIST = getenv('IP_BLACKLIST') ?: '';
 
-        self::$ACCESS_UNPUBLISHED_ON_DOMAIN = getenv('ACCESS_UNPUBLISHED_ON_DOMAIN') ?: '';
+        self::$ACCESS_UNPUBLISHED_ON_DOMAIN = getenv('ACCESS_UNPUBLISHED_ON_DOMAIN') ?: null;
     }
 
     public static function reinitializeMiddlewareConfig(): void
