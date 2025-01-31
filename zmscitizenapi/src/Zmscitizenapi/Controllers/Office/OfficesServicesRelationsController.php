@@ -24,7 +24,7 @@ class OfficesServicesRelationsController extends BaseController
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $uri = $request->getUri()->getScheme();
+        $uri = $request->getUri()->getFragment();
         var_dump($uri);exit;
         $showUnpublished = !empty($this->showUnpublishedOnDomain)
             && strpos($uri, $this->showUnpublishedOnDomain) !== false;
