@@ -994,4 +994,250 @@ class AvailabilityTest extends EntityCommonTests
             ]
         );
     }
+
+    public function testValidateStartTime()
+    {
+        $entity = new Availability();
+        $today = new \DateTimeImmutable('2024-01-15 12:00:00');
+        $tomorrow = new \DateTimeImmutable('2024-01-16 12:00:00');
+        $selectedDate = new \DateTimeImmutable('2024-01-16 12:00:00');
+        
+        $startDate = new \DateTimeImmutable('2024-01-17 12:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-17 16:00:00');
+        $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
+        $this->assertCount(1, $errors);
+        $this->assertEquals('startTimeFuture', $errors[0]['type']);
+        
+        $startDate = new \DateTimeImmutable('2024-01-15 23:30:00');
+        $endDate = new \DateTimeImmutable('2024-01-16 00:30:00');
+        $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
+        $this->assertCount(1, $errors);
+        $this->assertEquals('startOfDay', $errors[0]['type']);
+        
+        $startDate = new \DateTimeImmutable('2024-01-15 10:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-15 16:00:00');
+        $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
+        $this->assertCount(0, $errors);
+    }
+    
+    public function testValidateEndTime()
+    {
+        $entity = new Availability();
+        
+        $startDate = new \DateTimeImmutable('2024-01-15 14:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-15 12:00:00');
+        $errors = $entity->validateEndTime($startDate, $endDate);
+        $this->assertCount(1, $errors);
+        $this->assertEquals('endTime', $errors[0]['type']);
+        
+        $startDate = new \DateTimeImmutable('2024-01-15 12:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-14 14:00:00');
+        $errors = $entity->validateEndTime($startDate, $endDate);
+        $this->assertCount(1, $errors);
+        $this->assertEquals('endTime', $errors[0]['type']);
+        
+        $startDate = new \DateTimeImmutable('2024-01-15 12:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-15 16:00:00');
+        $errors = $entity->validateEndTime($startDate, $endDate);
+        $this->assertCount(0, $errors);
+    }
+    
+    public function testValidateOriginEndTimeWithPastAndFuture()
+    {
+        $entity = new Availability();
+        $today = new \DateTimeImmutable('2024-01-15 12:00:00');
+        $yesterday = new \DateTimeImmutable('2024-01-14 12:00:00');
+        $selectedDate = new \DateTimeImmutable('2024-01-16 12:00:00');
+        
+        $startDate = new \DateTimeImmutable('2024-01-15 12:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-14 10:00:00');
+        $errors = $entity->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, 'current');
+        $this->assertCount(2, $errors);
+        $this->assertEquals('endTimeFuture', $errors[0]['type']);
+        $this->assertEquals('endTimePast', $errors[1]['type']);
+        
+        $errors = $entity->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, 'origin');
+        $this->assertCount(0, $errors);
+        
+        $endDate = new \DateTimeImmutable('2024-01-16 16:00:00');
+        $errors = $entity->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, 'current');
+        $this->assertCount(0, $errors);
+    }
+    
+    public function testValidateType()
+    {
+        $entity = new Availability();
+        
+        $errors = $entity->validateType('');
+        $this->assertCount(1, $errors);
+        $this->assertEquals('type', $errors[0]['type']);
+        
+        $errors = $entity->validateType('appointment');
+        $this->assertCount(0, $errors);
+    }
+    
+    public function testValidateSlotTime()
+    {
+        $entity = new Availability();
+        $startDate = new \DateTimeImmutable('2024-01-15 12:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-15 14:00:00');
+        
+        $entity['slotTimeInMinutes'] = 0;
+        $errors = $entity->validateSlotTime($startDate, $endDate);
+        $this->assertCount(1, $errors);
+        $this->assertEquals('slotTime', $errors[0]['type']);
+        
+        $entity['slotTimeInMinutes'] = 25;
+        $errors = $entity->validateSlotTime($startDate, $endDate);
+        $this->assertCount(1, $errors);
+        $this->assertEquals('slotCount', $errors[0]['type']);
+        
+        $entity['slotTimeInMinutes'] = 30;
+        $errors = $entity->validateSlotTime($startDate, $endDate);
+        $this->assertCount(0, $errors);
+    }
+    
+    public function testValidateBookableDayRange()
+    {
+        $entity = new Availability();
+        
+        $errors = $entity->validateBookableDayRange(10, 5);
+        $this->assertCount(1, $errors);
+        $this->assertEquals('bookableDayRange', $errors[0]['type']);
+        
+        $errors = $entity->validateBookableDayRange(5, 10);
+        $this->assertCount(0, $errors);
+    }
+
+    public function testValidateStartTimeMaintenanceWindow()
+    {
+        // Test maintenance window validation (23:00-01:00)
+        $entity = new Availability([
+            'scope' => ['id' => 141],
+            'type' => 'appointment',
+            'weekday' => ['monday' => true],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-16'),
+            'startTime' => '23:00',  // Entity's start time in maintenance window
+            'endTime' => '01:00'     // Entity's end time in maintenance window
+        ]);
+        
+        $today = new \DateTimeImmutable('2024-01-15 12:00:00');
+        $tomorrow = new \DateTimeImmutable('2024-01-16 12:00:00');
+        $selectedDate = new \DateTimeImmutable('2024-01-15 12:00:00');
+        
+        $startDate = new \DateTimeImmutable('2024-01-15 23:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-16 01:00:00');
+        $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
+        $this->assertCount(1, $errors);
+        $this->assertEquals('startOfDay', $errors[0]['type']);
+        
+        $entity['startTime'] = '22:00';
+        $entity['endTime'] = '00:30';
+        $startDate = new \DateTimeImmutable('2024-01-15 22:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-16 00:30:00');
+        $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
+        $this->assertCount(1, $errors);
+        $this->assertEquals('startOfDay', $errors[0]['type']);
+        
+        $entity['startTime'] = '10:00';
+        $entity['endTime'] = '16:00';
+        $startDate = new \DateTimeImmutable('2024-01-15 10:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-15 16:00:00');
+        $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
+        $this->assertCount(0, $errors);
+    }
+    
+    public function testValidateStartTimeFutureDate()
+    {
+        $entity = new Availability([
+            'scope' => ['id' => 141],
+            'type' => 'appointment',
+            'weekday' => ['monday' => true],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-16'),
+            'startTime' => '10:00',
+            'endTime' => '16:00'
+        ]);
+        
+        $today = new \DateTimeImmutable('2024-01-15 12:00:00');
+        $tomorrow = new \DateTimeImmutable('2024-01-16 12:00:00');
+        $selectedDate = new \DateTimeImmutable('2024-01-16 12:00:00'); // Set to tomorrow
+
+        $startDate = new \DateTimeImmutable('2024-01-17 10:00:00'); // Day after tomorrow
+        $endDate = new \DateTimeImmutable('2024-01-17 16:00:00');
+        $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
+        $this->assertCount(1, $errors);
+        $this->assertEquals('startTimeFuture', $errors[0]['type']);
+
+        $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'future');
+        $this->assertCount(0, $errors);
+    }
+    
+    public function testValidateEndTimeMinutePrecision()
+    {
+        $entity = new Availability();
+
+        $startDate = new \DateTimeImmutable('2024-01-15 14:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-15 14:00:00');
+        $errors = $entity->validateEndTime($startDate, $endDate);
+        $this->assertCount(1, $errors);
+        $this->assertEquals('endTime', $errors[0]['type']);
+
+        $startDate = new \DateTimeImmutable('2024-01-15 14:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-15 14:01:00');
+        $errors = $entity->validateEndTime($startDate, $endDate);
+        $this->assertCount(0, $errors);
+    }
+    
+    public function testValidateSlotTimeDivisibility()
+    {
+        $entity = new Availability();
+        $startDate = new \DateTimeImmutable('2024-01-15 12:00:00');
+        $endDate = new \DateTimeImmutable('2024-01-15 13:00:00');
+
+        $entity['slotTimeInMinutes'] = 0;
+        $errors = $entity->validateSlotTime($startDate, $endDate);
+        $this->assertCount(1, $errors);
+        $this->assertEquals('slotTime', $errors[0]['type']);
+
+        $entity['slotTimeInMinutes'] = 25;
+        $errors = $entity->validateSlotTime($startDate, $endDate);
+        $this->assertCount(1, $errors);
+        $this->assertEquals('slotCount', $errors[0]['type']);
+
+        $entity['slotTimeInMinutes'] = 15;
+        $errors = $entity->validateSlotTime($startDate, $endDate);
+        $this->assertCount(0, $errors);
+    }
+    
+    public function testValidateBookableDayRangeOrder()
+    {
+        $entity = new Availability();
+
+        $errors = $entity->validateBookableDayRange(10, 5);
+        $this->assertCount(1, $errors);
+        $this->assertEquals('bookableDayRange', $errors[0]['type']);
+
+        $errors = $entity->validateBookableDayRange(5, 5);
+        $this->assertCount(0, $errors);
+
+        $errors = $entity->validateBookableDayRange(-5, -2);
+        $this->assertCount(0, $errors);
+    }
+    
+    public function testValidateTypeAllowedValues()
+    {
+        $entity = new Availability();
+
+        $errors = $entity->validateType('');
+        $this->assertCount(1, $errors);
+        $this->assertEquals('type', $errors[0]['type']);
+
+        $validTypes = ['appointment', 'openinghours', 'intern', 'callcenter'];
+        foreach ($validTypes as $type) {
+            $errors = $entity->validateType($type);
+            $this->assertCount(0, $errors, "Type '$type' should be valid");
+        }
+    }
 }
