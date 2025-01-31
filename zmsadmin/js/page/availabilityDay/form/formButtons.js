@@ -31,6 +31,7 @@ FormButtons.propTypes = {
     data: PropTypes.object,
     hasConflicts: PropTypes.bool,
     hasErrors: PropTypes.bool,
+    hasSlotCountError: PropTypes.bool,
     onCopy: PropTypes.func,
     onExclusion: PropTypes.func,
     onEditInFuture: PropTypes.func,
