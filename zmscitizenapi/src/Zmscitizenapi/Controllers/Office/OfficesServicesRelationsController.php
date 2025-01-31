@@ -24,8 +24,16 @@ class OfficesServicesRelationsController extends BaseController
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+            $real_domain = $_SERVER['HTTP_X_FORWARDED_HOST'];
+        } else {
+            $real_domain = $_SERVER['HTTP_HOST'] ?? ''; // Fallback
+        }
+
         $domain = $_SERVER['HTTP_HOST'] ?? '';
         $uri = $request->getUri()->getHost();
+        var_dump($_SERVER['SERVER_NAME'] ?? '');
+        var_dump($real_domain);
         var_dump($uri);
         var_dump($domain);
         exit;
