@@ -24,9 +24,10 @@ class OfficesServicesRelationsController extends BaseController
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $domain = $_SERVER['HTTP_HOST'] ?? '';
+        $uri = $request->getUri()->getScheme();
+        var_dump($uri);exit;
         $showUnpublished = !empty($this->showUnpublishedOnDomain)
-            && strpos($domain, $this->showUnpublishedOnDomain) !== false;
+            && strpos($uri, $this->showUnpublishedOnDomain) !== false;
         $requestErrors = ValidationService::validateServerGetRequest($request);
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse(
