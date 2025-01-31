@@ -956,6 +956,158 @@ class AvailabilityTest extends EntityCommonTests
 
     }
 
+    public function testPartialOverlaps()
+    {
+        $entity1 = new Availability([
+            'id' => '1',
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'startTime' => '08:00:00',
+            'endTime' => '12:00:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+        
+        // Test overlap at start
+        $entity2 = new Availability([
+            'id' => '2',
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'startTime' => '07:00:00',
+            'endTime' => '09:00:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+        
+        // Test overlap at end
+        $entity3 = new Availability([
+            'id' => '3',
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'startTime' => '11:00:00',
+            'endTime' => '13:00:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+        
+        // Test completely contained
+        $entity4 = new Availability([
+            'id' => '4',
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'startTime' => '09:00:00',
+            'endTime' => '11:00:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+    
+        $list = new AvailabilityList([$entity1, $entity2, $entity3, $entity4]);
+        $conflicts = $list->checkAllVsExistingConflicts(
+            new \DateTimeImmutable('2024-01-15 00:00:00'),
+            new \DateTimeImmutable('2024-01-15 23:59:59')
+        );
+        
+        $this->assertEquals(6, $conflicts->count(), "Should detect all overlaps bidirectionally");
+    }
+    
+    public function testEdgeCaseOverlaps()
+    {
+        // Test back-to-back times
+        $entity1 = new Availability([
+            'id' => '1',
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'startTime' => '08:00:00',
+            'endTime' => '12:00:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+        
+        $entity2 = new Availability([
+            'id' => '2',
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'startTime' => '12:00:00',
+            'endTime' => '16:00:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+        
+        // Test overlap across midnight
+        $entity3 = new Availability([
+            'id' => '3',
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-16'),
+            'startTime' => '23:00:00',
+            'endTime' => '01:00:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+    
+        $list = new AvailabilityList([$entity1, $entity2, $entity3]);
+        $conflicts = $list->checkAllVsExistingConflicts(
+            new \DateTimeImmutable('2024-01-15 00:00:00'),
+            new \DateTimeImmutable('2024-01-16 23:59:59')
+        );
+        
+        $this->assertEquals(0, $conflicts->count(), "Back-to-back times should not be considered overlapping");
+    }
+    
+    public function testWeekdayOverlaps()
+    {
+        // Test same weekday, different weeks
+        $entity1 = new Availability([
+            'id' => '1',
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'startTime' => '08:00:00',
+            'endTime' => '12:00:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []],
+            'repeat' => ['afterWeeks' => '1']
+        ]);
+        
+        $entity2 = new Availability([
+            'id' => '2',
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-22'),
+            'endDate' => strtotime('2024-01-22'),
+            'startTime' => '08:00:00',
+            'endTime' => '12:00:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []],
+            'repeat' => ['afterWeeks' => '2']
+        ]);
+        
+        // Test different weekdays, same times
+        $entity3 = new Availability([
+            'id' => '3',
+            'weekday' => ['tuesday' => '3'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'startTime' => '08:00:00',
+            'endTime' => '12:00:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+    
+        $list = new AvailabilityList([$entity1, $entity2, $entity3]);
+        $conflicts = $list->checkAllVsExistingConflicts(
+            new \DateTimeImmutable('2024-01-15 00:00:00'),
+            new \DateTimeImmutable('2024-01-22 23:59:59')
+        );
+        
+        $this->assertEquals(0, $conflicts->count(), "Different weeks or weekdays should not conflict");
+    }
+
     protected function getExampleWithTypeOpeningHours(\DateTimeImmutable $time)
     {
         return new $this->entityclass(
@@ -1239,4 +1391,40 @@ class AvailabilityTest extends EntityCommonTests
             $this->assertCount(0, $errors, "Type '$type' should be valid");
         }
     }
+    
+    public function testGetSummerizedSlotCount()
+    {
+        $availability1 = new Availability([
+            'id' => '1',
+            'type' => 'appointment',
+            'startTime' => '09:00:00',
+            'endTime' => '10:00:00',
+            'slotTimeInMinutes' => 10,
+            'workstationCount' => ['intern' => 1, 'public' => 1],
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+        
+        $availability2 = new Availability([
+            'id' => '2',
+            'type' => 'appointment',
+            'startTime' => '10:00:00',
+            'endTime' => '11:00:00',
+            'slotTimeInMinutes' => 10,
+            'workstationCount' => ['intern' => 1, 'public' => 1],
+            'weekday' => ['monday' => '2'],
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+        
+        $list = new AvailabilityList([$availability1, $availability2]);
+        $slotCounts = $list->getSummerizedSlotCount();
+        
+        $this->assertEquals(6, $slotCounts['1'], "First availability should have 6 slots");
+        $this->assertEquals(6, $slotCounts['2'], "Second availability should have 6 slots");
+    }
+
 }

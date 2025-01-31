@@ -22,7 +22,7 @@ class AvailabilityDatePicker extends Component
             availabilityList: this.props.attributes.availabilitylist,
             minDate: moment.unix(this.props.attributes.availability.startDate).toDate(),
             minTime: setHours(setMinutes(new Date(), 1), 0),
-            maxTime: setHours(setMinutes(new Date(), 59), 23),
+            maxTime: setHours(setMinutes(new Date(), 59), 22),
             datePickerIsOpen: false,
             timPickerIsOpen: false
         }
@@ -126,10 +126,10 @@ class AvailabilityDatePicker extends Component
         }
         var times = [];
         
-        // Add maintenance window times (23:00-01:00)
+        // Add maintenance window times (22:00-01:00)
         const selectedDate = moment(this.state.selectedDate);
         for (let minute = 1; minute < 60; minute++) {
-            times.push(selectedDate.clone().hour(23).minute(minute).toDate());
+            times.push(selectedDate.clone().hour(22).minute(minute).toDate());
         }
         for (let minute = 0; minute < 59; minute++) {
             times.push(selectedDate.clone().hour(0).minute(minute).toDate());
