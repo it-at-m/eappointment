@@ -1427,4 +1427,122 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertEquals(6, $slotCounts['2'], "Second availability should have 6 slots");
     }
 
+    public function testGetDefaults()
+    {
+        $entity = new Availability();
+        $defaults = $entity->getDefaults();
+        
+        $this->assertEquals(0, $defaults['id']);
+        $this->assertEquals(1, $defaults['repeat']['afterWeeks']);
+        $this->assertEquals(0, $defaults['repeat']['weekOfMonth']);
+        $this->assertEquals(1, $defaults['bookable']['startInDays']);
+        $this->assertEquals(60, $defaults['bookable']['endInDays']);
+        $this->assertEquals(10, $defaults['slotTimeInMinutes']);
+        $this->assertEquals('appointment', $defaults['type']);
+        
+        // Check all weekdays are initialized to 0
+        foreach (['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as $day) {
+            $this->assertEquals(0, $defaults['weekday'][$day]);
+        }
+    }
+    
+    public function testIsMatchOf()
+    {
+        $entity1 = new Availability([
+            'type' => 'appointment',
+            'startTime' => '09:00:00',
+            'endTime' => '17:00:00',
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15'),
+            'weekday' => ['monday' => '2'],
+            'repeat' => ['afterWeeks' => 1, 'weekOfMonth' => 0],
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+        
+        // Exact match
+        $entity2 = clone $entity1;
+        $this->assertTrue($entity1->isMatchOf($entity2));
+        
+        // Different type
+        $entity2['type'] = 'openinghours';
+        $this->assertFalse($entity1->isMatchOf($entity2));
+        
+        // Different time
+        $entity2 = clone $entity1;
+        $entity2['startTime'] = '10:00:00';
+        $this->assertFalse($entity1->isMatchOf($entity2));
+        
+        // Different weekday
+        $entity2 = clone $entity1;
+        $entity2['weekday']['tuesday'] = '2';
+        $entity2['weekday']['monday'] = '0';
+        $this->assertFalse($entity1->isMatchOf($entity2));
+    }
+    
+    public function testCacheClearing()
+    {
+        $entity = new Availability([
+            'startTime' => '09:00:00',
+            'endTime' => '17:00:00',
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15')
+        ]);
+        
+        // Access times to populate cache
+        $startTime1 = $entity->getStartDateTime();
+        $endTime1 = $entity->getEndDateTime();
+        
+        // Modify times
+        $entity['startTime'] = '10:00:00';
+        $entity['endTime'] = '18:00:00';
+        
+        // Get new times
+        $startTime2 = $entity->getStartDateTime();
+        $endTime2 = $entity->getEndDateTime();
+        
+        // Verify cache was cleared
+        $this->assertNotEquals($startTime1->format('H:i'), $startTime2->format('H:i'));
+        $this->assertNotEquals($endTime1->format('H:i'), $endTime2->format('H:i'));
+    }
+    
+    public function testHasTimeEdgeCases()
+    {
+        $entity = new Availability([
+            'startTime' => '09:00:00',
+            'endTime' => '17:00:00',
+            'startDate' => strtotime('2024-01-15'),
+            'endDate' => strtotime('2024-01-15')
+        ]);
+        
+        // Exactly at start time
+        $this->assertTrue($entity->hasTime(new \DateTimeImmutable('2024-01-15 09:00:00')));
+        
+        // Just before start time
+        $this->assertFalse($entity->hasTime(new \DateTimeImmutable('2024-01-15 08:59:59')));
+        
+        // Just before end time
+        $this->assertTrue($entity->hasTime(new \DateTimeImmutable('2024-01-15 16:59:59')));
+        
+        // Exactly at end time
+        $this->assertFalse($entity->hasTime(new \DateTimeImmutable('2024-01-15 17:00:00')));
+    }
+    
+    public function testGetAvailableSecondsPerDayWithTypes()
+    {
+        $entity = new Availability([
+            'startTime' => '09:00:00',
+            'endTime' => '17:00:00',
+            'workstationCount' => [
+                'intern' => 3,
+                'public' => 2,
+                'callcenter' => 1
+            ]
+        ]);
+        
+        // 8 hours = 28800 seconds
+        $this->assertEquals(86400, $entity->getAvailableSecondsPerDay('intern')); // 28800 * 3
+        $this->assertEquals(57600, $entity->getAvailableSecondsPerDay('public')); // 28800 * 2
+        $this->assertEquals(28800, $entity->getAvailableSecondsPerDay('callcenter')); // 28800 * 1
+    }
+
 }
