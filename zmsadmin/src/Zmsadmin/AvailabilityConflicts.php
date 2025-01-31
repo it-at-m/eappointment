@@ -8,7 +8,6 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
 use BO\Zmsentities\Collection\AvailabilityList;
-use BO\Zmsentities\Process;
 
 /**
  * Check if new Availability is in conflict with existing availability
@@ -17,7 +16,7 @@ class AvailabilityConflicts extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return string
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
@@ -40,13 +39,13 @@ class AvailabilityConflicts extends BaseController
             throw new BadRequestException("'selectedDate' is required.");
         }
 
-        $conflictList = new \BO\Zmsentities\Collection\ProcessList();
-        $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];
-    
+        
+        $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
 
-        $overlapConflicts = self::checkNewVsNewConflicts($availabilityList, $selectedDateTime);
+        $conflictList = new \BO\Zmsentities\Collection\ProcessList();
+        $overlapConflicts = $availabilityList->hasNewVsNewConflicts($selectedDateTime);
         $conflictList->addList($overlapConflicts);
     
         $scopeData = $input['availabilityList'][0]['scope'];
@@ -96,72 +95,6 @@ class AvailabilityConflicts extends BaseController
     }
 
     /**
-     * Check for overlaps between availabilities in the collection
-     * 
-     * @param AvailabilityList $collection
-     * @param \DateTimeImmutable $selectedDateTime
-     * @return \BO\Zmsentities\Collection\ProcessList
-     */
-    protected static function checkNewVsNewConflicts(AvailabilityList $collection, \DateTimeImmutable $selectedDateTime)
-    {
-        $conflicts = new \BO\Zmsentities\Collection\ProcessList();
-        
-        $newAvailabilities = new AvailabilityList();
-        foreach ($collection as $availability) {
-            if (isset($availability->tempId) && strpos($availability->tempId, '__temp__') !== false) {
-                $newAvailabilities->addEntity($availability);
-            }
-        }
-        
-        foreach ($newAvailabilities as $availability1) {
-            foreach ($newAvailabilities as $availability2) {
-                $scope1Id = is_array($availability1->scope) ? ($availability1->scope['id'] ?? null) : ($availability1->scope->id ?? null);
-                $scope2Id = is_array($availability2->scope) ? ($availability2->scope['id'] ?? null) : ($availability2->scope->id ?? null);
-                
-                if ($availability1 !== $availability2 && 
-                    $availability1->type == $availability2->type &&
-                    $scope1Id == $scope2Id &&
-                    $availability1->hasSharedWeekdayWith($availability2)) {
-                    
-                    $date1 = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)->format('Y-m-d');
-                    $date2 = (new \DateTimeImmutable())->setTimestamp($availability2->startDate)->format('Y-m-d');
-                    
-                    if ($date1 === $date2) {
-                        $time1Start = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)
-                            ->modify($availability1->startTime)->format('H:i');
-                        $time1End = (new \DateTimeImmutable())->setTimestamp($availability1->endDate)
-                            ->modify($availability1->endTime)->format('H:i');
-                        $time2Start = (new \DateTimeImmutable())->setTimestamp($availability2->startDate)
-                            ->modify($availability2->startTime)->format('H:i');
-                        $time2End = (new \DateTimeImmutable())->setTimestamp($availability2->endDate)
-                            ->modify($availability2->endTime)->format('H:i');
-    
-                        if ($time2Start < $time1End && $time1Start < $time2End) {
-                            $process = new Process();
-                            
-                            $dateRange1 = date('d.m.Y', $availability1->startDate) . ' - ' . date('d.m.Y', $availability1->endDate);
-                            $dateRange2 = date('d.m.Y', $availability2->startDate) . ' - ' . date('d.m.Y', $availability2->endDate);
-                            $timeRange1 = $time1Start . ' - ' . $time1End;
-                            $timeRange2 = $time2Start . ' - ' . $time2End;
-    
-                            $process->amendment = "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n"
-                                . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$dateRange1, $timeRange1]\n"
-                                . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$dateRange2, $timeRange2]";
-                            
-                            $appointment = new \BO\Zmsentities\Appointment();
-                            $appointment->date = $availability1->startDate;
-                            $appointment->availability = $availability1;
-                            $process->addAppointment($appointment);
-                            $conflicts->addEntity($process);
-                        }
-                    }
-                }
-            }
-        }
-        return $conflicts;
-    }
-
-    /**
      * Fetch availabilities for a given scope and date.
      * 
      * @param \BO\Zmsentities\Scope $scope
@@ -184,7 +117,7 @@ class AvailabilityConflicts extends BaseController
             if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
                 throw $exception;
             }
-            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+            $availabilityList = new AvailabilityList();
         }
         return $availabilityList->withScope($scope);
     }

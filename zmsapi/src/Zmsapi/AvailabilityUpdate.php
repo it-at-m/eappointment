@@ -70,9 +70,11 @@ class AvailabilityUpdate extends BaseController
 
         $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
-
         $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
-        $this->checkNewVsNewConflicts($newCollection, $selectedDate);
+
+        $conflicts = new \BO\Zmsentities\Collection\ProcessList();
+        $newVsNewConflicts = $newCollection->hasNewVsNewConflicts($selectedDate);
+        $conflicts->addList($newVsNewConflicts);
 
         $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
 
@@ -123,7 +125,8 @@ class AvailabilityUpdate extends BaseController
         [$earliestStartDateTime, $latestEndDateTime] = $mergedCollectionWithoutExclusions->getDateTimeRangeFromList(
             \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00')
         );
-        $conflicts = $mergedCollectionWithoutExclusions->checkAllVsExistingConflicts($earliestStartDateTime, $latestEndDateTime);
+        $existingConflicts = $mergedCollectionWithoutExclusions->checkAllVsExistingConflicts($earliestStartDateTime, $latestEndDateTime);
+        $conflicts->addList($existingConflicts);
         if ($conflicts->count() > 0) {
             throw new AvailabilityUpdateFailed();
         }
@@ -179,39 +182,4 @@ class AvailabilityUpdate extends BaseController
         }
     }
 
-    protected function checkNewVsNewConflicts(Collection $collection, \DateTimeImmutable $selectedDate): void
-    {
-        $newAvailabilities = new Collection();
-        foreach ($collection as $availability) {
-            if (isset($availability->tempId) && strpos($availability->tempId, '__temp__') !== false) {
-                $newAvailabilities->addEntity($availability);
-            }
-        }
-
-        foreach ($collection as $availability1) {
-            foreach ($collection as $availability2) {
-                $scope1Id = is_array($availability1->scope) ? ($availability1->scope['id'] ?? null) : ($availability1->scope->id ?? null);
-                $scope2Id = is_array($availability2->scope) ? ($availability2->scope['id'] ?? null) : ($availability2->scope->id ?? null);
-                
-                if ($availability1 !== $availability2 && 
-                    $availability1->type == $availability2->type &&
-                    $scope1Id == $scope2Id &&
-                    $availability1->hasSharedWeekdayWith($availability2)) {
-                    
-                    $start1 = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)
-                        ->modify($availability1->startTime);
-                    $end1 = (new \DateTimeImmutable())->setTimestamp($availability1->endDate)
-                        ->modify($availability1->endTime);
-                    $start2 = (new \DateTimeImmutable())->setTimestamp($availability2->startDate)
-                        ->modify($availability2->startTime);
-                    $end2 = (new \DateTimeImmutable())->setTimestamp($availability2->endDate)
-                        ->modify($availability2->endTime);
-    
-                    if ($start1 < $end2 && $start2 < $end1) {
-                        throw new AvailabilityUpdateFailed('Neue Öffnungszeiten überschneiden sich.');
-                    }
-                }
-            }
-        }
-    }
 }

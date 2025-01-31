@@ -1111,15 +1111,14 @@ class AvailabilityTest extends EntityCommonTests
 
     public function testValidateStartTimeMaintenanceWindow()
     {
-        // Test maintenance window validation (23:00-01:00)
         $entity = new Availability([
             'scope' => ['id' => 141],
             'type' => 'appointment',
             'weekday' => ['monday' => true],
             'startDate' => strtotime('2024-01-15'),
             'endDate' => strtotime('2024-01-16'),
-            'startTime' => '23:00',  // Entity's start time in maintenance window
-            'endTime' => '01:00'     // Entity's end time in maintenance window
+            'startTime' => '23:00',
+            'endTime' => '01:00'
         ]);
         
         $today = new \DateTimeImmutable('2024-01-15 12:00:00');
