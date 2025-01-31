@@ -14,31 +14,25 @@ use Psr\Http\Message\ResponseInterface;
 class OfficesServicesRelationsController extends BaseController
 {
     private OfficesServicesRelationsService $service;
-    private ?string $showUnpublishedOnDomain;
+    private bool $showUnpublished;
 
     public function __construct()
     {
+        if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+            $domain = $_SERVER['HTTP_X_FORWARDED_HOST'];
+        } else {
+            $domain = $_SERVER['HTTP_HOST'] ?? '';
+        }
+
         $this->service = new OfficesServicesRelationsService();
-        $this->showUnpublishedOnDomain = App::getAccessUnpublishedOnDomain();
+        $showUnpublishedOnDomain = App::getAccessUnpublishedOnDomain();
+        $this->showUnpublished = !empty($showUnpublishedOnDomain)
+            && strpos($domain, $showUnpublishedOnDomain) !== false;
+
     }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
-            $real_domain = $_SERVER['HTTP_X_FORWARDED_HOST'];
-        } else {
-            $real_domain = $_SERVER['HTTP_HOST'] ?? ''; // Fallback
-        }
-
-        $domain = $_SERVER['HTTP_HOST'] ?? '';
-        $uri = $request->getUri()->getHost();
-        var_dump($_SERVER['SERVER_NAME'] ?? '');
-        var_dump($real_domain);
-        var_dump($uri);
-        var_dump($domain);
-        exit;
-        $showUnpublished = !empty($this->showUnpublishedOnDomain)
-            && strpos($uri, $this->showUnpublishedOnDomain) !== false;
         $requestErrors = ValidationService::validateServerGetRequest($request);
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse(
@@ -48,7 +42,7 @@ class OfficesServicesRelationsController extends BaseController
             );
         }
 
-        $result = $this->service->getServicesAndOfficesList($showUnpublished);
+        $result = $this->service->getServicesAndOfficesList($this->showUnpublished);
 
         return is_array($result) && isset($result['errors'])
             ? $this->createJsonResponse(
