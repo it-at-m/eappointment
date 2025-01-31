@@ -6,7 +6,7 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsapi\Exception\BadRequest as BadRequestException;
+use BO\Zmsadmin\Exception\BadRequest as BadRequestException;
 use BO\Zmsentities\Collection\AvailabilityList;
 
 /**
