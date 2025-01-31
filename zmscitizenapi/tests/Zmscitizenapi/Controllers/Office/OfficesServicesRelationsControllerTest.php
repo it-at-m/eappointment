@@ -150,6 +150,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
 
     public function testDisplayNotPublicRequests()
     {
+        $_SERVER['HTTP_X_FORWARDED_HOST'] = 'localhost';
         \App::$ACCESS_UNPUBLISHED_ON_DOMAIN = 'localhost';
         $this->setApiCalls([
             [
