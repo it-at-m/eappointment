@@ -64,6 +64,20 @@ class AvailabilityConflictsTest extends Base
                         "description": "",
                         "scope": {
                             "id": "141",
+                            "dayoff": [
+                                {
+                                    "id": "302",
+                                    "date": 1458860400,
+                                    "lastChange": 1566566540,
+                                    "name": "Karfreitag"
+                                },
+                                {
+                                    "id": "303",
+                                    "date": 1459116000,
+                                    "lastChange": 1566566540,
+                                    "name": "Ostermontag"
+                                }
+                            ],
                             "source": "dldb",
                             "contact": {
                                 "name": "Bürgeramt Heerstraße",
@@ -527,6 +541,20 @@ class AvailabilityConflictsTest extends Base
                         "description": "",
                         "scope": {
                             "id": "141",
+                            "dayoff": [
+                                {
+                                    "id": "302",
+                                    "date": 1458860400,
+                                    "lastChange": 1566566540,
+                                    "name": "Karfreitag"
+                                },
+                                {
+                                    "id": "303",
+                                    "date": 1459116000,
+                                    "lastChange": 1566566540,
+                                    "name": "Ostermontag"
+                                }
+                            ],
                             "source": "dldb",
                             "contact": {
                                 "name": "Bürgeramt Heerstraße",
@@ -991,6 +1019,20 @@ class AvailabilityConflictsTest extends Base
                         "description": "Kopie von 2016-01-12 - 2016-05-22",
                         "scope": {
                             "id": "141",
+                            "dayoff": [
+                                {
+                                    "id": "302",
+                                    "date": 1458860400,
+                                    "lastChange": 1566566540,
+                                    "name": "Karfreitag"
+                                },
+                                {
+                                    "id": "303",
+                                    "date": 1459116000,
+                                    "lastChange": 1566566540,
+                                    "name": "Ostermontag"
+                                }
+                            ],
                             "source": "dldb",
                             "contact": {
                                 "name": "Bürgeramt Heerstraße",
@@ -1457,6 +1499,20 @@ class AvailabilityConflictsTest extends Base
                     "description": "Kopie von 2016-01-12 - 2016-05-22",
                     "scope": {
                         "id": "141",
+                        "dayoff": [
+                            {
+                                "id": "302",
+                                "date": 1458860400,
+                                "lastChange": 1566566540,
+                                "name": "Karfreitag"
+                            },
+                            {
+                                "id": "303",
+                                "date": 1459116000,
+                                "lastChange": 1566566540,
+                                "name": "Ostermontag"
+                            }
+                        ],
                         "source": "dldb",
                         "contact": {
                             "name": "Bürgeramt Heerstraße",
@@ -1887,16 +1943,304 @@ class AvailabilityConflictsTest extends Base
                 }
             }'
         ], [], 'POST');
-        $this->assertStringContainsString('Zwei \u00d6ffnungszeiten sind gleich', (string)$response->getBody());
-        $this->assertStringContainsString('2016-04-04', (string)$response->getBody());
-        $this->assertStringContainsString('2016-04-11', (string)$response->getBody());
-        $this->assertStringContainsString('2016-04-18', (string)$response->getBody());
-        $this->assertStringContainsString('2016-04-25', (string)$response->getBody());
-        $this->assertStringContainsString('2016-05-02', (string)$response->getBody());
-        $this->assertStringContainsString('2016-05-09', (string)$response->getBody());
-        $this->assertStringNotContainsString('2016-05-16', (string)$response->getBody());
-        $this->assertStringContainsString('"conflictIdList":["81871","__temp__0"]', (string)$response->getBody());
+        $this->assertStringContainsString('Zwei \u00d6ffnungszeiten sind gleich', (string) $response->getBody());
+        $this->assertStringContainsString('2016-04-04', (string) $response->getBody());
+        $this->assertStringContainsString('2016-04-11', (string) $response->getBody());
+        $this->assertStringContainsString('2016-04-18', (string) $response->getBody());
+        $this->assertStringContainsString('2016-04-25', (string) $response->getBody());
+        $this->assertStringContainsString('2016-05-02', (string) $response->getBody());
+        $this->assertStringContainsString('2016-05-09', (string) $response->getBody());
+        $this->assertStringNotContainsString('2016-05-16', (string) $response->getBody());
+        $this->assertStringContainsString('"conflictIdList":["81871","__temp__0"]', (string) $response->getBody());
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testDifferentWeekdaysNoConflict()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/availability/',
+                'parameters' => [
+                    'resolveReferences' => 0,
+                    'startDate' => '2016-04-04'
+                ],
+                'response' => $this->readFixture("GET_availability_68985.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            '__body' => '{
+            "availabilityList": [
+                {
+                    "id": "81871",
+                    "weekday": {"monday": "2"},
+                    "startDate": 1452553200,
+                    "endDate": 1463868000,
+                    "startTime": "08:00:00",
+                    "endTime": "15:50:00",
+                    "type": "appointment",
+                    "scope": {
+                        "id": "141", 
+                        "dayoff": [
+                            {
+                                "id": "302",
+                                "date": 1458860400,
+                                "lastChange": 1566566540,
+                                "name": "Karfreitag"
+                            },
+                            {
+                                "id": "303",
+                                "date": 1459116000,
+                                "lastChange": 1566566540,
+                                "name": "Ostermontag"
+                            }
+                        ]                    
+                    }
+                },
+                {
+                    "id": null,
+                    "weekday": {"tuesday": "4"},
+                    "startDate": 1452553200,
+                    "endDate": 1463868000,
+                    "startTime": "08:00:00",
+                    "endTime": "15:50:00",
+                    "type": "appointment",
+                    "scope": {
+                        "id": "141", 
+                        "dayoff": [
+                            {
+                                "id": "302",
+                                "date": 1458860400,
+                                "lastChange": 1566566540,
+                                "name": "Karfreitag"
+                            },
+                            {
+                                "id": "303",
+                                "date": 1459116000,
+                                "lastChange": 1566566540,
+                                "name": "Ostermontag"
+                            }
+                        ]                    
+                    },
+                    "tempId": "__temp__0"
+                }
+            ],
+            "selectedDate": "2016-04-04"
+        }'
+        ], [], 'POST');
+
+        $this->assertStringNotContainsString('Konflikt', (string) $response->getBody());
+        $this->assertStringContainsString('"conflictIdList":[]', (string) $response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testDifferentTypesNoConflict()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/availability/',
+                'parameters' => [
+                    'resolveReferences' => 0,
+                    'startDate' => '2016-04-04'
+                ],
+                'response' => $this->readFixture("GET_availability_68985.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            '__body' => '{
+            "availabilityList": [
+                {
+                    "id": "81871",
+                    "weekday": {"monday": "2"},
+                    "startDate": 1452553200,
+                    "endDate": 1463868000,
+                    "startTime": "08:00:00",
+                    "endTime": "15:50:00",
+                    "type": "appointment",
+                    "scope": {
+                        "id": "141", 
+                        "dayoff": [
+                            {
+                                "id": "302",
+                                "date": 1458860400,
+                                "lastChange": 1566566540,
+                                "name": "Karfreitag"
+                            },
+                            {
+                                "id": "303",
+                                "date": 1459116000,
+                                "lastChange": 1566566540,
+                                "name": "Ostermontag"
+                            }
+                        ]                    
+                    }
+                },
+                {
+                    "id": null,
+                    "weekday": {"monday": "2"},
+                    "startDate": 1452553200,
+                    "endDate": 1463868000,
+                    "startTime": "08:00:00",
+                    "endTime": "15:50:00",
+                    "type": "openinghours",
+                    "scope": {
+                        "id": "141", 
+                        "dayoff": [
+                            {
+                                "id": "302",
+                                "date": 1458860400,
+                                "lastChange": 1566566540,
+                                "name": "Karfreitag"
+                            },
+                            {
+                                "id": "303",
+                                "date": 1459116000,
+                                "lastChange": 1566566540,
+                                "name": "Ostermontag"
+                            }
+                        ]                    
+                    },
+                    "tempId": "__temp__0"
+                }
+            ],
+            "selectedDate": "2016-04-04"
+        }'
+        ], [], 'POST');
+
+        $this->assertStringNotContainsString('Konflikt', (string) $response->getBody());
+        $this->assertStringContainsString('"conflictIdList":[]', (string) $response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testInvalidInput()
+    {
+        $this->expectException(\BO\Zmsadmin\Exception\BadRequest::class);
         
+        $response = $this->render([], [
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "id": "81871",
+                        "weekday": {"monday": "2"},
+                        "startDate": 1452553200,
+                        "endDate": 1463868000,
+                        "startTime": "08:00:00",
+                        "endTime": "15:50:00",
+                        "type": "appointment"
+                    }
+                ]
+            }'
+        ], [], 'POST');
+    }
+
+    public function testMultipleConflicts()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/availability/',
+                'parameters' => [
+                    'resolveReferences' => 0,
+                    'startDate' => '2016-04-04'
+                ],
+                'response' => $this->readFixture("GET_availability_68985.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            '__body' => '{
+            "availabilityList": [
+                {
+                    "id": "81871",
+                    "weekday": {"monday": "2"},
+                    "startDate": 1452553200,
+                    "endDate": 1463868000,
+                    "startTime": "08:00:00",
+                    "endTime": "15:50:00",
+                    "type": "appointment",
+                    "scope": {
+                        "id": "141", 
+                        "dayoff": [
+                            {
+                                "id": "302",
+                                "date": 1458860400,
+                                "lastChange": 1566566540,
+                                "name": "Karfreitag"
+                            },
+                            {
+                                "id": "303",
+                                "date": 1459116000,
+                                "lastChange": 1566566540,
+                                "name": "Ostermontag"
+                            }
+                        ]                    
+                    }
+                },
+                {
+                    "id": null,
+                    "weekday": {"monday": "2"},
+                    "startDate": 1452553200,
+                    "endDate": 1463868000,
+                    "startTime": "08:00:00",
+                    "endTime": "15:50:00",
+                    "type": "appointment",
+                    "scope": {
+                        "id": "141", 
+                        "dayoff": [
+                            {
+                                "id": "302",
+                                "date": 1458860400,
+                                "lastChange": 1566566540,
+                                "name": "Karfreitag"
+                            },
+                            {
+                                "id": "303",
+                                "date": 1459116000,
+                                "lastChange": 1566566540,
+                                "name": "Ostermontag"
+                            }
+                        ]                    
+                    },
+                    "tempId": "__temp__0"
+                },
+                {
+                    "id": null,
+                    "weekday": {"monday": "2"},
+                    "startDate": 1452553200,
+                    "endDate": 1463868000,
+                    "startTime": "09:00:00",
+                    "endTime": "16:50:00",
+                    "type": "appointment",
+                    "scope": {
+                        "id": "141", 
+                        "dayoff": [
+                            {
+                                "id": "302",
+                                "date": 1458860400,
+                                "lastChange": 1566566540,
+                                "name": "Karfreitag"
+                            },
+                            {
+                                "id": "303",
+                                "date": 1459116000,
+                                "lastChange": 1566566540,
+                                "name": "Ostermontag"
+                            }
+                        ]                    
+                    },
+                    "tempId": "__temp__1"
+                }
+            ],
+            "selectedDate": "2016-04-04"
+        }'
+        ], [], 'POST');
+
+        $this->assertStringContainsString('Konflikt', (string) $response->getBody());
+        $this->assertStringContainsString('"conflictIdList":["81871","__temp__0","__temp__1"]', (string) $response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

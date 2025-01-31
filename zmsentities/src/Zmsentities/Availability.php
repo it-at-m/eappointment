@@ -636,15 +636,14 @@ class Availability extends Schema\Entity
 
     public function hasSharedWeekdayWith(Availability $availability)
     {
-        return ($this->type == $availability->type
-            && (bool)$this->weekday['monday'] != (bool)$availability->weekday['monday']
-            && (bool)$this->weekday['tuesday'] != (bool)$availability->weekday['tuesday']
-            && (bool)$this->weekday['wednesday'] != (bool)$availability->weekday['wednesday']
-            && (bool)$this->weekday['thursday'] != (bool)$availability->weekday['thursday']
-            && (bool)$this->weekday['friday'] != (bool)$availability->weekday['friday']
-            && (bool)$this->weekday['saturday'] != (bool)$availability->weekday['saturday']
-            && (bool)$this->weekday['sunday'] != (bool)$availability->weekday['sunday']
-        ) ? false : true;
+        return $this->type == $availability->type
+        && (bool)$this->weekday['monday'] == (bool)$availability->weekday['monday']
+        && (bool)$this->weekday['tuesday'] == (bool)$availability->weekday['tuesday']
+        && (bool)$this->weekday['wednesday'] == (bool)$availability->weekday['wednesday']
+        && (bool)$this->weekday['thursday'] == (bool)$availability->weekday['thursday']
+        && (bool)$this->weekday['friday'] == (bool)$availability->weekday['friday']
+        && (bool)$this->weekday['saturday'] == (bool)$availability->weekday['saturday']
+        && (bool)$this->weekday['sunday'] == (bool)$availability->weekday['sunday'];
     }
 
     /**
@@ -767,50 +766,42 @@ class Availability extends Schema\Entity
             && $availability->type == $this->type
             && $this->hasSharedWeekdayWith($availability)
         ) {
-            $processTemplate = new Process();
-            $processTemplate->status = 'conflict';
-            $appointment = $processTemplate->getFirstAppointment();
-            $appointment->availability = $this;
-            $appointment->date = $this->getStartDateTime()->getTimestamp();
+            $baseDate = $currentDate->format('Y-m-d');
+            $start1 = new \DateTimeImmutable($baseDate . ' ' . $this->startTime);
+            $end1 = new \DateTimeImmutable($baseDate . ' ' . $this->endTime);
+            $start2 = new \DateTimeImmutable($baseDate . ' ' . $availability->startTime);
+            $end2 = new \DateTimeImmutable($baseDate . ' ' . $availability->endTime);
     
-            $existingDateRange = $this->getStartDateTime()->format('d.m.Y') . ' - ' . $this->getEndDateTime()->format('d.m.Y');
-            $newDateRange = $availability->getStartDateTime()->format('d.m.Y') . ' - ' . $availability->getEndDateTime()->format('d.m.Y');
-            
-            $existingTimeRange = $this->getStartDateTime()->format('H:i') . ' - ' . $this->getEndDateTime()->format('H:i');
-            $newTimeRange = $availability->getStartDateTime()->format('H:i') . ' - ' . $availability->getEndDateTime()->format('H:i');
+            if ($start1 < $end2 && $start2 < $end1) {
+                $processTemplate = new Process();
+                $processTemplate->status = 'conflict';
+                $appointment = $processTemplate->getFirstAppointment();
+                $appointment->availability = $this;
+                $appointment->date = $currentDate->getTimestamp();
     
-            // Compare exact times without seconds
-            $start1 = $this->getStartDateTime()->format('H:i');
-            $end1 = $this->getEndDateTime()->format('H:i');
-            $start2 = $availability->getStartDateTime()->format('H:i');
-            $end2 = $availability->getEndDateTime()->format('H:i');
+                $existingDateRange = $this->getStartDateTime()->format('d.m.Y') . ' - ' . $this->getEndDateTime()->format('d.m.Y');
+                $newDateRange = $availability->getStartDateTime()->format('d.m.Y') . ' - ' . $availability->getEndDateTime()->format('d.m.Y');
+                
+                $existingTimeRange = $start1->format('H:i') . ' - ' . $end1->format('H:i');
+                $newTimeRange = $start2->format('H:i') . ' - ' . $end2->format('H:i');
     
-            $isEqual = ($start1 === $start2 && $end1 === $end2);
-            
-            if ($isEqual) {
-                $process = clone $processTemplate;
-                $process->amendment = "Konflikt: Zwei Öffnungszeiten sind gleich.\n"
-                                    . "Bestehende Öffnungszeit:&thinsp;&thinsp;[$newDateRange, $newTimeRange]\n"
-                                    . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange]";
-                $process->getFirstAppointment()->date = $availability
-                    ->getStartDateTime()
-                    ->modify($currentDate->format("Y-m-d"))
-                    ->getTimestamp();
-                $processList->addEntity($process);
-            }
-            elseif ($start2 < $end1 && $start1 < $end2) {
-                $process = clone $processTemplate;
-                $process->amendment = "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n"
-                                    . "Bestehende Öffnungszeit:&thinsp;&thinsp;[$newDateRange, $newTimeRange]\n"
-                                    . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange]";
-                $process->getFirstAppointment()->date = $availability
-                    ->getStartDateTime()
-                    ->modify($currentDate->format("Y-m-d"))
-                    ->getTimestamp();
-                $processList->addEntity($process);
+                $isEqual = ($start1 == $start2 && $end1 == $end2);
+                
+                if ($isEqual) {
+                    $process = clone $processTemplate;
+                    $process->amendment = "Konflikt: Zwei Öffnungszeiten sind gleich.\n"
+                                        . "Bestehende Öffnungszeit:&thinsp;&thinsp;[$newDateRange, $newTimeRange]\n"
+                                        . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange]";
+                    $processList->addEntity($process);
+                } else {
+                    $process = clone $processTemplate;
+                    $process->amendment = "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n"
+                                        . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange]\n"
+                                        . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$newDateRange, $newTimeRange]";
+                    $processList->addEntity($process);
+                }
             }
         }
-    
         return $processList;
     }
 
