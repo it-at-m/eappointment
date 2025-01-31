@@ -636,14 +636,15 @@ class Availability extends Schema\Entity
 
     public function hasSharedWeekdayWith(Availability $availability)
     {
-        return $this->type == $availability->type
-        && (bool)$this->weekday['monday'] == (bool)$availability->weekday['monday']
-        && (bool)$this->weekday['tuesday'] == (bool)$availability->weekday['tuesday']
-        && (bool)$this->weekday['wednesday'] == (bool)$availability->weekday['wednesday']
-        && (bool)$this->weekday['thursday'] == (bool)$availability->weekday['thursday']
-        && (bool)$this->weekday['friday'] == (bool)$availability->weekday['friday']
-        && (bool)$this->weekday['saturday'] == (bool)$availability->weekday['saturday']
-        && (bool)$this->weekday['sunday'] == (bool)$availability->weekday['sunday'];
+        return ($this->type == $availability->type
+            && (bool)$this->weekday['monday'] != (bool)$availability->weekday['monday']
+            && (bool)$this->weekday['tuesday'] != (bool)$availability->weekday['tuesday']
+            && (bool)$this->weekday['wednesday'] != (bool)$availability->weekday['wednesday']
+            && (bool)$this->weekday['thursday'] != (bool)$availability->weekday['thursday']
+            && (bool)$this->weekday['friday'] != (bool)$availability->weekday['friday']
+            && (bool)$this->weekday['saturday'] != (bool)$availability->weekday['saturday']
+            && (bool)$this->weekday['sunday'] != (bool)$availability->weekday['sunday']
+        ) ? false : true;
     }
 
     /**

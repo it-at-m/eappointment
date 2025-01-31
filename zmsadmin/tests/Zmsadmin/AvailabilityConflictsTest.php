@@ -1956,7 +1956,7 @@ class AvailabilityConflictsTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testDifferentWeekdaysNoConflict()
+    public function testDifferentWeekdaysConflict()
     {
         $this->setApiCalls([
             [
@@ -2031,8 +2031,8 @@ class AvailabilityConflictsTest extends Base
         }'
         ], [], 'POST');
 
-        $this->assertStringNotContainsString('Konflikt', (string) $response->getBody());
-        $this->assertStringContainsString('"conflictIdList":[]', (string) $response->getBody());
+        $this->assertStringContainsString('Konflikt', (string)$response->getBody());
+        $this->assertStringContainsString('"conflictIdList":["81871","__temp__0"]', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
