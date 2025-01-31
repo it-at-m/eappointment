@@ -233,6 +233,53 @@ class AvailabilityList extends Base
         return [$earliestStartDateTime, $latestEndDateTime];
     }
 
+    public function hasNewVsNewConflicts(\DateTimeImmutable $selectedDate): \BO\Zmsentities\Collection\ProcessList
+    {
+        $conflicts = new \BO\Zmsentities\Collection\ProcessList();
+        
+        foreach ($this as $availability1) {
+            foreach ($this as $availability2) {
+                $scope1Id = is_array($availability1->scope) ? ($availability1->scope['id'] ?? null) : ($availability1->scope->id ?? null);
+                $scope2Id = is_array($availability2->scope) ? ($availability2->scope['id'] ?? null) : ($availability2->scope->id ?? null);
+                
+                if ($availability1 !== $availability2 && 
+                    $availability1->type == $availability2->type &&
+                    $scope1Id == $scope2Id &&
+                    $availability1->hasSharedWeekdayWith($availability2)) {
+                    
+                    $start1 = (new \DateTimeImmutable())->setTimestamp($availability1->startDate)
+                        ->modify($availability1->startTime);
+                    $end1 = (new \DateTimeImmutable())->setTimestamp($availability1->endDate)
+                        ->modify($availability1->endTime);
+                    $start2 = (new \DateTimeImmutable())->setTimestamp($availability2->startDate)
+                        ->modify($availability2->startTime);
+                    $end2 = (new \DateTimeImmutable())->setTimestamp($availability2->endDate)
+                        ->modify($availability2->endTime);
+
+                    if ($start1 < $end2 && $start2 < $end1) {
+                        $process = new \BO\Zmsentities\Process();
+                        
+                        $dateRange1 = date('d.m.Y', $availability1->startDate) . ' - ' . date('d.m.Y', $availability1->endDate);
+                        $dateRange2 = date('d.m.Y', $availability2->startDate) . ' - ' . date('d.m.Y', $availability2->endDate);
+                        $timeRange1 = $start1->format('H:i') . ' - ' . $end1->format('H:i');
+                        $timeRange2 = $start2->format('H:i') . ' - ' . $end2->format('H:i');
+
+                        $process->amendment = "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n"
+                            . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$dateRange1, $timeRange1]\n"
+                            . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$dateRange2, $timeRange2]";
+                        
+                        $appointment = new \BO\Zmsentities\Appointment();
+                        $appointment->date = $availability1->startDate;
+                        $appointment->availability = $availability1;
+                        $process->addAppointment($appointment);
+                        $conflicts->addEntity($process);
+                    }
+                }
+            }
+        }
+        return $conflicts;
+    }
+
     public function checkAllVsExistingConflicts($startDate, $endDate)
     {
         $processList = new ProcessList();
