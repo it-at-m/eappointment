@@ -2,11 +2,8 @@
 
 namespace BO\Zmsentities\Schema;
 
-use Opis\JsonSchema\Validator as OpisValidator;
-use Opis\JsonSchema\ValidationResult;
-use Opis\JsonSchema\Schema;
-use BO\Zmsentities\Schema\Extensions\CoerceType;
-use BO\Zmsentities\Schema\Extensions\SameValues;
+use Opis\JsonSchema\{Validator as OpisValidator, ValidationResult};
+use Opis\JsonSchema\Errors\ValidationError as OpisValidationError;
 
 class Validator
 {
@@ -14,75 +11,111 @@ class Validator
     protected $schemaData;
     protected $locale;
     protected $validator;
+    protected $validationResult;
 
     public function __construct($data, Schema $schemaObject, $locale)
     {
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
-
-        // Initialize Opis Validator
+        
         $this->validator = new OpisValidator();
+        $this->validator->resolver()->registerPrefix('schema://', '/var/www/html/zmsentities/schema/');
 
-        // Register custom keywords
-        $this->validator->addKeyword('type', new CoerceType());
-        $this->validator->addKeyword('sameValues', new SameValues());
+        $schemaJson = json_encode($schemaObject->toJsonObject());
+        $schema = json_decode($schemaJson, false);
+
+        $data = json_decode(json_encode($data), false);
+
+        $this->validationResult = $this->validator->validate($data, $schema);
+
+        var_dump("Schema:", json_encode($schema, JSON_PRETTY_PRINT));
+        var_dump("Data:", json_encode($data, JSON_PRETTY_PRINT));
     }
 
     public function isValid()
     {
-        $result = $this->validator->validate($this->schemaData, $this->schemaObject);
-        return $result->isValid();
+        // var_dump("Validation Result: ", $this->validationResult);
+        return $this->validationResult->isValid();
     }
 
     public function getErrors()
     {
-        $result = $this->validator->validate($this->schemaData, $this->schemaObject);
-        $errorsReducedList = [];
+        if ($this->validationResult->isValid()) {
+            return [];
+        }
 
-        if (!$result->isValid()) {
-            foreach ($result->getErrors() as $error) {
-                $errorsReducedList[] = new ValidationError(
-                    $this->getCustomMessage($error),
-                    $error->keyword(),
-                    $error->keywordArgs(),
-                    $error->data(),
-                    $this->getTranslatedPointer($error),
-                    $error->schema(),
-                    $error->schemaLocation()
-                );
-            }
+        $errorsReducedList = [];
+        $error = $this->validationResult->error();
+
+        if ($error) {
+            $errorsReducedList = $this->extractErrors($error);
         }
 
         return $errorsReducedList;
     }
 
-    public function getCustomMessage($error)
+    private function extractErrors(OpisValidationError $error)
     {
-        $message = null;
-        $property = new \BO\Zmsentities\Helper\Property($error->schema());
-        $message = $property['x-locale'][$this->locale]->messages[$error->keyword()]->get();
-        return ($message) ? $message : $error->message();
-    }
+        $errors = [];
 
-    public static function getOriginPointer($error)
-    {
-        $pointer = explode('/', $error->schemaLocation());
-        $keys = array_keys($pointer, 'properties', true);
-        if (0 < count($keys)) {
-            $pointer = array_values(array_slice($pointer, end($keys) + 1, null, true));
+        $errors[] = new OpisValidationError(
+            $error->keyword(),
+            $error->schema(),
+            $error->data(),
+            //$this->getCustomMessage($error),
+            $error->message(),
+            $error->args(),
+            []
+        );
+
+        foreach ($error->subErrors() as $subError) {
+            if ($subError instanceof OpisValidationError) {
+                $errors = array_merge($errors, $this->extractErrors($subError));
+            }
         }
-        return reset($pointer);
+
+        return $errors;
     }
 
-    public function getTranslatedPointer($error)
+    public function getCustomMessage(OpisValidationError $error)
     {
         $property = new \BO\Zmsentities\Helper\Property($error->schema());
-        return $property['x-locale'][$this->locale]->pointer->get(static::getOriginPointer($error));
+
+        if (
+            isset($property['x-locale'][$this->locale]->messages[$error->keyword()])
+            && $property['x-locale'][$this->locale]->messages[$error->keyword()] !== null
+        ) {
+            return $property['x-locale'][$this->locale]->messages[$error->keyword()]->get();
+        }
+
+        return $error->message();
     }
 
-    public function registerFormatExtension($name, $extension)
+    public static function getOriginPointer(OpisValidationError $error)
     {
-        $this->validator->addKeyword($name, $extension);
+        $dataInfo = $error->data();
+
+        if (empty($dataInfo->path())) {
+            return '/';
+        }
+
+        $pointer = '/' . implode('/', array_map('strval', $dataInfo->path()));
+
+        return $pointer;
+    }
+
+    public function getTranslatedPointer(OpisValidationError $error)
+    {
+        $property = new \BO\Zmsentities\Helper\Property($error->schema());
+
+        if (
+            isset($property['x-locale'][$this->locale]->pointer)
+            && $property['x-locale'][$this->locale]->pointer !== null
+        ) {
+            return $property['x-locale'][$this->locale]->pointer->get(self::getOriginPointer($error));
+        }
+
+        return self::getOriginPointer($error);
     }
 }

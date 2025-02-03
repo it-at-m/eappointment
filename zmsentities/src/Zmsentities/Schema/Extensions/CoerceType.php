@@ -2,61 +2,44 @@
 
 namespace BO\Zmsentities\Schema\Extensions;
 
-use Opis\JsonSchema\KeywordValidator;
+use Opis\JsonSchema\Keyword;
 use Opis\JsonSchema\ValidationContext;
-use Opis\JsonSchema\SchemaKeyword;
 use Opis\JsonSchema\Errors\ValidationError;
 
-final class CoerceType implements KeywordValidator
+class CoerceType implements Keyword
 {
-    public function validate($value, SchemaKeyword $schemaKeyword, ValidationContext $context)
+    public function validate($data, ValidationContext $context, $value): ?ValidationError
     {
-        $typeList = $schemaKeyword->data();
-        $coercedValue = $this->coerceType($value, $typeList);
-        if ($coercedValue !== $value) {
-            $context->setData($coercedValue);
+        $type = $value;
+        
+        // Perform type coercion
+        switch ($type) {
+            case 'string':
+                if (is_numeric($data) || is_bool($data)) {
+                    $context->setData((string)$data);
+                }
+                break;
+            case 'number':
+                if (is_string($data) && is_numeric($data)) {
+                    $context->setData((float)$data);
+                }
+                break;
+            case 'integer':
+                if (is_string($data) && ctype_digit($data)) {
+                    $context->setData((int)$data);
+                }
+                break;
+            case 'boolean':
+                if (is_string($data)) {
+                    if ($data === 'true') {
+                        $context->setData(true);
+                    } elseif ($data === 'false') {
+                        $context->setData(false);
+                    }
+                }
+                break;
         }
-
-        // Re-run default validation logic
-        return null;
-    }
-
-    private function coerceType($value, $type)
-    {
-        if ($type === 'number') {
-            return $this->toFloat($value);
-        } elseif ($type === 'string') {
-            return $this->toString($value);
-        } elseif ($type === 'integer' && !is_int($value)) {
-            return $this->toInteger($value);
-        } elseif ($type === 'boolean') {
-            return $this->toBoolean($value);
-        }
-        return $value;
-    }
-
-    private function toFloat($value)
-    {
-        return is_numeric($value) ? (float)$value : $value;
-    }
-
-    private function toString($value)
-    {
-        return (string)$value;
-    }
-
-    private function toInteger($value)
-    {
-        return is_numeric($value) ? (int)$value : $value;
-    }
-
-    private function toBoolean($value)
-    {
-        if (is_bool($value)) {
-                return $value;
-            } elseif (is_string($value)) {
-                return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $value;
-            }
-            return (bool)$value;
+        
+        return null; // Return null if validation passes
     }
 }
