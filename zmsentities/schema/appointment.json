@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "An appointment represents a given time on a scope for defining appointments in a calendar.",
     "example": {
         "date": 1447869172,

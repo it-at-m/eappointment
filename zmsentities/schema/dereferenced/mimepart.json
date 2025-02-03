@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "A message part to send. For images an other binary files, the content can be encoded as base64.",
     "example": {
         "queueId": 1234,

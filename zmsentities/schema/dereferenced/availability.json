@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "An Availability is a representation of opening hours for a scope. It defines the time a scope offers appointments and a ticket printer is able to serve process numbers.",
     "example": {
         "bookable": {
@@ -40,7 +40,7 @@
     "additionalProperties": false,
     "properties": {
         "bookable": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "startInDays": {
                     "type": "number",
@@ -88,14 +88,14 @@
             "description": "an appointment is allowed to take more than one time slot"
         },
         "processingNote": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "type": "string",
                 "description": "Non persistent note usable for processing or logging calculation results, usually used for debugging"
             }
         },
         "repeat": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "afterWeeks": {
                     "type": "number",
@@ -108,7 +108,7 @@
             }
         },
         "scope": {
-            "type": "object",
+            "type": ["array", "object"],
             "description": "A scope is the central unit for processing requests for clients. It is usally a building or a special location offering workstations to serve the clients. According to the availabilities a scope has, appointments are possible. With a calldisplay and a ticketprinter it can serve clients without an appointment.",
             "example": {
                 "contact": {
@@ -233,7 +233,7 @@
                     "$ref": "contact.json"
                 },
                 "dayoff": {
-                    "type": "array",
+                    "type": ["array", "object"],
                     "items": {
                         "$ref": "dayoff.json"
                     }
@@ -256,11 +256,11 @@
                     "description": "unix timestamp of the last change on this scope"
                 },
                 "preferences": {
-                    "type": "object",
+                    "type": ["array", "object"],
                     "additionalProperties": false,
                     "properties": {
                         "appointment": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "additionalProperties": false,
                             "properties": {
                                 "deallocationDuration": {
@@ -310,7 +310,7 @@
                             }
                         },
                         "client": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "additionalProperties": false,
                             "properties": {
                                 "alternateAppointmentUrl": {
@@ -432,7 +432,7 @@
                             }
                         },
                         "notifications": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "additionalProperties": false,
                             "properties": {
                                 "confirmationContent": {
@@ -453,7 +453,7 @@
                             }
                         },
                         "pickup": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "additionalProperties": false,
                             "properties": {
                                 "alternateName": {
@@ -472,7 +472,7 @@
                             }
                         },
                         "queue": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "additionalProperties": false,
                             "properties": {
                                 "callCountMax": {
@@ -525,7 +525,7 @@
                             }
                         },
                         "survey": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "additionalProperties": false,
                             "properties": {
                                 "emailContent": {
@@ -549,7 +549,7 @@
                             }
                         },
                         "ticketprinter": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "additionalProperties": false,
                             "properties": {
                                 "buttonName": {
@@ -594,7 +594,7 @@
                             }
                         },
                         "workstation": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "additionalProperties": false,
                             "properties": {
                                 "emergencyEnabled": {
@@ -623,11 +623,11 @@
                     "default": ""
                 },
                 "status": {
-                    "type": "object",
+                    "type": ["array", "object"],
                     "additionalProperties": false,
                     "properties": {
                         "emergency": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "description": "If activated, a workstation has an emergency-button to call for help",
                             "properties": {
                                 "acceptedByWorkstation": {
@@ -655,7 +655,7 @@
                             }
                         },
                         "queue": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "properties": {
                                 "givenNumberCount": {
                                     "type": "number",
@@ -685,7 +685,7 @@
                             }
                         },
                         "ticketprinter": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "properties": {
                                 "deactivated": {
                                     "type": [
@@ -698,7 +698,7 @@
                             }
                         },
                         "availability": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "properties": {
                                 "isOpened": {
                                     "type": [
@@ -737,7 +737,7 @@
             "description": "The following type are available\n* appointment - defines times for appointments\n* openinghours - defines times where a scope is opened\n* break - defines times for a break (not implemented yet)\n"
         },
         "weekday": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "monday": {
                     "default": false,
@@ -791,7 +791,7 @@
             }
         },
         "workstationCount": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "callcenter": {
                     "type": "number",

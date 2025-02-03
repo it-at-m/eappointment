@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "A request is usually a representation of a service offered by a provider.",
     "example": {
         "id": "120335",

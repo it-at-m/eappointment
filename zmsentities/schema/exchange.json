@@ -1,5 +1,5 @@
 {
-  "type": "object",
+  "type": ["array", "object"],
   "description": "Represents an exchanged set of data usuable for statistics. It can include information how the data is changed.",
   "example": {
     "period": "day",
@@ -65,9 +65,9 @@
       ]
     },
     "dictionary": {
-      "type": "array",
+      "type": ["array", "object"],
       "items": {
-        "type": "object",
+        "type": ["array", "object"],
         "properties": {
           "position": {
             "type": "integer",
@@ -100,9 +100,9 @@
       }
     },
     "data": {
-      "type": "array",
+      "type": ["array", "object"],
       "items": {
-        "type": "array",
+        "type": ["array", "object"],
         "items": {
           "type": [
             "string",
@@ -117,17 +117,17 @@
       "description": "Title for the data, might include hints for the data"
     },
     "visualization": {
-      "type": "object",
+      "type": ["array", "object"],
       "description": "Hints for visualization of the data",
       "properties": {
         "xlabel": {
-          "type": "array",
+          "type": ["array", "object"],
           "items": {
             "type": "string"
           }
         },
         "ylabel": {
-          "type": "array",
+          "type": ["array", "object"],
           "items": {
             "type": "string"
           }

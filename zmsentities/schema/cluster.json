@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "A cluster is a way to group different scopes.",
     "example": {
         "callDisplayText": "Herzlich Willkommen,\nDie aufgerufenen Plätze finden Sie den im Gang rechts.",
@@ -35,7 +35,7 @@
             "description": "name for internal usage"
         },
         "scopes": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "$ref": "scope.json"
             }

@@ -1,5 +1,5 @@
 {
-  "type": "object",
+  "type": ["array", "object"],
   "description": "A workstation is an input device in a room or place to process requests for the clients. A workstation calls clients and changes the status of a process.",
   "example": {
     "hint": "Ausgabeschalter 3",
@@ -48,7 +48,7 @@
       "description": "id of the workstation"
     },
     "emergency": {
-      "type": "object",
+      "type": ["array", "object"],
       "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
       "properties": {
         "refreshInterval": {
@@ -67,7 +67,7 @@
       "$ref": "process.json"
     },
     "queue": {
-      "type": "object",
+      "type": ["array", "object"],
       "additionalProperties": false,
       "properties": {
         "appointmentsOnly": {
@@ -93,13 +93,13 @@
       "$ref": "useraccount.json"
     },
     "linkList": {
-      "type": "array",
+      "type": ["array", "object"],
       "items": {
         "$ref": "link.json"
       }
     },
     "support": {
-      "type": "object",
+      "type": ["array", "object"],
       "additionalProperties": false,
       "properties": {
         "telephone": {

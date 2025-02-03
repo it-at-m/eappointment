@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "A list of status informations for the API and the application.",
     "example": {
         "generated": "2015-11-20T18:01:04+01:00",
@@ -21,7 +21,7 @@
             "description": "identifier for the responding server"
         },
         "processes": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "blocked": {
                     "type": "number",
@@ -66,10 +66,10 @@
             }
         },
         "sources": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "dldb": {
-                    "type": "object",
+                    "type": ["array", "object"],
                     "properties": {
                         "last": {
                             "type": "string",
@@ -80,7 +80,7 @@
             }
         },
         "mail": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "queueCount": {
                     "type": "number",
@@ -97,7 +97,7 @@
             }
         },
         "notification": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "queueCount": {
                     "type": "number",
@@ -114,7 +114,7 @@
             }
         },
         "database": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "clusterStatus": {
                     "type": "string",
@@ -143,7 +143,7 @@
             }
         },
         "version": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "major": {
                     "type": "number",

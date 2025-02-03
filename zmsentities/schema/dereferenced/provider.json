@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "A provider usually represents an organisational entity offering services to clients. In most cases, it is a building or a special location hosting an organisation which provides the services. A service is represented by a request in the ZMS.",
     "example": {
         "contact": {
@@ -27,7 +27,7 @@
     "properties": {
         "contact": {
             "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
-            "type": "object",
+            "type": ["array", "object"],
             "example": {
                 "city": "Schönefeld",
                 "country": "Germany",
@@ -110,7 +110,7 @@
             "description": "URI with detailed information for the provider"
         },
         "data": {
-            "type": "object",
+            "type": ["array", "object"],
             "description": "source dependant additional properties",
             "additionalProperties": true
         },

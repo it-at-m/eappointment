@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "A mail represents a message to be send to a client and may have different content-types like in a multipart email.",
     "example": {
         "id": 1234,
@@ -141,7 +141,7 @@
             "$ref": "department.json"
         },
         "multipart": {
-            "type": "array",
+            "type": ["array", "object"],
             "description": "message parts to send",
             "items": {
                 "$ref": "mimepart.json"

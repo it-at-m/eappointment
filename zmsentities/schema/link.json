@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "Representation of a link.",
     "example": {
         "id": 1234,

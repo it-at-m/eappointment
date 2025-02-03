@@ -7,7 +7,7 @@
   "description": "Contains information about offices, services, and their relations. Includes details about each office, available services, and how they are related.",
   "properties": {
     "offices": {
-      "type": "array",
+      "type": ["array", "object"],
       "items": {
         "title": "Office",
         "type": [
@@ -110,7 +110,7 @@
       }
     },
     "services": {
-      "type": "array",
+      "type": ["array", "object"],
       "items": {
         "type": [
           "array",
@@ -119,7 +119,7 @@
         ],
         "properties": {
           "services": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
               "title": "Service",
               "type": [
@@ -190,7 +190,7 @@
       }
     },
     "relations": {
-      "type": "array",
+      "type": ["array", "object"],
       "items": {
         "title": "OfficeServiceRelation",
         "type": [

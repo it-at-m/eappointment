@@ -1,6 +1,6 @@
 {
     "title": "Office",
-    "type": ["array", "object"],
+    "type": ["array", "object"],,
     "properties": {
         "id": {
             "type": "integer",

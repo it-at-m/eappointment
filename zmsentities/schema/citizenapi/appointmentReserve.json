@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "Includes a message confirming that an appointment has been successfully reserved.",
     "properties": {
       "message": {

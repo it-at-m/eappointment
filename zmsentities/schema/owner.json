@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "An owner is usually a contract partner using the ZMS. The base scopes of the ZMS are organised in an hierarchy, with the Owner on top. The hierarchy looks like this:\n1. owner\n2. organisation (by law or area)\n3. department (by solving different requests)\n4. scope (by building or location)\n5. workstation (by person or room)\n",
     "example": {
         "contact": {
@@ -37,7 +37,7 @@
         	"type": "string"
         },
         "organisations": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "$ref": "organisation.json"
             }

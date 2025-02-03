@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "An source represents an import from a data source providing data for providers and requests as well as their relations.\n",
     "example": {
         "contact": {
@@ -73,25 +73,25 @@
             "default": 0
         },
         "providers": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "$ref": "provider.json"
             }
         },
         "requests": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "$ref": "request.json"
             }
         },
         "requestrelation": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "$ref": "requestrelation.json"
             }
         },
         "scopes": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "$ref": "scope.json"
             }

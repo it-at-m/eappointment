@@ -2,7 +2,7 @@
   "type": ["array", "object", "null"],
   "properties": {
     "offices": {
-      "type": "array",
+      "type": ["array", "object"],
       "items": {
         "title": "Office",
         "type": [

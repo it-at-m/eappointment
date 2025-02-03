@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "This entity represents a calculated number for available appointments. Attention: Be aware that the different types of appointments are not exclusive, the total amount of appointments are not equal to the sum of appointments from the different types.",
     "example": {
         "public": 3,

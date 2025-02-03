@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "representation of an ics attachment",
     "properties": {
         "content": {

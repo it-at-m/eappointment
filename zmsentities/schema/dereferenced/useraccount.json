@@ -1,6 +1,6 @@
 {
     "description": "An useraccount represents an user for the ZMS. It contains the rights the user has for processing data with the ZMS. Usually a user creates a workstation entity if he\/she begins with the work.",
-    "type": "object",
+    "type": ["array", "object"],
     "example": {
         "lastLogin": 1447926465,
         "id": "johndoe",
@@ -72,7 +72,7 @@
             }
         },
         "changePassword": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "type": "string",
                 "minLength": 6,
@@ -101,7 +101,7 @@
             }
         },
         "rights": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "availability": {
                     "description": "Allow editing availability with opening hours",
@@ -176,10 +176,10 @@
             }
         },
         "departments": {
-            "type": "array",
+            "type": ["array", "object"],
             "description": "list of assigned departments",
             "items": {
-                "type": "object",
+                "type": ["array", "object"],
                 "description": "A department is a subunit in an organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\".",
                 "example": {
                     "id": 123,
@@ -237,13 +237,13 @@
                         "$ref": "contact.json"
                     },
                     "clusters": {
-                        "type": "array",
+                        "type": ["array", "object"],
                         "items": {
                             "$ref": "cluster.json"
                         }
                     },
                     "dayoff": {
-                        "type": "array",
+                        "type": ["array", "object"],
                         "items": {
                             "$ref": "dayoff.json"
                         }
@@ -262,7 +262,7 @@
                         }
                     },
                     "links": {
-                        "type": "array",
+                        "type": ["array", "object"],
                         "items": {
                             "$ref": "link.json"
                         }
@@ -271,11 +271,11 @@
                         "type": "string"
                     },
                     "preferences": {
-                        "type": "object",
+                        "type": ["array", "object"],
                         "additionalProperties": false,
                         "properties": {
                             "notifications": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "additionalProperties": false,
                                 "properties": {
                                     "enabled": {
@@ -310,7 +310,7 @@
                         }
                     },
                     "scopes": {
-                        "type": "array",
+                        "type": ["array", "object"],
                         "items": {
                             "$ref": "scope.json"
                         }

@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "An organisation is the top unit to group departments with their scopes.",
     "example": {
         "contact": {
@@ -40,7 +40,7 @@
     "properties": {
         "contact": {
             "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
-            "type": "object",
+            "type": ["array", "object"],
             "example": {
                 "city": "Schönefeld",
                 "country": "Germany",
@@ -113,9 +113,9 @@
             }
         },
         "departments": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
-                "type": "object",
+                "type": ["array", "object"],
                 "description": "A department is a subunit in an organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\".",
                 "example": {
                     "id": 123,
@@ -173,13 +173,13 @@
                         "$ref": "contact.json"
                     },
                     "clusters": {
-                        "type": "array",
+                        "type": ["array", "object"],
                         "items": {
                             "$ref": "cluster.json"
                         }
                     },
                     "dayoff": {
-                        "type": "array",
+                        "type": ["array", "object"],
                         "items": {
                             "$ref": "dayoff.json"
                         }
@@ -198,7 +198,7 @@
                         }
                     },
                     "links": {
-                        "type": "array",
+                        "type": ["array", "object"],
                         "items": {
                             "$ref": "link.json"
                         }
@@ -207,11 +207,11 @@
                         "type": "string"
                     },
                     "preferences": {
-                        "type": "object",
+                        "type": ["array", "object"],
                         "additionalProperties": false,
                         "properties": {
                             "notifications": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "additionalProperties": false,
                                 "properties": {
                                     "enabled": {
@@ -246,7 +246,7 @@
                         }
                     },
                     "scopes": {
-                        "type": "array",
+                        "type": ["array", "object"],
                         "items": {
                             "$ref": "scope.json"
                         }
@@ -261,7 +261,7 @@
             "type": "string"
         },
         "preferences": {
-            "type": "object",
+            "type": ["array", "object"],
             "additionalProperties": false,
             "properties": {
                 "ticketPrinterProtectionEnabled": {
@@ -274,10 +274,10 @@
             }
         },
         "ticketprinters": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "description": "A ticketprinter is a system to print waiting numbers for clients. Usually it has a touch screen and a printing device.",
-                "type": "object",
+                "type": ["array", "object"],
                 "example": {
                     "buttonlist": "s123,l[http:\/\/www.berlin.de\/|Portal+Berlin.de]",
                     "enabled": true,
@@ -296,9 +296,9 @@
                 "additionalProperties": false,
                 "properties": {
                     "buttons": {
-                        "type": "array",
+                        "type": ["array", "object"],
                         "items": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "properties": {
                                 "name": {
                                     "type": "string",

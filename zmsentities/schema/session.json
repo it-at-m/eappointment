@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "Representation of a session. It usually stores temporary appointment data before a free appointment is found.",
     "example": {
         "name": "Zmsappointment",
@@ -10,7 +10,7 @@
                 "providers": "122217",
                 "scope": "123",
                 "process": "1234567",
-                "date": "1456310041",
+                "date": 1456310041,
                 "familyName": "Max Mustermann",
                 "clientEmail": "max@zms-bo.de",
                 "clientTelephone": "03023232323",
@@ -55,10 +55,10 @@
             "description": "id of session"
         },
         "content": {
-            "type": "object",
+            "type": ["array", "object"],
             "properties": {
                 "basket": {
-                    "type": "object",
+                    "type": ["array", "object"],
                     "properties": {
                         "requests": {
                             "type": [
@@ -104,7 +104,7 @@
                             "type": "string"
                         },
                         "clientTelephone": {
-                            "type": "number"
+                            "type": "string"
                         },
                         "clientAmendment": {
                             "type": "string"
@@ -121,7 +121,7 @@
                     }
                 },
                 "human": {
-                    "type": "object",
+                    "type": ["array", "object"],
                     "properties": {
                         "captcha_text": {
                             "type": "string"
@@ -142,7 +142,7 @@
                             "type": "string"
                         },
                         "step": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "properties": {
                                 "dayselect": {
                                     "type": "number"
@@ -165,7 +165,7 @@
                     "description": "source for multi-client capability"
                 },
                 "entry": {
-                    "type": "object",
+                    "type": ["array", "object"],
                     "description": "Save request IDs and provider IDs from entry query",
                     "properties": {
                         "source": {

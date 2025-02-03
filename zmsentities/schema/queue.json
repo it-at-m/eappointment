@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "A queue represents a waiting queue for processes/clients.",
     "example": {
         "arrivalTime": 1447922893,

@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "A notification is a message to send to a client. Compared to a mail, it is a short text message, usually a SMS.",
     "example": {
         "id": 1234,
@@ -61,7 +61,7 @@
             "description": "unix timestamp representing creation of the notification"
         },
         "department": {
-            "type": "object",
+            "type": ["array", "object"],
             "description": "A department is a subunit in an organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\".",
             "example": {
                 "id": 123,
@@ -119,13 +119,13 @@
                     "$ref": "contact.json"
                 },
                 "clusters": {
-                    "type": "array",
+                    "type": ["array", "object"],
                     "items": {
                         "$ref": "cluster.json"
                     }
                 },
                 "dayoff": {
-                    "type": "array",
+                    "type": ["array", "object"],
                     "items": {
                         "$ref": "dayoff.json"
                     }
@@ -144,7 +144,7 @@
                     }
                 },
                 "links": {
-                    "type": "array",
+                    "type": ["array", "object"],
                     "items": {
                         "$ref": "link.json"
                     }
@@ -153,11 +153,11 @@
                     "type": "string"
                 },
                 "preferences": {
-                    "type": "object",
+                    "type": ["array", "object"],
                     "additionalProperties": false,
                     "properties": {
                         "notifications": {
-                            "type": "object",
+                            "type": ["array", "object"],
                             "additionalProperties": false,
                             "properties": {
                                 "enabled": {
@@ -192,7 +192,7 @@
                     }
                 },
                 "scopes": {
-                    "type": "array",
+                    "type": ["array", "object"],
                     "items": {
                         "$ref": "scope.json"
                     }
@@ -204,7 +204,7 @@
             "description": "Short message to send. Beware, on using SMS, long messages might generate multiple SMS messages."
         },
         "process": {
-            "type": "object",
+            "type": ["array", "object"],
             "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
             "example": {
                 "amendment": "Beispiel Termin",
@@ -289,7 +289,7 @@
                     "$ref": "apiclient.json"
                 },
                 "appointments": {
-                    "type": "array",
+                    "type": ["array", "object"],
                     "items": {
                         "$ref": "appointment.json"
                     }
@@ -319,7 +319,7 @@
                     "description": "unix timestamp og time when process has been finished"
                 },
                 "clients": {
-                    "type": "array",
+                    "type": ["array", "object"],
                     "items": {
                         "$ref": "client.json"
                     }
@@ -349,7 +349,7 @@
                     "description": "timestamp of last reminder message"
                 },
                 "requests": {
-                    "type": "array",
+                    "type": ["array", "object"],
                     "items": {
                         "$ref": "request.json"
                     }
@@ -382,7 +382,7 @@
             }
         },
         "client": {
-            "type": "object",
+            "type": ["array", "object"],
             "description": "A client is usually a customer in a scope who intends to get his request solved. Usually the client has an appointment, if not he got a process number from a ticket printer and his familyName is set to 'Spontankunde'.",
             "example": {
                 "familyName": "Max Mustermann",

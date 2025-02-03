@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "A cluster is a way to group different scopes.",
     "example": {
         "callDisplayText": "Herzlich Willkommen,\nDie aufgerufenen Plätze finden Sie den im Gang rechts.",
@@ -35,9 +35,9 @@
             "description": "name for internal usage"
         },
         "scopes": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
-                "type": "object",
+                "type": ["array", "object"],
                 "description": "A scope is the central unit for processing requests for clients. It is usally a building or a special location offering workstations to serve the clients. According to the availabilities a scope has, appointments are possible. With a calldisplay and a ticketprinter it can serve clients without an appointment.",
                 "example": {
                     "contact": {
@@ -162,7 +162,7 @@
                         "$ref": "contact.json"
                     },
                     "dayoff": {
-                        "type": "array",
+                        "type": ["array", "object"],
                         "items": {
                             "$ref": "dayoff.json"
                         }
@@ -185,11 +185,11 @@
                         "description": "unix timestamp of the last change on this scope"
                     },
                     "preferences": {
-                        "type": "object",
+                        "type": ["array", "object"],
                         "additionalProperties": false,
                         "properties": {
                             "appointment": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "additionalProperties": false,
                                 "properties": {
                                     "deallocationDuration": {
@@ -239,7 +239,7 @@
                                 }
                             },
                             "client": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "additionalProperties": false,
                                 "properties": {
                                     "alternateAppointmentUrl": {
@@ -361,7 +361,7 @@
                                 }
                             },
                             "notifications": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "additionalProperties": false,
                                 "properties": {
                                     "confirmationContent": {
@@ -382,7 +382,7 @@
                                 }
                             },
                             "pickup": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "additionalProperties": false,
                                 "properties": {
                                     "alternateName": {
@@ -401,7 +401,7 @@
                                 }
                             },
                             "queue": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "additionalProperties": false,
                                 "properties": {
                                     "callCountMax": {
@@ -454,7 +454,7 @@
                                 }
                             },
                             "survey": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "additionalProperties": false,
                                 "properties": {
                                     "emailContent": {
@@ -478,7 +478,7 @@
                                 }
                             },
                             "ticketprinter": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "additionalProperties": false,
                                 "properties": {
                                     "buttonName": {
@@ -523,7 +523,7 @@
                                 }
                             },
                             "workstation": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "additionalProperties": false,
                                 "properties": {
                                     "emergencyEnabled": {
@@ -552,11 +552,11 @@
                         "default": ""
                     },
                     "status": {
-                        "type": "object",
+                        "type": ["array", "object"],
                         "additionalProperties": false,
                         "properties": {
                             "emergency": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "description": "If activated, a workstation has an emergency-button to call for help",
                                 "properties": {
                                     "acceptedByWorkstation": {
@@ -584,7 +584,7 @@
                                 }
                             },
                             "queue": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "properties": {
                                     "givenNumberCount": {
                                         "type": "number",
@@ -614,7 +614,7 @@
                                 }
                             },
                             "ticketprinter": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "properties": {
                                     "deactivated": {
                                         "type": [
@@ -627,7 +627,7 @@
                                 }
                             },
                             "availability": {
-                                "type": "object",
+                                "type": ["array", "object"],
                                 "properties": {
                                     "isOpened": {
                                         "type": [

@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "A department is a subunit in an organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\".",
     "example": {
         "id": 123,
@@ -57,13 +57,13 @@
             "$ref": "contact.json"
         },
         "clusters": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "$ref": "cluster.json"
             }
         },
         "dayoff": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "$ref": "dayoff.json"
             }
@@ -94,7 +94,7 @@
             "description": "number of minutes before appointment when reminder e-mail is sent"
         },
         "links": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "$ref": "link.json"
             }
@@ -103,11 +103,11 @@
             "type": "string"
         },
         "preferences": {
-            "type": "object",
+            "type": ["array", "object"],
             "additionalProperties": false,
             "properties": {
                 "notifications": {
-                    "type": "object",
+                    "type": ["array", "object"],
                     "additionalProperties": false,
                     "properties": {
                         "enabled": {
@@ -142,7 +142,7 @@
             }
         },
         "scopes": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
                 "$ref": "scope.json"
             }

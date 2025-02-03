@@ -1,5 +1,5 @@
 {
-    "type": "object",
+    "type": ["array", "object"],
     "description": "Representation of an Apikey. It usually stores temporary api quota data while appointment scheduling in service app",
     "example": {
         "key": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
@@ -33,7 +33,7 @@
             "description": "temporary random api key string"
         },
         "apiclient": {
-            "type": "object",
+            "type": ["array", "object"],
             "description": "An apiclient is required on requesting an apikey.",
             "example": {
                 "clientKey": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
@@ -76,7 +76,7 @@
             }
         },
         "captcha": {
-            "type": "object",
+            "type": ["array", "object"],
             "description": "A message part to send. For images an other binary files, the content can be encoded as base64.",
             "example": {
                 "queueId": 1234,
@@ -110,9 +110,9 @@
             }
         },
         "quota": {
-            "type": "array",
+            "type": ["array", "object"],
             "items": {
-                "type": "object",
+                "type": ["array", "object"],
                 "properties": {
                     "route": {
                         "type": "string",

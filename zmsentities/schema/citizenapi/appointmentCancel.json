@@ -1,5 +1,5 @@
 {
-  "type": "object",
+  "type": ["array", "object"],
   "description": "Includes a message indicating the result of a canceled appointment request.",
   "properties": {
     "message": {
