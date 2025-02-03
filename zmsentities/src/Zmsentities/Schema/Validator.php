@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Schema;
 
-use Opis\JsonSchema\{Validator as OpisValidator, ValidationResult};
+use Opis\JsonSchema\{Validator as OpisValidator, ValidationResult, Schema as OpisSchema};
 use Opis\JsonSchema\Errors\ValidationError as OpisValidationError;
 
 class Validator
@@ -18,19 +18,60 @@ class Validator
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
-        
+
         $this->validator = new OpisValidator();
-        $this->validator->resolver()->registerPrefix('schema://', '/var/www/html/zmsentities/schema/');
 
+        // Register schema loader for resolving $refs
+        $schemaPath = '/var/www/html/zmsentities/schema/';
+
+        // Register all schema files
+        $commonSchemas = [
+            'process.json',
+            'apiclient.json',
+            'scope.json',
+            'client.json',
+            'appointment.json',
+            'queue.json',
+            'request.json',
+            'useraccount.json',
+            'link.json',
+            'workstation.json',
+            'department.json',
+            'contact.json',
+            'provider.json',
+            'cluster.json',
+            'day.json',
+            'availability.json',
+            'organisation.json',
+            'mimepart.json'
+        ];
+
+        // Register schema loader
+        $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
+
+        // Register each schema file
+        foreach ($commonSchemas as $schema) {
+            if (file_exists($schemaPath . $schema)) {
+                $schemaContent = file_get_contents($schemaPath . $schema);
+                $this->validator->resolver()->registerRaw(
+                    $schemaContent,
+                    'schema://' . $schema
+                );
+            }
+        }
+
+        // Convert schema to JSON and create schema object
         $schemaJson = json_encode($schemaObject->toJsonObject());
-        $schema = json_decode($schemaJson, false);
+        $schemaJson = json_decode($schemaJson);
 
-        $data = json_decode(json_encode($data), false);
+        // Convert data to JSON object
+        $data = json_decode(json_encode($data));
 
-        $this->validationResult = $this->validator->validate($data, $schema);
-
-        var_dump("Schema:", json_encode($schema, JSON_PRETTY_PRINT));
-        var_dump("Data:", json_encode($data, JSON_PRETTY_PRINT));
+        // Set max errors and validate
+        $this->validator->setMaxErrors(1000);
+        $this->validator->setStopAtFirstError(false);
+        $this->validationResult = $this->validator->validate($data, $schemaJson);
+        //$this->validationResult = $this->validator->dataValidation($data, $schemaData);
     }
 
     public function isValid()
@@ -63,8 +104,8 @@ class Validator
             $error->keyword(),
             $error->schema(),
             $error->data(),
-            //$this->getCustomMessage($error),
-            $error->message(),
+            $this->getCustomMessage($error),
+            //$error->message(),
             $error->args(),
             []
         );
@@ -80,7 +121,11 @@ class Validator
 
     public function getCustomMessage(OpisValidationError $error)
     {
-        $property = new \BO\Zmsentities\Helper\Property($error->schema());
+        $schemaData = $error->schema()->info()->data();
+        if (is_object($schemaData)) {
+            $schemaData = (array) $schemaData;
+        }
+        $property = new \BO\Zmsentities\Helper\Property($schemaData);
 
         if (
             isset($property['x-locale'][$this->locale]->messages[$error->keyword()])
@@ -107,7 +152,11 @@ class Validator
 
     public function getTranslatedPointer(OpisValidationError $error)
     {
-        $property = new \BO\Zmsentities\Helper\Property($error->schema());
+        $schemaData = $error->schema()->info()->data();
+        if (is_object($schemaData)) {
+            $schemaData = (array) $schemaData;
+        }
+        $property = new \BO\Zmsentities\Helper\Property($schemaData);
 
         if (
             isset($property['x-locale'][$this->locale]->pointer)
@@ -117,5 +166,25 @@ class Validator
         }
 
         return self::getOriginPointer($error);
+    }
+
+    private function resolveRefs(&$schema)
+    {
+        if (is_object($schema)) {
+            foreach ($schema as $key => &$value) {
+                if ($key === '$ref' && is_string($value)) {
+                    // Convert relative path to schema:// protocol
+                    $value = 'schema://' . $value;
+                } elseif (is_object($value) || is_array($value)) {
+                    $this->resolveRefs($value);
+                }
+            }
+        } elseif (is_array($schema)) {
+            foreach ($schema as &$value) {
+                if (is_object($value) || is_array($value)) {
+                    $this->resolveRefs($value);
+                }
+            }
+        }
     }
 }
