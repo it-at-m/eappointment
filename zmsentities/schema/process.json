@@ -317,6 +317,11 @@
       "type": "number",
       "description": "unix timestamp of the last change on this process"
     },
+    "wasMissed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indicates whether the process was marked as missed at any prior point."
+    },
     "showUpTime": {
       "type": "string",
       "description": "unix timestamp of showing up after call"
