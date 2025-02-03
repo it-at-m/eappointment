@@ -51,7 +51,8 @@ class Process extends Schema\Entity
             'requests' => new Collection\RequestList(),
             'scope' => new Scope(),
             'status' => 'free',
-            'lastChange' => time()
+            'lastChange' => time(),
+            'wasMissed' => false,
         ];
     }
 
@@ -593,6 +594,12 @@ class Process extends Schema\Entity
         return $arrivalDateTime;
     }
 
+    public function setArrivalTime(\DateTimeInterface $dateTime = null)
+    {
+        $this->queue['arrivalTime'] = ($dateTime) ? $dateTime->getTimestamp() : 0;
+        return $this;
+    }
+
     /**
      * Calculate real waiting time, only available after called
      */
@@ -614,6 +621,17 @@ class Process extends Schema\Entity
     public function getWayMinutes($defaultTime = 'now')
     {
         return $this->getWaySeconds($defaultTime) / 60;
+    }
+
+    public function setWasMissed(bool $bool)
+    {
+        $this->wasMissed = $bool;
+        return $this;
+    }
+
+    public function getWasMissed(): bool
+    {
+        return (bool) $this->wasMissed;
     }
 
     public function toDerefencedAmendment()
