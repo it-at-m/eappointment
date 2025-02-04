@@ -243,7 +243,7 @@ export const getDataValuesFromForm = (form, scope) => {
     return Object.assign({}, getFirstLevelValues(form), {
         bookable: {
             startInDays: (!form.open_from || form.open_from === "") ? scope.preferences.appointment.startInDaysDefault : form.open_from,
-            endInDays: (!form.open_to || form.open_to === "") ? scope.preferences.appointment.endInDaysDefault : form.open_to
+            endInDays: (!form.open_to || form.open_to === "" || form.open_to === "0" || form.open_to === 0) ? scope.preferences.appointment.endInDaysDefault : form.open_to
         },
         workstationCount: {
             intern: form.workstationCount_intern,
