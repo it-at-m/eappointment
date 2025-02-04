@@ -581,18 +581,24 @@ class Process extends Schema\Entity
 
     public function getArrivalTime($default = 'now', $timezone = null)
     {
-        $arrivalTime = 0;
-        if ($this->isWithAppointment()) {
+        $queueArrivalTime = $this->toProperty()->queue->arrivalTime->get();
+
+        if ($queueArrivalTime) {
+            // Falls der Queue-Wert vorhanden ist – auch wenn ein Termin existiert – verwende diesen (dabei ist handelt es sich, um verpasste Termine)
+            $arrivalTime = $queueArrivalTime;
+        } elseif ($this->isWithAppointment()) {
             $arrivalTime = $this->getFirstAppointment()->date;
         } else {
-            $arrivalTime = $this->toProperty()->queue->arrivalTime->get();
+            $arrivalTime = 0;
         }
+
         $arrivalDateTime = Helper\DateTime::create($default, $timezone);
         if ($arrivalTime) {
             $arrivalDateTime = $arrivalDateTime->setTimestamp($arrivalTime);
         }
         return $arrivalDateTime;
     }
+
 
     public function setArrivalTime(\DateTimeInterface $dateTime = null)
     {
