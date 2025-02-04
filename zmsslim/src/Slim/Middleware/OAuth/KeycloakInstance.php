@@ -101,9 +101,9 @@ class KeycloakInstance
             'event' => 'oauth_token_validation',
             'timestamp' => date('c')
         ]);
-
+    
         list($header, $payload, $signature) = explode('.', $token->getToken());
-
+    
         if (empty($header)) {
             $this->logger->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
@@ -128,11 +128,16 @@ class KeycloakInstance
             ]);
             throw new \BO\Slim\Exception\OAuthFailed();
         }
-
+    
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
-        $accessTokenPayload = json_decode(base64_decode($payload), true);
+        
+        // Fix: Properly handle base64url encoding before JSON decoding
+        $payload = str_replace(['-', '_'], ['+', '/'], $payload);
+        $payload = base64_decode($payload . str_repeat('=', 4 - (strlen($payload) % 4)));
+        $accessTokenPayload = json_decode($payload, true);
+        
         $clientRoles = array();
-
+    
         if ($accessTokenPayload === null) {
             $this->logger->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
@@ -142,7 +147,7 @@ class KeycloakInstance
             ]);
             throw new \BO\Slim\Exception\OAuthFailed();
         }
-
+    
         if (!isset($accessTokenPayload['resource_access']) || !is_array($accessTokenPayload['resource_access'])) {
             $this->logger->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
@@ -153,7 +158,7 @@ class KeycloakInstance
             ]);
             throw new \BO\Slim\Exception\OAuthFailed();
         }
-
+    
         if (!isset($accessTokenPayload['resource_access'][\App::IDENTIFIER])) {
             $this->logger->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
@@ -164,10 +169,10 @@ class KeycloakInstance
             ]);
             throw new \BO\Slim\Exception\OAuthFailed();
         }
-
+    
         $resourceAccess = $accessTokenPayload['resource_access'];
         $appIdentifierRoles = $resourceAccess[\App::IDENTIFIER]['roles'] ?? null;
-
+    
         if (!$appIdentifierRoles || !is_array($appIdentifierRoles)) {
             $this->logger->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
@@ -178,7 +183,7 @@ class KeycloakInstance
             ]);
             throw new \BO\Slim\Exception\OAuthFailed();
         }
-
+    
         if (is_array($accessTokenPayload['resource_access'])) {
             $clientRoles = array_values($accessTokenPayload['resource_access'][\App::IDENTIFIER]['roles']);
         }
@@ -193,7 +198,7 @@ class KeycloakInstance
             ]);
             throw new \BO\Slim\Exception\OAuthFailed();
         }
-
+    
         \App::$log->info('Token validation successful', [
             'event' => 'oauth_token_validation_success',
             'timestamp' => date('c')
