@@ -5,19 +5,18 @@ import moment from 'moment'
 import setHours from "date-fns/setHours"
 import setMinutes from "date-fns/setMinutes";
 import DatePicker, { registerLocale } from 'react-datepicker'
-import {weekDayList, repeat} from '../helpers'
+import { weekDayList, repeat } from '../helpers'
 import * as Inputs from '../../../lib/inputs'
 const { Label, Description } = Inputs
 import de from 'date-fns/locale/de';
 //import {formatTimestampDate} from "../helpers"
 registerLocale('de', de)
 
-class AvailabilityDatePicker extends Component 
-{
+class AvailabilityDatePicker extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            kind: this.props.attributes.kind,            
+            kind: this.props.attributes.kind,
             availability: this.props.attributes.availability,
             availabilityList: this.props.attributes.availabilitylist,
             minDate: moment.unix(this.props.attributes.availability.startDate).toDate(),
@@ -59,11 +58,11 @@ class AvailabilityDatePicker extends Component
     updateState(name, date) {
         let startTime = moment(this.props.attributes.availability.startTime, 'HH:mm');
         let startDate = moment.unix(this.props.attributes.availability.startDate)
-            .set({"h": startTime.hours(), "m": startTime.minutes()})
+            .set({ "h": startTime.hours(), "m": startTime.minutes() })
             .toDate()
         let endTime = moment(this.props.attributes.availability.endTime, 'HH:mm');
         let endDate = moment.unix(this.props.attributes.availability.endDate)
-            .set({"h": endTime.hours(), "m": endTime.minutes()})
+            .set({ "h": endTime.hours(), "m": endTime.minutes() })
             .toDate()
 
         let selectedDate = ("startDate" == this.props.name) ? startDate : endDate
@@ -86,14 +85,14 @@ class AvailabilityDatePicker extends Component
         if (this.isWeekDaySelected(date) &&
             this.isDateInAvailabilityRange(date)
         ) {
-            className = `${className} day__selected__weekday__${this.state.availability.type}`; 
+            className = `${className} day__selected__weekday__${this.state.availability.type}`;
         }
         return className
     }
 
     isDateInAvailabilityRange(date) {
         return (
-            date <= moment.unix(this.state.availability.endDate).toDate() && 
+            date <= moment.unix(this.state.availability.endDate).toDate() &&
             date >= moment.unix(this.state.availability.startDate).toDate()
         )
     }
@@ -106,17 +105,16 @@ class AvailabilityDatePicker extends Component
         )
     }
 
-    isWeekDaySelected(date, availability)
-    {
+    isWeekDaySelected(date, availability) {
         const selectedAvailability = availability ? availability : this.state.availability
         let isSelected = false;
         for (const [key, value] of Object.entries(selectedAvailability.weekday)) {
             weekDayList.map((weekday, index) => {
-                if ((index+1) == date.getDay() && weekday.value == key && value > 0) {
-                    isSelected = true; 
-                }   
-            }) 
-        } 
+                if ((index + 1) == date.getDay() && weekday.value == key && value > 0) {
+                    isSelected = true;
+                }
+            })
+        }
         return isSelected;
     }
 
@@ -125,7 +123,7 @@ class AvailabilityDatePicker extends Component
             return;
         }
         var times = [];
-        
+
         // Add maintenance window times (22:00-01:00)
         const selectedDate = moment(this.state.selectedDate);
         for (let minute = 1; minute < 60; minute++) {
@@ -134,10 +132,10 @@ class AvailabilityDatePicker extends Component
         for (let minute = 0; minute < 59; minute++) {
             times.push(selectedDate.clone().hour(0).minute(minute).toDate());
         }
-    
+
         // Filter and sort availabilities
         const availabilities = [...this.state.availabilityList]
-            .filter(availability => 
+            .filter(availability =>
                 availability.id !== this.state.availability.id &&
                 availability.type == this.state.availability.type &&
                 this.isWeekDaySelected(this.state.selectedDate, availability)
@@ -147,21 +145,21 @@ class AvailabilityDatePicker extends Component
                 const timeB = moment(b.startTime, 'HH:mm');
                 return timeA.diff(timeB);
             });
-    
+
         // Add regular excluded times
         availabilities.forEach(availability => {
             const startTime = moment(availability.startTime, 'hh:mm')
                 .add(this.state.availability.slotTimeInMinutes, "m");
             const startOnDay = moment(this.state.selectedDate)
-                .set({"h": startTime.hours(), "m": startTime.minutes()})
+                .set({ "h": startTime.hours(), "m": startTime.minutes() })
                 .toDate();
-            
+
             const endTime = moment(availability.endTime, 'hh:mm')
                 .subtract(this.state.availability.slotTimeInMinutes, "m");
             const endOnDay = moment(this.state.selectedDate)
-                .set({"h": endTime.hours(), "m": endTime.minutes()})
+                .set({ "h": endTime.hours(), "m": endTime.minutes() })
                 .toDate();
-            
+
             var currentTime = new Date(startOnDay);
             while (currentTime < endOnDay) {
                 times.push(new Date(currentTime));
@@ -171,26 +169,26 @@ class AvailabilityDatePicker extends Component
             }
             times.push(endOnDay);
         });
-    
+
         // Add boundary timestamps between adjacent availabilities
         for (let i = 0; i < availabilities.length - 1; i++) {
             const current = availabilities[i];
             const next = availabilities[i + 1];
-            
+
             const currentEnd = moment(current.endTime, 'HH:mm');
             const nextStart = moment(next.startTime, 'HH:mm');
-            
+
             // If they're adjacent (end time of one equals start time of next)
             if (currentEnd.format('HH:mm') === nextStart.format('HH:mm')) {
                 // Add the boundary timestamp to excluded times
                 const boundaryTime = moment(this.state.selectedDate)
-                    .set({"h": currentEnd.hours(), "m": currentEnd.minutes()})
+                    .set({ "h": currentEnd.hours(), "m": currentEnd.minutes() })
                     .toDate();
                 times.push(boundaryTime);
             }
         }
-    
-        this.setState({excludeTimeList: times});
+
+        this.setState({ excludeTimeList: times });
     }
 
     handleChange(name, date) {
@@ -235,14 +233,14 @@ class AvailabilityDatePicker extends Component
     dpKeyDownHandler(event) {
         if (event.key === 'Enter') {
             event.preventDefault()
-            this.openDatePicker() 
+            this.openDatePicker()
         }
     }
 
     tpKeyDownHandler(event) {
         if (event.key === 'Enter') {
             event.preventDefault()
-            this.openTimePicker() 
+            this.openTimePicker()
         }
     }
 
@@ -272,7 +270,7 @@ class AvailabilityDatePicker extends Component
                 timePickerIsOpen: true,
             });
         }
-        
+
     }
 
     closeDatePicker() {
@@ -295,21 +293,22 @@ class AvailabilityDatePicker extends Component
         }
 
         const filterPassedTime = (time) => {
+            // For future dates, only check maintenance window
             if (!moment(this.state.selectedDate).isSame(moment.unix(this.props.attributes.today), 'day')) {
-                return true;
+                const hour = time.getHours();
+                const minutes = time.getMinutes();
+                // Block maintenance window (22:00-01:00)
+                return !(hour >= 22 || hour < 1 || (hour === 22 && minutes > 0));
             }
-        
-            const BUFFER_MINUTES = 60; // Minimum minutes needed between current time and next slot
+
+            // For today, check both maintenance window and use fixed 0-minute buffer
             const currentTime = moment();
             const timeToCheck = moment(time);
-            
-            // Calculate minutes difference between times
             const minutesDiff = timeToCheck.diff(currentTime, 'minutes');
-            
-            // Disable if time is in past or too close to current time
-            return minutesDiff >= BUFFER_MINUTES;
+
+            return minutesDiff >= 0;  // Fixed 30-minute buffer
         };
-        
+
         /*
         const isWeekday = date => {
             const day = date.getDay();
@@ -317,25 +316,27 @@ class AvailabilityDatePicker extends Component
         };
         */
 
+        console.log('slotTimeInMinutes:', this.state.availability.slotTimeInMinutes); // logs 90
+
         return (
             <div className="grid">
                 <div className="grid__item one-half">
                     <div className="form-group">
-                        <Label 
-                            attributes={{"htmlFor": this.props.attributes.id, "className": "light"}} 
-                            value={"startDate" == this.props.name ? "Datum von" : "Datum bis" }>
-                        </Label>    
+                        <Label
+                            attributes={{ "htmlFor": this.props.attributes.id, "className": "light" }}
+                            value={"startDate" == this.props.name ? "Datum von" : "Datum bis"}>
+                        </Label>
                         <div className="controls add-date-picker">
-                            <DatePicker 
+                            <DatePicker
                                 todayButton="Heute"
-                                locale="de" 
-                                className="form-control form-input" 
+                                locale="de"
+                                className="form-control form-input"
                                 id={this.props.attributes.id}
                                 ariaDescribedBy={"help_" + this.props.attributes.id}
                                 name={this.props.name}
-                                dateFormat="dd.MM.yyyy" 
+                                dateFormat="dd.MM.yyyy"
                                 selected={this.state.selectedDate}
-                                onChange={date => {this.handleChange(this.props.name, date)}}
+                                onChange={date => { this.handleChange(this.props.name, date) }}
                                 minDate={this.state.minDate}
                                 //maxDate={repeat(this.state.availability.repeat) == 0 ? this.state.selectedDate : null}
                                 //filterDate={isWeekday}
@@ -347,7 +348,7 @@ class AvailabilityDatePicker extends Component
                                 onClickOutside={this.closeDatePicker}
                                 strictParsing={true}
                                 open={this.state.datePickerIsOpen}
-                                ref={(datepicker) => { this.datepicker = datepicker }} 
+                                ref={(datepicker) => { this.datepicker = datepicker }}
                                 chooseDayAriaLabelPrefix="Datumsauswahl"
                                 disabledDayAriaLabelPrefix="Nicht auswählbar"
                                 previousMonthAriaLabel="vorheriger Monat"
@@ -363,24 +364,25 @@ class AvailabilityDatePicker extends Component
                 </div>
                 <div className="grid__item one-half">
                     <div className="form-group">
-                        <Label 
-                            attributes={{"htmlFor": this.props.attributes.id + "_time", "className": "light"}} 
-                            value={"startDate" == this.props.name ? "Uhrzeit von" : "Uhrzeit bis" }>
-                        </Label> 
+                        <Label
+                            attributes={{ "htmlFor": this.props.attributes.id + "_time", "className": "light" }}
+                            value={"startDate" == this.props.name ? "Uhrzeit von" : "Uhrzeit bis"}>
+                        </Label>
                         <div className="controls add-date-picker">
                             <DatePicker
                                 name={this.props.name + "_time"}
                                 locale="de"
-                                className="form-control form-input" 
+                                className="form-control form-input"
                                 ariaDescribedBy={"help_" + this.props.attributes.id + "_time"}
                                 id={this.props.attributes.id + "_time"}
                                 selected={this.state.selectedDate}
-                                onChange={date => {this.handleTimeChange(this.props.name, date)}}
+                                onChange={date => { this.handleTimeChange(this.props.name, date) }}
                                 showTimeSelect
                                 showTimeSelectOnly
                                 dateFormat="HH:mm"
                                 timeFormat="HH:mm"
-                                timeIntervals={this.state.availability.slotTimeInMinutes || 10}
+                                timeIntervals={this.state.availability.slotTimeInMinutes <= 30 ?
+                                    this.state.availability.slotTimeInMinutes : 30}
                                 timeCaption="Uhrzeit"
                                 minTime={this.state.minTime}
                                 maxTime={this.state.maxTime}
@@ -392,8 +394,7 @@ class AvailabilityDatePicker extends Component
                                 onClickOutside={this.closeTimePicker}
                                 strictParsing={true}
                                 open={this.state.timePickerIsOpen}
-                                ref={(timepicker) => { this.timepicker = timepicker }} 
-
+                                ref={(timepicker) => { this.timepicker = timepicker }}
                             />
                             <a href="#" aria-describedby={"help_" + this.props.attributes.id + "_time"} aria-label="Uhrzeitauswahl öffnen" className="calendar-placement icon" title={"startDate" == this.props.name ? "Uhrzeit von wählen" : "Uhrzeit bis wählen"} onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
                                 <i className="far fa-clock" aria-hidden="true" />

@@ -106,16 +106,21 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
     })
 
     const currentTime = moment()
-    const dayEndTime = moment('23:00:00', 'HH:mm:ss')
+    const dayEndTime = moment('22:00:00', 'HH:mm:ss')
     let startTime = moment('06:00:00', 'HH:mm:ss')
     
+    // Round up to next hour if current time is after 06:00
     if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && currentTime.isAfter(startTime)) {
-        startTime = moment(currentTime).add(5 - (currentTime.minutes() % 5), 'minutes')
+        startTime = moment(currentTime).add(1, 'hour').startOf('hour')
     }
-    let endTime = moment(startTime).add(1, 'hour')
+
+    const slotTimeInMinutes = scope.provider.data['slotTimeInMinutes'] || 20
+    
+    // Use one slot duration for initial availability
+    let endTime = moment(startTime).add(slotTimeInMinutes, 'minutes')
 
     if (endTime.isAfter(dayEndTime)) {
-        startTime = moment(dayEndTime).subtract(1, 'hour')
+        startTime = moment(dayEndTime).subtract(slotTimeInMinutes, 'minutes')
         endTime = moment(dayEndTime)
     }
 
@@ -135,13 +140,16 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
         } else {
             const lastAvail = todayAvailabilities[todayAvailabilities.length - 1]
             startTime = moment(lastAvail.endTime, 'HH:mm:ss')
+            // Round up to next hour
+            //startTime = startTime.add(1, 'hour').startOf('hour')
+            
             if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && startTime.isBefore(currentTime)) {
-                startTime = moment(currentTime).add(30 - (currentTime.minutes() % 30), 'minutes')
+                startTime = moment(currentTime).add(1, 'hour').startOf('hour')
             }
-            endTime = moment(startTime).add(1, 'hour')
+            endTime = moment(startTime).add(slotTimeInMinutes, 'minutes')
             
             if (endTime.isAfter(dayEndTime)) {
-                startTime = moment(dayEndTime).subtract(1, 'hour')
+                startTime = moment(dayEndTime).subtract(slotTimeInMinutes, 'minutes')
                 endTime = moment(dayEndTime)
             }
         }
