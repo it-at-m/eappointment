@@ -7,10 +7,11 @@
         data-state="clear"
         data-source="">
         <h2 class="aural">Notruf</h2>
+        {% if workstation.name %}
         <button class="button button--emergency emergency__button-trigger" >
             <i class="fas fa-bell" aria-hidden="true"></i> NOTRUF
         </button>
-
+        {% endif %}
         <div class="emergency__overlay">
             <div class="block emergency__overlay-layout" role="dialog" aria-labelledby="emergency__overlay_title">
             {% embed "block/scaffholding/board.twig" with {'class': "emergency__display-box"} %} {# do NOT use class exception here! #}
