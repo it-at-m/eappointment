@@ -592,13 +592,13 @@ class Process extends Schema\Entity
             $arrivalTime = 0;
         }
 
+        $arrivalTime = (int)$arrivalTime;
         $arrivalDateTime = Helper\DateTime::create($default, $timezone);
         if ($arrivalTime) {
             $arrivalDateTime = $arrivalDateTime->setTimestamp($arrivalTime);
         }
         return $arrivalDateTime;
     }
-
 
     public function setArrivalTime(\DateTimeInterface $dateTime = null)
     {
