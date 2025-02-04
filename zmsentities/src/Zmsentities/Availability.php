@@ -760,7 +760,7 @@ class Availability extends Schema\Entity
     Case 16 | 09:00-09:00 09:00-09:00 |      No       |        Yes
     */
 
-    public function getTimeOverlaps(Availability $availability, \DateTimeInterface $currentDate)
+    public function getTimeOverlaps(Availability $availability, \DateTimeInterface $selectedDate)
     {
         $processList = new Collection\ProcessList();
         if ($availability->id != $this->id
@@ -794,7 +794,7 @@ class Availability extends Schema\Entity
                                     . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange]";
                 $process->getFirstAppointment()->date = $availability
                     ->getStartDateTime()
-                    ->modify($currentDate->format("Y-m-d"))
+                    ->modify($selectedDate->format("Y-m-d"))
                     ->getTimestamp();
                 $processList->addEntity($process);
             }
@@ -805,7 +805,7 @@ class Availability extends Schema\Entity
                                     . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange]";
                 $process->getFirstAppointment()->date = $availability
                     ->getStartDateTime()
-                    ->modify($currentDate->format("Y-m-d"))
+                    ->modify($selectedDate->format("Y-m-d"))
                     ->getTimestamp();
                 $processList->addEntity($process);
             }

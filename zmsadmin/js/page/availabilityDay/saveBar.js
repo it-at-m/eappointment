@@ -11,12 +11,12 @@ const SaveBar = (props) => {
     const [isVisible, setIsVisible] = useState(true)
 
     useEffect(() => {
-        setIsVisible(true) // Reset visibility when lastSave changes
+        setIsVisible(true)
         const timer = setTimeout(() => {
             setIsVisible(false)
-        }, 6000)
+        }, 5500)
         return () => clearTimeout(timer)
-    }, [props.lastSave]) // Add lastSave as dependency
+    }, [props.lastSave])
 
     if (!isVisible) return null
 

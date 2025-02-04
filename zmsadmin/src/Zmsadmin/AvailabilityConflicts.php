@@ -87,6 +87,14 @@ class AvailabilityConflicts extends BaseController
                 $conflictedList[] = $availabilityId;
             }
         }
+
+        usort($conflictedList, function($a, $b) {
+            $aIsTemp = strpos($a, '__temp__') === 0;
+            $bIsTemp = strpos($b, '__temp__') === 0;
+            if ($aIsTemp && !$bIsTemp) return 1;
+            if (!$aIsTemp && $bIsTemp) return -1;
+            return strcmp($a, $b);
+        });
     
         return [
             'conflictList' => $conflictList->toConflictListByDay(),

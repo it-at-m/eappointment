@@ -236,9 +236,13 @@ class AvailabilityList extends Base
     public function hasNewVsNewConflicts(\DateTimeImmutable $selectedDate): \BO\Zmsentities\Collection\ProcessList
     {
         $conflicts = new \BO\Zmsentities\Collection\ProcessList();
+
+        $newAvailabilities = array_filter(iterator_to_array($this), function($availability) {
+            return isset($availability->tempId);
+        });
         
-        foreach ($this as $availability1) {
-            foreach ($this as $availability2) {
+        foreach ($newAvailabilities as $availability1) {
+            foreach ($newAvailabilities as $availability2) {
                 $scope1Id = is_array($availability1->scope) ? ($availability1->scope['id'] ?? null) : ($availability1->scope->id ?? null);
                 $scope2Id = is_array($availability2->scope) ? ($availability2->scope['id'] ?? null) : ($availability2->scope->id ?? null);
                 
