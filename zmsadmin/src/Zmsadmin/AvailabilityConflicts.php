@@ -33,7 +33,7 @@ class AvailabilityConflicts extends BaseController
     {
         if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
             throw new BadRequestException('Missing or invalid availabilityList.');
-        } else if(!isset($input['availabilityList'][0]['scope'])){
+        } else if (empty($input['availabilityList']) || !isset($input['availabilityList'][0]['scope'])) {
             throw new BadRequestException('Missing or invalid scope.');
         } else if (!isset($input['selectedDate'])) {
             throw new BadRequestException("'selectedDate' is required.");

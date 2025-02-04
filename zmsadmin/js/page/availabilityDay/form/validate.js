@@ -185,12 +185,22 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
     */
     const startHourInt = parseInt(startHour);
     const endHourInt = parseInt(endHour);
-    if (startHourInt >= 23 || startHourInt === 0 || endHourInt >= 23 || endHourInt === 0) {
+    if (
+        (startHourInt === 22 && startMinute > 0) || 
+        startHourInt === 23 || 
+        startHourInt === 0 || 
+        (endHourInt === 22 && endMinute > 0) || 
+        endHourInt === 23 || 
+        endHourInt === 0 ||
+        (startHourInt === 1 && startMinute > 0) ||
+        (endHourInt === 1 && endMinute > 0)
+    ) {
         errorList.push({
             type: 'startOfDay',
-            message: 'Die Uhrzeit darf nicht zwischen 23:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
-        })
+            message: 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
+        });
     }
+
     return errorList;
 }
 

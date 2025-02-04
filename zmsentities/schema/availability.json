@@ -121,7 +121,7 @@
     },
     "kind": {
       "type": "string",
-      "description": "format"
+      "description": "Format or category of the availability"
     },
     "type": {
       "type": "string",

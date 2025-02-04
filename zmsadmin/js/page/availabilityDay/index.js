@@ -82,23 +82,31 @@ class AvailabilityPage extends Component {
         });
     }
 
+    // Add this new method
+    updateDataState(newProps) {
+        this.setState({
+            conflicts: newProps.conflicts,
+            availabilitylist: newProps.availabilityList,
+            busyslots: newProps.busySlotsForAvailabilities,
+            maxslots: newProps.maxSlotsForAvailabilities,
+            slotbuckets: newProps.slotBuckets,
+            availabilitylistslices: writeSlotCalculationIntoAvailability(
+                newProps.availabilityList,
+                newProps.maxSlotsForAvailabilities,
+                newProps.busySlotsForAvailabilities
+            ),
+            stateChanged: false
+        });
+    }
+
+    // Modify refreshData to use the new method
     refreshData() {
         const currentDate = formatTimestampDate(this.props.timestamp)
         const url = `${this.props.links.includeurl}/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
         $.ajax(url, {
             method: 'GET'
         }).done(data => {
-            const newProps = {
-                conflicts: data.conflicts,
-                availabilitylist: data.availabilityList,
-                busyslots: data.busySlotsForAvailabilities,
-                maxslots: data.maxSlotsForAvailabilities,
-                slotbuckets: data.slotBuckets,
-            }
-            this.setState(Object.assign({}, getStateFromProps(Object.assign({}, this.props, newProps)), {
-                stateChanged: false
-            }))
-
+            this.updateDataState(data);
         }).fail(err => {
             console.log('refreshData error', err)
         })
@@ -108,9 +116,7 @@ class AvailabilityPage extends Component {
         const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?');
         if (ok) {
             showSpinner();
-
             const selectedDate = formatTimestampDate(this.props.timestamp);
-
             const sendData = this.state.availabilitylist
                 .filter((availability) => {
                     return (
@@ -124,7 +130,6 @@ class AvailabilityPage extends Component {
                     if (availability.tempId) {
                         delete sendAvailability.tempId;
                     }
-                    console.log(availability.kind);
                     return {
                         ...sendAvailability,
                         kind: availability.kind || 'default',
@@ -137,29 +142,22 @@ class AvailabilityPage extends Component {
                 selectedDate: selectedDate
             };
 
-            console.log('Saving updates', payload);
-
             $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
                 data: JSON.stringify(payload),
                 contentType: 'application/json'
             }).done((success) => {
-                console.log('save success:', success);
+                // Update data immediately
                 this.refreshData();
-                this.setState({
-                    lastSave: new Date().getTime(),
-                    saveSuccess: true,
-                }, () => {
-                    // Attempt to scroll immediately after state update, before the 6-second timer expires
-                    if (this.successElement) {
-                        this.successElement.scrollIntoView();
-                    } else {
-                        // Fallback to bottom scroll if the element isn't available
-                        this.handleScrollToBottom();
-                    }
-                });
+                this.getValidationList();
+
+                // Set SaveBar state with new method
+                this.updateSaveBarState('save', true);
+
+                if (this.successElement) {
+                    this.successElement.scrollIntoView();
+                }
                 hideSpinner();
-                this.handleScrollToBottom();
             }).fail((err) => {
                 let isException = err.responseText.toLowerCase().includes('exception');
                 if (err.status >= 500 && isException) {
@@ -167,27 +165,18 @@ class AvailabilityPage extends Component {
                         code: err.status,
                         message: err.responseText
                     });
-                } else if (err.status === 404) {
-                    console.log('404 error, ignored');
                 } else {
                     console.log('save all error', err);
                 }
-                this.setState({
-                    lastSave: new Date().getTime(),
-                    saveSuccess: true,
-                }, () => {
-                    if (this.successElement) {
-                        this.successElement.scrollIntoView();
-                    }
-                });
+                this.updateSaveBarState('save', false);
                 this.getValidationList();
                 hideSpinner();
-                this.handleScrollToBottom();
             });
         } else {
             hideSpinner();
         }
     }
+
 
     onRevertUpdates() {
         this.isCreatingExclusion = false
@@ -207,7 +196,6 @@ class AvailabilityPage extends Component {
 
         if (ok) {
             const selectedDate = formatTimestampDate(this.props.timestamp);
-
             const sendAvailability = Object.assign({}, availability);
 
             if (sendAvailability.tempId) {
@@ -224,23 +212,22 @@ class AvailabilityPage extends Component {
                 selectedDate: selectedDate
             };
 
-            console.log('Updating single availability', payload);
-
             $.ajax(`${this.props.links.includeurl}/availability/save/${id}/`, {
                 method: 'POST',
                 data: JSON.stringify(payload),
                 contentType: 'application/json'
             }).done((data) => {
-                console.log('Single update success:', data);
+                // Update data immediately
                 this.refreshData();
-                this.setState({
-                    lastSave: new Date().getTime(),
-                    saveSuccess: true,
-                }, () => {
+                this.getValidationList();
+
+                // Set SaveBar state with new method
+                this.updateSaveBarState('save', true);
+
+                if (this.successElement) {
                     this.successElement.scrollIntoView();
-                });
+                }
                 hideSpinner();
-                this.handleScrollToBottom();
             }).fail(err => {
                 const isException = err.responseText.toLowerCase().includes('exception');
                 if (isException) {
@@ -251,18 +238,21 @@ class AvailabilityPage extends Component {
                 } else {
                     console.log('Update error:', err);
                 }
-                this.setState({
-                    lastSave: new Date().getTime(),
-                    saveSuccess: false,
-                });
-
+                this.updateSaveBarState('save', false);
                 this.getValidationList();
                 hideSpinner();
-                this.handleScrollToBottom();
             });
         } else {
             hideSpinner();
         }
+    }
+
+    updateSaveBarState(type, success) {
+        this.setState({
+            lastSave: new Date().getTime(),
+            saveSuccess: success,
+            saveType: type
+        });
     }
 
     onDeleteAvailability(availability) {
@@ -273,13 +263,21 @@ class AvailabilityPage extends Component {
             $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
                 method: 'GET'
             }).done(() => {
-                this.setState(Object.assign({}, deleteAvailabilityInState(this.state, availability), {
-                    selectedAvailability: null
-                }), () => {
-                    this.refreshData()
-                    this.getConflictList(),
-                        this.getValidationList()
-                });
+                const newState = deleteAvailabilityInState(this.state, availability);
+
+                // Update data immediately
+                this.refreshData();
+                if (newState.availabilitylist.length > 0) {
+                    this.getConflictList();
+                }
+                this.getValidationList();
+
+                // Set SaveBar state with new method
+                this.updateSaveBarState('delete', true);
+
+                if (this.successElement) {
+                    this.successElement.scrollIntoView();
+                }
                 hideSpinner();
             }).fail(err => {
                 console.log('delete error', err);
@@ -292,6 +290,7 @@ class AvailabilityPage extends Component {
                 } else {
                     console.log('delete error', err);
                 }
+                this.updateSaveBarState('delete', false);
                 hideSpinner();
             })
         } else {
@@ -459,23 +458,23 @@ class AvailabilityPage extends Component {
         let state = {};
         const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope, this.state.availabilitylist);
         newAvailability.type = "appointment";
-    
+
         state = Object.assign(
             state,
             updateAvailabilityInState(this.state, newAvailability)
         );
-    
+
         state.selectedAvailability = newAvailability;
         state.stateChanged = false;
-    
+
         this.setState(state, () => {
             Promise.all([
                 this.getValidationList(),
                 this.getConflictList()
             ])
-            .then(() => {
-                $('body').scrollTop(0);
-            })
+                .then(() => {
+                    $('body').scrollTop(0);
+                })
         });
     }
 
@@ -541,24 +540,24 @@ class AvailabilityPage extends Component {
                 }
                 return [];
             };
-    
+
             try {
                 const list = this.state.availabilitylist
                     .map(validateData)
                     .flat();
-    
+
                 console.log("Validations fetched successfully:", list);
-    
+
                 this.setState(
                     {
                         errorList: list.length ? list : [],
                     },
                     () => {
                         if (list.length > 0) {
-                            const nonPastTimeErrors = list.filter(error => 
+                            const nonPastTimeErrors = list.filter(error =>
                                 !error.itemList?.flat(2).some(item => item?.type === 'endTimePast')
                             );
-                            
+
                             if (nonPastTimeErrors.length > 0) {
                                 console.warn("Validation failed with errors:", nonPastTimeErrors);
                                 this.errorElement?.scrollIntoView();
@@ -590,9 +589,9 @@ class AvailabilityPage extends Component {
                     selectedDate: formatTimestampDate(timestamp)
                 }),
             };
-    
+
             const url = `${this.props.links.includeurl}/availability/conflicts/`;
-    
+
             fetch(url, requestOptions)
                 .then((res) => res.json())
                 .then(
@@ -876,6 +875,7 @@ class AvailabilityPage extends Component {
                     lastSave={this.state.lastSave}
                     success={this.state.saveSuccess}
                     setSuccessRef={this.setSuccessRef}
+                    type={this.state.saveType}
                 />
             )
         }
