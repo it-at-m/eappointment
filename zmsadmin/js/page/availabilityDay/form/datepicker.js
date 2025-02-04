@@ -300,13 +300,12 @@ class AvailabilityDatePicker extends Component {
                 // Block maintenance window (22:00-01:00)
                 return !(hour >= 22 || hour < 1 || (hour === 22 && minutes > 0));
             }
-
-            // For today, check both maintenance window and use fixed 0-minute buffer
+            
             const currentTime = moment();
             const timeToCheck = moment(time);
             const minutesDiff = timeToCheck.diff(currentTime, 'minutes');
 
-            return minutesDiff >= 0;  // Fixed 30-minute buffer
+            return minutesDiff >= 0;
         };
 
         /*
@@ -315,8 +314,6 @@ class AvailabilityDatePicker extends Component {
             return day !== 0 && day !== 6;
         };
         */
-
-        console.log('slotTimeInMinutes:', this.state.availability.slotTimeInMinutes); // logs 90
 
         return (
             <div className="grid">

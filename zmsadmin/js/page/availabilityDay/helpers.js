@@ -11,7 +11,6 @@ export const getStateFromProps = (props, existingState = {}) => {
         conflicts: props.conflicts,
         today: props.today,
         busyslots: props.busyslots,
-        // Preserve SaveBar state
         saveType: existingState.saveType || 'save',
         lastSave: existingState.lastSave,
         saveSuccess: existingState.saveSuccess
@@ -116,7 +115,6 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
 
     const slotTimeInMinutes = scope.provider.data['slotTimeInMinutes'] || 20
     
-    // Use one slot duration for initial availability
     let endTime = moment(startTime).add(slotTimeInMinutes, 'minutes')
 
     if (endTime.isAfter(dayEndTime)) {
@@ -140,8 +138,6 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
         } else {
             const lastAvail = todayAvailabilities[todayAvailabilities.length - 1]
             startTime = moment(lastAvail.endTime, 'HH:mm:ss')
-            // Round up to next hour
-            //startTime = startTime.add(1, 'hour').startOf('hour')
             
             if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && startTime.isBefore(currentTime)) {
                 startTime = moment(currentTime).add(1, 'hour').startOf('hour')
