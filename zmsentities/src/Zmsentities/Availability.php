@@ -458,14 +458,14 @@ class Availability extends Schema\Entity
     public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
     {
         $errorList = [];
-
+        
         $startTime = (clone $startDate)->setTime(0, 0);
-        $startHour = ($startDate->format('H'));
-        $endHour = (int) $endDate->format('H');
-        $startMinute = (int) $startDate->format('i');
-        $endMinute = (int) $endDate->format('i');
+        $startHour = (int)$startDate->format('H');
+        $endHour = (int)$endDate->format('H');
+        $startMinute = (int)$startDate->format('i');
+        $endMinute = (int)$endDate->format('i');
         $isFuture = ($kind && $kind === 'future');
-
+    
         if (
             !$isFuture &&
             $selectedDate->getTimestamp() > $today->getTimestamp() &&
@@ -476,7 +476,7 @@ class Availability extends Schema\Entity
                 'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
             ];
         }
-
+        
         if (
             ($startHour === 22 && $startMinute > 0) || 
             $startHour === 23 || 
@@ -492,9 +492,10 @@ class Availability extends Schema\Entity
                 'message' => 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
             ];
         }
-
+        
         return $errorList;
     }
+
     public function validateEndTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
     {
         $errorList = [];
