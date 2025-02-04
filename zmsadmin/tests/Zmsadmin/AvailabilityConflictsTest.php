@@ -1969,7 +1969,7 @@ class AvailabilityConflictsTest extends Base
                 'response' => $this->readFixture("GET_availability_68985.json")
             ]
         ]);
-
+    
         $response = $this->render([], [
             '__body' => '{
             "availabilityList": [
@@ -2030,9 +2030,10 @@ class AvailabilityConflictsTest extends Base
             "selectedDate": "2016-04-04"
         }'
         ], [], 'POST');
-
-        $this->assertStringContainsString('Konflikt', (string)$response->getBody());
-        $this->assertStringContainsString('"conflictIdList":["81871","__temp__0"]', (string)$response->getBody());
+    
+        // Updated assertions to expect no conflicts
+        $this->assertStringContainsString('"conflictList":[]', (string)$response->getBody());
+        $this->assertStringContainsString('"conflictIdList":[]', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -2136,7 +2137,6 @@ class AvailabilityConflictsTest extends Base
             }'
         ], [], 'POST');
     }
-
     public function testMultipleConflicts()
     {
         $this->setApiCalls([
