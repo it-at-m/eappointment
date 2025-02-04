@@ -1,6 +1,6 @@
 import moment from 'moment'
 
-export const getStateFromProps = props => {
+export const getStateFromProps = (props, existingState = {}) => {
     return {
         availabilitylistslices: writeSlotCalculationIntoAvailability(
             props.availabilitylist,
@@ -11,7 +11,10 @@ export const getStateFromProps = props => {
         conflicts: props.conflicts,
         today: props.today,
         busyslots: props.busyslots,
-        slotbuckets: props.slotbuckets,
+        // Preserve SaveBar state
+        saveType: existingState.saveType || 'save',
+        lastSave: existingState.lastSave,
+        saveSuccess: existingState.saveSuccess
     }
 }
 
@@ -77,6 +80,7 @@ export const getInitialState = (props) => Object.assign({}, {
     lastSave: null,
     stateChanged: false,
     selectedTab: 'table',
+    saveType: 'save',
 }, getStateFromProps(props))
 
 export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilities = []) => {

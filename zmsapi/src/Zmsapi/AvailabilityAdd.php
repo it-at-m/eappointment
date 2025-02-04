@@ -47,7 +47,7 @@ class AvailabilityAdd extends BaseController
 
         if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
             throw new BadRequestException('Missing or invalid availabilityList.');
-        } else if (!isset($input['availabilityList'][0]['scope'])) {
+        } else if (empty($input['availabilityList']) || !isset($input['availabilityList'][0]['scope'])) {
             throw new BadRequestException('Missing or invalid scope.');
         } else if (!isset($input['selectedDate'])) {
             throw new BadRequestException("'selectedDate' is required.");
@@ -83,7 +83,7 @@ class AvailabilityAdd extends BaseController
             $startDateTime = new \DateTimeImmutable("{$startDate->format('Y-m-d')} {$newAvailability->startTime}");
             $endDateTime = new \DateTimeImmutable("{$endDate->format('Y-m-d')} {$newAvailability->endTime}");
 
-            $validations = $mergedCollection->validateInputs(
+            $currentValidation = $mergedCollection->validateInputs(
                 $startDateTime,
                 $endDateTime,
                 $selectedDate,
@@ -91,6 +91,7 @@ class AvailabilityAdd extends BaseController
                 $newAvailability->bookable['startInDays'],
                 $newAvailability->bookable['endInDays']
             );
+            $validations = array_merge($validations, $currentValidation);
 
             $mergedCollection->addEntity($newAvailability);
         }
