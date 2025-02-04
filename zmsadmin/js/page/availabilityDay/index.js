@@ -196,6 +196,7 @@ class AvailabilityPage extends Component {
         }), () => {
             this.refreshData()
             this.getValidationList()
+            this.getConflictList();
         })
     }
 
