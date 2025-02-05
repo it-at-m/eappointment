@@ -1,3 +1,11 @@
+import {describe, expect, it} from "vitest";
+
+describe('this', () => {
+  it('is a test', () => {
+    expect(1).toEqual(1);
+  });
+});
+
 // import { shallowMount} from '@vue/test-utils';
 // import { describe, it, expect, beforeEach } from 'vitest';
 // import AppointmentView from './../../src/components/Appointment/AppointmentView.vue';
