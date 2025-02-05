@@ -10,7 +10,7 @@
       <div class="container">
         <div class="m-component__grid">
           <div class="m-component__column">
-            <div v-if="currentView === 0">
+            <div v-if="currentView === 0 && !appointmentHash">
               <service-finder
                 :preselected-service-id="serviceId"
                 :preselected-offive-id="locationId"
@@ -516,6 +516,7 @@ onMounted(() => {
             );
 
             preselectedLocationId.value = appointment.value.officeId;
+            selectedProvider.value = offices.value.find(office => office.id === appointment.value?.officeId);
 
             if (appointment.value.subRequestCounts.length > 0) {
               appointment.value.subRequestCounts.forEach((subRequestCount) => {

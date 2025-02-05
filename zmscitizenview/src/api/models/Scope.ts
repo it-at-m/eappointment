@@ -26,40 +26,40 @@ export interface Scope {
   shortName: string;
   /**
    *
-   * @type {string}
+   * @type {boolean}
    * @memberof Scope
    */
-  telephoneActivated: string;
+  telephoneActivated?: boolean;
   /**
    *
-   * @type {any}
+   * @type {boolean}
    * @memberof Scope
    */
-  telephoneRequired: any;
+  telephoneRequired?: boolean;
   /**
    *
-   * @type {string}
+   * @type {boolean}
    * @memberof Scope
    */
-  customTextfieldActivated: string;
+  customTextfieldActivated?: boolean;
   /**
    *
-   * @type {any}
+   * @type {boolean}
    * @memberof Scope
    */
-  customTextfieldRequired: any;
-  /**
-   *
-   * @type {string}
-   * @memberof Scope
-   */
-  customTextfieldLabel: string;
+  customTextfieldRequired?: boolean;
   /**
    *
    * @type {string}
    * @memberof Scope
    */
-  captchaActivatedRequired: string;
+  customTextfieldLabel?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof Scope
+   */
+  captchaActivatedRequired?: boolean;
   /**
    *
    * @type {string}

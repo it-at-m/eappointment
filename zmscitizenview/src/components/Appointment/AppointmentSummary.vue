@@ -31,26 +31,26 @@
           <div class="m-content">
             <h3 tabindex="0">{{ t("location") }}</h3>
           </div>
-          <div class="m-content border-bottom">
+          <div v-if="selectedProvider" class="m-content border-bottom">
             <p tabindex="0">
-              <strong>Landeshauptstadt München</strong><br />
-              {{ appointment.scope.provider.contact.name }}<br />
+              <strong> {{ selectedProvider.organization }}</strong><br />
+              {{ selectedProvider.name }}<br />
             </p>
             <p tabindex="0">
               <strong>{{ t("address") }}</strong>
               <br />
             </p>
             <p tabindex="0">
-              {{ appointment.scope.provider.contact.street }}
-              {{ appointment.scope.provider.contact.streetNumber }}<br />
-              {{ appointment.scope.provider.contact.postalCode }}
-              {{ appointment.scope.provider.contact.region }}<br />
+              {{ selectedProvider.address.street }}
+              {{ selectedProvider.address.house_number }}<br />
+              {{ selectedProvider.address.postal_code }}
+              {{ selectedProvider.address.city }}<br />
             </p>
           </div>
           <div class="m-content">
             <h3 tabindex="0">{{ t("time") }}</h3>
           </div>
-          <div class="m-content border-bottom">
+          <div v-if="appointment" class="m-content border-bottom">
             <p tabindex="0">
               {{ formatTime(appointment.timestamp) }} <br />
               {{ t("estimatedDuration") }} {{ t("minutes") }}<br />
@@ -59,7 +59,7 @@
           <div class="m-content">
             <h3 tabindex="0">{{ t("contact") }}</h3>
           </div>
-          <div class="m-content border-bottom">
+          <div v-if="appointment"  class="m-content border-bottom">
             <p tabindex="0">
               {{ appointment.familyName }}
               <br />
@@ -198,7 +198,7 @@ import { computed, inject, ref } from "vue";
 
 import {
   SelectedAppointmentProvider,
-  SelectedServiceProvider,
+  SelectedServiceProvider, SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 
 defineProps<{
@@ -222,6 +222,10 @@ const emit =
 const { selectedService } = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;
+
+const { selectedProvider } = inject<SelectedTimeslotProvider>(
+  "selectedTimeslot"
+) as SelectedTimeslotProvider;
 
 const { appointment } = inject<SelectedAppointmentProvider>(
   "appointment"

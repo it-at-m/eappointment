@@ -4,7 +4,11 @@ import {fileURLToPath} from "node:url";
 
 export default defineConfig({
   plugins: [
-    vue()
+    vue({
+      features: {
+        customElement: true
+      }
+    })
   ],
   resolve: {
     alias: {
@@ -12,6 +16,9 @@ export default defineConfig({
     },
   },
   test: {
+    environment: "jsdom",
     globals: true
   }
 })
+
+
