@@ -101,8 +101,8 @@ class UseraccountTest extends EntityCommonTests
         $entity = $this->getExample();
         unset($entity->departments);
         $entity->departments = array(
-            '141',
-            '143'
+            141,
+            143
         );
         $entity = $entity->withDepartmentList();
         $this->assertEquals(2, $entity->getDepartmentList()->count());

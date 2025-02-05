@@ -73,7 +73,7 @@ class SchemaTest extends Base
             'contact__country' => 'Germany',
             'contact__name' => 'Flughafen Schönefeld, Landebahn',
             'email' => 'terminvereinbarung@mitte.berlin.de',
-            'id' => '1234',
+            'id' => 1234,
             'name' => 'Flughafen Schönefeld, Landebahn',
             'preferences__notifications__enabled' => true,
             'preferences__notifications__identification' => 'terminvereinbarung@mitte.berlin.de',

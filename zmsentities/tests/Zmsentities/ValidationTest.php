@@ -26,6 +26,7 @@ class ValidationTest extends Base
             $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             foreach ($exception->data as $error) {
+                $error = $exception->data['/preferences/client/emailFrom'];
                 $this->assertContainsEquals(
                     'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
                     $error['messages']
@@ -44,6 +45,7 @@ class ValidationTest extends Base
             $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             foreach ($exception->data as $error) {
+                $error = $exception->data['/contact/email'];
                 $this->assertContainsEquals(
                     'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
                     $error['messages']
@@ -63,10 +65,10 @@ class ValidationTest extends Base
             $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             $errorList = $exception->data;
-            // merge conflict, the following two lines might fail??
-            $this->assertEquals('changePassword', key($errorList));
-            $this->assertArrayHasKey('minLength', $errorList['changePassword']['messages']);
-            $this->assertArrayHasKey('format', $errorList['changePassword']['messages']);
+            var_dump($errorList);
+            $this->assertArrayHasKey('/changePassword', $errorList);
+            $this->assertArrayHasKey('minLength', $errorList['/changePassword/0']['messages']);
+            $this->assertArrayHasKey('format', $errorList['/changePassword/0']['messages']);
         }
     }
 }

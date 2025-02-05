@@ -67,6 +67,11 @@ class Validator
         // Convert data to JSON object
         $data = json_decode(json_encode($data));
 
+        // Debugging
+        // var_dump("Schema:", json_encode($schemaJson, JSON_PRETTY_PRINT));
+        // var_dump("*********************************************");
+        // var_dump("Data:", json_encode($data, JSON_PRETTY_PRINT)); 
+
         // Set max errors and validate
         $this->validator->setMaxErrors(1000);
         $this->validator->setStopAtFirstError(false);

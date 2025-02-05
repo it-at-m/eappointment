@@ -74,17 +74,17 @@
                         },
                         "scope": {
                             "type": [
-                                "number"
+                                "string"
                             ]
                         },
                         "process": {
                             "type": [
-                                "number"
+                                "string"
                             ]
                         },
                         "date": {
                             "type": [
-                                "number"
+                                "string"
                             ]
                         },
                         "firstDay": {
