@@ -516,7 +516,9 @@ onMounted(() => {
             );
 
             preselectedLocationId.value = appointment.value.officeId;
-            selectedProvider.value = offices.value.find(office => office.id === appointment.value?.officeId);
+            selectedProvider.value = offices.value.find(
+              (office) => office.id === appointment.value?.officeId
+            );
 
             if (appointment.value.subRequestCounts.length > 0) {
               appointment.value.subRequestCounts.forEach((subRequestCount) => {

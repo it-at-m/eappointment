@@ -1,5 +1,5 @@
-import { Scope } from "@/api/models/Scope";
 import { Address } from "@/api/models/Address";
+import { Scope } from "@/api/models/Scope";
 
 /**
  *
