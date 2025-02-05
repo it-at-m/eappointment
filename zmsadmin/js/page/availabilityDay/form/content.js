@@ -19,7 +19,8 @@ const FormContent = (props) => {
     } = props;
 
     const hasEndTimePastError = Object.values(errorList)
-        .some(error => error.itemList?.[0]?.[0]?.type === 'endTimePast');
+        .some(error => error.itemList?.[0]?.[0]?.type === 'endTimePast' ||
+            error.itemList?.some(items => items.some(item => item.type === 'endTimePast')));
     const calenderDisabled = data.type && data.slotTimeInMinutes ? false : true;
     const inputDisabled = hasEndTimePastError || calenderDisabled;
 
@@ -150,8 +151,7 @@ const FormContent = (props) => {
                                     inline={true}
                                     {...{ onChange }}
                                     boxes={weekDayList}
-                                    attributes={{ "disabled": inputDisabled }}
-                                    disabled={!data.repeat ? true : false}
+                                    disabled={inputDisabled || !data.repeat}
                                 />
                             </Controls>
                         </FormGroup>
@@ -175,7 +175,8 @@ const FormContent = (props) => {
                                 <Inputs.Checkbox name="multipleSlotsAllowed"
                                     checked={"1" == data.multipleSlotsAllowed} {...{ onChange }}
                                     value="1"
-                                    attributes={{ "id": "AvDayMultipleSlots", "disabled": inputDisabled }}
+                                    disabled={inputDisabled}
+                                    id="AvDayMultipleSlots"
                                 />
                                 <Label attributes={{ "htmlFor": "AvDayMultipleSlots", "className": "light" }}>Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen</Label>
                             </Controls>
