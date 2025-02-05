@@ -90,7 +90,7 @@ class ValidationServiceTest extends TestCase
         // Test valid input
         $result = ValidationService::validateGetAvailableAppointments(
             '2025-01-01',
-            1,
+            [1],
             [1],
             [1]
         );
@@ -99,7 +99,7 @@ class ValidationServiceTest extends TestCase
         // Test invalid date
         $result = ValidationService::validateGetAvailableAppointments(
             'invalid',
-            1,
+            [1],
             [1],
             [1]
         );
@@ -111,7 +111,7 @@ class ValidationServiceTest extends TestCase
         // Test invalid office ID
         $result = ValidationService::validateGetAvailableAppointments(
             '2025-01-01',
-            0,
+            [''],
             [1],
             [1]
         );
@@ -123,7 +123,7 @@ class ValidationServiceTest extends TestCase
         // Test invalid service IDs
         $result = ValidationService::validateGetAvailableAppointments(
             '2025-01-01',
-            1,
+            [1],
             ['invalid'],
             [1]
         );
@@ -135,7 +135,7 @@ class ValidationServiceTest extends TestCase
         // Test invalid service counts
         $result = ValidationService::validateGetAvailableAppointments(
             '2025-01-01',
-            1,
+            [1],
             [1],
             ['invalid']
         );
