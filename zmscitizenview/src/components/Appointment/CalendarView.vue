@@ -24,7 +24,14 @@
                   {{ proverider.name }}
                 </h3>
                 <p class="m-teaser-contained-contact__summary">
-                  Abteilung<br />Beschreibung<br />Weiter Beschreibung
+                  {{ proverider.organization }}
+                  <br />
+                  <div v-if="proverider.organizationUnit">
+                    {{ proverider.organizationUnit }}
+                    <br />
+                  </div>
+                  {{ proverider.displayNameAlternatives[0] }}
+                  <br />
                 </p>
                 <div class="m-teaser-contained-contact__details">
                   <p class="m-teaser-contained-contact__detail">
@@ -34,7 +41,7 @@
                     >
                       <use xlink:href="#icon-map-pin"></use>
                     </svg>
-                    <span>Straße Hausnummer</span>
+                    <span>{{ proverider.address.street }}  {{ proverider.address.house_number }}</span>
                   </p>
                 </div>
               </div>
@@ -65,7 +72,14 @@
                 {{ selectedProvider.name }}
               </h3>
               <p class="m-teaser-contained-contact__summary">
-                Abteilung<br />Beschreibung<br />Weiter Beschreibung
+                {{ selectedProvider.organization }}
+                <br />
+                <p v-if="selectedProvider.organizationUnit">
+                  {{ selectedProvider.organizationUnit }}
+                  <br />
+                </p>
+                {{ selectedProvider.displayNameAlternatives[0] }}
+                <br />
               </p>
               <div class="m-teaser-contained-contact__details">
                 <p class="m-teaser-contained-contact__detail">
@@ -75,7 +89,7 @@
                   >
                     <use xlink:href="#icon-map-pin"></use>
                   </svg>
-                  <span>Straße Hausnummer</span>
+                  <span>{{ selectedProvider.address.street }}  {{ selectedProvider.address.house_number }}</span>
                 </p>
               </div>
             </div>
@@ -137,12 +151,33 @@
         type="info"
       >
         <template #content>
-          <b>{{ t("location") }}</b>
-          <br />
-          <b>{{ t("time") }}</b>
-          <br />
-          {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
-          {{ t("clock") }}
+          <div v-if="selectedProvider">
+            <b>{{ t("location") }}</b>
+            <p class="m-teaser-contained-contact__summary">
+              {{ selectedProvider.organization }}
+              <div v-if="selectedProvider.organizationUnit">
+                {{ selectedProvider.organizationUnit }}
+              </div>
+              {{ selectedProvider.displayNameAlternatives[0] }}
+            </p>
+            <div>
+              <p class="m-teaser-contained-contact__detail">
+                <svg
+                  aria-hidden="true"
+                  class="icon icon--before"
+                >
+                  <use xlink:href="#icon-map-pin"></use>
+                </svg>
+                <span>{{ selectedProvider.address.street }}  {{ selectedProvider.address.house_number }}</span>
+              </p>
+            </div>
+          </div>
+          <div v-if="selectedDay">
+            <b>{{ t("time") }}</b>
+            <br />
+            {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
+            {{ t("clock") }}
+          </div>
         </template>
 
         <template #header>{{ t("selectedAppointment") }}</template>

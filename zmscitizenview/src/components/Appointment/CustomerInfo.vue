@@ -33,7 +33,7 @@
       v-model="customerData.telephoneNumber"
       :error-msg="showErrorMessage ? errorMessageTelephoneNumber : undefined"
       :label="t('telephoneNumber')"
-      :required="appointment.scope.telephoneRequired == '1'"
+      :required="appointment.scope.telephoneRequired"
       placeholder="+49 151 1234567"
     />
     <muc-text-area
@@ -93,12 +93,12 @@ const telephonPattern = /^\+?\d[\d\s]*$/;
 const telephoneActivated = () =>
   appointment.value &&
   appointment.value.scope &&
-  appointment.value.scope.telephoneActivated == "1";
+  appointment.value.scope.telephoneActivated;
 
 const customTextfieldActivated = () =>
   appointment.value &&
   appointment.value.scope &&
-  appointment.value.scope.customTextfieldActivated == "1";
+  appointment.value.scope.customTextfieldActivated;
 
 const errorMessageFirstName = computed(() =>
   customerData.value.firstName ? undefined : props.t("errorMessageFirstName")
@@ -122,7 +122,7 @@ const errorMessageTelephoneNumber = computed(() => {
   if (
     !customerData.value.telephoneNumber &&
     appointment.value &&
-    appointment.value.scope.telephoneRequired == "1"
+    appointment.value.scope.telephoneRequired
   ) {
     return props.t("errorMessageTelephoneNumberRequired");
   } else if (

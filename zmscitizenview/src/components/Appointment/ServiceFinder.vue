@@ -32,7 +32,7 @@
         min="1"
       />
     </div>
-    <div v-if="service.subServices">
+    <div v-if="service.subServices && service.subServices.length > 0">
       <h3 tabindex="0">{{ t("combinableServices") }}</h3>
       <p
         class="visually-hidden"
