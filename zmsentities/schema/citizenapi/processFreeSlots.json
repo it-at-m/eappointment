@@ -1,7 +1,7 @@
 {
     "title": "ProcessFreeSlots",
     "description": "Defines a list of free appointment timestamps returned by processFreeSlots method.",
-    "type": ["array", "object"],,
+    "type": ["array", "object"],
     "properties": {
       "appointmentTimestamps": {
         "type": ["array", "null"],

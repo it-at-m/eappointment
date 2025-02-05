@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "The meta result is used in HTTP-API-requests and has only debugging purposes.",
     "example": {
         "error": false,

@@ -2,7 +2,7 @@
   "type": ["array", "object", "null"],
   "properties": {
     "services": {
-      "type": ["array", "object"],
+      "type": "array",
       "items": {
         "title": "Service",
         "type": [

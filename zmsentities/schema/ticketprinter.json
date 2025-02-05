@@ -1,6 +1,6 @@
 {
   "description": "A ticketprinter is a system to print waiting numbers for clients. Usually it has a touch screen and a printing device.",
-  "type": ["array", "object"],
+  "type": "object",
   "example": {
     "buttonlist": "s123,l[http://www.berlin.de/|Portal+Berlin.de]",
     "enabled": true,
@@ -19,9 +19,9 @@
   "additionalProperties": false,
   "properties": {
     "buttons": {
-      "type": ["array", "object"],
+      "type": "array",
       "items": {
-        "type": ["array", "object"],
+        "type": "object",
         "properties": {
           "name": {
             "type": "string",

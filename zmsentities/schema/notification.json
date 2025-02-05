@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "A notification is a message to send to a client. Compared to a mail, it is a short text message, usually a SMS.",
     "example": {
         "id": 1234,

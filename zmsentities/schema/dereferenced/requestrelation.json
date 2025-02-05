@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "information of a request relation to a provider",
     "example": {
         "provider": {
@@ -21,7 +21,7 @@
     "additionalProperties": false,
     "properties": {
         "request": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A request is usually a representation of a service offered by a provider.",
             "example": {
                 "id": "120335",
@@ -170,7 +170,7 @@
                     "default": ""
                 },
                 "data": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "description": "source dependant additional properties",
                     "additionalProperties": true
                 },
@@ -197,7 +197,7 @@
             }
         },
         "provider": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A provider usually represents an organisational entity offering services to clients. In most cases, it is a building or a special location hosting an organisation which provides the services. A service is represented by a request in the ZMS.",
             "example": {
                 "contact": {
@@ -238,7 +238,7 @@
                     "description": "URI with detailed information for the provider"
                 },
                 "data": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "description": "source dependant additional properties",
                     "additionalProperties": true
                 },

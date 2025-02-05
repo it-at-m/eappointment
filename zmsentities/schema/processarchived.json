@@ -1,5 +1,5 @@
 {
-  "type": ["array", "object"],
+  "type": "object",
   "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
   "example": {
 
@@ -281,7 +281,7 @@
       "$ref": "apiclient.json"
     },
     "appointments": {
-      "type": ["array", "object"],
+      "type": "array",
       "items": {
         "$ref": "appointment.json"
       }
@@ -295,7 +295,7 @@
       "description": "key for client to delete or change process"
     },
     "clients": {
-      "type": ["array", "object"],
+      "type": "array",
       "items": {
         "$ref": "client.json"
       }
@@ -337,7 +337,7 @@
       "description": "timestamp of last reminder message"
     },
     "requests": {
-      "type": ["array", "object"],
+      "type": "array",
       "items": {
         "$ref": "request.json"
       }

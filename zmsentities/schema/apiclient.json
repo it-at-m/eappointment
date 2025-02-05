@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "An apiclient is required on requesting an apikey.",
     "example": {
         "clientKey": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",

@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "An source represents an import from a data source providing data for providers and requests as well as their relations.\n",
     "example": {
         "contact": {
@@ -53,7 +53,7 @@
     "properties": {
         "contact": {
             "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
-            "type": ["array", "object"],
+            "type": "object",
             "example": {
                 "city": "Schönefeld",
                 "country": "Germany",
@@ -144,9 +144,9 @@
             "default": 0
         },
         "providers": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "A provider usually represents an organisational entity offering services to clients. In most cases, it is a building or a special location hosting an organisation which provides the services. A service is represented by a request in the ZMS.",
                 "example": {
                     "contact": {
@@ -186,7 +186,7 @@
                         "description": "URI with detailed information for the provider"
                     },
                     "data": {
-                        "type": ["array", "object"],
+                        "type": "object",
                         "description": "source dependant additional properties",
                         "additionalProperties": true
                     },
@@ -204,9 +204,9 @@
             }
         },
         "requests": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "A request is usually a representation of a service offered by a provider.",
                 "example": {
                     "id": "120335",
@@ -355,7 +355,7 @@
                         "default": ""
                     },
                     "data": {
-                        "type": ["array", "object"],
+                        "type": "object",
                         "description": "source dependant additional properties",
                         "additionalProperties": true
                     },
@@ -383,9 +383,9 @@
             }
         },
         "requestrelation": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "information of a request relation to a provider",
                 "example": {
                     "provider": {

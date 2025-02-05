@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "A scope is the central unit for processing requests for clients. It is usally a building or a special location offering workstations to serve the clients. According to the availabilities a scope has, appointments are possible. With a calldisplay and a ticketprinter it can serve clients without an appointment.",
     "example": {
         "contact": {
@@ -125,7 +125,7 @@
     "properties": {
         "contact": {
             "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
-            "type": ["array", "object"],
+            "type": "object",
             "example": {
                 "city": "Schönefeld",
                 "country": "Germany",
@@ -198,9 +198,9 @@
             }
         },
         "dayoff": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "A dayoff is a free day where a department and its scopes are closed. Beware, if an availability is valid only for one day, it overrules a dayoff, so you can administrate exceptions on a particular scope.",
                 "example": {
                     "id": 1234,
@@ -249,11 +249,11 @@
             "description": "unix timestamp of the last change on this scope"
         },
         "preferences": {
-            "type": ["array", "object"],
+            "type": "object",
             "additionalProperties": false,
             "properties": {
                 "appointment": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "deallocationDuration": {
@@ -303,7 +303,7 @@
                     }
                 },
                 "client": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "alternateAppointmentUrl": {
@@ -425,7 +425,7 @@
                     }
                 },
                 "logs": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "deleteLogsOlderThanDays": {
@@ -436,7 +436,7 @@
                     }
                 },
                 "notifications": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "confirmationContent": {
@@ -457,7 +457,7 @@
                     }
                 },
                 "pickup": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "alternateName": {
@@ -476,7 +476,7 @@
                     }
                 },
                 "queue": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "callCountMax": {
@@ -529,7 +529,7 @@
                     }
                 },
                 "survey": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "emailContent": {
@@ -553,7 +553,7 @@
                     }
                 },
                 "ticketprinter": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "buttonName": {
@@ -598,7 +598,7 @@
                     }
                 },
                 "workstation": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "emergencyEnabled": {
@@ -619,7 +619,7 @@
             }
         },
         "provider": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A provider usually represents an organisational entity offering services to clients. In most cases, it is a building or a special location hosting an organisation which provides the services. A service is represented by a request in the ZMS.",
             "example": {
                 "contact": {
@@ -660,7 +660,7 @@
                     "description": "URI with detailed information for the provider"
                 },
                 "data": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "description": "source dependant additional properties",
                     "additionalProperties": true
                 },
@@ -682,11 +682,11 @@
             "default": ""
         },
         "status": {
-            "type": ["array", "object"],
+            "type": "object",
             "additionalProperties": false,
             "properties": {
                 "emergency": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "description": "If activated, a workstation has an emergency-button to call for help",
                     "properties": {
                         "acceptedByWorkstation": {
@@ -714,7 +714,7 @@
                     }
                 },
                 "queue": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "properties": {
                         "givenNumberCount": {
                             "type": "number",
@@ -744,7 +744,7 @@
                     }
                 },
                 "ticketprinter": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "properties": {
                         "deactivated": {
                             "type": [
@@ -757,7 +757,7 @@
                     }
                 },
                 "availability": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "properties": {
                         "isOpened": {
                             "type": [

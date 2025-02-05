@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "A mail represents a message to be send to a client and may have different content-types like in a multipart email.",
     "example": {
         "id": 1234,
@@ -138,7 +138,7 @@
             "description": "unix timestamp representing creation of the notification"
         },
         "department": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A department is a subunit in an organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\".",
             "example": {
                 "id": 123,
@@ -196,13 +196,13 @@
                     "$ref": "contact.json"
                 },
                 "clusters": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "cluster.json"
                     }
                 },
                 "dayoff": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "dayoff.json"
                     }
@@ -221,7 +221,7 @@
                     }
                 },
                 "links": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "link.json"
                     }
@@ -230,11 +230,11 @@
                     "type": "string"
                 },
                 "preferences": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "notifications": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "enabled": {
@@ -269,7 +269,7 @@
                     }
                 },
                 "scopes": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "scope.json"
                     }
@@ -277,10 +277,10 @@
             }
         },
         "multipart": {
-            "type": ["array", "object"],
+            "type": "array",
             "description": "message parts to send",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "A message part to send. For images an other binary files, the content can be encoded as base64.",
                 "example": {
                     "queueId": 1234,
@@ -315,7 +315,7 @@
             }
         },
         "process": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
             "example": {
                 "amendment": "Beispiel Termin",
@@ -393,7 +393,7 @@
                     "$ref": "apiclient.json"
                 },
                 "appointments": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "appointment.json"
                     }
@@ -423,7 +423,7 @@
                     "description": "unix timestamp og time when process has been finished"
                 },
                 "clients": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "client.json"
                     }
@@ -453,7 +453,7 @@
                     "description": "timestamp of last reminder message"
                 },
                 "requests": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "request.json"
                     }
@@ -490,7 +490,7 @@
             "description": "Subject part for the mail"
         },
         "client": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A client is usually a customer in a scope who intends to get his request solved. Usually the client has an appointment, if not he got a process number from a ticket printer and his familyName is set to 'Spontankunde'.",
             "example": {
                 "familyName": "Max Mustermann",

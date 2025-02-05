@@ -2,15 +2,15 @@
   "type": ["array", "object", "null"],
   "properties": {
     "scopes": {
-      "type": ["array", "object"],
+      "type": "array",
       "items": {
-        "type": ["array", "object"],
+        "type": "object",
         "properties": {
           "id": {
             "type": "number"
           },
           "provider": {
-            "type": ["array", "object"],
+            "type": "object",
             "properties": {
               "id": {
                 "type": "number"

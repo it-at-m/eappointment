@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "main config data",
     "example": {
         "appointments": {
@@ -20,7 +20,7 @@
             }
         },
         "emergency": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
             "properties": {
                 "refreshInterval": {

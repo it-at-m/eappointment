@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "representing a log entry for an event",
     "example": {
         "id": 123,
@@ -53,7 +53,7 @@
             "default": null
         },
         "context": {
-            "type": ["array", "object"],
+            "type": "object",
             "default": {},
             "description": "object containing properties that are related to the process where the event happened"
         },

@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "information of a request relation to a provider",
     "example": {
         "provider": {

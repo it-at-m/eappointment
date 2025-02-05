@@ -1,6 +1,6 @@
 {
   "description": "An useraccount represents an user for the ZMS. It contains the rights the user has for processing data with the ZMS. Usually a user creates a workstation entity if he/she begins with the work.",
-  "type": ["array", "object"],
+  "type": "object",
   "example": {
     "lastLogin": 1447926465,
     "id": "johndoe",
@@ -72,7 +72,7 @@
       }
     },
     "changePassword": {
-      "type": ["array", "object"],
+      "type": "array",
       "items": {
         "type": "string",
         "minLength": 6,
@@ -101,7 +101,7 @@
       }
     },
     "rights": {
-      "type": ["array", "object"],
+      "type": "object",
       "properties": {
         "availability": {
           "description": "Allow editing availability with opening hours",
@@ -176,7 +176,7 @@
       }
     },
     "departments": {
-      "type": ["array", "object"],
+      "type": "array",
       "description": "list of assigned departments",
       "minItems": 1,
       "items": {

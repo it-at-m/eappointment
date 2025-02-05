@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "Represents an exchanged set of data usuable for statistics. It can include information how the data is changed.",
     "example": {
         "period": "day",
@@ -48,7 +48,7 @@
     "additionalProperties": false,
     "properties": {
         "firstDay": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
             "example": {
                 "year": 2015,
@@ -105,7 +105,7 @@
                     "$ref": "slot.json"
                 },
                 "processList": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "description": "list of processes, only available if status is detail",
                     "items": {
                         "$ref": "process.json"
@@ -125,7 +125,7 @@
             }
         },
         "lastDay": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "Representation of a day in the calendar. You might find curious values in freeAppointments. While callcenter and public values might be positive, the intern value can be negative. This is due to calculation. The public and callcenter values are calculated per slot whereas the intern value is calculated for the whole day\/all summed scopes. If the intern value is lower 0 and beyond, some slots might be booked with more clients than available. This might be due to changes in the availability settings.",
             "example": {
                 "year": 2015,
@@ -182,7 +182,7 @@
                     "$ref": "slot.json"
                 },
                 "processList": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "description": "list of processes, only available if status is detail",
                     "items": {
                         "$ref": "process.json"
@@ -213,9 +213,9 @@
             ]
         },
         "dictionary": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "properties": {
                     "position": {
                         "type": "integer",
@@ -248,9 +248,9 @@
             }
         },
         "data": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "array",
                 "items": {
                     "type": [
                         "string",
@@ -265,17 +265,17 @@
             "description": "Title for the data, might include hints for the data"
         },
         "visualization": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "Hints for visualization of the data",
             "properties": {
                 "xlabel": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "ylabel": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "type": "string"
                     }

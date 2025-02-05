@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "A client is usually a customer in a scope who intends to get his request solved. Usually the client has an appointment, if not he got a process number from a ticket printer and his familyName is set to 'Spontankunde'.",
     "example": {
         "familyName": "Max Mustermann",

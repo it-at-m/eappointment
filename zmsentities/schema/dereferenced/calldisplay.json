@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "A calldisplay is a device to call people in a waiting room to a workstation. Usually it is a display on wall showing process ids together with a room number.\nThe clusters are resolved to fill the list of scopes. The text displayed on the calldisplay depends on the given scopes. If only one scope is present, a text can be displayed on the display. On multiple scopes, no text and no image is displayed.",
     "example": {
         "scopes": [
@@ -21,7 +21,7 @@
     "additionalProperties": false,
     "properties": {
         "image": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A symbolic image for the scope",
             "properties": {
                 "data": {
@@ -43,9 +43,9 @@
             "description": "unix timestamp of the server time to adjust the clock on the call display"
         },
         "clusters": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "A cluster is a way to group different scopes.",
                 "example": {
                     "callDisplayText": "Herzlich Willkommen,\nDie aufgerufenen Plätze finden Sie den im Gang rechts.",
@@ -81,7 +81,7 @@
                         "description": "name for internal usage"
                     },
                     "scopes": {
-                        "type": ["array", "object"],
+                        "type": "array",
                         "items": {
                             "$ref": "scope.json"
                         }
@@ -97,9 +97,9 @@
             }
         },
         "scopes": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "A scope is the central unit for processing requests for clients. It is usally a building or a special location offering workstations to serve the clients. According to the availabilities a scope has, appointments are possible. With a calldisplay and a ticketprinter it can serve clients without an appointment.",
                 "example": {
                     "contact": {
@@ -224,7 +224,7 @@
                         "$ref": "contact.json"
                     },
                     "dayoff": {
-                        "type": ["array", "object"],
+                        "type": "array",
                         "items": {
                             "$ref": "dayoff.json"
                         }
@@ -247,11 +247,11 @@
                         "description": "unix timestamp of the last change on this scope"
                     },
                     "preferences": {
-                        "type": ["array", "object"],
+                        "type": "object",
                         "additionalProperties": false,
                         "properties": {
                             "appointment": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
                                     "deallocationDuration": {
@@ -301,7 +301,7 @@
                                 }
                             },
                             "client": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
                                     "alternateAppointmentUrl": {
@@ -423,7 +423,7 @@
                                 }
                             },
                             "notifications": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
                                     "confirmationContent": {
@@ -444,7 +444,7 @@
                                 }
                             },
                             "pickup": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
                                     "alternateName": {
@@ -463,7 +463,7 @@
                                 }
                             },
                             "queue": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
                                     "callCountMax": {
@@ -516,7 +516,7 @@
                                 }
                             },
                             "survey": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
                                     "emailContent": {
@@ -540,7 +540,7 @@
                                 }
                             },
                             "ticketprinter": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
                                     "buttonName": {
@@ -585,7 +585,7 @@
                                 }
                             },
                             "workstation": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
                                     "emergencyEnabled": {
@@ -614,11 +614,11 @@
                         "default": ""
                     },
                     "status": {
-                        "type": ["array", "object"],
+                        "type": "object",
                         "additionalProperties": false,
                         "properties": {
                             "emergency": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "description": "If activated, a workstation has an emergency-button to call for help",
                                 "properties": {
                                     "acceptedByWorkstation": {
@@ -646,7 +646,7 @@
                                 }
                             },
                             "queue": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "properties": {
                                     "givenNumberCount": {
                                         "type": "number",
@@ -676,7 +676,7 @@
                                 }
                             },
                             "ticketprinter": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "properties": {
                                     "deactivated": {
                                         "type": [
@@ -689,7 +689,7 @@
                                 }
                             },
                             "availability": {
-                                "type": ["array", "object"],
+                                "type": "object",
                                 "properties": {
                                     "isOpened": {
                                         "type": [
@@ -707,7 +707,7 @@
             }
         },
         "organisation": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "An organisation is the top unit to group departments with their scopes.",
             "example": {
                 "contact": {
@@ -750,7 +750,7 @@
                     "$ref": "contact.json"
                 },
                 "departments": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "department.json"
                     }
@@ -762,7 +762,7 @@
                     "type": "string"
                 },
                 "preferences": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "ticketPrinterProtectionEnabled": {
@@ -775,7 +775,7 @@
                     }
                 },
                 "ticketprinters": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "ticketprinter.json"
                     }
@@ -784,7 +784,7 @@
         },
         "contact": {
             "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
-            "type": ["array", "object"],
+            "type": "object",
             "example": {
                 "city": "Schönefeld",
                 "country": "Germany",

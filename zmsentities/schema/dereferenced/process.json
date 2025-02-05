@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
     "example": {
         "amendment": "Beispiel Termin",
@@ -81,7 +81,7 @@
             "default": ""
         },
         "apiclient": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "An apiclient is required on requesting an apikey.",
             "example": {
                 "clientKey": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
@@ -124,9 +124,9 @@
             }
         },
         "appointments": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "An appointment represents a given time on a scope for defining appointments in a calendar.",
                 "example": {
                     "date": 1447869172,
@@ -168,9 +168,9 @@
             "description": "key for client to delete or change process"
         },
         "clients": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "A client is usually a customer in a scope who intends to get his request solved. Usually the client has an appointment, if not he got a process number from a ticket printer and his familyName is set to 'Spontankunde'.",
                 "example": {
                     "familyName": "Max Mustermann",
@@ -244,7 +244,7 @@
             "description": "unix timestamp og time when process has been finished"
         },
         "queue": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A queue represents a waiting queue for processes\/clients.",
             "example": {
                 "arrivalTime": 1447922893,
@@ -340,9 +340,9 @@
             "description": "timestamp of last reminder message"
         },
         "requests": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "A request is usually a representation of a service offered by a provider.",
                 "example": {
                     "id": "120335",
@@ -491,7 +491,7 @@
                         "default": ""
                     },
                     "data": {
-                        "type": ["array", "object"],
+                        "type": "object",
                         "description": "source dependant additional properties",
                         "additionalProperties": true
                     },
@@ -519,7 +519,7 @@
             }
         },
         "scope": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A scope is the central unit for processing requests for clients. It is usally a building or a special location offering workstations to serve the clients. According to the availabilities a scope has, appointments are possible. With a calldisplay and a ticketprinter it can serve clients without an appointment.",
             "example": {
                 "contact": {
@@ -644,7 +644,7 @@
                     "$ref": "contact.json"
                 },
                 "dayoff": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "dayoff.json"
                     }
@@ -667,11 +667,11 @@
                     "description": "unix timestamp of the last change on this scope"
                 },
                 "preferences": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "appointment": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "deallocationDuration": {
@@ -721,7 +721,7 @@
                             }
                         },
                         "client": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "alternateAppointmentUrl": {
@@ -843,7 +843,7 @@
                             }
                         },
                         "notifications": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "confirmationContent": {
@@ -864,7 +864,7 @@
                             }
                         },
                         "pickup": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "alternateName": {
@@ -883,7 +883,7 @@
                             }
                         },
                         "queue": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "callCountMax": {
@@ -936,7 +936,7 @@
                             }
                         },
                         "survey": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "emailContent": {
@@ -960,7 +960,7 @@
                             }
                         },
                         "ticketprinter": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "buttonName": {
@@ -1005,7 +1005,7 @@
                             }
                         },
                         "workstation": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "emergencyEnabled": {
@@ -1034,11 +1034,11 @@
                     "default": ""
                 },
                 "status": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "emergency": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "description": "If activated, a workstation has an emergency-button to call for help",
                             "properties": {
                                 "acceptedByWorkstation": {
@@ -1066,7 +1066,7 @@
                             }
                         },
                         "queue": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "properties": {
                                 "givenNumberCount": {
                                     "type": "number",
@@ -1096,7 +1096,7 @@
                             }
                         },
                         "ticketprinter": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "properties": {
                                 "deactivated": {
                                     "type": [
@@ -1109,7 +1109,7 @@
                             }
                         },
                         "availability": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "properties": {
                                 "isOpened": {
                                     "type": [

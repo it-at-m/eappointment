@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "main config data",
     "example": {
         "appointments": {
@@ -9,7 +9,7 @@
     },
     "properties": {
         "appointments": {
-            "type": ["array", "object"],
+            "type": "object",
             "properties": {
                 "urlAppointments": {
                     "type": "string"
@@ -20,7 +20,7 @@
             }
         },
         "emergency": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
             "properties": {
                 "refreshInterval": {
@@ -31,7 +31,7 @@
             }
         },
         "notifications": {
-            "type": ["array", "object"],
+            "type": "object",
             "properties": {
                 "absage": {
                     "type": [
@@ -90,7 +90,7 @@
             }
         },
         "ticketprinter": {
-            "type": ["array", "object"],
+            "type": "object",
             "properties": {
                 "baseUrl": {
                     "type": "string",

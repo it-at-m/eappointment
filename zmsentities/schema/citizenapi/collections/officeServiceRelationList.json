@@ -2,7 +2,7 @@
     "type": ["array", "object", "null"],
     "properties": {
         "relations": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
                 "title": "OfficeServiceRelation",
                 "type": ["array", "object", "null"],

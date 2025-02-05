@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "A workstation is an input device in a room or place to process requests for the clients. A workstation calls clients and changes the status of a process.",
     "example": {
         "hint": "Ausgabeschalter 3",
@@ -48,7 +48,7 @@
             "description": "id of the workstation"
         },
         "emergency": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
             "properties": {
                 "refreshInterval": {
@@ -64,7 +64,7 @@
             "description": "usually number of place or room where the workstation is located"
         },
         "process": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
             "example": {
                 "amendment": "Beispiel Termin",
@@ -149,7 +149,7 @@
                     "$ref": "apiclient.json"
                 },
                 "appointments": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "appointment.json"
                     }
@@ -179,7 +179,7 @@
                     "description": "unix timestamp og time when process has been finished"
                 },
                 "clients": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "client.json"
                     }
@@ -209,7 +209,7 @@
                     "description": "timestamp of last reminder message"
                 },
                 "requests": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "request.json"
                     }
@@ -242,7 +242,7 @@
             }
         },
         "queue": {
-            "type": ["array", "object"],
+            "type": "object",
             "additionalProperties": false,
             "properties": {
                 "appointmentsOnly": {
@@ -262,7 +262,7 @@
             }
         },
         "scope": {
-            "type": ["array", "object"],
+            "type": "object",
             "description": "A scope is the central unit for processing requests for clients. It is usally a building or a special location offering workstations to serve the clients. According to the availabilities a scope has, appointments are possible. With a calldisplay and a ticketprinter it can serve clients without an appointment.",
             "example": {
                 "contact": {
@@ -387,7 +387,7 @@
                     "$ref": "contact.json"
                 },
                 "dayoff": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "$ref": "dayoff.json"
                     }
@@ -410,11 +410,11 @@
                     "description": "unix timestamp of the last change on this scope"
                 },
                 "preferences": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "appointment": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "deallocationDuration": {
@@ -464,7 +464,7 @@
                             }
                         },
                         "client": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "alternateAppointmentUrl": {
@@ -586,7 +586,7 @@
                             }
                         },
                         "notifications": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "confirmationContent": {
@@ -607,7 +607,7 @@
                             }
                         },
                         "pickup": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "alternateName": {
@@ -626,7 +626,7 @@
                             }
                         },
                         "queue": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "callCountMax": {
@@ -679,7 +679,7 @@
                             }
                         },
                         "survey": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "emailContent": {
@@ -703,7 +703,7 @@
                             }
                         },
                         "ticketprinter": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "buttonName": {
@@ -748,7 +748,7 @@
                             }
                         },
                         "workstation": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "additionalProperties": false,
                             "properties": {
                                 "emergencyEnabled": {
@@ -777,11 +777,11 @@
                     "default": ""
                 },
                 "status": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "additionalProperties": false,
                     "properties": {
                         "emergency": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "description": "If activated, a workstation has an emergency-button to call for help",
                             "properties": {
                                 "acceptedByWorkstation": {
@@ -809,7 +809,7 @@
                             }
                         },
                         "queue": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "properties": {
                                 "givenNumberCount": {
                                     "type": "number",
@@ -839,7 +839,7 @@
                             }
                         },
                         "ticketprinter": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "properties": {
                                 "deactivated": {
                                     "type": [
@@ -852,7 +852,7 @@
                             }
                         },
                         "availability": {
-                            "type": ["array", "object"],
+                            "type": "object",
                             "properties": {
                                 "isOpened": {
                                     "type": [
@@ -870,7 +870,7 @@
         },
         "useraccount": {
             "description": "An useraccount represents an user for the ZMS. It contains the rights the user has for processing data with the ZMS. Usually a user creates a workstation entity if he\/she begins with the work.",
-            "type": ["array", "object"],
+            "type": "object",
             "example": {
                 "lastLogin": 1447926465,
                 "id": "johndoe",
@@ -942,7 +942,7 @@
                     }
                 },
                 "changePassword": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "items": {
                         "type": "string",
                         "minLength": 6,
@@ -971,7 +971,7 @@
                     }
                 },
                 "rights": {
-                    "type": ["array", "object"],
+                    "type": "object",
                     "properties": {
                         "availability": {
                             "description": "Allow editing availability with opening hours",
@@ -1046,7 +1046,7 @@
                     }
                 },
                 "departments": {
-                    "type": ["array", "object"],
+                    "type": "array",
                     "description": "list of assigned departments",
                     "items": {
                         "$ref": "department.json"
@@ -1055,9 +1055,9 @@
             }
         },
         "linkList": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
-                "type": ["array", "object"],
+                "type": "object",
                 "description": "Representation of a link.",
                 "example": {
                     "id": 1234,
@@ -1095,7 +1095,7 @@
             }
         },
         "support": {
-            "type": ["array", "object"],
+            "type": "object",
             "additionalProperties": false,
             "properties": {
                 "telephone": {

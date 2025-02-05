@@ -1,5 +1,5 @@
 {
-    "type": ["array", "object"],
+    "type": "object",
     "description": "An organisation is the top unit to group departments with their scopes.",
     "example": {
         "contact": {
@@ -42,7 +42,7 @@
             "$ref": "contact.json"
         },
         "departments": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
                 "$ref": "department.json"
             }
@@ -54,7 +54,7 @@
             "type": "string"
         },
         "preferences": {
-            "type": ["array", "object"],
+            "type": "object",
             "additionalProperties": false,
             "properties": {
                 "ticketPrinterProtectionEnabled": {
@@ -64,7 +64,7 @@
             }
         },
         "ticketprinters": {
-            "type": ["array", "object"],
+            "type": "array",
             "items": {
                 "$ref": "ticketprinter.json"
             }

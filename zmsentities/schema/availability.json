@@ -1,5 +1,5 @@
 {
-  "type": ["array", "object"],
+  "type": "object",
   "description": "An Availability is a representation of opening hours for a scope. It defines the time a scope offers appointments and a ticket printer is able to serve process numbers.",
   "example": {
     "bookable": {
@@ -40,7 +40,7 @@
   "additionalProperties": false,
   "properties": {
     "bookable": {
-      "type": ["array", "object"],
+      "type": "object",
       "properties": {
         "startInDays": {
           "type": ["string", "number", "null"],
@@ -84,14 +84,14 @@
       "description": "an appointment is allowed to take more than one time slot"
     },
     "processingNote": {
-      "type": ["array", "object"],
+      "type": "array",
       "items": {
         "type": "string",
         "description": "Non persistent note usable for processing or logging calculation results, usually used for debugging"
       }
     },
     "repeat": {
-      "type": ["array", "object"],
+      "type": "object",
       "properties": {
         "afterWeeks": {
           "type": "number",
@@ -129,7 +129,7 @@
       "description": "The following type are available\n* appointment - defines times for appointments\n* openinghours - defines times where a scope is opened\n* break - defines times for a break (not implemented yet)\n"
     },
     "weekday": {
-      "type": ["array", "object"],
+      "type": "object",
       "properties": {
         "monday": {
           "default": false,
@@ -183,7 +183,7 @@
       }
     },
     "workstationCount": {
-      "type": ["array", "object"],
+      "type": "object",
       "properties": {
         "callcenter": {
           "type": "number",

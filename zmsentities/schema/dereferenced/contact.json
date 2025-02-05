@@ -1,6 +1,6 @@
 {
     "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
-    "type": ["array", "object"],
+    "type": "object",
     "example": {
         "city": "Schönefeld",
         "country": "Germany",
