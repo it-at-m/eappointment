@@ -26,10 +26,10 @@
                 <p class="m-teaser-contained-contact__summary">
                   {{ proverider.organization }}
                   <br />
-                  <div v-if="proverider.organizationUnit">
+                  <span v-if="proverider.organizationUnit">
                     {{ proverider.organizationUnit }}
                     <br />
-                  </div>
+                  </span>
                   {{ proverider.displayNameAlternatives[0] }}
                   <br />
                 </p>
@@ -74,10 +74,10 @@
               <p class="m-teaser-contained-contact__summary">
                 {{ selectedProvider.organization }}
                 <br />
-                <p v-if="selectedProvider.organizationUnit">
+                <span v-if="selectedProvider.organizationUnit">
                   {{ selectedProvider.organizationUnit }}
                   <br />
-                </p>
+                </span>
                 {{ selectedProvider.displayNameAlternatives[0] }}
                 <br />
               </p>
@@ -155,9 +155,9 @@
             <b>{{ t("location") }}</b>
             <p class="m-teaser-contained-contact__summary">
               {{ selectedProvider.organization }}
-              <div v-if="selectedProvider.organizationUnit">
+              <span v-if="selectedProvider.organizationUnit">
                 {{ selectedProvider.organizationUnit }}
-              </div>
+              </span>
               {{ selectedProvider.displayNameAlternatives[0] }}
             </p>
             <div>
