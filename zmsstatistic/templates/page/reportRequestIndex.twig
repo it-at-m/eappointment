@@ -68,7 +68,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for name, entry in exchangeRequest.data|filter(name => name != "sum") %}
+                    {% set totalSum = 0 %}
+                    {% set dateSum = 0 %}
+
+                    {% for name, entry in exchangeRequest.data|filter(name => name != "Summe") %}
                     {% if name != "average_processingtime" %}
                     <tr>
                         <th class="report-board--long-text">{{ name|trans }}</th>
@@ -78,8 +81,12 @@
                             </td>
                         {% endif %}
                         <td class="report-board--summary">
-                            {{ exchangeRequest.data.sum[name] }}
+                            {{ exchangeRequest.data.Summe[name] }}
                         </td>
+
+                        {% set totalSum = totalSum + (exchangeRequest.data.Summe[name]|default(0)) %}
+                        
+
                         {% for date in dateRange %}
                             {% if exchangeRequest.period == "day" %}
                                 {% set date = "#{year}-#{month}-#{date}"|date("Y-m-d") %}
@@ -88,12 +95,30 @@
                             {% endif %}
                             <td>
                                 <span class="{% if not entry[date].requestscount %}ausgegraut{% endif %}">{{ entry[date].requestscount|default("-") }}</span><br>
+                                {% set dateSum = dateSum + (entry[date].requestscount|default(0)) %}
                             </td>
                         {% endfor %}
                     </tr>
                     {% endif %}
                     {% endfor %}
-                </tbody>
+                    {# Gesamtsummen-Zeile #}
+                    
+
+                    <tr>
+                        <th class="report-board--long-text">Gesamtsumme</th>
+                        {% if exchangeRequest.period == "day" %}
+                            <td class="report-board--summary">-</td> {# Leere Spalte für die Durchschnittswerte #}
+                        {% endif %}
+                        <td class="report-board--summary">
+                            {{ totalSum }}
+                        </td>
+                        {% for date in dateRange %}
+                        <td class="report-board--summary">
+                            {{ dateSum }}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>  
             </table>
         {% else %}
             {{ block("board_body_noperiod") }}

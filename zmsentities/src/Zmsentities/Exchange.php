@@ -138,7 +138,7 @@ class Exchange extends Schema\Entity
                 }
             }
         }
-        $entity->data['sum'] = $sum;
+        $entity->data['Summe'] = $sum;
         return $entity;
     }
 
