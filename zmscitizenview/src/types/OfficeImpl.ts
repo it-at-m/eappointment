@@ -1,6 +1,6 @@
+import { Address } from "@/api/models/Address";
 import { Office } from "@/api/models/Office";
 import { Scope } from "@/api/models/Scope";
-import { Address } from "@/api/models/Address";
 
 export class OfficeImpl implements Office {
   id: string;

@@ -31,9 +31,13 @@
           <div class="m-content">
             <h3 tabindex="0">{{ t("location") }}</h3>
           </div>
-          <div v-if="selectedProvider" class="m-content border-bottom">
+          <div
+            v-if="selectedProvider"
+            class="m-content border-bottom"
+          >
             <p tabindex="0">
-              <strong> {{ selectedProvider.organization }}</strong><br />
+              <strong> {{ selectedProvider.organization }}</strong
+              ><br />
               {{ selectedProvider.name }}<br />
             </p>
             <p tabindex="0">
@@ -50,7 +54,10 @@
           <div class="m-content">
             <h3 tabindex="0">{{ t("time") }}</h3>
           </div>
-          <div v-if="appointment" class="m-content border-bottom">
+          <div
+            v-if="appointment"
+            class="m-content border-bottom"
+          >
             <p tabindex="0">
               {{ formatTime(appointment.timestamp) }} <br />
               {{ t("estimatedDuration") }} {{ t("minutes") }}<br />
@@ -59,7 +66,10 @@
           <div class="m-content">
             <h3 tabindex="0">{{ t("contact") }}</h3>
           </div>
-          <div v-if="appointment"  class="m-content border-bottom">
+          <div
+            v-if="appointment"
+            class="m-content border-bottom"
+          >
             <p tabindex="0">
               {{ appointment.familyName }}
               <br />
@@ -198,7 +208,8 @@ import { computed, inject, ref } from "vue";
 
 import {
   SelectedAppointmentProvider,
-  SelectedServiceProvider, SelectedTimeslotProvider,
+  SelectedServiceProvider,
+  SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 
 defineProps<{
