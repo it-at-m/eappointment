@@ -42,7 +42,8 @@
                       <use xlink:href="#icon-map-pin"></use>
                     </svg>
                     <span>
-                      {{ proverider.address.street }}  {{ proverider.address.house_number }}
+                      {{ proverider.address.street }}
+                      {{ proverider.address.house_number }}
                     </span>
                   </p>
                 </div>
@@ -92,9 +93,9 @@
                     <use xlink:href="#icon-map-pin"></use>
                   </svg>
                   <span>
-                    {{ selectedProvider.address.street }}  {{ selectedProvider.address.house_number }}
-                  </span
-                  >
+                    {{ selectedProvider.address.street }}
+                    {{ selectedProvider.address.house_number }}
+                  </span>
                 </p>
               </div>
             </div>
@@ -174,7 +175,8 @@
                   <use xlink:href="#icon-map-pin"></use>
                 </svg>
                 <span>
-                  {{ selectedProvider.address.street }}  {{ selectedProvider.address.house_number }}
+                  {{ selectedProvider.address.street }}
+                  {{ selectedProvider.address.house_number }}
                 </span>
               </p>
             </div>
