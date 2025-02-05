@@ -51,7 +51,8 @@ export const updateAvailabilityInState = (state, newAvailability) => {
             } else {
                 return availability
             }
-        })
+        }),
+        stateChanged: true
     })
 
     if (!updated) {

@@ -177,16 +177,22 @@ class AvailabilityPage extends Component {
         }
     }
 
-
     onRevertUpdates() {
-        this.isCreatingExclusion = false
-        this.setState(Object.assign({}, getInitialState(this.props), {
-            selectedTab: this.state.selectedTab
-        }), () => {
-            this.refreshData()
-            this.getValidationList()
-            this.getConflictList();
-        })
+        this.isCreatingExclusion = false;
+        this.setState({
+            errorList: {},
+            conflictList: {
+                itemList: {},
+                conflictIdList: []
+            }
+        }, () => {
+            this.refreshData(() => {
+                this.getValidationList();
+                if (this.state.availabilitylist.length > 0) {
+                    this.getConflictList();
+                }
+            });
+        });
     }
 
     onUpdateSingleAvailability(availability) {
@@ -263,11 +269,13 @@ class AvailabilityPage extends Component {
             $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
                 method: 'GET'
             }).done(() => {
+                
                 const newState = deleteAvailabilityInState(this.state, availability);
 
                 // Update data immediately
                 this.refreshData();
                 if (newState.availabilitylist.length > 0) {
+                    console.log("here");
                     this.getConflictList();
                 }
                 this.getValidationList();
@@ -465,7 +473,7 @@ class AvailabilityPage extends Component {
         );
 
         state.selectedAvailability = newAvailability;
-        state.stateChanged = false;
+        state.stateChanged = true;
 
         this.setState(state, () => {
             Promise.all([

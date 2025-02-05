@@ -8,6 +8,8 @@ const FooterButtons = (props) => {
         availability => availability?.tempId?.includes('__temp__')
     );
 
+    console.log(hasConflicts);
+
     return (
         <div className="form-actions" style={{ "marginTop": "0", "padding": "0.75em" }}>
             <button

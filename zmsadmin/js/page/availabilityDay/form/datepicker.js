@@ -118,23 +118,23 @@ class AvailabilityDatePicker extends Component {
         return isSelected;
     }
 
-    setExcludeTimesForDay() {
-        if (this.state.kind === 'exclusion') {
-            return;
-        }
-        var times = [];
-
-        // Add maintenance window times (22:00-01:00)
+    getMaintenanceWindowTimes() {
+        const times = [];
         const selectedDate = moment(this.state.selectedDate);
+    
+        // Add 22:00-23:59
         for (let minute = 1; minute < 60; minute++) {
             times.push(selectedDate.clone().hour(22).minute(minute).toDate());
         }
+        // Add 00:00-00:59
         for (let minute = 0; minute < 59; minute++) {
             times.push(selectedDate.clone().hour(0).minute(minute).toDate());
         }
+        return times;
+    }
 
-        // Filter and sort availabilities
-        const availabilities = [...this.state.availabilityList]
+    getFilteredAvailabilities() {
+        return [...this.state.availabilityList]
             .filter(availability =>
                 availability.id !== this.state.availability.id &&
                 availability.type == this.state.availability.type &&
@@ -145,49 +145,61 @@ class AvailabilityDatePicker extends Component {
                 const timeB = moment(b.startTime, 'HH:mm');
                 return timeA.diff(timeB);
             });
-
-        // Add regular excluded times
-        availabilities.forEach(availability => {
-            const startTime = moment(availability.startTime, 'hh:mm')
-                .add(this.state.availability.slotTimeInMinutes, "m");
-            const startOnDay = moment(this.state.selectedDate)
-                .set({ "h": startTime.hours(), "m": startTime.minutes() })
-                .toDate();
-
-            const endTime = moment(availability.endTime, 'hh:mm')
-                .subtract(this.state.availability.slotTimeInMinutes, "m");
-            const endOnDay = moment(this.state.selectedDate)
-                .set({ "h": endTime.hours(), "m": endTime.minutes() })
-                .toDate();
-
-            var currentTime = new Date(startOnDay);
-            while (currentTime < endOnDay) {
-                times.push(new Date(currentTime));
-                currentTime = moment(currentTime)
-                    .add(this.state.availability.slotTimeInMinutes, "m")
-                    .toDate();
-            }
-            times.push(endOnDay);
-        });
-
-        // Add boundary timestamps between adjacent availabilities
+    }
+    
+    getExcludedTimesForAvailability(availability) {
+        const times = [];
+        const startTime = moment(availability.startTime, 'HH:mm');
+        const endTime = moment(availability.endTime, 'HH:mm');
+    
+        let currentTime = moment(this.state.selectedDate)
+            .set({ "h": startTime.hours(), "m": startTime.minutes() })
+            .add(1, "m");
+        const endOnDay = moment(this.state.selectedDate)
+            .set({ "h": endTime.hours(), "m": endTime.minutes() });
+    
+        while (currentTime.isBefore(endOnDay)) {
+            times.push(currentTime.toDate());
+            currentTime = moment(currentTime).add(1, "m");
+        }
+        return times;
+    }
+    
+    getBoundaryTimestamps(availabilities) {
+        const times = [];
         for (let i = 0; i < availabilities.length - 1; i++) {
             const current = availabilities[i];
             const next = availabilities[i + 1];
-
+    
             const currentEnd = moment(current.endTime, 'HH:mm');
             const nextStart = moment(next.startTime, 'HH:mm');
-
-            // If they're adjacent (end time of one equals start time of next)
+    
             if (currentEnd.format('HH:mm') === nextStart.format('HH:mm')) {
-                // Add the boundary timestamp to excluded times
                 const boundaryTime = moment(this.state.selectedDate)
                     .set({ "h": currentEnd.hours(), "m": currentEnd.minutes() })
                     .toDate();
                 times.push(boundaryTime);
             }
         }
-
+        return times;
+    }
+    
+    setExcludeTimesForDay() {
+        if (this.state.kind === 'exclusion') {
+            return;
+        }
+        
+        let times = this.getMaintenanceWindowTimes();
+        const availabilities = this.getFilteredAvailabilities();
+    
+        // Add regular excluded times
+        availabilities.forEach(availability => {
+            times = times.concat(this.getExcludedTimesForAvailability(availability));
+        });
+    
+        // Add boundary timestamps
+        times = times.concat(this.getBoundaryTimestamps(availabilities));
+    
         this.setState({ excludeTimeList: times });
     }
 
