@@ -1545,4 +1545,107 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertEquals(28800, $entity->getAvailableSecondsPerDay('callcenter')); // 28800 * 1
     }
 
+    public function testNoConflictsOnWednesday()
+    {
+        // Create two availabilities that overlap but only on Tuesdays
+        $availability1 = new Availability([
+            'id' => '1',
+            'weekday' => [
+                'sunday' => '0',
+                'monday' => '0',
+                'tuesday' => '4',  // Only active on Tuesday
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0'
+            ],
+            'startDate' => strtotime('2025-02-04'),  // A Tuesday
+            'endDate' => strtotime('2025-06-30'),
+            'startTime' => '14:00:00',
+            'endTime' => '17:40:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+    
+        $availability2 = new Availability([
+            'id' => '2',
+            'weekday' => [
+                'sunday' => '0',
+                'monday' => '0',
+                'tuesday' => '4',  // Only active on Tuesday
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0'
+            ],
+            'startDate' => strtotime('2025-02-04'),  // A Tuesday
+            'endDate' => strtotime('2025-06-30'),
+            'startTime' => '14:00:00',
+            'endTime' => '17:40:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+    
+        $list = new AvailabilityList([$availability1, $availability2]);
+        $conflicts = $list->checkAllVsExistingConflicts(
+            new \DateTimeImmutable('2025-02-05 00:00:00'),  // A Wednesday
+            new \DateTimeImmutable('2025-02-05 23:59:59')
+        );
+    
+        $this->assertEquals(0, $conflicts->count(), "Should not detect conflicts on Wednesday for Tuesday-only availabilities");
+    }
+    
+    public function testConflictsOnTuesday()
+    {
+        // Create two availabilities that overlap on Tuesdays
+        $availability1 = new Availability([
+            'id' => '1',
+            'weekday' => [
+                'sunday' => '0',
+                'monday' => '0',
+                'tuesday' => '4',  // Only active on Tuesday
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0'
+            ],
+            'startDate' => strtotime('2025-02-04'),  // A Tuesday
+            'endDate' => strtotime('2025-06-30'),
+            'startTime' => '14:00:00',
+            'endTime' => '17:40:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+    
+        $availability2 = new Availability([
+            'id' => '2',
+            'weekday' => [
+                'sunday' => '0',
+                'monday' => '0',
+                'tuesday' => '4',  // Only active on Tuesday
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0'
+            ],
+            'startDate' => strtotime('2025-02-04'),  // A Tuesday
+            'endDate' => strtotime('2025-06-30'),
+            'startTime' => '14:00:00',
+            'endTime' => '17:40:00',
+            'type' => 'appointment',
+            'scope' => ['id' => '141', 'dayoff' => []]
+        ]);
+    
+        $list = new AvailabilityList([$availability1, $availability2]);
+        $conflicts = $list->checkAllVsExistingConflicts(
+            new \DateTimeImmutable('2025-02-04 00:00:00'),  // A Tuesday
+            new \DateTimeImmutable('2025-02-04 23:59:59')
+        );
+    
+        $this->assertGreaterThan(0, $conflicts->count(), "Should detect conflicts on Tuesday for overlapping Tuesday availabilities");
+        foreach ($conflicts as $conflict) {
+            $this->assertStringContainsString('Konflikt: Zwei Öffnungszeiten', $conflict->amendment);
+        }
+    }
+
 }
