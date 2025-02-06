@@ -24,6 +24,9 @@ class Office extends Entity implements JsonSerializable
     /** @var array|null */
     public ?array $displayNameAlternatives = null;
 
+    /** @var bool|null */
+    public ?bool $showAlternativeLocations = null;
+
     /** @var string|null */
     public ?string $organization = null;
 
@@ -43,6 +46,7 @@ class Office extends Entity implements JsonSerializable
         int $id,
         string $name,
         ?array $address = null,
+        ?bool $showAlternativeLocations = null,
         ?array $displayNameAlternatives = null,
         ?string $organization = null,
         ?string $organizationUnit = null,
@@ -53,6 +57,7 @@ class Office extends Entity implements JsonSerializable
         $this->id = $id;
         $this->name = $name;
         $this->address = $address;
+        $this->showAlternativeLocations = $showAlternativeLocations;
         $this->displayNameAlternatives = $displayNameAlternatives;
         $this->organization = $organization;
         $this->organizationUnit = $organizationUnit;
@@ -81,6 +86,7 @@ class Office extends Entity implements JsonSerializable
             'id' => $this->id,
             'name' => $this->name,
             'address' => $this->address,
+            'showAlternativeLocations' => $this->showAlternativeLocations,
             'displayNameAlternatives' => $this->displayNameAlternatives,
             'organization' => $this->organization,
             'organizationUnit' => $this->organizationUnit,

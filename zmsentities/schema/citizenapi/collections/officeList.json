@@ -1,5 +1,9 @@
 {
-  "type": ["array", "object", "null"],
+  "type": [
+    "array",
+    "object",
+    "null"
+  ],
   "properties": {
     "offices": {
       "type": "array",
@@ -20,6 +24,13 @@
               "null"
             ],
             "description": "The name of the office"
+          },
+          "showAlternativeLocations": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Show alternative office locations in the citizen calendar"
           },
           "address": {
             "type": [
@@ -59,19 +70,31 @@
             }
           },
           "displayNameAlternatives": {
-            "type": ["array", "null"],
+            "type": [
+              "array",
+              "null"
+            ],
             "description": "Alternative names of the office"
           },
           "organization": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The name of the Organization"
           },
           "organizationUnit": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The name of the organization"
           },
           "slotTimeInMinutes": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "description": "Slot time in minutes"
           },
           "geo": {

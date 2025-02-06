@@ -63,6 +63,7 @@ class MapperService
                 id: isset($provider->id) ? (int) $provider->id : 0,
                 name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null),
                 address: isset($provider->data['address']) ? $provider->data['address'] : null,
+                showAlternativeLocations: isset($provider->data['showAlternativeLocations']) ? $provider->data['showAlternativeLocations'] : null,
                 displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
                 organization: $provider->data['organization'] ?? null,
                 organizationUnit: $provider->data['organizationUnit'] ?? null,
