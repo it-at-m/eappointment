@@ -80,220 +80,120 @@ class AvailabilityUpdateTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testDuplicateOverlappingAvailability()
+    public function testOverlappingAvailability()
     {
-
-        $input = (new Entity)->createExample();
-        $currentTimestamp = time();
-        $input['startDate'] = $currentTimestamp + (20 * 24 * 60 * 60); // 2 days in the future
-        $input['endDate'] = $currentTimestamp + (50 * 24 * 60 * 60);   // 5 days in the future
-        $input['startTime'] = "09:00:00";
-        $input['endTime'] = "17:00:00";
-        $input['scope'] = [
-            "id" => 312,
-            "dayoff" => [
-                [
-                    "id" => 35,
-                    "date" => $currentTimestamp + (70 * 24 * 60 * 60), // 7 days in the future
-                    "name" => "1. Mai",
-                    "lastChange" => $currentTimestamp
-                ],
-                [
-                    "id" => 36,
-                    "date" => $currentTimestamp + (140 * 24 * 60 * 60), // 14 days in the future
-                    "name" => "Christi Himmelfahrt",
-                    "lastChange" => $currentTimestamp
-                ]
+        $this->setWorkstation();
+        $this->expectException(AvailabilityUpdateFailed::class);
+    
+        $startDate = time() + (2 * 24 * 60 * 60);
+        $weekday = (int)date('N', $startDate);
+        $dayoffData = [
+            [
+                "id" => "302",
+                "date" => 1458860400,
+                "lastChange" => 1566566540,
+                "name" => "Karfreitag"
             ]
         ];
-        $input['kind'] = "default";
-
-        $entity = (new Query())->writeEntity($input);
-        $secondEntity = (new Query())->writeEntity($input);
-        $this->setWorkstation();
-        $currentTimestamp = time();
-        $this->expectException(AvailabilityUpdateFailed::class);
-
+    
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
                     [
-                        "id" => $entity->getId(),
-                        "description" => "Duplicate Entry 1",
-                        "startDate" => $currentTimestamp + (20 * 24 * 60 * 60),
-                        "endDate" => $currentTimestamp + (20 * 24 * 60 * 60),
+                        "id" => 21202,
+                        "description" => "Overlapping Entry 1",
+                        "startDate" => $startDate,
+                        "endDate" => $startDate + (24 * 60 * 60),
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
                         "kind" => "default",
+                        "weekday" => array_combine(
+                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                        ),
                         "scope" => [
                             "id" => 312,
-                            "dayoff" => [
-                                [
-                                    "id" => 35,
-                                    "date" => $currentTimestamp + (70 * 24 * 60 * 60),
-                                    "name" => "1. Mai",
-                                    "lastChange" => $currentTimestamp
-                                ],
-                                [
-                                    "id" => 36,
-                                    "date" => $currentTimestamp + (140 * 24 * 60 * 60),
-                                    "name" => "Christi Himmelfahrt",
-                                    "lastChange" => $currentTimestamp
-                                ]
-                            ]
-                        ],
-
+                            "dayoff" => $dayoffData
+                        ]
                     ],
                     [
-                        "id" => $secondEntity->getId(),
-                        "description" => "Duplicate Entry 2",
-                        "startDate" => $currentTimestamp + (20 * 24 * 60 * 60),
-                        "endDate" => $currentTimestamp + (20 * 24 * 60 * 60),
-                        "startTime" => "09:00:00",
-                        "endTime" => "17:00:00",
+                        "id" => 21203,
+                        "description" => "Overlapping Entry 2",
+                        "startDate" => $startDate,
+                        "endDate" => $startDate + (24 * 60 * 60),
+                        "startTime" => "10:00:00",
+                        "endTime" => "18:00:00",
                         "kind" => "default",
+                        "weekday" => array_combine(
+                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                        ),
                         "scope" => [
                             "id" => 312,
-                            "dayoff" => [
-                                [
-                                    "id" => 35,
-                                    "date" => $currentTimestamp + (70 * 24 * 60 * 60),
-                                    "name" => "1. Mai",
-                                    "lastChange" => $currentTimestamp
-                                ],
-                                [
-                                    "id" => 36,
-                                    "date" => $currentTimestamp + (140 * 24 * 60 * 60),
-                                    "name" => "Christi Himmelfahrt",
-                                    "lastChange" => $currentTimestamp
-                                ]
-                            ]
+                            "dayoff" => $dayoffData
                         ]
                     ]
                 ],
-                'selectedDate' => date('Y-m-d')
+                'selectedDate' => date('Y-m-d', $startDate)
             ])
         ], []);
     }
-
-    public function testOverlappingAvailability()
+    
+    public function testDuplicateOverlappingAvailability()
     {
-
-        $input = (new Entity)->createExample();
-        $currentTimestamp = time();
-        $input['startDate'] = $currentTimestamp + (20 * 24 * 60 * 60); // 2 days in the future
-        $input['endDate'] = $currentTimestamp + (50 * 24 * 60 * 60);   // 5 days in the future
-        $input['startTime'] = "09:00:00";
-        $input['endTime'] = "17:00:00";
-        $input['scope'] = [
-            "id" => 312,
-            "dayoff" => [
-                [
-                    "id" => 35,
-                    "date" => $currentTimestamp + (70 * 24 * 60 * 60), // 7 days in the future
-                    "name" => "1. Mai",
-                    "lastChange" => $currentTimestamp
-                ],
-                [
-                    "id" => 36,
-                    "date" => $currentTimestamp + (140 * 24 * 60 * 60), // 14 days in the future
-                    "name" => "Christi Himmelfahrt",
-                    "lastChange" => $currentTimestamp
-                ]
-            ]
-        ];
-        $input['kind'] = "default";
-
-
-        $secondInput = (new Entity)->createExample();
-        $currentTimestamp = time();
-        $secondInput['startDate'] = $currentTimestamp + (20 * 24 * 60 * 60); // 2 days in the future
-        $secondInput['endDate'] = $currentTimestamp + (50 * 24 * 60 * 60);   // 5 days in the future
-        $secondInput['startTime'] = "10:00:00";
-        $secondInput['endTime'] = "20:00:00";
-        $secondInput['scope'] = [
-            "id" => 312,
-            "dayoff" => [
-                [
-                    "id" => 35,
-                    "date" => $currentTimestamp + (70 * 24 * 60 * 60), // 7 days in the future
-                    "name" => "1. Mai",
-                    "lastChange" => $currentTimestamp
-                ],
-                [
-                    "id" => 36,
-                    "date" => $currentTimestamp + (140 * 24 * 60 * 60), // 14 days in the future
-                    "name" => "Christi Himmelfahrt",
-                    "lastChange" => $currentTimestamp
-                ]
-            ]
-        ];
-        $secondInput['kind'] = "default";
-
-        $entity = (new Query())->writeEntity($input);
-        $secondEntity = (new Query())->writeEntity($secondInput);
         $this->setWorkstation();
-        $currentTimestamp = time();
         $this->expectException(AvailabilityUpdateFailed::class);
-
+    
+        $startDate = time() + (3 * 24 * 60 * 60);
+        $weekday = (int)date('N', $startDate);
+        $dayoffData = [
+            [
+                "id" => "302",
+                "date" => 1458860400,
+                "lastChange" => 1566566540,
+                "name" => "Karfreitag"
+            ]
+        ];
+    
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
                     [
-                        "id" => $entity->getId(),
+                        "id" => 21202,
                         "description" => "Duplicate Entry 1",
-                        "startDate" => $currentTimestamp + (200 * 24 * 60 * 60),
-                        "endDate" => $currentTimestamp + (200 * 24 * 60 * 60),
+                        "startDate" => $startDate,
+                        "endDate" => $startDate + (24 * 60 * 60),
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
                         "kind" => "default",
+                        "weekday" => array_combine(
+                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                        ),
                         "scope" => [
                             "id" => 312,
-                            "dayoff" => [
-                                [
-                                    "id" => 35,
-                                    "date" => $currentTimestamp + (700 * 24 * 60 * 60),
-                                    "name" => "1. Mai",
-                                    "lastChange" => $currentTimestamp
-                                ],
-                                [
-                                    "id" => 36,
-                                    "date" => $currentTimestamp + (1400 * 24 * 60 * 60),
-                                    "name" => "Christi Himmelfahrt",
-                                    "lastChange" => $currentTimestamp
-                                ]
-                            ]
-                        ],
-
+                            "dayoff" => $dayoffData
+                        ]
                     ],
                     [
-                        "id" => $secondEntity->getId(), // Duplicate ID
+                        "id" => 21203,
                         "description" => "Duplicate Entry 2",
-                        "startDate" => $currentTimestamp + (200 * 24 * 60 * 60),
-                        "endDate" => $currentTimestamp + (200 * 24 * 60 * 60),
-                        "startTime" => "10:00:00",
-                        "endTime" => "20:00:00",
+                        "startDate" => $startDate,
+                        "endDate" => $startDate + (24 * 60 * 60),
+                        "startTime" => "09:00:00",
+                        "endTime" => "17:00:00",
                         "kind" => "default",
+                        "weekday" => array_combine(
+                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                        ),
                         "scope" => [
                             "id" => 312,
-                            "dayoff" => [
-                                [
-                                    "id" => 35,
-                                    "date" => $currentTimestamp + (700 * 24 * 60 * 60),
-                                    "name" => "1. Mai",
-                                    "lastChange" => $currentTimestamp
-                                ],
-                                [
-                                    "id" => 36,
-                                    "date" => $currentTimestamp + (1400 * 24 * 60 * 60),
-                                    "name" => "Christi Himmelfahrt",
-                                    "lastChange" => $currentTimestamp
-                                ]
-                            ]
+                            "dayoff" => $dayoffData
                         ]
                     ]
                 ],
-                'selectedDate' => date('Y-m-d')
+                'selectedDate' => date('Y-m-d', $startDate)
             ])
         ], []);
     }
