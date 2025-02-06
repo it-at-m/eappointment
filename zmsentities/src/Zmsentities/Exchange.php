@@ -258,18 +258,22 @@ class Exchange extends Schema\Entity
         if (count($fields)) {
             $field = array_shift($fields);
             $fieldposition = $this->getPositionByName($field);
-    
+            $requestscountPosition = $this->getPositionByName('requestscount');
+
             foreach ($this->data as $element) {
-                // Check if $fieldposition exists in $element
                 if (isset($element[$fieldposition])) {
                     if (!isset($list[$element[$fieldposition]])) {
                         $list[$element[$fieldposition]] = clone $this;
                         $list[$element[$fieldposition]]->data = [];
                     }
+                    if ($requestscountPosition !== false && isset($element[$requestscountPosition])) {
+                        $element[$requestscountPosition] = (int) $element[$requestscountPosition];
+                    }
+
                     $list[$element[$fieldposition]]->data[] = $element;
                 }
             }
-    
+
             foreach ($list as $key => $row) {
                 if ($row instanceof Exchange) {
                     $list[$key] = $row->getGroupedHashSet($fields, $hashfields);
@@ -279,5 +283,5 @@ class Exchange extends Schema\Entity
             return $this->getHashData($hashfields, true);
         }
         return $list;
-    }    
+    }
 }

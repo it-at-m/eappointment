@@ -69,56 +69,73 @@
                 </thead>
                 <tbody>
                     {% set totalSum = 0 %}
-                    {% set dateSum = 0 %}
 
                     {% for name, entry in exchangeRequest.data|filter(name => name != "Summe") %}
-                    {% if name != "average_processingtime" %}
-                    <tr>
-                        <th class="report-board--long-text">{{ name|trans }}</th>
-                        {% if exchangeRequest.period == "day" %}
-                            <td class="report-board--summary">
-                                {{ exchangeRequest.data.average_processingtime[name]|default("-") }}
-                            </td>
-                        {% endif %}
-                        <td class="report-board--summary">
-                            {{ exchangeRequest.data.Summe[name] }}
-                        </td>
+                        {% if name != "average_processingtime" %}
+                        <tr>
+                            <th class="report-board--long-text">{{ name|trans }}</th>
 
-                        {% set totalSum = totalSum + (exchangeRequest.data.Summe[name]|default(0)) %}
-                        
-
-                        {% for date in dateRange %}
                             {% if exchangeRequest.period == "day" %}
-                                {% set date = "#{year}-#{month}-#{date}"|date("Y-m-d") %}
-                            {% elseif exchangeRequest.period == "month" %}
-                                {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
+                                <td class="report-board--summary">
+                                    {{ exchangeRequest.data.average_processingtime[name]|default("-") }}
+                                </td>
                             {% endif %}
-                            <td>
-                                <span class="{% if not entry[date].requestscount %}ausgegraut{% endif %}">{{ entry[date].requestscount|default("-") }}</span><br>
-                                {% set dateSum = dateSum + (entry[date].requestscount|default(0)) %}
+
+                            <td class="report-board--summary">
+                                {{ exchangeRequest.data.Summe[name] }}
                             </td>
-                        {% endfor %}
-                    </tr>
-                    {% endif %}
+
+                            {% set totalSum = totalSum + (exchangeRequest.data.Summe[name]|default(0)) %}
+
+                            {% for date in dateRange %}
+                                {% if exchangeRequest.period == "day" %}
+                                    {% set formattedDate = "#{year}-#{month}-#{date}"|date("Y-m-d") %}
+                                {% elseif exchangeRequest.period == "month" %}
+                                    {% set formattedDate = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
+                                {% endif %}
+
+                                <td>
+                                    <span class="{% if not entry[formattedDate].requestscount %}ausgegraut{% endif %}">
+                                        {{ entry[formattedDate].requestscount|default("-") }}
+                                    </span>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        {% endif %}
                     {% endfor %}
-                    {# Gesamtsummen-Zeile #}
-                    
 
                     <tr>
                         <th class="report-board--long-text">Gesamtsumme</th>
+
                         {% if exchangeRequest.period == "day" %}
-                            <td class="report-board--summary">-</td> {# Leere Spalte für die Durchschnittswerte #}
+                            <td class="report-board--summary">-</td>
                         {% endif %}
+
                         <td class="report-board--summary">
                             {{ totalSum }}
                         </td>
+
                         {% for date in dateRange %}
-                        <td class="report-board--summary">
-                            {{ dateSum }}
-                        </td>
+                            {% if exchangeRequest.period == "day" %}
+                                {% set formattedDate = "#{year}-#{month}-#{date}"|date("Y-m-d") %}
+                            {% elseif exchangeRequest.period == "month" %}
+                                {% set formattedDate = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
+                            {% endif %}
+
+                            {% set dateSum = 0 %}
+
+                            {% for name, entry in exchangeRequest.data|filter(name => name != "Summe") %}
+                                {% if name != "average_processingtime" %}
+                                    {% set dateSum = dateSum + (entry[formattedDate].requestscount|default(0)) %}
+                                {% endif %}
+                            {% endfor %}
+
+                            <td class="report-board--summary">
+                                {{ dateSum }}
+                            </td>
                         {% endfor %}
                     </tr>
-                </tbody>  
+                </tbody>
             </table>
         {% else %}
             {{ block("board_body_noperiod") }}

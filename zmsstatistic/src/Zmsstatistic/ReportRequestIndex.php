@@ -53,7 +53,7 @@ class ReportRequestIndex extends BaseController
             $args['organisation'] = $this->organisation;
             return (new Download\RequestReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
-        var_dump($exchangeRequest);
+        
         return Render::withHtml(
             $response,
             'page/reportRequestIndex.twig',
