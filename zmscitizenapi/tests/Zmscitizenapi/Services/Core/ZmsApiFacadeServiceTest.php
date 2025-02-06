@@ -64,7 +64,8 @@ class ZmsApiFacadeServiceTest extends TestCase
                 'city' => 'Test City',
                 'postal_code' => '12345'
             ],
-            'geo' => ['lat' => 48.137154, 'lon' => 11.576124]
+            'geo' => ['lat' => 48.137154, 'lon' => 11.576124],
+            'showAlternativeLocations' => false
         ];
     
         $scope = new Scope();

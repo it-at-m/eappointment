@@ -63,6 +63,7 @@ class ZmsApiFacadeService
                 id: (int) $provider->id,
                 name: $provider->displayName ?? $provider->name,
                 address: $provider->data['address'] ?? null,
+                showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null,
                 displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
                 organization: $provider->data['organization'] ?? null,
                 organizationUnit: $provider->data['organizationUnit'] ?? null,
@@ -251,6 +252,11 @@ class ZmsApiFacadeService
                 $offices[] = new Office(
                     id: (int) $provider->id,
                     name: $provider->name,
+                    showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null,
+                    displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
+                    organization: $provider->data['organization'] ?? null,
+                    organizationUnit: $provider->data['organizationUnit'] ?? null,
+                    slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
                     address: $provider->address ?? null,
                     geo: $provider->geo ?? null,
                     scope: $scope
@@ -373,6 +379,7 @@ class ZmsApiFacadeService
                         id: (int) $provider->id,
                         name: $provider->displayName ?? $provider->name,
                         address: $provider->data['address'] ?? null,
+                        showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null,
                         displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
                         organization: $provider->data['organization'] ?? null,
                         organizationUnit: $provider->data['organizationUnit'] ?? null,
