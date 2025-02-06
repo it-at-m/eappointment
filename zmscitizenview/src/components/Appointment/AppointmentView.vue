@@ -289,6 +289,7 @@ const changeStep = (step: string) => {
 };
 
 const setServices = () => {
+  selectedServiceMap.value = new Map<string, number>();
   if (selectedService.value) {
     if (selectedService.value.count) {
       selectedServiceMap.value.set(

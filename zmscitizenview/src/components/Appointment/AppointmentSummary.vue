@@ -60,7 +60,7 @@
           >
             <p tabindex="0">
               {{ formatTime(appointment.timestamp) }} <br />
-              {{ t("estimatedDuration") }} {{ t("minutes") }}<br />
+              {{ t("estimatedDuration") }} {{ estimatedDuration() }} {{ t("minutes") }}<br />
             </p>
           </div>
           <div class="m-content">
@@ -277,6 +277,38 @@ const previousStep = () => emit("back");
 const cancelAppointment = () => emit("cancelAppointment");
 const cancelReschedule = () => emit("cancelReschedule");
 const rescheduleAppointment = () => emit("rescheduleAppointment");
+
+const estimatedDuration = () => {
+  let time = 0;
+  const serviceProvider = selectedService.value?.providers?.find(
+    (provider) => provider.id === selectedProvider.value?.id
+  );
+  if (
+    serviceProvider &&
+    selectedService.value?.count &&
+    serviceProvider?.slots
+  ) {
+    time =
+      selectedService.value.count *
+      serviceProvider.slots *
+      serviceProvider.slotTimeInMinutes;
+  }
+
+  if (selectedService.value?.subServices) {
+    selectedService.value?.subServices?.forEach((subservice) => {
+      const subserviceProvider = subservice.providers?.find(
+        (provider) => provider.id === selectedProvider.value?.id
+      );
+      if (subserviceProvider && subservice.count && subserviceProvider.slots) {
+        time =
+          subservice.count *
+          subserviceProvider.slots *
+          subserviceProvider.slotTimeInMinutes;
+      }
+    });
+  }
+  return time;
+};
 </script>
 
 <style scoped>

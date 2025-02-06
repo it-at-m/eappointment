@@ -1,5 +1,5 @@
 <template>
-  <div v-if="selectedProvider && selectableProviders">
+  <div v-if="selectedProvider && selectableProviders && selectableProviders.length > 1">
     <div class="m-component slider-no-margin">
       <div class="m-content">
         <h2 tabindex="0">{{ t("location") }}</h2>
@@ -55,7 +55,7 @@
     </div>
   </div>
   <div v-if="!error">
-    <div v-if="selectedProvider && !selectableProviders">
+    <div v-if="selectedProvider && selectableProviders && selectableProviders.length === 1">
       <div class="m-component">
         <div class="m-content">
           <h2 tabindex="0">{{ t("location") }}</h2>
@@ -106,6 +106,7 @@
     <div class="m-content">
       <h2 tabindex="0">{{ t("time") }}</h2>
     </div>
+    <div class="m-component">
     <muc-calendar
       v-model="selectedDay"
       disable-view-change
@@ -115,7 +116,8 @@
       :max="maxDate"
       :view-month="minDate"
     />
-    <div class="m-component">
+    </div>
+    <div v-if="selectedDay" class="m-component">
       <div class="m-content">
         <h3 tabindex="0">{{ t("availableTimes") }}</h3>
       </div>
@@ -153,7 +155,7 @@
       tabindex="0"
     >
       <muc-callout
-        v-if="selectedTimeslot !== 0"
+        v-if="selectedProvider && selectedDay && selectedTimeslot !== 0"
         type="info"
       >
         <template #content>
@@ -220,7 +222,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      :disabled="!selectedTimeslot"
+      :disabled="(selectedTimeslot === 0) || !selectedDay"
       icon="arrow-right"
       @click="nextStep"
     >
@@ -459,8 +461,11 @@ const previousStep = () => emit("back");
 onMounted(() => {
   if (selectedService.value && selectedService.value.providers) {
     let offices = selectedService.value.providers.filter((office) => {
-      if (props.preselectedOfficeId)
+      if (props.preselectedOfficeId) {
         return office.id === props.preselectedOfficeId;
+      } else if (selectedProvider.value) {
+        return office.id === selectedProvider.value.id;
+      }
     });
 
     if (selectedService.value.subServices) {
