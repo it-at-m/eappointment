@@ -28,7 +28,7 @@ const props = defineProps<{
 
 const emit = defineEmits<(e: "change", id: string, count: number) => void>();
 
-const count = ref<number>(0);
+const count = ref<number>(props.subService.count);
 
 watch(count, (newCount) => {
   emit("change", props.subService.id, newCount);

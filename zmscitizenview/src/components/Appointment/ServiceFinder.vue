@@ -187,11 +187,10 @@ const setServiceData = (selectedService: ServiceImpl) => {
 const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
   relations.value.forEach((relation) => {
-    if (relation.serviceId === serviceId) {
+    if (relation.serviceId == serviceId) {
       const foundOffice: OfficeImpl = offices.value.filter((office) => {
-        return office.id === relation.officeId;
+        return office.id == relation.officeId;
       })[0];
-
       if (
         props.exclusiveLocation &&
         foundOffice.id !== props.preselectedOffiveId
@@ -199,7 +198,7 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
         return;
       }
 
-      if (!providers || providers.includes(foundOffice.id.toString())) {
+      if (!providers || providers.find(prov => prov == foundOffice.id.toString())) {
         foundOffice.slots = relation.slots;
         officesAtService.push(foundOffice);
       }
@@ -266,20 +265,26 @@ const skipSubservices = () => {
 };
 
 onMounted(() => {
-  fetchServicesAndProviders(
-    props.preselectedServiceId ?? undefined,
-    props.preselectedOffiveId ?? undefined
-  ).then((data) => {
-    services.value = data.services;
-    relations.value = data.relations;
-    offices.value = data.offices;
+  if (service.value) {
+    countOfService.value = service.value.count ? service.value.count : countOfService.value;
+    currentSlots.value = getMinSlotOfProvider(service.value.providers) * countOfService.value;
+  } else {
+    fetchServicesAndProviders(
+      props.preselectedServiceId ?? undefined,
+      props.preselectedOffiveId ?? undefined
+    ).then((data) => {
+      services.value = data.services;
+      relations.value = data.relations;
+      offices.value = data.offices;
 
-    if (props.preselectedServiceId) {
-      service.value = services.value.find(
-        (service) => service.id === props.preselectedServiceId
-      );
-    }
-  });
+      if (props.preselectedServiceId) {
+        service.value = services.value.find(
+          (service) => service.id === props.preselectedServiceId
+        );
+      }
+    });
+  }
+
 });
 </script>
 

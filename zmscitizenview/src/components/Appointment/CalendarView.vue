@@ -186,6 +186,10 @@
             <br />
             {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
             {{ t("clock") }}
+            <br />
+            {{ t("estimatedDuration") }}
+            <br />
+            {{ estimatedDuration() }} {{ t("minutes") }}
           </div>
         </template>
 
@@ -415,6 +419,24 @@ const handleProviderSelection = (id: number) => {
 const handleTimeSlotSelection = (timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
   if (summary.value) summary.value.focus();
+};
+
+const estimatedDuration = () => {
+  let time = 0;
+  const serviceProvider = selectedService.value?.providers?.find(provider => provider.id === selectedProvider.value?.id);
+  if (serviceProvider && selectedService.value?.count && serviceProvider?.slots){
+    time = selectedService.value.count * serviceProvider.slots * serviceProvider.slotTimeInMinutes;
+  }
+
+  if (selectedService.value?.subServices) {
+    selectedService.value?.subServices?.forEach(subservice => {
+      const subserviceProvider = subservice.providers?.find(provider => provider.id === selectedProvider.value?.id);
+      if (subserviceProvider && subservice.count && subserviceProvider.slots){
+        time = subservice.count * subserviceProvider.slots * subserviceProvider.slotTimeInMinutes;
+      }
+    });
+  }
+  return time;
 };
 
 const nextStep = () => emit("next");
