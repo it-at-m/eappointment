@@ -96,11 +96,34 @@ class AvailabilityUpdateTest extends Base
             ]
         ];
     
+        // Create first entity
+        $input = (new Entity)->createExample();
+        $input['startDate'] = $startDate;
+        $input['endDate'] = $startDate + (24 * 60 * 60);
+        $input['startTime'] = "09:00:00";
+        $input['endTime'] = "17:00:00";
+        $input['weekday'] = array_combine(
+            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+        );
+        $input['scope'] = [
+            "id" => 312,
+            "dayoff" => $dayoffData
+        ];
+        $input['kind'] = "default";
+        $entity = (new Query())->writeEntity($input);
+    
+        // Create second entity
+        $secondInput = $input;
+        $secondInput['startTime'] = "10:00:00";
+        $secondInput['endTime'] = "18:00:00";
+        $secondEntity = (new Query())->writeEntity($secondInput);
+    
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
                     [
-                        "id" => 21202,
+                        "id" => $entity->getId(),
                         "description" => "Overlapping Entry 1",
                         "startDate" => $startDate,
                         "endDate" => $startDate + (24 * 60 * 60),
@@ -117,7 +140,7 @@ class AvailabilityUpdateTest extends Base
                         ]
                     ],
                     [
-                        "id" => 21203,
+                        "id" => $secondEntity->getId(),
                         "description" => "Overlapping Entry 2",
                         "startDate" => $startDate,
                         "endDate" => $startDate + (24 * 60 * 60),
@@ -155,11 +178,31 @@ class AvailabilityUpdateTest extends Base
             ]
         ];
     
+        // Create first entity
+        $input = (new Entity)->createExample();
+        $input['startDate'] = $startDate;
+        $input['endDate'] = $startDate + (24 * 60 * 60);
+        $input['startTime'] = "09:00:00";
+        $input['endTime'] = "17:00:00";
+        $input['weekday'] = array_combine(
+            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+        );
+        $input['scope'] = [
+            "id" => 312,
+            "dayoff" => $dayoffData
+        ];
+        $input['kind'] = "default";
+        $entity = (new Query())->writeEntity($input);
+    
+        // Create second entity with same times
+        $secondEntity = (new Query())->writeEntity($input);
+    
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
                     [
-                        "id" => 21202,
+                        "id" => $entity->getId(),
                         "description" => "Duplicate Entry 1",
                         "startDate" => $startDate,
                         "endDate" => $startDate + (24 * 60 * 60),
@@ -176,7 +219,7 @@ class AvailabilityUpdateTest extends Base
                         ]
                     ],
                     [
-                        "id" => 21203,
+                        "id" => $secondEntity->getId(),
                         "description" => "Duplicate Entry 2",
                         "startDate" => $startDate,
                         "endDate" => $startDate + (24 * 60 * 60),
