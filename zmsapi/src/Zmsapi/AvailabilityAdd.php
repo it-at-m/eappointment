@@ -63,6 +63,7 @@ class AvailabilityAdd extends BaseController
         $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
         $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
+        $weekday = (int)$selectedDate->format('N');
 
         $conflicts = new \BO\Zmsentities\Collection\ProcessList();
         $newVsNewConflicts = $newCollection->hasNewVsNewConflicts($selectedDate);
@@ -123,8 +124,36 @@ class AvailabilityAdd extends BaseController
         );
         $existingConflicts = $mergedCollectionWithoutExclusions->checkAllVsExistingConflicts($earliestStartDateTime, $latestEndDateTime);
         $conflicts->addList($existingConflicts);
-         
-        if ($conflicts->count() > 0) {
+
+        // Filter conflicts by weekday
+        $filteredConflicts = new \BO\Zmsentities\Collection\ProcessList();
+        foreach ($conflicts as $conflict) {
+            $availability1 = $conflict->getFirstAppointment()->getAvailability();
+            $availability2 = null;
+            foreach ($mergedCollectionWithoutExclusions as $avail) {
+                if ($avail->id === $availability1->id || 
+                    (isset($avail->tempId) && isset($availability1->tempId) && $avail->tempId === $availability1->tempId)) {
+                    $availability2 = $avail;
+                    break;
+                }
+            }
+
+            // Check if either availability has the weekday bit set
+            $affectsSelectedDay = false;
+            if (isset($availability1->weekday[$weekday]) && (int)$availability1->weekday[$weekday] > 0) {
+                $affectsSelectedDay = true;
+            }
+            if ($availability2 && isset($availability2->weekday[$weekday]) && (int)$availability2->weekday[$weekday] > 0) {
+                $affectsSelectedDay = true;
+            }
+
+            // Only keep conflicts that affect the selected day
+            if ($affectsSelectedDay) {
+                $filteredConflicts->addEntity($conflict);
+            }
+        }
+
+        if ($filteredConflicts->count() > 0) {
             throw new AvailabilityAddFailed();
         }
 
