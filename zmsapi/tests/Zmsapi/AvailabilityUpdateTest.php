@@ -86,7 +86,6 @@ class AvailabilityUpdateTest extends Base
         $this->expectException(AvailabilityUpdateFailed::class);
     
         $startDate = strtotime('2025-03-04'); // A Tuesday
-        $weekday = 4; // Tuesday
         $dayoffData = [
             [
                 "id" => "302",
@@ -102,9 +101,9 @@ class AvailabilityUpdateTest extends Base
         $input['endDate'] = $startDate;
         $input['startTime'] = "14:00:00";
         $input['endTime'] = "17:40:00";
-        $input['weekday'] = array_combine(
+        $input['weekday'] = array_fill_keys(
             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+            '1'
         );
         $input['bookable'] = [
             'startInDays' => 0,
@@ -140,9 +139,9 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "14:00:00",
                         "endTime" => "17:40:00",
                         "kind" => "default",
-                        "weekday" => array_combine(
+                        "weekday" => array_fill_keys(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                            '1'
                         ),
                         "bookable" => [
                             'startInDays' => 0,
@@ -167,9 +166,9 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "15:00:00",
                         "endTime" => "17:40:00",
                         "kind" => "default",
-                        "weekday" => array_combine(
+                        "weekday" => array_fill_keys(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                            '1'
                         ),
                         "bookable" => [
                             'startInDays' => 0,
@@ -198,7 +197,6 @@ class AvailabilityUpdateTest extends Base
         $this->expectException(AvailabilityUpdateFailed::class);
     
         $startDate = strtotime('2025-03-04'); // A Tuesday
-        $weekday = 4; // Tuesday
         $dayoffData = [
             [
                 "id" => "302",
@@ -214,9 +212,9 @@ class AvailabilityUpdateTest extends Base
         $input['endDate'] = $startDate;
         $input['startTime'] = "14:00:00";
         $input['endTime'] = "17:40:00";
-        $input['weekday'] = array_combine(
+        $input['weekday'] = array_fill_keys(
             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+            '1'
         );
         $input['bookable'] = [
             'startInDays' => 0,
@@ -249,9 +247,9 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "14:00:00",
                         "endTime" => "17:40:00",
                         "kind" => "default",
-                        "weekday" => array_combine(
+                        "weekday" => array_fill_keys(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                            '1'
                         ),
                         "bookable" => [
                             'startInDays' => 0,
@@ -276,9 +274,9 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "14:00:00",
                         "endTime" => "17:40:00",
                         "kind" => "default",
-                        "weekday" => array_combine(
+                        "weekday" => array_fill_keys(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                            '1'
                         ),
                         "bookable" => [
                             'startInDays' => 0,
