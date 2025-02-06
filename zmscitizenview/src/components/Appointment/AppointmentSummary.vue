@@ -60,7 +60,8 @@
           >
             <p tabindex="0">
               {{ formatTime(appointment.timestamp) }} <br />
-              {{ t("estimatedDuration") }} {{ estimatedDuration() }} {{ t("minutes") }}<br />
+              {{ t("estimatedDuration") }} {{ estimatedDuration() }}
+              {{ t("minutes") }}<br />
             </p>
           </div>
           <div class="m-content">

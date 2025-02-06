@@ -1,5 +1,9 @@
 <template>
-  <div v-if="selectedProvider && selectableProviders && selectableProviders.length > 1">
+  <div
+    v-if="
+      selectedProvider && selectableProviders && selectableProviders.length > 1
+    "
+  >
     <div class="m-component slider-no-margin">
       <div class="m-content">
         <h2 tabindex="0">{{ t("location") }}</h2>
@@ -55,7 +59,13 @@
     </div>
   </div>
   <div v-if="!error">
-    <div v-if="selectedProvider && selectableProviders && selectableProviders.length === 1">
+    <div
+      v-if="
+        selectedProvider &&
+        selectableProviders &&
+        selectableProviders.length === 1
+      "
+    >
       <div class="m-component">
         <div class="m-content">
           <h2 tabindex="0">{{ t("location") }}</h2>
@@ -107,17 +117,20 @@
       <h2 tabindex="0">{{ t("time") }}</h2>
     </div>
     <div class="m-component">
-    <muc-calendar
-      v-model="selectedDay"
-      disable-view-change
-      variant="single"
-      :allowed-dates="allowedDates"
-      :min="minDate"
-      :max="maxDate"
-      :view-month="minDate"
-    />
+      <muc-calendar
+        v-model="selectedDay"
+        disable-view-change
+        variant="single"
+        :allowed-dates="allowedDates"
+        :min="minDate"
+        :max="maxDate"
+        :view-month="minDate"
+      />
     </div>
-    <div v-if="selectedDay" class="m-component">
+    <div
+      v-if="selectedDay"
+      class="m-component"
+    >
       <div class="m-content">
         <h3 tabindex="0">{{ t("availableTimes") }}</h3>
       </div>
@@ -222,7 +235,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      :disabled="(selectedTimeslot === 0) || !selectedDay"
+      :disabled="selectedTimeslot === 0 || !selectedDay"
       icon="arrow-right"
       @click="nextStep"
     >
