@@ -101,10 +101,15 @@ class AvailabilityUpdateTest extends Base
         $input['endDate'] = $startDate;
         $input['startTime'] = "14:00:00";
         $input['endTime'] = "17:40:00";
-        $input['weekday'] = array_fill_keys(
-            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-            '1'
-        );
+        $input['weekday'] = [
+            'sunday' => '1',
+            'monday' => '2',
+            'tuesday' => '4',
+            'wednesday' => '8',
+            'thursday' => '16',
+            'friday' => '32',
+            'saturday' => '64'
+        ];
         $input['bookable'] = [
             'startInDays' => 0,
             'endInDays' => 90
@@ -139,10 +144,15 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "14:00:00",
                         "endTime" => "17:40:00",
                         "kind" => "default",
-                        "weekday" => array_fill_keys(
-                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            '1'
-                        ),
+                        "weekday" => [
+                            'sunday' => '1',
+                            'monday' => '2',
+                            'tuesday' => '4',
+                            'wednesday' => '8',
+                            'thursday' => '16',
+                            'friday' => '32',
+                            'saturday' => '64'
+                        ],
                         "bookable" => [
                             'startInDays' => 0,
                             'endInDays' => 90
@@ -166,10 +176,15 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "15:00:00",
                         "endTime" => "17:40:00",
                         "kind" => "default",
-                        "weekday" => array_fill_keys(
-                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            '1'
-                        ),
+                        "weekday" => [
+                            'sunday' => '1',
+                            'monday' => '2',
+                            'tuesday' => '4',
+                            'wednesday' => '8',
+                            'thursday' => '16',
+                            'friday' => '32',
+                            'saturday' => '64'
+                        ],
                         "bookable" => [
                             'startInDays' => 0,
                             'endInDays' => 90
@@ -212,10 +227,15 @@ class AvailabilityUpdateTest extends Base
         $input['endDate'] = $startDate;
         $input['startTime'] = "14:00:00";
         $input['endTime'] = "17:40:00";
-        $input['weekday'] = array_fill_keys(
-            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-            '1'
-        );
+        $input['weekday'] = [
+            'sunday' => '1',
+            'monday' => '2',
+            'tuesday' => '4',
+            'wednesday' => '8',
+            'thursday' => '16',
+            'friday' => '32',
+            'saturday' => '64'
+        ];
         $input['bookable'] = [
             'startInDays' => 0,
             'endInDays' => 90
@@ -235,11 +255,6 @@ class AvailabilityUpdateTest extends Base
     
         // Create second entity with exact same times
         $secondEntity = (new Query())->writeEntity($input);
-
-        error_log("****");
-        error_log(json_encode($entity));
-        error_log(json_encode($secondEntity));
-        error_log("****");
     
         $this->render([], [
             '__body' => json_encode([
@@ -252,10 +267,15 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "14:00:00",
                         "endTime" => "17:40:00",
                         "kind" => "default",
-                        "weekday" => array_fill_keys(
-                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            '1'
-                        ),
+                        "weekday" => [
+                            'sunday' => '1',
+                            'monday' => '2',
+                            'tuesday' => '4',
+                            'wednesday' => '8',
+                            'thursday' => '16',
+                            'friday' => '32',
+                            'saturday' => '64'
+                        ],
                         "bookable" => [
                             'startInDays' => 0,
                             'endInDays' => 90
@@ -279,10 +299,15 @@ class AvailabilityUpdateTest extends Base
                         "startTime" => "14:00:00",
                         "endTime" => "17:40:00",
                         "kind" => "default",
-                        "weekday" => array_fill_keys(
-                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            '1'
-                        ),
+                        "weekday" => [
+                            'sunday' => '1',
+                            'monday' => '2',
+                            'tuesday' => '4',
+                            'wednesday' => '8',
+                            'thursday' => '16',
+                            'friday' => '32',
+                            'saturday' => '64'
+                        ],
                         "bookable" => [
                             'startInDays' => 0,
                             'endInDays' => 90
