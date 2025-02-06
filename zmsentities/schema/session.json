@@ -104,7 +104,7 @@
                             "type": "string"
                         },
                         "clientTelephone": {
-                            "type": "number"
+                            "type": "string"
                         },
                         "clientAmendment": {
                             "type": "string"
