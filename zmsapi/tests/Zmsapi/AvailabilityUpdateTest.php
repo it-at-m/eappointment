@@ -237,8 +237,8 @@ class AvailabilityUpdateTest extends Base
         $secondEntity = (new Query())->writeEntity($input);
 
         error_log("****");
-        error_log($entity->getId());
-        error_log($secondEntity->getId());
+        error_log(json_encode($entity));
+        error_log(json_encode($secondEntity));
         error_log("****");
     
         $this->render([], [
