@@ -38,56 +38,76 @@ class AvailabilityConflicts extends BaseController
         } else if (!isset($input['selectedDate'])) {
             throw new BadRequestException("'selectedDate' is required.");
         }
-
+    
         $conflictedList = [];
-        
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
-
+        $weekday = (int)$selectedDateTime->format('N');
+    
         $conflictList = new \BO\Zmsentities\Collection\ProcessList();
         $overlapConflicts = $availabilityList->hasNewVsNewConflicts($selectedDateTime);
         $conflictList->addList($overlapConflicts);
     
         $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
-
         $futureAvailabilityList = self::getAvailabilityList($scope, $selectedDateTime);
-    
         foreach ($futureAvailabilityList as $futureAvailability) {
             $availabilityList->addEntity($futureAvailability);
         }
     
-        $originId = null;
-        foreach ($availabilityList as $availability) {
-            if (isset($availability->kind) && $availability->kind === 'origin' && isset($availability->id)) {
-                $originId = $availability->id;
-                break;
-            }
-        }
-    
         $filteredAvailabilityList = new AvailabilityList();
         foreach ($availabilityList as $availability) {
-            if ((!isset($availability->kind) || $availability->kind !== 'exclusion') && 
-                (!isset($availability->id) || $availability->id !== $originId)) {
+            if (!isset($availability->kind) || $availability->kind !== 'exclusion') {
                 $filteredAvailabilityList->addEntity($availability);
             }
         }
     
         [$earliestStartDateTime, $latestEndDateTime] = $filteredAvailabilityList->getDateTimeRangeFromList($selectedDateTime);
-    
         $filteredAvailabilityList = $filteredAvailabilityList->sortByCustomStringKey('endTime');
         $existingConflicts = $filteredAvailabilityList->checkAllVsExistingConflicts($earliestStartDateTime, $latestEndDateTime);
         $conflictList->addList($existingConflicts);
     
+        // Create filtered conflict list based on weekday
+        $filteredConflictList = new \BO\Zmsentities\Collection\ProcessList();
         foreach ($conflictList as $conflict) {
-            $availabilityId = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
-                $conflict->getFirstAppointment()->getAvailability()->getId() :
-                $conflict->getFirstAppointment()->getAvailability()->tempId;
-            if (!in_array($availabilityId, $conflictedList)) {
-                $conflictedList[] = $availabilityId;
+            // Get both availabilities involved in the conflict
+            $availability1 = $conflict->getFirstAppointment()->getAvailability();
+            $availability2 = null;
+            foreach ($filteredAvailabilityList as $avail) {
+                if ($avail->id === $availability1->id || 
+                    (isset($avail->tempId) && isset($availability1->tempId) && $avail->tempId === $availability1->tempId)) {
+                    $availability2 = $avail;
+                    break;
+                }
+            }
+    
+            // Check if either availability has the weekday bit set
+            $affectsSelectedDay = false;
+            $weekdayKey = strtolower(date('l', strtotime("Sunday +{$weekday} days")));
+            
+            if (isset($availability1->weekday[$weekdayKey]) && (int)$availability1->weekday[$weekdayKey] > 0) {
+                $affectsSelectedDay = true;
+            }
+            if ($availability2 && isset($availability2->weekday[$weekdayKey]) && (int)$availability2->weekday[$weekdayKey] > 0) {
+                $affectsSelectedDay = true;
+            }
+    
+            // Only keep conflicts that affect the selected day
+            if ($affectsSelectedDay) {
+                $filteredConflictList->addEntity($conflict);
+                $availabilityId = $availability1->getId() ?: $availability1->tempId;
+                if (!in_array($availabilityId, $conflictedList)) {
+                    $conflictedList[] = $availabilityId;
+                }
+                if ($availability2) {
+                    $availabilityId2 = $availability2->getId() ?: $availability2->tempId;
+                    if (!in_array($availabilityId2, $conflictedList)) {
+                        $conflictedList[] = $availabilityId2;
+                    }
+                }
             }
         }
-
+    
         usort($conflictedList, function($a, $b) {
             $aIsTemp = strpos($a, '__temp__') === 0;
             $bIsTemp = strpos($b, '__temp__') === 0;
@@ -97,7 +117,7 @@ class AvailabilityConflicts extends BaseController
         });
     
         return [
-            'conflictList' => $conflictList->toConflictListByDay(),
+            'conflictList' => $filteredConflictList->toConflictListByDay(),
             'conflictIdList' => (count($conflictedList)) ? $conflictedList : []
         ];
     }
