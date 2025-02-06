@@ -458,14 +458,14 @@ class Availability extends Schema\Entity
     public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
     {
         $errorList = [];
-        
+
         $startTime = (clone $startDate)->setTime(0, 0);
-        $startHour = (int)$startDate->format('H');
-        $endHour = (int)$endDate->format('H');
-        $startMinute = (int)$startDate->format('i');
-        $endMinute = (int)$endDate->format('i');
+        $startHour = (int) $startDate->format('H');
+        $endHour = (int) $endDate->format('H');
+        $startMinute = (int) $startDate->format('i');
+        $endMinute = (int) $endDate->format('i');
         $isFuture = ($kind && $kind === 'future');
-    
+
         if (
             !$isFuture &&
             $selectedDate->getTimestamp() > $today->getTimestamp() &&
@@ -476,13 +476,13 @@ class Availability extends Schema\Entity
                 'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
             ];
         }
-        
+
         if (
-            ($startHour === 22 && $startMinute > 0) || 
-            $startHour === 23 || 
-            $startHour === 0 || 
-            ($endHour === 22 && $endMinute > 0) || 
-            $endHour === 23 || 
+            ($startHour === 22 && $startMinute > 0) ||
+            $startHour === 23 ||
+            $startHour === 0 ||
+            ($endHour === 22 && $endMinute > 0) ||
+            $endHour === 23 ||
             $endHour === 0 ||
             ($startHour === 1 && $startMinute > 0) ||
             ($endHour === 1 && $endMinute > 0)
@@ -492,7 +492,7 @@ class Availability extends Schema\Entity
                 'message' => 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
             ];
         }
-        
+
         return $errorList;
     }
 
@@ -663,6 +663,73 @@ class Availability extends Schema\Entity
         ) ? false : true;
     }
 
+    public function validateWeekdays(\DateTimeInterface $startDate, \DateTimeInterface $endDate, array $weekday): array
+    {
+        $errorList = [];
+        
+        // Check if at least one weekday is selected
+        $hasSelectedDay = false;
+        foreach (self::$weekdayNameList as $day) {
+            if ((int)$weekday[$day] > 0) {
+                $hasSelectedDay = true;
+                break;
+            }
+        }
+        
+        if (!$hasSelectedDay) {
+            $errorList[] = [
+                'type' => 'weekdayRequired',
+                'message' => 'Mindestens ein Wochentag muss ausgewählt sein.'
+            ];
+            return $errorList;
+        }
+    
+        // Map weekday names to German
+        $germanWeekdays = [
+            'sunday' => 'Sonntag',
+            'monday' => 'Montag',
+            'tuesday' => 'Dienstag',
+            'wednesday' => 'Mittwoch',
+            'thursday' => 'Donnerstag',
+            'friday' => 'Freitag',
+            'saturday' => 'Samstag'
+        ];
+    
+        // Track which selected weekdays appear in the range
+        $selectedWeekdays = array_filter(self::$weekdayNameList, function($day) use ($weekday) {
+            return (int)$weekday[$day] > 0;
+        });
+        $foundWeekdays = [];
+    
+        // Check if dates fall on selected weekdays
+        $currentDate = clone $startDate;
+        while ($currentDate <= $endDate) {
+            $weekDayName = self::$weekdayNameList[$currentDate->format('w')];
+            if (in_array($weekDayName, $selectedWeekdays)) {
+                $foundWeekdays[] = $weekDayName;
+            }
+            $currentDate = $currentDate->modify('+1 day');
+        }
+    
+        // Check if any selected weekday doesn't appear in the range
+        $missingWeekdays = array_diff($selectedWeekdays, array_unique($foundWeekdays));
+        if (!empty($missingWeekdays)) {
+            $germanMissingWeekdays = array_map(function($day) use ($germanWeekdays) {
+                return $germanWeekdays[$day];
+            }, $missingWeekdays);
+    
+            $errorList[] = [
+                'type' => 'invalidWeekday',
+                'message' => sprintf(
+                    'Die ausgewählten Wochentage (%s) kommen im gewählten Zeitraum nicht vor.',
+                    implode(', ', $germanMissingWeekdays)
+                )
+            ];
+        }
+    
+        return $errorList;
+    }
+
     /**
      * Get overlaps on daytime
      * This functions does not check, if two availabilities are openend on the same day!
@@ -788,7 +855,7 @@ class Availability extends Schema\Entity
             $date1End = $this->getEndDateTime()->setTime(23, 59);
             $date2Start = $availability->getStartDateTime()->setTime(0, 0);
             $date2End = $availability->getEndDateTime()->setTime(23, 59);
-    
+
             // Only check time overlap if the dates overlap
             if ($date1Start <= $date2End && $date2Start <= $date1End) {
                 $processTemplate = new Process();
@@ -796,21 +863,21 @@ class Availability extends Schema\Entity
                 $appointment = $processTemplate->getFirstAppointment();
                 $appointment->availability = $this;
                 $appointment->date = $this->getStartDateTime()->getTimestamp();
-    
+
                 $existingDateRange = $this->getStartDateTime()->format('d.m.Y') . ' - ' . $this->getEndDateTime()->format('d.m.Y');
                 $newDateRange = $availability->getStartDateTime()->format('d.m.Y') . ' - ' . $availability->getEndDateTime()->format('d.m.Y');
-    
+
                 $existingTimeRange = $this->getStartDateTime()->format('H:i') . ' - ' . $this->getEndDateTime()->format('H:i');
                 $newTimeRange = $availability->getStartDateTime()->format('H:i') . ' - ' . $availability->getEndDateTime()->format('H:i');
-    
+
                 // Compare exact times without seconds
                 $time1Start = strtotime($this->startTime);
                 $time1End = strtotime($this->endTime);
                 $time2Start = strtotime($availability->startTime);
                 $time2End = strtotime($availability->endTime);
-    
+
                 $isEqual = ($time1Start === $time2Start && $time1End === $time2End);
-    
+
                 if ($isEqual) {
                     $process = clone $processTemplate;
                     $process->amendment = "Konflikt: Zwei Öffnungszeiten sind gleich.\n"
@@ -834,7 +901,7 @@ class Availability extends Schema\Entity
                 }
             }
         }
-    
+
         return $processList;
     }
 

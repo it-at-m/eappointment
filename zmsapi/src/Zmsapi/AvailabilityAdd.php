@@ -90,7 +90,8 @@ class AvailabilityAdd extends BaseController
                 $selectedDate,
                 $newAvailability->kind ?? 'default',
                 $newAvailability->bookable['startInDays'],
-                $newAvailability->bookable['endInDays']
+                $newAvailability->bookable['endInDays'],
+                $newAvailability->weekday
             );
             $validations = array_merge($validations, $currentValidation);
 
