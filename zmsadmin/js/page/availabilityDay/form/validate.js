@@ -18,6 +18,7 @@ const validate = (data, props) => {
 
     errorList.itemList.push(validateNullValues(data));
     errorList.itemList.push(validateTimestampAndTimeFormats(data));
+    errorList.itemList.push(validateWeekdays(data));
     errorList.itemList.push(validateStartTime(today, tomorrow, selectedDate, data));
     errorList.itemList.push(validateEndTime(today, yesterday, selectedDate, data));
     errorList.itemList.push(validateOriginEndTime(today, yesterday, selectedDate, data));
@@ -33,6 +34,74 @@ const validate = (data, props) => {
         errorList
     };
 };
+
+function validateWeekdays(data) {
+    let errorList = [];
+    
+    // Ensure weekday object exists
+    if (!data.weekday) {
+        errorList.push({
+            type: 'weekdayRequired',
+            message: 'Mindestens ein Wochentag muss ausgewählt sein.'
+        });
+        return errorList;
+    }
+    
+    // Check if at least one weekday is selected using bitmap values
+    const hasSelectedDay = Object.values(data.weekday)
+        .some(value => parseInt(value || '0') > 0);
+    
+    if (!hasSelectedDay) {
+        errorList.push({
+            type: 'weekdayRequired',
+            message: 'Mindestens ein Wochentag muss ausgewählt sein.'
+        });
+        return errorList;
+    }
+
+    const weekdayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const germanWeekdays = {
+        'sunday': 'Sonntag',
+        'monday': 'Montag',
+        'tuesday': 'Dienstag',
+        'wednesday': 'Mittwoch',
+        'thursday': 'Donnerstag',
+        'friday': 'Freitag',
+        'saturday': 'Samstag'
+    };
+
+    // Track which selected weekdays appear in the range
+    const selectedWeekdays = weekdayNames.filter(day => parseInt(data.weekday[day] || '0') > 0);
+    const foundWeekdays = new Set();
+
+    // Check if dates fall on selected weekdays
+    const startDate = moment.unix(data.startDate);
+    const endDate = moment.unix(data.endDate);
+    const currentDate = startDate.clone();
+
+    while (currentDate <= endDate) {
+        const dayIndex = currentDate.day();
+        const weekDayName = weekdayNames[dayIndex];
+        const weekdayValue = parseInt(data.weekday[weekDayName] || '0');
+        
+        if (weekdayValue > 0) {
+            foundWeekdays.add(weekDayName);
+        }
+    
+        currentDate.add(1, 'day');
+    }
+
+    // Check if any selected weekday doesn't appear in the range
+    const unusedWeekdays = selectedWeekdays.filter(day => !foundWeekdays.has(day));
+    if (unusedWeekdays.length > 0) {
+        errorList.push({
+            type: 'invalidWeekday',
+            message: `Die ausgewählten Wochentage (${unusedWeekdays.map(day => germanWeekdays[day]).join(', ')}) kommen im gewählten Zeitraum nicht vor.`
+        });
+    }
+
+    return errorList;
+}
 
 function validateNullValues(data) {
     let errorList = [];
