@@ -85,8 +85,8 @@ class AvailabilityUpdateTest extends Base
         $this->setWorkstation();
         $this->expectException(AvailabilityUpdateFailed::class);
     
-        $startDate = time() + (2 * 24 * 60 * 60);
-        $weekday = (int)date('N', $startDate);
+        $startDate = strtotime('2025-03-04'); // A Tuesday
+        $weekday = 4; // Tuesday
         $dayoffData = [
             [
                 "id" => "302",
@@ -99,31 +99,38 @@ class AvailabilityUpdateTest extends Base
         // Create first entity
         $input = (new Entity)->createExample();
         $input['startDate'] = $startDate;
-        $input['endDate'] = $startDate + (24 * 60 * 60);
-        $input['startTime'] = "09:00:00";
-        $input['endTime'] = "17:00:00";
+        $input['endDate'] = $startDate;
+        $input['startTime'] = "14:00:00";
+        $input['endTime'] = "17:40:00";
         $input['weekday'] = array_combine(
             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
             array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
         );
         $input['bookable'] = [
             'startInDays' => 0,
-            'endInDays' => 60
+            'endInDays' => 90
         ];
         $input['scope'] = [
-            "id" => 312,
+            "id" => 392,
             "dayoff" => $dayoffData
         ];
         $input['kind'] = "default";
+        $input['slotTimeInMinutes'] = 5;
+        $input['allexWochen'] = 0;
+        $input['jedexteWoche'] = 0;
+        $input['workstationCount'] = [
+            'public' => 6,
+            'callcenter' => 6,
+            'intern' => 0
+        ];
         $entity = (new Query())->writeEntity($input);
     
-        // Create second entity
+        // Create second entity with overlapping time
         $secondInput = $input;
-        $secondInput['startTime'] = "10:00:00";
-        $secondInput['endTime'] = "18:00:00";
+        $secondInput['startTime'] = "15:00:00";
+        $secondInput['endTime'] = "17:40:00";
         $secondEntity = (new Query())->writeEntity($secondInput);
     
-        // Try to update both entities with overlapping times
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
@@ -131,9 +138,9 @@ class AvailabilityUpdateTest extends Base
                         "id" => $entity->getId(),
                         "description" => "Overlapping Entry 1",
                         "startDate" => $startDate,
-                        "endDate" => $startDate + (24 * 60 * 60),
-                        "startTime" => "09:00:00",
-                        "endTime" => "17:00:00",
+                        "endDate" => $startDate,
+                        "startTime" => "14:00:00",
+                        "endTime" => "17:40:00",
                         "kind" => "default",
                         "weekday" => array_combine(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
@@ -141,20 +148,28 @@ class AvailabilityUpdateTest extends Base
                         ),
                         "bookable" => [
                             'startInDays' => 0,
-                            'endInDays' => 60
+                            'endInDays' => 90
                         ],
                         "scope" => [
-                            "id" => 312,
+                            "id" => 392,
                             "dayoff" => $dayoffData
+                        ],
+                        "slotTimeInMinutes" => 5,
+                        "allexWochen" => 0,
+                        "jedexteWoche" => 0,
+                        "workstationCount" => [
+                            'public' => 6,
+                            'callcenter' => 6,
+                            'intern' => 0
                         ]
                     ],
                     [
                         "id" => $secondEntity->getId(),
                         "description" => "Overlapping Entry 2",
                         "startDate" => $startDate,
-                        "endDate" => $startDate + (24 * 60 * 60),
-                        "startTime" => "10:00:00",
-                        "endTime" => "18:00:00",
+                        "endDate" => $startDate,
+                        "startTime" => "15:00:00",
+                        "endTime" => "17:40:00",
                         "kind" => "default",
                         "weekday" => array_combine(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
@@ -162,11 +177,19 @@ class AvailabilityUpdateTest extends Base
                         ),
                         "bookable" => [
                             'startInDays' => 0,
-                            'endInDays' => 60
+                            'endInDays' => 90
                         ],
                         "scope" => [
-                            "id" => 312,
+                            "id" => 392,
                             "dayoff" => $dayoffData
+                        ],
+                        "slotTimeInMinutes" => 5,
+                        "allexWochen" => 0,
+                        "jedexteWoche" => 0,
+                        "workstationCount" => [
+                            'public' => 6,
+                            'callcenter' => 6,
+                            'intern' => 0
                         ]
                     ]
                 ],
@@ -180,8 +203,8 @@ class AvailabilityUpdateTest extends Base
         $this->setWorkstation();
         $this->expectException(AvailabilityUpdateFailed::class);
     
-        $startDate = time() + (3 * 24 * 60 * 60);
-        $weekday = (int)date('N', $startDate);
+        $startDate = strtotime('2025-03-04'); // A Tuesday
+        $weekday = 4; // Tuesday
         $dayoffData = [
             [
                 "id" => "302",
@@ -194,28 +217,35 @@ class AvailabilityUpdateTest extends Base
         // Create first entity
         $input = (new Entity)->createExample();
         $input['startDate'] = $startDate;
-        $input['endDate'] = $startDate + (24 * 60 * 60);
-        $input['startTime'] = "09:00:00";
-        $input['endTime'] = "17:00:00";
+        $input['endDate'] = $startDate;
+        $input['startTime'] = "14:00:00";
+        $input['endTime'] = "17:40:00";
         $input['weekday'] = array_combine(
             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
             array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
         );
         $input['bookable'] = [
             'startInDays' => 0,
-            'endInDays' => 60
+            'endInDays' => 90
         ];
         $input['scope'] = [
-            "id" => 312,
+            "id" => 392,
             "dayoff" => $dayoffData
         ];
         $input['kind'] = "default";
+        $input['slotTimeInMinutes'] = 5;
+        $input['allexWochen'] = 0;
+        $input['jedexteWoche'] = 0;
+        $input['workstationCount'] = [
+            'public' => 6,
+            'callcenter' => 6,
+            'intern' => 0
+        ];
         $entity = (new Query())->writeEntity($input);
     
-        // Create second entity with same times
+        // Create second entity with exact same times
         $secondEntity = (new Query())->writeEntity($input);
     
-        // Try to update both entities with same times
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
@@ -223,9 +253,9 @@ class AvailabilityUpdateTest extends Base
                         "id" => $entity->getId(),
                         "description" => "Duplicate Entry 1",
                         "startDate" => $startDate,
-                        "endDate" => $startDate + (24 * 60 * 60),
-                        "startTime" => "09:00:00",
-                        "endTime" => "17:00:00",
+                        "endDate" => $startDate,
+                        "startTime" => "14:00:00",
+                        "endTime" => "17:40:00",
                         "kind" => "default",
                         "weekday" => array_combine(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
@@ -233,20 +263,28 @@ class AvailabilityUpdateTest extends Base
                         ),
                         "bookable" => [
                             'startInDays' => 0,
-                            'endInDays' => 60
+                            'endInDays' => 90
                         ],
                         "scope" => [
-                            "id" => 312,
+                            "id" => 392,
                             "dayoff" => $dayoffData
+                        ],
+                        "slotTimeInMinutes" => 5,
+                        "allexWochen" => 0,
+                        "jedexteWoche" => 0,
+                        "workstationCount" => [
+                            'public' => 6,
+                            'callcenter' => 6,
+                            'intern' => 0
                         ]
                     ],
                     [
                         "id" => $secondEntity->getId(),
                         "description" => "Duplicate Entry 2",
                         "startDate" => $startDate,
-                        "endDate" => $startDate + (24 * 60 * 60),
-                        "startTime" => "09:00:00",
-                        "endTime" => "17:00:00",
+                        "endDate" => $startDate,
+                        "startTime" => "14:00:00",
+                        "endTime" => "17:40:00",
                         "kind" => "default",
                         "weekday" => array_combine(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
@@ -254,11 +292,19 @@ class AvailabilityUpdateTest extends Base
                         ),
                         "bookable" => [
                             'startInDays' => 0,
-                            'endInDays' => 60
+                            'endInDays' => 90
                         ],
                         "scope" => [
-                            "id" => 312,
+                            "id" => 392,
                             "dayoff" => $dayoffData
+                        ],
+                        "slotTimeInMinutes" => 5,
+                        "allexWochen" => 0,
+                        "jedexteWoche" => 0,
+                        "workstationCount" => [
+                            'public' => 6,
+                            'callcenter' => 6,
+                            'intern' => 0
                         ]
                     ]
                 ],
