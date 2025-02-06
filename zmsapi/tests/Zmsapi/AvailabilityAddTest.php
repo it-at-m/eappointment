@@ -51,66 +51,116 @@ class AvailabilityAddTest extends Base
     {
         $this->setWorkstation();
         $this->expectException(AvailabilityAddFailed::class);
-
+    
+        $startDate = time() + (2 * 24 * 60 * 60);
+        $weekday = (int)date('N', $startDate);
+        $dayoffData = [
+            [
+                "id" => "302",
+                "date" => 1458860400,
+                "lastChange" => 1566566540,
+                "name" => "Karfreitag"
+            ]
+        ];
+    
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
                     [
                         "id" => 21202,
                         "description" => "Overlapping Entry 1",
-                        "startDate" => time() + (2 * 24 * 60 * 60),
-                        "endDate" => time() + (3 * 24 * 60 * 60),
+                        "startDate" => $startDate,
+                        "endDate" => $startDate + (24 * 60 * 60),
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
                         "kind" => "default",
-                        "scope" => ["id" => 312]
+                        "weekday" => array_combine(
+                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                        ),
+                        "scope" => [
+                            "id" => 312,
+                            "dayoff" => $dayoffData
+                        ]
                     ],
                     [
                         "id" => 21203,
                         "description" => "Overlapping Entry 2",
-                        "startDate" => time() + (2 * 24 * 60 * 60),
-                        "endDate" => time() + (3 * 24 * 60 * 60),
+                        "startDate" => $startDate,
+                        "endDate" => $startDate + (24 * 60 * 60),
                         "startTime" => "10:00:00",
                         "endTime" => "18:00:00",
                         "kind" => "default",
-                        "scope" => ["id" => 312]
+                        "weekday" => array_combine(
+                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                        ),
+                        "scope" => [
+                            "id" => 312,
+                            "dayoff" => $dayoffData
+                        ]
                     ]
                 ],
-                'selectedDate' => date('Y-m-d')
+                'selectedDate' => date('Y-m-d', $startDate)
             ])
         ], []);
     }
-
+    
     public function testDuplicateOverlappingAvailability()
     {
         $this->setWorkstation();
         $this->expectException(AvailabilityAddFailed::class);
-
+    
+        $startDate = time() + (3 * 24 * 60 * 60);
+        $weekday = (int)date('N', $startDate);
+        $dayoffData = [
+            [
+                "id" => "302",
+                "date" => 1458860400,
+                "lastChange" => 1566566540,
+                "name" => "Karfreitag"
+            ]
+        ];
+    
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
                     [
                         "id" => 21202,
                         "description" => "Duplicate Entry 1",
-                        "startDate" => time() + (3 * 24 * 60 * 60),
-                        "endDate" => time() + (4 * 24 * 60 * 60),
+                        "startDate" => $startDate,
+                        "endDate" => $startDate + (24 * 60 * 60),
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
                         "kind" => "default",
-                        "scope" => ["id" => 312]
+                        "weekday" => array_combine(
+                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                        ),
+                        "scope" => [
+                            "id" => 312,
+                            "dayoff" => $dayoffData
+                        ]
                     ],
                     [
                         "id" => 21203,
                         "description" => "Duplicate Entry 2",
-                        "startDate" => time() + (3 * 24 * 60 * 60),
-                        "endDate" => time() + (4 * 24 * 60 * 60),
+                        "startDate" => $startDate,
+                        "endDate" => $startDate + (24 * 60 * 60),
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
                         "kind" => "default",
-                        "scope" => ["id" => 312]
+                        "weekday" => array_combine(
+                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                        ),
+                        "scope" => [
+                            "id" => 312,
+                            "dayoff" => $dayoffData
+                        ]
                     ]
                 ],
-                'selectedDate' => date('Y-m-d')
+                'selectedDate' => date('Y-m-d', $startDate)
             ])
         ], []);
     }
