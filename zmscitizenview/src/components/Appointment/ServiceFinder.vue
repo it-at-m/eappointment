@@ -198,7 +198,10 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
         return;
       }
 
-      if (!providers || providers.find(prov => prov == foundOffice.id.toString())) {
+      if (
+        !providers ||
+        providers.find((prov) => prov == foundOffice.id.toString())
+      ) {
         foundOffice.slots = relation.slots;
         officesAtService.push(foundOffice);
       }
@@ -266,8 +269,11 @@ const skipSubservices = () => {
 
 onMounted(() => {
   if (service.value) {
-    countOfService.value = service.value.count ? service.value.count : countOfService.value;
-    currentSlots.value = getMinSlotOfProvider(service.value.providers) * countOfService.value;
+    countOfService.value = service.value.count
+      ? service.value.count
+      : countOfService.value;
+    currentSlots.value =
+      getMinSlotOfProvider(service.value.providers) * countOfService.value;
   } else {
     fetchServicesAndProviders(
       props.preselectedServiceId ?? undefined,
@@ -284,7 +290,6 @@ onMounted(() => {
       }
     });
   }
-
 });
 </script>
 
