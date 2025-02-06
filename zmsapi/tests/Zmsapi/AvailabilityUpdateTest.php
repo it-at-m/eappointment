@@ -116,8 +116,6 @@ class AvailabilityUpdateTest extends Base
         ];
         $input['kind'] = "default";
         $input['slotTimeInMinutes'] = 5;
-        $input['allexWochen'] = 0;
-        $input['jedexteWoche'] = 0;
         $input['workstationCount'] = [
             'public' => 6,
             'callcenter' => 6,
@@ -155,8 +153,6 @@ class AvailabilityUpdateTest extends Base
                             "dayoff" => $dayoffData
                         ],
                         "slotTimeInMinutes" => 5,
-                        "allexWochen" => 0,
-                        "jedexteWoche" => 0,
                         "workstationCount" => [
                             'public' => 6,
                             'callcenter' => 6,
@@ -184,8 +180,6 @@ class AvailabilityUpdateTest extends Base
                             "dayoff" => $dayoffData
                         ],
                         "slotTimeInMinutes" => 5,
-                        "allexWochen" => 0,
-                        "jedexteWoche" => 0,
                         "workstationCount" => [
                             'public' => 6,
                             'callcenter' => 6,
@@ -234,8 +228,6 @@ class AvailabilityUpdateTest extends Base
         ];
         $input['kind'] = "default";
         $input['slotTimeInMinutes'] = 5;
-        $input['allexWochen'] = 0;
-        $input['jedexteWoche'] = 0;
         $input['workstationCount'] = [
             'public' => 6,
             'callcenter' => 6,
@@ -270,8 +262,6 @@ class AvailabilityUpdateTest extends Base
                             "dayoff" => $dayoffData
                         ],
                         "slotTimeInMinutes" => 5,
-                        "allexWochen" => 0,
-                        "jedexteWoche" => 0,
                         "workstationCount" => [
                             'public' => 6,
                             'callcenter' => 6,
@@ -299,8 +289,6 @@ class AvailabilityUpdateTest extends Base
                             "dayoff" => $dayoffData
                         ],
                         "slotTimeInMinutes" => 5,
-                        "allexWochen" => 0,
-                        "jedexteWoche" => 0,
                         "workstationCount" => [
                             'public' => 6,
                             'callcenter' => 6,
