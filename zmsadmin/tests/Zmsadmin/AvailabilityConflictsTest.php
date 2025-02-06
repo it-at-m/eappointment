@@ -2243,4 +2243,194 @@ class AvailabilityConflictsTest extends Base
         $this->assertStringContainsString('"conflictIdList":["81871","__temp__0","__temp__1"]', (string) $response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testNoConflictsOnWednesday()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/availability/',
+                'parameters' => [
+                    'resolveReferences' => 0,
+                    'startDate' => '2025-02-05'  // A Wednesday
+                ],
+                'response' => $this->readFixture("GET_availability_68985.json")
+            ]
+        ]);
+    
+        $response = $this->render([], [
+            '__body' => '{
+                "selectedDate": "2025-02-05",
+                "availabilityList": [
+                    {
+                        "id": "8336",
+                        "weekday": {
+                            "sunday": "0",
+                            "monday": "0",
+                            "tuesday": "4",
+                            "wednesday": "0",
+                            "thursday": "0",
+                            "friday": "0",
+                            "saturday": "0"
+                        },
+                        "startDate": 1729548000,
+                        "endDate": 1751234400,
+                        "startTime": "14:00:00",
+                        "endTime": "17:40:00",
+                        "type": "appointment",
+                        "scope": {
+                            "id": "141",
+                            "dayoff": [
+                                {
+                                    "id": "302",
+                                    "date": 1458860400,
+                                    "lastChange": 1566566540,
+                                    "name": "Karfreitag"
+                                },
+                                {
+                                    "id": "303",
+                                    "date": 1459116000,
+                                    "lastChange": 1566566540,
+                                    "name": "Ostermontag"
+                                }
+                            ]                            
+                        }
+                    },
+                    {
+                        "id": "8351",
+                        "weekday": {
+                            "sunday": "0",
+                            "monday": "0",
+                            "tuesday": "4",
+                            "wednesday": "0",
+                            "thursday": "0",
+                            "friday": "0",
+                            "saturday": "0"
+                        },
+                        "startDate": 1729548000,
+                        "endDate": 1751234400,
+                        "startTime": "14:00:00",
+                        "endTime": "17:40:00",
+                        "type": "appointment",
+                        "scope": {
+                            "id": "141",
+                            "dayoff": [
+                                {
+                                    "id": "302",
+                                    "date": 1458860400,
+                                    "lastChange": 1566566540,
+                                    "name": "Karfreitag"
+                                },
+                                {
+                                    "id": "303",
+                                    "date": 1459116000,
+                                    "lastChange": 1566566540,
+                                    "name": "Ostermontag"
+                                }
+                            ]                            
+                        }
+                    }
+                ]
+            }'
+        ], [], 'POST');
+    
+        $this->assertStringContainsString('"conflictList":[]', (string)$response->getBody());
+        $this->assertStringContainsString('"conflictIdList":[]', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+    
+    public function testConflictsOnTuesday()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/availability/',
+                'parameters' => [
+                    'resolveReferences' => 0,
+                    'startDate' => '2025-02-04'  // A Tuesday
+                ],
+                'response' => $this->readFixture("GET_availability_68985.json")
+            ]
+        ]);
+    
+        $response = $this->render([], [
+            '__body' => '{
+                "selectedDate": "2025-02-04",
+                "availabilityList": [
+                    {
+                        "id": "8336",
+                        "weekday": {
+                            "sunday": "0",
+                            "monday": "0",
+                            "tuesday": "4",
+                            "wednesday": "0",
+                            "thursday": "0",
+                            "friday": "0",
+                            "saturday": "0"
+                        },
+                        "startDate": 1729548000,
+                        "endDate": 1751234400,
+                        "startTime": "14:00:00",
+                        "endTime": "17:40:00",
+                        "type": "appointment",
+                        "scope": {
+                            "id": "141",
+                            "dayoff": [
+                                {
+                                    "id": "302",
+                                    "date": 1458860400,
+                                    "lastChange": 1566566540,
+                                    "name": "Karfreitag"
+                                },
+                                {
+                                    "id": "303",
+                                    "date": 1459116000,
+                                    "lastChange": 1566566540,
+                                    "name": "Ostermontag"
+                                }
+                            ]                            
+                        }
+                    },
+                    {
+                        "id": "8351",
+                        "weekday": {
+                            "sunday": "0",
+                            "monday": "0",
+                            "tuesday": "4",
+                            "wednesday": "0",
+                            "thursday": "0",
+                            "friday": "0",
+                            "saturday": "0"
+                        },
+                        "startDate": 1729548000,
+                        "endDate": 1751234400,
+                        "startTime": "14:00:00",
+                        "endTime": "17:40:00",
+                        "type": "appointment",
+                        "scope": {
+                            "id": "141",
+                            "dayoff": [
+                                {
+                                    "id": "302",
+                                    "date": 1458860400,
+                                    "lastChange": 1566566540,
+                                    "name": "Karfreitag"
+                                },
+                                {
+                                    "id": "303",
+                                    "date": 1459116000,
+                                    "lastChange": 1566566540,
+                                    "name": "Ostermontag"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }'
+        ], [], 'POST');
+    
+        $this->assertStringContainsString('"conflictIdList":["8336","8351"]', (string)$response->getBody());
+        $this->assertNotEquals('[]', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }
