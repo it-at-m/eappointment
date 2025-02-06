@@ -235,6 +235,11 @@ class AvailabilityUpdateTest extends Base
     
         // Create second entity with exact same times
         $secondEntity = (new Query())->writeEntity($input);
+
+        error_log("****");
+        error_log($entity->getId());
+        error_log($secondEntity->getId());
+        error_log("****");
     
         $this->render([], [
             '__body' => json_encode([
