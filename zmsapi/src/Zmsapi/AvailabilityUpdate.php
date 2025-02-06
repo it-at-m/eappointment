@@ -86,10 +86,10 @@ class AvailabilityUpdate extends BaseController
 
         $validations = [];
         foreach ($newCollection as $newAvailability) {
-            $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate)->format('Y-m-d');
-            $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate)->format('Y-m-d');
-            $startDateTime = new \DateTimeImmutable("{$startDate} {$newAvailability->startTime}");
-            $endDateTime = new \DateTimeImmutable("{$endDate} {$newAvailability->endTime}");
+            $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate);
+            $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate);
+            $startDateTime = new \DateTimeImmutable("{$startDate->format('Y-m-d')} {$newAvailability->startTime}");
+            $endDateTime = new \DateTimeImmutable("{$endDate->format('Y-m-d')} {$newAvailability->endTime}");
             
             $currentValidation = $mergedCollection->validateInputs(
                 $startDateTime,
