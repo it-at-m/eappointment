@@ -106,6 +106,10 @@ class AvailabilityUpdateTest extends Base
             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
             array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
         );
+        $input['bookable'] = [
+            'startInDays' => 0,
+            'endInDays' => 60
+        ];
         $input['scope'] = [
             "id" => 312,
             "dayoff" => $dayoffData
@@ -119,6 +123,7 @@ class AvailabilityUpdateTest extends Base
         $secondInput['endTime'] = "18:00:00";
         $secondEntity = (new Query())->writeEntity($secondInput);
     
+        // Try to update both entities with overlapping times
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
@@ -134,6 +139,10 @@ class AvailabilityUpdateTest extends Base
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
                             array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
                         ),
+                        "bookable" => [
+                            'startInDays' => 0,
+                            'endInDays' => 60
+                        ],
                         "scope" => [
                             "id" => 312,
                             "dayoff" => $dayoffData
@@ -151,6 +160,10 @@ class AvailabilityUpdateTest extends Base
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
                             array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
                         ),
+                        "bookable" => [
+                            'startInDays' => 0,
+                            'endInDays' => 60
+                        ],
                         "scope" => [
                             "id" => 312,
                             "dayoff" => $dayoffData
@@ -188,6 +201,10 @@ class AvailabilityUpdateTest extends Base
             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
             array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
         );
+        $input['bookable'] = [
+            'startInDays' => 0,
+            'endInDays' => 60
+        ];
         $input['scope'] = [
             "id" => 312,
             "dayoff" => $dayoffData
@@ -198,6 +215,7 @@ class AvailabilityUpdateTest extends Base
         // Create second entity with same times
         $secondEntity = (new Query())->writeEntity($input);
     
+        // Try to update both entities with same times
         $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
@@ -213,6 +231,10 @@ class AvailabilityUpdateTest extends Base
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
                             array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
                         ),
+                        "bookable" => [
+                            'startInDays' => 0,
+                            'endInDays' => 60
+                        ],
                         "scope" => [
                             "id" => 312,
                             "dayoff" => $dayoffData
@@ -230,6 +252,10 @@ class AvailabilityUpdateTest extends Base
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
                             array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
                         ),
+                        "bookable" => [
+                            'startInDays' => 0,
+                            'endInDays' => 60
+                        ],
                         "scope" => [
                             "id" => 312,
                             "dayoff" => $dayoffData
