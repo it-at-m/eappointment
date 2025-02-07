@@ -168,6 +168,8 @@ The branch name must match the following regular expression:
 
 ## Screenshot
 ![screenshot](https://github.com/user-attachments/assets/54d360e9-c47b-4f3c-b849-5966a8766af9)
+![combined_image](https://github.com/user-attachments/assets/87902e60-fe90-48a0-bf60-c5edec210dc9)
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
