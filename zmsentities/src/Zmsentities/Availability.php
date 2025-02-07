@@ -849,7 +849,7 @@ class Availability extends Schema\Entity
     Case 16 | 09:00-09:00 09:00-09:00 |      No       |        Yes
     */
 
-    protected function getWeekdayNames(): string
+    public function getWeekdayNames(): string
     {
         $germanWeekdays = [
             'sunday' => 'Sonntag',
