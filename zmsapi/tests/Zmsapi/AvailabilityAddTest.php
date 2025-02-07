@@ -13,6 +13,7 @@ class AvailabilityAddTest extends Base
         $this->setWorkstation();
         $startDate = time() + (2 * 24 * 60 * 60); // 2 days in the future
         $weekday = strtolower(date('l', $startDate));
+        $currentTimestamp = time();
         
         $response = $this->render([], [
             '__body' => json_encode([
@@ -31,7 +32,23 @@ class AvailabilityAddTest extends Base
                                 return $day === $weekday ? '4' : '0'; 
                             }, ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'])
                         ),
-                        "scope" => ["id" => 312]
+                        "scope" => [
+                            "id" => 312,
+                            "dayoff" => [
+                                [
+                                    "id" => 35,
+                                    "date" => $currentTimestamp + (7 * 24 * 60 * 60),
+                                    "name" => "1. Mai",
+                                    "lastChange" => $currentTimestamp
+                                ],
+                                [
+                                    "id" => 36,
+                                    "date" => $currentTimestamp + (14 * 24 * 60 * 60),
+                                    "name" => "Christi Himmelfahrt",
+                                    "lastChange" => $currentTimestamp
+                                ]
+                            ]
+                        ]
                     ]
                 ],
                 'selectedDate' => date('Y-m-d', $startDate)
