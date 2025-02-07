@@ -1,8 +1,20 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import moment from 'moment'
 
 const FooterButtons = (props) => {
-    const { hasConflicts, hasErrors, stateChanged, data, onNew, onPublish, onAbort, hasSlotCountError, availabilitylist } = props;
+    const { 
+        hasConflicts, 
+        hasErrors, 
+        stateChanged, 
+        data, 
+        onNew, 
+        onPublish, 
+        onAbort, 
+        hasSlotCountError, 
+        availabilitylist,
+        selectedDate 
+    } = props;
 
     const hasNewAvailabilities = availabilitylist?.some(
         availability => availability?.tempId?.includes('__temp__')
@@ -28,13 +40,15 @@ const FooterButtons = (props) => {
         return hasOriginWithId && (hasExclusion || hasFuture);
     })();
 
+    const isPastDate = moment.unix(selectedDate).isBefore(moment(), 'day');
+
     return (
         <div className="form-actions" style={{ "marginTop": "0", "padding": "0.75em" }}>
             <button
                 title="Neue Öffnungszeit anlegen und bearbeiten"
                 className="button button--diamond button-new"
                 onClick={onNew}
-                disabled={data || hasConflicts || hasSplitInProgress}
+                disabled={data || hasConflicts || hasSplitInProgress || isPastDate}
             >
                 neue Öffnungszeit
             </button>
@@ -43,7 +57,7 @@ const FooterButtons = (props) => {
                 className="button btn"
                 type="abort"
                 onClick={onAbort}
-                disabled={!stateChanged && !hasNewAvailabilities && !hasConflicts && !hasErrors}
+                disabled={(!stateChanged && !hasNewAvailabilities && !hasConflicts && !hasErrors) || isPastDate}
             >
                 Abbrechen
             </button>
@@ -53,7 +67,7 @@ const FooterButtons = (props) => {
                 type="save"
                 value="publish"
                 onClick={onPublish}
-                disabled={(!stateChanged && !hasNewAvailabilities) || hasSlotCountError || hasConflicts || hasErrors}
+                disabled={(!stateChanged && !hasNewAvailabilities) || hasSlotCountError || hasConflicts || hasErrors || isPastDate}
             >
                 Alle Änderungen aktivieren
             </button>
@@ -70,7 +84,8 @@ FooterButtons.propTypes = {
     onPublish: PropTypes.func,
     onAbort: PropTypes.func,
     hasSlotCountError: PropTypes.bool,
-    availabilitylist: PropTypes.array
+    availabilitylist: PropTypes.array,
+    selectedDate: PropTypes.number.isRequired
 }
 
 export default FooterButtons

@@ -873,6 +873,7 @@ class Availability extends Schema\Entity
     public function getTimeOverlaps(Availability $availability, \DateTimeInterface $selectedDate)
     {
         $processList = new Collection\ProcessList();
+        
         if (
             $availability->id != $this->id
             && $availability->type == $this->type
