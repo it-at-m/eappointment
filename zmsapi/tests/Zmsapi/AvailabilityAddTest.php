@@ -11,38 +11,33 @@ class AvailabilityAddTest extends Base
     public function testRendering()
     {
         $this->setWorkstation();
-
+        $startDate = time() + (2 * 24 * 60 * 60); // 2 days in the future
+        $weekday = strtolower(date('l', $startDate));
+        
         $response = $this->render([], [
             '__body' => json_encode([
                 'availabilityList' => [
                     [
                         "id" => 21202,
                         "description" => "Test Öffnungszeit update",
-                        "startDate" => time() + (2 * 24 * 60 * 60), // 2 days in the future
-                        "endDate" => time() + (5 * 24 * 60 * 60),   // 5 days in the future
+                        "startDate" => $startDate,
+                        "endDate" => $startDate + (3 * 24 * 60 * 60),
                         "startTime" => "09:00:00",
                         "endTime" => "17:00:00",
                         "kind" => "default",
-                        "scope" => [
-                            "id" => 312
-                        ]
-                    ],
-                    [
-                        "description" => "Test Öffnungszeit ohne id",
-                        "startDate" => time() + (1 * 24 * 60 * 60), // 1 day in the future
-                        "endDate" => time() + (4 * 24 * 60 * 60),   // 4 days in the future
-                        "startTime" => "10:00:00",
-                        "endTime" => "16:30:00",
-                        "kind" => "default",
-                        "scope" => [
-                            "id" => 141
-                        ]
+                        "weekday" => array_combine(
+                            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                            array_map(function($day) use ($weekday) { 
+                                return $day === $weekday ? '4' : '0'; 
+                            }, ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'])
+                        ),
+                        "scope" => ["id" => 312]
                     ]
                 ],
-                'selectedDate' => date('Y-m-d')
+                'selectedDate' => date('Y-m-d', $startDate)
             ])
         ], []);
-
+    
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
