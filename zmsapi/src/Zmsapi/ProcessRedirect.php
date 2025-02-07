@@ -55,7 +55,7 @@ class ProcessRedirect extends BaseController
         $newProcess = (new \BO\Zmsdb\Process())->redirectToScope(
             $newProcess,
             $process->scope,
-            $process->id,
+            $process->queue['number'] ?? $process->id,
             $workstation->getUseraccount()
         );
 

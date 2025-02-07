@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
@@ -20,8 +19,7 @@ class ValidationService
     private const MIN_PROCESS_ID = 1;
     private const PHONE_PATTERN = '/^\+?[1-9]\d{6,14}$/';
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
-    private const MAX_FUTURE_DAYS = 365;
-// Maximum days in the future for appointments
+    private const MAX_FUTURE_DAYS = 365; // Maximum days in the future for appointments
 
     public static function setLanguageContext(?string $language): void
     {
@@ -42,7 +40,7 @@ class ValidationService
         if ($request->getMethod() !== "GET") {
             return ['errors' => [self::getError('invalidRequest')]];
         }
-
+    
         return [];
     }
 
@@ -55,11 +53,11 @@ class ValidationService
         if ($request->getMethod() !== "POST") {
             return ['errors' => [self::getError('invalidRequest')]];
         }
-
+    
         if ($request->getParsedBody() === null) {
             return ['errors' => [self::getError('invalidRequest')]];
         }
-
+    
         return [];
     }
 
@@ -80,19 +78,26 @@ class ValidationService
         }
 
         $invalidServiceIds = array_diff($serviceIds, $availableServiceIds);
-        return empty($invalidServiceIds)
-            ? []
+        
+        return empty($invalidServiceIds) 
+            ? [] 
             : ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
     }
 
-    public static function validateGetBookableFreeDays(?int $officeId, ?int $serviceId, ?string $startDate, ?string $endDate, ?array $serviceCounts): array
-    {
+    public static function validateGetBookableFreeDays(
+        ?array $officeIds,
+        ?array $serviceIds,
+        ?string $startDate, 
+        ?string $endDate, 
+        ?array $serviceCounts
+    ): array {
         $errors = [];
-        if (!self::isValidOfficeId($officeId)) {
+
+        if (!self::isValidOfficeIds($officeIds)) {
             $errors[] = self::getError('invalidOfficeId');
         }
 
-        if (!self::isValidServiceId($serviceId)) {
+        if (!self::isValidServiceIds($serviceIds)) {
             $errors[] = self::getError('invalidServiceId');
         }
 
@@ -124,6 +129,7 @@ class ValidationService
     public static function validateGetProcessById(?int $processId, ?string $authKey): array
     {
         $errors = [];
+
         if (!self::isValidProcessId($processId)) {
             $errors[] = self::getError('invalidProcessId');
         }
@@ -135,14 +141,19 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateGetAvailableAppointments(?string $date, ?int $officeId, ?array $serviceIds, ?array $serviceCounts): array
-    {
+    public static function validateGetAvailableAppointments(
+        ?string $date, 
+        ?array $officeIds,
+        ?array $serviceIds, 
+        ?array $serviceCounts
+    ): array {
         $errors = [];
+
         if (!$date || !self::isValidDate($date)) {
             $errors[] = self::getError('invalidDate');
         }
 
-        if (!self::isValidOfficeId($officeId)) {
+        if (!self::isValidOfficeIds($officeIds)) {
             $errors[] = self::getError('invalidOfficeId');
         }
 
@@ -157,9 +168,14 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validatePostAppointmentReserve(?int $officeId, ?array $serviceIds, ?array $serviceCounts, ?int $timestamp): array
-    {
+    public static function validatePostAppointmentReserve(
+        ?int $officeId, 
+        ?array $serviceIds, 
+        ?array $serviceCounts, 
+        ?int $timestamp
+    ): array {
         $errors = [];
+
         if (!self::isValidOfficeId($officeId)) {
             $errors[] = self::getError('invalidOfficeId');
         }
@@ -179,9 +195,16 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateUpdateAppointmentInputs(?int $processId, ?string $authKey, ?string $familyName, ?string $email, ?string $telephone, ?string $customTextfield): array
-    {
+    public static function validateUpdateAppointmentInputs(
+        ?int $processId, 
+        ?string $authKey, 
+        ?string $familyName, 
+        ?string $email, 
+        ?string $telephone, 
+        ?string $customTextfield
+    ): array {
         $errors = [];
+
         if (!self::isValidProcessId($processId)) {
             $errors[] = self::getError('invalidProcessId');
         }
@@ -287,28 +310,29 @@ class ValidationService
     public static function validateServiceArrays(array $serviceIds, array $serviceCounts): array
     {
         $errors = [];
+        
         if (empty($serviceIds) || empty($serviceCounts)) {
             $errors[] = self::getError('emptyServiceArrays');
         }
-
+        
         if (count($serviceIds) !== count($serviceCounts)) {
             $errors[] = self::getError('mismatchedArrays');
         }
-
+        
         foreach ($serviceIds as $id) {
             if (!is_numeric($id)) {
                 $errors[] = self::getError('invalidServiceId');
                 break;
             }
         }
-
+        
         foreach ($serviceCounts as $count) {
             if (!is_numeric($count) || $count < 0) {
                 $errors[] = self::getError('invalidServiceCount');
                 break;
             }
         }
-
+        
         return $errors;
     }
 
@@ -324,6 +348,7 @@ class ValidationService
         $start = new DateTime($startDate);
         $end = new DateTime($endDate);
         $diff = $start->diff($end);
+        
         return $diff->days <= self::MAX_FUTURE_DAYS;
     }
 
@@ -332,14 +357,9 @@ class ValidationService
         return !empty($array) && array_filter($array, 'is_numeric') === $array;
     }
 
-    private static function isValidOfficeId(?int $officeId): bool
+    private static function isValidOfficeIds(?array $officeIds): bool
     {
-        return !empty($officeId) && $officeId > 0;
-    }
-
-    private static function isValidServiceId(?int $serviceId): bool
-    {
-        return !empty($serviceId) && $serviceId > 0;
+        return !empty($officeIds) && self::isValidNumericArray($officeIds);
     }
 
     private static function isValidScopeId(?int $scopeId): bool
@@ -400,5 +420,15 @@ class ValidationService
     private static function isValidCustomTextfield(?string $customTextfield): bool
     {
         return $customTextfield === null || (is_string($customTextfield) && strlen(trim($customTextfield)) > 0);
+    }
+
+    private static function isValidOfficeId(?int $officeId): bool
+    {
+        return !empty($officeId) && $officeId > 0;
+    }
+
+    private static function isValidServiceId(?int $serviceId): bool
+    {
+        return !empty($serviceId) && $serviceId > 0;
     }
 }

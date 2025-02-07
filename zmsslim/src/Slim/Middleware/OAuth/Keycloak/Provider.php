@@ -86,10 +86,10 @@ class Provider extends Keycloak
         $realmData = $this->getBasicOptionsFromJsonFile();
         $realmData['clientSecret'] = $config_data['credentials']['secret'];
         $realmData['authServerUrl'] = $config_data['auth-server-url'];
-        $realmData['verify'] = $config_data['ssl-verify'];
+        $realmData['verify'] = $config_data['ssl-verify'] ?? true;
         return $realmData;
     }
-
+    
     public function getBasicOptionsFromJsonFile()
     {
         $config_data = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');

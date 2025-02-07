@@ -51,6 +51,9 @@ class QueueTable extends BaseController
 
         // data refinement
         $queueList = $processList->toQueueList(\App::$now);
+        $queueList->uasort(function ($queueA, $queueB) {
+            return $queueA->arrivalTime - $queueB->arrivalTime;
+        });
         $queueListVisible = $queueList->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
         $queueListMissed = $queueList->withStatus(['missed']);
         $queueListParked = $queueList->withStatus(['parked']);
