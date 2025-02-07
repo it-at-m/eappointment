@@ -390,8 +390,8 @@ class AvailabilityDatePicker extends Component {
                                 showTimeSelectOnly
                                 dateFormat="HH:mm"
                                 timeFormat="HH:mm"
-                                timeIntervals={this.state.availability.slotTimeInMinutes <= 30 ?
-                                    this.state.availability.slotTimeInMinutes : 30}
+                                timeIntervals={this.state.availability.slotTimeInMinutes <= 10 ?
+                                    this.state.availability.slotTimeInMinutes : 10}
                                 timeCaption="Uhrzeit"
                                 minTime={this.state.minTime}
                                 maxTime={this.state.maxTime}
