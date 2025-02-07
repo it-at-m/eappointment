@@ -344,10 +344,11 @@ class AvailabilityPage extends Component {
         (startDate) ? availability.startDate = startDate : null;
         (endDate) ? availability.endDate = endDate : null;
         availability.__modified = true;
+        availability.description = (description) ? description : availability.description;
+        
         if (!availability.kind && kind != 'origin') {
             availability.tempId = tempId()
             availability.id = null
-            availability.description = (description) ? description : availability.description
             availability.kind = kind
         } else {
             availability.kind = 'origin'
@@ -359,29 +360,30 @@ class AvailabilityPage extends Component {
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
         const tomorrow = selectedDay.clone().add(1, 'days')
-
+    
         this.isCreatingExclusion = true;
-
+    
         let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ?
             parseInt(selectedDay.unix(), 10) :
             parseInt(yesterday.unix(), 10);
-
+    
         let name = availability.description;
         name = name.replaceAll('Ausnahme zu Terminserie ', '');
         name = name.replaceAll('Fortführung der Terminserie ', '');
-
+        name = name.replaceAll('Ursprüngliche Serie ', '');  // Add this to clean the name
+    
         const originAvailability = this.editExclusionAvailability(
             Object.assign({}, availability),
             null,
             endDateTimestamp,
-            null,
+            `Ursprüngliche Serie ` + name,  // Set default description for origin
             'origin'
         )
-
+    
         if (availability.startDate === selectedDay.unix()) {
             originAvailability.description = `Ausnahme zu Terminserie ` + name;
         }
-
+    
         let exclusionAvailability = originAvailability;
         if (originAvailability.startDate < selectedDay.unix()) {
             exclusionAvailability = this.editExclusionAvailability(
@@ -392,7 +394,7 @@ class AvailabilityPage extends Component {
                 'exclusion'
             )
         }
-
+    
         let futureAvailability = originAvailability;
         if (parseInt(tomorrow.unix(), 10) <= availability.endDate) {
             futureAvailability = this.editExclusionAvailability(
@@ -403,7 +405,7 @@ class AvailabilityPage extends Component {
                 'future'
             )
         }
-
+    
         this.setState(Object.assign({},
             mergeAvailabilityListIntoState(this.state, [
                 originAvailability,
