@@ -6,26 +6,120 @@ moment.locale('de')
 
 const TableBodyLayout = (props) => {
     const { onDelete, onSelect, onAbort, availabilityList, data, showAllDates } = props;
+    const [sortColumn, setSortColumn] = React.useState(null);
+    const [sortDirection, setSortDirection] = React.useState('asc');
+
+    const handleSort = (column) => {
+        if (sortColumn === column) {
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortColumn(column);
+            setSortDirection('asc');
+        }
+    };
+
+    const getSortIcon = (column) => {
+        if (sortColumn !== column) {
+            return <i className="fas fa-sort" aria-hidden="true"></i>;
+        }
+        return sortDirection === 'asc' 
+            ? <i className="fas fa-sort-up" aria-hidden="true"></i>
+            : <i className="fas fa-sort-down" aria-hidden="true"></i>;
+    };
+
+    const sortData = (data) => {
+        if (!sortColumn) return data;
+
+        return [...data].sort((a, b) => {
+            const multiplier = sortDirection === 'asc' ? 1 : -1;
+            
+            switch (sortColumn) {
+                case 'weekday':
+                    const aWeekDay = Object.keys(a.weekday).find(key => parseInt(a.weekday[key], 10) > 0) || '';
+                    const bWeekDay = Object.keys(b.weekday).find(key => parseInt(b.weekday[key], 10) > 0) || '';
+                    return multiplier * aWeekDay.localeCompare(bWeekDay);
+                
+                case 'series':
+                    const aRepeat = availabilitySeries.find(element => element.value == repeat(a.repeat))?.name || '';
+                    const bRepeat = availabilitySeries.find(element => element.value == repeat(b.repeat))?.name || '';
+                    return multiplier * aRepeat.localeCompare(bRepeat);
+                
+                case 'startDate':
+                    return multiplier * (a.startDate - b.startDate);
+                
+                case 'endDate':
+                    return multiplier * (a.endDate - b.endDate);
+                
+                case 'time':
+                    return multiplier * a.startTime.localeCompare(b.startTime);
+                
+                case 'type':
+                    const aType = availabilityTypes.find(element => element.value == a.type)?.name || '';
+                    const bType = availabilityTypes.find(element => element.value == b.type)?.name || '';
+                    return multiplier * aType.localeCompare(bType);
+                
+                case 'slot':
+                    return multiplier * (a.slotTimeInMinutes - b.slotTimeInMinutes);
+                
+                case 'workstations':
+                    const aTotal = a.workstationCount.intern + a.workstationCount.callcenter + a.workstationCount.public;
+                    const bTotal = b.workstationCount.intern + b.workstationCount.callcenter + b.workstationCount.public;
+                    return multiplier * (aTotal - bTotal);
+                
+                case 'booking':
+                    const aBooking = a.bookable.startInDays + a.bookable.endInDays;
+                    const bBooking = b.bookable.startInDays + b.bookable.endInDays;
+                    return multiplier * (aBooking - bBooking);
+                
+                case 'description':
+                    return multiplier * (a.description || '').localeCompare(b.description || '');
+                
+                default:
+                    return 0;
+            }
+        });
+    };
+
     return (
-        <div className="table-responsive-wrapper">
+        <div className="table-responsive-wrapper"> 
             <table className="table--base">
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Wochentage</th>
-                        <th>Serie</th>
-                        <th>Von</th>
-                        <th>Bis</th>
-                        <th>Uhrzeit</th>
-                        <th>Typ</th>
-                        <th>Zeitschlitz</th>
-                        <th>Arbeitsplätze</th>
-                        <th>Buchung</th>
-                        <th>Anmerkung</th>
+                        <th onClick={() => handleSort('weekday')} style={{cursor: 'pointer', whiteSpace: 'nowrap'}}>
+                            Wochentage {getSortIcon('weekday')}
+                        </th>
+                        <th onClick={() => handleSort('series')} style={{cursor: 'pointer', whiteSpace: 'nowrap'}}>
+                            Serie {getSortIcon('series')}
+                        </th>
+                        <th onClick={() => handleSort('startDate')} style={{cursor: 'pointer', whiteSpace: 'nowrap'}}>
+                            Von {getSortIcon('startDate')}
+                        </th>
+                        <th onClick={() => handleSort('endDate')} style={{cursor: 'pointer', whiteSpace: 'nowrap'}}>
+                            Bis {getSortIcon('endDate')}
+                        </th>
+                        <th onClick={() => handleSort('time')} style={{cursor: 'pointer', whiteSpace: 'nowrap'}}>
+                            Uhrzeit {getSortIcon('time')}
+                        </th>
+                        <th onClick={() => handleSort('type')} style={{cursor: 'pointer', whiteSpace: 'nowrap'}}>
+                            Typ {getSortIcon('type')}
+                        </th>
+                        <th onClick={() => handleSort('slot')} style={{cursor: 'pointer', whiteSpace: 'nowrap'}}>
+                            Zeitschlitz {getSortIcon('slot')}
+                        </th>
+                        <th onClick={() => handleSort('workstations')} style={{cursor: 'pointer', whiteSpace: 'nowrap'}}>
+                            Arbeitsplätze {getSortIcon('workstations')}
+                        </th>
+                        <th onClick={() => handleSort('booking')} style={{cursor: 'pointer', whiteSpace: 'nowrap'}}>
+                            Buchung {getSortIcon('booking')}
+                        </th>
+                        <th onClick={() => handleSort('description')} style={{cursor: 'pointer', whiteSpace: 'nowrap'}}>
+                            Anmerkung {getSortIcon('description')}
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    {renderTable(onDelete, onSelect, onAbort, availabilityList, data, showAllDates)}
+                    {renderTable(onDelete, onSelect, onAbort, sortData(availabilityList), data, showAllDates)}
                 </tbody>
             </table>
         </div>
