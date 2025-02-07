@@ -233,6 +233,7 @@ class Accordion extends Component {
                         stateChanged={this.props.stateChanged}
                         data={this.props.data}
                         availabilitylist={this.props.availabilityList}
+                        selectedDate={this.props.timestamp}
                         {...{ onNew, onPublish, onAbort }}
                     />}
                 />

@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import moment from 'moment'
 
 const FormButtons = (props) => {
     const { 
@@ -17,6 +18,7 @@ const FormButtons = (props) => {
     } = props;
     
     const disabled = ((data && (!data.id || data.__modified === true)) || hasConflicts || hasErrors || hasSlotCountError);
+    const isPastDate = moment.unix(selectedDate).isBefore(moment(), 'day');
     
     return (
         <div className="body">
@@ -28,23 +30,23 @@ const FormButtons = (props) => {
                 <button onClick={onCopy}
                     title="Öffnungszeit kopieren und bearbeiten"
                     className="button button--diamond" 
-                    disabled={disabled}>Kopieren</button>
+                    disabled={disabled || isPastDate}>Kopieren</button>
                 <button
                     onClick={onExclusion}
                     title="Ausnahme von dieser Öffnungszeit eintragen"
                     className="button button--diamond"
-                    disabled={disabled || data.endDate == selectedDate || isCreatingExclusion}
+                    disabled={disabled || data.endDate == selectedDate || isCreatingExclusion || isPastDate}
                 >
                     Ausnahme
                 </button>
                 <button onClick={onEditInFuture}
                     title="Öffnungszeit ab diesem Tag ändern"
                     className="button button--diamond" 
-                    disabled={disabled || data.startDate == selectedDate}>Ab diesem Tag ändern</button>
+                    disabled={disabled || data.startDate == selectedDate || isPastDate}>Ab diesem Tag ändern</button>
                 <button onClick={onUpdateSingle}
                     title="Öffnungszeit aktualisieren"
                     className="button button--diamond" 
-                    disabled={disabled || isCreatingExclusion}>Aktualisieren</button>
+                    disabled={disabled || isCreatingExclusion || isPastDate}>Aktualisieren</button>
             </div>
         </div>
     )
