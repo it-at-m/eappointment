@@ -24,6 +24,9 @@ class AvailabilityListByScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        if (!array_key_exists('id', $args)) {
+            throw new BadRequestException('Missing scope ID.');
+        }
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $startDate = Validator::value($request->getQueryParams()['startDate'] ?? null)->isString()->getValue();
         $endDate = Validator::value($request->getQueryParams()['endDate'] ?? null)->isString()->getValue();
