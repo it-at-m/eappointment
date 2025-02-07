@@ -78,6 +78,7 @@ class AvailabilityAdd extends BaseController
         }
 
         $validations = [];
+        error_log("here");
         foreach ($newCollection as $newAvailability) {
             $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate);
             $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate);
@@ -97,8 +98,10 @@ class AvailabilityAdd extends BaseController
 
             $mergedCollection->addEntity($newAvailability);
         }
-
+        error_log("what");
         if (count($validations) > 0) {
+            error_log(message: "failed");
+            error_log(json_encode($validations));
             throw new AvailabilityAddFailed();
         }
 

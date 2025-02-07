@@ -593,7 +593,7 @@ class AvailabilityPage extends Component {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    availabilityList: availabilitylist.filter(a => a.kind !== 'exclusion'),
+                    availabilityList: availabilitylist,
                     selectedDate: formatTimestampDate(timestamp)
                 }),
             };

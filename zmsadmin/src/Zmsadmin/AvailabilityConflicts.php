@@ -43,6 +43,24 @@ class AvailabilityConflicts extends BaseController
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
         $weekday = (int)$selectedDateTime->format('N');
+
+        $hasExclusionSplit = false;
+        $originId = null;
+        foreach ($availabilityList as $availability) {
+            if (isset($availability->kind)) {
+                if ($availability->kind === 'origin' && isset($availability->id)) {
+                    $originId = $availability->id;
+                    $hasExclusionSplit = true;
+                } else if (in_array($availability->kind, ['origin', 'exclusion', 'future'])) {
+                    $hasExclusionSplit = true;
+                } else if (in_array($availability->kind, ['origin', 'exclusion'])) {
+                    $hasExclusionSplit = true;
+                } else if (in_array($availability->kind, ['origin', 'future'])) {
+                    $hasExclusionSplit = true;
+                } 
+
+            }
+        }
     
         $conflictList = new \BO\Zmsentities\Collection\ProcessList();
         $overlapConflicts = $availabilityList->hasNewVsNewConflicts($selectedDateTime);
@@ -51,15 +69,18 @@ class AvailabilityConflicts extends BaseController
         $scopeData = $input['availabilityList'][0]['scope'];
         $scope = new \BO\Zmsentities\Scope($scopeData);
         $futureAvailabilityList = self::getAvailabilityList($scope, $selectedDateTime);
-        foreach ($futureAvailabilityList as $futureAvailability) {
-            $availabilityList->addEntity($futureAvailability);
-        }
     
         $filteredAvailabilityList = new AvailabilityList();
         foreach ($availabilityList as $availability) {
-            if (!isset($availability->kind) || $availability->kind !== 'exclusion') {
-                $filteredAvailabilityList->addEntity($availability);
+            $isSpecialKind = isset($availability->kind) && in_array($availability->kind, ['origin', 'exclusion', 'future']);
+            
+            foreach ($futureAvailabilityList as $futureAvailability) {
+                if (!$isSpecialKind || !$hasExclusionSplit || !isset($futureAvailability->id) || $futureAvailability->id !== $originId) {
+                    $filteredAvailabilityList->addEntity($futureAvailability);
+                }
             }
+            
+            $filteredAvailabilityList->addEntity($availability);
         }
     
         [$earliestStartDateTime, $latestEndDateTime] = $filteredAvailabilityList->getDateTimeRangeFromList($selectedDateTime);
@@ -67,10 +88,8 @@ class AvailabilityConflicts extends BaseController
         $existingConflicts = $filteredAvailabilityList->checkAllVsExistingConflicts($earliestStartDateTime, $latestEndDateTime);
         $conflictList->addList($existingConflicts);
     
-        // Create filtered conflict list based on weekday
         $filteredConflictList = new \BO\Zmsentities\Collection\ProcessList();
         foreach ($conflictList as $conflict) {
-            // Get both availabilities involved in the conflict
             $availability1 = $conflict->getFirstAppointment()->getAvailability();
             $availability2 = null;
             foreach ($filteredAvailabilityList as $avail) {
@@ -81,7 +100,6 @@ class AvailabilityConflicts extends BaseController
                 }
             }
     
-            // Check if either availability has the weekday bit set
             $affectsSelectedDay = false;
             $weekdayKey = strtolower(date('l', strtotime("Sunday +{$weekday} days")));
             
@@ -92,7 +110,6 @@ class AvailabilityConflicts extends BaseController
                 $affectsSelectedDay = true;
             }
     
-            // Only keep conflicts that affect the selected day
             if ($affectsSelectedDay) {
                 $filteredConflictList->addEntity($conflict);
                 $availabilityId = $availability1->getId() ?: $availability1->tempId;

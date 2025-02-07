@@ -344,17 +344,16 @@ function validateType(data) {
 
 function validateSlotTime(data) {
     let errorList = []
-    const startTime = moment(data.startDate, 'X');
-    const startHour = data.startTime.split(':')[0]
-    const endHour = data.endTime.split(':')[0]
-    const startMinute = data.startTime.split(':')[1]
-    const endMinute = data.endTime.split(':')[1]
-    const startTimestamp = startTime.set({ h: startHour, m: startMinute }).unix();
-    const endTimestamp = startTime.set({ h: endHour, m: endMinute }).unix();
-    const slotTime = data.slotTimeInMinutes
-
-    let slotAmount = (endTimestamp - startTimestamp) / 60 % slotTime;
-    if (slotAmount > 0) {
+    
+    const startHour = parseInt(data.startTime.split(':')[0])
+    const endHour = parseInt(data.endTime.split(':')[0])
+    const startMinute = parseInt(data.startTime.split(':')[1])
+    const endMinute = parseInt(data.endTime.split(':')[1])
+    
+    const totalMinutes = ((endHour - startHour) * 60) + (endMinute - startMinute)
+    const slotTime = parseInt(data.slotTimeInMinutes)
+    
+    if (totalMinutes % slotTime > 0) {
         errorList.push({
             type: 'slotCount',
             message: 'Zeitschlitze müssen sich gleichmäßig in der Öffnungszeit aufteilen lassen.'

@@ -568,9 +568,16 @@ class Availability extends Schema\Entity
     {
         $errorList = [];
         $slotTime = $this['slotTimeInMinutes'];
-        $startTimestamp = $startDate->getTimestamp();
-        $endTimestamp = $endDate->getTimestamp();
-
+        
+        // Extract time components
+        $startHour = (int)$startDate->format('H');
+        $startMinute = (int)$startDate->format('i');
+        $endHour = (int)$endDate->format('H');
+        $endMinute = (int)$endDate->format('i');
+        
+        // Calculate total minutes
+        $totalMinutes = (($endHour - $startHour) * 60) + ($endMinute - $startMinute);
+        
         if ($slotTime === 0) {
             $errorList[] = [
                 'type' => 'slotTime',
@@ -578,15 +585,14 @@ class Availability extends Schema\Entity
             ];
             return $errorList;
         }
-
-        $slotAmount = (($endTimestamp - $startTimestamp) / 60) % $slotTime;
-        if ($slotAmount > 0) {
+    
+        if ($totalMinutes % $slotTime > 0) {
             $errorList[] = [
                 'type' => 'slotCount',
                 'message' => 'Zeitschlitze müssen sich gleichmäßig in der Öffnungszeit aufteilen lassen.'
             ];
         }
-
+    
         return $errorList;
     }
 

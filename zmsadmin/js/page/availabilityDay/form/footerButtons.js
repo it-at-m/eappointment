@@ -8,7 +8,25 @@ const FooterButtons = (props) => {
         availability => availability?.tempId?.includes('__temp__')
     );
 
-    console.log(hasConflicts);
+    const hasSplitInProgress = (() => {
+        let hasOriginWithId = false;
+        let hasExclusion = false;
+        let hasFuture = false;
+
+        availabilitylist?.forEach(availability => {
+            if (availability?.kind) {
+                if (availability.kind === 'origin' && availability.id) {
+                    hasOriginWithId = true;
+                } else if (availability.kind === 'exclusion') {
+                    hasExclusion = true;
+                } else if (availability.kind === 'future') {
+                    hasFuture = true;
+                }
+            }
+        });
+
+        return hasOriginWithId && (hasExclusion || hasFuture);
+    })();
 
     return (
         <div className="form-actions" style={{ "marginTop": "0", "padding": "0.75em" }}>
@@ -16,7 +34,7 @@ const FooterButtons = (props) => {
                 title="Neue Öffnungszeit anlegen und bearbeiten"
                 className="button button--diamond button-new"
                 onClick={onNew}
-                disabled={( data || hasConflicts)}
+                disabled={data || hasConflicts || hasSplitInProgress}
             >
                 neue Öffnungszeit
             </button>
