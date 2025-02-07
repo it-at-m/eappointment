@@ -26,7 +26,7 @@ const FormButtons = (props) => {
                 <button onClick={onDelete}
                     title="Ausgewählte Öffnungszeit löschen"
                     className="button button--destructive button-delete"
-                    disabled={disabled}>Löschen</button>
+                >Löschen</button>
                 <button onClick={onCopy}
                     title="Öffnungszeit kopieren und bearbeiten"
                     className="button button--diamond"

@@ -130,6 +130,9 @@ class AvailabilityPage extends Component {
                     if (availability.tempId) {
                         delete sendAvailability.tempId;
                     }
+                    if (sendAvailability.kind === 'new') {
+                        sendAvailability.description = 'Öffnungszeit für Terminvergabe';
+                    }
                     return {
                         ...sendAvailability,
                         kind: availability.kind || 'default',
@@ -370,13 +373,13 @@ class AvailabilityPage extends Component {
         let name = availability.description;
         name = name.replaceAll('Ausnahme zu Terminserie ', '');
         name = name.replaceAll('Fortführung der Terminserie ', '');
-        name = name.replaceAll('Ursprüngliche Serie ', '');  // Add this to clean the name
+        name = name.replaceAll('Ursprüngliche Serie ', '');
     
         const originAvailability = this.editExclusionAvailability(
             Object.assign({}, availability),
             null,
             endDateTimestamp,
-            `Ursprüngliche Serie ` + name,  // Set default description for origin
+            `Ursprüngliche Serie ` + name,
             'origin'
         )
     

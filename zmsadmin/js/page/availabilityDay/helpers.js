@@ -83,6 +83,14 @@ export const getInitialState = (props) => Object.assign({}, {
     saveType: 'save',
 }, getStateFromProps(props))
 
+const roundToSlotBoundary = (minutes, slotTimeInMinutes) => {
+    if (slotTimeInMinutes === 5) {
+        return Math.ceil(minutes / 5) * 5
+    } else {
+        return Math.ceil(minutes / 10) * 10
+    }
+}
+
 export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilities = []) => {
     const now = moment(timestamp, 'X')
     const weekday = [
@@ -109,13 +117,15 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
     const dayEndTime = moment('22:00:00', 'HH:mm:ss')
     let startTime = moment('06:00:00', 'HH:mm:ss')
     
-    // Round up to next hour if current time is after 06:00
-    if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && currentTime.isAfter(startTime)) {
-        startTime = moment(currentTime).add(1, 'hour').startOf('hour')
-    }
-
     const slotTimeInMinutes = scope.provider.data['slotTimeInMinutes'] || 20
     
+    // Round up to next slot boundary if current time is after 06:00
+    if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && currentTime.isAfter(startTime)) {
+        const currentMinutes = currentTime.hours() * 60 + currentTime.minutes()
+        const nextSlotMinutes = roundToSlotBoundary(currentMinutes, slotTimeInMinutes)
+        startTime = moment(currentTime).startOf('day').add(nextSlotMinutes, 'minutes')
+    }
+
     let endTime = moment(startTime).add(slotTimeInMinutes, 'minutes')
 
     if (endTime.isAfter(dayEndTime)) {
@@ -135,22 +145,21 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
         const firstAvail = todayAvailabilities[0]
         const firstStart = moment(firstAvail.startTime, 'HH:mm:ss')
         
-        if (!hasOverlap(startTime, endTime) && endTime.isSameOrBefore(firstStart)) {
-        } else {
-            const lastAvail = todayAvailabilities[todayAvailabilities.length - 1]
-            startTime = moment(lastAvail.endTime, 'HH:mm:ss')
+        if (hasOverlap(startTime, endTime) || endTime.isAfter(firstStart)) {
+            startTime = moment(todayAvailabilities[todayAvailabilities.length - 1].endTime, 'HH:mm:ss')
             
             if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && startTime.isBefore(currentTime)) {
-                startTime = moment(currentTime).add(1, 'hour').startOf('hour')
+                const currentMinutes = currentTime.hours() * 60 + currentTime.minutes()
+                const nextSlotMinutes = roundToSlotBoundary(currentMinutes, slotTimeInMinutes)
+                startTime = moment(currentTime).startOf('day').add(nextSlotMinutes, 'minutes')
             }
-            endTime = moment(startTime).add(slotTimeInMinutes, 'minutes')
             
+            endTime = moment(startTime).add(slotTimeInMinutes, 'minutes')
             if (endTime.isAfter(dayEndTime)) {
                 startTime = moment(dayEndTime).subtract(slotTimeInMinutes, 'minutes')
                 endTime = moment(dayEndTime)
             }
         }
-    }
 
     return {
         id: null,
