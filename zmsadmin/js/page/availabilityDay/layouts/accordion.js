@@ -25,8 +25,8 @@ class Accordion extends Component {
     }
 
     render() {
-        const hasNewAvailability = this.props.availabilityList.some(availability => 
-            (availability?.tempId?.includes('__temp__') ||
+        const hasNewAvailability = this.props.availabilityList.some(availability =>
+        (availability?.tempId?.includes('__temp__') ||
             availability?.kind === 'exclusion')
         );
 
@@ -135,18 +135,24 @@ class Accordion extends Component {
                                 className="accordion__trigger"
                                 aria-expanded={accordionExpanded}
                                 style={(() => {
-                                    switch (availability?.kind) {
-                                        case 'origin':
-                                            return { backgroundColor: '#CCE5FF' };
-                                        case 'future':
-                                            return { backgroundColor: '#94c5a2' };
-                                        case 'exclusion':
-                                            return { backgroundColor: '#FFE082' };
-                                        case 'new':
-                                            return { backgroundColor: '#F5F5DC' };
-                                        default:
-                                            return null;
+                                    // Helper function to check description text
+                                    const hasDescriptionText = (text) =>
+                                        availability?.description?.includes(text);
+
+                                    // Check both kind and description text
+                                    if (availability?.kind === 'origin' || hasDescriptionText('Ursprüngliche Serie')) {
+                                        return { backgroundColor: '#CCE5FF' };
                                     }
+                                    if (availability?.kind === 'future' || hasDescriptionText('Fortführung der Terminserie')) {
+                                        return { backgroundColor: '#94c5a2' };
+                                    }
+                                    if (availability?.kind === 'exclusion' || hasDescriptionText('Ausnahme zu Terminserie')) {
+                                        return { backgroundColor: '#FFE082' };
+                                    }
+                                    if (availability?.kind === 'new') {
+                                        return { backgroundColor: '#F5F5DC' };
+                                    }
+                                    return null;
                                 })()}
                             >
                                 <span className="accordion__title">{title}</span>
@@ -181,28 +187,35 @@ class Accordion extends Component {
                 {/* Legend */}
                 <div style={{
                     display: 'flex',
-                    justifyContent: 'center',
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '20px',
+                    gap: '10px',
                     margin: '20px 0'
                 }}>
-                    {[
-                        { color: '#F0F0F0', label: 'Standard Öffnungszeit' },
-                        { color: '#CCE5FF', label: 'Ursprüngliche Serie' },
-                        { color: '#94c5a2', label: 'Fortführung der Serie' },
-                        { color: '#FFE082', label: 'Ausnahme' },
-                        { color: '#F5F5DC', label: 'Neue Öffnungszeit' }
-                    ].map(({ color, label }) => (
-                        <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{
-                                width: '16px',
-                                height: '16px',
-                                backgroundColor: color,
-                                border: '1px solid #ccc'
-                            }} />
-                            <span>{label}</span>
-                        </div>
-                    ))}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '20px'
+                    }}>
+                        {[
+                            { color: '#F0F0F0', label: 'Nicht geänderte Öffnungszeit' },
+                            { color: '#CCE5FF', label: 'Ursprüngliche Serie' },
+                            { color: '#94c5a2', label: 'Fortführung der Serie' },
+                            { color: '#FFE082', label: 'Ausnahme' },
+                            { color: '#F5F5DC', label: 'Neue Öffnungszeit' }
+                        ].map(({ color, label }) => (
+                            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{
+                                    width: '16px',
+                                    height: '16px',
+                                    backgroundColor: color,
+                                    border: '1px solid #ccc'
+                                }} />
+                                <span>{label}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Accordion */}

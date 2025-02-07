@@ -13,7 +13,7 @@ const FormButtons = (props) => {
         hasConflicts, 
         hasErrors, 
         hasSlotCountError,
-        isCreatingExclusion  // Combined flag from Accordion
+        isCreatingExclusion
     } = props;
     
     const disabled = ((data && (!data.id || data.__modified === true)) || hasConflicts || hasErrors || hasSlotCountError);
