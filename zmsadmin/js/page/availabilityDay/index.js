@@ -7,6 +7,7 @@ import Conflicts from './conflicts'
 import TabsBar from './tabsbar'
 import GraphView from './timetable/graphview.js'
 import TableView from './timetable/tableview.js'
+import ScopeView from './timetable/scopeview.js'
 import SaveBar from './saveBar'
 import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
@@ -38,7 +39,10 @@ const tempId = (() => {
 class AvailabilityPage extends Component {
     constructor(props) {
         super(props)
-        this.state = getInitialState(props)
+        this.state = {
+            ...getInitialState(props),
+            fullAvailabilityList: null
+        }
         this.waitintervall = 1000;
         this.errorElement = null;
         this.successElement = null;
@@ -49,6 +53,33 @@ class AvailabilityPage extends Component {
         this.setSuccessRef = element => {
             this.successElement = element
         };
+    }
+
+    getAllScopeAvailabilities() {
+        const startDate = moment().startOf('year').format('YYYY-MM-DD')
+        const endDate = moment().add(1, 'year').format('YYYY-MM-DD')
+        
+        const url = `${this.props.links.includeurl}/scope/${this.props.scope.id}/availability/?startDate=${startDate}&endDate=${endDate}`
+        
+        $.ajax(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).done(response => {
+            const availabilityList = response.data ? Object.values(response.data) : [];
+            
+            this.setState({
+                fullAvailabilityList: availabilityList
+            }, () => {
+                if (availabilityList.length > 0) {
+                    this.getValidationList();
+                }
+            });
+        }).fail(err => {
+            console.error('getAllScopeAvailabilities error', err);
+        })
     }
 
     handleScrollToBottom() {
@@ -82,7 +113,6 @@ class AvailabilityPage extends Component {
         });
     }
 
-    // Add this new method
     updateDataState(newProps) {
         this.setState({
             conflicts: newProps.conflicts,
@@ -99,7 +129,6 @@ class AvailabilityPage extends Component {
         });
     }
 
-    // Modify refreshData to use the new method
     refreshData() {
         const currentDate = formatTimestampDate(this.props.timestamp)
         const url = `${this.props.links.includeurl}/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
@@ -150,11 +179,9 @@ class AvailabilityPage extends Component {
                 data: JSON.stringify(payload),
                 contentType: 'application/json'
             }).done((success) => {
-                // Update data immediately
                 this.refreshData();
                 this.getValidationList();
-
-                // Set SaveBar state with new method
+                this.getAllScopeAvailabilities();
                 this.updateSaveBarState('save', true);
 
                 if (this.successElement) {
@@ -226,11 +253,9 @@ class AvailabilityPage extends Component {
                 data: JSON.stringify(payload),
                 contentType: 'application/json'
             }).done((data) => {
-                // Update data immediately
                 this.refreshData();
                 this.getValidationList();
-
-                // Set SaveBar state with new method
+                this.getAllScopeAvailabilities();
                 this.updateSaveBarState('save', true);
 
                 if (this.successElement) {
@@ -275,15 +300,20 @@ class AvailabilityPage extends Component {
                 
                 const newState = deleteAvailabilityInState(this.state, availability);
 
-                // Update data immediately
+                if (this.state.fullAvailabilityList) {
+                    newState.fullAvailabilityList = this.state.fullAvailabilityList.filter(
+                        item => item.id !== availability.id
+                    );
+                }
+
                 this.refreshData();
                 if (newState.availabilitylist.length > 0) {
-                    console.log("here");
                     this.getConflictList();
                 }
                 this.getValidationList();
 
-                // Set SaveBar state with new method
+                this.getAllScopeAvailabilities();
+
                 this.updateSaveBarState('delete', true);
 
                 if (this.successElement) {
@@ -477,6 +507,11 @@ class AvailabilityPage extends Component {
             updateAvailabilityInState(this.state, newAvailability)
         );
 
+        state.fullAvailabilityList = [
+            ...(this.state.fullAvailabilityList || []),
+            newAvailability
+        ];
+
         state.selectedAvailability = newAvailability;
         state.stateChanged = true;
 
@@ -638,16 +673,35 @@ class AvailabilityPage extends Component {
         const onSelect = data => {
             this.onSelectAvailability(data)
         }
-
+    
         const onDelete = data => {
             this.onDeleteAvailability(data)
         }
-
-        const ViewComponent = this.state.selectedTab == 'graph' ? GraphView : TableView;
+    
+        let ViewComponent
+        let availabilityList
+        switch(this.state.selectedTab) {
+            case 'graph':
+                ViewComponent = GraphView
+                availabilityList = this.state.availabilitylistslices || this.state.availabilitylist
+                break
+            case 'scope':
+                ViewComponent = ScopeView
+                availabilityList = this.state.fullAvailabilityList || []
+                if (!this.state.fullAvailabilityList) {
+                    this.getAllScopeAvailabilities()
+                }
+                break
+            default:
+                ViewComponent = TableView
+                availabilityList = this.state.availabilitylistslices || this.state.availabilitylist
+        }
+    
         return <ViewComponent
             timestamp={this.props.timestamp}
+            scope={this.props.scope}
             conflicts={this.state.conflicts}
-            availabilityList={this.state.availabilitylistslices || this.state.availabilitylist}
+            availabilityList={availabilityList}
             data={this.state.selectedAvailability}
             maxWorkstationCount={this.state.maxWorkstationCount || this.props.maxworkstationcount}
             links={this.props.links}
@@ -714,18 +768,29 @@ class AvailabilityPage extends Component {
     handleChange(data) {
         if (data.__modified) {
             clearTimeout(this.timer)
-            this.setState(
-                Object.assign({}, updateAvailabilityInState(this.state, data)),
-                () => {
-                    this.readCalculatedAvailabilityList();
-                    if (data.tempId || data.id) {
-                        this.timer = setTimeout(() => {
-                            this.getConflictList()
-                            this.getValidationList()
-                        }, this.waitintervall)
-                    }
+            const state = Object.assign({}, updateAvailabilityInState(this.state, data));
+            
+            if (this.state.fullAvailabilityList) {
+                state.fullAvailabilityList = this.state.fullAvailabilityList.map(item => 
+                    (item.id === data.id || item.tempId === data.tempId) ? data : item
+                );
+                
+                if (!state.fullAvailabilityList.some(item => 
+                    item.id === data.id || item.tempId === data.tempId
+                )) {
+                    state.fullAvailabilityList = [...state.fullAvailabilityList, data];
                 }
-            );
+            }
+            
+            this.setState(state, () => {
+                this.readCalculatedAvailabilityList();
+                if (data.tempId || data.id) {
+                    this.timer = setTimeout(() => {
+                        this.getConflictList()
+                        this.getValidationList()
+                    }, this.waitintervall)
+                }
+            });
         }
         if (data.kind && inArray(data.kind, ["origin", "future", "exclusion"])) {
             this.handleChangesAvailabilityExclusion(data)
@@ -826,33 +891,37 @@ class AvailabilityPage extends Component {
         const onCopy = data => {
             this.onCopyAvailability(data)
         }
-
+    
         const onExclusion = data => {
             this.onCreateExclusionForAvailability(data)
         }
-
+    
         const onEditInFuture = data => {
             this.onEditAvailabilityInFuture(data)
         }
-
+    
         const onDelete = data => {
             this.onDeleteAvailability(data)
         }
-
+    
         const onUpdateSingle = data => {
             this.onUpdateSingleAvailability(data)
         }
-
+    
         const onNew = data => {
             this.onNewAvailability(data)
         }
-
+    
         const handleChange = (data) => {
             this.handleChange(data)
         }
-
+    
+        const availabilityList = this.state.selectedTab === 'scope' 
+            ? (this.state.fullAvailabilityList || [])
+            : this.state.availabilitylist
+    
         return <AccordionLayout
-            availabilityList={this.state.availabilitylist}
+            availabilityList={availabilityList}
             data={this.state.selectedAvailability}
             today={this.state.today}
             timestamp={this.props.timestamp}
