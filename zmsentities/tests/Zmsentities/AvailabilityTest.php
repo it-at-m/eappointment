@@ -893,8 +893,8 @@ class AvailabilityTest extends EntityCommonTests
             1,
             $list[
                 "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n" .
-                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00]\n" .
-                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]"
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00, Wochentag(e): Dienstag]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00, Wochentag(e): Dienstag]"
             ][1]
         );
 
@@ -902,8 +902,8 @@ class AvailabilityTest extends EntityCommonTests
             1,
             $list[
                 "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n" .
-                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00]\n" .
-                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]"
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00, Wochentag(e): Dienstag]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00, Wochentag(e): Dienstag]"
             ][5]
         );
 
@@ -912,8 +912,8 @@ class AvailabilityTest extends EntityCommonTests
             2,
             $list[
                 "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n" .
-                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]\n" .
-                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00]"
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00, Wochentag(e): Dienstag]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 10:00 - 13:00, Wochentag(e): Dienstag]"
             ][2]
         );
 
@@ -921,8 +921,8 @@ class AvailabilityTest extends EntityCommonTests
             2,
             $list[
                 "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n" .
-                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]\n" .
-                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 15:00 - 17:00]"
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00, Wochentag(e): Dienstag]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 15:00 - 17:00, Wochentag(e): Dienstag]"
             ][4]
         );
 
@@ -931,8 +931,8 @@ class AvailabilityTest extends EntityCommonTests
             1,
             $list[
                 "Konflikt: Zwei Öffnungszeiten sind gleich.\n" .
-                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]\n" .
-                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]"
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00, Wochentag(e): Dienstag]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00, Wochentag(e): Dienstag]"
             ][1]
         );
 
@@ -940,12 +940,12 @@ class AvailabilityTest extends EntityCommonTests
             1,
             $list[
                 "Konflikt: Zwei Öffnungszeiten sind gleich.\n" .
-                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]\n" .
-                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00]"
+                "Bestehende Öffnungszeit:&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00, Wochentag(e): Dienstag]\n" .
+                "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[19.04.2016 - 19.04.2016, 12:00 - 16:00, Wochentag(e): Dienstag]"
             ][5]
         );
 
-        // Assertion for slot size conflict
+        // Assertion for slot size conflict remains unchanged
         $this->assertEquals(
             1,
             $list[
@@ -968,7 +968,7 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-        
+
         // Test overlap at start
         $entity2 = new Availability([
             'id' => '2',
@@ -980,7 +980,7 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-        
+
         // Test overlap at end
         $entity3 = new Availability([
             'id' => '3',
@@ -992,7 +992,7 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-        
+
         // Test completely contained
         $entity4 = new Availability([
             'id' => '4',
@@ -1004,16 +1004,16 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-    
+
         $list = new AvailabilityList([$entity1, $entity2, $entity3, $entity4]);
         $conflicts = $list->checkAllVsExistingConflicts(
             new \DateTimeImmutable('2024-01-15 00:00:00'),
             new \DateTimeImmutable('2024-01-15 23:59:59')
         );
-        
+
         $this->assertEquals(6, $conflicts->count(), "Should detect all overlaps bidirectionally");
     }
-    
+
     public function testEdgeCaseOverlaps()
     {
         // Test back-to-back times
@@ -1027,7 +1027,7 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-        
+
         $entity2 = new Availability([
             'id' => '2',
             'weekday' => ['monday' => '2'],
@@ -1038,7 +1038,7 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-        
+
         // Test overlap across midnight
         $entity3 = new Availability([
             'id' => '3',
@@ -1050,16 +1050,16 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-    
+
         $list = new AvailabilityList([$entity1, $entity2, $entity3]);
         $conflicts = $list->checkAllVsExistingConflicts(
             new \DateTimeImmutable('2024-01-15 00:00:00'),
             new \DateTimeImmutable('2024-01-16 23:59:59')
         );
-        
+
         $this->assertEquals(0, $conflicts->count(), "Back-to-back times should not be considered overlapping");
     }
-    
+
     public function testWeekdayOverlaps()
     {
         // Test same weekday, different weeks
@@ -1074,7 +1074,7 @@ class AvailabilityTest extends EntityCommonTests
             'scope' => ['id' => '141', 'dayoff' => []],
             'repeat' => ['afterWeeks' => '1']
         ]);
-        
+
         $entity2 = new Availability([
             'id' => '2',
             'weekday' => ['monday' => '2'],
@@ -1086,7 +1086,7 @@ class AvailabilityTest extends EntityCommonTests
             'scope' => ['id' => '141', 'dayoff' => []],
             'repeat' => ['afterWeeks' => '2']
         ]);
-        
+
         // Test different weekdays, same times
         $entity3 = new Availability([
             'id' => '3',
@@ -1098,13 +1098,13 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-    
+
         $list = new AvailabilityList([$entity1, $entity2, $entity3]);
         $conflicts = $list->checkAllVsExistingConflicts(
             new \DateTimeImmutable('2024-01-15 00:00:00'),
             new \DateTimeImmutable('2024-01-22 23:59:59')
         );
-        
+
         $this->assertEquals(0, $conflicts->count(), "Different weeks or weekdays should not conflict");
     }
 
@@ -1153,110 +1153,110 @@ class AvailabilityTest extends EntityCommonTests
         $today = new \DateTimeImmutable('2024-01-15 12:00:00');
         $tomorrow = new \DateTimeImmutable('2024-01-16 12:00:00');
         $selectedDate = new \DateTimeImmutable('2024-01-16 12:00:00');
-        
+
         $startDate = new \DateTimeImmutable('2024-01-17 12:00:00');
         $endDate = new \DateTimeImmutable('2024-01-17 16:00:00');
         $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
         $this->assertCount(1, $errors);
         $this->assertEquals('startTimeFuture', $errors[0]['type']);
-        
+
         $startDate = new \DateTimeImmutable('2024-01-15 23:30:00');
         $endDate = new \DateTimeImmutable('2024-01-16 00:30:00');
         $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
         $this->assertCount(1, $errors);
         $this->assertEquals('startOfDay', $errors[0]['type']);
-        
+
         $startDate = new \DateTimeImmutable('2024-01-15 10:00:00');
         $endDate = new \DateTimeImmutable('2024-01-15 16:00:00');
         $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
         $this->assertCount(0, $errors);
     }
-    
+
     public function testValidateEndTime()
     {
         $entity = new Availability();
-        
+
         $startDate = new \DateTimeImmutable('2024-01-15 14:00:00');
         $endDate = new \DateTimeImmutable('2024-01-15 12:00:00');
         $errors = $entity->validateEndTime($startDate, $endDate);
         $this->assertCount(1, $errors);
         $this->assertEquals('endTime', $errors[0]['type']);
-        
+
         $startDate = new \DateTimeImmutable('2024-01-15 12:00:00');
         $endDate = new \DateTimeImmutable('2024-01-14 14:00:00');
         $errors = $entity->validateEndTime($startDate, $endDate);
         $this->assertCount(1, $errors);
         $this->assertEquals('endTime', $errors[0]['type']);
-        
+
         $startDate = new \DateTimeImmutable('2024-01-15 12:00:00');
         $endDate = new \DateTimeImmutable('2024-01-15 16:00:00');
         $errors = $entity->validateEndTime($startDate, $endDate);
         $this->assertCount(0, $errors);
     }
-    
+
     public function testValidateOriginEndTimeWithPastAndFuture()
     {
         $entity = new Availability();
         $today = new \DateTimeImmutable('2024-01-15 12:00:00');
         $yesterday = new \DateTimeImmutable('2024-01-14 12:00:00');
         $selectedDate = new \DateTimeImmutable('2024-01-16 12:00:00');
-        
+
         $startDate = new \DateTimeImmutable('2024-01-15 12:00:00');
         $endDate = new \DateTimeImmutable('2024-01-14 10:00:00');
         $errors = $entity->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, 'current');
         $this->assertCount(2, $errors);
         $this->assertEquals('endTimeFuture', $errors[0]['type']);
         $this->assertEquals('endTimePast', $errors[1]['type']);
-        
+
         $errors = $entity->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, 'origin');
         $this->assertCount(0, $errors);
-        
+
         $endDate = new \DateTimeImmutable('2024-01-16 16:00:00');
         $errors = $entity->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, 'current');
         $this->assertCount(0, $errors);
     }
-    
+
     public function testValidateType()
     {
         $entity = new Availability();
-        
+
         $errors = $entity->validateType('');
         $this->assertCount(1, $errors);
         $this->assertEquals('type', $errors[0]['type']);
-        
+
         $errors = $entity->validateType('appointment');
         $this->assertCount(0, $errors);
     }
-    
+
     public function testValidateSlotTime()
     {
         $entity = new Availability();
         $startDate = new \DateTimeImmutable('2024-01-15 12:00:00');
         $endDate = new \DateTimeImmutable('2024-01-15 14:00:00');
-        
+
         $entity['slotTimeInMinutes'] = 0;
         $errors = $entity->validateSlotTime($startDate, $endDate);
         $this->assertCount(1, $errors);
         $this->assertEquals('slotTime', $errors[0]['type']);
-        
+
         $entity['slotTimeInMinutes'] = 25;
         $errors = $entity->validateSlotTime($startDate, $endDate);
         $this->assertCount(1, $errors);
         $this->assertEquals('slotCount', $errors[0]['type']);
-        
+
         $entity['slotTimeInMinutes'] = 30;
         $errors = $entity->validateSlotTime($startDate, $endDate);
         $this->assertCount(0, $errors);
     }
-    
+
     public function testValidateBookableDayRange()
     {
         $entity = new Availability();
-        
+
         $errors = $entity->validateBookableDayRange(10, 5);
         $this->assertCount(1, $errors);
         $this->assertEquals('bookableDayRange', $errors[0]['type']);
-        
+
         $errors = $entity->validateBookableDayRange(5, 10);
         $this->assertCount(0, $errors);
     }
@@ -1272,17 +1272,17 @@ class AvailabilityTest extends EntityCommonTests
             'startTime' => '23:00',
             'endTime' => '01:00'
         ]);
-        
+
         $today = new \DateTimeImmutable('2024-01-15 12:00:00');
         $tomorrow = new \DateTimeImmutable('2024-01-16 12:00:00');
         $selectedDate = new \DateTimeImmutable('2024-01-15 12:00:00');
-        
+
         $startDate = new \DateTimeImmutable('2024-01-15 23:00:00');
         $endDate = new \DateTimeImmutable('2024-01-16 01:00:00');
         $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
         $this->assertCount(1, $errors);
         $this->assertEquals('startOfDay', $errors[0]['type']);
-        
+
         $entity['startTime'] = '22:00';
         $entity['endTime'] = '00:30';
         $startDate = new \DateTimeImmutable('2024-01-15 22:00:00');
@@ -1290,7 +1290,7 @@ class AvailabilityTest extends EntityCommonTests
         $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
         $this->assertCount(1, $errors);
         $this->assertEquals('startOfDay', $errors[0]['type']);
-        
+
         $entity['startTime'] = '10:00';
         $entity['endTime'] = '16:00';
         $startDate = new \DateTimeImmutable('2024-01-15 10:00:00');
@@ -1298,7 +1298,7 @@ class AvailabilityTest extends EntityCommonTests
         $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'current');
         $this->assertCount(0, $errors);
     }
-    
+
     public function testValidateStartTimeFutureDate()
     {
         $entity = new Availability([
@@ -1310,7 +1310,7 @@ class AvailabilityTest extends EntityCommonTests
             'startTime' => '10:00',
             'endTime' => '16:00'
         ]);
-        
+
         $today = new \DateTimeImmutable('2024-01-15 12:00:00');
         $tomorrow = new \DateTimeImmutable('2024-01-16 12:00:00');
         $selectedDate = new \DateTimeImmutable('2024-01-16 12:00:00'); // Set to tomorrow
@@ -1324,7 +1324,7 @@ class AvailabilityTest extends EntityCommonTests
         $errors = $entity->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, 'future');
         $this->assertCount(0, $errors);
     }
-    
+
     public function testValidateEndTimeMinutePrecision()
     {
         $entity = new Availability();
@@ -1340,7 +1340,7 @@ class AvailabilityTest extends EntityCommonTests
         $errors = $entity->validateEndTime($startDate, $endDate);
         $this->assertCount(0, $errors);
     }
-    
+
     public function testValidateSlotTimeDivisibility()
     {
         $entity = new Availability();
@@ -1361,7 +1361,7 @@ class AvailabilityTest extends EntityCommonTests
         $errors = $entity->validateSlotTime($startDate, $endDate);
         $this->assertCount(0, $errors);
     }
-    
+
     public function testValidateBookableDayRangeOrder()
     {
         $entity = new Availability();
@@ -1376,7 +1376,7 @@ class AvailabilityTest extends EntityCommonTests
         $errors = $entity->validateBookableDayRange(-5, -2);
         $this->assertCount(0, $errors);
     }
-    
+
     public function testValidateTypeAllowedValues()
     {
         $entity = new Availability();
@@ -1391,7 +1391,7 @@ class AvailabilityTest extends EntityCommonTests
             $this->assertCount(0, $errors, "Type '$type' should be valid");
         }
     }
-    
+
     public function testGetSummerizedSlotCount()
     {
         $availability1 = new Availability([
@@ -1406,7 +1406,7 @@ class AvailabilityTest extends EntityCommonTests
             'endDate' => strtotime('2024-01-15'),
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-        
+
         $availability2 = new Availability([
             'id' => '2',
             'type' => 'appointment',
@@ -1419,10 +1419,10 @@ class AvailabilityTest extends EntityCommonTests
             'endDate' => strtotime('2024-01-15'),
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-        
+
         $list = new AvailabilityList([$availability1, $availability2]);
         $slotCounts = $list->getSummerizedSlotCount();
-        
+
         $this->assertEquals(6, $slotCounts['1'], "First availability should have 6 slots");
         $this->assertEquals(6, $slotCounts['2'], "Second availability should have 6 slots");
     }
@@ -1431,7 +1431,7 @@ class AvailabilityTest extends EntityCommonTests
     {
         $entity = new Availability();
         $defaults = $entity->getDefaults();
-        
+
         $this->assertEquals(0, $defaults['id']);
         $this->assertEquals(1, $defaults['repeat']['afterWeeks']);
         $this->assertEquals(0, $defaults['repeat']['weekOfMonth']);
@@ -1439,13 +1439,13 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertEquals(60, $defaults['bookable']['endInDays']);
         $this->assertEquals(10, $defaults['slotTimeInMinutes']);
         $this->assertEquals('appointment', $defaults['type']);
-        
+
         // Check all weekdays are initialized to 0
         foreach (['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as $day) {
             $this->assertEquals(0, $defaults['weekday'][$day]);
         }
     }
-    
+
     public function testIsMatchOf()
     {
         $entity1 = new Availability([
@@ -1458,27 +1458,27 @@ class AvailabilityTest extends EntityCommonTests
             'repeat' => ['afterWeeks' => 1, 'weekOfMonth' => 0],
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-        
+
         // Exact match
         $entity2 = clone $entity1;
         $this->assertTrue($entity1->isMatchOf($entity2));
-        
+
         // Different type
         $entity2['type'] = 'openinghours';
         $this->assertFalse($entity1->isMatchOf($entity2));
-        
+
         // Different time
         $entity2 = clone $entity1;
         $entity2['startTime'] = '10:00:00';
         $this->assertFalse($entity1->isMatchOf($entity2));
-        
+
         // Different weekday
         $entity2 = clone $entity1;
         $entity2['weekday']['tuesday'] = '2';
         $entity2['weekday']['monday'] = '0';
         $this->assertFalse($entity1->isMatchOf($entity2));
     }
-    
+
     public function testCacheClearing()
     {
         $entity = new Availability([
@@ -1487,24 +1487,24 @@ class AvailabilityTest extends EntityCommonTests
             'startDate' => strtotime('2024-01-15'),
             'endDate' => strtotime('2024-01-15')
         ]);
-        
+
         // Access times to populate cache
         $startTime1 = $entity->getStartDateTime();
         $endTime1 = $entity->getEndDateTime();
-        
+
         // Modify times
         $entity['startTime'] = '10:00:00';
         $entity['endTime'] = '18:00:00';
-        
+
         // Get new times
         $startTime2 = $entity->getStartDateTime();
         $endTime2 = $entity->getEndDateTime();
-        
+
         // Verify cache was cleared
         $this->assertNotEquals($startTime1->format('H:i'), $startTime2->format('H:i'));
         $this->assertNotEquals($endTime1->format('H:i'), $endTime2->format('H:i'));
     }
-    
+
     public function testHasTimeEdgeCases()
     {
         $entity = new Availability([
@@ -1513,20 +1513,20 @@ class AvailabilityTest extends EntityCommonTests
             'startDate' => strtotime('2024-01-15'),
             'endDate' => strtotime('2024-01-15')
         ]);
-        
+
         // Exactly at start time
         $this->assertTrue($entity->hasTime(new \DateTimeImmutable('2024-01-15 09:00:00')));
-        
+
         // Just before start time
         $this->assertFalse($entity->hasTime(new \DateTimeImmutable('2024-01-15 08:59:59')));
-        
+
         // Just before end time
         $this->assertTrue($entity->hasTime(new \DateTimeImmutable('2024-01-15 16:59:59')));
-        
+
         // Exactly at end time
         $this->assertFalse($entity->hasTime(new \DateTimeImmutable('2024-01-15 17:00:00')));
     }
-    
+
     public function testGetAvailableSecondsPerDayWithTypes()
     {
         $entity = new Availability([
@@ -1538,7 +1538,7 @@ class AvailabilityTest extends EntityCommonTests
                 'callcenter' => 1
             ]
         ]);
-        
+
         // 8 hours = 28800 seconds
         $this->assertEquals(86400, $entity->getAvailableSecondsPerDay('intern')); // 28800 * 3
         $this->assertEquals(57600, $entity->getAvailableSecondsPerDay('public')); // 28800 * 2
@@ -1566,7 +1566,7 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-    
+
         $availability2 = new Availability([
             'id' => '2',
             'weekday' => [
@@ -1585,16 +1585,16 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-    
+
         $list = new AvailabilityList([$availability1, $availability2]);
         $conflicts = $list->checkAllVsExistingConflicts(
             new \DateTimeImmutable('2025-02-05 00:00:00'),  // A Wednesday
             new \DateTimeImmutable('2025-02-05 23:59:59')
         );
-    
+
         $this->assertEquals(0, $conflicts->count(), "Should not detect conflicts on Wednesday for Tuesday-only availabilities");
     }
-    
+
     public function testConflictsOnTuesday()
     {
         // Create two availabilities that overlap on Tuesdays
@@ -1616,7 +1616,7 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-    
+
         $availability2 = new Availability([
             'id' => '2',
             'weekday' => [
@@ -1635,13 +1635,13 @@ class AvailabilityTest extends EntityCommonTests
             'type' => 'appointment',
             'scope' => ['id' => '141', 'dayoff' => []]
         ]);
-    
+
         $list = new AvailabilityList([$availability1, $availability2]);
         $conflicts = $list->checkAllVsExistingConflicts(
             new \DateTimeImmutable('2025-02-04 00:00:00'),  // A Tuesday
             new \DateTimeImmutable('2025-02-04 23:59:59')
         );
-    
+
         $this->assertGreaterThan(0, $conflicts->count(), "Should detect conflicts on Tuesday for overlapping Tuesday availabilities");
         foreach ($conflicts as $conflict) {
             $this->assertStringContainsString('Konflikt: Zwei Öffnungszeiten', $conflict->amendment);
