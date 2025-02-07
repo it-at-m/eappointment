@@ -24,7 +24,7 @@ class ExceptionService
         return  ErrorMessages::get($key, self::$currentLanguage);
     }
 
-    public static function handleException(\Exception $e, string $method): never
+    public static function handleException(\Exception $e): never
     {
         $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
         $error = null;
