@@ -10,7 +10,7 @@ import * as constants from './index.js'
 
 const ScopeView = (props) => {
     const { onDelete, onSelect, onAbort, timestamp, availabilityList, data } = props
-    const titleTime = `Alle Öffnungszeiten für ${props.scope?.contact?.name || ''}`
+    const titleTime = `Alle Öffnungszeiten für den Standort ${props.scope?.contact?.name || ''}`
     
     const TableBody = <TableBodyLayout
         availabilityList={availabilityList}
