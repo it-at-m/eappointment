@@ -849,6 +849,27 @@ class Availability extends Schema\Entity
     Case 16 | 09:00-09:00 09:00-09:00 |      No       |        Yes
     */
 
+    protected function getWeekdayNames(): string
+    {
+        $germanWeekdays = [
+            'sunday' => 'Sonntag',
+            'monday' => 'Montag',
+            'tuesday' => 'Dienstag',
+            'wednesday' => 'Mittwoch',
+            'thursday' => 'Donnerstag',
+            'friday' => 'Freitag',
+            'saturday' => 'Samstag'
+        ];
+    
+        $selectedDays = array_filter(self::$weekdayNameList, function($day) {
+            return isset($this->weekday[$day]) && (int)$this->weekday[$day] > 0;
+        });
+    
+        return implode(' ', array_map(function($day) use ($germanWeekdays) {
+            return $germanWeekdays[$day];
+        }, $selectedDays));
+    }
+
     public function getTimeOverlaps(Availability $availability, \DateTimeInterface $selectedDate)
     {
         $processList = new Collection\ProcessList();
@@ -861,7 +882,7 @@ class Availability extends Schema\Entity
             $date1End = $this->getEndDateTime()->setTime(23, 59);
             $date2Start = $availability->getStartDateTime()->setTime(0, 0);
             $date2End = $availability->getEndDateTime()->setTime(23, 59);
-
+    
             // Only check time overlap if the dates overlap
             if ($date1Start <= $date2End && $date2Start <= $date1End) {
                 $processTemplate = new Process();
@@ -869,26 +890,26 @@ class Availability extends Schema\Entity
                 $appointment = $processTemplate->getFirstAppointment();
                 $appointment->availability = $this;
                 $appointment->date = $this->getStartDateTime()->getTimestamp();
-
+    
                 $existingDateRange = $this->getStartDateTime()->format('d.m.Y') . ' - ' . $this->getEndDateTime()->format('d.m.Y');
                 $newDateRange = $availability->getStartDateTime()->format('d.m.Y') . ' - ' . $availability->getEndDateTime()->format('d.m.Y');
-
+    
                 $existingTimeRange = $this->getStartDateTime()->format('H:i') . ' - ' . $this->getEndDateTime()->format('H:i');
                 $newTimeRange = $availability->getStartDateTime()->format('H:i') . ' - ' . $availability->getEndDateTime()->format('H:i');
-
+    
                 // Compare exact times without seconds
                 $time1Start = strtotime($this->startTime);
                 $time1End = strtotime($this->endTime);
                 $time2Start = strtotime($availability->startTime);
                 $time2End = strtotime($availability->endTime);
-
+    
                 $isEqual = ($time1Start === $time2Start && $time1End === $time2End);
-
+    
                 if ($isEqual) {
                     $process = clone $processTemplate;
                     $process->amendment = "Konflikt: Zwei Öffnungszeiten sind gleich.\n"
-                        . "Bestehende Öffnungszeit:&thinsp;&thinsp;[$newDateRange, $newTimeRange]\n"
-                        . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange]";
+                        . "Bestehende Öffnungszeit:&thinsp;&thinsp;[$newDateRange, $newTimeRange, Wochentag(e): " . $availability->getWeekdayNames() . "]\n"
+                        . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange, Wochentag(e): " . $this->getWeekdayNames() . "]";
                     $process->getFirstAppointment()->date = $availability
                         ->getStartDateTime()
                         ->modify($selectedDate->format("Y-m-d"))
@@ -897,8 +918,8 @@ class Availability extends Schema\Entity
                 } elseif ($time2Start < $time1End && $time1Start < $time2End) {
                     $process = clone $processTemplate;
                     $process->amendment = "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n"
-                        . "Bestehende Öffnungszeit:&thinsp;&thinsp;[$newDateRange, $newTimeRange]\n"
-                        . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange]";
+                        . "Bestehende Öffnungszeit:&thinsp;&thinsp;[$newDateRange, $newTimeRange, Wochentag(e): " . $availability->getWeekdayNames() . "]\n"
+                        . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$existingDateRange, $existingTimeRange, Wochentag(e): " . $this->getWeekdayNames() . "]";
                     $process->getFirstAppointment()->date = $availability
                         ->getStartDateTime()
                         ->modify($selectedDate->format("Y-m-d"))
@@ -907,7 +928,7 @@ class Availability extends Schema\Entity
                 }
             }
         }
-
+    
         return $processList;
     }
 
