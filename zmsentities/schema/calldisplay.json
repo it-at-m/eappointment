@@ -2,13 +2,33 @@
     "type": "object",
     "description": "A calldisplay is a device to call people in a waiting room to a workstation. Usually it is a display on wall showing process ids together with a room number.\nThe clusters are resolved to fill the list of scopes. The text displayed on the calldisplay depends on the given scopes. If only one scope is present, a text can be displayed on the display. On multiple scopes, no text and no image is displayed.",
     "example": {
+        "serverTime": 1447925159,
         "scopes": [
             {
-                "id": 141
+                "id": 141,
+                "provider": {
+                    "contact": {
+                        "city": "Schönefeld",
+                        "country": "Germany",
+                        "lat": 52.345,
+                        "lon": 13.456,
+                        "name": "Flughafen Schönefeld, Landebahn",
+                        "postalCode": "15831",
+                        "region": "Brandenburg",
+                        "street": "Zaunstraße",
+                        "streetNumber": "1"
+                    },
+                    "id": 123456,
+                    "name": "Flughafen Schönefeld, Aufsicht",
+                    "source": "dldb",
+                    "displayName":"001"
+                },
+                "shortName": "Zentrale"
             }
         ],
         "organisation": {
-        	"id": 123
+        	"id": 123,
+            "name": "Flughafen"
         },
         "contact": {
         	"name": "Bürgeramt"
@@ -18,7 +38,7 @@
         "serverTime",
         "organisation"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "image": {
             "type": "object",

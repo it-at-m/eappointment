@@ -9,7 +9,6 @@ class CalldisplayTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
-        //var_dump($entity);
         $resolvedEntity = $entity->withResolvedCollections($this->getTestInput());
         $resolvedEntity['scopes'][] = $this->getTestScope();
         $resolvedEntity['clusters'][] = $this->getTestCluster();

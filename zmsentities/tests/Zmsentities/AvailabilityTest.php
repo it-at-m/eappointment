@@ -460,33 +460,33 @@ class AvailabilityTest extends EntityCommonTests
             [
                 'id' => '93181',
                 'weekday' => array(
-                    'monday' => '0',
-                    'tuesday' => '4',
-                    'wednesday' => '0',
-                    'thursday' => '0',
-                    'friday' => '0',
-                    'saturday' => '0',
-                    'sunday' => '0'
+                    'monday' => 0,
+                    'tuesday' => 4,
+                    'wednesday' => 0,
+                    'thursday' => 0,
+                    'friday' => 0,
+                    'saturday' => 0,
+                    'sunday' => 0
                 ),
                 'repeat' => array(
-                    'afterWeeks' => '2',
-                    'weekOfMonth' => '0'
+                    'afterWeeks' => 2,
+                    'weekOfMonth' => 0
                 ),
                 'bookable' => array(
-                    'startInDays' => '0',
-                    'endInDays' => '60'
+                    'startInDays' => 0,
+                    'endInDays' => 60
                 ),
                 'workstationCount' => array(
-                    'public' => '2',
-                    'callcenter' => '2',
-                    'intern' => '2'
+                    'public' => 2,
+                    'callcenter' => 2,
+                    'intern' => 2
                 ),
-                'slotTimeInMinutes' => '15',
-                'startDate' => '1461024000',
-                'endDate' => '1461024000',
+                'slotTimeInMinutes' => 15,
+                'startDate' => 1461024000,
+                'endDate' => 1461024000,
                 'startTime' => '12:00:00',
                 'endTime' => '16:00:00',
-                'multipleSlotsAllowed' => '0'
+                'multipleSlotsAllowed' => 0
             ]
         );
         $slotList = $entity->getSlotList();
@@ -710,23 +710,23 @@ class AvailabilityTest extends EntityCommonTests
         $availability = new Availability([
             'id' => '1',
             'weekday' => array(
-                'monday' => '0',
-                'tuesday' => '4',
-                'wednesday' => '0',
-                'thursday' => '0',
-                'friday' => '0',
-                'saturday' => '0',
-                'sunday' => '0'
+                'monday' => 0,
+                'tuesday' => 4,
+                'wednesday' => 0,
+                'thursday' => 0,
+                'friday' => 0,
+                'saturday' => 0,
+                'sunday' => 0
             ),
             'repeat' => array(
-                'afterWeeks' => '1',
+                'afterWeeks' => 1,
             ),
             'workstationCount' => array(
-                'public' => '2',
-                'callcenter' => '2',
-                'intern' => '2'
+                'public' => 2,
+                'callcenter' => 2,
+                'intern' => 2
             ),
-            'slotTimeInMinutes' => '15',
+            'slotTimeInMinutes' => 15,
             'startDate' => strtotime('2016-04-19'),
             'endDate' => strtotime('2016-04-19'),
             'startTime' => '12:00:00',
@@ -735,23 +735,23 @@ class AvailabilityTest extends EntityCommonTests
         $availabilityOverlap = new Availability([
             'id' => '2',
             'weekday' => array(
-                'monday' => '0',
-                'tuesday' => '4',
-                'wednesday' => '0',
-                'thursday' => '0',
-                'friday' => '0',
-                'saturday' => '0',
-                'sunday' => '0'
+                'monday' => 0,
+                'tuesday' => 4,
+                'wednesday' => 0,
+                'thursday' => 0,
+                'friday' => 0,
+                'saturday' => 0,
+                'sunday' => 0
             ),
             'repeat' => array(
-                'afterWeeks' => '1',
+                'afterWeeks' => 1,
             ),
             'workstationCount' => array(
-                'public' => '2',
-                'callcenter' => '2',
-                'intern' => '2'
+                'public' => 2,
+                'callcenter' => 2,
+                'intern' => 2
             ),
-            'slotTimeInMinutes' => '15',
+            'slotTimeInMinutes' => 15,
             'startDate' => strtotime('2016-04-19'),
             'endDate' => strtotime('2016-04-19'),
             'startTime' => '10:00:00',
@@ -760,23 +760,23 @@ class AvailabilityTest extends EntityCommonTests
         $availabilitySlotsize = new Availability([
             'id' => '3',
             'weekday' => array(
-                'monday' => '0',
-                'tuesday' => '4',
-                'wednesday' => '0',
-                'thursday' => '0',
-                'friday' => '0',
-                'saturday' => '0',
-                'sunday' => '0'
+                'monday' => 0,
+                'tuesday' => 4,
+                'wednesday' => 0,
+                'thursday' => 0,
+                'friday' => 0,
+                'saturday' => 0,
+                'sunday' => 0
             ),
             'repeat' => array(
-                'afterWeeks' => '1',
+                'afterWeeks' => 1,
             ),
             'workstationCount' => array(
-                'public' => '2',
-                'callcenter' => '2',
-                'intern' => '2'
+                'public' => 2,
+                'callcenter' => 2,
+                'intern' => 2
             ),
-            'slotTimeInMinutes' => '25',
+            'slotTimeInMinutes' => 25,
             'startDate' => strtotime('2016-04-19'),
             'endDate' => strtotime('2016-04-19'),
             'startTime' => '09:00:00',
@@ -785,23 +785,23 @@ class AvailabilityTest extends EntityCommonTests
         $availabilityOverlap2 = new Availability([
             'id' => '4',
             'weekday' => array(
-                'monday' => '0',
-                'tuesday' => '4',
-                'wednesday' => '0',
-                'thursday' => '0',
-                'friday' => '0',
-                'saturday' => '0',
-                'sunday' => '0'
+                'monday' => 0,
+                'tuesday' => 4,
+                'wednesday' => 0,
+                'thursday' => 0,
+                'friday' => 0,
+                'saturday' => 0,
+                'sunday' => 0
             ),
             'repeat' => array(
-                'afterWeeks' => '1',
+                'afterWeeks' => 1,
             ),
             'workstationCount' => array(
-                'public' => '2',
-                'callcenter' => '2',
-                'intern' => '2'
+                'public' => 2,
+                'callcenter' => 2,
+                'intern' => 2
             ),
-            'slotTimeInMinutes' => '15',
+            'slotTimeInMinutes' => 15,
             'startDate' => strtotime('2016-04-19'),
             'endDate' => strtotime('2016-04-19'),
             'startTime' => '15:00:00',
@@ -810,23 +810,23 @@ class AvailabilityTest extends EntityCommonTests
         $availabilityEqual = new Availability([
             'id' => '5',
             'weekday' => array(
-                'monday' => '0',
-                'tuesday' => '4',
-                'wednesday' => '0',
-                'thursday' => '0',
-                'friday' => '0',
-                'saturday' => '0',
-                'sunday' => '0'
+                'monday' => 0,
+                'tuesday' => 4,
+                'wednesday' => 0,
+                'thursday' => 0,
+                'friday' => 0,
+                'saturday' => 0,
+                'sunday' => 0
             ),
             'repeat' => array(
-                'afterWeeks' => '1',
+                'afterWeeks' => 1,
             ),
             'workstationCount' => array(
-                'public' => '2',
-                'callcenter' => '2',
-                'intern' => '2'
+                'public' => 2,
+                'callcenter' => 2,
+                'intern' => 2
             ),
-            'slotTimeInMinutes' => '15',
+            'slotTimeInMinutes' => 15,
             'startDate' => strtotime('2016-04-19'),
             'endDate' => strtotime('2016-04-19'),
             'startTime' => '12:00:00',
@@ -835,23 +835,23 @@ class AvailabilityTest extends EntityCommonTests
         $availabilityWrongStartAndEnd = new Availability([
             'id' => '6',
             'weekday' => array(
-                'monday' => '0',
-                'tuesday' => '4',
-                'wednesday' => '0',
-                'thursday' => '0',
-                'friday' => '0',
-                'saturday' => '0',
-                'sunday' => '0'
+                'monday' => 0,
+                'tuesday' => 4,
+                'wednesday' => 0,
+                'thursday' => 0,
+                'friday' => 0,
+                'saturday' => 0,
+                'sunday' => 0
             ),
             'repeat' => array(
-                'afterWeeks' => '1',
+                'afterWeeks' => 1,
             ),
             'workstationCount' => array(
-                'public' => '2',
-                'callcenter' => '2',
-                'intern' => '2'
+                'public' => 2,
+                'callcenter' => 2,
+                'intern' => 2
             ),
-            'slotTimeInMinutes' => '15',
+            'slotTimeInMinutes' => 15,
             'startDate' => strtotime('2016-04-19'),
             'endDate' => strtotime('2016-04-20'),
             'startTime' => '17:00:00',
@@ -915,33 +915,33 @@ class AvailabilityTest extends EntityCommonTests
             [
                 'id' => '93181',
                 'weekday' => array(
-                    'monday' => '0',
-                    'tuesday' => '0',
-                    'wednesday' => '0',
-                    'thursday' => '0',
-                    'friday' => '1',
-                    'saturday' => '0',
-                    'sunday' => '0'
+                    'monday' => 0,
+                    'tuesday' => 0,
+                    'wednesday' => 0,
+                    'thursday' => 0,
+                    'friday' => 1,
+                    'saturday' => 0,
+                    'sunday' => 0
                 ),
                 'repeat' => array(
-                    'afterWeeks' => '2',
-                    'weekOfMonth' => '0'
+                    'afterWeeks' => 2,
+                    'weekOfMonth' => 0
                 ),
                 'bookable' => array(
-                    'startInDays' => '0',
-                    'endInDays' => '60'
+                    'startInDays' => 0,
+                    'endInDays' => 60
                 ),
                 'workstationCount' => array(
-                    'public' => '2',
-                    'callcenter' => '2',
-                    'intern' => '2'
+                    'public' => 2,
+                    'callcenter' => 2,
+                    'intern' => 2
                 ),
-                'slotTimeInMinutes' => '15',
+                'slotTimeInMinutes' => 15,
                 'startDate' => $time->getTimestamp(),
                 'endDate' => $time->getTimestamp(),
                 'startTime' => '12:00:00',
                 'endTime' => '16:00:00',
-                'multipleSlotsAllowed' => '0',
+                'multipleSlotsAllowed' => 0,
                 'scope' => array('id' => 141),
                 'type' => 'openinghours'
             ]

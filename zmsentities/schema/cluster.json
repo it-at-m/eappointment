@@ -16,7 +16,7 @@
         ],
         "shortNameEnabled": true
     },
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "callDisplayText": {
             "type": "string",
