@@ -25,6 +25,10 @@ class Accordion extends Component {
     }
 
     render() {
+        const hasNewAvailability = this.props.availabilityList.some(
+            availability => availability?.tempId?.includes('__temp__')
+        );
+
         const onPublish = (ev) => {
             ev.preventDefault()
             this.props.onPublish()
@@ -140,7 +144,7 @@ class Accordion extends Component {
                                         case 'new':
                                             return { backgroundColor: '#F5F5DC' };
                                         default:
-                                            return null; // Keep default for 'default' and null/undefined
+                                            return null;
                                     }
                                 })()}
                             >
@@ -163,13 +167,14 @@ class Accordion extends Component {
                                 onDelete={onDelete}
                                 errorList={hasError(eventId) ? errorList : {}}
                                 conflictList={hasConflict(eventId) ? Object.assign({}, conflictList) : {}}
-                                isCreatingExclusion={this.props.isCreatingExclusion}
+                                isCreatingExclusion={this.props.isCreatingExclusion || hasNewAvailability}  // Pass combined flag
                             />
                         </div>
                     </section>
                 )
             })
         }
+
         return (
             <>
                 {/* Legend */}
@@ -185,7 +190,7 @@ class Accordion extends Component {
                         { color: '#CCE5FF', label: 'Ursprüngliche Serie' },
                         { color: '#94c5a2', label: 'Fortführung der Serie' },
                         { color: '#FFE082', label: 'Ausnahme' },
-                        { color: '#FFFFFF', label: 'Neue Öffnungszeit' }
+                        { color: '#F5F5DC', label: 'Neue Öffnungszeit' }
                     ].map(({ color, label }) => (
                         <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <div style={{
