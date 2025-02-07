@@ -84,21 +84,51 @@ class RequestReport extends Base
      * @SuppressWarnings(Unused)
      */
     public function writeReportData(ReportEntity $report, $sheet, $datePatternCol1, $datePatternCol2)
-    {
-        $reportData = [];
-        foreach ($report->data as $name => $entry) {
-            if ('Summe' != $name && 'average_processingtime' != $name ) {
-                $reportData[$name][] = $name;
-                $reportData[$name][] = isset($report->data['average_processingtime'][$name]) || is_numeric($report->data['average_processingtime'][$name]) ? (string)$report->data['average_processingtime'][$name]  : "0";
-                $reportData[$name][] = $report->data['Summe'][$name];  
-                $dateTime = clone $this->firstDayDate;
-                do {
-                    $dateString = $dateTime->format($this->dateFormatter[$report->period]);
-                    $reportData[$name][] = (isset($entry[$dateString])) ? $entry[$dateString]['requestscount'] : '0';
-                    $dateTime->modify('+1 '. $report->period);
-                } while ($dateTime <= $this->lastDayDate);
-            }
+{
+    $reportData = [];
+    $rowIndex = $sheet->getHighestRow() + 1;
+    $firstDataRow = $rowIndex;
+
+    foreach ($report->data as $name => $entry) {
+        if ($name !== 'Summe' && $name !== 'average_processingtime' && stripos($name, 'Madian') === false) {
+            $rowData = [];
+            $rowData[] = $name;
+            $rowData[] = isset($report->data['average_processingtime'][$name]) && is_numeric($report->data['average_processingtime'][$name])
+                ? (string)$report->data['average_processingtime'][$name]
+                : "0";
+            $rowData[] = $report->data['Summe'][$name];
+
+            $dateTime = clone $this->firstDayDate;
+            do {
+                $dateString = $dateTime->format($this->dateFormatter[$report->period]);
+                $rowData[] = isset($entry[$dateString]) ? $entry[$dateString]['requestscount'] : '0';
+                $dateTime->modify('+1 ' . $report->period);
+            } while ($dateTime <= $this->lastDayDate);
+
+            $reportData[$name] = $rowData;
         }
-        $sheet->fromArray($reportData, null, 'A'. ($sheet->getHighestRow() + 1));
     }
+
+   
+    $sheet->fromArray($reportData, null, 'A' . $rowIndex);
+
+   
+    $lastColumn = $sheet->getHighestColumn();
+    $lastRow = $sheet->getHighestRow();
+    $sumRowIndex = $lastRow + 1;
+
+    $sumRow = ["Summe", "", ""]; 
+
+   
+    $sumRow[2] = "=SUM(C{$firstDataRow}:C{$lastRow})";
+
+    for ($col = 'D'; $col <= $lastColumn; $col++) {
+        $sumRow[] = "=SUM({$col}{$firstDataRow}:{$col}{$lastRow})";
+    }
+
+    $sheet->fromArray($sumRow, null, 'A' . $sumRowIndex);
+}
+
+    
+    
 }
