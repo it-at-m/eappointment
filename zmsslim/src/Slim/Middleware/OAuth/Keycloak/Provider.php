@@ -89,7 +89,7 @@ class Provider extends Keycloak
         $realmData['verify'] = $config_data['ssl-verify'] ?? true;
         return $realmData;
     }
-    
+
     public function getBasicOptionsFromJsonFile()
     {
         $config_data = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');
