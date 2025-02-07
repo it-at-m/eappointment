@@ -160,6 +160,7 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
                 endTime = moment(dayEndTime)
             }
         }
+    }
 
     return {
         id: null,
