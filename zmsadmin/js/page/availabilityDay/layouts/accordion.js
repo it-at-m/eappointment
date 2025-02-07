@@ -26,7 +26,8 @@ class Accordion extends Component {
 
     render() {
         const hasNewAvailability = this.props.availabilityList.some(
-            availability => availability?.tempId?.includes('__temp__')
+            availability?.tempId?.includes('__temp__') ||
+            availability?.kind === 'exclusion'
         );
 
         const onPublish = (ev) => {
