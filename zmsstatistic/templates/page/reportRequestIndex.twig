@@ -70,8 +70,9 @@
                 <tbody>
                     {% set totalSum = 0 %}
 
-                    {% for name, entry in exchangeRequest.data|filter(name => name != "Summe") %}
-                        {% if name != "average_processingtime" %}
+                    {% for name, entry in exchangeRequest.data %}
+
+                        {% if name != "average_processingtime" and name != "sum" %}
                         <tr>
                             <th class="report-board--long-text">{{ name|trans }}</th>
 
@@ -82,10 +83,10 @@
                             {% endif %}
 
                             <td class="report-board--summary">
-                                {{ exchangeRequest.data.Summe[name] }}
+                                {{ exchangeRequest.data.sum[name] }}
                             </td>
 
-                            {% set totalSum = totalSum + (exchangeRequest.data.Summe[name]|default(0)) %}
+                            {% set totalSum = totalSum + (exchangeRequest.data.sum[name]|default(0)) %}
 
                             {% for date in dateRange %}
                                 {% if exchangeRequest.period == "day" %}
@@ -105,7 +106,7 @@
                     {% endfor %}
 
                     <tr>
-                        <th class="report-board--long-text">Gesamtsumme</th>
+                        <th class="report-board--long-text">Summe</th>
 
                         {% if exchangeRequest.period == "day" %}
                             <td class="report-board--summary">-</td>
@@ -124,10 +125,8 @@
 
                             {% set dateSum = 0 %}
 
-                            {% for name, entry in exchangeRequest.data|filter(name => name != "Summe") %}
-                                {% if name != "average_processingtime" %}
-                                    {% set dateSum = dateSum + (entry[formattedDate].requestscount|default(0)) %}
-                                {% endif %}
+                            {% for name, entry in exchangeRequest.data %}
+                                {% set dateSum = dateSum + (entry[formattedDate].requestscount|default(0)) %}
                             {% endfor %}
 
                             <td class="report-board--summary">

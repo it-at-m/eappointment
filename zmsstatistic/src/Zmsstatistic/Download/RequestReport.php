@@ -84,50 +84,52 @@ class RequestReport extends Base
      * @SuppressWarnings(Unused)
      */
     public function writeReportData(ReportEntity $report, $sheet, $datePatternCol1, $datePatternCol2)
-{
-    $reportData = [];
-    $rowIndex = $sheet->getHighestRow() + 1;
-    $firstDataRow = $rowIndex;
+    {
+        $reportData = [];
+        $rowIndex = $sheet->getHighestRow() + 1;
+        $firstDataRow = $rowIndex;
+        $sheet->setCellValue('A20', "firstDataRow: " . $firstDataRow);
+        foreach ($report->data as $name => $entry) {
+            if ($name !== 'sum' && $name !== 'average_processingtime') {
+                $rowData = [];
+                $rowData[] = $name;
+                $rowData[] = isset($report->data['average_processingtime'][$name]) && is_numeric($report->data['average_processingtime'][$name])
+                    ? (string)$report->data['average_processingtime'][$name]
+                    : "0";
+                $rowData[] = $report->data['sum'][$name];
 
-    foreach ($report->data as $name => $entry) {
-        if ($name !== 'Summe' && $name !== 'average_processingtime' && stripos($name, 'Madian') === false) {
-            $rowData = [];
-            $rowData[] = $name;
-            $rowData[] = isset($report->data['average_processingtime'][$name]) && is_numeric($report->data['average_processingtime'][$name])
-                ? (string)$report->data['average_processingtime'][$name]
-                : "0";
-            $rowData[] = $report->data['Summe'][$name];
+                $dateTime = clone $this->firstDayDate;
+                do {
+                    $dateString = $dateTime->format($this->dateFormatter[$report->period]);
+                    $rowData[] = isset($entry[$dateString]) ? (int)$entry[$dateString]['requestscount'] : '0';
+                    $dateTime->modify('+1 ' . $report->period);
+                } while ($dateTime <= $this->lastDayDate);
 
-            $dateTime = clone $this->firstDayDate;
-            do {
-                $dateString = $dateTime->format($this->dateFormatter[$report->period]);
-                $rowData[] = isset($entry[$dateString]) ? $entry[$dateString]['requestscount'] : '0';
-                $dateTime->modify('+1 ' . $report->period);
-            } while ($dateTime <= $this->lastDayDate);
-
-            $reportData[$name] = $rowData;
+                $reportData[$name] = $rowData;
+            }
         }
+
+    
+        $sheet->fromArray($reportData, null, 'A' . $rowIndex);
+
+    
+        $lastColumn = $sheet->getHighestColumn();
+        $sheet->setCellValue('A21', "Last Column: " . $lastColumn);
+        $lastRow = $sheet->getHighestRow();
+        $sheet->setCellValue('A22', "Last Row: " . $lastRow);
+        $sumRowIndex = $lastRow + 2;
+
+        $sumRow = ["Summe", "", ""]; 
+
+    
+        $sumRow[2] = "=SUM(C{$firstDataRow}:C{$lastRow})";
+
+        for ($col = 'D'; $col <= $lastColumn; $col++) {
+            $sumRow[] = "=SUM({$col}{$firstDataRow}:{$col}{$lastRow})";
+        }
+
+        $sheet->fromArray($sumRow, null, 'A' . $sumRowIndex);
     }
-
-   
-    $sheet->fromArray($reportData, null, 'A' . $rowIndex);
-
-   
-    $lastColumn = $sheet->getHighestColumn();
-    $lastRow = $sheet->getHighestRow();
-    $sumRowIndex = $lastRow + 1;
-
-    $sumRow = ["Summe", "", ""]; 
-
-   
-    $sumRow[2] = "=SUM(C{$firstDataRow}:C{$lastRow})";
-
-    for ($col = 'D'; $col <= $lastColumn; $col++) {
-        $sumRow[] = "=SUM({$col}{$firstDataRow}:{$col}{$lastRow})";
-    }
-
-    $sheet->fromArray($sumRow, null, 'A' . $sumRowIndex);
-}
 
     
     
