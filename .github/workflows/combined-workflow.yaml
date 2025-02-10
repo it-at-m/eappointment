@@ -18,6 +18,7 @@ jobs:
     uses: ./.github/workflows/php-unit-tests.yaml
 
   combine-php-test-coverage:
+    if: github.ref_name == 'next' 
     needs: [call-php-unit-tests]
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +37,7 @@ jobs:
           retention-days: 7
 
   build-api-docs:
-    #if: github.ref_name == 'next' 
+    if: github.ref_name == 'next' 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -96,7 +97,7 @@ jobs:
 
   deploy-to-pages:
     needs: [combine-php-test-coverage, build-api-docs]
-    #if: github.ref_name == 'next' && needs.build-api-docs.result == 'success'
+    if: github.ref_name == 'next' && needs.build-api-docs.result == 'success'
     uses: ./.github/workflows/deploy-pages.yaml
     with:
       coverage_artifact: coverage-reports
