@@ -148,7 +148,8 @@ class Messaging
     ) {
         $parameters = self::generateMailParameters($processList, $config, $initiator, $status);
 
-        $collection = (new ProcessList())->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
+        (new ProcessList())->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
+        $template = self::getTemplate('mail', $status);
         if ($initiator) {
             $template = self::getTemplate('admin', $status);
         }
