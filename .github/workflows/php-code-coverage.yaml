@@ -144,18 +144,31 @@ jobs:
   zmsclient-coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          cd zmsclient
+          composer install --no-progress --prefer-dist --optimize-autoloader
+
       - name: Install Docker Compose
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
       - name: Run coverage
         run: |
-          cd zmsclient
-          docker-compose up -d
-          mkdir -p coverage
-          docker-compose exec -T test ./vendor/bin/phpunit \
-            --coverage-html coverage/html --coverage-clover coverage/clover.xml
+          /bin/bash -c "cd ./zmsclient && docker-compose up -d && docker-compose exec -T test ./vendor/bin/phpunit --coverage-html coverage/html --coverage-clover coverage/clover.xml"
+
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
