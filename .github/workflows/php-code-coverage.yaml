@@ -31,6 +31,7 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         module: [
           'mellon',
