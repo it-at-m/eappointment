@@ -232,7 +232,6 @@ const estimatedDuration = computed(() => {
     : 0;
 });
 
-
 const maxValueOfService = computed(() => {
   return checkPlusEndabled.value
     ? service.value.maxQuantity
@@ -280,14 +279,15 @@ onMounted(() => {
     countOfService.value = service.value.count
       ? service.value.count
       : countOfService.value;
-    slots =
-      getMinSlotOfProvider(service.value.providers) * service.value.count;
+    slots = getMinSlotOfProvider(service.value.providers) * service.value.count;
     if (service.value.subServices) {
-      service.value.subServices.forEach(subservice => {
+      service.value.subServices.forEach((subservice) => {
         if (subservice.count > 0) {
-          slots = slots + (getMinSlotOfProvider(subservice.providers) * subservice.count);
+          slots =
+            slots +
+            getMinSlotOfProvider(subservice.providers) * subservice.count;
         }
-      })
+      });
     }
     currentSlots.value = slots;
   } else {
