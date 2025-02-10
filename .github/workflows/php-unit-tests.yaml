@@ -24,6 +24,8 @@ jobs:
       env:
         XDEBUG_MODE: coverage
         PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
     steps:
       - uses: actions/checkout@main
       
@@ -46,13 +48,14 @@ jobs:
           cd "${{ matrix.module }}"
           mkdir -p coverage
           echo "Running tests with coverage for ${{ matrix.module }}"
-          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+          php -dmemory_limit=-1 \
             ./vendor/bin/phpunit \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
           echo "Coverage files generated:"
           ls -la coverage/
+
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
@@ -87,7 +90,7 @@ jobs:
             php_version: "8.0"
           - module: zmsticketprinter
             php_version: "8.0"
-
+            
   zmsapi-test:
     runs-on: ubuntu-latest
     container:
