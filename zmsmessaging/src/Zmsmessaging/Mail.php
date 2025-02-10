@@ -87,7 +87,7 @@ class Mail extends BaseController
 
                     $idsStr = implode(', ', $ids);
                     $command = "php " . escapeshellarg(__DIR__ . '/MailProcessor.php') . " " . escapeshellarg($encodedIds) . " " . escapeshellarg($actionStr);
-                    $processHandles[] = $this->startProcess($command, $index, $idsStr);
+                    $processHandles[] = $this->startProcess($command, $idsStr);
                 }
 
                 if ($this->maxRunTime >= $this->getSpendTime()) {
@@ -276,7 +276,7 @@ class Mail extends BaseController
         return $mailer;
     }
 
-    private function startProcess($command, $batchIndex, $ids)
+    private function startProcess($command, $ids)
     {
         $descriptorSpec = [
             0 => ["pipe", "r"], // stdin
@@ -295,21 +295,6 @@ class Mail extends BaseController
             return null;
         }
     }
-
-    private function getMailById($itemId)
-    {
-        $endpoint = '/mails/' . $itemId . '/';
-
-        try {
-            $response = \App::$http->readGetResult($endpoint);
-            return $response->getEntity();
-        } catch (\Exception $e) {
-            $this->log("Error fetching mail data: " . $e->getMessage() . "\n\n");
-            echo "Error fetching mail data: " . $e->getMessage() . "\n\n";
-            return null;
-        }
-    }
-
 
     private function deleteEntitiesFromQueue(array $itemIds)
     {
