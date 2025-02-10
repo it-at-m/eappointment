@@ -98,6 +98,7 @@ jobs:
           MYSQL_DATABASE: zmsbo
           MYSQL_CHARACTER_SET: utf8mb4
           MYSQL_COLLATION: utf8mb4_unicode_ci
+          MYSQL_EXTRA_FLAGS: --innodb-lock-wait-timeout=120 --lock-wait-timeout=120
         ports:
           - 3306:3306
         options: >-
@@ -105,8 +106,6 @@ jobs:
           --health-interval 10s
           --health-timeout 10s
           --health-retries 5
-          --innodb-lock-wait-timeout=120
-          --lock-wait-timeout=120
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
@@ -164,6 +163,7 @@ jobs:
           MYSQL_DATABASE: zmsbo
           MYSQL_CHARACTER_SET: utf8mb4
           MYSQL_COLLATION: utf8mb4_unicode_ci
+          MYSQL_EXTRA_FLAGS: --innodb-lock-wait-timeout=120 --lock-wait-timeout=120
         ports:
           - 3306:3306
         options: >-
@@ -171,8 +171,6 @@ jobs:
           --health-interval 10s
           --health-timeout 10s
           --health-retries 5
-          --innodb-lock-wait-timeout=120
-          --lock-wait-timeout=120
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
