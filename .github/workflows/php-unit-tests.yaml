@@ -23,16 +23,16 @@ jobs:
       image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
       env:
         XDEBUG_MODE: coverage
-    outputs:
-      result: ${{ steps.set-result.outputs.result }}
+        PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
     steps:
       - uses: actions/checkout@main
       
-      - name: Configure Xdebug
-        if: matrix.module == 'zmsslim'
+      - name: Configure PHP
         run: |
-          echo "xdebug.mode=coverage" > /usr/local/etc/php/conf.d/xdebug.ini
-          echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/xdebug.ini
+          mkdir -p /tmp/php/conf.d
+          echo "zend_extension=xdebug.so" > /tmp/php/conf.d/xdebug.ini
+          echo "xdebug.mode=coverage" >> /tmp/php/conf.d/xdebug.ini
+          echo "xdebug.start_with_request=yes" >> /tmp/php/conf.d/xdebug.ini
 
       - name: Install Composer Dependencies
         run: |
@@ -53,7 +53,6 @@ jobs:
             --log-junit coverage/junit.xml
           echo "Coverage files generated:"
           ls -la coverage/
-
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
