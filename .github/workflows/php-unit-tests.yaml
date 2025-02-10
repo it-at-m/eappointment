@@ -45,9 +45,14 @@ jobs:
         run: |
           cd "${{ matrix.module }}"
           mkdir -p coverage
-          php -dxdebug.mode=coverage \
-              -dxdebug.start_with_request=yes \
-              ./vendor/bin/phpunit --coverage-html coverage/html --coverage-clover coverage/clover.xml
+          echo "Running tests with coverage for ${{ matrix.module }}"
+          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+            ./vendor/bin/phpunit \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml
+            --log-junit coverage/junit.xml
+          echo "Coverage files generated:"
+          ls -la coverage/
 
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
@@ -133,8 +138,14 @@ jobs:
           echo "Importing test data..."
           vendor/bin/importTestData --commit
           mkdir -p coverage
-          php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
-            --coverage-html coverage/html --coverage-clover coverage/clover.xml
+          echo "Running tests with coverage"
+          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+            ./vendor/bin/phpunit \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml
+            --log-junit coverage/junit.xml
+          echo "Coverage files generated:"
+          ls -la coverage/
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
@@ -191,11 +202,14 @@ jobs:
           cd zmsdb
           bin/importTestData --commit
           mkdir -p coverage
+          echo "Running tests with coverage"
           php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
             -v --colors=never --coverage-text \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
+          echo "Coverage files generated:"
+          ls -la coverage/
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
@@ -242,8 +256,12 @@ jobs:
           mkdir -p coverage
           docker-compose up -d
           docker-compose exec -T test php -dzend_extension=xdebug.so -dmemory_limit=-1 \
-            ./vendor/bin/phpunit --coverage-html coverage/html --coverage-clover coverage/clover.xml
-
+            ./vendor/bin/phpunit \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml \
+            --log-junit coverage/junit.xml
+          echo "Coverage files generated:"
+          ls -la coverage/
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
