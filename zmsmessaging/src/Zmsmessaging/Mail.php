@@ -63,7 +63,10 @@ class Mail extends BaseController
                             }
                         }
                     } catch (\Exception $exception) {
-                        $this->handleProcessingException($exception);
+                        $this->log("Error processing mail items: " . $exception->getMessage());
+                        $resultList[] = [
+                            'errorInfo' => $exception->getMessage()
+                        ];
                     }
                 }
             } else {
@@ -73,7 +76,7 @@ class Mail extends BaseController
                 $this->log("Messages divided into " . count($batches) . " batches.");
 
                 $processHandles = [];
-                foreach ($batches as $index => $batch) {
+                foreach ($batches as $batch) {
                     if ($this->maxRunTime < $this->getSpendTime()) {
                         $this->log("Max Runtime exceeded during batch processing - " . \App::$now->format('c'));
                         break;

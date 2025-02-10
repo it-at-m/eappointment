@@ -133,8 +133,7 @@ class Messaging
             $process,
             new Config(),
             null,
-            'appointment',
-            null
+            'appointment'
         );
 
         return self::twigView()->createTemplate($templateContent)->render($parameters);
@@ -150,8 +149,6 @@ class Messaging
         $parameters = self::generateMailParameters($processList, $config, $initiator, $status);
 
         $collection = (new ProcessList())->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
-        $mainProcess = $collection->getFirst();
-        $template = self::getTemplate('mail', $status, $mainProcess);
         if ($initiator) {
             $template = self::getTemplate('admin', $status);
         }
@@ -318,7 +315,7 @@ class Messaging
         $plainTextDescription = self::getPlainText($message);
 
         // Get the ICS template for the process status dynamically
-        $template = self::getTemplate('ics', $status, $process);
+        $template = self::getTemplate('ics', $status);
         if (!$template) {
             throw new \Exception("ICS template for status $status not found");
         }
