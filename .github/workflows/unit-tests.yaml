@@ -2,6 +2,15 @@ name: unit tests
 
 on:
   workflow_call:
+    outputs:
+      module-test-result:
+        value: ${{ jobs.module-test.result }}
+      zmsapi-test-result:
+        value: ${{ jobs.zmsapi-test.result }}
+      zmsdb-test-result:
+        value: ${{ jobs.zmsdb-test.result }}
+      zmsclient-test-result:
+        value: ${{ jobs.zmsclient-test.result }}
 
 jobs:
   module-test:
@@ -76,6 +85,9 @@ jobs:
           MYSQL_COLLATION: utf8mb4_unicode_ci
         ports:
           - 3306:3306
+        command: >-
+          --innodb-lock-wait-timeout=120
+          --lock-wait-timeout=120
         options: >-
           --health-cmd "mysqladmin ping"
           --health-interval 10s
@@ -134,6 +146,9 @@ jobs:
           MYSQL_COLLATION: utf8mb4_unicode_ci
         ports:
           - 3306:3306
+        command: >-
+          --innodb-lock-wait-timeout=120
+          --lock-wait-timeout=120
         options: >-
           --health-cmd "mysqladmin ping"
           --health-interval 10s
@@ -215,30 +230,3 @@ jobs:
           name: coverage-zmsclient
           path: zmsclient/coverage/
           retention-days: 1
-
-  combine-coverage:
-    needs: [module-test, zmsapi-test, zmsdb-test, zmsclient-test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download all coverage reports
-        uses: actions/download-artifact@v4
-        with:
-          path: all-coverage
-          merge-multiple: true
-
-      - name: Combine reports
-        run: |
-          mkdir -p combined-coverage
-          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
-            if [ -d "all-coverage/coverage-$module" ]; then
-              mkdir -p "combined-coverage/$module"
-              cp -r "all-coverage/coverage-$module"/* "combined-coverage/$module/"
-            fi
-          done
-
-      - name: Upload combined coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports
-          path: combined-coverage/
-          retention-days: 7
