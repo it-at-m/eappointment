@@ -118,8 +118,9 @@ class Index extends BaseController
         $translations = ['printText' => ''];
         if ($languageConfig) {
             foreach ($languageConfig['languages'] as $language) {
-                if ($language['language'] !== $currentLang)
+                if ($language['language'] !== $currentLang) {
                     continue;
+                }
                 foreach ($language['translations'] as $requestId => $translation) {
                     $translations[$requestId] = $translation;
                 }
