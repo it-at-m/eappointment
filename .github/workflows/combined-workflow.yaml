@@ -18,3 +18,9 @@ jobs:
       needs.call-unit-tests.result == 'success'
     steps:
       - run: echo "All required checks passed"
+  call-build-images:
+    needs: call-unit-tests
+    if: |
+      always() &&
+      needs.call-unit-tests.result == 'success'
+    uses: ./.github/workflows/build-images.yaml
