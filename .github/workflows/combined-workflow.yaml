@@ -19,7 +19,7 @@ jobs:
     steps:
       - run: echo "All required checks passed"
   call-build-images:
-    needs: call-unit-tests
+    needs: check-and-proceed
     if: |
       always() &&
       needs.call-unit-tests.result == 'success'
