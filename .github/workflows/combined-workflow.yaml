@@ -7,13 +7,14 @@ jobs:
     uses: ./.github/workflows/code-quality.yaml
 
   call-unit-tests:
-    needs: call-code-quality
-    if: always()
     uses: ./.github/workflows/unit-tests.yaml
 
-  call-build-images:
-    needs: call-unit-tests
+  check-and-proceed:
+    needs: [call-code-quality, call-unit-tests]
+    runs-on: ubuntu-latest
     if: |
       always() &&
+      (needs.call-code-quality.result == 'success' || needs.call-code-quality.result == 'skipped') &&
       needs.call-unit-tests.result == 'success'
-    uses: ./.github/workflows/build-images.yaml
+    steps:
+      - run: echo "All required checks passed"
