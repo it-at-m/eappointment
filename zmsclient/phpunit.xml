@@ -14,11 +14,19 @@
   verbose="true"
   processIsolation="false"
 >
-  <coverage processUncoveredFiles="true">
-    <include>
-      <directory suffix=".php">./src</directory>
-    </include>
-  </coverage>
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+        <exclude>
+            <directory>./vendor</directory>
+            <directory>./tests</directory>
+        </exclude>
+        <report>
+            <html outputDirectory="./coverage/html" />
+            <clover outputFile="./coverage/clover.xml" />
+        </report>
+    </coverage>
   <testsuites>
     <testsuite name="Zmsclient Test Suite">
       <directory>./tests/Zmsclient/</directory>
