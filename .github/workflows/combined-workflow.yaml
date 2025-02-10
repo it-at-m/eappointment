@@ -2,12 +2,11 @@ name: Combined Workflow
 
 on:
   push:
+    branches-ignore: [chore-zms-add-code-test-coverage-report]
   workflow_call:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
   packages: write
 
 jobs:
@@ -16,92 +15,6 @@ jobs:
 
   call-php-unit-tests:
     uses: ./.github/workflows/php-unit-tests.yaml
-
-  combine-php-test-coverage:
-    if: github.ref_name == 'next' 
-    needs: [call-php-unit-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download all coverage reports
-        uses: actions/download-artifact@v4
-        with:
-          pattern: 'coverage-*'
-          path: public/coverage
-          merge-multiple: false
-
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports
-          path: public/coverage/
-          retention-days: 7
-
-  build-api-docs:
-    if: github.ref_name == 'next' 
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.0'
-          extensions: mbstring, json
-          tools: composer
-
-      - name: Install PHP dependencies
-        run: |
-          composer install --working-dir=zmsapi
-          composer install --working-dir=zmscitizenapi
-
-      - name: Run PHP post-install scripts
-        run: |
-          cd zmsapi && bin/configure && composer run-script post-install-cmd && cd ..
-          cd zmscitizenapi && bin/configure && composer run-script post-install-cmd && cd ..
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install Node.js dependencies
-        run: |
-          cd zmsapi && npm install && cd ..
-          cd zmscitizenapi && npm install && cd ..
-
-      - name: Build projects
-        run: |
-          cd zmsapi && npm run build && cd ..
-          cd zmscitizenapi && npm run build && cd ..
-
-      - name: Generate Swagger documentation
-        run: |
-          cd zmsapi
-          npm run doc
-          npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
-          cd ..
-          
-          cd zmscitizenapi
-          npm run doc
-          npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
-          cd ..
-
-      - name: Upload API docs artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-docs
-          path: |
-            zmsapi/public/doc/
-            zmscitizenapi/public/doc/
-
-  deploy-to-pages:
-    needs: [combine-php-test-coverage, build-api-docs]
-    if: github.ref_name == 'next' && needs.build-api-docs.result == 'success'
-    uses: ./.github/workflows/deploy-pages.yaml
-    with:
-      coverage_artifact: coverage-reports
-      api_docs_artifact: api-docs
 
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
