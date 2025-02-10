@@ -1,0 +1,54 @@
+name: Code Coverage
+
+on:
+  workflow_call:  # Makes this a reusable workflow
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        module: [
+          'mellon',
+          'zmsadmin',
+          'zmsapi',
+          'zmscalldisplay',
+          'zmscitizenapi',
+          'zmsclient',
+          'zmsdb',
+          'zmsdldb',
+          'zmsentities',
+          'zmsmessaging',
+          'zmsslim',
+          'zmsstatistic',
+          'zmsticketprinter'
+        ]
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        coverage: pcov
+        tools: composer:v2
+        ini-values: memory_limit=512M
+
+    - name: Install dependencies
+      working-directory: ${{ matrix.module }}
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run tests with coverage
+      working-directory: ${{ matrix.module }}
+      run: |
+        mkdir -p coverage
+        vendor/bin/phpunit --coverage-html coverage --coverage-clover coverage/coverage.xml
+
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-${{ matrix.module }}
+        path: ${{ matrix.module }}/coverage/
+        retention-days: 14

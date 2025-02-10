@@ -15,3 +15,4 @@ vendor.old
 vendor.update
 VERSION
 .phpunit.result.cache
+coverage
