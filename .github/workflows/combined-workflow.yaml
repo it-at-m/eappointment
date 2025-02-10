@@ -3,11 +3,12 @@ name: Combined Workflow
 on: [push]
 
 jobs:
-  call-php-code-quality:
-    uses: ./.github/workflows/php-code-quality.yaml
 
   call-php-code-coverage:
     uses: ./.github/workflows/php-code-coverage.yaml
+
+  call-php-code-quality:
+    uses: ./.github/workflows/php-code-quality.yaml
 
   call-php-unit-tests:
     uses: ./.github/workflows/unit-tests.yaml
