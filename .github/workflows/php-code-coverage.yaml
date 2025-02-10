@@ -4,31 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.0'
-        coverage: pcov
-        tools: composer:v2
-        ini-values: memory_limit=512M
-
-    - name: Cache PHP setup
-      uses: actions/cache@v4
-      with:
-        path: |
-          /opt/hostedtoolcache/php
-          ~/.composer/cache
-        key: php-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          php-${{ runner.os }}-
-
   coverage:
-    needs: setup
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -52,22 +28,28 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Restore PHP setup
-      uses: actions/cache@v4
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
       with:
-        path: |
-          /opt/hostedtoolcache/php
-          ~/.composer/cache
-        key: php-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          php-${{ runner.os }}-
+        php-version: '8.0'
+        coverage: pcov
+        tools: composer:v2
+        ini-values: memory_limit=512M
 
     - name: Install dependencies
       working-directory: ${{ matrix.module }}
       run: composer install --prefer-dist --no-progress
 
+    - name: Add ReturnTypeWillChange attribute
+      run: |
+        if [ -f "zmsentities/src/Zmsentities/Schema/Entity.php" ]; then
+          sed -i '1,/class Entity/s/class Entity/#[\ReturnTypeWillChange]\nclass Entity/' zmsentities/src/Zmsentities/Schema/Entity.php
+        fi
+
     - name: Run tests with coverage
       working-directory: ${{ matrix.module }}
+      env:
+        XDEBUG_MODE: coverage
       run: |
         mkdir -p coverage
         vendor/bin/phpunit --coverage-html coverage/html --coverage-clover coverage/clover.xml
