@@ -91,7 +91,7 @@ class Meta extends Base
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool
+    public function clearEntity(array $addWhere = []): bool
     {
         try {
             return $this->deleteWith(
@@ -111,13 +111,13 @@ class Meta extends Base
         string $locale = '',
         string $objectHash = '',
         string $type = ''
-    ) : bool {
+    ): bool {
         try {
             $statment = $this->getPDOAccess()->prepare(
                 "SELECT count(1) AS count FROM meta WHERE object_id = ? AND locale = ? AND hash = ? AND type = ?"
             );
             $fields = $this->get(['object_id', 'locale', 'hash', 'type']);
-            
+
             $result = $statment->execute(array_values($fields));
 
             $needsUpdate = false;

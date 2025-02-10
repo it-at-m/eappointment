@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -11,7 +12,6 @@ use BO\Mellon\Validator;
 
 class DayoffByYear extends BaseController
 {
-
     /**
      *
      * @return String
@@ -24,7 +24,7 @@ class DayoffByYear extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $year = Validator::value($args['year'])->isNumber()->getValue();
-        $collection = \App::$http->readGetResult('/dayoff/'. $year .'/')->getCollection();
+        $collection = \App::$http->readGetResult('/dayoff/' . $year . '/')->getCollection();
         $dayOffList = ($collection) ? array_values($collection->sortByCustomKey('date')->getArrayCopy()) : null;
 
         $updated = false;
@@ -32,7 +32,7 @@ class DayoffByYear extends BaseController
         if (array_key_exists('save', (array) $input)) {
             $data = (array_key_exists('dayoff', $input)) ? $input['dayoff'] : [];
             $collection = (new Collection($data))->withTimestampFromDateformat();
-            \App::$http->readPostResult('/dayoff/'. $year .'/', $collection);
+            \App::$http->readPostResult('/dayoff/' . $year . '/', $collection);
             $updated = true;
             return \BO\Slim\Render::redirect('dayoffByYear', ['year' => $year], [
                 'success' => 'dayoff_saved'

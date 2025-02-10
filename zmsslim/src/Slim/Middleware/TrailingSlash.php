@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -18,7 +19,7 @@ class TrailingSlash
         if (substr($path, -1) !== '/' && !pathinfo($path, PATHINFO_EXTENSION)) {
             // permanently redirect paths without a trailing slash
             // to their trailing counterpart
-            $uri = $uri->withPath($path. '/');
+            $uri = $uri->withPath($path . '/');
             if ($request->getHeader('X-Ssl') && 'no' != $request->getHeader('X-Ssl')) {
                 $uri = $uri->withScheme('https');
                 $uriString = (string)$uri;

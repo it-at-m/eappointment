@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
@@ -12,6 +13,10 @@ use BO\Zmsentities\Collection\ScopeList;
 use DateTime;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @TODO: Split this service into domain-specific validation services
+ */
 class ValidationService
 {
     private static ?string $currentLanguage = null;
@@ -19,7 +24,8 @@ class ValidationService
     private const MIN_PROCESS_ID = 1;
     private const PHONE_PATTERN = '/^\+?[1-9]\d{6,14}$/';
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
-    private const MAX_FUTURE_DAYS = 365; // Maximum days in the future for appointments
+    private const MAX_FUTURE_DAYS = 365;
+    // Maximum days in the future for appointments
 
     public static function setLanguageContext(?string $language): void
     {
@@ -40,7 +46,7 @@ class ValidationService
         if ($request->getMethod() !== "GET") {
             return ['errors' => [self::getError('invalidRequest')]];
         }
-    
+
         return [];
     }
 
@@ -53,11 +59,11 @@ class ValidationService
         if ($request->getMethod() !== "POST") {
             return ['errors' => [self::getError('invalidRequest')]];
         }
-    
+
         if ($request->getParsedBody() === null) {
             return ['errors' => [self::getError('invalidRequest')]];
         }
-    
+
         return [];
     }
 
@@ -78,21 +84,18 @@ class ValidationService
         }
 
         $invalidServiceIds = array_diff($serviceIds, $availableServiceIds);
-        
-        return empty($invalidServiceIds) 
-            ? [] 
+        return empty($invalidServiceIds)
+            ? []
             : ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
     }
 
-    public static function validateGetBookableFreeDays(
-        ?array $officeIds,
-        ?array $serviceIds,
-        ?string $startDate, 
-        ?string $endDate, 
-        ?array $serviceCounts
-    ): array {
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract validation rules into separate rule objects using the specification pattern
+     */
+    public static function validateGetBookableFreeDays(?array $officeIds, ?array $serviceIds, ?string $startDate, ?string $endDate, ?array $serviceCounts): array
+    {
         $errors = [];
-
         if (!self::isValidOfficeIds($officeIds)) {
             $errors[] = self::getError('invalidOfficeId');
         }
@@ -129,7 +132,6 @@ class ValidationService
     public static function validateGetProcessById(?int $processId, ?string $authKey): array
     {
         $errors = [];
-
         if (!self::isValidProcessId($processId)) {
             $errors[] = self::getError('invalidProcessId');
         }
@@ -141,14 +143,9 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateGetAvailableAppointments(
-        ?string $date, 
-        ?array $officeIds,
-        ?array $serviceIds, 
-        ?array $serviceCounts
-    ): array {
+    public static function validateGetAvailableAppointments(?string $date, ?array $officeIds, ?array $serviceIds, ?array $serviceCounts): array
+    {
         $errors = [];
-
         if (!$date || !self::isValidDate($date)) {
             $errors[] = self::getError('invalidDate');
         }
@@ -168,14 +165,9 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validatePostAppointmentReserve(
-        ?int $officeId, 
-        ?array $serviceIds, 
-        ?array $serviceCounts, 
-        ?int $timestamp
-    ): array {
+    public static function validatePostAppointmentReserve(?int $officeId, ?array $serviceIds, ?array $serviceCounts, ?int $timestamp): array
+    {
         $errors = [];
-
         if (!self::isValidOfficeId($officeId)) {
             $errors[] = self::getError('invalidOfficeId');
         }
@@ -195,16 +187,9 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateUpdateAppointmentInputs(
-        ?int $processId, 
-        ?string $authKey, 
-        ?string $familyName, 
-        ?string $email, 
-        ?string $telephone, 
-        ?string $customTextfield
-    ): array {
+    public static function validateUpdateAppointmentInputs(?int $processId, ?string $authKey, ?string $familyName, ?string $email, ?string $telephone, ?string $customTextfield): array
+    {
         $errors = [];
-
         if (!self::isValidProcessId($processId)) {
             $errors[] = self::getError('invalidProcessId');
         }
@@ -310,29 +295,28 @@ class ValidationService
     public static function validateServiceArrays(array $serviceIds, array $serviceCounts): array
     {
         $errors = [];
-        
         if (empty($serviceIds) || empty($serviceCounts)) {
             $errors[] = self::getError('emptyServiceArrays');
         }
-        
+
         if (count($serviceIds) !== count($serviceCounts)) {
             $errors[] = self::getError('mismatchedArrays');
         }
-        
+
         foreach ($serviceIds as $id) {
             if (!is_numeric($id)) {
                 $errors[] = self::getError('invalidServiceId');
                 break;
             }
         }
-        
+
         foreach ($serviceCounts as $count) {
             if (!is_numeric($count) || $count < 0) {
                 $errors[] = self::getError('invalidServiceCount');
                 break;
             }
         }
-        
+
         return $errors;
     }
 
@@ -348,7 +332,6 @@ class ValidationService
         $start = new DateTime($startDate);
         $end = new DateTime($endDate);
         $diff = $start->diff($end);
-        
         return $diff->days <= self::MAX_FUTURE_DAYS;
     }
 
@@ -389,7 +372,7 @@ class ValidationService
         }
 
         foreach ($serviceCounts as $count) {
-            if (!is_numeric($count) || $count < 0 || !preg_match(self::SERVICE_COUNT_PATTERN, (string)$count)) {
+            if (!is_numeric($count) || $count < 0 || !preg_match(self::SERVICE_COUNT_PATTERN, (string) $count)) {
                 return false;
             }
         }

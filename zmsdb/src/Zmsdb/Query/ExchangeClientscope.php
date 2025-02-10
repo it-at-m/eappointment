@@ -36,7 +36,7 @@ class ExchangeClientscope extends Base
             0 AS withappointment,
             0 AS missedwithappointment,
             0 AS requestcount
-          FROM '. self::NOTIFICATIONSTABLE .'
+          FROM ' . self::NOTIFICATIONSTABLE . '
           WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend
           GROUP BY date
 
@@ -51,7 +51,7 @@ class ExchangeClientscope extends Base
             SUM(IF(`nicht_erschienen`=0 AND mitTermin=1,AnzahlPersonen,0)) as withappointment,
             SUM(IF(`nicht_erschienen`=1 AND mitTermin=1,AnzahlPersonen,0)) as missedwithappointment,
             0 AS requestcount
-            FROM '. ProcessStatusArchived::TABLE .'
+            FROM ' . ProcessStatusArchived::TABLE . '
             WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend
               GROUP BY date
 
@@ -66,8 +66,8 @@ class ExchangeClientscope extends Base
             0 AS withappointment,
             0 AS missedwithappointment,
             COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as requestcount
-            FROM '. ProcessStatusArchived::TABLE .' a
-              LEFT JOIN '. self::BATABLE .' as ba ON a.BuergerarchivID = ba.BuergerarchivID
+            FROM ' . ProcessStatusArchived::TABLE . ' a
+              LEFT JOIN ' . self::BATABLE . ' as ba ON a.BuergerarchivID = ba.BuergerarchivID
             WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend AND nicht_erschienen=0
             GROUP BY date
       ) as unionresult
@@ -80,14 +80,14 @@ class ExchangeClientscope extends Base
           periodstart,
           periodend,
           CONCAT(scope.`Bezeichnung`, " ", scope.`standortinfozeile`) AS description
-      FROM '. Scope::TABLE .' AS scope
+      FROM ' . Scope::TABLE . ' AS scope
           INNER JOIN
             (
               SELECT
                 s.standortid as scopeid,
                 MIN(s.`datum`) AS periodstart,
                 MAX(s.`datum`) AS periodend
-              FROM '. self::TABLE .' s
+              FROM ' . self::TABLE . ' s
               group by scopeid
             )
           maxAndminDate ON maxAndminDate.`scopeid` = scope.`StandortID`
@@ -97,12 +97,12 @@ class ExchangeClientscope extends Base
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT date
-        FROM '. Scope::TABLE .' AS scope
+        FROM ' . Scope::TABLE . ' AS scope
             INNER JOIN (
               SELECT
                 `StandortID`,
                 DATE_FORMAT(`Datum`,"%Y-%m") AS date
-              FROM '. self::TABLE .'
+              FROM ' . self::TABLE . '
             ) s ON scope.`StandortID` = s.`standortid`
         WHERE scope.`StandortID` = :scopeid
         GROUP BY date

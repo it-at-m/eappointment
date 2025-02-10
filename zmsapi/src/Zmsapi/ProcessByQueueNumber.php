@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope;
 
 class ProcessByQueueNumber extends BaseController
 {
@@ -30,7 +31,7 @@ class ProcessByQueueNumber extends BaseController
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $queueList = (new \BO\Zmsdb\Scope)->readQueueListWithWaitingTime($scope, \App::$now, $resolveReferences + 1);
+        $queueList = (new \BO\Zmsdb\Scope())->readQueueListWithWaitingTime($scope, \App::$now, $resolveReferences + 1);
         $process = $queueList->getQueueByNumber($args['number']);
         if ($process) {
             $process = $process->getProcess();

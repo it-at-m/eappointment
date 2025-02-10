@@ -15,7 +15,7 @@ class Workstation extends Base implements MappingInterface
 
     const QUERY_LOGIN = '
         UPDATE
-            '. self::TABLE .'
+            ' . self::TABLE . '
         SET
             `SessionID`=?,
             `sessionExpiry`=?,
@@ -31,7 +31,7 @@ class Workstation extends Base implements MappingInterface
 
     const QUERY_LOGIN_OIDC = '
         UPDATE
-            '. self::TABLE .'
+            ' . self::TABLE . '
         SET
             `SessionID`=?,
             `sessionExpiry`=?,
@@ -45,7 +45,7 @@ class Workstation extends Base implements MappingInterface
 
     const QUERY_PROCESS_RESET = '
         UPDATE
-            '. Process::TABLE .'
+            ' . Process::TABLE . '
         SET
             `NutzerID` = 0,
             `aufrufzeit` = "00:00:00"
@@ -55,7 +55,7 @@ class Workstation extends Base implements MappingInterface
 
     const QUERY_LOGOUT = '
         UPDATE
-            '. self::TABLE .'
+            ' . self::TABLE . '
         SET
             `SessionID`="",
             `sessionExpiry`=NULL,
@@ -71,7 +71,7 @@ class Workstation extends Base implements MappingInterface
         SELECT
             SessionID as hash
         FROM
-            '. self::TABLE .'
+            ' . self::TABLE . '
         WHERE
             `Name` = :loginName
         LIMIT 1
@@ -79,7 +79,7 @@ class Workstation extends Base implements MappingInterface
 
     const QUERY_UPDATE_AUTHKEY = '
         UPDATE
-            '. self::TABLE .'
+            ' . self::TABLE . '
         SET
             `SessionID`=?,
             `sessionExpiry`=?

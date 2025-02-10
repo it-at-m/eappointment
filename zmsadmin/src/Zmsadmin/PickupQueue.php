@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -23,9 +24,9 @@ class PickupQueue extends BaseController
         $limit = $validator->getParameter('limit')->isNumber()->setDefault(Pickup::$defaultLimit)->getValue();
         $offset = $validator->getParameter('offset')->isNumber()->setDefault(0)->getValue();
         $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
-        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/')->getEntity();
+        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
         $department = \App::$http->readGetResult(
-            '/scope/'. $workstation->scope['id'] .'/department/',
+            '/scope/' . $workstation->scope['id'] . '/department/',
             [
                 'resolveReferences' => 2
             ]
@@ -37,7 +38,7 @@ class PickupQueue extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'block/pickup/'. $template .'.twig',
+            'block/pickup/' . $template . '.twig',
             array(
               'workstation' => $workstation,
               'pickupList' => $department->getScopeList(),

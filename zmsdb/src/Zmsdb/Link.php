@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Link as Entity;
-use \BO\Zmsentities\Collection\LinkList as Collection;
+use BO\Zmsentities\Link as Entity;
+use BO\Zmsentities\Collection\LinkList as Collection;
 
 class Link extends Base
 {

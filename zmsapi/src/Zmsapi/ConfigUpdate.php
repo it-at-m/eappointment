@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Config as Query;
-use \BO\Zmsapi\Helper\User;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Config as Query;
+use BO\Zmsapi\Helper\User;
 
 class ConfigUpdate extends BaseController
 {

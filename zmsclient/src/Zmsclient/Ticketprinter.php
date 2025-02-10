@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsclient;
 
 /**
@@ -21,7 +22,7 @@ class Ticketprinter
             setcookie(
                 self::HASH_COOKIE_NAME,
                 $hash,
-                time() + (60*60*24*365*10),
+                time() + (60 * 60 * 24 * 365 * 10),
                 $request->getBasePath(),
                 null,
                 false
@@ -55,7 +56,7 @@ class Ticketprinter
             setcookie(
                 self::HOME_URL_COOKIE_NAME,
                 $url,
-                time() + (60*60*24*365*10),
+                time() + (60 * 60 * 24 * 365 * 10),
                 $request->getBasePath(),
                 null,
                 false,

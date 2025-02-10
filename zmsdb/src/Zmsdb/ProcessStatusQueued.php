@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Process as Entity;
-use \BO\Zmsentities\Collection\ProcessList as Collection;
+use BO\Zmsentities\Process as Entity;
+use BO\Zmsentities\Collection\ProcessList as Collection;
 
 /**
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process as Query;
-use \BO\Zmsdb\ProcessStatusQueued;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Process as Query;
+use BO\Zmsdb\ProcessStatusQueued;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -35,7 +36,7 @@ class ProcessQueued extends BaseController
         $process->status = 'queued';
         $process->queue['callCount'] = 0;
         $process->queue['lastCallTime'] = 0;
-        $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
+        $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], 1);
         $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
         $process = (new Query())->updateEntity(
             $process,

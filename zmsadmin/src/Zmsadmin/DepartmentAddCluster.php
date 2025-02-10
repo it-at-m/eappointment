@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -22,7 +23,7 @@ class DepartmentAddCluster extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $department = \App::$http
-            ->readGetResult('/department/'. $departmentId .'/', ['resolveReferences' => 2])->getEntity();
+            ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 2])->getEntity();
         $organisation = \App::$http->readGetResult('/department/' . $departmentId . '/organisation/')->getEntity();
         $input = $request->getParsedBody();
 
@@ -30,7 +31,7 @@ class DepartmentAddCluster extends BaseController
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->scopes = (new \BO\Zmsentities\Collection\ScopeList($entity->scopes))->withUniqueScopes();
             $entity = \App::$http
-                ->readPostResult('/department/'. $department->id .'/cluster/', $entity)
+                ->readPostResult('/department/' . $department->id . '/cluster/', $entity)
                 ->getEntity();
             (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToCluster($entity->id);
             return \BO\Slim\Render::redirect(

@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Notification as Entity;
-use \BO\Zmsentities\Collection\NotificationList as Collection;
+use BO\Zmsentities\Notification as Entity;
+use BO\Zmsentities\Collection\NotificationList as Collection;
 
 class Notification extends Base
 {
