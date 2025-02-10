@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.ref_name == 'next'
+    #if: github.ref_name == 'next'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
