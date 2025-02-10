@@ -51,9 +51,6 @@ jobs:
     needs: [call-php-code-quality, call-php-unit-tests]
     if: |
       always() &&
-      needs.call-php-unit-tests.outputs.module-test-result == 'success' &&
-      needs.call-php-unit-tests.outputs.zmsapi-test-result == 'success' &&
-      needs.call-php-unit-tests.outputs.zmsdb-test-result == 'success' &&
-      needs.call-php-unit-tests.outputs.zmsclient-test-result == 'success' &&
-      needs.call-php-code-quality.result == 'success'
+      needs.call-code-quality.result == 'success' &&
+      needs.call-unit-tests.result == 'success'
     uses: ./.github/workflows/php-build-images.yaml
