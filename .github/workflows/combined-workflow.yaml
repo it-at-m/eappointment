@@ -3,10 +3,6 @@ name: Combined Workflow
 on: [push]
 
 jobs:
-
-  call-php-code-coverage:
-    uses: ./.github/workflows/php-code-coverage.yaml
-
   call-php-code-quality:
     uses: ./.github/workflows/php-code-quality.yaml
 
@@ -30,3 +26,6 @@ jobs:
       needs.call-php-unit-tests.result == 'success' &&
       needs.call-php-code-quality.result == 'success'
     uses: ./.github/workflows/build-images.yaml
+
+  call-php-code-coverage:
+    uses: ./.github/workflows/php-code-coverage.yaml

@@ -12,7 +12,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2'
+        php-version: '8.0'
         coverage: pcov
         tools: composer:v2
         ini-values: memory_limit=512M
@@ -104,4 +104,4 @@ jobs:
       with:
         name: coverage-reports
         path: combined-coverage/
-        retention-days: 14
+        retention-days: 7
