@@ -1,26 +1,25 @@
 name: Combined Workflow
 
-on: [push]
+on:
+  push:
+    branches-ignore: [next]
+  workflow_call:
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-  call-code-quality:
-    uses: ./.github/workflows/code-quality.yaml
+  call-php-code-quality:
+    uses: ./.github/workflows/php-code-quality.yaml
 
-  call-unit-tests:
-    uses: ./.github/workflows/unit-tests.yaml
+  call-php-unit-tests:
+    uses: ./.github/workflows/php-unit-tests.yaml
 
-  check-and-proceed:
-    needs: [call-code-quality, call-unit-tests]
-    runs-on: ubuntu-latest
+  call-php-build-images:
+    needs: [call-php-code-quality, call-php-unit-tests]
     if: |
       always() &&
-      needs.call-code-quality.result == 'success' &&
-      needs.call-unit-tests.result == 'success'
-    steps:
-      - run: echo "All required checks passed"
-  call-build-images:
-    needs: check-and-proceed
-    if: |
-      always() &&
-      needs.call-unit-tests.result == 'success'
-    uses: ./.github/workflows/build-images.yaml
+      needs.call-php-code-quality.result == 'success' &&
+      needs.call-php-unit-tests.result == 'success'
+    uses: ./.github/workflows/php-build-images.yaml

@@ -32,8 +32,7 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 * collecting statistics like waiting time or served clients per day
 * emergency call for employees
 
-[ZMSAPI Documentation](https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html)
-[ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html)
+[Code Coverage ZMSAPI and ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/)
 
 ## Contact
 [Overview](https://opensource.muenchen.de/software/zeitmanagementsystem.html)
@@ -79,8 +78,7 @@ Das ZMS-System dient zur Verwaltung von Warteschlangen für Menschen. Es bietet 
 * Sammeln von Statistiken wie Wartezeiten oder bedienten Kunden pro Tag
 * Notruf für Mitarbeiter
 
-[ZMSAPI-Dokumentation](https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html)
-[ZMSCITIZENAPI-Dokumentation](https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html)
+[Code-Abdeckung ZMSAPI und ZMSCITIZENAPI Dokumentation](https://it-at-m.github.io/eappointment/)
 
 ## Kontakt
 BerlinOnline Stadtportal GmbH & Co KG Kontakt: 

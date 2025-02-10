@@ -1,27 +1,20 @@
-# Workflow for deploying API documentation to Pages
-name: Deploy API Documentation to Pages
+name: Build API Documentation
 
 on:
-  push:
-    branches: ["main"]
-  workflow_dispatch:
+  workflow_call:
+    outputs:
+      result:
+        description: "Build result"
+        value: ${{ jobs.build.outputs.result }}
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
-
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,14 +63,15 @@ jobs:
           npx swagger-cli bundle -o public/doc/swagger.json public/doc/swagger.yaml
           cd ..
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload API docs artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: '.'
+          name: api-docs
+          path: |
+            zmsapi/public/doc/
+            zmscitizenapi/public/doc/
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT

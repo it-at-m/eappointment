@@ -19,3 +19,4 @@ public/_css/statistic.css.map
 .phpunit.result.cache
 .idea
 .parcel-cache
+coverage
