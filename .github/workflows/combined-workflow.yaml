@@ -9,10 +9,6 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
   call-php-code-quality:
     uses: ./.github/workflows/php-code-quality.yaml
