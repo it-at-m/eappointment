@@ -56,10 +56,11 @@ jobs:
           name: coverage-reports
           path: combined-coverage/
           retention-days: 7
+
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
     if: |
       always() &&
-      needs.call-code-quality.result == 'success' &&
-      needs.call-unit-tests.result == 'success'
+      needs.call-php-code-quality.result == 'success' &&
+      needs.call-php-unit-tests.result == 'success'
     uses: ./.github/workflows/php-build-images.yaml
