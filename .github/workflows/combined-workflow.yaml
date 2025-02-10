@@ -1,83 +1,31 @@
-name: Code Coverage
+name: Combined Workflow
 
-on:
-  workflow_call:
+on: [push]
 
 jobs:
-  coverage:
+  call-php-code-quality:
+    uses: ./.github/workflows/php-code-quality.yaml
+
+  call-php-code-coverage:
+    uses: ./.github/workflows/php-code-coverage.yaml
+
+  call-php-unit-tests:
+    uses: ./.github/workflows/unit-tests.yaml
+
+  check-and-proceed:
+    needs: [call-php-code-quality, call-php-unit-tests, call-php-code-coverage]
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        module: [
-          'mellon',
-          'zmsadmin',
-          'zmsapi',
-          'zmscalldisplay',
-          'zmscitizenapi',
-          'zmsclient',
-          'zmsdb',
-          'zmsdldb',
-          'zmsentities',
-          'zmsmessaging',
-          'zmsslim',
-          'zmsstatistic',
-          'zmsticketprinter'
-        ]
-    
+    if: |
+      always() &&
+      needs.call-php-code-quality.result == 'success' &&
+      needs.call-php-unit-tests.result == 'success'
     steps:
-    - uses: actions/checkout@v4
+      - run: echo "All required checks passed"
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        coverage: pcov
-        tools: composer:v2
-        ini-values: memory_limit=512M
-
-    - name: Install dependencies
-      working-directory: ${{ matrix.module }}
-      run: composer install --prefer-dist --no-progress
-
-    - name: Run tests with coverage
-      working-directory: ${{ matrix.module }}
-      run: |
-        mkdir -p coverage
-        vendor/bin/phpunit --coverage-html coverage/html --coverage-clover coverage/clover.xml
-
-    - name: Upload individual coverage
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-temp-${{ matrix.module }}
-        path: ${{ matrix.module }}/coverage/
-        retention-days: 1
-        compression-level: 6  # Balance between size and speed
-
-  combine-coverage:
-    needs: coverage
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Download all coverage reports
-      uses: actions/download-artifact@v4
-      with:
-        path: all-coverage
-        merge-multiple: true  # New in v4, better for multiple artifacts
-
-    - name: Combine reports
-      run: |
-        mkdir -p combined-coverage
-        for module in mellon zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsclient zmsdb zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter; do
-          if [ -d "all-coverage/coverage-temp-$module" ]; then
-            mkdir -p "combined-coverage/$module"
-            cp -r "all-coverage/coverage-temp-$module"/* "combined-coverage/$module/"
-          fi
-        done
-
-    - name: Upload combined coverage
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-reports
-        path: combined-coverage/
-        retention-days: 7
+  call-build-images:
+    needs: check-and-proceed
+    if: |
+      always() &&
+      needs.call-php-unit-tests.result == 'success' &&
+      needs.call-php-code-quality.result == 'success'
+    uses: ./.github/workflows/build-images.yaml

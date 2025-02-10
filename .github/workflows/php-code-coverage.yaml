@@ -1,7 +1,7 @@
 name: Code Coverage
 
 on:
-  workflow_call:  # Makes this a reusable workflow
+  workflow_call:
 
 jobs:
   coverage:
@@ -44,11 +44,40 @@ jobs:
       working-directory: ${{ matrix.module }}
       run: |
         mkdir -p coverage
-        vendor/bin/phpunit --coverage-html coverage --coverage-clover coverage/coverage.xml
+        vendor/bin/phpunit --coverage-html coverage/html --coverage-clover coverage/clover.xml
 
-    - name: Upload coverage reports
-      uses: actions/upload-artifact@v3
+    - name: Upload individual coverage
+      uses: actions/upload-artifact@v4
       with:
-        name: coverage-${{ matrix.module }}
+        name: coverage-temp-${{ matrix.module }}
         path: ${{ matrix.module }}/coverage/
-        retention-days: 14
+        retention-days: 1
+        compression-level: 6  # Balance between size and speed
+
+  combine-coverage:
+    needs: coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Download all coverage reports
+      uses: actions/download-artifact@v4
+      with:
+        path: all-coverage
+        merge-multiple: true  # New in v4, better for multiple artifacts
+
+    - name: Combine reports
+      run: |
+        mkdir -p combined-coverage
+        for module in mellon zmsadmin zmsapi zmscalldisplay zmscitizenapi zmsclient zmsdb zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter; do
+          if [ -d "all-coverage/coverage-temp-$module" ]; then
+            mkdir -p "combined-coverage/$module"
+            cp -r "all-coverage/coverage-temp-$module"/* "combined-coverage/$module/"
+          fi
+        done
+
+    - name: Upload combined coverage
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-reports
+        path: combined-coverage/
+        retention-days: 7
