@@ -1,9 +1,8 @@
 <?php
 
-
 namespace BO\Zmsentities\Schema;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 /**
  * @SuppressWarnings(NumberOfChildren)

@@ -60,6 +60,6 @@ class Profiler
 
     public function __toString()
     {
-        return $this->message . "=" . $this->getMilliSeconds() . "ms/#".$this->includedFiles;
+        return $this->message . "=" . $this->getMilliSeconds() . "ms/#" . $this->includedFiles;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Process;
 
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
@@ -25,7 +26,7 @@ class ProcessPreconfirm extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-        
+
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
@@ -37,7 +38,7 @@ class ProcessPreconfirm extends BaseController
         if ('reserved' != $process->status) {
             throw new Exception\Process\ProcessNotReservedAnymore();
         }
-        
+
         $process = (new Process())->updateProcessStatus(
             $process,
             'preconfirmed',
@@ -47,7 +48,7 @@ class ProcessPreconfirm extends BaseController
         );
         $message = Response\Message::create($request);
         $message->data = $process;
-        
+
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;

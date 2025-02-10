@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process as Query;
-use \BO\Zmsdb\ProcessStatusQueued;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Process as Query;
+use BO\Zmsdb\ProcessStatusQueued;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -32,10 +33,10 @@ class ProcessPickup extends BaseController
 
         $process = $this->readValidProcess($workstation, $entity, $input);
         $this->testProcessAccess($workstation, $process);
-        (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation, $process, \App::$now);
+        (new \BO\Zmsdb\Workstation())->writeAssignedProcess($workstation, $process, \App::$now);
 
         $message = Response\Message::create($request);
-        $message->data = (new Query)->readEntity($process->id, $process->authKey);
+        $message->data = (new Query())->readEntity($process->id, $process->authKey);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
@@ -55,7 +56,7 @@ class ProcessPickup extends BaseController
 
     protected function testProcessAccess($workstation, $process)
     {
-        $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
+        $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], 1);
         $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
         if ($workstation->process && $workstation->process->hasId() && $workstation->process->id != $process->id) {
             $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
@@ -83,7 +84,7 @@ class ProcessPickup extends BaseController
             $process = ProcessStatusQueued::init()
                 ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id'], 0, 100000000);
             if (! $process->id) {
-                $workstation = (new \BO\Zmsdb\Workstation)->readResolvedReferences($workstation, 1);
+                $workstation = (new \BO\Zmsdb\Workstation())->readResolvedReferences($workstation, 1);
                 $process = (new Query())->writeNewPickup(
                     $workstation->scope,
                     \App::$now,

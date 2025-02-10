@@ -11,7 +11,6 @@ use Ulrichsg\Getopt\Option;
  */
 class Config extends Base
 {
-
     /**
      * @SuppressWarnings(Parameter)
      *
@@ -82,6 +81,6 @@ class Config extends Base
     protected function printValue(\League\CLImate\CLImate $climate, $key, $value)
     {
         $padding = $climate->padding(25)->char(' ');
-        $padding->label("\"$key\"")->result("= \"". (string)$value . '"');
+        $padding->label("\"$key\"")->result("= \"" . (string)$value . '"');
     }
 }

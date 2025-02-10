@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -44,7 +45,7 @@ class TicketprinterStatusByScope extends BaseController
             $scope = \App::$http->readPostResult('/scope/' . $scope->id . '/', $scope)->getEntity();
 
             return \BO\Slim\Render::redirect('ticketprinterStatusByScope', ['id' => $scopeId], [
-                'success' => 'ticketprinter_deactivated_'. $scope->status['ticketprinter']['deactivated']
+                'success' => 'ticketprinter_deactivated_' . $scope->status['ticketprinter']['deactivated']
             ]);
         }
 

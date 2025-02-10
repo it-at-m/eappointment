@@ -243,7 +243,7 @@ class Scope extends Base implements MappingInterface
                         SELECT COUNT(*)
                         FROM nutzer
                         WHERE nutzer.StandortID = scope.StandortID
-                        AND nutzer.Datum = "'. $dateTime->format('Y-m-d') .'"
+                        AND nutzer.Datum = "' . $dateTime->format('Y-m-d') . '"
                         AND nutzer.Arbeitsplatznr <> 0
                     )
                 )
@@ -389,8 +389,8 @@ class Scope extends Base implements MappingInterface
         if (!$data[$this->getPrefixed('contact__email')]) {
             $data[$this->getPrefixed("preferences__client__adminMailOnAppointment")] = 0;
             $data[$this->getPrefixed("preferences__client__adminMailOnDeleted")] = 0;
-            $data[$this->getPrefixed("preferences__client__adminMailOnUpdated")] = 0;            
-            $data[$this->getPrefixed("preferences__client__adminMailOnMailSent")] = 0;            
+            $data[$this->getPrefixed("preferences__client__adminMailOnUpdated")] = 0;
+            $data[$this->getPrefixed("preferences__client__adminMailOnMailSent")] = 0;
         }
         if (!$data[$this->getPrefixed('preferences__client__customTextfieldActivated')]) {
             $data[$this->getPrefixed("preferences__client__customTextfieldRequired")] = 0;

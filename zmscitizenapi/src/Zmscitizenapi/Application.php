@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi;
@@ -7,21 +8,22 @@ use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @TODO: Refactor this class into smaller focused classes (LoggerInitializer, MiddlewareInitializer) to reduce complexity
+ */
 class Application extends \BO\Slim\Application
 {
     public const IDENTIFIER = 'Zmscitizenapi';
     public static string $source_name = 'dldb';
-
     public static $http = null;
     public static array $http_curl_config = [];
     public static ?CacheInterface $cache = null;
-
     // Cache config
     public static string $CACHE_DIR;
     public static int $SOURCE_CACHE_TTL;
-
     public static bool $MAINTENANCE_MODE_ENABLED;
-
     // Logger config
 
     public static int $LOGGER_MAX_REQUESTS;
@@ -33,7 +35,6 @@ class Application extends \BO\Slim\Application
     public static int $LOGGER_BACKOFF_MIN;
     public static int $LOGGER_BACKOFF_MAX;
     public static int $LOGGER_LOCK_TIMEOUT;
-
     // Captcha config
     public static bool $CAPTCHA_ENABLED;
     public static string $FRIENDLY_CAPTCHA_SECRET_KEY;
@@ -44,7 +45,6 @@ class Application extends \BO\Slim\Application
     public static string $ALTCHA_CAPTCHA_SITE_KEY;
     public static string $ALTCHA_CAPTCHA_ENDPOINT;
     public static string $ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
-
     // Rate limiting config
     public static int $RATE_LIMIT_MAX_REQUESTS;
     public static int $RATE_LIMIT_CACHE_TTL;
@@ -52,22 +52,17 @@ class Application extends \BO\Slim\Application
     public static int $RATE_LIMIT_BACKOFF_MIN;
     public static int $RATE_LIMIT_BACKOFF_MAX;
     public static int $RATE_LIMIT_LOCK_TIMEOUT;
-
     // Request limits config
     public static int $MAX_REQUEST_SIZE;
     public static int $MAX_STRING_LENGTH;
     public static int $MAX_RECURSION_DEPTH;
-
     // CSRF config
     public static int $CSRF_TOKEN_LENGTH;
     public static string $CSRF_SESSION_KEY;
-
     // CORS config
     public static string $CORS_ALLOWED_ORIGINS;
-
     // IP Filter config
     public static string $IP_BLACKLIST;
-
     public static function initialize(): void
     {
         self::initializeMaintenanceMode();
@@ -79,18 +74,21 @@ class Application extends \BO\Slim\Application
 
     private static function initializeMaintenanceMode(): void
     {
-        self::$MAINTENANCE_MODE_ENABLED = filter_var(
-            getenv('MAINTENANCE_ENABLED'),
-            FILTER_VALIDATE_BOOLEAN
-        );
+        self::$MAINTENANCE_MODE_ENABLED = filter_var(getenv('MAINTENANCE_ENABLED'), FILTER_VALIDATE_BOOLEAN);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract logger initialization logic into a dedicated LoggerInitializer class
+     */
     private static function initializeLogger(): void
     {
         self::$LOGGER_MAX_REQUESTS = (int) (getenv('LOGGER_MAX_REQUESTS') ?: 1000);
-        self::$LOGGER_RESPONSE_LENGTH = (int) (getenv('LOGGER_RESPONSE_LENGTH') ?: 1048576); // 1MB
+        self::$LOGGER_RESPONSE_LENGTH = (int) (getenv('LOGGER_RESPONSE_LENGTH') ?: 1048576);
+        // 1MB
         self::$LOGGER_STACK_LINES = (int) (getenv('LOGGER_STACK_LINES') ?: 20);
-        self::$LOGGER_MESSAGE_SIZE = (int) (getenv('LOGGER_MESSAGE_SIZE') ?: 8192); // 8KB
+        self::$LOGGER_MESSAGE_SIZE = (int) (getenv('LOGGER_MESSAGE_SIZE') ?: 8192);
+        // 8KB
         self::$LOGGER_CACHE_TTL = (int) (getenv('LOGGER_CACHE_TTL') ?: 60);
         self::$LOGGER_MAX_RETRIES = (int) (getenv('LOGGER_MAX_RETRIES') ?: 3);
         self::$LOGGER_BACKOFF_MIN = (int) (getenv('LOGGER_BACKOFF_MIN') ?: 100);
@@ -100,18 +98,13 @@ class Application extends \BO\Slim\Application
 
     private static function initializeCaptcha(): void
     {
-        self::$CAPTCHA_ENABLED = filter_var(
-            getenv('CAPTCHA_ENABLED'),
-            FILTER_VALIDATE_BOOLEAN
-        );
-
+        self::$CAPTCHA_ENABLED = filter_var(getenv('CAPTCHA_ENABLED'), FILTER_VALIDATE_BOOLEAN);
         self::$FRIENDLY_CAPTCHA_SECRET_KEY = getenv('FRIENDLY_CAPTCHA_SECRET_KEY') ?: '';
         self::$FRIENDLY_CAPTCHA_SITE_KEY = getenv('FRIENDLY_CAPTCHA_SITE_KEY') ?: '';
         self::$FRIENDLY_CAPTCHA_ENDPOINT = getenv('FRIENDLY_CAPTCHA_ENDPOINT')
             ?: 'https://eu-api.friendlycaptcha.eu/api/v1/siteverify';
         self::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE = getenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE')
             ?: 'https://eu-api.friendlycaptcha.eu/api/v1/puzzle';
-
         self::$ALTCHA_CAPTCHA_SECRET_KEY = getenv('ALTCHA_CAPTCHA_SECRET_KEY') ?: '';
         self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: '';
         self::$ALTCHA_CAPTCHA_ENDPOINT = getenv('ALTCHA_CAPTCHA_ENDPOINT')
@@ -124,11 +117,14 @@ class Application extends \BO\Slim\Application
     {
         self::$CACHE_DIR = getenv('CACHE_DIR') ?: __DIR__ . '/cache';
         self::$SOURCE_CACHE_TTL = (int) (getenv('SOURCE_CACHE_TTL') ?: 3600);
-
         self::validateCacheDirectory();
         self::setupCache();
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract middleware initialization logic into a dedicated MiddlewareInitializer class
+     */
     private static function initializeMiddleware(): void
     {
         // Rate limiting
@@ -138,19 +134,17 @@ class Application extends \BO\Slim\Application
         self::$RATE_LIMIT_BACKOFF_MIN = (int) (getenv('RATE_LIMIT_BACKOFF_MIN') ?: 10);
         self::$RATE_LIMIT_BACKOFF_MAX = (int) (getenv('RATE_LIMIT_BACKOFF_MAX') ?: 50);
         self::$RATE_LIMIT_LOCK_TIMEOUT = (int) (getenv('RATE_LIMIT_LOCK_TIMEOUT') ?: 1);
-
         // Request limits
-        self::$MAX_REQUEST_SIZE = (int) (getenv('MAX_REQUEST_SIZE') ?: 10485760); // 10MB
-        self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 32768); // 32KB
+        self::$MAX_REQUEST_SIZE = (int) (getenv('MAX_REQUEST_SIZE') ?: 10485760);
+        // 10MB
+        self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 32768);
+        // 32KB
         self::$MAX_RECURSION_DEPTH = (int) (getenv('MAX_RECURSION_DEPTH') ?: 10);
-
         // CSRF
         self::$CSRF_TOKEN_LENGTH = (int) (getenv('CSRF_TOKEN_LENGTH') ?: 32);
         self::$CSRF_SESSION_KEY = getenv('CSRF_SESSION_KEY') ?: 'csrf_token';
-
         // CORS
         self::$CORS_ALLOWED_ORIGINS = getenv('CORS') ?: '';
-
         // IP Filter
         self::$IP_BLACKLIST = getenv('IP_BLACKLIST') ?: '';
     }
@@ -163,26 +157,17 @@ class Application extends \BO\Slim\Application
     private static function validateCacheDirectory(): void
     {
         if (!is_dir(self::$CACHE_DIR) && !mkdir(self::$CACHE_DIR, 0750, true)) {
-            throw new \RuntimeException(
-                sprintf('Cache directory "%s" could not be created', self::$CACHE_DIR)
-            );
+            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$CACHE_DIR));
         }
 
         if (!is_writable(self::$CACHE_DIR)) {
-            throw new \RuntimeException(
-                sprintf('Cache directory "%s" is not writable', self::$CACHE_DIR)
-            );
+            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$CACHE_DIR));
         }
     }
 
     private static function setupCache(): void
     {
-        $psr6 = new FilesystemAdapter(
-            namespace: '',
-            defaultLifetime: self::$SOURCE_CACHE_TTL,
-            directory: self::$CACHE_DIR
-        );
-
+        $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$SOURCE_CACHE_TTL, directory: self::$CACHE_DIR);
         self::$cache = new Psr16Cache($psr6);
     }
 
@@ -239,8 +224,6 @@ class Application extends \BO\Slim\Application
     {
         return self::$IP_BLACKLIST ?: '';
     }
-
-
 }
 
 Application::initialize();

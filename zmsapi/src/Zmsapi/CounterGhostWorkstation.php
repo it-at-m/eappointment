@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope;
-use \BO\Zmsentities\Scope as Entity;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope;
+use BO\Zmsentities\Scope as Entity;
 
 class CounterGhostWorkstation extends BaseController
 {
@@ -26,7 +27,7 @@ class CounterGhostWorkstation extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new Entity($input);
         $entity->testValid();
-        $scope = (new Scope)->readEntity($entity->id, 0);
+        $scope = (new Scope())->readEntity($entity->id, 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }

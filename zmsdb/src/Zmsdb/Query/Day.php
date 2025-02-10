@@ -8,7 +8,6 @@ namespace BO\Zmsdb\Query;
  */
 class Day extends Base
 {
-
     const QUERY_CREATE_TEMPORARY_SCOPELIST = '
         CREATE TEMPORARY TABLE calendarscope (
             scopeID INT,

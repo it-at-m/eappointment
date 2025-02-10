@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
-use \BO\Zmsentities\Helper\DateTime;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope as Query;
+use BO\Zmsentities\Helper\DateTime;
 
 class ProcessNextByScope extends BaseController
 {
@@ -35,7 +36,7 @@ class ProcessNextByScope extends BaseController
 
         $message = Response\Message::create($request);
         $message->data = static::getProcess($queueList, $dateTime, $exclude);
-        
+
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
         return $response;

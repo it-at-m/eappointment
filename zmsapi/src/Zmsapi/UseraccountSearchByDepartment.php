@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Mellon\Validator;
-use \BO\Slim\Render;
-use \BO\Zmsdb\Useraccount;
-use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsdb\Useraccount;
+use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -32,9 +33,9 @@ class UseraccountSearchByDepartment extends BaseController
 
         /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
-        $useraccountList = (new Useraccount)->readSearchByDepartmentId($department->id, $parameters, $resolveReferences)->withLessData();
+        $useraccountList = (new Useraccount())->readSearchByDepartmentId($department->id, $parameters, $resolveReferences)->withLessData();
         $useraccountList = $useraccountList->withAccessByWorkstation($workstation);
-        
+
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
             try {
@@ -45,7 +46,7 @@ class UseraccountSearchByDepartment extends BaseController
             }
         }
         $useraccountList = $validUserAccounts;
-        
+
         $message = Response\Message::create($request);
         $message->data = $useraccountList;
 
@@ -54,5 +55,4 @@ class UseraccountSearchByDepartment extends BaseController
 
         return $response;
     }
-
 }

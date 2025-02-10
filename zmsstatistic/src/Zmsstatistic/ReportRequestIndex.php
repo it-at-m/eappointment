@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -37,7 +38,7 @@ class ReportRequestIndex extends BaseController
         $exchangeRequest = null;
         if (isset($args['period'])) {
             $exchangeRequest = \App::$http
-            ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/'. $args['period']. '/')
+            ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/' . $args['period'] . '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
             ->withRequestsSum()

@@ -5,7 +5,7 @@ namespace BO\Dldb\Importer;
 trait OptionsTrait
 {
     protected $options = 0;
-    
+
     protected function checkOptionFlag($optionFlag = 0)
     {
         return $this->options & $optionFlag;
@@ -16,7 +16,7 @@ trait OptionsTrait
         $this->options = $options;
     }
 
-    protected function getOptions() : int
+    protected function getOptions(): int
     {
         return $this->options;
     }

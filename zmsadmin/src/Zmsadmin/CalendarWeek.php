@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Scope;
-
+use BO\Zmsentities\Scope;
 use BO\Mellon\Validator;
 
 class CalendarWeek extends BaseController
@@ -32,7 +32,7 @@ class CalendarWeek extends BaseController
         $selectedWeek = ($selectedWeek < $currentWeek && $selectedYear <= $currentYear) ?
             $currentWeek :
             $selectedWeek;
-        
+
         // HTTP requests
         /** @var \BO\Zmsentities\Workstation $workstation */
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();

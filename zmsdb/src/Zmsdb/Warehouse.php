@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
-use \BO\Zmsentities\Scope as ScopeEntity;
+use BO\Zmsentities\Exchange;
+use BO\Zmsentities\Scope as ScopeEntity;
 
 class Warehouse extends Base
 {
@@ -112,7 +112,7 @@ class Warehouse extends Base
 
     public function readSubjectsList()
     {
-        $entity = (new Exchange)->withLessData();
+        $entity = (new Exchange())->withLessData();
         $entity->addDictionaryEntry('subject', 'string', 'subject name');
         $entity->addDictionaryEntry('description', 'string', 'subject description');
         $entity->addDictionaryEntry('right', 'string', 'useraccount right for this subject', 'useraccount.rights');

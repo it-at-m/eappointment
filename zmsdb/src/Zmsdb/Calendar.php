@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Calendar as Entity;
-use \BO\Zmsdb\Query\SlotList;
+use BO\Zmsentities\Calendar as Entity;
+use BO\Zmsdb\Query\SlotList;
 
 /**
  * @SuppressWarnings(Coupling)

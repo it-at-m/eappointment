@@ -3,9 +3,24 @@ name: Combined Workflow
 on: [push]
 
 jobs:
+  call-code-quality:
+    uses: ./.github/workflows/code-quality.yaml
+
   call-unit-tests:
     uses: ./.github/workflows/unit-tests.yaml
 
+  check-and-proceed:
+    needs: [call-code-quality, call-unit-tests]
+    runs-on: ubuntu-latest
+    if: |
+      always() &&
+      needs.call-code-quality.result == 'success' &&
+      needs.call-unit-tests.result == 'success'
+    steps:
+      - run: echo "All required checks passed"
   call-build-images:
-    needs: call-unit-tests
+    needs: check-and-proceed
+    if: |
+      always() &&
+      needs.call-unit-tests.result == 'success'
     uses: ./.github/workflows/build-images.yaml

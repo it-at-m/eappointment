@@ -146,42 +146,42 @@ class Exchange extends Schema\Entity
     {
         $entity = clone $this;
         $average = [];
-    
+
         foreach ($entity->data as $name => $entry) {
             if (!is_array($entry) && !($entry instanceof \Traversable)) {
                 // Skip or handle non-iterable $entry appropriately.
                 continue;
             }
-    
+
             $average[$name . '_sum'] = 0;
             $average[$name . '_count'] = 0;
-    
+
             foreach ($entry as $dateItem) {
                 if (!is_array($dateItem) && !($dateItem instanceof \Traversable)) {
                     // Skip or handle non-iterable $dateItem appropriately.
                     continue;
                 }
-    
+
                 foreach ($dateItem as $key => $value) {
                     if (!is_numeric($value) || $key !== $keyToCalculate) {
                         // Skip non-numeric values or when the key doesn't match.
                         continue;
                     }
-    
+
                     $average[$name . '_sum'] += $value;
                     $average[$name . '_count']++;
                 }
             }
-    
+
             $average[$name] = $average[$name . '_count'] > 0
                 ? round($average[$name . '_sum'] / $average[$name . '_count'], 2)
                 : null;
         }
-    
+
         $entity->data['average_' . $keyToCalculate] = $average;
         return $entity;
     }
-    
+
 
     public function withMaxAndAverageFromWaitingTime()
     {
@@ -258,7 +258,7 @@ class Exchange extends Schema\Entity
         if (count($fields)) {
             $field = array_shift($fields);
             $fieldposition = $this->getPositionByName($field);
-    
+
             foreach ($this->data as $element) {
                 // Check if $fieldposition exists in $element
                 if (isset($element[$fieldposition])) {
@@ -269,7 +269,7 @@ class Exchange extends Schema\Entity
                     $list[$element[$fieldposition]]->data[] = $element;
                 }
             }
-    
+
             foreach ($list as $key => $row) {
                 if ($row instanceof Exchange) {
                     $list[$key] = $row->getGroupedHashSet($fields, $hashfields);
@@ -279,5 +279,5 @@ class Exchange extends Schema\Entity
             return $this->getHashData($hashfields, true);
         }
         return $list;
-    }    
+    }
 }

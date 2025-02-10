@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Ticketprinter as Entity;
-use \BO\Zmsentities\Collection\TicketprinterList as Collection;
+use BO\Zmsentities\Ticketprinter as Entity;
+use BO\Zmsentities\Collection\TicketprinterList as Collection;
 
 /**
  *
@@ -96,8 +96,8 @@ class Ticketprinter extends Base
             if ('request' == $button['type']) {
                 $scopeId = explode('-', $button['request']['id'])[0];
                 $requestId = explode('-', $button['request']['id'])[1];
-                $request = (new Request)->readEntity('dldb', $requestId);
-                $scope = (new Scope)->readWithWorkstationCount($scopeId, $now);
+                $request = (new Request())->readEntity('dldb', $requestId);
+                $scope = (new Scope())->readWithWorkstationCount($scopeId, $now);
 
                 if (! $request || ! $scope) {
                     throw new Exception\Ticketprinter\UnvalidButtonList();
@@ -105,7 +105,7 @@ class Ticketprinter extends Base
                 $ticketprinter->buttons[$key]['scope'] = $scope;
 
                 $ticketprinter->buttons[$key]['requestId'] = $requestId;
-                $ticketprinter->buttons[$key]['enabled'] = (new Scope)->readIsEnabled($scope->id, $now);
+                $ticketprinter->buttons[$key]['enabled'] = (new Scope())->readIsEnabled($scope->id, $now);
                 $ticketprinter->buttons[$key]['name'] = $request->getProperty('name');
             }
         }

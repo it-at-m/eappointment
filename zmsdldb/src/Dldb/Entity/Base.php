@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -8,7 +9,6 @@ namespace BO\Dldb\Entity;
 
 class Base extends \ArrayObject
 {
-
     /**
      * return an ID for this entity
      *
@@ -102,7 +102,7 @@ class Base extends \ArrayObject
                 static::doubleUnterlineToArray($this, $index, $value);
                 return true;
             }
-            
+
             parent::offsetSet($index, $value);
         }
     }
@@ -113,7 +113,7 @@ class Base extends \ArrayObject
             return $array = $value;
         }
         $keys = explode('__', $key);
-    
+
         $numKeys = count($keys);
         while ($numKeys > 1) {
             $key = array_shift($keys);
@@ -126,7 +126,7 @@ class Base extends \ArrayObject
         }
 
         $array[array_shift($keys)] = $value;
-    
+
         return $array;
     }
 }
