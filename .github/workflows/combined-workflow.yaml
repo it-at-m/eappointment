@@ -25,10 +25,12 @@ jobs:
           path: all-coverage
           merge-multiple: true
 
-      - name: List downloaded artifacts
+      - name: Debug downloaded artifacts
         run: |
-          echo "Downloaded artifacts:"
-          ls -la all-coverage/
+          echo "Contents of all-coverage directory:"
+          find all-coverage -type f
+          echo "Number of coverage reports found:"
+          find all-coverage -type f | wc -l
 
       - name: Combine reports
         run: |
@@ -36,9 +38,17 @@ jobs:
             if [ -d "all-coverage/coverage-$module" ]; then
               echo "Processing $module coverage"
               mkdir -p "combined-coverage/$module"
-              cp -r "all-coverage/coverage-$module"/* "combined-coverage/$module/"
+              if ! cp -r "all-coverage/coverage-$module"/* "combined-coverage/$module/"; then
+                echo "Failed to copy files for $module"
+                exit 1
+              fi
+              echo "Successfully copied files for $module"
+            else
+              echo "No coverage found for $module"
             fi
           done
+          echo "Contents of combined-coverage directory:"
+          find combined-coverage -type f
 
       - name: Upload combined coverage
         uses: actions/upload-artifact@v4
@@ -46,7 +56,6 @@ jobs:
           name: coverage-reports
           path: combined-coverage/
           retention-days: 7
-
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
     if: |
