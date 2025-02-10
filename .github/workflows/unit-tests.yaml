@@ -3,6 +3,9 @@ name: unit tests
 on:
   workflow_call:
 
+env:
+  XDEBUG_MODE: coverage
+
 jobs:
   module-test:
     runs-on: ubuntu-latest
