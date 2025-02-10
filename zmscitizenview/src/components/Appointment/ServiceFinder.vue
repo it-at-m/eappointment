@@ -66,7 +66,7 @@
         >
           <b>{{ t("estimatedDuration") }}</b>
           <br />
-          {{ t("minutes") }}
+          {{ estimatedDuration }} {{ t("minutes") }}
         </div>
       </div>
     </div>
@@ -226,6 +226,13 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
   }
 };
 
+const estimatedDuration = computed(() => {
+  return service.value.providers
+    ? service.value.providers[0].slotTimeInMinutes * currentSlots.value
+    : 0;
+});
+
+
 const maxValueOfService = computed(() => {
   return checkPlusEndabled.value
     ? service.value.maxQuantity
@@ -269,11 +276,20 @@ const skipSubservices = () => {
 
 onMounted(() => {
   if (service.value) {
+    let slots = 0;
     countOfService.value = service.value.count
       ? service.value.count
       : countOfService.value;
-    currentSlots.value =
-      getMinSlotOfProvider(service.value.providers) * countOfService.value;
+    slots =
+      getMinSlotOfProvider(service.value.providers) * service.value.count;
+    if (service.value.subServices) {
+      service.value.subServices.forEach(subservice => {
+        if (subservice.count > 0) {
+          slots = slots + (getMinSlotOfProvider(subservice.providers) * subservice.count);
+        }
+      })
+    }
+    currentSlots.value = slots;
   } else {
     fetchServicesAndProviders(
       props.preselectedServiceId ?? undefined,
