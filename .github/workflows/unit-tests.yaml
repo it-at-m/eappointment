@@ -4,13 +4,17 @@ on:
   workflow_call:
     outputs:
       module-test-result:
-        value: ${{ jobs.module-test.result }}
+        description: "Module test result"
+        value: ${{ jobs.module-test.outputs.result }}
       zmsapi-test-result:
-        value: ${{ jobs.zmsapi-test.result }}
+        description: "ZMSAPI test result"
+        value: ${{ jobs.zmsapi-test.outputs.result }}
       zmsdb-test-result:
-        value: ${{ jobs.zmsdb-test.result }}
+        description: "ZMSDB test result"
+        value: ${{ jobs.zmsdb-test.outputs.result }}
       zmsclient-test-result:
-        value: ${{ jobs.zmsclient-test.result }}
+        description: "ZMSClient test result"
+        value: ${{ jobs.zmsclient-test.outputs.result }}
 
 jobs:
   module-test:
@@ -19,6 +23,8 @@ jobs:
       image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
       env:
         XDEBUG_MODE: coverage
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
     steps:
       - uses: actions/checkout@main
       
@@ -42,12 +48,19 @@ jobs:
           php -dxdebug.mode=coverage \
               -dxdebug.start_with_request=yes \
               ./vendor/bin/phpunit --coverage-html coverage/html --coverage-clover coverage/clover.xml
+
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.module }}
           path: ${{ matrix.module }}/coverage/
           retention-days: 1
+
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+
     strategy:
       fail-fast: false
       matrix:
@@ -75,6 +88,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: "ghcr.io/it-at-m/eappointment-php-base:8.0-dev"
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
     services:
       mariadb:
         image: mariadb:10.6
@@ -131,11 +146,17 @@ jobs:
           name: coverage-zmsapi
           path: zmsapi/coverage/
           retention-days: 1
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
 
   zmsdb-test:
     runs-on: ubuntu-latest
     container:
       image: "ghcr.io/it-at-m/eappointment-php-base:8.0-dev"
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
     services:
       mariadb:
         image: mariadb:10.6
@@ -188,9 +209,15 @@ jobs:
           name: coverage-zmsdb
           path: zmsdb/coverage/
           retention-days: 1
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
 
   zmsclient-test:
     runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
@@ -230,3 +257,8 @@ jobs:
           name: coverage-zmsclient
           path: zmsclient/coverage/
           retention-days: 1
+
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
