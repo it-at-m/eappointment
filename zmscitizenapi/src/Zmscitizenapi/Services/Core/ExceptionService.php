@@ -21,112 +21,116 @@ class ExceptionService
 
     private static function getError(string $key): array
     {
-        return  ErrorMessages::get($key, self::$currentLanguage);
+        return ErrorMessages::get($key, self::$currentLanguage);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @TODO: Consider using a strategy pattern or error handler chain to reduce method complexity
+     */
     public static function handleException(\Exception $e): never
     {
         $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
         $error = null;
         switch ($exceptionName) {
-        // Process exceptions
+            // Process exceptions
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          $error = self::getError('appointmentNotFound');
+                $error = self::getError('appointmentNotFound');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\AuthKeyMatchFailed':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          $error = self::getError('authKeyMismatch');
+                $error = self::getError('authKeyMismatch');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyCalled':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('processAlreadyCalled');
+                $error = self::getError('processAlreadyCalled');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotReservedAnymore':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('processNotReservedAnymore');
+                $error = self::getError('processNotReservedAnymore');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotPreconfirmedAnymore':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('processNotPreconfirmedAnymore');
+                $error = self::getError('processNotPreconfirmedAnymore');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessDeleteFailed':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('processDeleteFailed');
+                $error = self::getError('processDeleteFailed');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessInvalid':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('processInvalid');
+                $error = self::getError('processInvalid');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessAlreadyExists':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('processAlreadyExists');
+                $error = self::getError('processAlreadyExists');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\EmailRequired':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('emailIsRequired');
+                $error = self::getError('emailIsRequired');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\TelephoneRequired':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('telephoneIsRequired');
+                $error = self::getError('telephoneIsRequired');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\MoreThanAllowedAppointmentsPerMail':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('tooManyAppointmentsWithSameMail');
+                $error = self::getError('tooManyAppointmentsWithSameMail');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\PreconfirmationExpired':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('preconfirmationExpired');
+                $error = self::getError('preconfirmationExpired');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Process\\ApiclientInvalid':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('invalidApiClient');
+                $error = self::getError('invalidApiClient');
 
                 break;
-// Calendar exceptions
+            // Calendar exceptions
             case 'BO\\Zmsapi\\Exception\\Calendar\\InvalidFirstDay':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          $error = self::getError('invalidDateRange');
+                $error = self::getError('invalidDateRange');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('noAppointmentsAtLocation');
+                $error = self::getError('noAppointmentsAtLocation');
 
                 break;
-// Other entity exceptions
+            // Other entity exceptions
             case 'BO\\Zmsapi\\Exception\\Department\\DepartmentNotFound':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          $error = self::getError('departmentNotFound');
+                $error = self::getError('departmentNotFound');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Mail\\MailNotFound':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('mailNotFound');
+                $error = self::getError('mailNotFound');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Organisation\\OrganisationNotFound':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('organisationNotFound');
+                $error = self::getError('organisationNotFound');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Provider\\ProviderNotFound':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('providerNotFound');
+                $error = self::getError('providerNotFound');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Request\\RequestNotFound':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('requestNotFound');
+                $error = self::getError('requestNotFound');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Scope\\ScopeNotFound':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('scopeNotFound');
+                $error = self::getError('scopeNotFound');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound':
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      $error = self::getError('sourceNotFound');
+                $error = self::getError('sourceNotFound');
 
                 break;
-// Use original message for unmapped exceptions
+            // Use original message for unmapped exceptions
             default:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          $error = [
-                'errorCode' => $exceptionName ?? 'unknown',
-                'errorMessage' => $e->getMessage(),
-                'statusCode' => $e->getCode() ?: 500
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ];
+                $error = [
+                    'errorCode' => $exceptionName ?? 'unknown',
+                    'errorMessage' => $e->getMessage(),
+                    'statusCode' => $e->getCode() ?: 500
+                ];
         }
 
         throw new \RuntimeException($error['errorCode'] . ': ' . $error['errorMessage'], $error['statusCode'], $e);

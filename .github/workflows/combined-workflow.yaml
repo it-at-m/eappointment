@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       always() &&
-      (needs.call-code-quality.result == 'success' || needs.call-code-quality.result == 'skipped') &&
+      needs.call-code-quality.result == 'success' &&
       needs.call-unit-tests.result == 'success'
     steps:
       - run: echo "All required checks passed"

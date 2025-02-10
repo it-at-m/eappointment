@@ -13,6 +13,10 @@ use BO\Zmsentities\Collection\ScopeList;
 use DateTime;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @TODO: Split this service into domain-specific validation services
+ */
 class ValidationService
 {
     private static ?string $currentLanguage = null;
@@ -21,7 +25,7 @@ class ValidationService
     private const PHONE_PATTERN = '/^\+?[1-9]\d{6,14}$/';
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
     private const MAX_FUTURE_DAYS = 365;
-// Maximum days in the future for appointments
+    // Maximum days in the future for appointments
 
     public static function setLanguageContext(?string $language): void
     {
@@ -85,6 +89,10 @@ class ValidationService
             : ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract validation rules into separate rule objects using the specification pattern
+     */
     public static function validateGetBookableFreeDays(?array $officeIds, ?array $serviceIds, ?string $startDate, ?string $endDate, ?array $serviceCounts): array
     {
         $errors = [];
@@ -364,7 +372,7 @@ class ValidationService
         }
 
         foreach ($serviceCounts as $count) {
-            if (!is_numeric($count) || $count < 0 || !preg_match(self::SERVICE_COUNT_PATTERN, (string)$count)) {
+            if (!is_numeric($count) || $count < 0 || !preg_match(self::SERVICE_COUNT_PATTERN, (string) $count)) {
                 return false;
             }
         }

@@ -30,6 +30,10 @@ use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\ProcessList;
 
+/**
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @TODO: Break down this facade into smaller domain-specific facades or use the Command pattern
+ */
 class ZmsApiFacadeService
 {
     private static ?string $currentLanguage = null;
@@ -348,7 +352,7 @@ class ZmsApiFacadeService
             ];
         }
 
-        $freeDays = ZmsApiClientService::getFreeDays(new ProviderList($providers), new RequestList($services), $firstDay, $lastDay,) ?? new Calendar();
+        $freeDays = ZmsApiClientService::getFreeDays(new ProviderList($providers), new RequestList($services), $firstDay, $lastDay, ) ?? new Calendar();
         $daysCollection = $freeDays->days;
         $formattedDays = [];
         foreach ($daysCollection as $day) {
@@ -432,12 +436,12 @@ class ZmsApiFacadeService
                     if (isset($appointment->date)) {
                         $timestamp = (int) $appointment->date;
                         if ($timestamp > $currentTimestamp) {
-                                    $timestamps[$providerId][$timestamp] = true;
+                            $timestamps[$providerId][$timestamp] = true;
                         }
                     }
                 }
             }
-                return $timestamps;
+            return $timestamps;
         }, []);
         foreach ($appointmentTimestamps as $providerId => &$timestamps) {
             $timestamps = array_keys($timestamps);

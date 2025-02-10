@@ -9,6 +9,11 @@
 
 namespace BO\Zmsticketprinter;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @TODO: Refactor this class into smaller focused classes (LoggerInitializer, MiddlewareInitializer) to reduce complexity
+ */
 class Application extends \BO\Slim\Application
 {
     /**
@@ -26,13 +31,13 @@ class Application extends \BO\Slim\Application
     public static $supportedLanguages = array(
         // Default language
         'de' => array(
-            'name'    => 'Deutsch',
-            'locale'  => 'de_DE.utf-8',
+            'name' => 'Deutsch',
+            'locale' => 'de_DE.utf-8',
             'default' => true,
         ),
         'en' => array(
-            'name'    => 'English',
-            'locale'  => 'en_GB.utf-8',
+            'name' => 'English',
+            'locale' => 'en_GB.utf-8',
             'default' => false,
         )
     );

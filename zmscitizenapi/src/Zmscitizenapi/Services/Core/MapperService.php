@@ -47,6 +47,11 @@ class MapperService
         return $matchingScope;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract mapping logic into specialized mapper classes for each entity type
+     */
     public static function mapOfficesWithScope(ProviderList $providerList): OfficeList
     {
         $offices = [];
@@ -91,10 +96,10 @@ class MapperService
         usort($requestArray, function ($a, $b) {
 
             return $a->getId() <=> $b->getId();
-        // Sorting by service ID (ascending order)
+            // Sorting by service ID (ascending order)
         });
         foreach ($requestArray as $service) {
-        /** @var array<string, array<int>> $serviceCombinations */
+            /** @var array<string, array<int>> $serviceCombinations */
             $serviceCombinations = [];
             $combinableData = $service->getAdditionalData()['combinable'] ?? [];
             foreach ($combinableData as $combinationServiceId) {
@@ -140,6 +145,11 @@ class MapperService
         return new ThinnedScope(id: (int) ($scope->id ?? 0), provider: $thinnedProvider, shortName: $scope->shortName ?? null, telephoneActivated: isset($scope->data['telephoneActivated']) ? (bool) $scope->data['telephoneActivated'] : null, telephoneRequired: isset($scope->data['telephoneRequired']) ? (bool) $scope->data['telephoneRequired'] : null, customTextfieldActivated: isset($scope->data['customTextfieldActivated']) ? (bool) $scope->data['customTextfieldActivated'] : null, customTextfieldRequired: isset($scope->data['customTextfieldRequired']) ? (bool) $scope->data['customTextfieldRequired'] : null, customTextfieldLabel: $scope->data['customTextfieldLabel'] ?? null, captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null, displayInfo: $scope->data['displayInfo'] ?? null);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Break down process mapping into smaller, focused methods
+     */
     public static function processToThinnedProcess(Process $myProcess): ThinnedProcess
     {
         if (!$myProcess || !isset($myProcess->id)) {
@@ -183,7 +193,7 @@ class MapperService
         $processEntity->id = $thinnedProcess->processId;
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
         $processEntity->customTextfield = $thinnedProcess->customTextfield ?? null;
-// Moved to Process level
+        // Moved to Process level
 
         $client = new Client();
         $client->familyName = $thinnedProcess->familyName ?? null;
@@ -258,6 +268,6 @@ class MapperService
      */
     public static function providerToThinnedProvider(Provider $provider): ThinnedProvider
     {
-        return new ThinnedProvider(id: isset($provider->id) ? (int) $provider->id : null, name: isset($provider->name) ? $provider->name : null, source: isset($provider->source) ? $provider->source : null, lon: isset($provider->data['geo']['lon']) ? (float)$provider->data['geo']['lon'] : null, lat: isset($provider->data['geo']['lat']) ? (float)$provider->data['geo']['lat'] : null, contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null,);
+        return new ThinnedProvider(id: isset($provider->id) ? (int) $provider->id : null, name: isset($provider->name) ? $provider->name : null, source: isset($provider->source) ? $provider->source : null, lon: isset($provider->data['geo']['lon']) ? (float) $provider->data['geo']['lon'] : null, lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null, contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null, );
     }
 }
