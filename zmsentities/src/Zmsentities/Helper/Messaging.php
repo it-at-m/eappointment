@@ -258,26 +258,6 @@ class Messaging
         return $template;
     }
 
-    private static function getProviderTemplateName($providerName)
-    {
-        if (strpos($providerName, '(')) {
-            $providerName = substr($providerName, 0, strpos($providerName, '('));
-        }
-        $divider = '-';
-        $providerTemplate = preg_replace('~[^\pL\d]+~u', $divider, $providerName);
-        $providerTemplate = iconv('utf-8', 'us-ascii//TRANSLIT', $providerTemplate);
-        $providerTemplate = preg_replace('~[^-\w]+~', '', $providerTemplate);
-        $providerTemplate = trim($providerTemplate, $divider);
-        $providerTemplate = preg_replace('~-+~', $divider, $providerTemplate);
-        $providerTemplate = strtolower($providerTemplate);
-
-        if (empty($providerTemplate)) {
-            return 'none';
-        }
-
-        return $providerTemplate;
-    }
-
     public static function getMailSubject(
         Process $process,
         Config $config,
@@ -315,27 +295,7 @@ class Messaging
         $templateProvider = false
     ) {
         $ics = new \BO\Zmsentities\Ics();
-        $template = self::getTemplate('ics', $status);
         $message = self::getMailContent($process, $config, $initiator, $status, $templateProvider);
-        $plainContent = self::getPlainText($message, "\\n");
-        $appointment = $process->getFirstAppointment();
-        $currentYear = $appointment->getStartTime()->format('Y');
-        $icsString = self::twigView()->render(
-            'messaging/' . $template,
-            array(
-                'date' => $appointment->toDateTime()->format('U'),
-                'startTime' => $appointment->getStartTime()->format('U'),
-                'endTime' => $appointment->getEndTime()->format('U'),
-                'startSummerTime' =>
-                    \BO\Zmsentities\Helper\DateTime::getSummerTimeStartDateTime($currentYear)->format('U'),
-                'endSummerTime' =>
-                    \BO\Zmsentities\Helper\DateTime::getSummerTimeEndDateTime($currentYear)->format('U'),
-                'process' => $process,
-                'timestamp' => (!$now) ? time() : $now,
-                'message' => $plainContent
-            )
-        );
-
         $ics->content = self::generateIcsContent($process, $config, $status, $now, $templateProvider, $message);
 
         return $ics;
