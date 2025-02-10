@@ -9,19 +9,6 @@ jobs:
   call-php-unit-tests:
     uses: ./.github/workflows/php-unit-tests.yaml
 
-  check-and-proceed:
-    needs: [call-php-code-quality, call-php-unit-tests]
-    runs-on: ubuntu-latest
-    if: |
-      always() &&
-      needs.call-php-code-quality.result == 'success' &&
-      needs.call-php-unit-tests.outputs.module-test-result == 'success' &&
-      needs.call-php-unit-tests.outputs.zmsapi-test-result == 'success' &&
-      needs.call-php-unit-tests.outputs.zmsdb-test-result == 'success' &&
-      needs.call-php-unit-tests.outputs.zmsclient-test-result == 'success'
-    steps:
-      - run: echo "All required checks passed"
-
   combine-php-test-coverage:
     needs: [call-php-unit-tests]
     runs-on: ubuntu-latest
@@ -32,7 +19,7 @@ jobs:
           ls -la all-coverage/ || echo "all-coverage directory not found"
           
       - name: Download all coverage reports
-        uses: actions/download-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           path: all-coverage
           merge-multiple: true
@@ -41,8 +28,9 @@ jobs:
         run: |
           echo "Downloaded artifacts:"
           ls -la all-coverage/
+
   call-php-build-images:
-    needs: check-and-proceed
+    needs: [call-php-code-quality, call-php-unit-tests]
     if: |
       always() &&
       needs.call-php-unit-tests.outputs.module-test-result == 'success' &&
