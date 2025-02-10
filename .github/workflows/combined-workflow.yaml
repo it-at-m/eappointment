@@ -22,6 +22,31 @@ jobs:
     steps:
       - run: echo "All required checks passed"
 
+  combine-coverage:
+    needs: [call-php-unit-tests]  # Only depends on tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          path: all-coverage
+          merge-multiple: true
+      - name: Combine reports
+        run: |
+          mkdir -p combined-coverage
+          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
+            if [ -d "all-coverage/coverage-$module" ]; then
+              mkdir -p "combined-coverage/$module"
+              cp -r "all-coverage/coverage-$module"/* "combined-coverage/$module/"
+            fi
+          done
+      - name: Upload combined coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: combined-coverage/
+          retention-days: 7
+
   call-build-images:
     needs: check-and-proceed
     if: |
