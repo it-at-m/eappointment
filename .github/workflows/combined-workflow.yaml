@@ -39,7 +39,7 @@ jobs:
           retention-days: 7
 
   build-api-docs:
-    if: github.ref_name == 'next' 
+    #if: github.ref_name == 'next' 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -99,12 +99,12 @@ jobs:
 
   deploy-to-pages:
     needs: [combine-php-test-coverage, build-api-docs]
-    if: github.ref_name == 'next' && needs.build-api-docs.result == 'success'
+    #if: github.ref_name == 'next' && needs.build-api-docs.result == 'success'
     uses: ./.github/workflows/deploy-pages.yaml
     with:
       coverage_artifact: coverage-reports
       api_docs_artifact: api-docs
-      
+
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
     if: |
