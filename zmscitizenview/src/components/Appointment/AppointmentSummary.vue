@@ -301,7 +301,7 @@ const estimatedDuration = () => {
         (provider) => provider.id === selectedProvider.value?.id
       );
       if (subserviceProvider && subservice.count && subserviceProvider.slots) {
-        time =
+        time +=
           subservice.count *
           subserviceProvider.slots *
           subserviceProvider.slotTimeInMinutes;
