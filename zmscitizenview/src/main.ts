@@ -13,4 +13,4 @@ const I18nHostElement = defineCustomElement(I18nHost);
 customElements.define("i18n-host", I18nHostElement);
 
 const zmsAppointmentWebcomponent = defineCustomElement(ZMSAppointmentElement);
-customElements.define("zms-appointment", zmsAppointmentWebcomponent);
+customElements.define("zms-appointment-wrapped", zmsAppointmentWebcomponent);
