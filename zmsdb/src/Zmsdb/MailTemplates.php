@@ -187,7 +187,7 @@ class MailTemplates extends Base
         return trim($value);
     }
 
-    function mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates)
+    protected function mergeMailTemplatesWithCustomizations($generalTemplates, $customTemplates)
     {
 
         $customTemplatesByName = [];

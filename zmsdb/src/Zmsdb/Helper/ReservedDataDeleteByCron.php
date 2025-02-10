@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @copyright BerlinOnline Stadtportal GmbH & Co. KG
+ **/
+
 namespace BO\Zmsdb\Helper;
 
 /**
