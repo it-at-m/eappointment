@@ -102,7 +102,7 @@ jobs:
               </style>
             </head>
             <body>
-              <h1>eAppointment Documentation</h1>
+              <h1>ZMS eAppointment Technical Documentation</h1>
               
               <div class="grid">
                 <div class="card">
@@ -114,7 +114,7 @@ jobs:
                 </div>
 
                 <div class="card">
-                  <h2>Code Coverage Reports</h2>
+                  <h2>Code Test Coverage Reports</h2>
                   <ul>
                     <li><a href="coverage/coverage-zmsadmin/html/">Zmsadmin Coverage</a></li>
                     <li><a href="coverage/coverage-zmscalldisplay/html/">Zmscalldisplay Coverage</a></li>
