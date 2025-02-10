@@ -88,8 +88,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: "ghcr.io/it-at-m/eappointment-php-base:8.0-dev"
-    outputs:
-      result: ${{ steps.set-result.outputs.result }}
     services:
       mariadb:
         image: mariadb:10.6
@@ -98,7 +96,6 @@ jobs:
           MYSQL_DATABASE: zmsbo
           MYSQL_CHARACTER_SET: utf8mb4
           MYSQL_COLLATION: utf8mb4_unicode_ci
-          MYSQL_EXTRA_FLAGS: --innodb-lock-wait-timeout=120 --lock-wait-timeout=120
         ports:
           - 3306:3306
         options: >-
@@ -153,8 +150,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: "ghcr.io/it-at-m/eappointment-php-base:8.0-dev"
-    outputs:
-      result: ${{ steps.set-result.outputs.result }}
     services:
       mariadb:
         image: mariadb:10.6
@@ -163,7 +158,6 @@ jobs:
           MYSQL_DATABASE: zmsbo
           MYSQL_CHARACTER_SET: utf8mb4
           MYSQL_COLLATION: utf8mb4_unicode_ci
-          MYSQL_EXTRA_FLAGS: --innodb-lock-wait-timeout=120 --lock-wait-timeout=120
         ports:
           - 3306:3306
         options: >-
@@ -198,7 +192,10 @@ jobs:
           bin/importTestData --commit
           mkdir -p coverage
           php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
-            --coverage-html coverage/html --coverage-clover coverage/clover.xml
+            -v --colors=never --coverage-text \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml \
+            --log-junit coverage/junit.xml
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
