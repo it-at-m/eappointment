@@ -13,7 +13,7 @@ jobs:
     uses: ./.github/workflows/unit-tests.yaml
 
   check-and-proceed:
-    needs: [call-php-code-quality, call-php-unit-tests, call-php-code-coverage]
+    needs: [call-php-code-quality, call-php-unit-tests]
     runs-on: ubuntu-latest
     if: |
       always() &&

@@ -4,9 +4,32 @@ on:
   workflow_call:
 
 jobs:
-  coverage:
+  setup:
     runs-on: ubuntu-latest
-    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        coverage: pcov
+        tools: composer:v2
+        ini-values: memory_limit=512M
+
+    - name: Cache PHP setup
+      uses: actions/cache@v4
+      with:
+        path: |
+          /opt/hostedtoolcache/php
+          ~/.composer/cache
+        key: php-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          php-${{ runner.os }}-
+
+  coverage:
+    needs: setup
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         module: [
@@ -28,13 +51,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+    - name: Restore PHP setup
+      uses: actions/cache@v4
       with:
-        php-version: '8.2'
-        coverage: pcov
-        tools: composer:v2
-        ini-values: memory_limit=512M
+        path: |
+          /opt/hostedtoolcache/php
+          ~/.composer/cache
+        key: php-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          php-${{ runner.os }}-
 
     - name: Install dependencies
       working-directory: ${{ matrix.module }}
@@ -52,18 +77,17 @@ jobs:
         name: coverage-temp-${{ matrix.module }}
         path: ${{ matrix.module }}/coverage/
         retention-days: 1
-        compression-level: 6  # Balance between size and speed
+        compression-level: 6
 
   combine-coverage:
     needs: coverage
     runs-on: ubuntu-latest
-    
     steps:
     - name: Download all coverage reports
       uses: actions/download-artifact@v4
       with:
         path: all-coverage
-        merge-multiple: true  # New in v4, better for multiple artifacts
+        merge-multiple: true
 
     - name: Combine reports
       run: |
@@ -80,4 +104,4 @@ jobs:
       with:
         name: coverage-reports
         path: combined-coverage/
-        retention-days: 7
+        retention-days: 14
