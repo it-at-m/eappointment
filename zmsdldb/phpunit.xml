@@ -9,6 +9,11 @@
     stopOnFailure="false"
     bootstrap="tests/bootstrap.php"
 >
+    <testsuites>
+        <testsuite name="Dldb">
+            <directory>./tests/Dldb/</directory>
+        </testsuite>
+    </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
             <directory suffix=".php">./src</directory>
@@ -22,9 +27,4 @@
             <clover outputFile="./coverage/clover.xml" />
         </report>
     </coverage>
-    <testsuites>
-        <testsuite name="Dldb">
-            <directory>./tests/Dldb/</directory>
-        </testsuite>
-    </testsuites>
 </phpunit>
