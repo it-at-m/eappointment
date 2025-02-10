@@ -1,1 +1,2 @@
 import(new URL('./{{filename}}', document.currentScript.src).href);
+import(new URL('./wrapper.js', document.currentScript.src).href);
