@@ -13,82 +13,47 @@ jobs:
     needs: [call-php-unit-tests]
     runs-on: ubuntu-latest
     steps:
-      - name: Create directories
-        run: |
-          mkdir -p all-coverage
-          mkdir -p combined-coverage
-          echo "Created directories:"
-          ls -la
-
-      - name: List available artifacts
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.runId
-            });
-            console.log('Available artifacts:');
-            console.log(JSON.stringify(artifacts.data, null, 2));
-
       - name: Download all coverage reports
         uses: actions/download-artifact@v4
         with:
           pattern: 'coverage-*'
-          path: all-coverage
-          merge-multiple: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Debug downloaded artifacts
-        run: |
-          echo "Current directory:"
-          pwd
-          echo "All files:"
-          find . -type f
-          echo "Contents of all-coverage directory:"
-          ls -la all-coverage/ || echo "all-coverage not found or empty"
-          echo "Detailed file listing:"
-          find all-coverage -type f || echo "No files found in all-coverage"
-
-      - name: Combine reports
-        run: |
-          echo "Starting report combination..."
-          # First, copy everything to combined-coverage
-          cp -rv all-coverage/* combined-coverage/ || echo "No files to copy"
-          
-          # Create module directories and organize files
-          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
-            echo "Processing $module"
-            mkdir -p "combined-coverage/$module"
-            
-            # Move module-specific files
-            find combined-coverage -type f -name "*${module}*" -exec mv {} "combined-coverage/$module/" \;
-          done
-          
-          echo "Final combined-coverage structure:"
-          find combined-coverage -type f
+          path: combined-coverage
+          merge-multiple: false  # Keep separate directories
 
       - name: Upload combined coverage
-        run: |
-          if [ -n "$(find combined-coverage -type f)" ]; then
-            echo "Uploading combined coverage reports"
-            actions/upload-artifact@v4 with:
-              name: coverage-reports
-              path: combined-coverage/
-              retention-days: 7
-          else
-            echo "No coverage files found to upload"
-            exit 1
-          fi
-
-      - name: Upload combined coverage
-        if: hashFiles('combined-coverage/**/*') != ''
         uses: actions/upload-artifact@v4
         with:
           name: coverage-reports
           path: combined-coverage/
           retention-days: 7
+
+  deploy-php-test-coverage:
+    needs: combine-php-test-coverage
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download combined coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-reports
+          path: coverage
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: coverage
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
