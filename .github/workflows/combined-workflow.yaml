@@ -2,7 +2,7 @@ name: Combined Workflow
 
 on:
   push:
-    branches-ignore: [chore-zms-add-code-test-coverage-report]
+    branches-ignore: [next]
   workflow_call:
 
 permissions:

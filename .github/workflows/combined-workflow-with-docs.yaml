@@ -2,7 +2,7 @@ name: Combined Workflow with Documentation
 
 on:
   push:
-    branches: [chore-zms-add-code-test-coverage-report]
+    branches: [next]
 
 permissions:
   contents: read
