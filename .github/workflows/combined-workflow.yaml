@@ -15,7 +15,10 @@ jobs:
     if: |
       always() &&
       needs.call-php-code-quality.result == 'success' &&
-      needs.call-php-unit-tests.result == 'success'
+      needs.call-php-unit-tests.outputs.module-test-result == 'success' &&
+      needs.call-php-unit-tests.outputs.zmsapi-test-result == 'success' &&
+      needs.call-php-unit-tests.outputs.zmsdb-test-result == 'success' &&
+      needs.call-php-unit-tests.outputs.zmsclient-test-result == 'success'
     steps:
       - run: echo "All required checks passed"
 
@@ -23,6 +26,9 @@ jobs:
     needs: check-and-proceed
     if: |
       always() &&
-      needs.call-php-unit-tests.result == 'success' &&
+      needs.call-php-unit-tests.outputs.module-test-result == 'success' &&
+      needs.call-php-unit-tests.outputs.zmsapi-test-result == 'success' &&
+      needs.call-php-unit-tests.outputs.zmsdb-test-result == 'success' &&
+      needs.call-php-unit-tests.outputs.zmsclient-test-result == 'success' &&
       needs.call-php-code-quality.result == 'success'
     uses: ./.github/workflows/build-images.yaml
