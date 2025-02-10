@@ -26,6 +26,3 @@ jobs:
       needs.call-php-unit-tests.result == 'success' &&
       needs.call-php-code-quality.result == 'success'
     uses: ./.github/workflows/build-images.yaml
-
-  call-php-code-coverage:
-    uses: ./.github/workflows/php-code-coverage.yaml
