@@ -352,7 +352,7 @@ class ZmsApiFacadeService
             ];
         }
 
-        $freeDays = ZmsApiClientService::getFreeDays(new ProviderList($providers), new RequestList($services), $firstDay, $lastDay, ) ?? new Calendar();
+        $freeDays = ZmsApiClientService::getFreeDays(new ProviderList($providers), new RequestList($services), $firstDay, $lastDay,) ?? new Calendar();
         $daysCollection = $freeDays->days;
         $formattedDays = [];
         foreach ($daysCollection as $day) {
