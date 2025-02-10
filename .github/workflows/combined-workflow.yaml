@@ -13,14 +13,15 @@ jobs:
     needs: [call-php-unit-tests]
     runs-on: ubuntu-latest
     steps:
-      - name: List available artifacts
+      - name: Create directories
         run: |
-          echo "Available artifacts in all-coverage:"
-          ls -la all-coverage/ || echo "all-coverage directory not found"
-          
+          mkdir -p all-coverage
+          mkdir -p combined-coverage
+
       - name: Download all coverage reports
-        uses: actions/upload-artifact@v4
+        uses: actions/download-artifact@v4
         with:
+          pattern: coverage-*
           path: all-coverage
           merge-multiple: true
 
@@ -28,6 +29,23 @@ jobs:
         run: |
           echo "Downloaded artifacts:"
           ls -la all-coverage/
+
+      - name: Combine reports
+        run: |
+          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
+            if [ -d "all-coverage/coverage-$module" ]; then
+              echo "Processing $module coverage"
+              mkdir -p "combined-coverage/$module"
+              cp -r "all-coverage/coverage-$module"/* "combined-coverage/$module/"
+            fi
+          done
+
+      - name: Upload combined coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: combined-coverage/
+          retention-days: 7
 
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
