@@ -7,7 +7,7 @@ jobs:
     uses: ./.github/workflows/php-code-quality.yaml
 
   call-php-unit-tests:
-    uses: ./.github/workflows/unit-tests.yaml
+    uses: ./.github/workflows/php-unit-tests.yaml
 
   check-and-proceed:
     needs: [call-php-code-quality, call-php-unit-tests]
@@ -22,7 +22,7 @@ jobs:
     steps:
       - run: echo "All required checks passed"
 
-  combine-coverage:
+  combine-php-test-coverage:
     needs: [call-php-unit-tests]
     runs-on: ubuntu-latest
     steps:
@@ -47,7 +47,7 @@ jobs:
           path: combined-coverage/
           retention-days: 7
 
-  call-build-images:
+  call-php-build-images:
     needs: check-and-proceed
     if: |
       always() &&
@@ -56,4 +56,4 @@ jobs:
       needs.call-php-unit-tests.outputs.zmsdb-test-result == 'success' &&
       needs.call-php-unit-tests.outputs.zmsclient-test-result == 'success' &&
       needs.call-php-code-quality.result == 'success'
-    uses: ./.github/workflows/build-images.yaml
+    uses: ./.github/workflows/php-build-images.yaml
