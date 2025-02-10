@@ -3,7 +3,7 @@ name: Deploy API Documentation to Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["next"]
   workflow_dispatch:
 
 permissions:

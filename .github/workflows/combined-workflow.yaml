@@ -41,7 +41,98 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-reports
-          path: coverage
+          path: public/coverage
+
+      - name: Create index page
+        run: |
+          mkdir -p public
+          cat > public/index.html <<EOL
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>eAppointment Documentation</title>
+              <style>
+                :root {
+                  --primary: #0366d6;
+                  --bg: #ffffff;
+                  --text: #24292e;
+                }
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                  line-height: 1.6;
+                  color: var(--text);
+                  max-width: 1200px;
+                  margin: 0 auto;
+                  padding: 2rem;
+                  background: var(--bg);
+                }
+                h1, h2 {
+                  border-bottom: 1px solid #eaecef;
+                  padding-bottom: 0.3em;
+                }
+                .grid {
+                  display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                  gap: 2rem;
+                  margin: 2rem 0;
+                }
+                .card {
+                  background: #f6f8fa;
+                  border-radius: 6px;
+                  padding: 1.5rem;
+                }
+                .card h2 {
+                  margin-top: 0;
+                }
+                ul {
+                  list-style-type: none;
+                  padding: 0;
+                }
+                li {
+                  margin: 0.5rem 0;
+                }
+                a {
+                  color: var(--primary);
+                  text-decoration: none;
+                }
+                a:hover {
+                  text-decoration: underline;
+                }
+              </style>
+            </head>
+            <body>
+              <h1>eAppointment Documentation</h1>
+              
+              <div class="grid">
+                <div class="card">
+                  <h2>API Documentation</h2>
+                  <ul>
+                    <li><a href="zmscitizenapi/public/doc/">Citizen API Documentation</a></li>
+                    <li><a href="zmsapi/public/doc/">ZMS API Documentation</a></li>
+                  </ul>
+                </div>
+
+                <div class="card">
+                  <h2>Code Coverage Reports</h2>
+                  <ul>
+                    <li><a href="coverage/coverage-zmsadmin/html/">zmsadmin Coverage</a></li>
+                    <li><a href="coverage/coverage-zmscalldisplay/html/">zmscalldisplay Coverage</a></li>
+                    <li><a href="coverage/coverage-zmscitizenapi/html/">zmscitizenapi Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsdldb/html/">zmsdldb Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsentities/html/">zmsentities Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsmessaging/html/">zmsmessaging Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsslim/html/">zmsslim Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsstatistic/html/">zmsstatistic Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsticketprinter/html/">zmsticketprinter Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsapi/html/">zmsapi Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsdb/html/">zmsdb Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsclient/html/">zmsclient Coverage</a></li>
+                  </ul>
+                </div>
+              </div>
+            </body>
+          </html>
+          EOL
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -49,14 +140,14 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: coverage
+          path: public
 
       - name: Deploy to GitHub Pages
         id: deployment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/deploy-pages@v4
-
+        
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
     if: |
