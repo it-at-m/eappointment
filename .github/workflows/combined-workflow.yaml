@@ -54,23 +54,33 @@ jobs:
       - name: Combine reports
         run: |
           echo "Starting report combination..."
+          # First, copy everything to combined-coverage
+          cp -rv all-coverage/* combined-coverage/ || echo "No files to copy"
+          
+          # Create module directories and organize files
           for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
-            echo "Checking module: $module"
-            if [ -d "all-coverage/coverage-$module" ]; then
-              echo "Found coverage for $module"
-              mkdir -p "combined-coverage/$module"
-              if ! cp -rv "all-coverage/coverage-$module"/* "combined-coverage/$module/"; then
-                echo "Failed to copy files for $module"
-                ls -la "all-coverage/coverage-$module/"
-                exit 1
-              fi
-              echo "Successfully copied files for $module"
-            else
-              echo "No coverage found for $module"
-            fi
+            echo "Processing $module"
+            mkdir -p "combined-coverage/$module"
+            
+            # Move module-specific files
+            find combined-coverage -type f -name "*${module}*" -exec mv {} "combined-coverage/$module/" \;
           done
-          echo "Final combined-coverage contents:"
-          find combined-coverage -type f || echo "No files in combined-coverage"
+          
+          echo "Final combined-coverage structure:"
+          find combined-coverage -type f
+
+      - name: Upload combined coverage
+        run: |
+          if [ -n "$(find combined-coverage -type f)" ]; then
+            echo "Uploading combined coverage reports"
+            actions/upload-artifact@v4 with:
+              name: coverage-reports
+              path: combined-coverage/
+              retention-days: 7
+          else
+            echo "No coverage files found to upload"
+            exit 1
+          fi
 
       - name: Upload combined coverage
         if: hashFiles('combined-coverage/**/*') != ''
