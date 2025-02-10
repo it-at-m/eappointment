@@ -200,13 +200,15 @@ jobs:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsdb
+          XDEBUG_MODE: coverage
         run: |
           cd zmsdb
           bin/importTestData --commit
           mkdir -p coverage
           echo "Running tests with coverage"
-          php -dzend_extension=xdebug.so -dmemory_limit=-1 vendor/bin/phpunit \
-            -v --colors=never --coverage-text \
+          php -i | grep -i xdebug
+          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+            ./vendor/bin/phpunit \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
@@ -256,12 +258,16 @@ jobs:
         run: |
           cd ./zmsclient
           mkdir -p coverage
+          chmod 777 coverage
           docker-compose up -d
-          docker-compose exec -T test php -dzend_extension=xdebug.so -dmemory_limit=-1 \
-            ./vendor/bin/phpunit \
-            --coverage-html coverage/html \
-            --coverage-clover coverage/clover.xml \
-            --log-junit coverage/junit.xml
+          docker-compose exec -T test bash -c "
+            php -i | grep -i xdebug &&
+            php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+              ./vendor/bin/phpunit \
+              --coverage-html coverage/html \
+              --coverage-clover coverage/clover.xml \
+              --log-junit coverage/junit.xml
+          "
           echo "Coverage files generated:"
           ls -la coverage/
       - name: Upload Coverage

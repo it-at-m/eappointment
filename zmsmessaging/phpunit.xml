@@ -26,14 +26,6 @@
       <html outputDirectory="./coverage/html" />
       <clover outputFile="./coverage/clover.xml" />
     </report>
-    <exclude>
-      <directory>./vendor</directory>
-      <directory>./tests</directory>
-    </exclude>
-    <report>
-      <html outputDirectory="./coverage/html" />
-      <clover outputFile="./coverage/clover.xml" />
-    </report>
   </coverage>
   <testsuites>
     <testsuite name="Zmsmessaging Test Suite">
