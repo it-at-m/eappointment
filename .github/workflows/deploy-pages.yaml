@@ -108,26 +108,26 @@ jobs:
                 <div class="card">
                   <h2>API Documentation</h2>
                   <ul>
-                    <li><a href="doc/zmscitizenapi/">Citizen API Documentation</a></li>
-                    <li><a href="doc/zmsapi/">ZMS API Documentation</a></li>
+                    <li><a href="https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html">Zmscitizenapi API Documentation</a></li>
+                    <li><a href="https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html">Zmsapi Documentation</a></li>
                   </ul>
                 </div>
 
                 <div class="card">
                   <h2>Code Coverage Reports</h2>
                   <ul>
-                    <li><a href="coverage/coverage-zmsadmin/html/">zmsadmin Coverage</a></li>
-                    <li><a href="coverage/coverage-zmscalldisplay/html/">zmscalldisplay Coverage</a></li>
-                    <li><a href="coverage/coverage-zmscitizenapi/html/">zmscitizenapi Coverage</a></li>
-                    <li><a href="coverage/coverage-zmsdldb/html/">zmsdldb Coverage</a></li>
-                    <li><a href="coverage/coverage-zmsentities/html/">zmsentities Coverage</a></li>
-                    <li><a href="coverage/coverage-zmsmessaging/html/">zmsmessaging Coverage</a></li>
-                    <li><a href="coverage/coverage-zmsslim/html/">zmsslim Coverage</a></li>
-                    <li><a href="coverage/coverage-zmsstatistic/html/">zmsstatistic Coverage</a></li>
-                    <li><a href="coverage/coverage-zmsticketprinter/html/">zmsticketprinter Coverage</a></li>
-                    <li><a href="coverage/coverage-zmsapi/html/">zmsapi Coverage</a></li>
-                    <li><a href="coverage/coverage-zmsdb/html/">zmsdb Coverage</a></li>
-                    <li><a href="coverage/coverage-zmsclient/html/">zmsclient Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsadmin/html/">Zmsadmin Coverage</a></li>
+                    <li><a href="coverage/coverage-zmscalldisplay/html/">Zmscalldisplay Coverage</a></li>
+                    <li><a href="coverage/coverage-zmscitizenapi/html/">Zmscitizenapi Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsdldb/html/">Zmsdldb Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsentities/html/">Zmsentities Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsmessaging/html/">Zmsmessaging Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsslim/html/">Zmsslim Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsstatistic/html/">Zmsstatistic Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsticketprinter/html/">Zmsticketprinter Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsapi/html/">Zmsapi Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsdb/html/">Zmsdb Coverage</a></li>
+                    <li><a href="coverage/coverage-zmsclient/html/">Zmsclient Coverage</a></li>
                   </ul>
                 </div>
               </div>
