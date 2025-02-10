@@ -9,11 +9,6 @@
 
 namespace BO\Zmsticketprinter;
 
-/**
- * @SuppressWarnings(PHPMD.TooManyFields)
- * @SuppressWarnings(PHPMD.NPathComplexity)
- * @TODO: Refactor this class into smaller focused classes (LoggerInitializer, MiddlewareInitializer) to reduce complexity
- */
 class Application extends \BO\Slim\Application
 {
     /**
