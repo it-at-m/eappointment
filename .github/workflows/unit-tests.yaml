@@ -8,29 +8,31 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
+      env:
+        XDEBUG_MODE: coverage
     steps:
-      - name: Checkout GitHub Action
-        uses: actions/checkout@main
+      - uses: actions/checkout@main
+      
+      - name: Configure Xdebug
+        if: matrix.module == 'zmsslim'
+        run: |
+          echo "xdebug.mode=coverage" > /usr/local/etc/php/conf.d/xdebug.ini
+          echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/xdebug.ini
+
       - name: Install Composer Dependencies
         run: |
           cd "${{ matrix.module }}"
           composer install --no-progress --prefer-dist --optimize-autoloader
-      - name: Run Unit Tests with Coverage (zmsslim)
-        if: matrix.module == 'zmsslim'
+
+      - name: Run Unit Tests with Coverage
         env:
           XDEBUG_MODE: coverage
         run: |
           cd "${{ matrix.module }}"
           mkdir -p coverage
-          XDEBUG_MODE=coverage php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
-            ./vendor/bin/phpunit --coverage-html coverage/html --coverage-clover coverage/clover.xml
-      - name: Run Unit Tests (other modules)
-        if: matrix.module != 'zmsslim'
-        run: |
-          cd "${{ matrix.module }}"
-          mkdir -p coverage
-          php -dzend_extension=xdebug.so -dmemory_limit=-1 \
-            ./vendor/bin/phpunit --coverage-html coverage/html --coverage-clover coverage/clover.xml
+          php -dxdebug.mode=coverage \
+              -dxdebug.start_with_request=yes \
+              ./vendor/bin/phpunit --coverage-html coverage/html --coverage-clover coverage/clover.xml
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
