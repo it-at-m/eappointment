@@ -49,7 +49,7 @@ jobs:
           php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
             ./vendor/bin/phpunit \
             --coverage-html coverage/html \
-            --coverage-clover coverage/clover.xml
+            --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
           echo "Coverage files generated:"
           ls -la coverage/
@@ -142,7 +142,7 @@ jobs:
           php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
             ./vendor/bin/phpunit \
             --coverage-html coverage/html \
-            --coverage-clover coverage/clover.xml
+            --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
           echo "Coverage files generated:"
           ls -la coverage/
