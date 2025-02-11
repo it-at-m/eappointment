@@ -17,6 +17,9 @@ jobs:
   call-php-unit-tests:
     uses: ./.github/workflows/php-unit-tests.yaml
 
+  call-security-checks:
+    uses: ./.github/workflows/security-checks.yaml
+
   combine-php-test-coverage:
     needs: [call-php-unit-tests]
     runs-on: ubuntu-latest

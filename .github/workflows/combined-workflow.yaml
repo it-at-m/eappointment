@@ -16,6 +16,9 @@ jobs:
   call-php-unit-tests:
     uses: ./.github/workflows/php-unit-tests.yaml
 
+  call-security-checks:
+    uses: ./.github/workflows/security-checks.yaml
+
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
     if: |

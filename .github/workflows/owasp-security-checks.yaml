@@ -1,0 +1,106 @@
+name: security checks
+
+on:
+  workflow_call:
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - module: zmsadmin
+            php_version: "8.0"
+          - module: zmsapi
+            php_version: "8.0"
+          - module: zmscalldisplay
+            php_version: "8.0"
+          - module: zmscitizenapi
+            php_version: "8.0"
+          - module: zmsmessaging
+            php_version: "8.0"
+          - module: zmsstatistic
+            php_version: "8.0"
+          - module: zmsticketprinter
+            php_version: "8.0"
+    container:
+      image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install python3
+        run: |
+          apt update
+          apt install -y python3 python3-click python3-git
+
+      - name: Reference local modules
+        run: python3 ./cli modules reference-libraries --no-symlink
+
+      - name: Install Composer Dependencies
+        run: |
+          cd "${{ matrix.module }}"
+          composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: PHP Security Checker
+        uses: symfonycorp/security-checker-action@v5
+        with:
+          lock: ${{ matrix.module }}/composer.lock
+
+      - name: OWASP Dependency-Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: ${{ matrix.module }}
+          path: ${{ matrix.module }}
+          format: 'HTML'
+          out: 'reports/${{ matrix.module }}'
+          args: >
+            --scan ${{ matrix.module }}/composer.lock
+            --suppression .security/suppression.xml
+            --failOnCVSS 7
+
+      - name: Upload dependency check report
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-check-report-${{ matrix.module }}
+          path: reports/${{ matrix.module }}
+
+  zap-scan:
+    needs: security-scan
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - module: zmsapi
+            url: http://localhost:8080/api
+          - module: zmscitizenapi
+            url: http://localhost:8080/citizen-api
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run OWASP ZAP Scan
+        uses: zaproxy/action-full-scan@v0.9.0
+        with:
+          target: ${{ matrix.url }}
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+          allow_issue_writing: false
+
+      - name: Security Headers Check
+        run: |
+          curl -s -I "${{ matrix.url }}" | grep -iE '^(Strict-Transport-Security|X-Frame-Options|X-Content-Type-Options|Content-Security-Policy|X-XSS-Protection):'
+
+  notify:
+    needs: [security-scan, zap-scan]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Notification
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              title: '🚨 Security Check Failed',
+              body: `Security checks failed in workflow run: ${context.serverUrl}/${context.repo.owner}/${context.repo.name}/actions/runs/${context.runId}`
+            })
