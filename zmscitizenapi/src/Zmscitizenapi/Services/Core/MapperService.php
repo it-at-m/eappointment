@@ -29,8 +29,7 @@ use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
 
 /**
-* @SuppressWarnings(PHPMD.CyclomaticComplexity)
-* @SuppressWarnings(PHPMD.NPathComplexity)
+* @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
 * @TODO: Extract class has ExcessiveClassComplexity 101 vs 100
 */
 class MapperService
