@@ -45,20 +45,34 @@ jobs:
           path: public/security/zap
           merge-multiple: false
 
-      - name: Debug - List security reports structure
+      - name: Debug - List directory structure
         run: |
+          echo "=== Coverage Reports Structure ==="
+          find public/coverage -type f -name "index.html"
+          echo "=== Full Coverage Directory Structure ==="
+          ls -R public/coverage/
+          
           echo "=== Security Reports Structure ==="
           find public/security -type f -name "*.html"
-          echo "=== Full Directory Structure ==="
+          echo "=== Full Security Directory Structure ==="
           ls -R public/security/
 
       - name: Ensure correct structure
         run: |
+          # Fix security reports structure
           for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
-            if [ -d "public/security/security-report-$module" ]; then
-              # Move files from nested directory if needed
-              mv public/security/security-report-$module/* public/security/$module/ 2>/dev/null || true
-              rmdir public/security/security-report-$module 2>/dev/null || true
+            # Create module directory
+            mkdir -p "public/security/$module"
+            # Move security reports
+            if [ -f "public/security/security-report-$module/dependency-check-report.html" ]; then
+              mv "public/security/security-report-$module/dependency-check-report.html" "public/security/$module/"
+              rmdir "public/security/security-report-$module" 2>/dev/null || true
+            fi
+            # Move coverage reports
+            if [ -d "public/coverage/coverage-$module" ]; then
+              mkdir -p "public/coverage/$module"
+              mv "public/coverage/coverage-$module/html" "public/coverage/$module/"
+              rmdir "public/coverage/coverage-$module" 2>/dev/null || true
             fi
           done
 
@@ -68,7 +82,6 @@ jobs:
           name: aggregated-reports
           path: public/
           retention-days: 7
-
   call-build-api-docs:
     uses: ./.github/workflows/build-api-docs.yaml
 
