@@ -29,7 +29,7 @@ test-php-80:
     extends: .test-php-custom
     allow_failure: true
     services:
-        - name: mariadb:10.1
+        - name: mariadb:10.11
           alias: mysql
           command: ["mysqld", "--general-log=1", "--general-log-file=/var/log/mysql/general.log"]
     before_script:
