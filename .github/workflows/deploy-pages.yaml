@@ -13,6 +13,11 @@ on:
         required: true
         type: string
         default: 'api-docs'
+      security_artifact:
+        description: 'Name of the security reports artifact'
+        required: true
+        type: string
+        default: 'security-reports'
 
 permissions:
   pages: write
@@ -36,13 +41,24 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.coverage_artifact }}
-          path: public/coverage
+          path: public
 
       - name: Download API docs
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.api_docs_artifact }}
           path: public
+
+      - name: Download security reports
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.security_artifact }}
+          path: public
+
+      - name: Debug - List directory structure
+        run: |
+          echo "=== Directory Structure ==="
+          ls -R public/
 
       - name: Create index page
         run: |
@@ -127,6 +143,25 @@ jobs:
                     <li><a href="coverage/coverage-zmsapi/html/">Zmsapi Coverage</a></li>
                     <li><a href="coverage/coverage-zmsdb/html/">Zmsdb Coverage</a></li>
                     <li><a href="coverage/coverage-zmsclient/html/">Zmsclient Coverage</a></li>
+                  </ul>
+                </div>
+
+                <div class="card">
+                  <h2>OWASP Security Reports</h2>
+                  <ul>
+                    <li><a href="security/security-report-zmsadmin/dependency-check-report.html">Zmsadmin Security Report</a></li>
+                    <li><a href="security/security-report-zmscalldisplay/dependency-check-report.html">Zmscalldisplay Security Report</a></li>
+                    <li><a href="security/security-report-zmscitizenapi/dependency-check-report.html">Zmscitizenapi Security Report</a></li>
+                    <li><a href="security/security-report-zmsdldb/dependency-check-report.html">Zmsdldb Security Report</a></li>
+                    <li><a href="security/security-report-zmsentities/dependency-check-report.html">Zmsentities Security Report</a></li>
+                    <li><a href="security/security-report-zmsmessaging/dependency-check-report.html">Zmsmessaging Security Report</a></li>
+                    <li><a href="security/security-report-zmsslim/dependency-check-report.html">Zmsslim Security Report</a></li>
+                    <li><a href="security/security-report-zmsstatistic/dependency-check-report.html">Zmsstatistic Security Report</a></li>
+                    <li><a href="security/security-report-zmsticketprinter/dependency-check-report.html">Zmsticketprinter Security Report</a></li>
+                    <li><a href="security/security-report-zmsapi/dependency-check-report.html">Zmsapi Security Report</a></li>
+                    <li><a href="security/security-report-zmsdb/dependency-check-report.html">Zmsdb Security Report</a></li>
+                    <li><a href="security/security-report-zmsclient/dependency-check-report.html">Zmsclient Security Report</a></li>
+                    <li><a href="security/zap/zap-scan-report.html">ZAP Scan Reports</a></li>
                   </ul>
                 </div>
               </div>
