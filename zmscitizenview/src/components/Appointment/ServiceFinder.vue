@@ -132,7 +132,7 @@ watch(service, (newService) => {
 watch(countOfService, (newCountOfService) => {
   if (service.value.count < newCountOfService) {
     currentSlots.value += getMinSlotOfProvider(service.value.providers);
-  } else {
+  } else if (service.value.count > newCountOfService) {
     currentSlots.value -= getMinSlotOfProvider(service.value.providers);
   }
   service.value.count = newCountOfService;
@@ -219,7 +219,7 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
   if (subservice != undefined) {
     if (subservice.count < count) {
       currentSlots.value += getMinSlotOfProvider(subservice.providers);
-    } else {
+    } else if (subservice.count > count) {
       currentSlots.value -= getMinSlotOfProvider(subservice.providers);
     }
     subservice.count = count;
