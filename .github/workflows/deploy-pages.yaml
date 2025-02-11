@@ -140,23 +140,22 @@ jobs:
                     <li><a href="coverage/coverage-zmsclient/html/">Zmsclient Coverage</a></li>
                   </ul>
                 </div>
-
                 <div class="card">
                   <h2>Security Reports</h2>
                   <ul>
-                    <li><a href="security/zmsadmin/">Zmsadmin Security Report</a></li>
-                    <li><a href="security/zmscalldisplay/">Zmscalldisplay Security Report</a></li>
-                    <li><a href="security/zmscitizenapi/">Zmscitizenapi Security Report</a></li>
-                    <li><a href="security/zmsdldb/">Zmsdldb Security Report</a></li>
-                    <li><a href="security/zmsentities/">Zmsentities Security Report</a></li>
-                    <li><a href="security/zmsmessaging/">Zmsmessaging Security Report</a></li>
-                    <li><a href="security/zmsslim/">Zmsslim Security Report</a></li>
-                    <li><a href="security/zmsstatistic/">Zmsstatistic Security Report</a></li>
-                    <li><a href="security/zmsticketprinter/">Zmsticketprinter Security Report</a></li>
-                    <li><a href="security/zmsapi/">Zmsapi Security Report</a></li>
-                    <li><a href="security/zmsdb/">Zmsdb Security Report</a></li>
-                    <li><a href="security/zmsclient/">Zmsclient Security Report</a></li>
-                    <li><a href="security/zap/">ZAP Scan Reports</a></li>
+                    <li><a href="security/zmsadmin/dependency-check-report.html">Zmsadmin Security Report</a></li>
+                    <li><a href="security/zmscalldisplay/dependency-check-report.html">Zmscalldisplay Security Report</a></li>
+                    <li><a href="security/zmscitizenapi/dependency-check-report.html">Zmscitizenapi Security Report</a></li>
+                    <li><a href="security/zmsdldb/dependency-check-report.html">Zmsdldb Security Report</a></li>
+                    <li><a href="security/zmsentities/dependency-check-report.html">Zmsentities Security Report</a></li>
+                    <li><a href="security/zmsmessaging/dependency-check-report.html">Zmsmessaging Security Report</a></li>
+                    <li><a href="security/zmsslim/dependency-check-report.html">Zmsslim Security Report</a></li>
+                    <li><a href="security/zmsstatistic/dependency-check-report.html">Zmsstatistic Security Report</a></li>
+                    <li><a href="security/zmsticketprinter/dependency-check-report.html">Zmsticketprinter Security Report</a></li>
+                    <li><a href="security/zmsapi/dependency-check-report.html">Zmsapi Security Report</a></li>
+                    <li><a href="security/zmsdb/dependency-check-report.html">Zmsdb Security Report</a></li>
+                    <li><a href="security/zmsclient/dependency-check-report.html">Zmsclient Security Report</a></li>
+                    <li><a href="security/zap/zap-scan-report.html">ZAP Scan Reports</a></li>
                   </ul>
                 </div>
               </div>
