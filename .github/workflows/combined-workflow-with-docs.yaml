@@ -45,6 +45,23 @@ jobs:
           path: public/security/zap
           merge-multiple: false
 
+      - name: Debug - List security reports structure
+        run: |
+          echo "=== Security Reports Structure ==="
+          find public/security -type f -name "*.html"
+          echo "=== Full Directory Structure ==="
+          ls -R public/security/
+
+      - name: Ensure correct structure
+        run: |
+          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
+            if [ -d "public/security/security-report-$module" ]; then
+              # Move files from nested directory if needed
+              mv public/security/security-report-$module/* public/security/$module/ 2>/dev/null || true
+              rmdir public/security/security-report-$module 2>/dev/null || true
+            fi
+          done
+
       - name: Upload aggregated reports
         uses: actions/upload-artifact@v4
         with:
