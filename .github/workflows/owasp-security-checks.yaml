@@ -2,12 +2,16 @@ name: owasp security checks
 
 on:
   workflow_call:
+    outputs:
+      security-scan-result:
+        description: "Security scan result"
+        value: ${{ jobs.security-scan.outputs.result }}
 
 jobs:
   security-scan:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false  # Prevents matrix jobs from stopping when one fails
+      fail-fast: false
       matrix:
         include:
           - module: zmsadmin
@@ -24,8 +28,20 @@ jobs:
             php_version: "8.0"
           - module: zmsticketprinter
             php_version: "8.0"
+          - module: zmsdldb
+            php_version: "8.0"
+          - module: zmsentities
+            php_version: "8.0"
+          - module: zmsslim
+            php_version: "8.0"
+          - module: zmsdb
+            php_version: "8.0"
+          - module: zmsclient
+            php_version: "8.0"
     container:
       image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
     steps:
       - uses: actions/checkout@v4
 
@@ -62,12 +78,18 @@ jobs:
             --suppression .security/suppression.xml
             --failOnCVSS 7
 
-      - name: Upload dependency check report
+      - name: Upload security report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dependency-check-report-${{ matrix.module }}
+          name: security-report-${{ matrix.module }}
           path: reports/${{ matrix.module }}
+          retention-days: 1
+
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
 
   zap-scan:
     needs: security-scan
@@ -97,18 +119,10 @@ jobs:
         run: |
           curl -s -I "${{ matrix.url }}" | grep -iE '^(Strict-Transport-Security|X-Frame-Options|X-Content-Type-Options|Content-Security-Policy|X-XSS-Protection):'
 
-  notify:
-    needs: [security-scan, zap-scan]
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send Notification
-        uses: actions/github-script@v6
+      - name: Upload ZAP scan report
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          script: |
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.name,
-              title: '🚨 Security Check Failed',
-              body: `Security checks failed in workflow run: ${context.serverUrl}/${context.repo.owner}/${context.repo.name}/actions/runs/${context.runId}`
-            })
+          name: zap-scan-${{ matrix.module }}
+          path: reports/
+          retention-days: 1

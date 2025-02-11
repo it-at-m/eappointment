@@ -13,6 +13,11 @@ on:
         required: true
         type: string
         default: 'api-docs'
+      security_artifact:
+        description: 'Name of the security reports artifact'
+        required: true
+        type: string
+        default: 'security-reports'
 
 permissions:
   pages: write
@@ -43,6 +48,12 @@ jobs:
         with:
           name: ${{ inputs.api_docs_artifact }}
           path: public
+
+      - name: Download security reports
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.security_artifact }}
+          path: public/security
 
       - name: Create index page
         run: |
@@ -127,6 +138,25 @@ jobs:
                     <li><a href="coverage/coverage-zmsapi/html/">Zmsapi Coverage</a></li>
                     <li><a href="coverage/coverage-zmsdb/html/">Zmsdb Coverage</a></li>
                     <li><a href="coverage/coverage-zmsclient/html/">Zmsclient Coverage</a></li>
+                  </ul>
+                </div>
+
+                <div class="card">
+                  <h2>Security Reports</h2>
+                  <ul>
+                    <li><a href="security/zmsadmin/">Zmsadmin Security Report</a></li>
+                    <li><a href="security/zmscalldisplay/">Zmscalldisplay Security Report</a></li>
+                    <li><a href="security/zmscitizenapi/">Zmscitizenapi Security Report</a></li>
+                    <li><a href="security/zmsdldb/">Zmsdldb Security Report</a></li>
+                    <li><a href="security/zmsentities/">Zmsentities Security Report</a></li>
+                    <li><a href="security/zmsmessaging/">Zmsmessaging Security Report</a></li>
+                    <li><a href="security/zmsslim/">Zmsslim Security Report</a></li>
+                    <li><a href="security/zmsstatistic/">Zmsstatistic Security Report</a></li>
+                    <li><a href="security/zmsticketprinter/">Zmsticketprinter Security Report</a></li>
+                    <li><a href="security/zmsapi/">Zmsapi Security Report</a></li>
+                    <li><a href="security/zmsdb/">Zmsdb Security Report</a></li>
+                    <li><a href="security/zmsclient/">Zmsclient Security Report</a></li>
+                    <li><a href="security/zap/">ZAP Scan Reports</a></li>
                   </ul>
                 </div>
               </div>

@@ -2,7 +2,7 @@ name: Combined Workflow with Documentation
 
 on:
   push:
-    branches: [next]
+    branches: [feature-gh-850-implement-owasp-security]
 
 permissions:
   contents: read
@@ -38,16 +38,44 @@ jobs:
           path: public/coverage/
           retention-days: 7
 
+  combine-security-reports:
+    needs: [call-owasp-security-checks]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all security reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'security-report-*'
+          path: public/security
+          merge-multiple: false
+
+      - name: Download all ZAP scan reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'zap-scan-*'
+          path: public/security/zap
+          merge-multiple: false
+
+      - name: Upload combined security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: public/security/
+          retention-days: 7
+
   call-build-api-docs:
     uses: ./.github/workflows/build-api-docs.yaml
 
   deploy-to-pages:
-    needs: [combine-php-test-coverage, call-build-api-docs]
-    if: needs.call-build-api-docs.result == 'success'
+    needs: [combine-php-test-coverage, call-build-api-docs, combine-security-reports]
+    if: |
+      needs.call-build-api-docs.result == 'success' &&
+      needs.combine-security-reports.result == 'success'
     uses: ./.github/workflows/deploy-pages.yaml
     with:
       coverage_artifact: coverage-reports
       api_docs_artifact: api-docs
+      security_artifact: security-reports
 
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
