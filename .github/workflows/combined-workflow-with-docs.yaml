@@ -64,6 +64,7 @@ jobs:
     with:
       coverage_artifact: aggregated-reports
       api_docs_artifact: api-docs
+      security_artifact: aggregated-reports
 
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
