@@ -292,39 +292,6 @@ class ZmsApiFacadeService
         return new ServiceList($services);
     }
 
-    public static function getOfficesThatProvideService(int $serviceId): OfficeList|array
-    {
-        $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
-        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-        $providerIds = [];
-        foreach ($requestRelationList as $relation) {
-            if ((int) $relation->request->id === $serviceId) {
-                $providerIds[] = $relation->provider->id;
-            }
-        }
-
-        $offices = [];
-        foreach ($providerList as $provider) {
-            if (
-                in_array($provider->id, $providerIds) &&
-                isset($provider->data['public']) &&
-                $provider->data['public'] === true
-            ) {
-                $scope = self::getScopeByOfficeId((int) $provider->id);
-                if (!is_array($scope)) {
-                    $offices[] = new Office(id: (int) $provider->id, name: $provider->displayName ?? $provider->name, address: $provider->data['address'] ?? null, showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null, displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [], organization: $provider->data['organization'] ?? null, organizationUnit: $provider->data['organizationUnit'] ?? null, slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null, geo: $provider->data['geo'] ?? null, scope: $scope instanceof ThinnedScope ? $scope : null);
-                }
-            }
-        }
-
-        $errors = ValidationService::validateOfficesNotFound($offices);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        return new OfficeList($offices);
-    }
-
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
     {
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
