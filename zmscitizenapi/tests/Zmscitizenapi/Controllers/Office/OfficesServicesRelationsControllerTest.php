@@ -41,6 +41,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "id" => 9999998,
                     "name" => "Unittest Source Dienstleister",
                     "address" => null,
+                    "showAlternativeLocations" => false,
                     "displayNameAlternatives" => [],
                     "organization" => null,
                     "organizationUnit" => null,
@@ -81,6 +82,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
                     "address" => null,
+                    "showAlternativeLocations" => true,
                     "displayNameAlternatives" => [],
                     "organization" => null,
                     "organizationUnit" => null,
@@ -162,7 +164,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
             ]
         ]);
-
+    
         $response = $this->render();
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
@@ -171,6 +173,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "id" => 9999998,
                     "name" => "Unittest Source Dienstleister",
                     "address" => null,
+                    "showAlternativeLocations" => false,
                     "displayNameAlternatives" => [],
                     "organization" => null,
                     "organizationUnit" => null,
@@ -211,6 +214,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
                     "address" => null,
+                    "showAlternativeLocations" => true,
                     "displayNameAlternatives" => [],
                     "organization" => null,
                     "organizationUnit" => null,
@@ -283,6 +287,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                 ]
             ]
         ];
+        
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }

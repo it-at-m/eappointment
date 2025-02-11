@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Schema\Loader;
@@ -15,7 +16,6 @@ use BO\Zmsclient\Auth;
 
 class UseraccountEdit extends BaseController
 {
-
     /**
      *
      * @return String
@@ -28,7 +28,7 @@ class UseraccountEdit extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $userAccountName = Validator::value($args['loginname'])->isString()->getValue();
         $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
-        $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();
+        $userAccount = \App::$http->readGetResult('/useraccount/' . $userAccountName . '/')->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         if ($request->getMethod() === 'POST') {
@@ -69,10 +69,11 @@ class UseraccountEdit extends BaseController
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->setPassword($input);
         try {
-            $entity = \App::$http->readPostResult('/useraccount/'. $userAccountName .'/', $entity)->getEntity();
+            $entity = \App::$http->readPostResult('/useraccount/' . $userAccountName . '/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
-            if ('' != $exception->template
+            if (
+                '' != $exception->template
                 && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 return [

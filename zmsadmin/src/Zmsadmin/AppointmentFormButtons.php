@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -26,7 +27,7 @@ class AppointmentFormButtons extends BaseController
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId) ?
-            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
+            \App::$http->readGetResult('/process/' . $selectedProcessId . '/')->getEntity() : null;
 
         $isNewAppointment = $this->isNewAppointment(
             $selectedProcess,
@@ -50,7 +51,7 @@ class AppointmentFormButtons extends BaseController
     protected function isNewAppointment($process, $selectedDate, $selectedTime)
     {
         $selectedAppointment = new \BO\Zmsentities\Appointment();
-        $selectedAppointment->setTime($selectedDate.' '.$selectedTime);
+        $selectedAppointment->setTime($selectedDate . ' ' . $selectedTime);
         return ($process) ? ($process->getFirstAppointment()->date != $selectedAppointment->date) : false;
     }
 }

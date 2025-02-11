@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Owner;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Owner;
 
 class OwnerByOrganisation extends BaseController
 {

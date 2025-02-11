@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Middleware;
@@ -15,8 +16,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class RequestLoggingMiddleware implements MiddlewareInterface
 {
     private LoggerService $logger;
-
-    /**
+/**
      * @param LoggerService $logger Service for logging requests and responses
      */
     public function __construct(LoggerService $logger)
@@ -32,18 +32,13 @@ class RequestLoggingMiddleware implements MiddlewareInterface
      * @return ResponseInterface The resulting response
      * @throws \Throwable If an error occurs during request handling
      */
-    public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $handler
-    ): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
         try {
             $response = $handler->handle($request);
-
             $responseToLog = clone $response;
             $responseToLog->getBody()->rewind();
-
             $this->logger->logRequest($request, $responseToLog);
-
             return $response;
         } catch (\Throwable $e) {
             $this->logger->logError($e, $request);

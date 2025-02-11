@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
-use \BO\Zmsdb\ProcessStatusArchived;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope as Query;
+use BO\Zmsdb\ProcessStatusArchived;
 use BO\Zmsentities\Collection\QueueList;
 
 class ProcessListByScopeAndDate extends BaseController
@@ -52,7 +53,7 @@ class ProcessListByScopeAndDate extends BaseController
             $queueList->addList($query->readQueueListWithWaitingTime(
                 $scope,
                 $date,
-                $resolveReferences? $resolveReferences + 1 : 1 // resolveReferences is for process, for queue we have to +1
+                $resolveReferences ? $resolveReferences + 1 : 1 // resolveReferences is for process, for queue we have to +1
             ));
         }
 

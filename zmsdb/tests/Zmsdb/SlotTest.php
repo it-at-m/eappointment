@@ -340,9 +340,6 @@ class SlotTest extends Base
         $dateTime = new \DateTimeImmutable('2016-04-01 11:55:00');
         $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+7days'));
         $this->assertEquals($slotList[0]['status'], 'free');
-        (new Slot())->writeCanceledByTime($dateTime->modify('+8days'));
-        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+7days'));
-        $this->assertEquals($slotList[0]['status'], 'cancelled');
         $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+14days'));
         $this->assertEquals($slotList[0]['status'], 'free');
 

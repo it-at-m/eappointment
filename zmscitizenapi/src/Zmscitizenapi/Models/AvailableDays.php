@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -10,14 +11,11 @@ use JsonSerializable;
 class AvailableDays extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/availableDays.json';
-
-    /** @var array */
+/** @var array */
     public array $availableDays = [];
-
     public function __construct(array $availableDays = [])
     {
         $this->availableDays = $availableDays;
-
         $this->ensureValid();
     }
 

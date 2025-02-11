@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models\Collections;
@@ -13,22 +14,17 @@ use JsonSerializable;
 class OfficeServiceAndRelationList extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/collections/officeServiceAndRelationList.json";
-
-    /** @var OfficeList */
+/** @var OfficeList */
     protected OfficeList $offices;
-
-    /** @var ServiceList */
+/** @var ServiceList */
     protected ServiceList $services;
-
-    /** @var OfficeServiceRelationList */
+/** @var OfficeServiceRelationList */
     protected OfficeServiceRelationList $relations;
-
     public function __construct(OfficeList $offices, ServiceList $services, OfficeServiceRelationList $relations)
     {
         $this->offices = $offices;
         $this->services = $services;
         $this->relations = $relations;
-
         $this->ensureValid();
     }
 

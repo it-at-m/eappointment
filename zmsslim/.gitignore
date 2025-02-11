@@ -5,3 +5,4 @@ tags
 tests/cache/*
 !tests/cache/.gitkeep
 public
+coverage

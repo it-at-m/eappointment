@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -10,40 +11,26 @@ use JsonSerializable;
 class ThinnedProvider extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/thinnedProvider.json";
-
-    /** @var int|null */
+/** @var int|null */
     public ?int $id;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $name;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $source;
-
-    /** @var float|null */
-    public ?float  $lat;
-
-    /** @var float|null */
-    public ?float  $lon;
-
-    /** @var ThinnedContact|null */
+/** @var float|null */
+    public ?float $lat;
+/** @var float|null */
+    public ?float $lon;
+/** @var ThinnedContact|null */
     public ?ThinnedContact $contact;
-
-    public function __construct(
-        ?int $id = null,
-        ?string $name = null,
-        ?float $lat = null,
-        ?float $lon = null,
-        ?string $source = null,
-        ?ThinnedContact $contact = null,
-    ) {
+    public function __construct(?int $id = null, ?string $name = null, ?float $lat = null, ?float $lon = null, ?string $source = null, ?ThinnedContact $contact = null,)
+    {
         $this->id = $id;
         $this->name = $name;
         $this->lat = $lat;
         $this->lon = $lon;
         $this->source = $source;
         $this->contact = $contact;
-
         $this->ensureValid();
     }
 

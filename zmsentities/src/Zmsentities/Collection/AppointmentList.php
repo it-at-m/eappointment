@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
-use \BO\Zmsentities\Appointment;
+use BO\Zmsentities\Appointment;
 
 class AppointmentList extends Base
 {

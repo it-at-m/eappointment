@@ -1,13 +1,14 @@
 <?php
+
 /**
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\Collection;
 
 class Services extends Base
 {
-
     public function containsLocation($locationCsv = null)
     {
         $list = new self();

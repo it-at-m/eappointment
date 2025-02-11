@@ -139,7 +139,7 @@ class Http
         if (null !== $xAuthKey && ! $userInfo) {
             $request = $request->withHeader('X-Authkey', $xAuthKey);
         } elseif ($userInfo) {
-            $request = $request->withHeader('Authorization', 'Basic '. base64_encode($userInfo));
+            $request = $request->withHeader('Authorization', 'Basic ' . base64_encode($userInfo));
         }
         if (null !== $this->apikeyString) {
             $request = $request->withHeader('X-Api-Key', $this->apikeyString);
@@ -223,7 +223,7 @@ class Http
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = self::createRequest('DELETE', $uri);        
+        $request = self::createRequest('DELETE', $uri);
         return $this->readResult($request);
     }
 
@@ -237,10 +237,12 @@ class Http
             try {
                 $result->getData();
             } catch (Exception $exception) {
-                if ($try < 3 && in_array($exception->template, [
+                if (
+                    $try < 3 && in_array($exception->template, [
                     "BO\\Zmsdb\\Exception\\Pdo\\DeadLockFound",
                     "BO\\Zmsdb\\Exception\\Pdo\\LockTimeout",
-                ])) {
+                    ])
+                ) {
                     usleep(rand(1000000, 3000000));
                     return $this->readResult($request, $try + 1);
                 }

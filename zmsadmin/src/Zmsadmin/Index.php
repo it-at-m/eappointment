@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Workstation;
-use \BO\Zmsadmin\Helper\LoginForm;
-use \BO\Mellon\Validator;
+use BO\Zmsentities\Workstation;
+use BO\Zmsadmin\Helper\LoginForm;
+use BO\Mellon\Validator;
 
 class Index extends BaseController
 {
@@ -85,7 +86,8 @@ class Index extends BaseController
             } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
                 throw $exception;
-            } elseif ('' != $exception->template
+            } elseif (
+                '' != $exception->template
                 && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 $exceptionData = [
@@ -104,7 +106,8 @@ class Index extends BaseController
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
         $oidcproviderlist = [];
         foreach (\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
-            if (0 < count($allowedProviderList) &&
+            if (
+                0 < count($allowedProviderList) &&
                 class_exists($authInstance) &&
                 in_array($provider, $allowedProviderList)
             ) {

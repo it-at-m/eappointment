@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsadmin;
 
-use \Psr\Http\Message\RequestInterface;
-use \BO\Zmsadmin\Helper\ProcessFinishedHelper;
-use \BO\Zmsentities\Process as Entity;
-use \BO\Zmsentities\Collection\RequestList;
+use Psr\Http\Message\RequestInterface;
+use BO\Zmsadmin\Helper\ProcessFinishedHelper;
+use BO\Zmsentities\Process as Entity;
+use BO\Zmsentities\Collection\RequestList;
 
 class WorkstationProcessFinished extends BaseController
 {
@@ -44,7 +45,7 @@ class WorkstationProcessFinished extends BaseController
         }
 
         $requestList = \App::$http
-            ->readGetResult('/scope/'. $scopeId .'/request/')
+            ->readGetResult('/scope/' . $scopeId . '/request/')
             ->getCollection();
         $requestList = $requestList ? $requestList : new RequestList();
 

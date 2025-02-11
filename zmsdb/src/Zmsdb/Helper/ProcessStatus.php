@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsdb\Helper;
 
-use \BO\Zmsdb\Log;
+use BO\Zmsdb\Log;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
@@ -61,7 +62,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
             LIMIT 1
             '
         );
-        
+
         $statusList = [
             'free' => true,
             'reserved' => $this->isReservedProcess($processData),

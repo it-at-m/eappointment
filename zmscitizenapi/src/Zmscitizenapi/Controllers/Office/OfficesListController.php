@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Controllers\Office;
@@ -13,7 +14,6 @@ use Psr\Http\Message\ResponseInterface;
 class OfficesListController extends BaseController
 {
     private OfficesListService $service;
-
     public function __construct()
     {
         $this->service = new OfficesListService();
@@ -23,21 +23,12 @@ class OfficesListController extends BaseController
     {
         $requestErrors = ValidationService::validateServerGetRequest($request);
         if (!empty($requestErrors['errors'])) {
-            return $this->createJsonResponse(
-                $response,
-                $requestErrors,
-                ErrorMessages::get('invalidRequest', $this->language)['statusCode']
-            );
+            return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
         }
 
         $result = $this->service->getOfficesList();
-
         return is_array($result) && isset($result['errors'])
-            ? $this->createJsonResponse(
-                $response,
-                $result,
-                ErrorMessages::getHighestStatusCode($result['errors'])
-            )
+            ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
             : $this->createJsonResponse($response, $result->toArray(), 200);
     }
 }

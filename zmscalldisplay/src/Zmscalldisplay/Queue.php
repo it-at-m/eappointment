@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmscalldisplay;
 
 use BO\Slim\Render;
@@ -39,7 +41,7 @@ class Queue extends BaseController
 
         if ($displayNumber === 1) {
             $queueList = $queueList->chunk(10)[0];
-        } else if ($displayNumber === 2) {
+        } elseif ($displayNumber === 2) {
             $queueList = $queueList->chunk(10)[1] ?? new \BO\Zmsentities\Collection\QueueList();
         }
 
@@ -48,7 +50,7 @@ class Queue extends BaseController
 
         if ($callDisplayInfo->getClusterList()->count() > 0 && $callDisplayInfo->getClusterList()->getFirst()->callDisplayText) {
             $displayInfo = $callDisplayInfo->getClusterList()->getFirst()->callDisplayText;
-        } else if (
+        } elseif (
             $callDisplayInfo->getScopeList()->count() > 0
             && $callDisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText']
         ) {

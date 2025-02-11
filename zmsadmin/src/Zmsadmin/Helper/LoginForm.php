@@ -1,17 +1,18 @@
 <?php
+
 /**
  *
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin\Helper;
 
-use \BO\Mellon\Validator;
+use BO\Mellon\Validator;
 
 class LoginForm
 {
-
     /**
      * form data for reuse in multiple controllers
      */

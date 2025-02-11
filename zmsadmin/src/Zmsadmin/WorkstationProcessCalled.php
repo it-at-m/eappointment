@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Mellon\Validator;
+use BO\Mellon\Validator;
 
 class WorkstationProcessCalled extends BaseController
 {
@@ -22,7 +23,7 @@ class WorkstationProcessCalled extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         if (! $workstation->process->hasId() && ! $workstation->process->queue->callTime) {
-            $process = \App::$http->readGetResult('/process/'. $args['id'] .'/')->getEntity();
+            $process = \App::$http->readGetResult('/process/' . $args['id'] . '/')->getEntity();
             $workstation = \App::$http->readPostResult('/workstation/process/called/', $process, [
                 'allowClusterWideCall' => \App::$allowClusterWideCall
             ])->getEntity();
@@ -33,14 +34,14 @@ class WorkstationProcessCalled extends BaseController
             $exclude = explode(',', $excludedIds);
         }
         $exclude[] = $workstation->process->toQueue(\App::$now)->number;
-        
+
         $error = $validator->getParameter('error')->isString()->getValue();
         if (isset($processId) && $workstation->process->getId() != $processId) {
             $error = ('pickup' == $workstation->process->getStatus()) ?
                 'has_called_pickup' :
                 'has_called_process';
         }
-    
+
         if ($workstation->process->getStatus() == 'processing') {
             return \BO\Slim\Render::redirect('workstationProcessProcessing', [], ['error' => $error]);
         }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Controllers\Office;
@@ -13,7 +14,6 @@ use Psr\Http\Message\ResponseInterface;
 class OfficeListByServiceController extends BaseController
 {
     private OfficeListByServiceService $service;
-
     public function __construct()
     {
         $this->service = new OfficeListByServiceService();
@@ -22,22 +22,13 @@ class OfficeListByServiceController extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
             $requestErrors = ValidationService::validateServerGetRequest($request);
-            if (!empty($requestErrors['errors'])) {
-                return $this->createJsonResponse(
-                    $response,
-                    $requestErrors,
-                    ErrorMessages::get('invalidRequest', $this->language)['statusCode']
-                );
-            }
+        if (!empty($requestErrors['errors'])) {
+            return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
+        }
 
             $result = $this->service->getOfficeList($request->getQueryParams());
-
-            return is_array($result) && isset($result['errors'])
-                ? $this->createJsonResponse(
-                    $response,
-                    $result,
-                    ErrorMessages::getHighestStatusCode($result['errors'])
-                )
+        return is_array($result) && isset($result['errors'])
+                ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
                 : $this->createJsonResponse($response, $result->toArray(), 200);
     }
 }
