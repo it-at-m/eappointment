@@ -2,7 +2,7 @@ name: Combined Workflow with Documentation
 
 on:
   push:
-    branches: [feature-gh-850-implement-owasp-security]
+    branches: [next]
 
 permissions:
   contents: read
