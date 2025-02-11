@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Useraccount as Entity;
-use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Zmsentities\Useraccount as Entity;
+use BO\Zmsentities\Collection\UseraccountList as Collection;
 
 /**
  * @SuppressWarnings(Public)
@@ -289,7 +289,6 @@ class Useraccount extends Base
 
     public function readListByRoleAndDepartment($roleLevel, $departmentId, $resolveReferences = 0)
     {
-        $collection = new Collection();
         $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addResolvedReferences($resolveReferences)
               ->addEntityMapping();
@@ -302,5 +301,4 @@ class Useraccount extends Base
         $statement = $this->fetchStatement($query);
         return $this->readListStatement($statement, $resolveReferences);
     }
-    
 }

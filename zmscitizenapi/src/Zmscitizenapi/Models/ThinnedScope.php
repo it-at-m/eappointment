@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -11,49 +12,28 @@ use JsonSerializable;
 class ThinnedScope extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/thinnedScope.json';
-
-    /** @var int */
+/** @var int */
     public int $id;
-
-    /** @var ThinnedProvider|null */
+/** @var ThinnedProvider|null */
     public ?ThinnedProvider $provider;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $shortName;
-
-    /** @var bool|null */
+/** @var bool|null */
     public ?bool $telephoneActivated;
-
-    /** @var bool|null */
+/** @var bool|null */
     public ?bool $telephoneRequired;
-
-    /** @var bool|null */
+/** @var bool|null */
     public ?bool $customTextfieldActivated;
-
-    /** @var bool|null */
+/** @var bool|null */
     public ?bool $customTextfieldRequired;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $customTextfieldLabel;
-
-    /** @var bool|null */
+/** @var bool|null */
     public ?bool $captchaActivatedRequired;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $displayInfo;
-
-    public function __construct(
-        int $id = 0,
-        ?ThinnedProvider $provider = null,
-        ?string $shortName = null,
-        ?bool $telephoneActivated = null,
-        ?bool $telephoneRequired = null,
-        ?bool $customTextfieldActivated = null,
-        ?bool $customTextfieldRequired = null,
-        ?string $customTextfieldLabel = null,
-        ?bool $captchaActivatedRequired = null,
-        ?string $displayInfo = null
-    ) {
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null)
+    {
         $this->id = $id;
         $this->provider = $provider;
         $this->shortName = $shortName;
@@ -64,7 +44,6 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->customTextfieldLabel = $customTextfieldLabel;
         $this->captchaActivatedRequired = $captchaActivatedRequired;
         $this->displayInfo = $displayInfo;
-
         $this->ensureValid();
     }
 

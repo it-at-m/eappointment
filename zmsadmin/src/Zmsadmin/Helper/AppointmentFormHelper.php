@@ -1,13 +1,15 @@
 <?php
+
 /**
  *
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin\Helper;
 
-use \BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Collection\ScopeList;
 
 /**
  * @SuppressWarnings(Complexity)
@@ -19,14 +21,14 @@ class AppointmentFormHelper
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId)
-            ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
+            ? \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
                 'gql' => GraphDefaults::getProcess()
             ])->getEntity()
             : null;
 
         $scope = static::readSelectedScope($request, $workstation, $selectedProcess, $resolveReferences);
-        $scopeList = ($scope) ? (new ScopeList)->addEntity($scope) : (new ClusterHelper($workstation))->getScopeList();
-        
+        $scopeList = ($scope) ? (new ScopeList())->addEntity($scope) : (new ClusterHelper($workstation))->getScopeList();
+
         $slotType = static::setSlotType($validator);
         $slotsRequired = static::setSlotsRequired($validator, $scope, $selectedProcess);
         $freeProcessList = static::readProcessListByScopeAndDate(
@@ -51,12 +53,12 @@ class AppointmentFormHelper
         $requestList = null;
         if ($scope) {
             $requestList = \App::$http
-                ->readGetResult('/scope/'. $scope->getId().'/request/', [
+                ->readGetResult('/scope/' . $scope->getId() . '/request/', [
                     'gql' => GraphDefaults::getRequest()
                 ])
                 ->getCollection();
         }
-        return ($requestList) ? $requestList->sortByName() : new \BO\Zmsentities\Collection\RequestList;
+        return ($requestList) ? $requestList->sortByName() : new \BO\Zmsentities\Collection\RequestList();
     }
 
     public static function readSelectedScope($request, $workstation, $selectedProcess = null, $resolveReferences = 1)
@@ -75,7 +77,7 @@ class AppointmentFormHelper
         }
         if ($selectedScopeId) {
             $selectedScope = \App::$http
-              ->readGetResult('/scope/'. $selectedScopeId .'/', [
+              ->readGetResult('/scope/' . $selectedScopeId . '/', [
                   'resolveReferences' => $resolveReferences,
                   'gql' => GraphDefaults::getScope()
                 ])
@@ -92,7 +94,7 @@ class AppointmentFormHelper
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         return ($selectedProcessId) ?
-            \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
+            \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
                 'gql' => GraphDefaults::getProcess()
             ])->getEntity() :
             null;
@@ -126,7 +128,8 @@ class AppointmentFormHelper
         $selectedProcess
     ) {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        if ($selectedProcess &&
+        if (
+            $selectedProcess &&
             $selectedProcess->queue->withAppointment &&
             $selectedDate == $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d')
         ) {
@@ -139,7 +142,7 @@ class AppointmentFormHelper
                 $freeProcessList = (new \BO\Zmsentities\Collection\ProcessList())->addEntity($selectedProcess);
             }
         }
-        
+
         return ($freeProcessList) ? $freeProcessList : null;
     }
 
@@ -165,12 +168,13 @@ class AppointmentFormHelper
 
     protected static function writeNotification($smsConfirmation, \BO\Zmsentities\Process $process)
     {
-        if ($smsConfirmation &&
+        if (
+            $smsConfirmation &&
             $process->scope->hasNotificationEnabled() &&
             $process->getFirstClient()->hasTelephone()
         ) {
             \App::$http->readPostResult(
-                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
+                '/process/' . $process->id . '/' . $process->authKey . '/confirmation/notification/',
                 $process
             );
         }
@@ -178,12 +182,13 @@ class AppointmentFormHelper
 
     protected static function writeMail($mailConfirmation, \BO\Zmsentities\Process $process)
     {
-        if ($mailConfirmation &&
+        if (
+            $mailConfirmation &&
             $process->getFirstClient()->hasEmail() &&
             $process->scope->hasEmailFrom()
         ) {
             \App::$http->readPostResult(
-                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
+                '/process/' . $process->id . '/' . $process->authKey . '/confirmation/mail/',
                 $process
             );
         }

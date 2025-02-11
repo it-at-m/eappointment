@@ -26,7 +26,7 @@ class ApiQuotaDeleteByCron
         if ($this->quotaList) {
             foreach ($this->quotaList as $quota) {
                 if ($verbose) {
-                    error_log("INFO: Processing quota: ". join(', ', $quota));
+                    error_log("INFO: Processing quota: " . join(', ', $quota));
                 }
                 if ($commit) {
                     $this->removeQuota($quota['quotaid']);

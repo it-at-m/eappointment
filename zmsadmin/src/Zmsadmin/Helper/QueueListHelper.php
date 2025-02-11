@@ -1,15 +1,16 @@
 <?php
+
 /**
  *
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin\Helper;
 
-use \BO\Mellon\Validator;
-
-use \BO\Zmsentities\Collection\QueueList;
+use BO\Mellon\Validator;
+use BO\Zmsentities\Collection\QueueList;
 
 class QueueListHelper
 {

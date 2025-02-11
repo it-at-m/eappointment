@@ -37,10 +37,10 @@ class ExchangeClientorganisation extends Base
             0 as withappointment,
             0 as missedwithappointment,
             0 as requestcount
-          FROM '. Organisation::TABLE .' o
-              LEFT JOIN '. Department::TABLE .' d ON d.`OrganisationsID` = o.`OrganisationsID`
-              LEFT JOIN '. Scope::TABLE .' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
-              LEFT JOIN '. self::NOTIFICATIONSTABLE .' n ON n.`StandortID` = scope.`StandortID`
+          FROM ' . Organisation::TABLE . ' o
+              LEFT JOIN ' . Department::TABLE . ' d ON d.`OrganisationsID` = o.`OrganisationsID`
+              LEFT JOIN ' . Scope::TABLE . ' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
+              LEFT JOIN ' . self::NOTIFICATIONSTABLE . ' n ON n.`StandortID` = scope.`StandortID`
           WHERE o.`OrganisationsID` = :organisationid AND n.`Datum` BETWEEN :datestart AND :dateend
           GROUP BY date
 
@@ -55,10 +55,10 @@ class ExchangeClientorganisation extends Base
             SUM(IF(a.`nicht_erschienen`=0 AND a.mitTermin=1,a.AnzahlPersonen,0)) as withappointment,
             SUM(IF(a.`nicht_erschienen`=1 AND a.mitTermin=1,a.AnzahlPersonen,0)) as missedwithappointment,
             0 as requestcount                
-            FROM '. Organisation::TABLE .' o
-                LEFT JOIN '. Department::TABLE .' d ON d.`OrganisationsID` = o.`OrganisationsID`
-                LEFT JOIN '. Scope::TABLE .' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.`StandortID` = scope.`StandortID`
+            FROM ' . Organisation::TABLE . ' o
+                LEFT JOIN ' . Department::TABLE . ' d ON d.`OrganisationsID` = o.`OrganisationsID`
+                LEFT JOIN ' . Scope::TABLE . ' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
+                LEFT JOIN ' . ProcessStatusArchived::TABLE . ' a ON a.`StandortID` = scope.`StandortID`
             WHERE o.`OrganisationsID` = :organisationid AND a.`Datum` BETWEEN :datestart AND :dateend
             GROUP BY date
 
@@ -73,11 +73,11 @@ class ExchangeClientorganisation extends Base
             	0 as withappointment,
             	0 as missedwithappointment,
               COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as requestcount
-                FROM '. Organisation::TABLE .' o
-                    LEFT JOIN '. Department::TABLE .' d ON d.`OrganisationsID` = o.`OrganisationsID`
-                    LEFT JOIN '. Scope::TABLE .' as scope ON d.`BehoerdenID` = scope.`BehoerdenID`
-                    LEFT JOIN '. ProcessStatusArchived::TABLE .' as a ON scope.`StandortID` = a.`StandortID`
-                    LEFT JOIN '. self::BATABLE .' as ba ON a.BuergerarchivID = ba.BuergerarchivID
+                FROM ' . Organisation::TABLE . ' o
+                    LEFT JOIN ' . Department::TABLE . ' d ON d.`OrganisationsID` = o.`OrganisationsID`
+                    LEFT JOIN ' . Scope::TABLE . ' as scope ON d.`BehoerdenID` = scope.`BehoerdenID`
+                    LEFT JOIN ' . ProcessStatusArchived::TABLE . ' as a ON scope.`StandortID` = a.`StandortID`
+                    LEFT JOIN ' . self::BATABLE . ' as ba ON a.BuergerarchivID = ba.BuergerarchivID
                 WHERE
                   o.`OrganisationsID` = :organisationid AND
                   a.nicht_erschienen=0 AND
@@ -96,14 +96,14 @@ class ExchangeClientorganisation extends Base
           periodstart,
           periodend,
           o.`Organisationsname` AS description
-      FROM '. Organisation::TABLE .' AS o
+      FROM ' . Organisation::TABLE . ' AS o
           INNER JOIN
             (
               SELECT
                 s.`organisationsid` AS organisationsid,
                 MIN(s.`datum`) AS periodstart,
                 MAX(s.`datum`) AS periodend
-              FROM '. self::TABLE .' s
+              FROM ' . self::TABLE . ' s
               group by organisationsid
             )
           maxAndminDate ON maxAndminDate.`organisationsid` = o.`OrganisationsID`
@@ -113,12 +113,12 @@ class ExchangeClientorganisation extends Base
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT date
-        FROM '. Organisation::TABLE .' AS o
+        FROM ' . Organisation::TABLE . ' AS o
             INNER JOIN (
               SELECT
                 organisationsid,
                 DATE_FORMAT(`datum`,"%Y-%m") AS date
-              FROM '. self::TABLE .'
+              FROM ' . self::TABLE . '
             ) s ON s.organisationsid = o.`OrganisationsID`
         WHERE o.`OrganisationsID` = :organisationid
         GROUP BY date

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -7,7 +8,6 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
-
 use BO\Zmsentities\Department;
 use BO\Zmsentities\Collection\DepartmentList;
 
@@ -29,7 +29,7 @@ class Calldisplay extends BaseController
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
         $entity = \App::$http->readGetResult(
-            '/scope/'. $entityId .'/organisation/',
+            '/scope/' . $entityId . '/organisation/',
             ['resolveReferences' => 3]
         )->getEntity();
 

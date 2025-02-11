@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Department as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Department as Query;
 
 class DepartmentUpdate extends BaseController
 {
@@ -28,7 +29,7 @@ class DepartmentUpdate extends BaseController
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
         );
-        
+
         $message = Response\Message::create($request);
         $message->data = (new Query())->updateEntity($department->id, $department);
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -33,7 +34,7 @@ class WorkstationProcess extends BaseController
         }
         return \BO\Slim\Render::withHtml(
             $response,
-            'block/process/'. $template .'.twig',
+            'block/process/' . $template . '.twig',
             array(
                 'workstation' => $workstation
             )

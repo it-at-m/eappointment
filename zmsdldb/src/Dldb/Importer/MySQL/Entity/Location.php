@@ -214,7 +214,7 @@ class Location extends Base
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool
+    public function clearEntity(array $addWhere = []): bool
     {
         try {
             return $this->deleteWith(

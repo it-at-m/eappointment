@@ -155,7 +155,7 @@ class AvailableAppointmentsListServiceTest extends TestCase
             class ValidationService {
                 public static function validateGetAvailableAppointments(
                     ?string $date,
-                    ?int $officeId,
+                    ?array $officeIds,
                     array $serviceIds,
                     array $serviceCounts
                 ): array {
@@ -172,7 +172,7 @@ class AvailableAppointmentsListServiceTest extends TestCase
             class ZmsApiFacadeService {
                 public static function getAvailableAppointments(
                     ?string $date,
-                    ?int $officeId,
+                    ?array $officeIds,
                     ?array $serviceIds,
                     ?array $serviceCounts
                 ): \BO\Zmscitizenapi\Models\AvailableAppointments|array {

@@ -4,6 +4,7 @@
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb;
 
 class AccessFactory

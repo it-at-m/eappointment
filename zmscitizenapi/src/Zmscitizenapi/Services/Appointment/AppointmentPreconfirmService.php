@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Appointment;
@@ -13,17 +14,12 @@ class AppointmentPreconfirmService
     public function processPreconfirm(array $body): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($body);
-
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
         }
 
-        $reservedProcess = $this->getReservedProcess(
-            $clientData->processId,
-            $clientData->authKey
-        );
-
+        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey);
         if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
             return $reservedProcess;
         }
@@ -56,10 +52,7 @@ class AppointmentPreconfirmService
 
     private function validateClientData(object $data): array
     {
-        return ValidationService::validateGetProcessById(
-            $data->processId,
-            $data->authKey
-        );
+        return ValidationService::validateGetProcessById($data->processId, $data->authKey);
     }
 
     private function getReservedProcess(int $processId, string $authKey): ThinnedProcess|array
@@ -71,7 +64,6 @@ class AppointmentPreconfirmService
     {
         $processEntity = MapperService::thinnedProcessToProcess($process);
         $result = ZmsApiFacadeService::preconfirmAppointment($processEntity);
-
         if (is_array($result) && !empty($result['errors'])) {
             return $result;
         }

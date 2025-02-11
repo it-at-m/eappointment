@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope as Query;
 
 class ScopeCalldisplayImageDataDelete extends BaseController
 {
@@ -21,7 +22,7 @@ class ScopeCalldisplayImageDataDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $scope = (new Query)->readEntity($args['id']);
+        $scope = (new Query())->readEntity($args['id']);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }(new Helper\User($request, 2))->checkRights(
@@ -30,7 +31,7 @@ class ScopeCalldisplayImageDataDelete extends BaseController
         );
 
         $message = Response\Message::create($request);
-        $result = (new Query)->deleteImage($scope->id);
+        $result = (new Query())->deleteImage($scope->id);
         $message->data = $result;
 
         $response = Render::withLastModified($response, time(), '0');

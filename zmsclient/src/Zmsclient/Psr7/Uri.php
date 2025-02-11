@@ -22,7 +22,7 @@ class Uri extends \Slim\Psr7\Uri implements \Psr\Http\Message\UriInterface
         if ($host !== null) {
             parent::__construct($schemeOrUri, $host, $port, $path, $query, $fragment, $user, $password);
         } else {
-            $temp = (new UriFactory)->createUri($schemeOrUri);
+            $temp = (new UriFactory())->createUri($schemeOrUri);
             $this->scheme = $temp->scheme;
             $this->host = $temp->host;
             $this->port = $temp->port;

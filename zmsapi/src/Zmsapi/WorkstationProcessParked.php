@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Workstation;
-use \BO\Zmsdb\Process as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Workstation;
+use BO\Zmsdb\Process as Query;
 
 class WorkstationProcessParked extends BaseController
 {
@@ -41,7 +42,7 @@ class WorkstationProcessParked extends BaseController
             $previousStatus,
             $workstation->getUseraccount()
         );
-        (new Workstation)->writeRemovedProcess($workstation);
+        (new Workstation())->writeRemovedProcess($workstation);
         unset($workstation->process);
 
         $message = Response\Message::create($request);

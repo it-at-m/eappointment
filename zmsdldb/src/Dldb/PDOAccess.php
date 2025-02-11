@@ -24,7 +24,7 @@ abstract class PDOAccess extends AbstractAccess
 
     protected $engine = 'SQLite';
 
-    
+
     public function __construct(array $options)
     {
         try {
@@ -63,7 +63,7 @@ abstract class PDOAccess extends AbstractAccess
             if ('loadFromPath' != $method && preg_match('/load(?P<accessor>[A-Za-z_0-9]+)/', $method, $matches)) {
                 $locale = $args[0] ?? 'de';
                 $instance = $this->loadAccessor($matches['accessor'], $locale);
-                
+
                 return $instance;
             }
         }

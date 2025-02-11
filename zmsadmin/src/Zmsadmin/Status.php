@@ -1,9 +1,11 @@
 <?php
+
 /**
  *
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 /**
@@ -11,7 +13,6 @@ namespace BO\Zmsadmin;
  */
 class Status extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return String
