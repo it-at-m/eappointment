@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -9,20 +10,16 @@ use JsonSerializable;
 
 class ProcessFreeSlots extends Entity implements JsonSerializable
 {
-
     public static $schema = 'citizenapi/processFreeSlots.json';
-
-    /** @var array|null */
+/** @var array|null */
     public array|null $appointmentTimestamps = [];
-
-    /**
+/**
      * @param array $appointmentTimestamps
      */
     public function __construct(array $appointmentTimestamps = [])
     {
 
         $this->appointmentTimestamps = array_map('intval', $appointmentTimestamps);
-
         $this->ensureValid();
     }
 

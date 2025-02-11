@@ -1,12 +1,14 @@
 <?php
+
 /**
  *
 * @package Zmsmessaging
 *
 */
+
 namespace BO\Zmsmessaging;
 
-use \PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\PHPMailer;
 
 class Mailer extends PHPMailer
 {

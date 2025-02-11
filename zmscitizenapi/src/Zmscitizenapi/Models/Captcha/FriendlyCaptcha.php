@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models\Captcha;
@@ -10,23 +11,17 @@ use GuzzleHttp\Exception\RequestException;
 class FriendlyCaptcha extends Entity implements CaptchaInterface
 {
     public static $schema = "citizenapi/captcha/friendlyCaptcha.json";
-
-    /** @var string */
+/** @var string */
     public string $service;
-
-    /** @var string */
+/** @var string */
     public string $siteKey;
-
-    /** @var string */
+/** @var string */
     public string $apiUrl;
-
-    /** @var string */
+/** @var string */
     public string $secretKey;
-
-    /** @var string */
+/** @var string */
     public string $puzzle;
-
-    /**
+/**
      * Constructor.
      */
     public function __construct()
@@ -36,7 +31,6 @@ class FriendlyCaptcha extends Entity implements CaptchaInterface
         $this->apiUrl = \App::$FRIENDLY_CAPTCHA_ENDPOINT;
         $this->secretKey = \App::$FRIENDLY_CAPTCHA_SECRET_KEY;
         $this->puzzle = \App::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
-
         $this->ensureValid();
     }
 
@@ -78,13 +72,11 @@ class FriendlyCaptcha extends Entity implements CaptchaInterface
                     'solution' => $solution
                 ]
             ]);
-    
             $responseBody = json_decode((string)$response->getBody(), true);
-    
             if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['success'])) {
                 return false;
             }
-    
+
             return $responseBody['success'] === true;
         } catch (RequestException $e) {
             return false;

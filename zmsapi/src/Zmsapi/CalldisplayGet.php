@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Calldisplay as Query;
-use \BO\Zmsentities\Calldisplay as Entity;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Calldisplay as Query;
+use BO\Zmsentities\Calldisplay as Entity;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -46,13 +47,13 @@ class CalldisplayGet extends BaseController
             throw new Exception\Calldisplay\ScopeAndClusterNotFound();
         }
         foreach ($calldisplay->getClusterList() as $cluster) {
-            $cluster = (new \BO\Zmsdb\Cluster)->readEntity($cluster->id);
+            $cluster = (new \BO\Zmsdb\Cluster())->readEntity($cluster->id);
             if (! $cluster) {
                 throw new Exception\Cluster\ClusterNotFound();
             }
         }
         foreach ($calldisplay->getScopeList() as $scope) {
-            $scope = (new \BO\Zmsdb\Scope)->readEntity($scope->id);
+            $scope = (new \BO\Zmsdb\Scope())->readEntity($scope->id);
             if (! $scope) {
                 throw new Exception\Scope\ScopeNotFound();
             }

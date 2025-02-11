@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -26,7 +27,7 @@ class AppointmentFormFreeProcessList extends BaseController
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId) ?
-            \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
+            \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
                 'gql' => Helper\GraphDefaults::getProcess()
             ])->getEntity() : null;
         $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);

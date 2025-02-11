@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsstatistic\Helper;
 
 use BO\Slim\Response;

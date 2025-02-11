@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,12 +7,12 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
 use BO\Zmsdb\Log;
-use \BO\Zmsdb\Workstation;
-use \BO\Zmsdb\Process;
-use \BO\Zmsdb\Process as Query;
+use BO\Zmsdb\Workstation;
+use BO\Zmsdb\Process;
+use BO\Zmsdb\Process as Query;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -57,8 +58,8 @@ class WorkstationProcess extends BaseController
         $process->queue['callCount']++;
 
         $process->status = 'called';
-        
-        $workstation->process = (new Workstation)->writeAssignedProcess($workstation, $process, \App::$now);
+
+        $workstation->process = (new Workstation())->writeAssignedProcess($workstation, $process, \App::$now);
 
         $message = Response\Message::create($request);
         $message->data = $workstation;

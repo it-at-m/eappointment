@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -22,7 +23,7 @@ class WarehousePeriod extends BaseController
         array $args
     ) {
         $periodList = \App::$http
-          ->readGetResult('/warehouse/'. $args['subject'] .'/'. $args['subjectid'] .'/')
+          ->readGetResult('/warehouse/' . $args['subject'] . '/' . $args['subjectid'] . '/')
           ->getEntity();
         if (count($periodList['data']) == 1) {
             return Render::redirect("WarehouseReport", [

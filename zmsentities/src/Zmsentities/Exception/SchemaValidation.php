@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Exception;
 
-use \BO\Zmsentities\Schema\Validator;
+use BO\Zmsentities\Schema\Validator;
 
 /**
  * example class to generate an exception
@@ -37,7 +37,7 @@ class SchemaValidation extends \Exception
             $this->data[$pointer]['failed'] = 1;
             $this->data[$pointer]['data'] = $error->getData();
         }
-        $message = '[property '. $error->getDataPath() .'] '. json_encode($this->data[$pointer]['messages'], 1);
+        $message = '[property ' . $error->getDataPath() . '] ' . json_encode($this->data[$pointer]['messages'], 1);
         $this->message = (! $this->message) ? $message : $this->message;
         return $this;
     }

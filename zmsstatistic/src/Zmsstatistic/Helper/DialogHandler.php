@@ -1,9 +1,11 @@
 <?php
+
 /**
  *
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsstatistic\Helper;
 
 use BO\Slim\Render;
@@ -30,7 +32,7 @@ class DialogHandler extends \BO\Zmsstatistic\BaseController
 
         return Render::withHtml(
             $response,
-            'element/helper/dialog/'. $template .'.twig',
+            'element/helper/dialog/' . $template . '.twig',
             $parameter
         );
     }

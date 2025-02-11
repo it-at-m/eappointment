@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Controllers\Office;
@@ -52,5 +53,14 @@ class OfficesServicesRelationsController extends BaseController
             )
             : $this->createJsonResponse($response, $result->toArray(), 200);
 
+            $requestErrors = ValidationService::validateServerGetRequest($request);
+        if (!empty($requestErrors['errors'])) {
+            return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
+        }
+
+            $result = $this->service->getServicesAndOfficesList();
+        return is_array($result) && isset($result['errors'])
+                ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
+                : $this->createJsonResponse($response, $result->toArray(), 200);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -28,7 +29,7 @@ class Cluster extends BaseController
                 ->readGetResult('/cluster/' . $entityId . '/', ['resolveReferences' => 2])
                 ->getEntity();
         $organisation = $this->testOrganisation($entityId);
-        
+
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
         $department = \App::$http->readGetResult(
@@ -36,14 +37,14 @@ class Cluster extends BaseController
             ['resolveReferences' => 2]
         )->getEntity();
 
-        $callDisplayImage = \App::$http->readGetResult('/cluster/'. $entityId .'/imagedata/calldisplay/')->getEntity();
+        $callDisplayImage = \App::$http->readGetResult('/cluster/' . $entityId . '/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->id = $entityId;
             $entity = \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
             if (isset($input['removeImage']) && $input['removeImage']) {
-                \App::$http->readDeleteResult('/cluster/'. $entityId .'/imagedata/calldisplay/');
+                \App::$http->readDeleteResult('/cluster/' . $entityId . '/imagedata/calldisplay/');
             } else {
                 (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToCluster($entityId);
             }

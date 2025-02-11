@@ -6,7 +6,7 @@ class Collection implements \Countable, \ArrayAccess
 {
     protected $entities = [];
 
-    final public function offsetExists($offset) : bool
+    final public function offsetExists($offset): bool
     {
         return array_key_exists($offset, $this->entities);
     }
@@ -19,7 +19,7 @@ class Collection implements \Countable, \ArrayAccess
         throw new \InvalidArgumentException(__METHOD__ . " offset({$offset}) has not been set!");
     }
 
-    final public function offsetSet($offset, $value) : Collection
+    final public function offsetSet($offset, $value): Collection
     {
         if (!$value instanceof Base) {
             throw new \InvalidArgumentException(
@@ -34,13 +34,13 @@ class Collection implements \Countable, \ArrayAccess
         return $this;
     }
 
-    final public function offsetUnset($offset) : Collection
+    final public function offsetUnset($offset): Collection
     {
         unset($this->entities[$offset]);
         return $this;
     }
 
-    final public function count() : int
+    final public function count(): int
     {
         return count($this->entities);
     }

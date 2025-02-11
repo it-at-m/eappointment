@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb;
 
 /**
@@ -10,7 +12,6 @@ namespace BO\Dldb;
  */
 class AbstractAccess
 {
-
     protected static $showDeprecated = false;
 
     protected $accessInstance = array(
@@ -98,7 +99,8 @@ class AbstractAccess
             }
         }
         $accessInstance = $this->getInstanceCompatibilities();
-        if ($instanceName
+        if (
+            $instanceName
             && $instanceName != 'Missing'
             && method_exists($accessInstance[$instanceName], $actionType . $actionName)
         ) {

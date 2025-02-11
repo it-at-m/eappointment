@@ -3,15 +3,11 @@
 namespace BO\Zmsdb;
 
 use BO\Zmsentities\Collection\ScopeList;
-use \BO\Zmsentities\Source as Entity;
-
-use \BO\Zmsentities\Collection\SourceList as Collection;
-
-use \BO\Zmsentities\Collection\ProviderList;
-
-use \BO\Zmsentities\Collection\RequestList;
-
-use \BO\Zmsentities\Collection\RequestRelationList;
+use BO\Zmsentities\Source as Entity;
+use BO\Zmsentities\Collection\SourceList as Collection;
+use BO\Zmsentities\Collection\ProviderList;
+use BO\Zmsentities\Collection\RequestList;
+use BO\Zmsentities\Collection\RequestRelationList;
 
 /**
  *

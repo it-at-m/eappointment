@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Appointment;
@@ -13,17 +14,12 @@ class AppointmentCancelService
     public function processCancel(array $body): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($body);
-
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
         }
 
-        $process = $this->getProcess(
-            $clientData->processId,
-            $clientData->authKey
-        );
-
+        $process = $this->getProcess($clientData->processId, $clientData->authKey);
         if (is_array($process) && !empty($process['errors'])) {
             return $process;
         }
@@ -39,7 +35,6 @@ class AppointmentCancelService
 
         // Send cancellation email before cancelling the appointment
         $this->sendCancellationEmail($process);
-
         return $this->cancelProcess($process);
     }
 
@@ -57,10 +52,7 @@ class AppointmentCancelService
 
     private function validateClientData(object $data): array
     {
-        return ValidationService::validateGetProcessById(
-            $data->processId,
-            $data->authKey
-        );
+        return ValidationService::validateGetProcessById($data->processId, $data->authKey);
     }
 
     private function getProcess(int $processId, string $authKey): ThinnedProcess|array
@@ -78,7 +70,6 @@ class AppointmentCancelService
     {
         $processEntity = MapperService::thinnedProcessToProcess($process);
         $result = ZmsApiFacadeService::cancelAppointment($processEntity);
-
         if (is_array($result) && !empty($result['errors'])) {
             return $result;
         }

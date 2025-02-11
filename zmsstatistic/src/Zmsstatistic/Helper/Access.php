@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsstatistic\Helper;
 
 use BO\Zmsclient\Auth;
@@ -12,7 +14,7 @@ use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Exception\WorkstationMissingScope;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
-use \BO\Zmsentities\Application;
+use BO\Zmsentities\Application;
 
 class Access extends \BO\Slim\Controller
 {
@@ -81,7 +83,8 @@ class Access extends \BO\Slim\Controller
 
     protected function testAccess($path)
     {
-        if ((false !== strpos($path, 'owner') && ! $this->owner) ||
+        if (
+            (false !== strpos($path, 'owner') && ! $this->owner) ||
             (false !== strpos($path, 'organisation') && ! $this->organisation) ||
             (false !== strpos($path, 'department') && ! $this->department)
         ) {
@@ -91,7 +94,8 @@ class Access extends \BO\Slim\Controller
 
     protected function testScope($path)
     {
-        if ($this->isPathWithoutScope($path)
+        if (
+            $this->isPathWithoutScope($path)
             && (! isset($this->workstation['scope']) || ! isset($this->workstation['scope']['id']))
         ) {
             throw new WorkstationMissingScope();
@@ -130,7 +134,8 @@ class Access extends \BO\Slim\Controller
             } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
                 Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
                 throw $exception;
-            } elseif ('' != $exception->template
+            } elseif (
+                '' != $exception->template
                 && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 $exceptionData = [

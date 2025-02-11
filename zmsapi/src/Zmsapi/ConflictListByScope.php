@@ -7,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process;
-use \BO\Zmsdb\Scope;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Process;
+use BO\Zmsdb\Scope;
 
 class ConflictListByScope extends BaseController
 {
