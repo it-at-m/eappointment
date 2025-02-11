@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models\Collections;
@@ -11,10 +12,8 @@ use JsonSerializable;
 class ThinnedScopeList extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/collections/thinnedScopeList.json";
-
-    /** @var ThinnedScope[] */
+/** @var ThinnedScope[] */
     public array $scopes = [];
-
     public function __construct(array $scopes = [])
     {
         foreach ($scopes as $scope) {
@@ -24,7 +23,8 @@ class ThinnedScopeList extends Entity implements JsonSerializable
                 }
                 $this->scopes[] = $scope;
             } catch (\Exception $e) {
-                error_log("Invalid ThinnedScope encountered: " . $e->getMessage()); //Gracefully handle
+                error_log("Invalid ThinnedScope encountered: " . $e->getMessage());
+            //Gracefully handle
             }
         }
 
@@ -54,5 +54,4 @@ class ThinnedScopeList extends Entity implements JsonSerializable
     {
         return $this->scopes;
     }
-
 }

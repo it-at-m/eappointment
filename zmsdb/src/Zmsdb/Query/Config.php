@@ -29,7 +29,7 @@ class Config extends Base
 
     public function addConditionName($itemName)
     {
-        $this->query->where(self::TABLE .'.name', '=', $itemName);
+        $this->query->where(self::TABLE . '.name', '=', $itemName);
         return $this;
     }
 }

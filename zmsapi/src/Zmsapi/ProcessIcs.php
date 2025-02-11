@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Process;
-use \BO\Zmsdb\Config;
+use BO\Slim\Render;
+use BO\Zmsdb\Process;
+use BO\Zmsdb\Config;
 use BO\Mellon\Validator;
 
 class ProcessIcs extends BaseController
@@ -24,7 +25,7 @@ class ProcessIcs extends BaseController
     ) {
         $status = Validator::param('status')->isNumber()->setDefault('appointment')->getValue();
         $this->testProcessData($args['id'], $args['authKey']);
-        $process = (new Process)->readEntity($args['id'], $args['authKey'], 2);
+        $process = (new Process())->readEntity($args['id'], $args['authKey'], 2);
 
         $config = (new Config())->readEntity();
         $templateProvider = new \BO\Zmsdb\Helper\MailTemplateProvider($process);

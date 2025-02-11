@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -7,8 +8,8 @@ declare(strict_types=1);
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\EventLog as EventLogEntity;
-use \BO\Zmsentities\Collection\EventLogList as EventLogCollection;
+use BO\Zmsentities\EventLog as EventLogEntity;
+use BO\Zmsentities\Collection\EventLogList as EventLogCollection;
 use PDO;
 
 class EventLog extends Base

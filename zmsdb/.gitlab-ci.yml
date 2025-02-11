@@ -6,7 +6,7 @@ test-php-80:
     cache: []
     allow_failure: false
     services:
-        - name: mariadb:10.3
+        - name: mariadb:10.11
           alias: mysql
           command: ["mysqld", "--general-log=1", "--general-log-file=/var/log/mysql/general.log"]
     before_script:

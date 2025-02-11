@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,11 +7,11 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Cluster as Query;
-use \BO\Zmsdb\ProcessStatusArchived;
-use \BO\Zmsentities\Collection\ProcessList as ProcessListCollection;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Cluster as Query;
+use BO\Zmsdb\ProcessStatusArchived;
+use BO\Zmsentities\Collection\ProcessList as ProcessListCollection;
 use BO\Zmsentities\Collection\QueueList;
 
 class ProcessListByClusterAndDate extends BaseController

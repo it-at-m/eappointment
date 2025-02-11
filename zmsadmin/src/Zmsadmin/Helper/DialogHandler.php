@@ -1,14 +1,15 @@
 <?php
+
 /**
  *
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin\Helper;
 
 class DialogHandler extends \BO\Zmsadmin\BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return String
@@ -24,7 +25,7 @@ class DialogHandler extends \BO\Zmsadmin\BaseController
         $parameter = ($parameter) ? $parameter : array();
 
         if (isset($parameter['id'])) {
-            $result = \App::$http->readGetResult('/process/'. $parameter['id'] .'/');
+            $result = \App::$http->readGetResult('/process/' . $parameter['id'] . '/');
             if ($result) {
                 $process = $result->getEntity();
                 $parameter['settings']['isWithAppointment'] = $process->isWithAppointment();
@@ -40,7 +41,7 @@ class DialogHandler extends \BO\Zmsadmin\BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'element/helper/dialog/'. $template .'.twig',
+            'element/helper/dialog/' . $template . '.twig',
             $parameter
         );
     }

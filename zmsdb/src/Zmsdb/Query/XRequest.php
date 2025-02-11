@@ -1,9 +1,9 @@
 <?php
+
 namespace BO\Zmsdb\Query;
 
 class XRequest extends Base
 {
-
     /**
      *
      * @var String TABLE mysql table reference

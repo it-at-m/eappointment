@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -10,17 +11,13 @@ use JsonSerializable;
 class OfficeServiceRelation extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/officeServiceRelation.json';
-
-    /** @var int */
+/** @var int */
     public int $officeId;
-
-    /** @var int */
+/** @var int */
     public int $serviceId;
-
-    /** @var int */
+/** @var int */
     public int $slots;
-
-    /**
+/**
      * Constructor.
      *
      * @param int $officeId
@@ -32,7 +29,6 @@ class OfficeServiceRelation extends Entity implements JsonSerializable
         $this->officeId = $officeId;
         $this->serviceId = $serviceId;
         $this->slots = $slots;
-
         $this->ensureValid();
     }
 

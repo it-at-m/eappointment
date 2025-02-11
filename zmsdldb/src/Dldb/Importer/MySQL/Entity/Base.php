@@ -18,8 +18,9 @@ use BO\Dldb\Importer\MySQL\Entity\Collection as EntityCollection
  */
 abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
 {
-    use ItemNeedsUpdateTrait, PDOTrait;
-    
+    use ItemNeedsUpdateTrait;
+    use PDOTrait;
+
     protected $fieldMapping = [];
 
     protected $fields = [];
@@ -50,11 +51,11 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 $this->setupMapping();
 
                 $this->preSetup();
-                
+
                 $this->setupFields();
 
                 $this->setupReferences();
-                
+
                 $this->postSetup();
             }
         } catch (\Exception $e) {
@@ -95,7 +96,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $this;
     }
 
-    public function getRawData() : array
+    public function getRawData(): array
     {
         return $this->dataRaw;
     }
@@ -105,12 +106,12 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         $this->status = $status;
     }
 
-    public function getStatus() : int
+    public function getStatus(): int
     {
         return $this->status;
     }
 
-    public function getReferenceMapping($setup = false) : array
+    public function getReferenceMapping($setup = false): array
     {
         try {
             if (true === $setup) {
@@ -138,7 +139,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     public function postSetup()
     {
     }
-    
+
     public function preSetupFields()
     {
     }
@@ -147,14 +148,14 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     {
     }
 
-    final public function setupFields() : bool
+    final public function setupFields(): bool
     {
         try {
             if (false === $this->setupFields) {
                 return true;
             }
             $this->preSetupFields();
-            
+
             $values = $this->get(array_keys(array_filter($this->fieldMapping)));
             foreach ($values as $key => $value) {
                 $this->__set($key, $value);
@@ -170,7 +171,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     protected function getReferenceFields()
     {
         $referenceFields = array_flip(array_keys(array_filter($this->referanceMapping)));
-        
+
         foreach (array_keys($referenceFields) as $name) {
             $referenceFields[$name] = $this->get($name);
         }
@@ -188,16 +189,16 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
             foreach ($values as $name => $references) {
                 $referenceEntityClass = $this->referanceMapping[$name]['class'];
                 $addFields = [];
-                
+
                 foreach (($this->referanceMapping[$name]['neededFields'] ?? []) as $sourceKey => $destinationKey) {
                     $addFields[$destinationKey] = $this->get($sourceKey);
                 }
                 $isMultiple = $this->referanceMapping[$name]['multiple'] ?? true;
-               
+
                 if (false === $isMultiple) {
                     $references = [$references];
                 }
-                
+
                 $position = 0;
                 foreach (($references ?? []) as $reference) {
                     foreach ($this->referanceMapping[$name]['addFields'] as $key => $value) {
@@ -275,7 +276,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         throw new \InvalidArgumentException(__METHOD__ . " {$name} has not been set!");
     }
 
-    final public function __isset($name) : bool
+    final public function __isset($name): bool
     {
         return array_key_exists($name, $this->fields) || array_key_exists($name, $this->references);
     }
@@ -290,7 +291,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    final public function offsetExists($offset) : bool
+    final public function offsetExists($offset): bool
     {
         return $this->__isset($offset);
     }
@@ -300,19 +301,19 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $this->__get($offset);
     }
 
-    final public function offsetSet($offset, $value) : Base
+    final public function offsetSet($offset, $value): Base
     {
         $this->__set($offset, $value);
         return $this;
     }
 
-    final public function offsetUnset($offset) : Base
+    final public function offsetUnset($offset): Base
     {
         $this->__unset($offset);
         return $this;
     }
 
-    final public function count() : int
+    final public function count(): int
     {
         return count($this->fields);
     }
@@ -322,7 +323,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return $this->fields;
     }
 
-    public function getFields() : array
+    public function getFields(): array
     {
         return $this->fields;
     }
@@ -337,14 +338,14 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
             $keys = [$keys];
         }
         $values = [];
-        
+
         foreach ($keys as $key) {
             if ('__RAW__' == $key) {
                 $values[$key] = $this->dataRaw;
                 continue;
             }
             $levels = static::arrayAccessByDotPerpareKeys($key);
-            
+
             $value = $default;
 
             $pointer = &$this->dataRaw;
@@ -353,7 +354,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 if (array_key_exists($levels[$i], $pointer)) {
                     $pointer = &$pointer[$levels[$i]];
                     $value = $pointer;
-                    
+
                     continue;
                 }
             }
@@ -362,7 +363,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return 1 == count($keys) ? $values[$keys[0]] : $values;
     }
 
-    protected static function arrayAccessByDotPerpareKeys(string $key = null) : array
+    protected static function arrayAccessByDotPerpareKeys(string $key = null): array
     {
         if (null === $key) {
             return [];
@@ -373,7 +374,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
         $keys = array_filter($keys, 'strlen');
         $keys = array_map(function ($key) {
-            return ((is_numeric($key) && !is_double(1*$key)) ? (int)$key : $key);
+            return ((is_numeric($key) && !is_double(1 * $key)) ? (int)$key : $key);
         }, $keys);
 
         return $keys;
@@ -393,7 +394,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    final public function saveEntitiy() : bool
+    final public function saveEntitiy(): bool
     {
         try {
             if (static::STATUS_NEW !== $this->getStatus()) {
@@ -402,7 +403,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
             if (!empty($this->fields)) {
                 $sql = 'REPLACE INTO ' . static::getTableName() . ' ';
                 $sql .= '(`' . implode('`, `', array_keys($this->fields)) . '`) ';
-                
+
                 $questionMarks = array_fill(0, count($this->fields), '?');
                 $sql .= 'VALUES (' . implode(', ', $questionMarks) . ') ';
 
@@ -410,7 +411,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 $stm = $this->getPDOAccess()->prepare($sql);
 
                 $stm->execute(array_values($this->fields));
-                
+
                 #$this->postSave($stm, $this);
 
                 if ($stm && 0 < $stm->rowCount()) {
@@ -434,7 +435,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     {
     }
 
-    final public function saveReferences() : bool
+    final public function saveReferences(): bool
     {
         try {
             if (static::STATUS_NEW !== $this->getStatus()) {
@@ -451,7 +452,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    public function delete() : bool
+    public function delete(): bool
     {
         try {
             $this->deleteEntity();
@@ -462,7 +463,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    abstract public function deleteEntity() : bool;
+    abstract public function deleteEntity(): bool;
 
     public function deleteReferences(): bool
     {
@@ -484,7 +485,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 foreach ($mappingData['deleteFields'] as $sourceKey => $val) {
                     $addFields[$sourceKey] = $val;
                 }
-                
+
                 $referencesInstance = new $referenceEntityClass(
                     $this->getPDOAccess(),
                     $addFields,
@@ -515,7 +516,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                 }, array_keys($fields));
                 $sql .= " WHERE " . implode(' AND ', $where);
             }
-            
+
             $stm = $this->getPDOAccess()->prepare($sql);
             $stm->execute(array_values($fields));
             if ($stm && 0 < $stm->rowCount()) {
@@ -527,7 +528,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool
+    public function clearEntity(array $addWhere = []): bool
     {
         try {
             return $this->deleteWith($addWhere);
@@ -536,7 +537,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    public function clearEntityReferences() : bool
+    public function clearEntityReferences(): bool
     {
         try {
             foreach ($this->getReferenceMapping(true) as $name => $mappingData) {
@@ -550,7 +551,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
                         $clearFields[$key] = $value;
                     }
                 }
-                
+
                 $referencesInstance = new $referenceEntityClass(
                     $this->getPDOAccess(),
                     [],
@@ -568,14 +569,14 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
-    public static function getTableName() : string
+    public static function getTableName(): string
     {
         if (defined('static::TABLENAME')) {
             return strtolower(static::TABLENAME);
         }
         $classNameWithNs = explode("\\", static::class);
         $className = end($classNameWithNs);
-        
+
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $className));
     }
 }

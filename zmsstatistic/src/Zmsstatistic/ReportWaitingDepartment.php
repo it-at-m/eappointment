@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -9,7 +10,6 @@ namespace BO\Zmsstatistic;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-
 use BO\Zmsstatistic\Helper\ReportHelper;
 
 class ReportWaitingDepartment extends BaseController
@@ -22,7 +22,7 @@ class ReportWaitingDepartment extends BaseController
         'waitingtime_termin',
         'waitingcalculated_termin',
         'waytime',
-        'waytime_termin',        
+        'waytime_termin',
     ];
 
     protected $groupfields = [
@@ -46,7 +46,7 @@ class ReportWaitingDepartment extends BaseController
         $exchangeWaiting = null;
         if (isset($args['period'])) {
             $exchangeWaiting = \App::$http
-            ->readGetResult('/warehouse/waitingdepartment/' . $this->department->id . '/'. $args['period']. '/')
+            ->readGetResult('/warehouse/waitingdepartment/' . $this->department->id . '/' . $args['period'] . '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
             ->withMaxByHour($this->hashset)
@@ -55,7 +55,7 @@ class ReportWaitingDepartment extends BaseController
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime');
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime_termin');
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime');
-            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime_termin');            
+            $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waytime_termin');
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
@@ -85,5 +85,4 @@ class ReportWaitingDepartment extends BaseController
             )
         );
     }
-
 }

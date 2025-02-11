@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Slim\Render;
@@ -14,7 +16,6 @@ use Psr\Http\Message\ResponseInterface;
 
 class Home extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface

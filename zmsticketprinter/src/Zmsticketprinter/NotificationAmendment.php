@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Slim\Render;
@@ -13,7 +15,6 @@ use Psr\Http\Message\ResponseInterface;
 
 class NotificationAmendment extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
@@ -28,8 +29,8 @@ class NotificationAmendment extends BaseController
         $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
         $ticketprinter = (new Helper\Ticketprinter($args, $request))->getEntity();
 
-        $scope = ($scopeId) ? \App::$http->readGetResult('/scope/'. $scopeId .'/')->getEntity() : null;
-        $cluster = ($clusterId) ? \App::$http->readGetResult('/cluster/'. $clusterId .'/')->getEntity() : null;
+        $scope = ($scopeId) ? \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity() : null;
+        $cluster = ($clusterId) ? \App::$http->readGetResult('/cluster/' . $clusterId . '/')->getEntity() : null;
 
         return Render::withHtml(
             $response,
@@ -41,7 +42,7 @@ class NotificationAmendment extends BaseController
                 'scope' => $scope,
                 'cluster' => $cluster,
                 'organisation' => \App::$http->readGetResult(
-                    '/scope/'. $scopeId . '/organisation/',
+                    '/scope/' . $scopeId . '/organisation/',
                     ['resolveReferences' => 2]
                 )->getEntity(),
             )

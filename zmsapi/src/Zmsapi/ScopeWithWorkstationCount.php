@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope;
 
 class ScopeWithWorkstationCount extends BaseController
 {
@@ -22,7 +23,7 @@ class ScopeWithWorkstationCount extends BaseController
         array $args
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $scope = (new Scope)->readWithWorkstationCount($args['id'], \App::$now, $resolveReferences);
+        $scope = (new Scope())->readWithWorkstationCount($args['id'], \App::$now, $resolveReferences);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
