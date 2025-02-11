@@ -137,7 +137,6 @@ const errorMessageTelephoneNumber = computed(() => {
   }
 });
 
-
 const errorMessageCustomTextfield = computed(() => {
   if (
     !customerData.value.customTextfield &&
