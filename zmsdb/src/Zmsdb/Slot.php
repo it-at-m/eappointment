@@ -439,9 +439,7 @@ class Slot extends Base
     public function writeOptimizedSlotTables()
     {
         $status = true;
-        \BO\Zmsdb\Connection\Select::writeCommit();
         $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_SLOT));
-        \BO\Zmsdb\Connection\Select::writeCommit();
         $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_SLOT_HIERA));
         $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_SLOT_PROCESS));
         $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_PROCESS));
