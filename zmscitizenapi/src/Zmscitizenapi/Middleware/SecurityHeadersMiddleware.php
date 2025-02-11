@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Middleware;
@@ -23,42 +24,34 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         'Permissions-Policy' => 'geolocation=(), microphone=(), camera=()',
         'X-Permitted-Cross-Domain-Policies' => 'none'
     ];
-
     private LoggerService $logger;
-
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
     }
 
-    public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $handler
-    ): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
         try {
             $response = $handler->handle($request);
-            
             foreach ($this->securityHeaders as $header => $value) {
                 $response = $response->withHeader($header, $value);
             }
-            
+
             /*$this->logger->logInfo('Security headers added', [
                 'uri' => (string)$request->getUri()
             ]);*/
-            
+
             return $response;
         } catch (\Throwable $e) {
             $this->logger->logError($e, $request);
-            
             $response = \App::$slim->getResponseFactory()->createResponse();
             $language = $request->getAttribute('language');
             $response = $response->withStatus(ErrorMessages::get('securityHeaderViolation', $language)['statusCode'])
                 ->withHeader('Content-Type', 'application/json');
-            
             $response->getBody()->write(json_encode([
                 'errors' => [ErrorMessages::get('securityHeaderViolation', $language)]
             ]));
-            
             return $response;
         }
     }

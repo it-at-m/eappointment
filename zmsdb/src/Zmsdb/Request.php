@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Request as Entity;
-use \BO\Zmsentities\Collection\RequestList as Collection;
+use BO\Zmsentities\Request as Entity;
+use BO\Zmsentities\Collection\RequestList as Collection;
 
 /**
  *
@@ -162,7 +163,7 @@ class Request extends Base
             'name' => $request['name'],
             'group' => (isset($request['group'])) ? $request['group'] : 'Sonstiges',
             'link' => ('dldb' == $source)
-                ? 'https://service.berlin.de/dienstleistung/'. $request['id'] .'/'
+                ? 'https://service.berlin.de/dienstleistung/' . $request['id'] . '/'
                 : ((isset($request['link'])) ? $request['link'] : ''),
             'data' => json_encode($request)
         ]);

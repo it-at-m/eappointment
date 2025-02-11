@@ -28,7 +28,8 @@ class Request extends Schema\Entity
     {
         if (isset($this['data']) && isset($this['data']['locations'])) {
             foreach ($this['data']['locations'] as $provider) {
-                if ((!isset($provider['appointment']['external']) || !$provider['appointment']['external'])
+                if (
+                    (!isset($provider['appointment']['external']) || !$provider['appointment']['external'])
                     && isset($provider['appointment']['allowed']) && $provider['appointment']['allowed']
                 ) {
                     return true;

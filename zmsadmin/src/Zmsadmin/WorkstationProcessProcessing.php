@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -23,7 +24,7 @@ class WorkstationProcessProcessing extends BaseController
             throw new \BO\Zmsentities\Exception\WorkstationMissingAssignedProcess();
         }
         $workstation->process = \App::$http->readPostResult(
-            '/process/'. $workstation->process->id .'/'. $workstation->process->authKey .'/',
+            '/process/' . $workstation->process->id . '/' . $workstation->process->authKey . '/',
             $workstation->process,
             ['initiator' => 'admin']
         )->getEntity();

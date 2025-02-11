@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -11,65 +12,36 @@ use JsonSerializable;
 class ThinnedProcess extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/thinnedProcess.json";
-
-    /** @var int|null */
+/** @var int|null */
     public ?int $processId;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $timestamp;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $authKey;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $familyName;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $customTextfield;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $email;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $telephone;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $officeName;
-
-    /** @var int|null */
+/** @var int|null */
     public ?int $officeId;
-
-    /** @var ThinnedScope|null */
+/** @var ThinnedScope|null */
     public ?ThinnedScope $scope;
-
-    /** @var array */
+/** @var array */
     public array $subRequestCounts;
-
-    /** @var int|null */
+/** @var int|null */
     public ?int $serviceId;
-
-    /** @var int */
+/** @var int */
     public int $serviceCount;
-
-    /** @var string|null */
+/** @var string|null */
     public ?string $status;
-
-    public function __construct(
-        ?int $processId = null,
-        ?string $timestamp = null,
-        ?string $authKey = null,
-        ?string $familyName = null,
-        ?string $customTextfield = null,
-        ?string $email = null,
-        ?string $telephone = null,
-        ?string $officeName = null,
-        ?int $officeId = null,
-        ?ThinnedScope $scope = null,
-        array $subRequestCounts = [],
-        ?int $serviceId = null,
-        int $serviceCount = 0,
-        ?string $status = null
-    ) {
+    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, int $serviceCount = 0, ?string $status = null)
+    {
         $this->processId = $processId;
         $this->timestamp = $timestamp;
         $this->authKey = $authKey;
@@ -84,7 +56,6 @@ class ThinnedProcess extends Entity implements JsonSerializable
         $this->serviceId = $serviceId;
         $this->serviceCount = $serviceCount;
         $this->status = $status;
-
         $this->ensureValid();
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -24,7 +25,7 @@ class OwnerDelete extends BaseController
         array $args
     ) {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
-        \App::$http->readDeleteResult('/owner/'. $entityId .'/')->getEntity();
+        \App::$http->readDeleteResult('/owner/' . $entityId . '/')->getEntity();
         return \BO\Slim\Render::redirect(
             'owner_overview',
             array(),

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -12,7 +13,6 @@ namespace BO\Dldb\Entity;
   */
 class Service extends Base
 {
-
     /**
      * Checks, if it contains _all_ locations
      * Necessary, cause service A might be in location C but not location D,

@@ -12,7 +12,6 @@ use BO\Zmsentities\Slot;
  */
 class SlotList extends Base
 {
-
     const QUERY = 'SELECT
 
             -- collect some important settings, especially from the scope, use the appointment key

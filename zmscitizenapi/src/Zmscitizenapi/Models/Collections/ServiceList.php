@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models\Collections;
@@ -11,10 +12,8 @@ use JsonSerializable;
 class ServiceList extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/collections/serviceList.json";
-
-    /** @var Service[] */
+/** @var Service[] */
     public array $services = [];
-
     public function __construct(array $services = [])
     {
         foreach ($services as $service) {
@@ -24,9 +23,9 @@ class ServiceList extends Entity implements JsonSerializable
                 }
                 $this->services[] = $service;
             } catch (\Exception $e) {
-                error_log("Invalid Service encountered: " . $e->getMessage()); //Gracefully handle
+                error_log("Invalid Service encountered: " . $e->getMessage());
+            //Gracefully handle
             }
-
         }
 
         $this->ensureValid();

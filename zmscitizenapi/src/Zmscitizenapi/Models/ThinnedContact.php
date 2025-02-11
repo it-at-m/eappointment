@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -10,7 +11,6 @@ class ThinnedContact extends Entity implements \JsonSerializable
 {
     /** @var string Points to the JSON schema file for validation */
     public static $schema = 'citizenapi/thinnedContact.json';
-
     public ?string $city;
     public ?string $country;
     public ?string $name;
@@ -18,16 +18,8 @@ class ThinnedContact extends Entity implements \JsonSerializable
     public ?string $region;
     public ?string $street;
     public ?string $streetNumber;
-
-    public function __construct(
-        ?string $city = null,
-        ?string $country = null,
-        ?string $name = null,
-        ?string $postalCode = null,
-        ?string $region = null,
-        ?string $street = null,
-        ?string $streetNumber = null
-    ) {
+    public function __construct(?string $city = null, ?string $country = null, ?string $name = null, ?string $postalCode = null, ?string $region = null, ?string $street = null, ?string $streetNumber = null)
+    {
         $this->city         = $city     ?? '';
         $this->country      = $country  ?? '';
         $this->name         = $name     ?? '';
@@ -35,7 +27,6 @@ class ThinnedContact extends Entity implements \JsonSerializable
         $this->region       = $region   ?? '';
         $this->street       = $street   ?? '';
         $this->streetNumber = $streetNumber ?? '';
-
         $this->ensureValid();
     }
 

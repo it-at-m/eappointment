@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -30,7 +31,7 @@ class AvailabilityCalcSlots extends BaseController
         $data['maxWorkstationCount'] = $collection->getMaxWorkstationCount();
         $data['maxSlots'] = $collection->getSummerizedSlotCount();
         $data['busySlots'] = $input['busySlots'];
-  
+
         return \BO\Slim\Render::withJson(
             $response,
             $data

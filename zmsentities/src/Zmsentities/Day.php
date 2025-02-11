@@ -13,7 +13,7 @@ class Day extends Schema\Entity
     const NOTBOOKABLE = 'notBookable';
 
     const RESTRICTED = 'restricted';
-    
+
     const DETAIL = 'detail';
 
     public static $schema = "day.json";
@@ -34,7 +34,7 @@ class Day extends Schema\Entity
     public function __toString()
     {
         $this->freeAppointments = new Slot($this->freeAppointments);
-        return "Day {$this->status}@{$this->year}-{$this->month}-{$this->day} with ". $this->freeAppointments;
+        return "Day {$this->status}@{$this->year}-{$this->month}-{$this->day} with " . $this->freeAppointments;
     }
 
     public function setDateTime(\DateTimeInterface $dateTime)

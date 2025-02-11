@@ -3,7 +3,6 @@
 namespace BO\Slim;
 
 use Psr\Http\Message\RequestInterface;
-
 // Symfony Translation Classes
 use Symfony\Component\Translation\Loader\JsonFileLoader;
 use Symfony\Component\Translation\Loader\PoFileLoader;
@@ -47,7 +46,7 @@ class LanguageTranslator
         foreach (\App::$supportedLanguages as $language) {
             $this->translator->addResource(
                 'json',
-                \App::APP_PATH .'/lang/'. $language['locale'] .'.json',
+                \App::APP_PATH . '/lang/' . $language['locale'] . '.json',
                 $language['locale']
             );
         }
@@ -60,7 +59,7 @@ class LanguageTranslator
             if ($locale != $this->defaultLang) {
                 $this->translator->addResource(
                     'pofile',
-                    \App::APP_PATH .'/lang/'. $language['locale'] .'.po',
+                    \App::APP_PATH . '/lang/' . $language['locale'] . '.po',
                     $language['locale']
                 );
             }

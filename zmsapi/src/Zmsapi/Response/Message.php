@@ -2,9 +2,8 @@
 
 namespace BO\Zmsapi\Response;
 
-use \BO\Zmsdb\Connection\Select;
-
-use \BO\Zmsclient\GraphQL\GraphQLInterpreter;
+use BO\Zmsdb\Connection\Select;
+use BO\Zmsclient\GraphQL\GraphQLInterpreter;
 
 /**
  * example class to generate a response
@@ -115,7 +114,7 @@ class Message implements \JsonSerializable
         $schema .= $this->request->getUri()->getHost();
         $schema .= \App::$slim->urlFor('index');
         $jsonCompressLevel = $this->getJsonCompressLevel();
-        
+
         if ($jsonCompressLevel > 0 && $this->data && is_object($this->data)) {
             $this->data->setJsonCompressLevel($jsonCompressLevel);
         }

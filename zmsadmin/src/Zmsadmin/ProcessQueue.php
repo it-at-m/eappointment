@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Condition;
@@ -26,7 +27,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ProcessQueue extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      */
@@ -39,7 +39,7 @@ class ProcessQueue extends BaseController
 
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-        
+
         if ($selectedProcessId) {
             $process = $this->readSelectedProcessWithWaitingnumber($selectedProcessId);
 
@@ -111,7 +111,7 @@ class ProcessQueue extends BaseController
                     $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
                 )
             )
-            
+
         ;
         $processValidator->getCollection()->addValid(
             $validator->getParameter('sendConfirmation')->isNumber(),
@@ -127,7 +127,7 @@ class ProcessQueue extends BaseController
     {
         $result = null;
         if ($selectedProcessId) {
-            $result = \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
+            $result = \App::$http->readGetResult('/process/' . $selectedProcessId . '/')->getEntity();
         }
         return $result;
     }
@@ -149,7 +149,7 @@ class ProcessQueue extends BaseController
     protected function isOpened($scope)
     {
         if ($scope->getResolveLevel() < 1) {
-            $scope =  \App::$http->readGetResult('/scope/'. $scope->getId() .'/', [
+            $scope =  \App::$http->readGetResult('/scope/' . $scope->getId() . '/', [
                 'resolveReferences' => 1,
                 'gql' => Helper\GraphDefaults::getScope()
             ])
@@ -157,7 +157,7 @@ class ProcessQueue extends BaseController
         }
         try {
             $isOpened = \App::$http
-                ->readGetResult('/scope/'. $scope->getId() .'/availability/', ['resolveReferences' => 0])
+                ->readGetResult('/scope/' . $scope->getId() . '/availability/', ['resolveReferences' => 0])
                 ->getCollection()
                 ->withScope($scope)
                 ->isOpened(\App::$now);
@@ -174,8 +174,7 @@ class ProcessQueue extends BaseController
         Entity $process,
         ?string $printType = null,
         ?int $providerId = null
-    ): ResponseInterface
-    {
+    ): ResponseInterface {
         if ($printType === 'mail') {
             $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/')
                 ->getCollection();

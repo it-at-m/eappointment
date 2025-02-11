@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -10,11 +11,9 @@ use JsonSerializable;
 class Combinable extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/combinable.json';
-
-    /** @var array<int, int[]> */
+/** @var array<int, int[]> */
     private array $combinations = [];
-
-    /**
+/**
      * Constructor.
      *
      * @param array $combinations An associative array of combinations (serviceId => providerIds).
@@ -22,9 +21,7 @@ class Combinable extends Entity implements JsonSerializable
     public function __construct(array $combinations = [])
     {
         foreach ($combinations as $id => $providerIds) {
-
             $this->combinations[(int)$id] = array_map('intval', $providerIds);
-
             $this->ensureValid();
         }
     }

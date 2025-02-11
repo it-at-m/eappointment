@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Slim\Middleware;
 
-use \Psr\Http\Message\ServerRequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
 
@@ -54,7 +55,7 @@ class OAuthMiddleware
      */
     public function __invoke(
         ServerRequestInterface $request,
-        RequestHandlerInterface  $next
+        RequestHandlerInterface $next
     ) {
         $response = (new ResponseFactory())->createResponse(200, '');
         $request = $request->withAttribute('authentificationHandler', $this->authentificationHandler);
@@ -88,7 +89,8 @@ class OAuthMiddleware
 
     private function handleLogout(ServerRequestInterface $request, ResponseInterface $response, $instance)
     {
-        if ('logout' == $request->getAttribute('authentificationHandler') &&
+        if (
+            'logout' == $request->getAttribute('authentificationHandler') &&
             ! $request->getParam('state')
         ) {
             return $instance->doLogout($response);
@@ -98,7 +100,8 @@ class OAuthMiddleware
 
     private function handleRefreshToken(ServerRequestInterface $request, ResponseInterface $response, $instance)
     {
-        if ('refresh' == $request->getAttribute('authentificationHandler') &&
+        if (
+            'refresh' == $request->getAttribute('authentificationHandler') &&
             ! $instance->writeNewAccessTokenIfExpired()
         ) {
             return $instance->doLogout($response);

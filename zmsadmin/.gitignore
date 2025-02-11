@@ -21,3 +21,4 @@ public/_css/admin.css
 public/_css/admin.css.map
 .cache
 .phpunit.*
+coverage

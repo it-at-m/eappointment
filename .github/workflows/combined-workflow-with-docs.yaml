@@ -1,0 +1,55 @@
+name: Combined Workflow with Documentation
+
+on:
+  push:
+    branches: [next]
+
+permissions:
+  contents: read
+  packages: write
+  pages: write
+  id-token: write
+
+jobs:
+  call-php-code-quality:
+    uses: ./.github/workflows/php-code-quality.yaml
+
+  call-php-unit-tests:
+    uses: ./.github/workflows/php-unit-tests.yaml
+
+  combine-php-test-coverage:
+    needs: [call-php-unit-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'coverage-*'
+          path: public/coverage
+          merge-multiple: false
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: public/coverage/
+          retention-days: 7
+
+  call-build-api-docs:
+    uses: ./.github/workflows/build-api-docs.yaml
+
+  deploy-to-pages:
+    needs: [combine-php-test-coverage, call-build-api-docs]
+    if: needs.call-build-api-docs.result == 'success'
+    uses: ./.github/workflows/deploy-pages.yaml
+    with:
+      coverage_artifact: coverage-reports
+      api_docs_artifact: api-docs
+
+  call-php-build-images:
+    needs: [call-php-code-quality, call-php-unit-tests]
+    if: |
+      always() &&
+      needs.call-php-code-quality.result == 'success' &&
+      needs.call-php-unit-tests.result == 'success'
+    uses: ./.github/workflows/php-build-images.yaml

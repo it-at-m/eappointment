@@ -8,13 +8,13 @@ namespace BO\Zmsdb\Helper;
 class AppointmentDeallocateByCron
 {
     protected $verbose = false;
-    
+
     protected $limit = 10000;
-    
+
     protected $loopCount = 500;
 
     protected $time;
-    
+
     protected $statuslist = [
         "deleted"
     ];
@@ -56,7 +56,7 @@ class AppointmentDeallocateByCron
     {
         $this->count['deallocated'] = 0;
         $this->deallocateProcessList($commit);
-        $this->log("\nSUMMARY: Deallocated processes: ".var_export($this->count, true));
+        $this->log("\nSUMMARY: Deallocated processes: " . var_export($this->count, true));
     }
 
     protected function deallocateProcessList($commit)

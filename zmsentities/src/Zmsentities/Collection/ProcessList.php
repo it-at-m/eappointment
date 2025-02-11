@@ -1,13 +1,11 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
-use \BO\Zmsentities\Helper\Sorter;
-
-use \BO\Zmsentities\Helper\Property;
-
-use \BO\Zmsentities\Helper\Messaging;
-
-use \BO\Zmsentities\Process;
+use BO\Zmsentities\Helper\Sorter;
+use BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Messaging;
+use BO\Zmsentities\Process;
 
 /**
  * @SuppressWarnings(Complexity)
@@ -189,7 +187,7 @@ class ProcessList extends Base
     public function setTempAppointmentToProcess($dateTime, $scopeId)
     {
         $addedAppointment = false;
-        $appointment = (new \BO\Zmsentities\Appointment)->addDate($dateTime->getTimestamp())->addScope($scopeId);
+        $appointment = (new \BO\Zmsentities\Appointment())->addDate($dateTime->getTimestamp())->addScope($scopeId);
         foreach ($this as $process) {
             if ($process->hasAppointment($dateTime->getTimestamp(), $scopeId) && !$addedAppointment) {
                 $entity = clone $process;
@@ -263,14 +261,14 @@ class ProcessList extends Base
         return $processList;
     }
 
-    
-    
+
+
     public function setConflictAmendment()
     {
         foreach ($this as $process) {
             $process->amendment = 'Die Slots für diesen Zeitraum wurden überbucht';
             if (! $process->getFirstAppointment()->availability->hasId()) {
-                $process->amendment = 'Der Vorgang ('. $process->getId() .') befindet sich außerhalb der Öffnungszeit!';
+                $process->amendment = 'Der Vorgang (' . $process->getId() . ') befindet sich außerhalb der Öffnungszeit!';
             }
         }
         return $this;
@@ -424,7 +422,8 @@ class ProcessList extends Base
         $processList = new self();
         if ($this->count()) {
             foreach ($this as $process) {
-                if ($appointment->getEndTime() > $process->getFirstAppointment()->getStartTime() &&
+                if (
+                    $appointment->getEndTime() > $process->getFirstAppointment()->getStartTime() &&
                     $appointment->getStartTime() < $process->getFirstAppointment()->getEndTime()
                 ) {
                     $processList->addEntity(clone $process);

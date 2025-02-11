@@ -22,7 +22,7 @@ class CalculateSlots
     public function log($message)
     {
         $time = $this->getSpendTime();
-        $memory = memory_get_usage()/(1024*1024);
+        $memory = memory_get_usage() / (1024 * 1024);
         $text = sprintf("[CalculateSlots %07.3fs %07.1fmb] %s", "$time", $memory, $message);
         $this->logList[] = $text;
         if ($this->verbose) {
@@ -49,13 +49,13 @@ class CalculateSlots
 
     protected function readCalculateSkip()
     {
-        $skip = (new \BO\Zmsdb\Config)->readProperty('status__calculateSlotsSkip');
+        $skip = (new \BO\Zmsdb\Config())->readProperty('status__calculateSlotsSkip');
         return $skip;
     }
 
     protected function readForceVerbose()
     {
-        $force = (new \BO\Zmsdb\Config)->readProperty('status__calculateSlotsForceVerbose');
+        $force = (new \BO\Zmsdb\Config())->readProperty('status__calculateSlotsForceVerbose');
         if ($force) {
             $this->log("Forced verbose, see table config.status__calculateSlotsForceVerbose");
             $this->dumpLogs();
@@ -65,13 +65,13 @@ class CalculateSlots
 
     protected function readLastRun()
     {
-        $updateTimestamp = (new \BO\Zmsdb\Config)->readProperty('status__calculateSlotsLastRun', true);
+        $updateTimestamp = (new \BO\Zmsdb\Config())->readProperty('status__calculateSlotsLastRun', true);
         return $updateTimestamp;
     }
 
     public function writeMaintenanceQueries()
     {
-        $sqlList = (new \BO\Zmsdb\Config)->readProperty('status__calculateSlotsMaintenanceSQL');
+        $sqlList = (new \BO\Zmsdb\Config())->readProperty('status__calculateSlotsMaintenanceSQL');
         if ($sqlList) {
             $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
             foreach (explode("\n", $sqlList) as $sql) {
@@ -89,18 +89,18 @@ class CalculateSlots
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $this->readForceVerbose();
-        $this->log("Calculate with time ". $now->format('c'));
+        $this->log("Calculate with time " . $now->format('c'));
         if ($this->readCalculateSkip()) {
             $this->log("Skip calculation due to config setting status.calculateSlotsSkip");
             return false;
         }
-        $startTimestamp = (new \BO\Zmsdb\Config)->readProperty('status__calculateSlotsLastStart', true);
-        $updateTimestamp = (new \BO\Zmsdb\Config)->readProperty('status__calculateSlotsLastRun', false);
+        $startTimestamp = (new \BO\Zmsdb\Config())->readProperty('status__calculateSlotsLastStart', true);
+        $updateTimestamp = (new \BO\Zmsdb\Config())->readProperty('status__calculateSlotsLastRun', false);
         if ($startTimestamp > $updateTimestamp && ((strtotime($startTimestamp) + (60 * 15)) > $now->getTimestamp())) {
             $this->log("Skip calculation, last start on $startTimestamp is not yet finished, waiting 15 minutes.");
             return false;
         }
-        (new \BO\Zmsdb\Config)->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
+        (new \BO\Zmsdb\Config())->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
         \BO\Zmsdb\Connection\Select::writeCommit();
         $updateTimestamp = $this->readLastRun();
         $this->log("Last Run on time=" . $updateTimestamp);
@@ -128,7 +128,7 @@ class CalculateSlots
             $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
         }
 
-        (new \BO\Zmsdb\Config)->replaceProperty('status__calculateSlotsLastRun', $now->format('Y-m-d H:i:s'));
+        (new \BO\Zmsdb\Config())->replaceProperty('status__calculateSlotsLastRun', $now->format('Y-m-d H:i:s'));
 
         \BO\Zmsdb\Connection\Select::writeCommit();
         $this->log("Slot calculation finished");
@@ -166,13 +166,13 @@ class CalculateSlots
         }
     }
 
-    public function writeCanceledSlots(\DateTimeInterface $now, $modify = '+10 minutes')
+    public function writeCanceledSlots(\DateTimeInterface $now, $modify = '+5 minutes')
     {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $slotQuery = new \BO\Zmsdb\Slot();
         if ($slotQuery->writeCanceledByTime($now->modify($modify))) {
             \BO\Zmsdb\Connection\Select::writeCommit();
-            $this->log("Cancelled slots older than ".$now->modify($modify)->format('c'));
+            $this->log("Cancelled slots older than " . $now->modify($modify)->format('c'));
             return true;
         }
         return false;
@@ -180,7 +180,7 @@ class CalculateSlots
 
     public function deleteOldSlots(\DateTimeInterface $now)
     {
-        $this->log("Maintenance: Delete slots older than ". $now->format('Y-m-d'));
+        $this->log("Maintenance: Delete slots older than " . $now->format('Y-m-d'));
         $slotQuery = new \BO\Zmsdb\Slot();
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
         $pdo->exec('SET SESSION innodb_lock_wait_timeout=600');

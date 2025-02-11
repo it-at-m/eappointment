@@ -20,7 +20,8 @@ class Provider extends Schema\Entity
     public function addData($input)
     {
         $refString = '$ref';
-        if ((is_array($input) || $input instanceof \ArrayAccess)
+        if (
+            (is_array($input) || $input instanceof \ArrayAccess)
             && isset($input[$refString])
             && (!isset($input['id']) || !isset($input['source']))
         ) {

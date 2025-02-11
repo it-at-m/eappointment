@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Schema;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 /**
  * @SuppressWarnings(NumberOfChildren)
@@ -301,7 +301,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function withCleanedUpFormData()
     {
         $entity = clone $this;
-        unset($entity['save']);
+        if (isset($entity['save'])) {
+            unset($entity['save']);
+        }
         if (isset($entity['removeImage'])) {
             unset($entity['removeImage']);
         }
