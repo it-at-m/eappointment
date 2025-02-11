@@ -942,7 +942,15 @@ class AvailabilityTest extends EntityCommonTests
                 'startTime' => '12:00:00',
                 'endTime' => '16:00:00',
                 'multipleSlotsAllowed' => 0,
-                'scope' => array('id' => 141),
+                'scope' => array(
+                    'id' => 141,
+                    'provider' => array(
+                        'id' => 123456,
+                        'name' => 'Flughafen Schönefeld, Aufsicht',
+                        'source' => 'dldb'
+                    ),
+                    'shortName' => 'Zentrale'
+                ),
                 'type' => 'openinghours'
             ]
         );

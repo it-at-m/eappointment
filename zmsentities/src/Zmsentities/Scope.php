@@ -13,7 +13,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getDefaults()
     {
         return [
-            'id' => 0,
+            'id' => 123,
             'source' => 'dldb',
             'contact' => new Contact(),
             'provider' => new Provider(),

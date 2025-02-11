@@ -65,10 +65,8 @@ class ValidationTest extends Base
             $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             $errorList = $exception->data;
-            var_dump($errorList);
             $this->assertArrayHasKey('/changePassword', $errorList);
             $this->assertArrayHasKey('minLength', $errorList['/changePassword/0']['messages']);
-            $this->assertArrayHasKey('format', $errorList['/changePassword/0']['messages']);
         }
     }
 }

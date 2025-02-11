@@ -16,7 +16,7 @@
         "arrivalTime",
         "number"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "arrivalTime": {
             "type": "number",

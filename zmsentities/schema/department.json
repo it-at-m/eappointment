@@ -39,7 +39,25 @@
         },
         "scopes": [
             {
-                "id": 123
+                "id": 123,
+                "provider": {
+                    "contact": {
+                        "city": "Schönefeld",
+                        "country": "Germany",
+                        "lat": 52.345,
+                        "lon": 13.456,
+                        "name": "Flughafen Schönefeld, Landebahn",
+                        "postalCode": "15831",
+                        "region": "Brandenburg",
+                        "street": "Zaunstraße",
+                        "streetNumber": "1"
+                    },
+                    "id": 123456,
+                    "name": "Flughafen Schönefeld, Aufsicht",
+                    "source": "dldb",
+                    "displayName":"001"
+                },
+                "shortName": "Zentrale"
             }
         ],
         "clusters": [

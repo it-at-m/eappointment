@@ -51,4 +51,9 @@ class Factory
         $entityName = preg_replace('#^.*/([^/]+)\.json#', '$1', $schema);
         return ucfirst($entityName);
     }
+
+    public function getFactoryName()
+    {
+        return static::class;
+    }
 }
