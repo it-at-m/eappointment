@@ -2,7 +2,7 @@ name: Combined Workflow with Documentation
 
 on:
   push:
-    branches: [feature-gh-850-implement-owasp-security]
+    branches: [next]
 
 permissions:
   contents: read
@@ -20,62 +20,50 @@ jobs:
   call-owasp-security-checks:
     uses: ./.github/workflows/owasp-security-checks.yaml
 
-  combine-php-test-coverage:
-    needs: [call-php-unit-tests]
+  aggregate-reports:
+    needs: [call-php-unit-tests, call-owasp-security-checks]
     runs-on: ubuntu-latest
     steps:
-      - name: Download all coverage reports
+      - name: Download coverage reports
         uses: actions/download-artifact@v4
         with:
           pattern: 'coverage-*'
           path: public/coverage
           merge-multiple: false
 
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports
-          path: public/coverage/
-          retention-days: 7
-
-  combine-security-reports:
-    needs: [call-owasp-security-checks]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download all security reports
+      - name: Download security reports
         uses: actions/download-artifact@v4
         with:
           pattern: 'security-report-*'
           path: public/security
           merge-multiple: false
 
-      - name: Download all ZAP scan reports
+      - name: Download ZAP scan reports
         uses: actions/download-artifact@v4
         with:
           pattern: 'zap-scan-*'
           path: public/security/zap
           merge-multiple: false
 
-      - name: Upload combined security reports
+      - name: Upload aggregated reports
         uses: actions/upload-artifact@v4
         with:
-          name: security-reports
-          path: public/security/
+          name: aggregated-reports
+          path: public/
           retention-days: 7
 
   call-build-api-docs:
     uses: ./.github/workflows/build-api-docs.yaml
 
   deploy-to-pages:
-    needs: [combine-php-test-coverage, call-build-api-docs, combine-security-reports]
+    needs: [aggregate-reports, call-build-api-docs]
     if: |
       needs.call-build-api-docs.result == 'success' &&
-      needs.combine-security-reports.result == 'success'
+      needs.aggregate-reports.result == 'success'
     uses: ./.github/workflows/deploy-pages.yaml
     with:
-      coverage_artifact: coverage-reports
+      coverage_artifact: aggregated-reports
       api_docs_artifact: api-docs
-      security_artifact: security-reports
 
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]
