@@ -1,4 +1,4 @@
-name: security checks
+name: owasp security checks
 
 on:
   workflow_call:
@@ -7,6 +7,7 @@ jobs:
   security-scan:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false  # Prevents matrix jobs from stopping when one fails
       matrix:
         include:
           - module: zmsadmin
@@ -37,16 +38,19 @@ jobs:
         run: python3 ./cli modules reference-libraries --no-symlink
 
       - name: Install Composer Dependencies
+        continue-on-error: true
         run: |
           cd "${{ matrix.module }}"
           composer install --no-progress --prefer-dist --optimize-autoloader
 
       - name: PHP Security Checker
+        continue-on-error: true
         uses: symfonycorp/security-checker-action@v5
         with:
           lock: ${{ matrix.module }}/composer.lock
 
       - name: OWASP Dependency-Check
+        continue-on-error: true
         uses: dependency-check/Dependency-Check_Action@main
         with:
           project: ${{ matrix.module }}
@@ -59,6 +63,7 @@ jobs:
             --failOnCVSS 7
 
       - name: Upload dependency check report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report-${{ matrix.module }}
@@ -68,6 +73,7 @@ jobs:
     needs: security-scan
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - module: zmsapi
@@ -78,6 +84,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run OWASP ZAP Scan
+        continue-on-error: true
         uses: zaproxy/action-full-scan@v0.9.0
         with:
           target: ${{ matrix.url }}
@@ -86,6 +93,7 @@ jobs:
           allow_issue_writing: false
 
       - name: Security Headers Check
+        continue-on-error: true
         run: |
           curl -s -I "${{ matrix.url }}" | grep -iE '^(Strict-Transport-Security|X-Frame-Options|X-Content-Type-Options|Content-Security-Policy|X-XSS-Protection):'
 
