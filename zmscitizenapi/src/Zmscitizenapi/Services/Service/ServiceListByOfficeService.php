@@ -10,7 +10,7 @@ use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
 class ServiceListByOfficeService
 {
-    public function getServiceList(array $queryParams): ServiceList|array
+    public function getServiceList(array $queryParams, bool $showUnpublished = false): ServiceList|array
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
@@ -18,7 +18,7 @@ class ServiceListByOfficeService
             return $errors;
         }
 
-        return $this->getServicesByOffice($clientData);
+        return $this->getServicesByOffice($clientData, $showUnpublished);
     }
 
     private function extractClientData(array $queryParams): object
@@ -35,8 +35,8 @@ class ServiceListByOfficeService
         return ValidationService::validateGetServicesByOfficeId($clientData->officeId);
     }
 
-    private function getServicesByOffice(object $clientData): array|ServiceList
+    private function getServicesByOffice(object $clientData, bool $showUnpublished = false): array|ServiceList
     {
-        return ZmsApiFacadeService::getServicesByOfficeId($clientData->officeId);
+        return ZmsApiFacadeService::getServicesByOfficeId($clientData->officeId, $showUnpublished);
     }
 }

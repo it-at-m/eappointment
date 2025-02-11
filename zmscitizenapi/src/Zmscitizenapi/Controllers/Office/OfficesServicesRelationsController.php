@@ -11,24 +11,18 @@ use BO\Zmscitizenapi\Services\Office\OfficesServicesRelationsService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use BO\Zmscitizenapi\Controllers\UnpublishedAccessTrait;
 
 class OfficesServicesRelationsController extends BaseController
 {
+    use UnpublishedAccessTrait;
+
     private OfficesServicesRelationsService $service;
     private bool $showUnpublished;
 
     public function __construct()
     {
-        if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
-            $domain = $_SERVER['HTTP_X_FORWARDED_HOST'];
-        } else {
-            $domain = $_SERVER['HTTP_HOST'] ?? '';
-        }
-
-        $this->service = new OfficesServicesRelationsService();
-        $showUnpublishedOnDomain = App::getAccessUnpublishedOnDomain();
-        $this->showUnpublished = !empty($showUnpublishedOnDomain)
-            && strpos($domain, $showUnpublishedOnDomain) !== false;
+        $this->initializeUnpublishedAccess();
     }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
