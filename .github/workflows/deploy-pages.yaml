@@ -147,7 +147,7 @@ jobs:
                 </div>
 
                 <div class="card">
-                  <h2>Security Reports</h2>
+                  <h2>OWASP Security Reports</h2>
                   <ul>
                     <li><a href="security/security-report-zmsadmin/dependency-check-report.html">Zmsadmin Security Report</a></li>
                     <li><a href="security/security-report-zmscalldisplay/dependency-check-report.html">Zmscalldisplay Security Report</a></li>
