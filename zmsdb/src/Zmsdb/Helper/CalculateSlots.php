@@ -69,7 +69,7 @@ class CalculateSlots
         return $updateTimestamp;
     }
 
-    public function writeMaintenanceQueries()
+    public function writeMaintenanceQueries($daily = false)
     {
         $sqlList = (new \BO\Zmsdb\Config)->readProperty('status__calculateSlotsMaintenanceSQL');
         if ($sqlList) {
@@ -80,11 +80,15 @@ class CalculateSlots
             }
             return \BO\Zmsdb\Connection\Select::writeCommit();
         }
-        return false;
+
+        if ($daily) {
+            (new \BO\Zmsdb\Slot())->writeOptimizedSlotTables();
+            $this->log("Optimized tables successfully");
+        }
     }
 
 
-    public function writeCalculations(\DateTimeInterface $now, $delete = false)
+    public function writeCalculations(\DateTimeInterface $now, $daily = false)
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
@@ -104,7 +108,7 @@ class CalculateSlots
         \BO\Zmsdb\Connection\Select::writeCommit();
         $updateTimestamp = $this->readLastRun();
         $this->log("Last Run on time=" . $updateTimestamp);
-        if ($delete) {
+        if ($daily) {
             $this->deleteOldSlots($now);
         }
         $scopeList = (new \BO\Zmsdb\Scope())->readList(1);
@@ -132,7 +136,9 @@ class CalculateSlots
 
         \BO\Zmsdb\Connection\Select::writeCommit();
         $this->log("Slot calculation finished");
-        $this->writeMaintenanceQueries();
+        $this->writeMaintenanceQueries($daily);
+
+        return true;
     }
 
     protected function writeCalculatedScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
@@ -187,8 +193,6 @@ class CalculateSlots
         if ($slotQuery->deleteSlotsOlderThan($now)) {
             \BO\Zmsdb\Connection\Select::writeCommit();
             $this->log("Deleted old slots successfully");
-            $slotQuery->writeOptimizedSlotTables();
-            $this->log("Optimized tables successfully");
         }
     }
 }
