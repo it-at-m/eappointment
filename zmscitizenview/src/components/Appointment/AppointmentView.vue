@@ -370,8 +370,8 @@ const nextUpdateAppointment = () => {
     appointment.value.telephone = customerData.value.telephoneNumber
       ? customerData.value.telephoneNumber
       : undefined;
-    appointment.value.customTextfield = customerData.value.remarks
-      ? customerData.value.remarks
+    appointment.value.customTextfield = customerData.value.customTextfield
+      ? customerData.value.customTextfield
       : undefined;
 
     updateAppointment(appointment.value).then((data) => {
@@ -455,6 +455,7 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
 };
 
 onMounted(() => {
+  console.log("Hier ", props.confirmAppointmentHash);
   if (props.confirmAppointmentHash) {
     let appointmentData: AppointmentHash;
     try {

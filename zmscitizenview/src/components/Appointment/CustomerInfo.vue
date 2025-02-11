@@ -33,15 +33,16 @@
       v-model="customerData.telephoneNumber"
       :error-msg="showErrorMessage ? errorMessageTelephoneNumber : undefined"
       :label="t('telephoneNumber')"
-      :required="appointment.scope.telephoneRequired"
+      :required="selectedProvider.scope.telephoneRequired"
       placeholder="+49 151 1234567"
     />
     <muc-text-area
       v-if="customTextfieldActivated"
       id="remarks"
-      v-model="customerData.remarks"
-      :label="t('remarks')"
-      :hint="t('remarkCompletionInstructions')"
+      v-model="customerData.customTextfield"
+      :error-msg="showErrorMessage ? errorMessageCustomTextfield : undefined"
+      :label="selectedProvider.scope.customTextfieldLabel"
+      :required="selectedProvider.scope.customTextfieldRequired"
     />
   </form>
   <div class="m-button-group">
@@ -68,7 +69,7 @@ import { computed, inject, ref } from "vue";
 
 import {
   CustomerDataProvider,
-  SelectedAppointmentProvider,
+  SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 
 const props = defineProps<{
@@ -81,9 +82,9 @@ const { customerData } = inject<CustomerDataProvider>(
   "customerData"
 ) as CustomerDataProvider;
 
-const { appointment } = inject<SelectedAppointmentProvider>(
-  "appointment"
-) as SelectedAppointmentProvider;
+const { selectedProvider } = inject<SelectedTimeslotProvider>(
+  "selectedTimeslot"
+) as SelectedTimeslotProvider;
 
 const showErrorMessage = ref<boolean>(false);
 
@@ -91,14 +92,14 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const telephonPattern = /^\+?\d[\d\s]*$/;
 
 const telephoneActivated = () =>
-  appointment.value &&
-  appointment.value.scope &&
-  appointment.value.scope.telephoneActivated;
+  selectedProvider.value &&
+  selectedProvider.value.scope &&
+  selectedProvider.value.scope.telephoneActivated;
 
 const customTextfieldActivated = () =>
-  appointment.value &&
-  appointment.value.scope &&
-  appointment.value.scope.customTextfieldActivated;
+  selectedProvider.value &&
+  selectedProvider.value.scope &&
+  selectedProvider.value.scope.customTextfieldActivated;
 
 const errorMessageFirstName = computed(() =>
   customerData.value.firstName ? undefined : props.t("errorMessageFirstName")
@@ -121,8 +122,9 @@ const errorMessageMailAddress = computed(() => {
 const errorMessageTelephoneNumber = computed(() => {
   if (
     !customerData.value.telephoneNumber &&
-    appointment.value &&
-    appointment.value.scope.telephoneRequired
+    selectedProvider.value &&
+    selectedProvider.value.scope &&
+    selectedProvider.value.scope.telephoneRequired
   ) {
     return props.t("errorMessageTelephoneNumberRequired");
   } else if (
@@ -135,12 +137,27 @@ const errorMessageTelephoneNumber = computed(() => {
   }
 });
 
+
+const errorMessageCustomTextfield = computed(() => {
+  if (
+    !customerData.value.customTextfield &&
+    selectedProvider.value &&
+    selectedProvider.value.scope &&
+    selectedProvider.value.scope.customTextfieldRequired
+  ) {
+    return props.t("errorMessageCustomTextfield");
+  } else {
+    return undefined;
+  }
+});
+
 const validForm = computed(
   () =>
     !errorMessageFirstName.value &&
     !errorMessageLastName.value &&
     !errorMessageMailAddress.value &&
-    !errorMessageTelephoneNumber.value
+    !errorMessageTelephoneNumber.value &&
+    !errorMessageCustomTextfield.value
 );
 
 const nextStep = () => {
