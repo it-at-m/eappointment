@@ -59,7 +59,7 @@ jobs:
             --failOnCVSS 7
 
       - name: Upload dependency check report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report-${{ matrix.module }}
           path: reports/${{ matrix.module }}
