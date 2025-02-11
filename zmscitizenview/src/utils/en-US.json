@@ -19,6 +19,7 @@
   "communicationCheckboxText": "I have taken note of the <a href=\"https://stadt.muenchen.de/infos/elektronische-kommunikation.html\" target='_blank'>information on electronic communication</a> and agree to be notified of my appointment by e-mail.",
   "confirmAppointmentHeader": "Confirm your appointment.",
   "confirmAppointmentText": "In the next minutes you will receive an e-mail with an activation link. Click on the link to finalise the booking. If you do not activate the appointment within one hour, your booking will expire.",
+  "errorMessageCustomTextfield": "Please fill out the field.",
   "errorMessageFirstName": "Please enter your first name.",
   "errorMessageLastName": "Please enter your surname.",
   "errorMessageMailAddressRequired": "Please enter your email address.",

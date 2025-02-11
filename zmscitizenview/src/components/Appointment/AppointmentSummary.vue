@@ -81,7 +81,7 @@
               v-if="appointment.customTextfield"
               tabindex="0"
             >
-              <strong>{{ t("remarks") }}</strong
+              <strong>{{ selectedProvider.scope.customTextfieldLabel }}</strong
               ><br />
               <p>{{ appointment.customTextfield }}</p>
               <br />
