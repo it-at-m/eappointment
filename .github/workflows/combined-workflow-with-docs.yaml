@@ -50,14 +50,14 @@ jobs:
           echo "=== Directory Structure ==="
           ls -R public/
 
-      - name: Fix directory structure
+      - name: Fix security reports structure
         run: |
-          # Fix security reports structure
+          # Move security reports to match index page links
           for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
             mkdir -p "public/security/$module"
             if [ -f "public/security/security-report-$module/dependency-check-report.html" ]; then
               mv "public/security/security-report-$module/dependency-check-report.html" "public/security/$module/"
-              rmdir "public/security/security-report-$module" 2>/dev/null || true
+              rm -rf "public/security/security-report-$module"
             fi
           done
 
@@ -66,8 +66,7 @@ jobs:
         with:
           name: aggregated-reports
           path: public/
-          retention-days: 7
-           
+          retention-days: 7           
   call-build-api-docs:
     uses: ./.github/workflows/build-api-docs.yaml
 
