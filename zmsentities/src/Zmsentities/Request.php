@@ -8,6 +8,15 @@ class Request extends Schema\Entity
 
     public static $schema = "request.json";
 
+    public function getDefaults()
+    {
+        return [
+            'id' => '123',
+            'name' => '',
+            'source' => 'dldb'
+        ];
+    }
+
     public function withReference($additionalData = [])
     {
         $additionalData['id'] = $this->getId();

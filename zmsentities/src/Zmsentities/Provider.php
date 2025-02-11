@@ -8,6 +8,15 @@ class Provider extends Schema\Entity
 
     public static $schema = "provider.json";
 
+    public function getDefaults()
+    {
+        return [
+            'id' => 123,
+            'name' => '',
+            'source' => 'dldb'
+        ];
+    }
+
     public function addData($input)
     {
         $refString = '$ref';

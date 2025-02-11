@@ -72,7 +72,7 @@ class Calendar extends Schema\Entity
             if ($id) {
                 $provider = new Provider();
                 $provider->source = $source;
-                $provider->id = $id;
+                $provider->id = (int) $id;
                 $this->providers[] = $provider;
             }
         }
@@ -88,7 +88,7 @@ class Calendar extends Schema\Entity
     {
         foreach (explode(',', $idList) as $id) {
             $cluster = new Cluster();
-            $cluster->id = $id;
+            $cluster->id = (int) $id;
             $this->clusters[] = $cluster;
         }
         return $this;
@@ -122,7 +122,7 @@ class Calendar extends Schema\Entity
         foreach (explode(',', $scopeList) as $id) {
             if ($id) {
                 $scope = new Scope();
-                $scope->id = $id;
+                $scope->id = (int) $id;
                 $this->scopes[] = $scope;
             }
         }

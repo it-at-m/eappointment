@@ -9,7 +9,6 @@ class FactoryTest extends EntityCommonTests
     public function testBasic()
     {
         $data = $this->getExampleData();
-        error_log(json_encode($data));
         $factory = \BO\Zmsentities\Schema\Factory::create($data);
         $this->assertEntity('\BO\Zmsentities\Session', $factory->getEntity());
         $this->assertTrue('Session' == $factory->getEntityName(), 'Failed to get EntityName of factored entity');

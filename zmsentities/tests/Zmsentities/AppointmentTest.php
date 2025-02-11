@@ -12,7 +12,7 @@ class AppointmentTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertEntity($this->entityclass, $entity);
-        $this->assertStringContainsString('123', (string)$entity);
+        $this->assertStringContainsString('0', (string)$entity);
     }
 
     public function testDate()

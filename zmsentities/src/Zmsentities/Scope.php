@@ -13,10 +13,11 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getDefaults()
     {
         return [
-            'id' => 123,
+            'id' => 0,
             'source' => 'dldb',
             'contact' => new Contact(),
             'provider' => new Provider(),
+            'shortName' => ''
         ];
     }
 
@@ -67,6 +68,9 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 
     public function getProvider()
     {
+        if (!isset($this->provider)) {
+            throw new Exception\ScopeMissingProvider("Provider is missing", 500);
+        }
         if (!$this->provider instanceof Provider) {
             $this->provider = new Provider($this->toProperty()->provider->get());
         }
