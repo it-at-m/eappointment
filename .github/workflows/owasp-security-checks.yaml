@@ -108,7 +108,7 @@ jobs:
 
       - name: Run OWASP ZAP Scan
         continue-on-error: true
-        uses: zaproxy/action-full-scan@v0.9.0
+        uses: zaproxy/action-full-scan@v0.12.0
         with:
           target: ${{ matrix.url }}
           rules_file_name: '.zap/rules.tsv'
