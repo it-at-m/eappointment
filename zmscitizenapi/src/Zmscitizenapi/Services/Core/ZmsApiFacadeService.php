@@ -110,12 +110,12 @@ class ZmsApiFacadeService
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $relationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
 
-        $offices = MapperService::mapOfficesWithScope($providerList, $showUnpublished) ?? new OfficeList;
+        $offices = MapperService::mapOfficesWithScope($providerList, $showUnpublished) ?? new OfficeList();
         $services = MapperService::mapServicesWithCombinations(
             $requestList,
             $relationList,
             $showUnpublished
-            ) ?? new ServiceList();
+        ) ?? new ServiceList();
         $relations = MapperService::mapRelations($relationList) ?? new OfficeServiceRelationList();
         return new OfficeServiceAndRelationList($offices, $services, $relations);
     }

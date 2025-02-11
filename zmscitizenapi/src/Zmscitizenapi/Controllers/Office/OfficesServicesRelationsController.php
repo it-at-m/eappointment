@@ -29,7 +29,6 @@ class OfficesServicesRelationsController extends BaseController
         $showUnpublishedOnDomain = App::getAccessUnpublishedOnDomain();
         $this->showUnpublished = !empty($showUnpublishedOnDomain)
             && strpos($domain, $showUnpublishedOnDomain) !== false;
-
     }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface

@@ -46,7 +46,7 @@ class MapperService
 
         return $matchingScope;
     }
- 
+
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -71,7 +71,7 @@ class MapperService
                 id: isset($provider->id) ? (int) $provider->id : 0,
                 name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null),
                 address: isset($provider->data['address']) ? $provider->data['address'] : null,
-                showAlternativeLocations: isset($provider->data['showAlternativeLocations']) ? $provider->data['showAlternativeLocations'] : null, 
+                showAlternativeLocations: isset($provider->data['showAlternativeLocations']) ? $provider->data['showAlternativeLocations'] : null,
                 displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
                 organization: $provider->data['organization'] ?? null,
                 organizationUnit: $provider->data['organizationUnit'] ?? null,
@@ -110,8 +110,8 @@ class MapperService
     public static function mapServicesWithCombinations(
         RequestList $requestList,
         RequestRelationList $relationList,
-        bool $showUnpublished = false): ServiceList
-    {
+        bool $showUnpublished = false
+    ): ServiceList {
         /** @var array<string, array<int>> $servicesProviderIds */
         $servicesProviderIds = [];
         foreach ($relationList as $relation) {
@@ -129,10 +129,11 @@ class MapperService
             // Sorting by service ID (ascending order)
         });
         foreach ($requestArray as $service) {
-            if (! $showUnpublished
+            if (
+                ! $showUnpublished
                 && isset($service->getAdditionalData()['public'])
-                && !$service->getAdditionalData()['public'])
-            {
+                && !$service->getAdditionalData()['public']
+            ) {
                 continue;
             }
 
