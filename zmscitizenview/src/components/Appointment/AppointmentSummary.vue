@@ -35,11 +35,7 @@
             v-if="selectedProvider"
             class="m-content border-bottom"
           >
-            <p tabindex="0">
-              <strong> {{ selectedProvider.organization }}</strong
-              ><br />
-              {{ selectedProvider.name }}<br />
-            </p>
+            <p tabindex="0">{{ selectedProvider.name }}<br /></p>
             <p tabindex="0">
               <strong>{{ t("address") }}</strong>
               <br />
