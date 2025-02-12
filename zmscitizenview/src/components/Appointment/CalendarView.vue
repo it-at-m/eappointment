@@ -27,16 +27,6 @@
                 <h3 class="m-teaser-contained-contact__headline">
                   {{ proverider.name }}
                 </h3>
-                <p class="m-teaser-contained-contact__summary">
-                  {{ proverider.organization }}
-                  <br />
-                  <span v-if="proverider.organizationUnit">
-                    {{ proverider.organizationUnit }}
-                    <br />
-                  </span>
-                  {{ proverider.displayNameAlternatives[0] }}
-                  <br />
-                </p>
                 <div class="m-teaser-contained-contact__details">
                   <p class="m-teaser-contained-contact__detail">
                     <svg
@@ -84,16 +74,6 @@
               <h3 class="m-teaser-contained-contact__headline">
                 {{ selectedProvider.name }}
               </h3>
-              <p class="m-teaser-contained-contact__summary">
-                {{ selectedProvider.organization }}
-                <br />
-                <span v-if="selectedProvider.organizationUnit">
-                  {{ selectedProvider.organizationUnit }}
-                  <br />
-                </span>
-                {{ selectedProvider.displayNameAlternatives[0] }}
-                <br />
-              </p>
               <div class="m-teaser-contained-contact__details">
                 <p class="m-teaser-contained-contact__detail">
                   <svg
@@ -175,11 +155,7 @@
           <div v-if="selectedProvider">
             <b>{{ t("location") }}</b>
             <p class="m-teaser-contained-contact__summary">
-              {{ selectedProvider.organization }}
-              <span v-if="selectedProvider.organizationUnit">
-                {{ selectedProvider.organizationUnit }}
-              </span>
-              {{ selectedProvider.displayNameAlternatives[0] }}
+              {{ selectedProvider.name }}
             </p>
             <div>
               <p class="m-teaser-contained-contact__detail">
