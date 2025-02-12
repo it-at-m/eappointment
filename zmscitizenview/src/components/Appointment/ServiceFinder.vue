@@ -8,18 +8,33 @@
     class="m-component"
     style="background-color: var(--color-neutrals-blue-xlight)"
   >
-    <div class="container">
-      <form class="m-form m-form--default">
-        <muc-select
-          id="service-search"
-          v-model="service"
-          :items="services"
-          item-title="name"
-          :label="t('serviceSearch')"
-          :no-item-found-message="t('noServiceFound')"
-        />
-      </form>
-      <p>{{ t("oftenSearchedService") }}</p>
+    <div class="m-intro m-intro-search-category">
+      <div class="container">
+        <div class="m-intro-search-category__body">
+          <div class="m-intro-search-category__grid">
+            <div class="m-intro-search-category__content">
+              <form class="m-form m-form--default">
+                <muc-select
+                  id="service-search"
+                  v-model="service"
+                  :items="services"
+                  item-title="name"
+                  :label="t('serviceSearch')"
+                  :no-item-found-message="t('noServiceFound')"
+                />
+              </form>
+              <div class="m-linklist-inline">
+                <p class="m-linklist-inline__title">{{ t("oftenSearchedService") }}</p>
+                <ul class="m-linklist-inline__list">
+                  <li v-for="searchedService in OFTEN_SEARCHED_SERVICES"
+                      :key="searchedService[0]"
+                      class="m-linklist-inline__list-item"><a href="#" @click="setOftenSearchedService(searchedService[0])"> {{ t(searchedService[1]) }}</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div v-else>
@@ -95,7 +110,7 @@ import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue"
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { getServiceBaseURL, MAX_SLOTS } from "@/utils/Constants";
+import { getServiceBaseURL, MAX_SLOTS, OFTEN_SEARCHED_SERVICES } from "@/utils/Constants";
 
 const props = defineProps<{
   preselectedServiceId: string | undefined;
@@ -267,6 +282,12 @@ const getMaxSlotsPerAppointementOfProvider = (provider: OfficeImpl[]) => {
   return maxSlot;
 };
 
+const setOftenSearchedService = (serviceId: string) => {
+  service.value = services.value.find(
+    (service) => service.id == serviceId
+  );
+};
+
 const nextStep = () => emit("next");
 
 const skipSubservices = () => {
@@ -301,7 +322,7 @@ onMounted(() => {
 
       if (props.preselectedServiceId) {
         service.value = services.value.find(
-          (service) => service.id === props.preselectedServiceId
+          (service) => service.id == props.preselectedServiceId
         );
       }
     });
