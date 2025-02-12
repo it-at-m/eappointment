@@ -8,43 +8,35 @@
     class="m-component"
     style="background-color: var(--color-neutrals-blue-xlight)"
   >
-    <div class="m-intro m-intro-search-category">
-      <div class="container">
-        <div class="m-intro-search-category__body">
-          <div class="m-intro-search-category__grid">
-            <div class="m-intro-search-category__content">
-              <form class="m-form m-form--default">
-                <muc-select
-                  id="service-search"
-                  v-model="service"
-                  :items="services"
-                  item-title="name"
-                  :label="t('serviceSearch')"
-                  :no-item-found-message="t('noServiceFound')"
-                />
-              </form>
-              <div class="m-linklist-inline">
-                <p class="m-linklist-inline__title">
-                  {{ t("oftenSearchedService") }}
-                </p>
-                <ul class="m-linklist-inline__list">
-                  <li
-                    v-for="searchedService in OFTEN_SEARCHED_SERVICES"
-                    :key="searchedService[0]"
-                    class="m-linklist-inline__list-item"
-                  >
-                    <a
-                      href="#"
-                      @click="setOftenSearchedService(searchedService[0])"
-                    >
-                      {{ t(searchedService[1]) }}</a
-                    >
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="container">
+      <form class="m-form m-form--default">
+        <muc-select
+          id="service-search"
+          v-model="service"
+          :items="services"
+          item-title="name"
+          :label="t('serviceSearch')"
+          :no-item-found-message="t('noServiceFound')"
+        />
+      </form>
+      <div class="m-linklist-inline">
+        <h3 class="m-linklist-inline__title">
+          {{ t("oftenSearchedService") }}
+        </h3>
+        <ul class="m-linklist-inline__list">
+          <li
+            v-for="searchedService in OFTEN_SEARCHED_SERVICES"
+            :key="searchedService[0]"
+            class="m-linklist-inline__list-item"
+          >
+            <a
+              href="#"
+              @click="setOftenSearchedService(searchedService[0])"
+            >
+              {{ t(searchedService[1]) }}</a
+            >
+          </li>
+        </ul>
       </div>
     </div>
   </div>
