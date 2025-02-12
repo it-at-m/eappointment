@@ -199,12 +199,21 @@
           <div v-if="selectedDay">
             <b>{{ t("time") }}</b>
             <br />
-            {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
-            {{ t("clock") }}
+            <p class="m-teaser-contained-contact__detail">
+              {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
+              {{ t("clock") }}
+              <br />
+              {{ t("estimatedDuration") }}
+              <br />
+              {{ estimatedDuration() }} {{ t("minutes") }}
+            </p>
+          </div>
+          <div v-if="selectedProvider.scope && selectedProvider.scope.displayInfo">
+            <b>{{ t("hint") }}</b>
             <br />
-            {{ t("estimatedDuration") }}
-            <br />
-            {{ estimatedDuration() }} {{ t("minutes") }}
+            <p class="m-teaser-contained-contact__detail">
+              {{ selectedProvider.scope.displayInfo }}
+            </p>
           </div>
         </template>
 
