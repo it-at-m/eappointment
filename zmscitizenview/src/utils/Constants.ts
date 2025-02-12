@@ -27,14 +27,14 @@ export function getServiceBaseURL(): string {
 export const MAX_SLOTS = 25;
 
 export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
-  ["1063475","shortNameResidenceRegistration"],
-  ["1063453","shortNamePassport"],
-  ["1063441","shortNameIdentityCard"],
-  ["10295182","shortNameIdentityCardCollection"],
-  ["10176294","shortNameDrivingLicenseCollection"],
-  ["10225119","shortNameEidPin"],
-  ["1064314","shortNameVehicleReregistration"],
-  ["1064305","shortNameVehicleDeregistration"],
+  ["1063475", "shortNameResidenceRegistration"],
+  ["1063453", "shortNamePassport"],
+  ["1063441", "shortNameIdentityCard"],
+  ["10295182", "shortNameIdentityCardCollection"],
+  ["10176294", "shortNameDrivingLicenseCollection"],
+  ["10225119", "shortNameEidPin"],
+  ["1064314", "shortNameVehicleReregistration"],
+  ["1064305", "shortNameVehicleDeregistration"],
 ]);
 
 export function getAPIBaseURL(): string {
