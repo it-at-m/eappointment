@@ -64,16 +64,21 @@
               {{ t("minutes") }}<br />
             </p>
           </div>
-          <div class="m-content">
-            <h3 tabindex="0">{{ t("hint") }}</h3>
-          </div>
           <div
-            v-if="selectedProvider && selectedProvider.scope && selectedProvider.scope.displayInfo"
-            class="m-content border-bottom"
+            v-if="
+              selectedProvider &&
+              selectedProvider.scope &&
+              selectedProvider.scope.displayInfo
+            "
           >
-            <p tabindex="0">
-              {{ selectedProvider.scope.displayInfo }}
-            </p>
+            <div class="m-content">
+              <h3 tabindex="0">{{ t("hint") }}</h3>
+            </div>
+            <div class="m-content border-bottom">
+              <p tabindex="0">
+                {{ selectedProvider.scope.displayInfo }}
+              </p>
+            </div>
           </div>
           <div class="m-content">
             <h3 tabindex="0">{{ t("contact") }}</h3>

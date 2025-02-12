@@ -208,7 +208,9 @@
               {{ estimatedDuration() }} {{ t("minutes") }}
             </p>
           </div>
-          <div v-if="selectedProvider.scope && selectedProvider.scope.displayInfo">
+          <div
+            v-if="selectedProvider.scope && selectedProvider.scope.displayInfo"
+          >
             <b>{{ t("hint") }}</b>
             <br />
             <p class="m-teaser-contained-contact__detail">
