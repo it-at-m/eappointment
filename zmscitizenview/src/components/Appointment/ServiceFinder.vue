@@ -24,11 +24,22 @@
                 />
               </form>
               <div class="m-linklist-inline">
-                <p class="m-linklist-inline__title">{{ t("oftenSearchedService") }}</p>
+                <p class="m-linklist-inline__title">
+                  {{ t("oftenSearchedService") }}
+                </p>
                 <ul class="m-linklist-inline__list">
-                  <li v-for="searchedService in OFTEN_SEARCHED_SERVICES"
-                      :key="searchedService[0]"
-                      class="m-linklist-inline__list-item"><a href="#" @click="setOftenSearchedService(searchedService[0])"> {{ t(searchedService[1]) }}</a></li>
+                  <li
+                    v-for="searchedService in OFTEN_SEARCHED_SERVICES"
+                    :key="searchedService[0]"
+                    class="m-linklist-inline__list-item"
+                  >
+                    <a
+                      href="#"
+                      @click="setOftenSearchedService(searchedService[0])"
+                    >
+                      {{ t(searchedService[1]) }}</a
+                    >
+                  </li>
                 </ul>
               </div>
             </div>
@@ -110,7 +121,11 @@ import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue"
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { getServiceBaseURL, MAX_SLOTS, OFTEN_SEARCHED_SERVICES } from "@/utils/Constants";
+import {
+  getServiceBaseURL,
+  MAX_SLOTS,
+  OFTEN_SEARCHED_SERVICES,
+} from "@/utils/Constants";
 
 const props = defineProps<{
   preselectedServiceId: string | undefined;
@@ -283,9 +298,7 @@ const getMaxSlotsPerAppointementOfProvider = (provider: OfficeImpl[]) => {
 };
 
 const setOftenSearchedService = (serviceId: string) => {
-  service.value = services.value.find(
-    (service) => service.id == serviceId
-  );
+  service.value = services.value.find((service) => service.id == serviceId);
 };
 
 const nextStep = () => emit("next");
