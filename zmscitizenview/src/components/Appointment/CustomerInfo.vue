@@ -28,7 +28,11 @@
       required
     />
     <muc-input
-      v-if="telephoneActivated"
+      v-if="
+        selectedProvider &&
+        selectedProvider.scope &&
+        selectedProvider.scope.telephoneActivated
+      "
       id="telephonenumber"
       v-model="customerData.telephoneNumber"
       :error-msg="showErrorMessage ? errorMessageTelephoneNumber : undefined"
@@ -37,7 +41,11 @@
       placeholder="+49 151 1234567"
     />
     <muc-text-area
-      v-if="customTextfieldActivated"
+      v-if="
+        selectedProvider &&
+        selectedProvider.scope &&
+        selectedProvider.scope.customTextfieldActivated
+      "
       id="remarks"
       v-model="customerData.customTextfield"
       :error-msg="showErrorMessage ? errorMessageCustomTextfield : undefined"
@@ -90,16 +98,6 @@ const showErrorMessage = ref<boolean>(false);
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const telephonPattern = /^\+?\d[\d\s]*$/;
-
-const telephoneActivated = () =>
-  selectedProvider.value &&
-  selectedProvider.value.scope &&
-  selectedProvider.value.scope.telephoneActivated;
-
-const customTextfieldActivated = () =>
-  selectedProvider.value &&
-  selectedProvider.value.scope &&
-  selectedProvider.value.scope.customTextfieldActivated;
 
 const errorMessageFirstName = computed(() =>
   customerData.value.firstName ? undefined : props.t("errorMessageFirstName")

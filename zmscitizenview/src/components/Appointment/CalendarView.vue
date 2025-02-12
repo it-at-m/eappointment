@@ -272,7 +272,6 @@ const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
 ) as SelectedTimeslotProvider;
 
 const selectableProviders = ref<OfficeImpl[]>();
-const displayInfo = ref<string>();
 const availableDays = ref<string[]>();
 const appointmentTimestamps = ref<number[]>();
 
@@ -340,16 +339,8 @@ const timeSlotsInHours = () => {
 const showSelectionForProvider = (provider: OfficeImpl) => {
   selectedProvider.value = provider;
   error.value = false;
-
-  if (
-    provider.scope &&
-    provider.scope.displayInfo &&
-    provider.scope.displayInfo.length > 0
-  ) {
-    displayInfo.value = provider.scope.displayInfo;
-  } else {
-    displayInfo.value = undefined;
-  }
+  selectedDay.value = undefined;
+  selectedTimeslot.value = 0;
 
   fetchAvailableDays(
     selectedProvider.value,
@@ -476,7 +467,7 @@ onMounted(() => {
         (provider) => {
           return choosenSubservices.every((subservice) => {
             return subservice.providers.some(
-              (subserviceProvider) => subserviceProvider.id === provider.id
+              (subserviceProvider) => subserviceProvider.id == provider.id
             );
           });
         }
@@ -488,7 +479,9 @@ onMounted(() => {
     if (!props.exclusiveLocation) {
       const otherOffices = selectableProviders.value.filter((office) => {
         if (props.preselectedOfficeId)
-          return office.id !== props.preselectedOfficeId;
+          return office.id != props.preselectedOfficeId;
+        else if (selectedProvider.value)
+          return office.id != selectedProvider.value.id;
         else return true;
       });
       offices = [...offices, ...otherOffices];
