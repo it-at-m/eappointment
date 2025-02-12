@@ -10,7 +10,7 @@ jobs:
       image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Composer Dependencies
         run: |
