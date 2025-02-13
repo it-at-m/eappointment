@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmscitizenapi\Controllers;
 
 use App;
@@ -6,7 +7,6 @@ use App;
 trait UnpublishedAccessTrait
 {
     private bool $showUnpublished;
-
     private function initializeUnpublishedAccess(): void
     {
         if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
