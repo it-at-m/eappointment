@@ -81,7 +81,8 @@
         "data": {
           "json": "data",
           "key": "value",
-          "combinable": ["1", "2"]
+          "combinable": ["1", "2"],
+          "public": false
         }
       }
     ],

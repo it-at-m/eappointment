@@ -47,7 +47,7 @@ class ZmsApiFacadeService
         return ErrorMessages::get($key, self::$currentLanguage);
     }
 
-    public static function getOffices(): OfficeList
+    public static function getOffices(bool $showUnpublished = false): OfficeList
     {
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
@@ -60,6 +60,10 @@ class ZmsApiFacadeService
         }
 
         foreach ($providerList as $provider) {
+            if (! $showUnpublished && isset($provider->data['public']) && ! (bool) $provider->data['public']) {
+                continue;
+            }
+
             $matchingScope = $scopeMap[$provider->source . '_' . $provider->id] ?? null;
             $offices[] = new Office(id: (int) $provider->id, name: $provider->displayName ?? $provider->name, address: $provider->data['address'] ?? null, showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null, displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [], organization: $provider->data['organization'] ?? null, organizationUnit: $provider->data['organizationUnit'] ?? null, slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null, geo: $provider->data['geo'] ?? null, scope: $matchingScope ? new ThinnedScope(id: (int) $matchingScope->id, provider: MapperService::providerToThinnedProvider($provider), shortName: $matchingScope->getShortName(), telephoneActivated: (bool) $matchingScope->getTelephoneActivated(), telephoneRequired: (bool) $matchingScope->getTelephoneRequired(), customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(), customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(), customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(), captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(), displayInfo: $matchingScope->getDisplayInfo()) : null);
         }
@@ -92,25 +96,38 @@ class ZmsApiFacadeService
         return new ThinnedScopeList($scopesProjectionList);
     }
 
-    public static function getServices(): ServiceList|array
+    public static function getServices(bool $showUnpublished = false): ServiceList|array
     {
-        $requestList = ZmsApiClientService::getServices() ?? new RequestList();
+        $requestList = ZmsApiClientService::getServices($showUnpublished) ?? new RequestList();
         $services = [];
         foreach ($requestList as $request) {
             $additionalData = $request->getAdditionalData();
+            if (
+                ! $showUnpublished
+                && isset($additionalData['public'])
+                && !$additionalData['public']
+            ) {
+                continue;
+            }
+
             $services[] = new Service(id: (int) $request->getId(), name: $request->getName(), maxQuantity: $additionalData['maxQuantity'] ?? 1);
         }
 
         return new ServiceList($services);
     }
 
-    public static function getServicesAndOffices(): OfficeServiceAndRelationList|array
+    public static function getServicesAndOffices(bool $showUnpublished = false): OfficeServiceAndRelationList|array
     {
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $relationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-        $offices = MapperService::mapOfficesWithScope($providerList) ?? new OfficeList();
-        $services = MapperService::mapServicesWithCombinations($requestList, $relationList) ?? new ServiceList();
+
+        $offices = MapperService::mapOfficesWithScope($providerList, $showUnpublished) ?? new OfficeList();
+        $services = MapperService::mapServicesWithCombinations(
+            $requestList,
+            $relationList,
+            $showUnpublished
+        ) ?? new ServiceList();
         $relations = MapperService::mapRelations($relationList) ?? new OfficeServiceRelationList();
         return new OfficeServiceAndRelationList($offices, $services, $relations);
     }
@@ -163,12 +180,16 @@ class ZmsApiFacadeService
      *
      */
 
-    public static function getOfficeListByServiceId(int $serviceId): OfficeList|array
+    public static function getOfficeListByServiceId(int $serviceId, bool $showUnpublished = false): OfficeList|array
     {
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $providerMap = [];
         foreach ($providerList as $provider) {
+            if (! $showUnpublished && isset($provider->data['public']) && ! (bool) $provider->data['public']) {
+                continue;
+            }
+
             $providerMap[$provider->id] = $provider;
         }
 
@@ -234,12 +255,21 @@ class ZmsApiFacadeService
         return new ThinnedScope(id: (int) $matchingScope->id, provider: MapperService::providerToThinnedProvider($matchingProv), shortName: $matchingScope->getShortName() ?? null, telephoneActivated: (bool) $matchingScope->getTelephoneActivated() ?? null, telephoneRequired: (bool) $matchingScope->getTelephoneRequired() ?? null, customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated() ?? null, customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired() ?? null, customTextfieldLabel: $matchingScope->getCustomTextfieldLabel() ?? null, captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired() ?? null, displayInfo: $matchingScope->getDisplayInfo() ?? null);
     }
 
-    public static function getServicesByOfficeId(int $officeId): ServiceList|array
+    public static function getServicesByOfficeId(int $officeId, bool $showUnpublished = false): ServiceList|array
     {
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $requestMap = [];
         foreach ($requestList as $request) {
+            $additionalData = $request->getAdditionalData();
+            if (
+                ! $showUnpublished
+                && isset($additionalData['public'])
+                && !$additionalData['public']
+            ) {
+                continue;
+            }
+
             $requestMap[$request->id] = $request;
         }
 
@@ -260,39 +290,6 @@ class ZmsApiFacadeService
         }
 
         return new ServiceList($services);
-    }
-
-    public static function getOfficesThatProvideService(int $serviceId): OfficeList|array
-    {
-        $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
-        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-        $providerIds = [];
-        foreach ($requestRelationList as $relation) {
-            if ((int) $relation->request->id === $serviceId) {
-                $providerIds[] = $relation->provider->id;
-            }
-        }
-
-        $offices = [];
-        foreach ($providerList as $provider) {
-            if (
-                in_array($provider->id, $providerIds) &&
-                isset($provider->data['public']) &&
-                $provider->data['public'] === true
-            ) {
-                $scope = self::getScopeByOfficeId((int) $provider->id);
-                if (!is_array($scope)) {
-                    $offices[] = new Office(id: (int) $provider->id, name: $provider->displayName ?? $provider->name, address: $provider->data['address'] ?? null, showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null, displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [], organization: $provider->data['organization'] ?? null, organizationUnit: $provider->data['organizationUnit'] ?? null, slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null, geo: $provider->data['geo'] ?? null, scope: $scope instanceof ThinnedScope ? $scope : null);
-                }
-            }
-        }
-
-        $errors = ValidationService::validateOfficesNotFound($offices);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        return new OfficeList($offices);
     }
 
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
