@@ -1,6 +1,10 @@
 <template>
   <div class="m-component m-component-form">
-    <div v-if="!confirmAppointmentHash && currentView < 4">
+    <div
+      v-if="
+        !confirmAppointmentHash && !appointmentNotFoundError && currentView < 4
+      "
+    >
       <muc-stepper
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
@@ -148,6 +152,18 @@
               t("appointmentBookingErrorHeader")
             }}</template>
           </muc-callout>
+          <muc-callout
+            v-if="appointmentNotFoundError"
+            type="error"
+          >
+            <template #content>
+              {{ t("appointmentNotFoundErrorText") }}
+            </template>
+
+            <template #header>{{
+              t("appointmentNotFoundErrorHeader")
+            }}</template>
+          </muc-callout>
         </div>
       </div>
     </div>
@@ -251,6 +267,7 @@ const isRebooking = ref<boolean>(false);
 const appointmentNotAvailableError = ref<boolean>(false);
 const updateAppointmentError = ref<boolean>(false);
 const tooManyAppointmentsWithSameMailError = ref<boolean>(false);
+const appointmentNotFoundError = ref<boolean>(false);
 
 const confirmAppointmentSuccess = ref<boolean>(false);
 const confirmAppointmentError = ref<boolean>(false);
@@ -455,7 +472,6 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
 };
 
 onMounted(() => {
-  console.log("Hier ", props.confirmAppointmentHash);
   if (props.confirmAppointmentHash) {
     let appointmentData: AppointmentHash;
     try {
@@ -543,7 +559,7 @@ onMounted(() => {
             currentView.value = 3;
           }
         } else {
-          //confirmAppointmentError.value = true;
+          appointmentNotFoundError.value = true;
         }
       });
     });
