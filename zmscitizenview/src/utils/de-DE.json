@@ -3,6 +3,8 @@
   "appointment": "Termin",
   "appointmentBookingErrorHeader": "Aktivierung fehlgeschlagen.",
   "appointmentBookingErrorText": "Aktivierung fehlgeschlagen.",
+  "appointmentNotFoundErrorHeader": "Wir konnten Ihren Termin nicht finden.",
+  "appointmentNotFoundErrorText": "Vielleicht haben Sie Ihren Termin bereits abgesagt? Andernfalls überprüfen Sie bitte, ob Sie den richtigen Link verwendet haben.",
   "appointmentSuccessfullyBookedHeader": "Ihr Termin wurde reserviert.",
   "appointmentSuccessfullyBookedText": "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.",
   "appointmentSuccessfullyCanceledHeader": "Sie haben Ihren Termin erfolgreich abgesagt.",

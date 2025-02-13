@@ -3,6 +3,8 @@
   "appointment": "Appointment",
   "appointmentBookingErrorHeader": "Activation failed.",
   "appointmentBookingErrorText": "Activation failed.",
+  "appointmentNotFoundErrorHeader": "We could not find your appointment.",
+  "appointmentNotFoundErrorText": "Maybe you have already canceled your appointment? Otherwise, please check that you have used the correct link.",
   "appointmentSuccessfullyBookedHeader": " Your appointment has been booked.",
   "appointmentSuccessfullyBookedText": "You will receive confirmation and further information about your appointment by e-mail. We look forward to your visit.",
   "appointmentSuccessfullyCanceledHeader": "You have successfully cancelled your appointment.",
