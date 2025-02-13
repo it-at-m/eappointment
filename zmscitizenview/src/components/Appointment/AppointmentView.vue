@@ -8,7 +8,7 @@
       <muc-stepper
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
-        :disable-previous-steps="appointmentHash"
+        :disable-previous-steps="!!appointmentHash"
         @change-step="changeStep"
       />
       <div class="container">
@@ -16,6 +16,7 @@
           <div class="m-component__column">
             <div v-if="currentView === 0 && !appointmentHash">
               <service-finder
+                :base-url="baseUrl"
                 :preselected-service-id="serviceId"
                 :preselected-offive-id="locationId"
                 :exclusive-location="exclusiveLocation"
@@ -25,6 +26,7 @@
             </div>
             <div v-if="currentView === 1">
               <calendar-view
+                :base-url="baseUrl"
                 :is-rebooking="isRebooking"
                 :exclusive-location="exclusiveLocation"
                 :preselected-office-id="preselectedLocationId"
@@ -207,12 +209,12 @@ import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
 
 const props = defineProps<{
-  baseUrl: any;
+  baseUrl?: string;
   serviceId?: string;
   locationId?: string;
   exclusiveLocation?: string;
-  appointmentHash?: any;
-  confirmAppointmentHash?: any;
+  appointmentHash?: string;
+  confirmAppointmentHash?: string;
   t: any;
 }>();
 
@@ -336,20 +338,22 @@ const setRebookData = () => {
     appointment.value.telephone = rebookedAppointment.value.telephone;
     appointment.value.customTextfield =
       rebookedAppointment.value.customTextfield;
-    updateAppointment(appointment.value).then((data) => {
-      if ((data as AppointmentDTO).processId !== undefined) {
-        appointment.value = data as AppointmentDTO;
-      } else {
-        if (
-          (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
-        ) {
-          tooManyAppointmentsWithSameMailError.value = true;
+    updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
+      (data) => {
+        if ((data as AppointmentDTO).processId !== undefined) {
+          appointment.value = data as AppointmentDTO;
         } else {
-          updateAppointmentError.value = true;
+          if (
+            (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
+          ) {
+            tooManyAppointmentsWithSameMailError.value = true;
+          } else {
+            updateAppointmentError.value = true;
+          }
         }
+        currentView.value = 3;
       }
-      currentView.value = 3;
-    });
+    );
   }
 };
 
@@ -359,11 +363,12 @@ const nextReserveAppointment = () => {
     selectedTimeslot.value,
     Array.from(selectedServiceMap.value.keys()),
     Array.from(selectedServiceMap.value.values()),
-    selectedProvider.value.id
+    selectedProvider.value.id,
+    props.baseUrl ?? undefined
   ).then((data) => {
     if ((data as AppointmentDTO).processId !== undefined) {
       if (appointment.value && !isRebooking.value) {
-        cancelAppointment(appointment.value);
+        cancelAppointment(appointment.value, props.baseUrl ?? undefined);
       }
       appointment.value = data as AppointmentDTO;
       if (isRebooking.value) {
@@ -391,49 +396,58 @@ const nextUpdateAppointment = () => {
       ? customerData.value.customTextfield
       : undefined;
 
-    updateAppointment(appointment.value).then((data) => {
-      if ((data as AppointmentDTO).processId !== undefined) {
-        appointment.value = data as AppointmentDTO;
-      } else {
-        if (
-          (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
-        ) {
-          tooManyAppointmentsWithSameMailError.value = true;
+    updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
+      (data) => {
+        if ((data as AppointmentDTO).processId !== undefined) {
+          appointment.value = data as AppointmentDTO;
         } else {
-          updateAppointmentError.value = true;
+          if (
+            (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
+          ) {
+            tooManyAppointmentsWithSameMailError.value = true;
+          } else {
+            updateAppointmentError.value = true;
+          }
         }
+        increaseCurrentView();
       }
-      increaseCurrentView();
-    });
+    );
   }
 };
 
 const nextBookAppointment = () => {
   if (appointment.value) {
-    preconfirmAppointment(appointment.value).then((data) => {
-      if ((data as AppointmentDTO).processId !== undefined) {
-        appointment.value = data as AppointmentDTO;
-        if (isRebooking.value && rebookedAppointment.value) {
-          cancelAppointment(rebookedAppointment.value);
+    preconfirmAppointment(appointment.value, props.baseUrl ?? undefined).then(
+      (data) => {
+        if ((data as AppointmentDTO).processId !== undefined) {
+          appointment.value = data as AppointmentDTO;
+          if (isRebooking.value && rebookedAppointment.value) {
+            cancelAppointment(
+              rebookedAppointment.value,
+              props.baseUrl ?? undefined
+            );
+          }
+        } else {
+          // error.value = true;
         }
-      } else {
-        // error.value = true;
+        increaseCurrentView();
       }
-      increaseCurrentView();
-    });
+    );
   }
 };
 
 const nextCancelAppointment = () => {
   if (appointment.value) {
-    cancelAppointment(appointment.value).then((data) => {
-      if ((data as AppointmentDTO).processId !== undefined) {
-        cancelAppointmentSuccess.value = true;
-      } else {
-        cancelAppointmentError.value = true;
+    cancelAppointment(appointment.value, props.baseUrl ?? undefined).then(
+      (data) => {
+        if ((data as AppointmentDTO).processId !== undefined) {
+          cancelAppointmentSuccess.value = true;
+        } else {
+          cancelAppointmentError.value = true;
+        }
+        increaseCurrentView();
       }
-      increaseCurrentView();
-    });
+    );
   }
 };
 
@@ -487,20 +501,23 @@ onMounted(() => {
       confirmAppointmentError.value = true;
       return;
     }
-    confirmAppointment(appointmentData).then((data) => {
-      if ((data as AppointmentDTO).processId !== undefined) {
-        confirmAppointmentSuccess.value = true;
-      } else {
-        confirmAppointmentError.value = true;
+    confirmAppointment(appointmentData, props.baseUrl ?? undefined).then(
+      (data) => {
+        if ((data as AppointmentDTO).processId !== undefined) {
+          confirmAppointmentSuccess.value = true;
+        } else {
+          confirmAppointmentError.value = true;
+        }
       }
-    });
+    );
   }
 
   if (props.appointmentHash) {
     rebookOrCanelDialog.value = true;
     fetchServicesAndProviders(
       props.serviceId ?? undefined,
-      props.locationId ?? undefined
+      props.locationId ?? undefined,
+      props.baseUrl ?? undefined
     ).then((data) => {
       services.value = data.services;
       relations.value = data.relations;
@@ -520,48 +537,52 @@ onMounted(() => {
         confirmAppointmentError.value = true;
         return;
       }
-      fetchAppointment(appointmentData).then((data) => {
-        if ((data as AppointmentDTO).processId !== undefined) {
-          appointment.value = data as AppointmentDTO;
-          selectedService.value = services.value.find(
-            (service) => service.id === appointment.value.serviceId
-          );
-          if (selectedService.value) {
-            selectedService.value.count = appointment.value.serviceCount;
-            selectedService.value.providers = getProviders(
-              selectedService.value.id,
-              null
+      fetchAppointment(appointmentData, props.baseUrl ?? undefined).then(
+        (data) => {
+          if ((data as AppointmentDTO).processId !== undefined) {
+            appointment.value = data as AppointmentDTO;
+            selectedService.value = services.value.find(
+              (service) => service.id === appointment.value.serviceId
             );
+            if (selectedService.value) {
+              selectedService.value.count = appointment.value.serviceCount;
+              selectedService.value.providers = getProviders(
+                selectedService.value.id,
+                null
+              );
 
-            preselectedLocationId.value = appointment.value.officeId;
-            selectedProvider.value = offices.value.find(
-              (office) => office.id === appointment.value?.officeId
-            );
+              preselectedLocationId.value = appointment.value.officeId;
+              selectedProvider.value = offices.value.find(
+                (office) => office.id === appointment.value?.officeId
+              );
 
-            if (appointment.value.subRequestCounts.length > 0) {
-              appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest: Service = services.value.find(
-                  (service) => service.id === subRequestCount.id
+              if (appointment.value.subRequestCounts.length > 0) {
+                appointment.value.subRequestCounts.forEach(
+                  (subRequestCount) => {
+                    const subRequest: Service = services.value.find(
+                      (service) => service.id === subRequestCount.id
+                    );
+                    const subService = new SubService(
+                      subRequest.id,
+                      subRequest.name,
+                      subRequest.maxQuantity,
+                      getProviders(subRequest.id, null),
+                      subRequestCount.count
+                    );
+                    if (!selectedService.value.subServices) {
+                      selectedService.value.subServices = [];
+                    }
+                    selectedService.value.subServices.push(subService);
+                  }
                 );
-                const subService = new SubService(
-                  subRequest.id,
-                  subRequest.name,
-                  subRequest.maxQuantity,
-                  getProviders(subRequest.id, null),
-                  subRequestCount.count
-                );
-                if (!selectedService.value.subServices) {
-                  selectedService.value.subServices = [];
-                }
-                selectedService.value.subServices.push(subService);
-              });
+              }
+              currentView.value = 3;
             }
-            currentView.value = 3;
+          } else {
+            appointmentNotFoundError.value = true;
           }
-        } else {
-          appointmentNotFoundError.value = true;
         }
-      });
+      );
     });
   }
 });

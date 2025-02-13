@@ -254,6 +254,7 @@ import {
 } from "@/types/ProvideInjectTypes";
 
 const props = defineProps<{
+  baseUrl: string | undefined;
   isRebooking: boolean;
   exclusiveLocation: string | undefined;
   preselectedOfficeId: string | undefined;
@@ -345,7 +346,8 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
   fetchAvailableDays(
     selectedProvider.value,
     Array.from(props.selectedServiceMap.keys()),
-    Array.from(props.selectedServiceMap.values())
+    Array.from(props.selectedServiceMap.values()),
+    props.baseUrl ?? undefined
   ).then((data) => {
     if ((data as AvailableDaysDTO).availableDays !== undefined) {
       availableDays.value = (data as AvailableDaysDTO).availableDays;
@@ -366,7 +368,8 @@ const getAppointmentsOfDay = (date: string) => {
     date,
     selectedProvider.value,
     Array.from(props.selectedServiceMap.keys()),
-    Array.from(props.selectedServiceMap.values())
+    Array.from(props.selectedServiceMap.values()),
+    props.baseUrl ?? undefined
   ).then((data) => {
     if (data as AvailableTimeSlotsDTO) {
       appointmentTimestamps.value = (
