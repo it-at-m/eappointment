@@ -46,6 +46,5 @@ class OfficesServicesRelationsController extends BaseController
                 ErrorMessages::getHighestStatusCode($result['errors'])
             )
             : $this->createJsonResponse($response, $result->toArray(), 200);
-
     }
 }
