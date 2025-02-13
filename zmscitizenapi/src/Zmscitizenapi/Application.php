@@ -63,6 +63,9 @@ class Application extends \BO\Slim\Application
     public static string $CORS_ALLOWED_ORIGINS;
     // IP Filter config
     public static string $IP_BLACKLIST;
+
+    public static string $ACCESS_UNPUBLISHED_ON_DOMAIN;
+
     public static function initialize(): void
     {
         self::initializeMaintenanceMode();
@@ -147,6 +150,8 @@ class Application extends \BO\Slim\Application
         self::$CORS_ALLOWED_ORIGINS = getenv('CORS') ?: '';
         // IP Filter
         self::$IP_BLACKLIST = getenv('IP_BLACKLIST') ?: '';
+
+        self::$ACCESS_UNPUBLISHED_ON_DOMAIN = getenv('ACCESS_UNPUBLISHED_ON_DOMAIN') ?: '';
     }
 
     public static function reinitializeMiddlewareConfig(): void
@@ -223,6 +228,11 @@ class Application extends \BO\Slim\Application
     public static function getIpBlacklist(): string
     {
         return self::$IP_BLACKLIST ?: '';
+    }
+
+    public static function getAccessUnpublishedOnDomain(): ?string
+    {
+        return self::$ACCESS_UNPUBLISHED_ON_DOMAIN ?: null;
     }
 }
 

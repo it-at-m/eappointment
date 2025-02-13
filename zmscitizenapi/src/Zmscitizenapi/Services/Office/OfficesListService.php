@@ -9,13 +9,13 @@ use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
 class OfficesListService
 {
-    public function getOfficesList(): OfficeList|array
+    public function getOfficesList(bool $showUnpublished = false): OfficeList|array
     {
-        return $this->getOffices();
+        return $this->getOffices($showUnpublished);
     }
 
-    private function getOffices(): array|OfficeList
+    private function getOffices(bool $showUnpublished = false): array|OfficeList
     {
-        return ZmsApiFacadeService::getOffices();
+        return ZmsApiFacadeService::getOffices($showUnpublished);
     }
 }
