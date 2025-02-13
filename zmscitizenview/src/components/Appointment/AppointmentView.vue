@@ -542,7 +542,7 @@ onMounted(() => {
           if ((data as AppointmentDTO).processId !== undefined) {
             appointment.value = data as AppointmentDTO;
             selectedService.value = services.value.find(
-              (service) => service.id === appointment.value.serviceId
+              (service) => service.id == appointment.value.serviceId
             );
             if (selectedService.value) {
               selectedService.value.count = appointment.value.serviceCount;
@@ -553,14 +553,14 @@ onMounted(() => {
 
               preselectedLocationId.value = appointment.value.officeId;
               selectedProvider.value = offices.value.find(
-                (office) => office.id === appointment.value?.officeId
+                (office) => office.id == appointment.value?.officeId
               );
 
               if (appointment.value.subRequestCounts.length > 0) {
                 appointment.value.subRequestCounts.forEach(
                   (subRequestCount) => {
                     const subRequest: Service = services.value.find(
-                      (service) => service.id === subRequestCount.id
+                      (service) => service.id == subRequestCount.id
                     );
                     const subService = new SubService(
                       subRequest.id,
