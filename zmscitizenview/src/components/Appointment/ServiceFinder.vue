@@ -120,6 +120,7 @@ import {
 } from "@/utils/Constants";
 
 const props = defineProps<{
+  baseUrl: string | undefined;
   preselectedServiceId: string | undefined;
   preselectedOffiveId: string | undefined;
   exclusiveLocation: string | undefined;
@@ -319,7 +320,8 @@ onMounted(() => {
   } else {
     fetchServicesAndProviders(
       props.preselectedServiceId ?? undefined,
-      props.preselectedOffiveId ?? undefined
+      props.preselectedOffiveId ?? undefined,
+      props.baseUrl ?? undefined
     ).then((data) => {
       services.value = data.services;
       relations.value = data.relations;

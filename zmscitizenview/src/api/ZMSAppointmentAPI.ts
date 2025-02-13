@@ -27,10 +27,11 @@ const MAXDATE = new Date(
 
 export function fetchServicesAndProviders(
   serviceId?: string,
-  locationId?: string
+  locationId?: string,
+  baseUrl?: string
 ): Promise<OfficesAndServicesDTO> {
   let apiUrl =
-    getAPIBaseURL() + VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT;
+    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT;
 
   if (serviceId && locationId) {
     apiUrl += `?serviceId=${serviceId}&locationId=${locationId}`;
@@ -44,7 +45,8 @@ export function fetchServicesAndProviders(
 export function fetchAvailableDays(
   provider: OfficeImpl,
   serviceIds: string[],
-  serviceCounts: number[]
+  serviceCounts: number[],
+  baseUrl?: string
 ): Promise<AvailableDaysDTO | ErrorDTO> {
   const params: Record<string, any> = {
     startDate: convertDateToString(TODAY),
@@ -55,7 +57,7 @@ export function fetchAvailableDays(
   };
 
   return fetch(
-    getAPIBaseURL() +
+    getAPIBaseURL(baseUrl) +
       VUE_APP_ZMS_API_CALENDAR_ENDPOINT +
       "?" +
       new URLSearchParams(params).toString()
@@ -68,7 +70,8 @@ export function fetchAvailableTimeSlots(
   date: string,
   provider: OfficeImpl,
   serviceIds: string[],
-  serviceCounts: number[]
+  serviceCounts: number[],
+  baseUrl?: string
 ): Promise<AvailableTimeSlotsDTO | ErrorDTO> {
   const params: Record<string, any> = {
     date: date,
@@ -78,7 +81,7 @@ export function fetchAvailableTimeSlots(
   };
 
   return fetch(
-    getAPIBaseURL() +
+    getAPIBaseURL(baseUrl) +
       VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT +
       "?" +
       new URLSearchParams(params).toString()
@@ -98,7 +101,8 @@ export function reserveAppointment(
   timeSlot: number,
   serviceIds: string[],
   serviceCount: number[],
-  providerId: string
+  providerId: string,
+  baseUrl?: string
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     timestamp: timeSlot,
@@ -108,17 +112,21 @@ export function reserveAppointment(
     captchaSolution: null,
   };
 
-  return fetch(getAPIBaseURL() + VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(requestBody),
-  }).then((response) => {
+  return fetch(
+    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+    }
+  ).then((response) => {
     return response.json();
   });
 }
 
 export function updateAppointment(
-  appointment: AppointmentDTO
+  appointment: AppointmentDTO,
+  baseUrl?: string
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     processId: appointment.processId,
@@ -130,17 +138,21 @@ export function updateAppointment(
     customTextfield: appointment.customTextfield,
   };
 
-  return fetch(getAPIBaseURL() + VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(requestBody),
-  }).then((response) => {
+  return fetch(
+    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+    }
+  ).then((response) => {
     return response.json();
   });
 }
 
 export function preconfirmAppointment(
-  appointment: AppointmentDTO
+  appointment: AppointmentDTO,
+  baseUrl?: string
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     processId: appointment.processId,
@@ -150,7 +162,7 @@ export function preconfirmAppointment(
   };
 
   return fetch(
-    getAPIBaseURL() + VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT,
+    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -162,7 +174,8 @@ export function preconfirmAppointment(
 }
 
 export function confirmAppointment(
-  appointment: AppointmentHash
+  appointment: AppointmentHash,
+  baseUrl?: string
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     processId: appointment.id,
@@ -170,17 +183,21 @@ export function confirmAppointment(
     scope: appointment.scope,
   };
 
-  return fetch(getAPIBaseURL() + VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(requestBody),
-  }).then((response) => {
+  return fetch(
+    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+    }
+  ).then((response) => {
     return response.json();
   });
 }
 
 export function fetchAppointment(
-  appointment: AppointmentHash
+  appointment: AppointmentHash,
+  baseUrl?: string
 ): Promise<AppointmentDTO | ErrorDTO> {
   const params: Record<string, any> = {
     processId: appointment.id,
@@ -189,7 +206,7 @@ export function fetchAppointment(
   };
 
   return fetch(
-    getAPIBaseURL() +
+    getAPIBaseURL(baseUrl) +
       VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT +
       "?" +
       new URLSearchParams(params).toString()
@@ -199,7 +216,8 @@ export function fetchAppointment(
 }
 
 export function cancelAppointment(
-  appointment: AppointmentDTO
+  appointment: AppointmentDTO,
+  baseUrl?: string
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     processId: appointment.processId,
@@ -207,11 +225,14 @@ export function cancelAppointment(
     scope: appointment.scope,
   };
 
-  return fetch(getAPIBaseURL() + VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(requestBody),
-  }).then((response) => {
+  return fetch(
+    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+    }
+  ).then((response) => {
     return response.json();
   });
 }

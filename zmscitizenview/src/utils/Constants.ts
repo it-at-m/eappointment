@@ -37,8 +37,10 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
   ["1064305", "shortNameVehicleDeregistration"],
 ]);
 
-export function getAPIBaseURL(): string {
-  console.log("#getAPIBaseURL", import.meta);
+export function getAPIBaseURL(baseUrl: string | undefined): string {
+  if (baseUrl) {
+    return baseUrl;
+  }
   if (import.meta.env.VITE_VUE_APP_API_URL) {
     return import.meta.env.VITE_VUE_APP_API_URL;
   } else {
