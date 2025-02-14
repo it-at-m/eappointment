@@ -90,13 +90,13 @@ class RequestReport extends Base
         $reportData = [];
         $rowIndex = $sheet->getHighestRow() + 1;
         $firstDataRow = $rowIndex;
-        $sheet->setCellValue('A20', "firstDataRow: " . $firstDataRow);
 
         foreach ($report->data as $name => $entry) {
             if ($name !== 'sum' && $name !== 'average_processingtime') {
                 $rowData = [];
                 $rowData[] = $name;
-                $rowData[] = isset($report->data['average_processingtime'][$name]) && is_numeric($report->data['average_processingtime'][$name])
+                $rowData[] = isset($report->data['average_processingtime'][$name])
+                    && is_numeric($report->data['average_processingtime'][$name])
                     ? (string)$report->data['average_processingtime'][$name]
                     : "0";
                 $rowData[] = $report->data['sum'][$name];
