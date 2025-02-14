@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
+use BO\Zmsdb\Mail as Query;
 use BO\Zmsdb\Config;
 use BO\Zmsdb\Process as ProcessRepository;
 use BO\Zmsdb\Department as DepartmentRepository;
@@ -57,11 +58,7 @@ class ProcessDeleteMail extends BaseController
             ->toResolvedEntity($collection, $config, 'deleted')
             ->withDepartment($department);
         $mail->testValid();
-        error_log("outside");
-        error_log($process->getFirstClient()->hasEmail());
-        error_log($process->scope->hasEmailFrom());
         if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
-            error_log("inside");
             $mail = (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now, false);
             \App::$log->debug("Send mail", [$mail]);
         }
