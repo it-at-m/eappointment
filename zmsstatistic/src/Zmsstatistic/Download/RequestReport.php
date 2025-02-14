@@ -91,8 +91,8 @@ class RequestReport extends Base
         $rowIndex = $sheet->getHighestRow() + 1;
         $firstDataRow = $rowIndex;
         $sheet->setCellValue('A20', "firstDataRow: " . $firstDataRow);
-        foreach ($report->data as $name => $entry) {
 
+        foreach ($report->data as $name => $entry) {
             if ($name !== 'sum' && $name !== 'average_processingtime') {
                 $rowData = [];
                 $rowData[] = $name;
@@ -114,29 +114,19 @@ class RequestReport extends Base
             }
         }
 
-
-    
         $sheet->fromArray($reportData, null, 'A' . $rowIndex);
         $lastColumn = $sheet->getHighestColumn();
         $lastRow = $sheet->getHighestRow();
         $sumRowIndex = $lastRow + 2;
-
-        $sumRow = ["Summe", "", ""]; 
-        
+        $sumRow = ["Summe", "", ""];
         $sumRow[2] = "=SUM(C{$firstDataRow}:C{$lastRow})";
-
         $lastColumnIndex = Coordinate::columnIndexFromString($lastColumn);
 
         for ($colIndex = 4; $colIndex <= $lastColumnIndex; $colIndex++) {
             $colLetter = Coordinate::stringFromColumnIndex($colIndex);
             $sumRow[] = "=SUM({$colLetter}{$firstDataRow}:{$colLetter}{$lastRow})";
-        } 
+        }
 
         $sheet->fromArray($sumRow, null, 'A' . $sumRowIndex);
-    
-
     }
-
-    
-    
 }
