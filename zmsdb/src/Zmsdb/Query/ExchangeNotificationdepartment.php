@@ -17,11 +17,11 @@ class ExchangeNotificationdepartment extends Base
             d.`Name` as departmentname,
             CONCAT(s.`Bezeichnung`, " ", s.`standortkuerzel`) AS scopename,
             IFNULL(SUM(n.`gesendet`), 0) as notificationscount
-        FROM '. Department::TABLE .' AS d
-            LEFT JOIN '. Organisation::TABLE .' o ON o.`OrganisationsID` = d.`OrganisationsID`
-            LEFT JOIN '. Scope::TABLE .' s ON d.`BehoerdenID` = s.`BehoerdenID`
+        FROM ' . Department::TABLE . ' AS d
+            LEFT JOIN ' . Organisation::TABLE . ' o ON o.`OrganisationsID` = d.`OrganisationsID`
+            LEFT JOIN ' . Scope::TABLE . ' s ON d.`BehoerdenID` = s.`BehoerdenID`
             LEFT JOIN
-                '. self::TABLE .' n ON s.`StandortID` = n.`StandortID` AND n.`Datum` BETWEEN :datestart AND :dateend
+                ' . self::TABLE . ' n ON s.`StandortID` = n.`StandortID` AND n.`Datum` BETWEEN :datestart AND :dateend
         WHERE
             s.`BehoerdenID` = :departmentid 
         GROUP BY scopename
@@ -35,10 +35,10 @@ class ExchangeNotificationdepartment extends Base
           MAX(n.`Datum`) AS periodend,
           o.`Organisationsname` AS organisationname,
           d.`Name` AS description
-      FROM '. self::TABLE .' AS n
-          LEFT JOIN '. Scope::TABLE .' AS s ON n.`standortid` = s.`StandortID`
-          INNER JOIN '. Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-          LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
+      FROM ' . self::TABLE . ' AS n
+          LEFT JOIN ' . Scope::TABLE . ' AS s ON n.`standortid` = s.`StandortID`
+          INNER JOIN ' . Department::TABLE . ' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+          LEFT JOIN ' . Organisation::TABLE . ' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
       GROUP BY d.`BehoerdenID`
       ORDER BY d.`BehoerdenID` ASC
     ';
@@ -46,9 +46,9 @@ class ExchangeNotificationdepartment extends Base
     const QUERY_PERIODLIST_MONTH = '
         SELECT
             DATE_FORMAT(n.datum,"%Y-%m") AS date
-        FROM '. self::TABLE .' AS n
-            LEFT JOIN '. Scope::TABLE .' AS s ON n.`standortid` = s.`StandortID`
-            LEFT JOIN '. Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+        FROM ' . self::TABLE . ' AS n
+            LEFT JOIN ' . Scope::TABLE . ' AS s ON n.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Department::TABLE . ' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
         WHERE d.`BehoerdenID` = :departmentid
         GROUP BY date
         ORDER BY date ASC

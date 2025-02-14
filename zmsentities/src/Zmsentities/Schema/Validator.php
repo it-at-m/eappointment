@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Schema;
 
-use \League\JsonGuard\ValidationError;
+use League\JsonGuard\ValidationError;
 
 class Validator
 {

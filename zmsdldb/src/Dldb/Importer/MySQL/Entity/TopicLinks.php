@@ -31,7 +31,7 @@ class TopicLinks extends Base
             array_push($searchValues, ...$titels);
         }
         */
-        
+
         $keywords = $this->get('meta.keywords');
         if (!empty($keywords)) {
             if (is_string($keywords)) {
@@ -40,11 +40,11 @@ class TopicLinks extends Base
             $keywords = array_filter($keywords);
             array_push($searchValues, ...$keywords);
         }
-        
+
         $this->fields['search'] = implode(', ', $searchValues);
     }
 
-    public function clearEntity(array $addWhere = []) : bool
+    public function clearEntity(array $addWhere = []): bool
     {
         try {
             return $this->deleteWith(
@@ -54,7 +54,7 @@ class TopicLinks extends Base
             throw $e;
         }
     }
-    
+
     public function deleteEntity(): bool
     {
         try {
@@ -75,7 +75,7 @@ class TopicLinks extends Base
 
                 $sql = 'REPLACE INTO ' . static::getTableName() . ' ';
                 $sql .= '(`' . implode('`, `', array_keys($this->fields)) . '`) ';
-                
+
                 $questionMarks = array_fill(0, count($this->fields), '?');
                 $sql .= 'VALUES (' . implode(', ', $questionMarks) . ') ';
 

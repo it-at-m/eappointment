@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models\Collections;
@@ -11,10 +12,8 @@ use JsonSerializable;
 class OfficeServiceRelationList extends Entity implements JsonSerializable
 {
     public static $schema = "citizenapi/collections/officeServiceRelationList.json";
-
-    /** @var OfficeServiceRelation[] */
+/** @var OfficeServiceRelation[] */
     public array $relations = [];
-
     public function __construct(array $relations = [])
     {
 
@@ -25,7 +24,8 @@ class OfficeServiceRelationList extends Entity implements JsonSerializable
                 }
                 $this->relations[] = $relation;
             } catch (\Exception $e) {
-                error_log("Invalid OfficeServiceRelation encountered: " . $e->getMessage()); //Gracefully handle
+                error_log("Invalid OfficeServiceRelation encountered: " . $e->getMessage());
+            //Gracefully handle
             }
         }
 

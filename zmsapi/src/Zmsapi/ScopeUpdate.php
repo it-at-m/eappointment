@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope;
 
 class ScopeUpdate extends BaseController
 {
@@ -22,7 +23,7 @@ class ScopeUpdate extends BaseController
         array $args
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $scope = (new Scope)->readEntity($args['id'], 1);
+        $scope = (new Scope())->readEntity($args['id'], 1);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
@@ -33,7 +34,7 @@ class ScopeUpdate extends BaseController
         );
 
         $message = Response\Message::create($request);
-        $message->data = (new Scope)->updateEntity($scope->id, $scope);
+        $message->data = (new Scope())->updateEntity($scope->id, $scope);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());

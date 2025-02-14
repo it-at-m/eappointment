@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -33,7 +34,7 @@ class RequestReport extends Base
         ResponseInterface $response,
         array $args
     ) {
-        $title = 'requeststatistic_'. $args['period'];
+        $title = 'requeststatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
 
         $this->writeInfoHeader($args, $download->getSpreadSheet());
@@ -56,8 +57,8 @@ class RequestReport extends Base
     ) {
         $sheet = $spreadsheet->getActiveSheet();
 
-        $firstDay = $report->firstDay->year .'-'. $report->firstDay->month .'-'. $report->firstDay->day;
-        $lastDay = $report->lastDay->year .'-'. $report->lastDay->month .'-'. $report->lastDay->day;
+        $firstDay = $report->firstDay->year . '-' . $report->firstDay->month . '-' . $report->firstDay->day;
+        $lastDay = $report->lastDay->year . '-' . $report->lastDay->month . '-' . $report->lastDay->day;
         $this->firstDayDate = $this->setDateTime($firstDay);
         $this->lastDayDate = $this->setDateTime($lastDay);
 
@@ -76,9 +77,9 @@ class RequestReport extends Base
         $dateTime = clone $this->firstDayDate;
         do {
             $reportHeader[] = $this->getFormatedDates($dateTime, $datePatternCol2);
-            $dateTime->modify('+1 '. $report->period);
+            $dateTime->modify('+1 ' . $report->period);
         } while ($dateTime <= $this->lastDayDate);
-        $sheet->fromArray($reportHeader, null, 'A'. ($sheet->getHighestRow() + 2));
+        $sheet->fromArray($reportHeader, null, 'A' . ($sheet->getHighestRow() + 2));
     }
 
     /**
@@ -91,6 +92,7 @@ class RequestReport extends Base
         $firstDataRow = $rowIndex;
         $sheet->setCellValue('A20', "firstDataRow: " . $firstDataRow);
         foreach ($report->data as $name => $entry) {
+
             if ($name !== 'sum' && $name !== 'average_processingtime') {
                 $rowData = [];
                 $rowData[] = $name;
@@ -103,12 +105,15 @@ class RequestReport extends Base
                 do {
                     $dateString = $dateTime->format($this->dateFormatter[$report->period]);
                     $rowData[] = isset($entry[$dateString]) ? (int)$entry[$dateString]['requestscount'] : '0';
+
+
                     $dateTime->modify('+1 ' . $report->period);
                 } while ($dateTime <= $this->lastDayDate);
 
                 $reportData[$name] = $rowData;
             }
         }
+
 
     
         $sheet->fromArray($reportData, null, 'A' . $rowIndex);
@@ -128,6 +133,8 @@ class RequestReport extends Base
         } 
 
         $sheet->fromArray($sumRow, null, 'A' . $sumRowIndex);
+    
+
     }
 
     

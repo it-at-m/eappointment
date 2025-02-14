@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Middleware;
@@ -11,12 +12,11 @@ use BO\Zmscitizenapi\Services\Core\LoggerService;
 
 class LanguageMiddleware implements MiddlewareInterface
 {
-    private const SUPPORTED_LANGUAGES = ['de', 'en', 'ua']; // Add more languages here
+    private const SUPPORTED_LANGUAGES = ['de', 'en', 'ua'];
+// Add more languages here
     private const DEFAULT_LANGUAGE = 'de';
     private const FALLBACK_LANGUAGE = 'en';
-
     private LoggerService $logger;
-
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
@@ -26,19 +26,19 @@ class LanguageMiddleware implements MiddlewareInterface
     {
         $uri = $request->getUri()->getPath();
         $parts = explode('/', trim($uri, '/'));
-        
-        if (count($parts) >= 3 && 
-            $parts[0] === 'terminvereinbarung' && 
-            $parts[1] === 'api' && 
-            $parts[2] === 'citizen') {
-            
+
+        if (
+            count($parts) >= 3 &&
+            $parts[0] === 'terminvereinbarung' &&
+            $parts[1] === 'api' &&
+            $parts[2] === 'citizen'
+        ) {
             $language = isset($parts[3]) && in_array($parts[3], self::SUPPORTED_LANGUAGES)
                 ? $parts[3]
                 : self::DEFAULT_LANGUAGE;
-                
             $request = $request->withAttribute('language', $language);
         }
-        
+
         return $handler->handle($request);
     }
 

@@ -2,12 +2,11 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Workstation as Entity;
-use \BO\Zmsentities\Useraccount as UseraccountEntity;
-use \BO\Zmsentities\Scope as ScopeEntity;
-use \BO\Zmsentities\Process as ProcessEntity;
-
-use \BO\Zmsentities\Collection\WorkstationList as Collection;
+use BO\Zmsentities\Workstation as Entity;
+use BO\Zmsentities\Useraccount as UseraccountEntity;
+use BO\Zmsentities\Scope as ScopeEntity;
+use BO\Zmsentities\Process as ProcessEntity;
+use BO\Zmsentities\Collection\WorkstationList as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -39,16 +38,16 @@ class Workstation extends Base
                     $resolveReferences - 1
                 );
             if ($workstation->scope['id']) {
-                $workstation->scope = (new Scope)->readResolvedReferences(
+                $workstation->scope = (new Scope())->readResolvedReferences(
                     new ScopeEntity($workstation->scope),
                     $resolveReferences - 1
                 );
-                $workstation->scope->cluster = (new Cluster)->readByScopeId($workstation->scope->id);
+                $workstation->scope->cluster = (new Cluster())->readByScopeId($workstation->scope->id);
                 $department = (new Department())->readByScopeId($workstation->scope['id']);
                 $workstation->linkList = (new Link())->readByDepartmentId($department->getId());
             }
-            $workstation->process = (new Process)->readByWorkstation($workstation, $resolveReferences - 1);
-            $config = (new Config)->readEntity();
+            $workstation->process = (new Process())->readByWorkstation($workstation, $resolveReferences - 1);
+            $config = (new Config())->readEntity();
             $workstation->support = $config->support;
         }
         return $workstation;
@@ -86,7 +85,7 @@ class Workstation extends Base
     public function readLoggedInListByCluster($clusterId, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
-        $cluster = (new Cluster)->readEntity($clusterId, $resolveReferences);
+        $cluster = (new Cluster())->readEntity($clusterId, $resolveReferences);
         if ($cluster->toProperty()->scopes->get()) {
             foreach ($cluster->scopes as $scope) {
                 $workstationList->addList($this->readLoggedInListByScope($scope['id'], $dateTime, $resolveReferences));
@@ -205,7 +204,7 @@ class Workstation extends Base
         \DateTimeInterface $dateTime
     ) {
         $processEntity = $process;
-        $process = (new Process)->updateEntity(
+        $process = (new Process())->updateEntity(
             $process,
             $dateTime,
             0,

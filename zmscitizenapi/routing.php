@@ -311,6 +311,48 @@ createLanguageRoutes(
 
 /**
  * @swagger
+ * /available-appointments-by-office/:
+ *   get:
+ *     summary: Get available appointments for a specific day grouped by office
+ *     tags:
+ *       - appointments
+ *     parameters:
+ *       - name: date
+ *         description: Date in format YYYY-MM-DD
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: officeId
+ *         description: Comma separated Office IDs
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: serviceIds
+ *         description: Comma separated Service IDs
+ *         in: query
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: List of available appointments grouped by office id
+ *         schema:
+ *           type: object
+ *           properties:
+ *             meta:
+ *               $ref: "schema/metaresult.json"
+ *             data:
+ *               $ref: "schema/citizenapi/availableAppointments.json"
+ */
+createLanguageRoutes(
+    \App::$slim,
+    '/available-appointments-by-office/',
+    '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListByOfficeController',
+    "AvailableAppointmentsListByOfficeController",
+    "get"
+);
+
+/**
+ * @swagger
  * /appointment/:
  *   get:
  *     summary: Get an appointment by process ID

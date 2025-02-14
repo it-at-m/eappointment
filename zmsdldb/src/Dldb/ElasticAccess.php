@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -14,7 +15,6 @@ namespace BO\Dldb;
  */
 class ElasticAccess extends FileAccess
 {
-
     /**
      * The client used to talk to elastic search.
      *
@@ -118,7 +118,7 @@ class ElasticAccess extends FileAccess
         return $this;
     }
 
-  
+
     /**
      *
      * @return self

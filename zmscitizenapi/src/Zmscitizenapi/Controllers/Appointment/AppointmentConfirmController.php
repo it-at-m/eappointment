@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Controllers\Appointment;
@@ -13,7 +14,6 @@ use Psr\Http\Message\ResponseInterface;
 class AppointmentConfirmController extends BaseController
 {
     private AppointmentConfirmService $service;
-
     public function __construct()
     {
         $this->service = new AppointmentConfirmService();
@@ -23,21 +23,12 @@ class AppointmentConfirmController extends BaseController
     {
         $requestErrors = ValidationService::validateServerPostRequest($request);
         if (!empty($requestErrors['errors'])) {
-            return $this->createJsonResponse(
-                $response,
-                $requestErrors,
-                ErrorMessages::get('invalidRequest', $this->language)['statusCode']
-            );
+            return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
         }
 
         $result = $this->service->processConfirm($request->getParsedBody());
-
         return is_array($result) && isset($result['errors'])
-            ? $this->createJsonResponse(
-                $response,
-                $result,
-                ErrorMessages::getHighestStatusCode($result['errors'])
-            )
+            ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
             : $this->createJsonResponse($response, $result->toArray(), 200);
     }
 }

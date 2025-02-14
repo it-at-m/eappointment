@@ -3,16 +3,13 @@
 namespace BO\Zmsdb\Query;
 
 /**
- *
  * @SuppressWarnings(Methods)
  * @SuppressWarnings(Complexity)
  */
 class Process extends Base implements MappingInterface
 {
-
     /**
-     *
-     * @var String TABLE mysql table reference
+     *     * @var String TABLE mysql table reference
      */
     const TABLE = 'buerger';
 
@@ -418,7 +415,6 @@ class Process extends Base implements MappingInterface
 
     /**
      * Identify processes between two dates
-     *
      */
     public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
@@ -513,7 +509,8 @@ class Process extends Base implements MappingInterface
             if ('queued' == $status) {
                 $query->andWith('process.Uhrzeit', '=', '00:00:00')
                     ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.AbholortID', '=', 0);;
+                    ->andWith('process.AbholortID', '=', 0);
+                ;
             }
             if ('confirmed' == $status) {
                 $query
@@ -601,7 +598,6 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-
     public function addConditionCustomTextfield($customText, $exactMatching = false)
     {
         if ($exactMatching) {
@@ -652,7 +648,6 @@ class Process extends Base implements MappingInterface
         $this->query->orderBy('process.IPTimeStamp', 'ASC');
         return $this;
     }
-
 
     public function addValuesNewProcess(\BO\Zmsentities\Process $process, $parentProcess = 0, $childProcessCount = 0)
     {
@@ -825,10 +820,10 @@ class Process extends Base implements MappingInterface
         ) {
             $timeoutTime = $dateTime->format('Y-m-d H:i:s');
             $data['timeoutTime'] = $timeoutTime;
-        } else if ($process->status == 'processing') {
+        } elseif ($process->status == 'processing') {
             $showUpTime = $dateTime->format('Y-m-d H:i:s');
             $data['showUpTime'] = $showUpTime;
-        } else if ($process->status == 'finished') {
+        } elseif ($process->status == 'finished') {
             $finishTime = $dateTime->format('Y-m-d H:i:s');
             $data['finishTime'] = $finishTime;
         }
@@ -840,7 +835,7 @@ class Process extends Base implements MappingInterface
 
             $processingTimeStr = $process->getProcessingTime();
             $previousProcessingTimeInSeconds = 0; // Default to 0 if not set
-            
+
             if (!empty($processingTimeStr)) {
                 // Assume the format is HH:MM:SS and parse it
                 list($hours, $minutes, $seconds) = explode(':', $processingTimeStr);
@@ -852,18 +847,17 @@ class Process extends Base implements MappingInterface
             $totalSeconds = ($interval->days * 24 * 60 * 60) + ($interval->h * 60 * 60) + ($interval->i * 60) + $interval->s;
 
             $totalSeconds += $previousProcessingTimeInSeconds;
-        
+
             $hours = intdiv($totalSeconds, 3600);
             $minutes = intdiv($totalSeconds % 3600, 60);
             $seconds = $totalSeconds % 60;
-        
+
             $data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-        
         } elseif (isset($timeoutTime) && isset($process->showUpTime)) {
             $showUpDateTime = new \DateTime($process->showUpTime);
             $timeoutDateTime = new \DateTime($timeoutTime);
             $processingTimeStr = $process->getProcessingTime();
-            
+
             $previousProcessingTimeInSeconds = 0; // Default to 0 if not set
             if (!empty($processingTimeStr)) {
                 // Assume the format is HH:MM:SS and parse it
@@ -873,19 +867,18 @@ class Process extends Base implements MappingInterface
             }
             $interval = $showUpDateTime->diff($timeoutDateTime);
             $totalSeconds = ($interval->days * 24 * 60 * 60) + ($interval->h * 60 * 60) + ($interval->i * 60) + $interval->s;
-        
+
             $totalSeconds += $previousProcessingTimeInSeconds;
-        
+
             $hours = intdiv($totalSeconds, 3600);
             $minutes = intdiv($totalSeconds % 3600, 60);
             $seconds = $totalSeconds % 60;
-        
+
             $data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
 
         $this->addValues($data);
     }
-
 
     protected function addValuesQueueData($process)
     {

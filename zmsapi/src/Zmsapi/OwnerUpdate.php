@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Owner as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Owner as Query;
 
 class OwnerUpdate extends BaseController
 {
@@ -31,7 +32,7 @@ class OwnerUpdate extends BaseController
         );
 
         $message = Response\Message::create($request);
-        $message->data = (new Query)->updateEntity($owner->id, $entity);
+        $message->data = (new Query())->updateEntity($owner->id, $entity);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

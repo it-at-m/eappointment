@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,11 +7,11 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Ticketprinter as Query;
-use \BO\Zmsdb\Cluster;
-use \BO\Zmsdb\ProcessStatusQueued;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Ticketprinter as Query;
+use BO\Zmsdb\Cluster;
+use BO\Zmsdb\ProcessStatusQueued;
 
 class TicketprinterWaitingnumberByCluster extends BaseController
 {
