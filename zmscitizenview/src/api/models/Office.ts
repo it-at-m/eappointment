@@ -27,6 +27,12 @@ export interface Office {
   address: Address;
   /**
    *
+   * @type {boolean}
+   * @memberof Office
+   */
+  showAlternativeLocations: boolean;
+  /**
+   *
    * @type {string[]}
    * @memberof Office
    */

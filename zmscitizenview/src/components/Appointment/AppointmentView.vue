@@ -470,9 +470,9 @@ watch(currentView, (newCurrentView) => {
 const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
   relations.value.forEach((relation) => {
-    if (relation.serviceId === serviceId) {
+    if (relation.serviceId == serviceId) {
       const foundOffice: OfficeImpl = offices.value.filter((office) => {
-        return office.id === relation.officeId;
+        return office.id == relation.officeId;
       })[0];
 
       if (!providers || providers.includes(foundOffice.id.toString())) {

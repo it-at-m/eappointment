@@ -179,9 +179,8 @@
               {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
               {{ t("clock") }}
               <br />
-              {{ t("estimatedDuration") }}
-              <br />
-              {{ estimatedDuration() }} {{ t("minutes") }}
+              {{ t("estimatedDuration") }} {{ estimatedDuration() }}
+              {{ t("minutes") }}
             </p>
           </div>
           <div
@@ -420,7 +419,7 @@ const handleTimeSlotSelection = (timeSlot: number) => {
 const estimatedDuration = () => {
   let time = 0;
   const serviceProvider = selectedService.value?.providers?.find(
-    (provider) => provider.id === selectedProvider.value?.id
+    (provider) => provider.id == selectedProvider.value?.id
   );
   if (
     serviceProvider &&
@@ -436,7 +435,7 @@ const estimatedDuration = () => {
   if (selectedService.value?.subServices) {
     selectedService.value?.subServices?.forEach((subservice) => {
       const subserviceProvider = subservice.providers?.find(
-        (provider) => provider.id === selectedProvider.value?.id
+        (provider) => provider.id == selectedProvider.value?.id
       );
       if (subserviceProvider && subservice.count && subserviceProvider.slots) {
         time +=
@@ -456,9 +455,9 @@ onMounted(() => {
   if (selectedService.value && selectedService.value.providers) {
     let offices = selectedService.value.providers.filter((office) => {
       if (props.preselectedOfficeId) {
-        return office.id === props.preselectedOfficeId;
+        return office.id == props.preselectedOfficeId;
       } else if (selectedProvider.value) {
-        return office.id === selectedProvider.value.id;
+        return office.id == selectedProvider.value.id;
       }
     });
 
@@ -479,7 +478,11 @@ onMounted(() => {
       selectableProviders.value = selectedService.value.providers;
     }
 
-    if (!props.exclusiveLocation) {
+    if (
+      !props.exclusiveLocation &&
+      ((offices.length > 0 && offices[0].showAlternativeLocations) ||
+        offices.length == 0)
+    ) {
       const otherOffices = selectableProviders.value.filter((office) => {
         if (props.preselectedOfficeId)
           return office.id != props.preselectedOfficeId;

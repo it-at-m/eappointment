@@ -9,6 +9,8 @@ export class OfficeImpl implements Office {
 
   address: Address;
 
+  showAlternativeLocations: boolean;
+
   displayNameAlternatives: string[];
 
   organization: string;
@@ -27,6 +29,7 @@ export class OfficeImpl implements Office {
     id: string,
     name: string,
     address: Address,
+    showAlternativeLocations: boolean,
     displayNameAlternatives: string[],
     organization: string,
     organizationUnit: string | undefined,
@@ -38,6 +41,7 @@ export class OfficeImpl implements Office {
     this.id = id;
     this.name = name;
     this.address = address;
+    this.showAlternativeLocations = showAlternativeLocations;
     this.displayNameAlternatives = displayNameAlternatives;
     this.organization = organization;
     this.organizationUnit = organizationUnit;

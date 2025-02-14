@@ -175,7 +175,7 @@ const setServiceData = (selectedService: ServiceImpl) => {
     service.value.subServices = Object.entries(combinable)
       .map(([subServiceId, providers]) => {
         const subService = services.value.filter(
-          (subService) => parseInt(subService.id) === parseInt(subServiceId)
+          (subService) => parseInt(subService.id) == parseInt(subServiceId)
         );
         if (subService && subService.length === 1) {
           return {
@@ -191,7 +191,7 @@ const setServiceData = (selectedService: ServiceImpl) => {
         if (subService === undefined) return false;
         if (props.preselectedOffiveId) {
           return subService.providers.some(
-            (provider) => provider.id === props.preselectedOffiveId
+            (provider) => provider.id == props.preselectedOffiveId
           );
         }
         return true;
@@ -214,12 +214,6 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
       const foundOffice: OfficeImpl = offices.value.filter((office) => {
         return office.id == relation.officeId;
       })[0];
-      if (
-        props.exclusiveLocation &&
-        foundOffice.id !== props.preselectedOffiveId
-      ) {
-        return;
-      }
 
       if (
         !providers ||

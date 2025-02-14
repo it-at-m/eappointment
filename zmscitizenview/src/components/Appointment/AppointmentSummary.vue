@@ -294,7 +294,7 @@ const rescheduleAppointment = () => emit("rescheduleAppointment");
 const estimatedDuration = () => {
   let time = 0;
   const serviceProvider = selectedService.value?.providers?.find(
-    (provider) => provider.id === selectedProvider.value?.id
+    (provider) => provider.id == selectedProvider.value?.id
   );
   if (
     serviceProvider &&
@@ -310,7 +310,7 @@ const estimatedDuration = () => {
   if (selectedService.value?.subServices) {
     selectedService.value?.subServices?.forEach((subservice) => {
       const subserviceProvider = subservice.providers?.find(
-        (provider) => provider.id === selectedProvider.value?.id
+        (provider) => provider.id == selectedProvider.value?.id
       );
       if (subserviceProvider && subservice.count && subserviceProvider.slots) {
         time +=
