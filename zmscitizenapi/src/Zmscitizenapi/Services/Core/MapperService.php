@@ -303,7 +303,6 @@ class MapperService
             $scope->provider->source = \App::$source_name;
         }
         $processEntity->scope = $scope;
-        $processEntity->scope = $scope;
         if (isset($thinnedProcess->status)) {
             $processEntity->queue = new \stdClass();
             $processEntity->queue->status = $thinnedProcess->status;
