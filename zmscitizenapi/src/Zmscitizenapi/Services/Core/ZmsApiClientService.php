@@ -55,7 +55,7 @@ class ZmsApiClientService
             }
             return $list;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -69,7 +69,7 @@ class ZmsApiClientService
             }
             return $list;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -83,7 +83,7 @@ class ZmsApiClientService
             }
             return $list;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -97,7 +97,7 @@ class ZmsApiClientService
             }
             return $list;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -116,7 +116,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -136,7 +136,7 @@ class ZmsApiClientService
 
             return $collection;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -174,7 +174,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -189,7 +189,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -204,7 +204,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -219,7 +219,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -227,15 +227,14 @@ class ZmsApiClientService
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/";
-            $result = \App::$http->readDeleteResult($url, [], null);
-// Changed to match test expectations
+            $result = \App::$http->readDeleteResult($url, []);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
                 return new Process();
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -250,7 +249,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -265,7 +264,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -280,7 +279,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -297,7 +296,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -314,7 +313,7 @@ class ZmsApiClientService
             }
             return $result;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 }

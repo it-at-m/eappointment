@@ -694,7 +694,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $this->httpMock->expects($this->once())
             ->method('readDeleteResult')
-            ->with('/process/1/test/', [], null)
+            ->with('/process/1/test/', [])
             ->willReturn($result);
 
         $result = ZmsApiClientService::cancelAppointment($process);
