@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Middleware;
@@ -15,48 +16,37 @@ class CorsMiddleware implements MiddlewareInterface
     private const ERROR_CORS = 'corsOriginNotAllowed';
     private array $whitelist = [];
     private LoggerService $logger;
-
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
         $this->whitelist = \App::getCorsAllowedOrigins();
     }
 
-    public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $handler
-    ): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
         try {
             $origin = $request->getHeaderLine('Origin');
-            
-            // Allow requests without Origin header (direct browser access)
+// Allow requests without Origin header (direct browser access)
             if (empty($origin)) {
-                /*$this->logger->logInfo('Direct browser request - no Origin header', [
+/*$this->logger->logInfo('Direct browser request - no Origin header', [
                     'uri' => (string)$request->getUri(),
                     'headers' => $request->getHeaders()
                 ]);*/
                 return $handler->handle($request);
             }
-            
+
             if (!$this->isOriginAllowed($origin)) {
-                $this->logger->logInfo(sprintf(
-                    'CORS blocked - Origin %s not allowed. URI: %s',
-                    $origin,
-                    $request->getUri()
-                ));
-                
+                $this->logger->logInfo(sprintf('CORS blocked - Origin %s not allowed. URI: %s', $origin, $request->getUri()));
                 $response = \App::$slim->getResponseFactory()->createResponse();
                 $language = $request->getAttribute('language');
                 $response = $response->withStatus(ErrorMessages::get(self::ERROR_CORS, $language)['statusCode'])
                     ->withHeader('Content-Type', 'application/json');
-                
                 $response->getBody()->write(json_encode([
                     'errors' => [ErrorMessages::get(self::ERROR_CORS, $language)]
                 ]));
-                
                 return $response;
             }
-    
+
             // Handle preflight OPTIONS requests
             if ($request->getMethod() === 'OPTIONS') {
                 $response = \App::$slim->getResponseFactory()->createResponse(200);
@@ -67,7 +57,7 @@ class CorsMiddleware implements MiddlewareInterface
                     ->withHeader('Access-Control-Allow-Credentials', 'true')
                     ->withHeader('Access-Control-Max-Age', '86400');
             }
-    
+
             $response = $handler->handle($request);
             return $response
                 ->withHeader('Access-Control-Allow-Origin', $origin)

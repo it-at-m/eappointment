@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright MIT
  * derived from akrabat/rka-ip-address-middleware via composer.phar
@@ -6,8 +7,8 @@
 
 namespace BO\Slim\Middleware;
 
-use \Psr\Http\Message\ServerRequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
 

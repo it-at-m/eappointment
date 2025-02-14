@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
+use BO\Zmsentities\Exchange;
 
 abstract class ExchangeSimpleQuery extends Base
 {

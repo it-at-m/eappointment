@@ -36,8 +36,8 @@ class ExchangeClientdepartment extends Base
             0 as withappointment,
             0 as missedwithappointment,
             0 as requestcount
-          FROM '. Department::TABLE .' d
-              LEFT JOIN '. Scope::TABLE .' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
+          FROM ' . Department::TABLE . ' d
+              LEFT JOIN ' . Scope::TABLE . ' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
               LEFT JOIN abrechnung n ON n.`StandortID` = scope.`StandortID`
           WHERE d.`BehoerdenID` = :departmentid AND n.`Datum` BETWEEN :datestart AND :dateend
           GROUP BY date
@@ -53,9 +53,9 @@ class ExchangeClientdepartment extends Base
               SUM(IF(a.`nicht_erschienen`=0 AND a.mitTermin=1,a.AnzahlPersonen,0)) as withappointment,
               SUM(IF(a.`nicht_erschienen`=1 AND a.mitTermin=1,a.AnzahlPersonen,0)) as missedwithappointment,
             	0 as requestcount               
-            FROM '. Department::TABLE .' d
-                LEFT JOIN '. Scope::TABLE .' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.`StandortID` = scope.`StandortID`
+            FROM ' . Department::TABLE . ' d
+                LEFT JOIN ' . Scope::TABLE . ' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
+                LEFT JOIN ' . ProcessStatusArchived::TABLE . ' a ON a.`StandortID` = scope.`StandortID`
             WHERE d.`BehoerdenID` = :departmentid AND a.`Datum` BETWEEN :datestart AND :dateend
               GROUP BY date
     UNION ALL  
@@ -69,10 +69,10 @@ class ExchangeClientdepartment extends Base
               0 as withappointment,
               0 as missedwithappointment,
               COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as requestcount
-          FROM '. Department::TABLE .' as d
-                    LEFT JOIN '. Scope::TABLE .' as scope ON d.`BehoerdenID` = scope.`BehoerdenID`
-                    LEFT JOIN '. ProcessStatusArchived::TABLE .' as a ON scope.`StandortID` = a.`StandortID`
-                    LEFT JOIN '. self::BATABLE .' as ba ON a.BuergerarchivID = ba.BuergerarchivID
+          FROM ' . Department::TABLE . ' as d
+                    LEFT JOIN ' . Scope::TABLE . ' as scope ON d.`BehoerdenID` = scope.`BehoerdenID`
+                    LEFT JOIN ' . ProcessStatusArchived::TABLE . ' as a ON scope.`StandortID` = a.`StandortID`
+                    LEFT JOIN ' . self::BATABLE . ' as ba ON a.BuergerarchivID = ba.BuergerarchivID
                 WHERE
                   d.`BehoerdenID` = :departmentid AND
                   a.nicht_erschienen=0 AND
@@ -92,30 +92,30 @@ class ExchangeClientdepartment extends Base
           periodend,
           o.`Organisationsname` AS organisationname,
           d.`Name` AS description
-      FROM '. Department::TABLE .' AS d
+      FROM ' . Department::TABLE . ' AS d
           INNER JOIN
             (
               SELECT
                 s.`behoerdenid` as departmentid,
                 MIN(s.`datum`) AS periodstart,
                 MAX(s.`datum`) AS periodend
-              FROM '. self::TABLE .' s
+              FROM ' . self::TABLE . ' s
               group by departmentid
             )
           maxAndminDate ON maxAndminDate.`departmentid` = d.`BehoerdenID`
-          LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
+          LEFT JOIN ' . Organisation::TABLE . ' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
       GROUP BY d.`BehoerdenID`
       ORDER BY d.`BehoerdenID` ASC
     ';
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT date
-        FROM '. Department::TABLE .' AS d
+        FROM ' . Department::TABLE . ' AS d
             INNER JOIN (
               SELECT
                 behoerdenid,
                 DATE_FORMAT(`datum`,"%Y-%m") AS date
-              FROM '. self::TABLE .'
+              FROM ' . self::TABLE . '
             ) s ON s.behoerdenid = d.BehoerdenID
         WHERE d.`BehoerdenID` = :departmentid
         GROUP BY date

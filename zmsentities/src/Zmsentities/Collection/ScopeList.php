@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
-use \BO\Zmsentities\Helper\Sorter;
-use \BO\Zmsentities\Scope;
+use BO\Zmsentities\Helper\Sorter;
+use BO\Zmsentities\Scope;
 
 class ScopeList extends Base
 {

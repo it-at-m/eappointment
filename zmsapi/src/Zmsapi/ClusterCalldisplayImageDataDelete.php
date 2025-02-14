@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Cluster as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Cluster as Query;
 
 class ClusterCalldisplayImageDataDelete extends BaseController
 {
@@ -22,13 +23,13 @@ class ClusterCalldisplayImageDataDelete extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('cluster');
-        $cluster = (new Query)->readEntity($args['id']);
+        $cluster = (new Query())->readEntity($args['id']);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
 
         $message = Response\Message::create($request);
-        $result = (new Query)->deleteImage($cluster->id);
+        $result = (new Query())->deleteImage($cluster->id);
         $message->data = $result;
 
         $response = Render::withLastModified($response, time(), '0');

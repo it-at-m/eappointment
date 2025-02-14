@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Provider as Entity;
-use \BO\Zmsentities\Collection\ProviderList as Collection;
+use BO\Zmsentities\Provider as Entity;
+use BO\Zmsentities\Collection\ProviderList as Collection;
 
 class Provider extends Base
 {
@@ -63,7 +63,7 @@ class Provider extends Base
         }
         $query = new Query\Provider(Query\Base::INSERT);
         $additionalData = $entity->getAdditionalData() ?? [];
-        
+
         $query->addValues([
             'source' => $entity->getSource(),
             'id' => $entity->getId(),
@@ -121,7 +121,7 @@ class Provider extends Base
                 'contact__street' => $provider['address']['street'],
                 'contact__streetNumber' => $provider['address']['house_number'],
                 'link' => ('dldb' == $source)
-                    ? 'https://service.berlin.de/standort/'. $provider['id'] .'/'
+                    ? 'https://service.berlin.de/standort/' . $provider['id'] . '/'
                     : ((isset($provider['link'])) ? $provider['link'] : ''),
                 'data' => json_encode($provider)
             ]);

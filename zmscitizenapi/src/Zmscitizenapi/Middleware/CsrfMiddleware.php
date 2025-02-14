@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Middleware;
@@ -14,28 +15,25 @@ class CsrfMiddleware implements MiddlewareInterface
 {
     private const ERROR_TOKEN_MISSING = 'csrfTokenMissing';
     private const ERROR_TOKEN_INVALID = 'csrfTokenInvalid';
-    private const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE']; //Remove POST DELETE and PUT when in use
-    
+    private const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'];
+//Remove POST DELETE and PUT when in use
+
     private int $tokenLength;
     private string $sessionKey;
     private LoggerService $logger;
-
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
         $config = \App::getCsrfConfig();
         $this->tokenLength = $config['tokenLength'];
         $this->sessionKey = $config['sessionKey'];
-        
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
 
-    public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $handler
-    ): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
         try {
             if (in_array($request->getMethod(), self::SAFE_METHODS, true)) {
                 $this->ensureTokenExists();
@@ -47,16 +45,13 @@ class CsrfMiddleware implements MiddlewareInterface
                 $this->logger->logInfo('CSRF token missing', [
                     'uri' => (string)$request->getUri()
                 ]);
-                
                 $response = \App::$slim->getResponseFactory()->createResponse();
                 $language = $request->getAttribute('language');
                 $response = $response->withStatus(ErrorMessages::get(self::ERROR_TOKEN_MISSING, $language)['statusCode'])
-                    ->withHeader('Content-Type', 'application/json');
-                
+                                ->withHeader('Content-Type', 'application/json');
                 $response->getBody()->write(json_encode([
-                    'errors' => [ErrorMessages::get(self::ERROR_TOKEN_MISSING, $language)]
+                                'errors' => [ErrorMessages::get(self::ERROR_TOKEN_MISSING, $language)]
                 ]));
-                
                 return $response;
             }
 
@@ -64,16 +59,13 @@ class CsrfMiddleware implements MiddlewareInterface
                 $this->logger->logInfo('Invalid CSRF token', [
                     'uri' => (string)$request->getUri()
                 ]);
-                
                 $response = \App::$slim->getResponseFactory()->createResponse();
                 $language = $request->getAttribute('language');
                 $response = $response->withStatus(ErrorMessages::get(self::ERROR_TOKEN_INVALID, $language)['statusCode'])
                     ->withHeader('Content-Type', 'application/json');
-                
                 $response->getBody()->write(json_encode([
                     'errors' => [ErrorMessages::get(self::ERROR_TOKEN_INVALID, $language)]
                 ]));
-                
                 return $response;
             }
 
@@ -89,7 +81,7 @@ class CsrfMiddleware implements MiddlewareInterface
         if (strlen($token) !== $this->tokenLength || !ctype_xdigit($token)) {
             return false;
         }
-        
+
         $storedToken = $this->getStoredToken();
         if (empty($storedToken)) {
             return false;

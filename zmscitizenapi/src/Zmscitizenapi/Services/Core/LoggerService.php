@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
@@ -17,7 +18,6 @@ class LoggerService
     private const LOG_OPTIONS = LOG_PID | LOG_PERROR;
     private const CACHE_KEY_PREFIX = 'logger.';
     private const CACHE_COUNTER_KEY = self::CACHE_KEY_PREFIX . 'counter';
-    
     private const SENSITIVE_HEADERS = [
         'authorization',
         'cookie',
@@ -25,14 +25,11 @@ class LoggerService
         'auth-key',
         'authkey'
     ];
-
     private const IMPORTANT_HEADERS = [
         'user-agent'
     ];
-
     protected static bool $logOpened = false;
     private static ?array $config = null;
-
     private static function ensureConfigLoaded(): void
     {
         if (self::$config === null) {
@@ -44,12 +41,7 @@ class LoggerService
     {
         if (!self::$logOpened) {
             self::ensureConfigLoaded();
-            self::$logOpened = @openlog(
-                \App::IDENTIFIER, 
-                self::LOG_OPTIONS,
-                self::LOG_FACILITY
-            ) !== false;
-
+            self::$logOpened = @openlog(\App::IDENTIFIER, self::LOG_OPTIONS, self::LOG_FACILITY) !== false;
             if (!self::$logOpened) {
                 error_log('Failed to open syslog');
             }
@@ -64,12 +56,8 @@ class LoggerService
         }
     }
 
-    public static function logError(
-        \Throwable $exception,
-        ?RequestInterface $request = null,
-        ?ResponseInterface $response = null,
-        array $context = []
-    ): void {
+    public static function logError(\Throwable $exception, ?RequestInterface $request = null, ?ResponseInterface $response = null, array $context = []): void
+    {
         self::ensureConfigLoaded();
         if (!self::checkRateLimit()) {
             return;
@@ -85,7 +73,7 @@ class LoggerService
         if (!self::checkRateLimit()) {
             return;
         }
-    
+
         $message = self::formatMessage($message, $context);
         self::writeLog(LOG_WARNING, $message);
     }
@@ -101,27 +89,22 @@ class LoggerService
         self::writeLog(LOG_INFO, $message);
     }
 
-    public static function logRequest(ServerRequestInterface $request, ResponseInterface $response): void 
+    public static function logRequest(ServerRequestInterface $request, ResponseInterface $response): void
     {
         self::ensureConfigLoaded();
         if (!self::checkRateLimit()) {
             return;
         }
-    
+
         $uri = $request->getUri();
-        // Normalize path by removing double slashes
+// Normalize path by removing double slashes
         $path = preg_replace('#/+#', '/', $uri->getPath());
-    
-        // Filter out query params that look like paths
-        $queryParams = array_filter(
-            $request->getQueryParams(),
-            function ($key, $value) {
+// Filter out query params that look like paths
+        $queryParams = array_filter($request->getQueryParams(), function ($key, $value) {
+
                 // Remove if key or value starts with slash or contains multiple slashes
                 return !preg_match('#^/|//#', $key) && !preg_match('#^/|//#', $value);
-            },
-            ARRAY_FILTER_USE_BOTH
-        );
-    
+        }, ARRAY_FILTER_USE_BOTH);
         $queryParts = [];
         foreach ($queryParams as $key => $value) {
             $encodedKey = urlencode($key);
@@ -131,7 +114,6 @@ class LoggerService
             $queryParts[] = "$encodedKey=$encodedValue";
         }
         $queryString = implode('&', $queryParts);
-    
         $data = [
             'timestamp' => date('Y-m-d H:i:s'),
             'method' => $request->getMethod(),
@@ -139,23 +121,16 @@ class LoggerService
             'status' => $response->getStatusCode(),
             'ip' => ClientIpHelper::getClientIp(),
             'headers' => self::filterSensitiveHeaders($request->getHeaders())
-        ];    
-    
+        ];
         if ($response->getStatusCode() >= 400) {
             $body = '';
             $stream = $response->getBody();
-    
             if ($stream->isSeekable()) {
                 try {
                     $stream->seek(0, SEEK_END);
                     $size = $stream->tell();
                     $stream->rewind();
-    
-                    $maxSafeSize = min(
-                        self::$config['responseLength'],
-                        (int)(self::$config['messageSize'] * 0.75)
-                    );
-    
+                    $maxSafeSize = min(self::$config['responseLength'], (int)(self::$config['messageSize'] * 0.75));
                     if ($size > $maxSafeSize) {
                         $data['response'] = [
                             'error' => 'Response body too large to log',
@@ -164,7 +139,6 @@ class LoggerService
                     } else {
                         $body = (string)$stream;
                         $stream->rewind();
-    
                         try {
                             $decodedBody = json_decode($body, true);
                             if (
@@ -175,7 +149,7 @@ class LoggerService
                                 $englishErrors = [];
                                 foreach ($decodedBody['errors'] as $error) {
                                     if (isset($error['errorCode'])) {
-                                        $englishErrors[] = ErrorMessages::get($error['errorCode'], 'en');
+                                            $englishErrors[] = ErrorMessages::get($error['errorCode'], 'en');
                                     } else {
                                         $englishErrors[] = $error;
                                     }
@@ -184,28 +158,25 @@ class LoggerService
                             }
                         } catch (\Throwable $e) {
                             $data['response'] = [
-                                'error' => 'Failed to decode response body',
-                                'message' => $e->getMessage()
+                            'error' => 'Failed to decode response body',
+                            'message' => $e->getMessage()
                             ];
                         }
                     }
                 } catch (\RuntimeException $e) {
                     $data['response'] = [
-                        'error' => 'Failed to read response body',
-                        'message' => $e->getMessage()
+                    'error' => 'Failed to read response body',
+                    'message' => $e->getMessage()
                     ];
                 }
             } else {
                 $data['response'] = [
-                    'error' => 'Response body not seekable'
+                'error' => 'Response body not seekable'
                 ];
             }
         }
-    
-        self::writeLog(
-            $response->getStatusCode() >= 400 ? LOG_ERR : LOG_INFO,
-            self::encodeJson($data)
-        );
+
+        self::writeLog($response->getStatusCode() >= 400 ? LOG_ERR : LOG_INFO, self::encodeJson($data));
     }
 
     private static function checkRateLimit(): bool
@@ -218,30 +189,27 @@ class LoggerService
         $attempt = 0;
         $key = self::CACHE_COUNTER_KEY;
         $lockKey = $key . '_lock';
-
         while ($attempt < self::$config['maxRetries']) {
             try {
                 if (self::acquireLock($lockKey)) {
                     try {
                         $data = Application::$cache->get($key);
-                        
                         if ($data === null) {
-                            // First log in this window
+                                // First log in this window
                             Application::$cache->set($key, [
                                 'count' => 1,
                                 'timestamp' => time()
                             ], self::$config['cacheTtl']);
-                            return true;
+                                return true;
                         }
 
                         if (!is_array($data) || !isset($data['count'], $data['timestamp'])) {
-                            // Handle corrupted data
+        // Handle corrupted data
                             Application::$cache->delete($key);
                             return true;
                         }
 
                         $count = (int)$data['count'];
-                        
                         if ($count >= self::$config['maxRequests']) {
                             error_log('Log rate limit exceeded');
                             return false;
@@ -250,7 +218,6 @@ class LoggerService
                         // Update the counter atomically
                         $data['count'] = $count + 1;
                         Application::$cache->set($key, $data, self::$config['cacheTtl']);
-                        
                         return true;
                     } finally {
                         self::releaseLock($lockKey);
@@ -259,13 +226,10 @@ class LoggerService
             } catch (\Throwable $e) {
                 error_log('Rate limiting error: ' . $e->getMessage());
             }
-            
+
             $attempt++;
             if ($attempt < self::$config['maxRetries']) {
-                $backoffMs = min(
-                    self::$config['backoffMax'],
-                    (int)(self::$config['backoffMin'] * pow(2, $attempt))
-                );
+                $backoffMs = min(self::$config['backoffMax'], (int)(self::$config['backoffMin'] * pow(2, $attempt)));
                 $jitterMs = random_int(0, (int)($backoffMs * 0.1));
                 usleep(($backoffMs + $jitterMs) * 1000);
             }
@@ -293,7 +257,6 @@ class LoggerService
     {
         // Initialize syslog connection if needed
         self::init();
-
         if (!self::$logOpened) {
             error_log('Syslog not available, falling back to error_log');
             error_log($message);
@@ -317,12 +280,8 @@ class LoggerService
         }
     }
 
-    private static function formatErrorMessage(
-        \Throwable $exception,
-        ?RequestInterface $request,
-        ?ResponseInterface $response,
-        array $context
-    ): string {
+    private static function formatErrorMessage(\Throwable $exception, ?RequestInterface $request, ?ResponseInterface $response, array $context): string
+    {
         $data = [
             'timestamp' => date('Y-m-d H:i:s'),
             'exception' => get_class($exception),
@@ -330,13 +289,8 @@ class LoggerService
             'code' => $exception->getCode(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
-            'trace' => implode("\n", array_slice(
-                explode("\n", $exception->getTraceAsString()),
-                0,
-                self::$config['stackLines']
-            ))
+            'trace' => implode("\n", array_slice(explode("\n", $exception->getTraceAsString()), 0, self::$config['stackLines']))
         ];
-
         if ($request) {
             $data['request'] = [
                 'method' => $request->getMethod(),
@@ -350,46 +304,38 @@ class LoggerService
                 'status' => $response->getStatusCode(),
                 'headers' => self::filterSensitiveHeaders($response->getHeaders())
             ];
-
-            // Only include response body for errors
+// Only include response body for errors
             if ($response->getStatusCode() >= 400) {
                 $body = '';
                 $stream = $response->getBody();
-
                 if ($stream->isSeekable()) {
                     try {
                         $stream->seek(0, SEEK_END);
                         $size = $stream->tell();
                         $stream->rewind();
-
-                        $maxSafeSize = min(
-                            self::$config['responseLength'],
-                            (int)(self::$config['messageSize'] * 0.75)
-                        );
-
+                        $maxSafeSize = min(self::$config['responseLength'], (int)(self::$config['messageSize'] * 0.75));
                         if ($size > $maxSafeSize) {
-                            $data['response']['body'] = [
+                                    $data['response']['body'] = [
                                 'error' => 'Response body too large to log',
                                 'size' => $size
-                            ];
+                                            ];
                         } else {
-                            $body = (string)$stream;
-                            $stream->rewind();
-
-                            $decodedBody = json_decode($body, true);
+                                $body = (string)$stream;
+                                $stream->rewind();
+                                $decodedBody = json_decode($body, true);
                             if (
                                 json_last_error() === JSON_ERROR_NONE &&
-                                isset($decodedBody['errors']) &&
-                                is_array($decodedBody['errors'])
+                                    isset($decodedBody['errors']) &&
+                                    is_array($decodedBody['errors'])
                             ) {
-                                // Only log if response contains an errors array
+        // Only log if response contains an errors array
                                 $data['response']['body'] = $decodedBody;
                             }
                         }
                     } catch (\Throwable $e) {
                         $data['response']['body'] = [
-                            'error' => 'Failed to decode response body',
-                            'message' => $e->getMessage()
+                        'error' => 'Failed to decode response body',
+                        'message' => $e->getMessage()
                         ];
                     }
                 } else {
@@ -413,7 +359,6 @@ class LoggerService
             'timestamp' => date('Y-m-d H:i:s'),
             'message' => $message
         ];
-
         if ($context) {
             $data['context'] = $context;
         }
@@ -438,9 +383,10 @@ class LoggerService
     private static function encodeJson(array $data): string
     {
         try {
-            $json = json_encode($data, 
-                JSON_UNESCAPED_SLASHES | 
-                JSON_UNESCAPED_UNICODE | 
+            $json = json_encode(
+                $data,
+                JSON_UNESCAPED_SLASHES |
+                JSON_UNESCAPED_UNICODE |
                 JSON_INVALID_UTF8_SUBSTITUTE
             );
             if ($json === false) {

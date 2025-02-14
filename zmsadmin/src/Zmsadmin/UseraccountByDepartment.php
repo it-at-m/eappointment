@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -26,7 +27,7 @@ class UseraccountByDepartment extends BaseController
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $department = \App::$http->readGetResult("/department/$departmentId/")->getEntity();
 
-        $useraccountList = new Collection;
+        $useraccountList = new Collection();
         $useraccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
         $workstationList = \App::$http->readGetResult("/department/$departmentId/workstation/")->getCollection();
 

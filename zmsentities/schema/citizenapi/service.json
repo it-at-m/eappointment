@@ -26,6 +26,10 @@
         "items": {
           "type": ["integer", "null"]
         }
+      },
+      "public": {
+        "type": ["boolean", "null"],
+        "description": "Indicates whether the service is publicly visible"
       }
     },
     "required": ["id", "name"],

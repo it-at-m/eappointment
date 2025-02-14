@@ -2,11 +2,10 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
+use BO\Zmsentities\Exchange;
 
 class ExchangeUseraccount extends Base
 {
-
     public function readEntity()
     {
         $entity = new Exchange();
