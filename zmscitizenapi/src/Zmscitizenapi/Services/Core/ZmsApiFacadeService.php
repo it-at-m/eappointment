@@ -98,7 +98,7 @@ class ZmsApiFacadeService
 
     public static function getServices(bool $showUnpublished = false): ServiceList|array
     {
-        $requestList = ZmsApiClientService::getServices($showUnpublished) ?? new RequestList();
+        $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $services = [];
         foreach ($requestList as $request) {
             $additionalData = $request->getAdditionalData();
@@ -547,9 +547,9 @@ class ZmsApiFacadeService
         return $clientUpdateResult;
     }
 
-    public static function sendCancelationEmail(Process $confirmedProcess): Process|array
+    public static function sendCancellationEmail(Process $confirmedProcess): Process|array
     {
-        $clientUpdateResult = ZmsApiClientService::sendCancelationEmail($confirmedProcess);
+        $clientUpdateResult = ZmsApiClientService::sendCancellationEmail($confirmedProcess);
         if (isset($clientUpdateResult['error'])) {
             return $clientUpdateResult;
         }

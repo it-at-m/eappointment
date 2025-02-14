@@ -268,7 +268,7 @@ class ZmsApiClientService
         }
     }
 
-    public static function sendCancelationEmail(Process $process): Process
+    public static function sendCancellationEmail(Process $process): Process
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/delete/mail/";

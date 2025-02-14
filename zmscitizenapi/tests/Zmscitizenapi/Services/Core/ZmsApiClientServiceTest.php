@@ -844,7 +844,7 @@ class ZmsApiClientServiceTest extends TestCase
             ->with('/process/1/test/delete/mail/', $this->isInstanceOf(Process::class))
             ->willReturn($result);
 
-        $result = ZmsApiClientService::sendCancelationEmail($process);
+        $result = ZmsApiClientService::sendCancellationEmail($process);
         $this->assertInstanceOf(Process::class, $result);
     }
 
@@ -861,7 +861,7 @@ class ZmsApiClientServiceTest extends TestCase
             ->method('readPostResult')
             ->willReturn($result);
 
-        $result = ZmsApiClientService::sendCancelationEmail($process);
+        $result = ZmsApiClientService::sendCancellationEmail($process);
         $this->assertInstanceOf(Process::class, $result);
         $this->assertEmpty($result->id);
     }
@@ -876,7 +876,7 @@ class ZmsApiClientServiceTest extends TestCase
             ->willThrowException(new \Exception('Test error'));
 
         $this->expectException(\RuntimeException::class);
-        ZmsApiClientService::sendCancelationEmail($process);
+        ZmsApiClientService::sendCancellationEmail($process);
     }
 
     public function testGetProcessByIdSuccess(): void
