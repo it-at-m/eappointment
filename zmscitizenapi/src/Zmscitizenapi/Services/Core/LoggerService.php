@@ -36,7 +36,7 @@ class LoggerService
         $attempt = 0;
         $key = self::CACHE_COUNTER_KEY;
         $lockKey = $key . '_lock';
-        
+
         while ($attempt < 3) { // Max retries
             try {
                 if (!Application::$cache->has($lockKey)) {
@@ -137,7 +137,7 @@ class LoggerService
 
         $uri = $request->getUri();
         $path = preg_replace('#/+#', '/', $uri->getPath());
-        
+
         // Filter out query params that look like paths
         $queryParams = array_filter($request->getQueryParams(), function ($key, $value) {
             return !preg_match('#^/|//#', $key) && !preg_match('#^/|//#', $value);

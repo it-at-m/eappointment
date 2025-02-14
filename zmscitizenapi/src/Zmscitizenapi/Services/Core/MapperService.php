@@ -358,6 +358,6 @@ class MapperService
      */
     public static function providerToThinnedProvider(Provider $provider): ThinnedProvider
     {
-        return new ThinnedProvider(id: isset($provider->id) ? (int) $provider->id : null, name: isset($provider->name) ? $provider->name : null, source: isset($provider->source) ? $provider->source : null, lon: isset($provider->data['geo']['lon']) ? (float) $provider->data['geo']['lon'] : null, lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null, contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null, );
+        return new ThinnedProvider(id: isset($provider->id) ? (int) $provider->id : null, name: isset($provider->name) ? $provider->name : null, source: isset($provider->source) ? $provider->source : null, lon: isset($provider->data['geo']['lon']) ? (float) $provider->data['geo']['lon'] : null, lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null, contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null);
     }
 }
