@@ -11,6 +11,7 @@ use BO\Zmsstatistic\Helper\Download;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class RequestReport extends Base
 {
@@ -111,22 +112,20 @@ class RequestReport extends Base
 
     
         $sheet->fromArray($reportData, null, 'A' . $rowIndex);
-
-    
         $lastColumn = $sheet->getHighestColumn();
-        $sheet->setCellValue('A21', "Last Column: " . $lastColumn);
         $lastRow = $sheet->getHighestRow();
-        $sheet->setCellValue('A22', "Last Row: " . $lastRow);
         $sumRowIndex = $lastRow + 2;
 
         $sumRow = ["Summe", "", ""]; 
-
-    
+        
         $sumRow[2] = "=SUM(C{$firstDataRow}:C{$lastRow})";
 
-        for ($col = 'D'; $col <= $lastColumn; $col++) {
-            $sumRow[] = "=SUM({$col}{$firstDataRow}:{$col}{$lastRow})";
-        }
+        $lastColumnIndex = Coordinate::columnIndexFromString($lastColumn);
+
+        for ($colIndex = 4; $colIndex <= $lastColumnIndex; $colIndex++) {
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $sumRow[] = "=SUM({$colLetter}{$firstDataRow}:{$colLetter}{$lastRow})";
+        } 
 
         $sheet->fromArray($sumRow, null, 'A' . $sumRowIndex);
     }
