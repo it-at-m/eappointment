@@ -57,6 +57,7 @@ jobs:
           from pathlib import Path
           from jsonschema import validators
           from typing import Dict, Any, Set, Union, List, Tuple
+          from jinja2 import Template 
 
           def sanitize_name(name: str, prefix: str = '') -> str:
               """Sanitize name for Mermaid compatibility."""
