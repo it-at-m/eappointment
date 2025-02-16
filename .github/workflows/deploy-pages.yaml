@@ -62,10 +62,12 @@ jobs:
           from pathlib import Path
           from jsonschema import validators
           from typing import Dict, Any, Set, Union
+          from jinja2 import Template
 
           def sanitize_name(name: str) -> str:
               """Sanitize name for Mermaid compatibility."""
-              return name.replace('-', '_').replace(' ', '_')
+              # Prefix class names to avoid conflicts with Mermaid keywords
+              return 'model_' + name.replace('-', '_').replace(' ', '_')
 
           def get_type_name(type_def: Union[str, list, dict]) -> str:
               """Convert JSON Schema type to Mermaid type."""
@@ -127,7 +129,7 @@ jobs:
                   classes.append('\n'.join(class_def))
 
               # Start processing from root
-              process_schema(schema, root_name)
+              process_schema(schema, sanitize_name(root_name))
               
               # Combine all elements
               mermaid = ['classDiagram']
@@ -136,35 +138,6 @@ jobs:
               
               return '\n'.join(mermaid)
 
-          def process_schema_files(directory: str, prefix: str = '') -> None:
-              """Process all JSON Schema files in a directory."""
-              diagrams_dir = Path('public/diagrams')
-              diagrams_dir.mkdir(parents=True, exist_ok=True)
-              
-              for file in Path(directory).glob('*.json'):
-                  try:
-                      # Load and validate schema
-                      with open(file) as f:
-                          schema = json.load(f)
-                      
-                      # Validate schema
-                      validators.Draft7Validator.check_schema(schema)
-                      
-                      # Convert to Mermaid
-                      mermaid = convert_to_mermaid(schema, sanitize_name(file.stem))
-                      
-                      # Save diagram
-                      output_path = diagrams_dir / f'{prefix}{file.stem}.mmd'
-                      output_path.write_text(mermaid)
-                      print(f'Successfully processed {file}')
-                  except Exception as e:
-                      print(f'Error processing {file}: {e}')
-
-          # Process main API schema
-          process_schema_files('zmsentities/schema')
-          # Process citizen API schema
-          process_schema_files('zmsentities/schema/citizenapi', 'citizen_')
-          EOL
       - name: Generate schema diagrams
         run: python convert_schema.py
 
