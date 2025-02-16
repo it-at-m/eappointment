@@ -40,11 +40,6 @@ jobs:
       - name: Create public directory
         run: mkdir -p public/diagrams
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -52,19 +47,124 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install jsonschema
           pip install jsonschema jinja2
 
       - name: Create schema converter script
         run: |
-          cat > create_pages.py <<'EOL'
+          cat > convert_schema.py <<'EOL'
           import json
           import os
           from pathlib import Path
+          from jsonschema import validators
+          from typing import Dict, Any, Set, Union
           from jinja2 import Template
 
+          def sanitize_name(name: str) -> str:
+              """Sanitize name for Mermaid compatibility."""
+              # Prefix class names to avoid conflicts with Mermaid keywords
+              return 'model_' + name.replace('-', '_').replace(' ', '_')
+
+          def get_type_name(type_def: Union[str, list, dict]) -> str:
+              """Convert JSON Schema type to Mermaid type."""
+              if isinstance(type_def, list):
+                  return 'any'  # Convert union types to 'any'
+              if isinstance(type_def, dict):
+                  return type_def.get('type', 'any')
+              return type_def
+
+          def convert_to_mermaid(schema: Dict[str, Any], root_name: str) -> str:
+              """Convert JSON Schema to Mermaid class diagram."""
+              classes = []
+              relationships = []
+              processed = set()  # Track processed schemas to avoid duplicates
+
+              def process_schema(schema: Dict[str, Any], class_name: str) -> None:
+                  """Process a schema object and its properties."""
+                  if class_name in processed:
+                      return
+                  processed.add(class_name)
+                  
+                  # Start class definition
+                  class_def = [f'class {class_name} {{']
+                  
+                  # Process properties
+                  properties = schema.get('properties', {})
+                  required = schema.get('required', [])
+                  
+                  # Handle empty classes
+                  if not properties:
+                      class_def.append('    +any _empty')
+                  
+                  for prop_name, prop_schema in properties.items():
+                      prop_type = get_type_name(prop_schema.get('type', 'any'))
+                      is_required = prop_name in required
+                      
+                      # Handle different property types
+                      if prop_type == 'array':
+                          items = prop_schema.get('items', {})
+                          if items.get('type') == 'object':
+                              # Create a new class for array items
+                              item_class_name = f'{class_name}_{sanitize_name(prop_name)}_Item'
+                              relationships.append(f'{class_name} --> "*" {item_class_name}')
+                              process_schema(items, item_class_name)
+                              class_def.append(f'    +{item_class_name}[] {prop_name}{"" if is_required else "?"}')
+                          else:
+                              item_type = get_type_name(items.get('type', 'any'))
+                              class_def.append(f'    +{item_type}[] {prop_name}{"" if is_required else "?"}')
+                      elif prop_type == 'object':
+                          # Create a new class for nested objects
+                          nested_class_name = f'{class_name}_{sanitize_name(prop_name)}'
+                          relationships.append(f'{class_name} --> {nested_class_name}')
+                          process_schema(prop_schema, nested_class_name)
+                          class_def.append(f'    +{nested_class_name} {prop_name}{"" if is_required else "?"}')
+                      else:
+                          class_def.append(f'    +{prop_type} {prop_name}{"" if is_required else "?"}')
+                  
+                  class_def.append('}')
+                  classes.append('\n'.join(class_def))
+
+              # Start processing from root
+              process_schema(schema, sanitize_name(root_name))
+              
+              # Combine all elements
+              mermaid = ['classDiagram']
+              mermaid.extend(classes)
+              mermaid.extend(relationships)
+              
+              return '\n'.join(mermaid)
+
+          def process_schema_files(directory: str, prefix: str = '') -> None:
+              """Process all JSON Schema files in a directory."""
+              diagrams_dir = Path('public/diagrams')
+              diagrams_dir.mkdir(parents=True, exist_ok=True)
+              
+              schema_dir = Path(directory)
+              if not schema_dir.exists():
+                  print(f"Warning: Schema directory {directory} does not exist")
+                  return
+              
+              for file in schema_dir.glob('*.json'):
+                  try:
+                      print(f"Processing {file}...")
+                      # Load and validate schema
+                      with open(file) as f:
+                          schema = json.load(f)
+                      
+                      # Validate schema
+                      validators.Draft7Validator.check_schema(schema)
+                      
+                      # Convert to Mermaid
+                      mermaid = convert_to_mermaid(schema, file.stem)
+                      
+                      # Save diagram
+                      output_path = diagrams_dir / f'{prefix}{file.stem}.mmd'
+                      output_path.write_text(mermaid)
+                      print(f'Successfully processed {file} -> {output_path}')
+                  except Exception as e:
+                      print(f'Error processing {file}: {e}')
+
           def create_pages(diagrams_dir: Path) -> None:
-              """Create index page with Mermaid diagrams."""
+              """Create both index and debug pages."""
               # Get main schema diagrams
               main_schemas = []
               for file in sorted(diagrams_dir.glob('*.mmd')):
@@ -83,7 +183,7 @@ jobs:
                   })
               
               # Create index.html
-              template = Template("""
+              index_template = Template("""
           <!DOCTYPE html>
           <html>
             <head>
@@ -136,23 +236,8 @@ jobs:
           </html>
           """)
               
-              # Write index page
-              diagrams_dir.joinpath('index.html').write_text(
-                  template.render(
-                      main_schemas=main_schemas,
-                      citizen_schemas=citizen_schemas
-                  )
-              )
-
-          if __name__ == '__main__':
-              create_pages(Path('public/diagrams'))
-          EOL
-
-          python create_pages.py
-
-      - name: Create debug page
-        run: |
-          cat > public/diagrams/debug.html <<EOL
+              # Create debug.html
+              debug_template = Template("""
           <!DOCTYPE html>
           <html>
             <head>
@@ -167,6 +252,11 @@ jobs:
                 });
               </script>
               <style>
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                  line-height: 1.6;
+                  padding: 2rem;
+                }
                 .diagram {
                   margin: 2rem 0;
                   padding: 1rem;
@@ -180,45 +270,40 @@ jobs:
                   white-space: pre;
                   font-family: monospace;
                 }
+                .error {
+                  color: #cf222e;
+                  background: #ffebe9;
+                  padding: 1rem;
+                  margin: 1rem 0;
+                  border-radius: 6px;
+                }
               </style>
             </head>
             <body>
               <h1>Debug: Mermaid Diagrams</h1>
               
               <h2>Main API Schema</h2>
-          EOL
+              <div id="main-schemas">
+                {% for schema in main_schemas %}
+                <div class="diagram">
+                  <h3>{{ schema.name }}</h3>
+                  <div class="source">Source:<br>{{ schema.source }}</div>
+                  <pre class="mermaid">{{ schema.source }}</pre>
+                </div>
+                {% endfor %}
+              </div>
 
-          # Add main schema diagrams
-          for f in public/diagrams/*.mmd; do
-            if [[ ! $f =~ citizen_ ]]; then
-              echo "<div class='diagram'>" >> public/diagrams/debug.html
-              echo "<h3>$(basename "$f" .mmd)</h3>" >> public/diagrams/debug.html
-              echo "<div class='source'>Source:<br>$(cat "$f")</div>" >> public/diagrams/debug.html
-              echo "<pre class='mermaid'>" >> public/diagrams/debug.html
-              cat "$f" >> public/diagrams/debug.html
-              echo "</pre>" >> public/diagrams/debug.html
-              echo "</div>" >> public/diagrams/debug.html
-            fi
-          done
-
-          # Add citizen schema diagrams
-          cat >> public/diagrams/debug.html <<EOL
-              
               <h2>Citizen API Schema</h2>
-          EOL
+              <div id="citizen-schemas">
+                {% for schema in citizen_schemas %}
+                <div class="diagram">
+                  <h3>{{ schema.name }}</h3>
+                  <div class="source">Source:<br>{{ schema.source }}</div>
+                  <pre class="mermaid">{{ schema.source }}</pre>
+                </div>
+                {% endfor %}
+              </div>
 
-          for f in public/diagrams/citizen_*.mmd; do
-            echo "<div class='diagram'>" >> public/diagrams/debug.html
-            echo "<h3>$(basename "$f" .mmd | sed 's/citizen_//')</h3>" >> public/diagrams/debug.html
-            echo "<div class='source'>Source:<br>$(cat "$f")</div>" >> public/diagrams/debug.html
-            echo "<pre class='mermaid'>" >> public/diagrams/debug.html
-            cat "$f" >> public/diagrams/debug.html
-            echo "</pre>" >> public/diagrams/debug.html
-            echo "</div>" >> public/diagrams/debug.html
-          done
-
-          # Close HTML
-          cat >> public/diagrams/debug.html <<EOL
               <script>
                 // Log any Mermaid errors
                 window.onerror = function(msg, url, lineNo, columnNo, error) {
@@ -234,103 +319,35 @@ jobs:
               </script>
             </body>
           </html>
-          EOL
-
-
-      - name: Create diagrams index page
-        run: |
-          cat > public/diagrams/index.html <<EOL
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>API Schema Class Diagrams</title>
-              <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-              <script>
-                mermaid.initialize({
-                  startOnLoad: true,
-                  securityLevel: 'loose',
-                  logLevel: 'debug'
-                });
-              </script>
-              <style>
-                body {
-                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-                  line-height: 1.6;
-                  padding: 2rem;
-                }
-                .diagram {
-                  margin: 2rem 0;
-                  padding: 1rem;
-                  border: 1px solid #eaecef;
-                  border-radius: 6px;
-                }
-              </style>
-            </head>
-            <body>
-              <h1>API Schema Class Diagrams</h1>
+          """)
               
-              <h2>Main API Schema</h2>
-              <div id="main-schemas">
+              # Write pages
+              diagrams_dir.joinpath('index.html').write_text(
+                  index_template.render(
+                      main_schemas=main_schemas,
+                      citizen_schemas=citizen_schemas
+                  )
+              )
+              diagrams_dir.joinpath('debug.html').write_text(
+                  debug_template.render(
+                      main_schemas=main_schemas,
+                      citizen_schemas=citizen_schemas
+                  )
+              )
+
+          if __name__ == '__main__':
+              print("Starting schema conversion...")
+              # Process main API schema
+              process_schema_files('zmsentities/schema')
+              # Process citizen API schema
+              process_schema_files('zmsentities/schema/citizenapi', 'citizen_')
+              # Create HTML pages
+              create_pages(Path('public/diagrams'))
+              print("Schema conversion complete")
           EOL
 
-          # Add main schema diagrams
-          for f in public/diagrams/*.mmd; do
-            if [[ ! \$f =~ citizen_ ]]; then
-              echo "<div class='diagram'>" >> public/diagrams/index.html
-              echo "<h3>\$(basename "\$f" .mmd)</h3>" >> public/diagrams/index.html
-              echo "<pre class='mermaid'>" >> public/diagrams/index.html
-              cat "\$f" >> public/diagrams/index.html
-              echo "</pre>" >> public/diagrams/index.html
-              echo "</div>" >> public/diagrams/index.html
-            fi
-          done
-
-          cat >> public/diagrams/index.html <<EOL
-              </div>
-
-              <h2>Citizen API Schema</h2>
-              <div id="citizen-schemas">
-          EOL
-
-          # Add citizen schema diagrams
-          for f in public/diagrams/citizen_*.mmd; do
-            echo "<div class='diagram'>" >> public/diagrams/index.html
-            echo "<h3>\$(basename "\$f" .mmd | sed 's/citizen_//')</h3>" >> public/diagrams/index.html
-            echo "<pre class='mermaid'>" >> public/diagrams/index.html
-            cat "\$f" >> public/diagrams/index.html
-            echo "</pre>" >> public/diagrams/index.html
-            echo "</div>" >> public/diagrams/index.html
-          done
-
-          cat >> public/diagrams/index.html <<EOL
-              </div>
-            </body>
-          </html>
-          EOL
-
-
-      - name: Download coverage reports
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.coverage_artifact }}
-          path: public
-
-      - name: Download API docs
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.api_docs_artifact }}
-          path: public
-
-      - name: Download security reports
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.security_artifact }}
-          path: public
-
-      - name: Debug - List directory structure
-        run: |
-          echo "=== Directory Structure ==="
-          ls -R public/
+      - name: Generate schema diagrams and pages
+        run: python convert_schema.py
 
       - name: Create index page
         run: |
@@ -387,10 +404,6 @@ jobs:
                   text-decoration: underline;
                 }
               </style>
-              <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-              <script>
-                mermaid.initialize({ startOnLoad: true });
-              </script>
             </head>
             <body>
               <h1>ZMS eAppointment Technical Documentation</h1>
@@ -452,61 +465,28 @@ jobs:
           </html>
           EOL
 
-          # Create diagrams index page
-          cat > public/diagrams/index.html <<'EOL'
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>API Schema Class Diagrams</title>
-              <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-              <script>
-                mermaid.initialize({ startOnLoad: true });
-              </script>
-              <style>
-                body {
-                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-                  line-height: 1.6;
-                  padding: 2rem;
-                }
-                .diagram {
-                  margin: 2rem 0;
-                  padding: 1rem;
-                  border: 1px solid #eaecef;
-                  border-radius: 6px;
-                }
-              </style>
-            </head>
-            <body>
-              <h1>API Schema Class Diagrams</h1>
-              
-              <h2>Main API Schema</h2>
-              <div id="main-schemas">
-                $(for f in public/diagrams/*.mmd; do
-                  if [[ ! $f =~ citizen_ ]]; then
-                    echo "<div class='diagram'>"
-                    echo "<h3>$(basename "$f" .mmd)</h3>"
-                    echo "<pre class='mermaid'>"
-                    cat "$f"
-                    echo "</pre>"
-                    echo "</div>"
-                  fi
-                done)
-              </div>
+      - name: Download coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.coverage_artifact }}
+          path: public
 
-              <h2>Citizen API Schema</h2>
-              <div id="citizen-schemas">
-                $(for f in public/diagrams/citizen_*.mmd; do
-                  echo "<div class='diagram'>"
-                  echo "<h3>$(basename "$f" .mmd | sed 's/citizen_//')</h3>"
-                  echo "<pre class='mermaid'>"
-                  cat "$f"
-                  echo "</pre>"
-                  echo "</div>"
-                done)
-              </div>
-            </body>
-          </html>
-          EOL
+      - name: Download API docs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.api_docs_artifact }}
+          path: public
+
+      - name: Download security reports
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.security_artifact }}
+          path: public
+
+      - name: Debug - List directory structure
+        run: |
+          echo "=== Directory Structure ==="
+          ls -R public/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
