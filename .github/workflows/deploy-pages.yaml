@@ -45,22 +45,116 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Install dependencies
         run: |
-          npm install -g json-schema-to-mermaid
+          pip install jsonschema
+
+      - name: Create schema converter script
+        run: |
+          cat > convert_schema.py <<'EOL'
+          import json
+          import os
+          from pathlib import Path
+          from jsonschema import validators
+          from typing import Dict, Any, Set
+
+          def sanitize_name(name: str) -> str:
+              """Sanitize name for Mermaid compatibility."""
+              return name.replace('-', '_').replace(' ', '_')
+
+          def convert_to_mermaid(schema: Dict[str, Any], root_name: str) -> str:
+              """Convert JSON Schema to Mermaid class diagram."""
+              classes = []
+              relationships = []
+              processed = set()  # Track processed schemas to avoid duplicates
+
+              def process_schema(schema: Dict[str, Any], class_name: str) -> None:
+                  """Process a schema object and its properties."""
+                  if class_name in processed:
+                      return
+                  processed.add(class_name)
+                  
+                  # Start class definition
+                  class_def = [f'class {class_name} {{']
+                  
+                  # Process properties
+                  properties = schema.get('properties', {})
+                  required = schema.get('required', [])
+                  
+                  for prop_name, prop_schema in properties.items():
+                      prop_type = prop_schema.get('type', 'any')
+                      is_required = prop_name in required
+                      
+                      # Handle different property types
+                      if prop_type == 'array':
+                          items = prop_schema.get('items', {})
+                          if items.get('type') == 'object':
+                              # Create a new class for array items
+                              item_class_name = f'{class_name}_{sanitize_name(prop_name)}_Item'
+                              relationships.append(f'{class_name} --> "*" {item_class_name}')
+                              process_schema(items, item_class_name)
+                              class_def.append(f'  +{item_class_name}[] {prop_name}{"" if is_required else "?"}')
+                          else:
+                              item_type = items.get('type', 'any')
+                              class_def.append(f'  +{item_type}[] {prop_name}{"" if is_required else "?"}')
+                      elif prop_type == 'object':
+                          # Create a new class for nested objects
+                          nested_class_name = f'{class_name}_{sanitize_name(prop_name)}'
+                          relationships.append(f'{class_name} --> {nested_class_name}')
+                          process_schema(prop_schema, nested_class_name)
+                          class_def.append(f'  +{nested_class_name} {prop_name}{"" if is_required else "?"}')
+                      else:
+                          class_def.append(f'  +{prop_type} {prop_name}{"" if is_required else "?"}')
+                  
+                  class_def.append('}')
+                  classes.append('\n'.join(class_def))
+
+              # Start processing from root
+              process_schema(schema, root_name)
+              
+              # Combine all elements
+              mermaid = ['classDiagram']
+              mermaid.extend(classes)
+              mermaid.extend(relationships)
+              
+              return '\n'.join(mermaid)
+
+          def process_schema_files(directory: str, prefix: str = '') -> None:
+              """Process all JSON Schema files in a directory."""
+              os.makedirs('public/diagrams', exist_ok=True)
+              
+              for file in Path(directory).glob('*.json'):
+                  try:
+                      # Load and validate schema
+                      with open(file) as f:
+                          schema = json.load(f)
+                      
+                      # Validate schema
+                      validators.Draft7Validator.check_schema(schema)
+                      
+                      # Convert to Mermaid
+                      mermaid = convert_to_mermaid(schema, sanitize_name(file.stem))
+                      
+                      # Save diagram
+                      output_path = Path(f'public/diagrams/{prefix}{file.stem}.mmd')
+                      output_path.write_text(mermaid)
+                      print(f'Successfully processed {file}')
+                  except Exception as e:
+                      print(f'Error processing {file}: {e}')
+
+          # Process main API schema
+          process_schema_files('zmsentities/schema')
+          # Process citizen API schema
+          process_schema_files('zmsentities/schema/citizenapi', 'citizen_')
+          EOL
 
       - name: Generate schema diagrams
-        run: |
-          # Generate diagram for main API schema
-          for f in zmsentities/schema/*.json; do
-            filename=$(basename "$f" .json)
-            json-schema-to-mermaid "$f" > "public/diagrams/${filename}.mmd"
-          done
-
-          # Generate diagram for citizen API schema
-          for f in zmsentities/schema/citizenapi/*.json; do
-            filename=$(basename "$f" .json)
-            json-schema-to-mermaid "$f" > "public/diagrams/citizen_${filename}.mmd"
+        run: python convert_schema.py
           done
 
       - name: Download coverage reports
