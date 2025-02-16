@@ -182,28 +182,7 @@ jobs:
               <title>{{ title }}</title>
               <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
               <script>
-                mermaid.initialize({
-                  startOnLoad: true,
-                  securityLevel: 'loose',
-                  logLevel: 'debug',
-                  maxTextSize: 900000,
-                  theme: 'default',
-                  flowchart: {
-                    useMaxWidth: false,
-                    htmlLabels: true,
-                    padding: 20
-                  },
-                  class: {
-                    padding: 20,
-                    useMaxWidth: true,
-                    labelSpacing: 10,
-                    defaultRenderer: 'dagre',
-                    curve: 'basis',
-                    nodeSpacing: 100,
-                    rankSpacing: 100,
-                    fontSize: 14
-                  }
-                });
+
               </script>
               <style>
                 body {
