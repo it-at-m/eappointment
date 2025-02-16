@@ -132,7 +132,7 @@ jobs:
               <title>API Schema Class Diagrams</title>
               <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
               <script>
-                mermaid.initialize({ startOnLoad: true });
+                mermaid.initialize({ startOnLoad: true, theme: 'default' });
               </script>
               <style>
                 body {
@@ -145,6 +145,10 @@ jobs:
                   padding: 1rem;
                   border: 1px solid #eaecef;
                   border-radius: 6px;
+                }
+                pre.mermaid {
+                  background: #f6f8fa;
+                  padding: 1rem;
                 }
               </style>
             </head>
