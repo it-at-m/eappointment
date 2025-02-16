@@ -421,7 +421,7 @@ jobs:
         run: python convert_schema.py
 
       - name: Upload diagrams artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: schema-diagrams
           path: public/diagrams/
