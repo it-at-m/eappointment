@@ -154,241 +154,255 @@ jobs:
               
               return ''.join(mermaid)
 
-          def create_diagram_page(title: str, mermaid: str) -> str:
-              """Create HTML page with diagram."""
-              template = Template("""<!DOCTYPE html>
-          <html>
-            <head>
-              <title>{{ title }}</title>
-              <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-              <script>
-                mermaid.initialize({
-                  startOnLoad: true,
-                  securityLevel: 'loose',
-                  logLevel: 'debug',
-                  maxTextSize: 900000,
-                  theme: 'default',
-                  flowchart: {
-                    useMaxWidth: false,
-                    htmlLabels: true,
-                    padding: 20
-                  },
-                  class: {
-                    padding: 20,
-                    useMaxWidth: true,
-                    labelSpacing: 10,
-                    defaultRenderer: 'dagre',
-                    curve: 'basis',
-                    nodeSpacing: 100,
-                    rankSpacing: 100,
-                    fontSize: 14
-                  }
-                });
-              </script>
-              <style>
-                body {
-                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-                  line-height: 1.6;
-                  margin: 0;
-                  padding: 0;
-                  height: 100vh;
-                  display: flex;
-                  flex-direction: column;
-                }
-                h1 {
-                  margin: 0;
-                  padding: 1rem;
-                  background: #f6f8fa;
-                  border-bottom: 1px solid #eaecef;
-                }
-                .diagram-container {
-                  flex: 1;
-                  position: relative;
-                  overflow: hidden;
-                }
-                .diagram {
-                  position: absolute;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%, -50%) scale(0.6);
-                  transform-origin: center center;
-                  cursor: grab;
-                  min-width: 100%;
-                  min-height: 100%;
-                }
-                .diagram:active {
-                  cursor: grabbing;
-                }
-                .controls {
-                  position: fixed;
-                  top: 1rem;
-                  right: 1rem;
-                  background: white;
-                  padding: 1rem;
-                  border: 1px solid #eaecef;
-                  border-radius: 6px;
-                  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                  z-index: 1000;
-                }
-                #search {
-                  width: 200px;
-                  padding: 0.5rem;
-                  margin-bottom: 0.5rem;
-                }
-                #zoom-level {
-                  margin-left: 1rem;
-                }
-                .nav {
-                  padding: 0.5rem 1rem;
-                  background: #f6f8fa;
-                  border-bottom: 1px solid #eaecef;
-                }
-                .nav a {
-                  margin-right: 1rem;
-                  color: #0366d6;
-                  text-decoration: none;
-                }
-                .nav a:hover {
-                  text-decoration: underline;
-                }
-                .mermaid {
-                  font-size: 14px;
-                  line-height: 1.8;
-                }
-                .mermaid .node rect {
-                  padding: 20px;
-                }
-                .mermaid .node .label-container {
-                  line-height: 2;
-                }
-                .mermaid .node text {
-                  font-size: 14px !important;
-                  line-height: 1.8 !important;
-                }
-                .mermaid .node .label {
-                  padding: 10px;
-                }
-                .mermaid .node .label foreignObject {
-                  overflow: visible;
-                }
-                .mermaid .node .label div {
-                  white-space: nowrap;
-                  line-height: 2 !important;
-                  padding: 4px 0;
-                }
-              </style>
-            </head>
-            <body>
-              <h1>{{ title }}</h1>
-              <div class="nav">
-                <a href="zmsapi.html">ZMS API Schema</a>
-                <a href="zmscitizenapi.html">ZMS Citizen API Schema</a>
-                <a href="index.html">Combined View</a>
-              </div>
-              
-              <div class="controls">
-                <input type="text" id="search" placeholder="Search classes...">
-                <button onclick="zoomIn()">Zoom In</button>
-                <button onclick="zoomOut()">Zoom Out</button>
-                <button onclick="resetZoom()">Reset</button>
-                <span id="zoom-level">60%</span>
-              </div>
-              
-              <div class="diagram-container">
-                <div class="diagram">
-                  <pre class="mermaid">{{ mermaid }}</pre>
-                </div>
-              </div>
+              def create_diagram_page(title: str, mermaid: str) -> str:
+                  """Create HTML page with diagram."""
+                  template = Template("""<!DOCTYPE html>
+              <html>
+                  <head>
+                      <title>{{ title }}</title>
+                      <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+                      <script>
+                          mermaid.initialize({
+                              startOnLoad: true,
+                              securityLevel: 'loose',
+                              logLevel: 'debug',
+                              maxTextSize: 900000,
+                              theme: 'default',
+                              flowchart: {
+                                  useMaxWidth: false,
+                                  htmlLabels: true,
+                                  padding: 20
+                              },
+                              class: {
+                                  padding: 20,
+                                  useMaxWidth: true,
+                                  labelSpacing: 10,
+                                  defaultRenderer: 'dagre',
+                                  curve: 'basis',
+                                  nodeSpacing: 100,
+                                  rankSpacing: 100,
+                                  fontSize: 14
+                              }
+                          });
+                      </script>
+                      <style>
+                          body {
+                              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                              line-height: 1.6;
+                              margin: 0;
+                              padding: 0;
+                              height: 100vh;
+                              display: flex;
+                              flex-direction: column;
+                          }
+                          h1 {
+                              margin: 0;
+                              padding: 1rem;
+                              background: #f6f8fa;
+                              border-bottom: 1px solid #eaecef;
+                          }
+                          .diagram-container {
+                              flex: 1;
+                              position: relative;
+                              overflow: hidden;
+                          }
+                          .diagram {
+                              position: absolute;
+                              top: 50%;
+                              left: 50%;
+                              transform: translate(-50%, -50%) scale(0.6);
+                              transform-origin: center center;
+                              cursor: grab;
+                              min-width: 100%;
+                              min-height: 100%;
+                          }
+                          .diagram:active {
+                              cursor: grabbing;
+                          }
+                          .controls {
+                              position: fixed;
+                              top: 1rem;
+                              right: 1rem;
+                              background: white;
+                              padding: 1rem;
+                              border: 1px solid #eaecef;
+                              border-radius: 6px;
+                              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                              z-index: 1000;
+                          }
+                          #search {
+                              width: 200px;
+                              padding: 0.5rem;
+                              margin-bottom: 0.5rem;
+                          }
+                          #zoom-level {
+                              margin-left: 1rem;
+                          }
+                          .nav {
+                              padding: 0.5rem 1rem;
+                              background: #f6f8fa;
+                              border-bottom: 1px solid #eaecef;
+                          }
+                          .nav a {
+                              margin-right: 1rem;
+                              color: #0366d6;
+                              text-decoration: none;
+                          }
+                          .nav a:hover {
+                              text-decoration: underline;
+                          }
+                          .mermaid {
+                              font-size: 14px;
+                              line-height: 1.8;
+                          }
+                          .mermaid .node rect {
+                              padding: 20px;
+                          }
+                          .mermaid .node .label-container {
+                              line-height: 2;
+                          }
+                          .mermaid .node text {
+                              font-size: 14px !important;
+                              line-height: 1.8 !important;
+                          }
+                          .mermaid .node .label {
+                              padding: 10px;
+                          }
+                          .mermaid .node .label foreignObject {
+                              overflow: visible;
+                          }
+                          .mermaid .node .label div {
+                              white-space: nowrap;
+                              line-height: 2 !important;
+                              padding: 4px 0;
+                          }
+                      </style>
+                  </head>
+                  <body>
+                      <h1>{{ title }}</h1>
+                      <div class="nav">
+                          <a href="zmsapi.html">ZMS API Schema</a>
+                          <a href="zmscitizenapi.html">ZMS Citizen API Schema</a>
+                          <!--<a href="index.html">Combined View</a>-->
+                      </div>
+                      
+                      <div class="controls">
+                          <input type="text" id="search" placeholder="Search classes...">
+                          <button onclick="zoomIn()">Zoom In</button>
+                          <button onclick="zoomOut()">Zoom Out</button>
+                          <button onclick="resetZoom()">Reset</button>
+                          <button onclick="downloadMermaid()">Download Mermaid</button>
+                          <span id="zoom-level">90%</span>
+                      </div>
+                      
+                      <div class="diagram-container">
+                          <div class="diagram">
+                              <pre class="mermaid">{{ mermaid }}</pre>
+                          </div>
+                      </div>
 
-              <script>
-                let zoom = 0.6;
-                let offsetX = 0;
-                let offsetY = 0;
-                let isDragging = false;
-                let startX = 0;
-                let startY = 0;
-                
-                const container = document.querySelector('.diagram-container');
-                const diagram = document.querySelector('.diagram');
-                const zoomLevel = document.getElementById('zoom-level');
-                
-                function updateTransform() {
-                  diagram.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(${zoom})`;
-                  zoomLevel.textContent = Math.round(zoom * 100) + '%';
-                }
-                
-                function zoomIn() {
-                  zoom *= 1.5;
-                  updateTransform();
-                }
-                
-                function zoomOut() {
-                  zoom = Math.max(0.1, zoom / 1.5);
-                  updateTransform();
-                }
-                
-                function resetZoom() {
-                  zoom = 0.6;
-                  offsetX = 0;
-                  offsetY = 0;
-                  updateTransform();
-                }
-                
-                diagram.addEventListener('mousedown', (e) => {
-                  isDragging = true;
-                  startX = e.clientX - offsetX;
-                  startY = e.clientY - offsetY;
-                  diagram.style.cursor = 'grabbing';
-                });
-                
-                document.addEventListener('mousemove', (e) => {
-                  if (!isDragging) return;
-                  offsetX = e.clientX - startX;
-                  offsetY = e.clientY - startY;
-                  updateTransform();
-                });
-                
-                document.addEventListener('mouseup', () => {
-                  isDragging = false;
-                  diagram.style.cursor = 'grab';
-                });
-                
-                container.addEventListener('wheel', (e) => {
-                  e.preventDefault();
-                  const rect = container.getBoundingClientRect();
-                  const x = e.clientX - rect.left;
-                  const y = e.clientY - rect.top;
-                  
-                  const mouseX = (x - offsetX) / zoom;
-                  const mouseY = (y - offsetY) / zoom;
-                  
-                  if (e.deltaY < 0) {
-                    zoom *= 1.1;
-                  } else {
-                    zoom = Math.max(0.1, zoom / 1.1);
-                  }
-                  
-                  offsetX = x - mouseX * zoom;
-                  offsetY = y - mouseY * zoom;
-                  
-                  updateTransform();
-                });
-                
-                document.getElementById('search').addEventListener('input', (e) => {
-                  const text = e.target.value.toLowerCase();
-                  const svgText = document.querySelectorAll('text');
-                  svgText.forEach(t => {
-                    if (t.textContent.toLowerCase().includes(text)) {
-                      t.style.fill = 'red';
-                    } else {
-                      t.style.fill = '';
-                    }
-                  });
-                });
-              </script>
-            </body>
-          </html>""")
-              return template.render(title=title, mermaid=mermaid)
+                      <script>
+                          let zoom = 0.6;
+                          let offsetX = 0;
+                          let offsetY = 0;
+                          let isDragging = false;
+                          let startX = 0;
+                          let startY = 0;
+                          
+                          const container = document.querySelector('.diagram-container');
+                          const diagram = document.querySelector('.diagram');
+                          const zoomLevel = document.getElementById('zoom-level');
+                          
+                          function updateTransform() {
+                              diagram.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(${zoom})`;
+                              zoomLevel.textContent = Math.round(zoom * 100) + '%';
+                          }
+                          
+                          function zoomIn() {
+                              zoom *= 1.5;
+                              updateTransform();
+                          }
+                          
+                          function zoomOut() {
+                              zoom = Math.max(0.1, zoom / 1.5);
+                              updateTransform();
+                          }
+                          
+                          function resetZoom() {
+                              zoom = 0.6;
+                              offsetX = 0;
+                              offsetY = 0;
+                              updateTransform();
+                          }
+                          
+                          function downloadMermaid() {
+                              const mermaidCode = document.querySelector('.mermaid').textContent;
+                              const blob = new Blob([mermaidCode], { type: 'text/plain' });
+                              const url = URL.createObjectURL(blob);
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = '{{ title.lower().replace(" ", "_") }}.mmd';
+                              document.body.appendChild(a);
+                              a.click();
+                              document.body.removeChild(a);
+                              URL.revokeObjectURL(url);
+                          }
+                          
+                          diagram.addEventListener('mousedown', (e) => {
+                              isDragging = true;
+                              startX = e.clientX - offsetX;
+                              startY = e.clientY - offsetY;
+                              diagram.style.cursor = 'grabbing';
+                          });
+                          
+                          document.addEventListener('mousemove', (e) => {
+                              if (!isDragging) return;
+                              offsetX = e.clientX - startX;
+                              offsetY = e.clientY - startY;
+                              updateTransform();
+                          });
+                          
+                          document.addEventListener('mouseup', () => {
+                              isDragging = false;
+                              diagram.style.cursor = 'grab';
+                          });
+                          
+                          container.addEventListener('wheel', (e) => {
+                              e.preventDefault();
+                              const rect = container.getBoundingClientRect();
+                              const x = e.clientX - rect.left;
+                              const y = e.clientY - rect.top;
+                              
+                              const mouseX = (x - offsetX) / zoom;
+                              const mouseY = (y - offsetY) / zoom;
+                              
+                              if (e.deltaY < 0) {
+                                  zoom *= 1.1;
+                              } else {
+                                  zoom = Math.max(0.1, zoom / 1.1);
+                              }
+                              
+                              offsetX = x - mouseX * zoom;
+                              offsetY = y - mouseY * zoom;
+                              
+                              updateTransform();
+                          });
+                          
+                          document.getElementById('search').addEventListener('input', (e) => {
+                              const text = e.target.value.toLowerCase();
+                              const svgText = document.querySelectorAll('text');
+                              svgText.forEach(t => {
+                                  if (t.textContent.toLowerCase().includes(text)) {
+                                      t.style.fill = 'red';
+                                  } else {
+                                      t.style.fill = '';
+                                  }
+                              });
+                          });
+                      </script>
+                  </body>
+              </html>""")
+                  return template.render(title=title, mermaid=mermaid)
 
           if __name__ == '__main__':
               print("Starting schema conversion...")
