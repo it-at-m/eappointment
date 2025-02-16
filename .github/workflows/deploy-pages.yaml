@@ -52,7 +52,45 @@ jobs:
       - name: Create schema converter script
         run: |
           cat > convert_schema.py <<'EOL'
-          # Previous imports remain the same...
+          import json
+          import os
+          from pathlib import Path
+          from jsonschema import validators
+          from typing import Dict, Any, Set, Union, List, Tuple
+          from jinja2 import Template 
+
+          def sanitize_name(name: str, prefix: str = '') -> str:
+              """Sanitize name for Mermaid compatibility."""
+              name = name.replace('-', '_').replace(' ', '_')
+              return f"{prefix}_{name}" if prefix else f"model_{name}"
+
+          def get_type_name(type_def: Union[str, list, dict]) -> str:
+              """Convert JSON Schema type to Mermaid type."""
+              if isinstance(type_def, list):
+                  return 'any'
+              if isinstance(type_def, dict):
+                  return type_def.get('type', 'any')
+              return type_def
+
+          def load_all_schemas() -> List[Tuple[str, Dict[str, Any], str]]:
+              """Load all schema files with their prefixes."""
+              schemas = []
+              
+              # Load main schemas
+              main_dir = Path('zmsentities/schema')
+              if main_dir.exists():
+                  for file in main_dir.glob('*.json'):
+                      with open(file) as f:
+                          schemas.append((file.stem, json.load(f), ''))
+              
+              # Load citizen schemas
+              citizen_dir = Path('zmsentities/schema/citizenapi')
+              if citizen_dir.exists():
+                  for file in citizen_dir.glob('*.json'):
+                      with open(file) as f:
+                          schemas.append((file.stem, json.load(f), 'citizen'))
+              
+              return schemas
 
           def convert_schemas_to_mermaid(schemas: List[Tuple[str, Dict[str, Any], str]], prefix_filter: str = None) -> str:
               """Convert schemas to a Mermaid diagram, optionally filtering by prefix."""
@@ -202,7 +240,6 @@ jobs:
               print("Schema conversion complete")
           EOL
 
-
       - name: Generate schema diagrams and pages
         run: python convert_schema.py
 
@@ -269,16 +306,10 @@ jobs:
                 <div class="card">
                   <h2>API Documentation</h2>
                   <ul>
-                    <li><a href="https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html">Zmscitizenapi API Documentation</a></li>
+                    <li><a href="https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html">Zmscitizenapi Documentation</a></li>
                     <li><a href="https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html">Zmsapi Documentation</a></li>
-                  </ul>
-                </div>
-
-                <div class="card">
-                  <h2>Schema Diagrams</h2>
-                  <ul>
-                    <li><a href="diagrams/zmsapi.html">ZMS API Schema</a></li>
-                    <li><a href="diagrams/zmscitizenapi.html">ZMS Citizen API Schema</a></li>
+                     <li><a href="diagrams/zmsapi.html">Zmscitizenapi Schema</a></li>
+                    <li><a href="diagrams/zmscitizenapi.html">Zmsapi Schema</a></li>
                     <li><a href="diagrams/index.html">Combined View</a></li>
                   </ul>
                 </div>
