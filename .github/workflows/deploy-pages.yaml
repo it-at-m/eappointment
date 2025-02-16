@@ -29,11 +29,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  generate-diagrams:
-    uses: ./.github/workflows/generate-schema-diagrams.yaml
-
   deploy:
-    needs: generate-diagrams
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -131,7 +127,7 @@ jobs:
                   <ul>
                     <li><a href="https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html">Zmscitizenapi Documentation</a></li>
                     <li><a href="https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html">Zmsapi Documentation</a></li>
-                     <li><a href="diagrams/zmsapi.html">Zmscitizenapi Schema</a></li>
+                    <li><a href="diagrams/zmsapi.html">Zmscitizenapi Schema</a></li>
                     <li><a href="diagrams/zmscitizenapi.html">Zmsapi Schema</a></li>
                   </ul>
                 </div>

@@ -80,11 +80,15 @@ jobs:
   call-build-api-docs:
     uses: ./.github/workflows/build-api-docs.yaml
 
+  generate-schema-diagrams:
+    uses: ./.github/workflows/generate-schema-diagrams.yaml
+
   deploy-to-pages:
-    needs: [aggregate-reports, call-build-api-docs]
+    needs: [aggregate-reports, call-build-api-docs, generate-schema-diagrams]
     if: |
       needs.call-build-api-docs.result == 'success' &&
-      needs.aggregate-reports.result == 'success'
+      needs.aggregate-reports.result == 'success' &&
+      needs.generate-schema-diagrams.result == 'success'
     uses: ./.github/workflows/deploy-pages.yaml
     with:
       coverage_artifact: aggregated-reports
