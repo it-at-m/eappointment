@@ -34,8 +34,34 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Create public directory
-        run: mkdir -p public
+        run: mkdir -p public/diagrams
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install -g json-schema-to-mermaid
+
+      - name: Generate schema diagrams
+        run: |
+          # Generate diagram for main API schema
+          for f in zmsentities/schema/*.json; do
+            filename=$(basename "$f" .json)
+            json-schema-to-mermaid "$f" > "public/diagrams/${filename}.mmd"
+          done
+
+          # Generate diagram for citizen API schema
+          for f in zmsentities/schema/citizenapi/*.json; do
+            filename=$(basename "$f" .json)
+            json-schema-to-mermaid "$f" > "public/diagrams/citizen_${filename}.mmd"
+          done
 
       - name: Download coverage reports
         uses: actions/download-artifact@v4
@@ -115,6 +141,10 @@ jobs:
                   text-decoration: underline;
                 }
               </style>
+              <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+              <script>
+                mermaid.initialize({ startOnLoad: true });
+              </script>
             </head>
             <body>
               <h1>ZMS eAppointment Technical Documentation</h1>
@@ -125,6 +155,13 @@ jobs:
                   <ul>
                     <li><a href="https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html">Zmscitizenapi API Documentation</a></li>
                     <li><a href="https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html">Zmsapi Documentation</a></li>
+                  </ul>
+                </div>
+
+                <div class="card">
+                  <h2>Schema Diagrams</h2>
+                  <ul>
+                    <li><a href="diagrams/index.html">API Schema Class Diagrams</a></li>
                   </ul>
                 </div>
 
@@ -164,6 +201,62 @@ jobs:
                     <li><a href="security/zap/zap-scan-report.html">ZAP Scan Reports</a></li>
                   </ul>
                 </div>
+              </div>
+            </body>
+          </html>
+          EOL
+
+          # Create diagrams index page
+          cat > public/diagrams/index.html <<'EOL'
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>API Schema Class Diagrams</title>
+              <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+              <script>
+                mermaid.initialize({ startOnLoad: true });
+              </script>
+              <style>
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                  line-height: 1.6;
+                  padding: 2rem;
+                }
+                .diagram {
+                  margin: 2rem 0;
+                  padding: 1rem;
+                  border: 1px solid #eaecef;
+                  border-radius: 6px;
+                }
+              </style>
+            </head>
+            <body>
+              <h1>API Schema Class Diagrams</h1>
+              
+              <h2>Main API Schema</h2>
+              <div id="main-schemas">
+                $(for f in public/diagrams/*.mmd; do
+                  if [[ ! $f =~ citizen_ ]]; then
+                    echo "<div class='diagram'>"
+                    echo "<h3>$(basename "$f" .mmd)</h3>"
+                    echo "<pre class='mermaid'>"
+                    cat "$f"
+                    echo "</pre>"
+                    echo "</div>"
+                  fi
+                done)
+              </div>
+
+              <h2>Citizen API Schema</h2>
+              <div id="citizen-schemas">
+                $(for f in public/diagrams/citizen_*.mmd; do
+                  echo "<div class='diagram'>"
+                  echo "<h3>$(basename "$f" .mmd | sed 's/citizen_//')</h3>"
+                  echo "<pre class='mermaid'>"
+                  cat "$f"
+                  echo "</pre>"
+                  echo "</div>"
+                done)
               </div>
             </body>
           </html>
