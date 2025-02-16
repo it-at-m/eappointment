@@ -407,3 +407,4 @@ jobs:
         with:
           name: schema-diagrams
           path: public/diagrams/
+          retention-days: 1
