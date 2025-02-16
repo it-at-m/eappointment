@@ -183,12 +183,7 @@ jobs:
                   startOnLoad: true,
                   securityLevel: 'loose',
                   logLevel: 'debug',
-                  maxTextSize: 900000,
-                  zoomEnabled: true,
-                  pan: {
-                    enabled: true,
-                    requireShiftKey: true
-                  }
+                  maxTextSize: 900000
                 });
               </script>
               <style>
@@ -196,13 +191,26 @@ jobs:
                   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
                   line-height: 1.6;
                   padding: 2rem;
+                  margin: 0;
+                  overflow: hidden;
+                }
+                .diagram-container {
+                  position: fixed;
+                  top: 4rem;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  overflow: hidden;
                 }
                 .diagram {
-                  margin: 2rem 0;
-                  padding: 1rem;
-                  border: 1px solid #eaecef;
-                  border-radius: 6px;
-                  overflow: auto;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  transform-origin: 0 0;
+                  cursor: grab;
+                }
+                .diagram:active {
+                  cursor: grabbing;
                 }
                 .controls {
                   position: fixed;
@@ -213,11 +221,15 @@ jobs:
                   border: 1px solid #eaecef;
                   border-radius: 6px;
                   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                  z-index: 1000;
                 }
                 #search {
                   width: 200px;
                   padding: 0.5rem;
                   margin-bottom: 0.5rem;
+                }
+                #zoom-level {
+                  margin-left: 1rem;
                 }
               </style>
             </head>
@@ -229,30 +241,93 @@ jobs:
                 <button onclick="zoomIn()">Zoom In</button>
                 <button onclick="zoomOut()">Zoom Out</button>
                 <button onclick="resetZoom()">Reset</button>
+                <span id="zoom-level">100%</span>
               </div>
               
-              <div class="diagram">
-                <pre class="mermaid">{{ mermaid }}</pre>
+              <div class="diagram-container">
+                <div class="diagram">
+                  <pre class="mermaid">{{ mermaid }}</pre>
+                </div>
               </div>
 
               <script>
                 let zoom = 1;
+                let offsetX = 0;
+                let offsetY = 0;
+                let isDragging = false;
+                let startX = 0;
+                let startY = 0;
+                
+                const container = document.querySelector('.diagram-container');
                 const diagram = document.querySelector('.diagram');
+                const zoomLevel = document.getElementById('zoom-level');
+                
+                function updateTransform() {
+                  diagram.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
+                  zoomLevel.textContent = Math.round(zoom * 100) + '%';
+                }
                 
                 function zoomIn() {
-                  zoom *= 1.2;
-                  diagram.style.transform = `scale(${zoom})`;
+                  zoom *= 1.5;
+                  updateTransform();
                 }
                 
                 function zoomOut() {
-                  zoom /= 1.2;
-                  diagram.style.transform = `scale(${zoom})`;
+                  zoom = Math.max(0.1, zoom / 1.5);
+                  updateTransform();
                 }
                 
                 function resetZoom() {
                   zoom = 1;
-                  diagram.style.transform = `scale(${zoom})`;
+                  offsetX = 0;
+                  offsetY = 0;
+                  updateTransform();
                 }
+                
+                // Pan support
+                diagram.addEventListener('mousedown', (e) => {
+                  isDragging = true;
+                  startX = e.clientX - offsetX;
+                  startY = e.clientY - offsetY;
+                  diagram.style.cursor = 'grabbing';
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                  if (!isDragging) return;
+                  offsetX = e.clientX - startX;
+                  offsetY = e.clientY - startY;
+                  updateTransform();
+                });
+                
+                document.addEventListener('mouseup', () => {
+                  isDragging = false;
+                  diagram.style.cursor = 'grab';
+                });
+                
+                // Zoom with mouse wheel
+                container.addEventListener('wheel', (e) => {
+                  e.preventDefault();
+                  const rect = container.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  
+                  // Calculate cursor position relative to diagram
+                  const mouseX = (x - offsetX) / zoom;
+                  const mouseY = (y - offsetY) / zoom;
+                  
+                  // Apply zoom
+                  if (e.deltaY < 0) {
+                    zoom *= 1.1;
+                  } else {
+                    zoom = Math.max(0.1, zoom / 1.1);
+                  }
+                  
+                  // Adjust offset to keep mouse position fixed
+                  offsetX = x - mouseX * zoom;
+                  offsetY = y - mouseY * zoom;
+                  
+                  updateTransform();
+                });
                 
                 document.getElementById('search').addEventListener('input', (e) => {
                   const text = e.target.value.toLowerCase();
