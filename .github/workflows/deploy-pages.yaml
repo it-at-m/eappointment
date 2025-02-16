@@ -62,7 +62,7 @@ jobs:
           def sanitize_name(name: str, prefix: str = '') -> str:
               """Sanitize name for Mermaid compatibility."""
               name = name.replace('-', '_').replace(' ', '_')
-              return f"{prefix}_{name}" if prefix else f"model_{name}"
+              return f"{prefix}_{name}" if prefix else f"c_{name}"
 
           def get_type_name(type_def: Union[str, list, dict]) -> str:
               """Convert JSON Schema type to Mermaid type."""
@@ -194,9 +194,9 @@ jobs:
                     padding: 20
                   },
                   class: {
-                    padding: 40,
-                    useMaxWidth: false,
-                    labelSpacing: 20,
+                    padding: 20,
+                    useMaxWidth: true,
+                    labelSpacing: 10,
                     defaultRenderer: 'dagre',
                     curve: 'basis',
                     nodeSpacing: 100,
