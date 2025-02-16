@@ -48,7 +48,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install jsonschema jinja2
-
       - name: Create schema converter script
         run: |
           cat > convert_schema.py <<'EOL'
@@ -191,7 +190,14 @@ jobs:
                   theme: 'default',
                   flowchart: {
                     useMaxWidth: false,
-                    htmlLabels: true
+                    htmlLabels: true,
+                    padding: 20
+                  },
+                  class: {
+                    padding: 20,
+                    useMaxWidth: false,
+                    labelSpacing: 10,
+                    defaultRenderer: 'dagre'
                   }
                 });
               </script>
@@ -260,6 +266,26 @@ jobs:
                 }
                 .nav a:hover {
                   text-decoration: underline;
+                }
+                .nodeLabel p {
+                  margin: 0.5em 0;
+                  line-height: 2;
+                }
+                .members-group text {
+                  font-size: 14px;
+                }
+                .label foreignObject div {
+                  line-height: 2 !important;
+                  padding: 4px 0;
+                }
+                .node rect {
+                  padding: 10px;
+                }
+                .node .label-container {
+                  padding: 10px;
+                }
+                .node .members-group {
+                  padding: 10px 0;
                 }
               </style>
             </head>
@@ -402,7 +428,6 @@ jobs:
               
               print("Schema conversion complete")
           EOL
-
       - name: Generate schema diagrams and pages
         run: python convert_schema.py
 
