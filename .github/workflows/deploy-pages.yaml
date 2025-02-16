@@ -124,9 +124,78 @@ jobs:
               
               return '\n'.join(mermaid)
 
+          def create_html_page(diagrams_dir: Path) -> str:
+              """Create HTML page with Mermaid diagrams."""
+              html = """<!DOCTYPE html>
+          <html>
+            <head>
+              <title>API Schema Class Diagrams</title>
+              <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+              <script>
+                mermaid.initialize({ startOnLoad: true });
+              </script>
+              <style>
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                  line-height: 1.6;
+                  padding: 2rem;
+                }
+                .diagram {
+                  margin: 2rem 0;
+                  padding: 1rem;
+                  border: 1px solid #eaecef;
+                  border-radius: 6px;
+                }
+              </style>
+            </head>
+            <body>
+              <h1>API Schema Class Diagrams</h1>
+              
+              <h2>Main API Schema</h2>
+              <div id="main-schemas">
+          """
+              
+              # Add main schema diagrams
+              for file in sorted(diagrams_dir.glob('*.mmd')):
+                  if not file.name.startswith('citizen_'):
+                      html += f"""
+                <div class="diagram">
+                  <h3>{file.stem}</h3>
+                  <pre class="mermaid">
+          {file.read_text().strip()}
+                  </pre>
+                </div>
+          """
+              
+              html += """
+              </div>
+
+              <h2>Citizen API Schema</h2>
+              <div id="citizen-schemas">
+          """
+              
+              # Add citizen schema diagrams
+              for file in sorted(diagrams_dir.glob('citizen_*.mmd')):
+                  html += f"""
+                <div class="diagram">
+                  <h3>{file.stem.replace('citizen_', '')}</h3>
+                  <pre class="mermaid">
+          {file.read_text().strip()}
+                  </pre>
+                </div>
+          """
+              
+              html += """
+              </div>
+            </body>
+          </html>
+          """
+              return html
+
           def process_schema_files(directory: str, prefix: str = '') -> None:
               """Process all JSON Schema files in a directory."""
-              os.makedirs('public/diagrams', exist_ok=True)
+              diagrams_dir = Path('public/diagrams')
+              diagrams_dir.mkdir(parents=True, exist_ok=True)
               
               for file in Path(directory).glob('*.json'):
                   try:
@@ -141,11 +210,15 @@ jobs:
                       mermaid = convert_to_mermaid(schema, sanitize_name(file.stem))
                       
                       # Save diagram
-                      output_path = Path(f'public/diagrams/{prefix}{file.stem}.mmd')
+                      output_path = diagrams_dir / f'{prefix}{file.stem}.mmd'
                       output_path.write_text(mermaid)
                       print(f'Successfully processed {file}')
                   except Exception as e:
                       print(f'Error processing {file}: {e}')
+              
+              # Create index page
+              index_path = diagrams_dir / 'index.html'
+              index_path.write_text(create_html_page(diagrams_dir))
 
           # Process main API schema
           process_schema_files('zmsentities/schema')
@@ -155,6 +228,7 @@ jobs:
 
       - name: Generate schema diagrams
         run: python convert_schema.py
+
 
       - name: Create diagrams index page
         run: |
@@ -225,6 +299,9 @@ jobs:
             </body>
           </html>
           EOL
+
+
+
       - name: Download coverage reports
         uses: actions/download-artifact@v4
         with:
