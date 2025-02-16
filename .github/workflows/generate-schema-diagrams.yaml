@@ -285,7 +285,6 @@ jobs:
                       <button onclick="zoomIn()">Zoom In</button>
                       <button onclick="zoomOut()">Zoom Out</button>
                       <button onclick="resetZoom()">Reset</button>
-                      <button onclick="downloadMermaid()">Download Mermaid</button>
                       <span id="zoom-level">90%</span>
                   </div>
                   
@@ -327,19 +326,6 @@ jobs:
                           offsetX = 0;
                           offsetY = 0;
                           updateTransform();
-                      }
-                      
-                      function downloadMermaid() {
-                          const mermaidCode = document.querySelector('.mermaid').textContent;
-                          const blob = new Blob([mermaidCode], { type: 'text/plain' });
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = '{{ title.lower().replace(" ", "_") }}.mmd';
-                          document.body.appendChild(a);
-                          a.click();
-                          document.body.removeChild(a);
-                          URL.revokeObjectURL(url);
                       }
                       
                       diagram.addEventListener('mousedown', (e) => {
