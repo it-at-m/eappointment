@@ -57,126 +57,98 @@ jobs:
 
       - name: Create schema converter script
         run: |
-          cat > convert_schema.py <<'EOL'
+          cat > create_pages.py <<'EOL'
           import json
           import os
           from pathlib import Path
-          from jsonschema import validators
-          from typing import Dict, Any, Set, Union
           from jinja2 import Template
 
-          def sanitize_name(name: str) -> str:
-              """Sanitize name for Mermaid compatibility."""
-              # Prefix class names to avoid conflicts with Mermaid keywords
-              return 'model_' + name.replace('-', '_').replace(' ', '_')
-
-          def get_type_name(type_def: Union[str, list, dict]) -> str:
-              """Convert JSON Schema type to Mermaid type."""
-              if isinstance(type_def, list):
-                  return 'any'  # Convert union types to 'any'
-              if isinstance(type_def, dict):
-                  return type_def.get('type', 'any')
-              return type_def
-
-          def convert_to_mermaid(schema: Dict[str, Any], root_name: str) -> str:
-              """Convert JSON Schema to Mermaid class diagram."""
-              classes = []
-              relationships = []
-              processed = set()  # Track processed schemas to avoid duplicates
-
-              def process_schema(schema: Dict[str, Any], class_name: str) -> None:
-                  """Process a schema object and its properties."""
-                  if class_name in processed:
-                      return
-                  processed.add(class_name)
-                  
-                  # Start class definition
-                  class_def = [f'class {class_name} {{']
-                  
-                  # Process properties
-                  properties = schema.get('properties', {})
-                  required = schema.get('required', [])
-                  
-                  # Handle empty classes
-                  if not properties:
-                      class_def.append('    +any _empty')
-                  
-                  for prop_name, prop_schema in properties.items():
-                      prop_type = get_type_name(prop_schema.get('type', 'any'))
-                      is_required = prop_name in required
-                      
-                      # Handle different property types
-                      if prop_type == 'array':
-                          items = prop_schema.get('items', {})
-                          if items.get('type') == 'object':
-                              # Create a new class for array items
-                              item_class_name = f'{class_name}_{sanitize_name(prop_name)}_Item'
-                              relationships.append(f'{class_name} --> "*" {item_class_name}')
-                              process_schema(items, item_class_name)
-                              class_def.append(f'    +{item_class_name}[] {prop_name}{"" if is_required else "?"}')
-                          else:
-                              item_type = get_type_name(items.get('type', 'any'))
-                              class_def.append(f'    +{item_type}[] {prop_name}{"" if is_required else "?"}')
-                      elif prop_type == 'object':
-                          # Create a new class for nested objects
-                          nested_class_name = f'{class_name}_{sanitize_name(prop_name)}'
-                          relationships.append(f'{class_name} --> {nested_class_name}')
-                          process_schema(prop_schema, nested_class_name)
-                          class_def.append(f'    +{nested_class_name} {prop_name}{"" if is_required else "?"}')
-                      else:
-                          class_def.append(f'    +{prop_type} {prop_name}{"" if is_required else "?"}')
-                  
-                  class_def.append('}')
-                  classes.append('\n'.join(class_def))
-
-              # Start processing from root
-              process_schema(schema, sanitize_name(root_name))
+          def create_pages(diagrams_dir: Path) -> None:
+              """Create index page with Mermaid diagrams."""
+              # Get main schema diagrams
+              main_schemas = []
+              for file in sorted(diagrams_dir.glob('*.mmd')):
+                  if not file.name.startswith('citizen_'):
+                      main_schemas.append({
+                          'name': file.stem,
+                          'source': file.read_text().strip()
+                      })
               
-              # Combine all elements
-              mermaid = ['classDiagram']
-              mermaid.extend(classes)
-              mermaid.extend(relationships)
+              # Get citizen schema diagrams
+              citizen_schemas = []
+              for file in sorted(diagrams_dir.glob('citizen_*.mmd')):
+                  citizen_schemas.append({
+                      'name': file.stem.replace('citizen_', ''),
+                      'source': file.read_text().strip()
+                  })
               
-              return '\n'.join(mermaid)
+              # Create index.html
+              template = Template("""
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>API Schema Class Diagrams</title>
+              <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+              <script>
+                mermaid.initialize({
+                  startOnLoad: true,
+                  securityLevel: 'loose',
+                  logLevel: 'debug'
+                });
+              </script>
+              <style>
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                  line-height: 1.6;
+                  padding: 2rem;
+                }
+                .diagram {
+                  margin: 2rem 0;
+                  padding: 1rem;
+                  border: 1px solid #eaecef;
+                  border-radius: 6px;
+                }
+              </style>
+            </head>
+            <body>
+              <h1>API Schema Class Diagrams</h1>
+              
+              <h2>Main API Schema</h2>
+              <div id="main-schemas">
+                {% for schema in main_schemas %}
+                <div class="diagram">
+                  <h3>{{ schema.name }}</h3>
+                  <pre class="mermaid">{{ schema.source }}</pre>
+                </div>
+                {% endfor %}
+              </div>
 
-          def process_schema_files(directory: str, prefix: str = '') -> None:
-              """Process all JSON Schema files in a directory."""
-              diagrams_dir = Path('public/diagrams')
-              diagrams_dir.mkdir(parents=True, exist_ok=True)
+              <h2>Citizen API Schema</h2>
+              <div id="citizen-schemas">
+                {% for schema in citizen_schemas %}
+                <div class="diagram">
+                  <h3>{{ schema.name }}</h3>
+                  <pre class="mermaid">{{ schema.source }}</pre>
+                </div>
+                {% endfor %}
+              </div>
+            </body>
+          </html>
+          """)
               
-              schema_dir = Path(directory)
-              if not schema_dir.exists():
-                  print(f"Warning: Schema directory {directory} does not exist")
-                  return
-              
-              for file in schema_dir.glob('*.json'):
-                  try:
-                      print(f"Processing {file}...")
-                      # Load and validate schema
-                      with open(file) as f:
-                          schema = json.load(f)
-                      
-                      # Validate schema
-                      validators.Draft7Validator.check_schema(schema)
-                      
-                      # Convert to Mermaid
-                      mermaid = convert_to_mermaid(schema, file.stem)
-                      
-                      # Save diagram
-                      output_path = diagrams_dir / f'{prefix}{file.stem}.mmd'
-                      output_path.write_text(mermaid)
-                      print(f'Successfully processed {file} -> {output_path}')
-                  except Exception as e:
-                      print(f'Error processing {file}: {e}')
+              # Write index page
+              diagrams_dir.joinpath('index.html').write_text(
+                  template.render(
+                      main_schemas=main_schemas,
+                      citizen_schemas=citizen_schemas
+                  )
+              )
 
           if __name__ == '__main__':
-              print("Starting schema conversion...")
-              # Process main API schema
-              process_schema_files('zmsentities/schema')
-              # Process citizen API schema
-              process_schema_files('zmsentities/schema/citizenapi', 'citizen_')
-              print("Schema conversion complete")
+              create_pages(Path('public/diagrams'))
           EOL
+
+          python create_pages.py
 
       - name: Generate schema diagrams
         run: python convert_schema.py
