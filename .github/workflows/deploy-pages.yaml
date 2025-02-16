@@ -233,25 +233,13 @@ jobs:
       - name: Generate schema diagrams
         run: python convert_schema.py
 
-      - name: Test individual diagrams
+      - name: Create debug page
         run: |
-          # Enable debug mode for Mermaid
-          mkdir -p public/diagrams/debug
-          
-          # Function to create test HTML
-          create_test_html() {
-            local file=$1
-            local basename=$(basename "$file" .mmd)
-            echo "=== Testing diagram: $basename ==="
-            echo "=== Content of $file ==="
-            cat "$file"
-            echo "=== Generating test HTML ==="
-            
-            cat > "public/diagrams/debug/${basename}_test.html" <<EOL
+          cat > public/diagrams/debug.html <<EOL
           <!DOCTYPE html>
           <html>
             <head>
-              <title>Test: ${basename}</title>
+              <title>Debug: Mermaid Diagrams</title>
               <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
               <script>
                 mermaid.initialize({
@@ -261,42 +249,75 @@ jobs:
                   theme: 'default'
                 });
               </script>
+              <style>
+                .diagram {
+                  margin: 2rem 0;
+                  padding: 1rem;
+                  border: 1px solid #eaecef;
+                  border-radius: 6px;
+                }
+                .source {
+                  background: #f6f8fa;
+                  padding: 1rem;
+                  margin: 1rem 0;
+                  white-space: pre;
+                  font-family: monospace;
+                }
+              </style>
             </head>
             <body>
-              <h3>Diagram: ${basename}</h3>
-              <pre class="mermaid">
-          $(cat "$file")
-              </pre>
-              <div id="debug"></div>
+              <h1>Debug: Mermaid Diagrams</h1>
+              
+              <h2>Main API Schema</h2>
+          EOL
+
+          # Add main schema diagrams
+          for f in public/diagrams/*.mmd; do
+            if [[ ! $f =~ citizen_ ]]; then
+              echo "<div class='diagram'>" >> public/diagrams/debug.html
+              echo "<h3>$(basename "$f" .mmd)</h3>" >> public/diagrams/debug.html
+              echo "<div class='source'>Source:<br>$(cat "$f")</div>" >> public/diagrams/debug.html
+              echo "<pre class='mermaid'>" >> public/diagrams/debug.html
+              cat "$f" >> public/diagrams/debug.html
+              echo "</pre>" >> public/diagrams/debug.html
+              echo "</div>" >> public/diagrams/debug.html
+            fi
+          done
+
+          # Add citizen schema diagrams
+          cat >> public/diagrams/debug.html <<EOL
+              
+              <h2>Citizen API Schema</h2>
+          EOL
+
+          for f in public/diagrams/citizen_*.mmd; do
+            echo "<div class='diagram'>" >> public/diagrams/debug.html
+            echo "<h3>$(basename "$f" .mmd | sed 's/citizen_//')</h3>" >> public/diagrams/debug.html
+            echo "<div class='source'>Source:<br>$(cat "$f")</div>" >> public/diagrams/debug.html
+            echo "<pre class='mermaid'>" >> public/diagrams/debug.html
+            cat "$f" >> public/diagrams/debug.html
+            echo "</pre>" >> public/diagrams/debug.html
+            echo "</div>" >> public/diagrams/debug.html
+          done
+
+          # Close HTML
+          cat >> public/diagrams/debug.html <<EOL
               <script>
                 // Log any Mermaid errors
                 window.onerror = function(msg, url, lineNo, columnNo, error) {
-                  document.getElementById('debug').innerHTML += '<pre>' + msg + '</pre>';
+                  const diagram = document.querySelector('pre.mermaid:hover');
+                  if (diagram) {
+                    const debug = document.createElement('div');
+                    debug.className = 'error';
+                    debug.innerHTML = '<pre>' + msg + '</pre>';
+                    diagram.parentNode.appendChild(debug);
+                  }
                   return false;
                 };
               </script>
             </body>
           </html>
           EOL
-          }
-          
-          # Test main schema diagrams
-          echo "=== Testing main schema diagrams ==="
-          for f in public/diagrams/*.mmd; do
-            if [[ ! $f =~ citizen_ ]]; then
-              create_test_html "$f"
-            fi
-          done
-          
-          # Test citizen schema diagrams
-          echo "=== Testing citizen schema diagrams ==="
-          for f in public/diagrams/citizen_*.mmd; do
-            create_test_html "$f"
-          done
-          
-          # List generated test files
-          echo "=== Generated test files ==="
-          ls -l public/diagrams/debug/
 
 
       - name: Create diagrams index page
