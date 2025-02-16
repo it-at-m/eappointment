@@ -230,11 +230,6 @@ jobs:
                           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                           z-index: 1000;
                       }
-                      #search {
-                          width: 200px;
-                          padding: 0.5rem;
-                          margin-bottom: 0.5rem;
-                      }
                       #zoom-level {
                           margin-left: 1rem;
                       }
@@ -385,18 +380,6 @@ jobs:
                           offsetY = y - mouseY * zoom;
                           
                           updateTransform();
-                      });
-                      
-                      document.getElementById('search').addEventListener('input', (e) => {
-                          const text = e.target.value.toLowerCase();
-                          const svgText = document.querySelectorAll('text');
-                          svgText.forEach(t => {
-                              if (t.textContent.toLowerCase().includes(text)) {
-                                  t.style.fill = 'red';
-                              } else {
-                                  t.style.fill = '';
-                              }
-                          });
                       });
                   </script>
               </body>
