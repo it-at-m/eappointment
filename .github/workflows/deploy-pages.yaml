@@ -233,6 +233,71 @@ jobs:
       - name: Generate schema diagrams
         run: python convert_schema.py
 
+      - name: Test individual diagrams
+        run: |
+          # Enable debug mode for Mermaid
+          mkdir -p public/diagrams/debug
+          
+          # Function to create test HTML
+          create_test_html() {
+            local file=$1
+            local basename=$(basename "$file" .mmd)
+            echo "=== Testing diagram: $basename ==="
+            echo "=== Content of $file ==="
+            cat "$file"
+            echo "=== Generating test HTML ==="
+            
+            cat > "public/diagrams/debug/${basename}_test.html" <<EOL
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Test: ${basename}</title>
+              <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+              <script>
+                mermaid.initialize({
+                  startOnLoad: true,
+                  securityLevel: 'loose',
+                  logLevel: 'debug',
+                  theme: 'default'
+                });
+              </script>
+            </head>
+            <body>
+              <h3>Diagram: ${basename}</h3>
+              <pre class="mermaid">
+          $(cat "$file")
+              </pre>
+              <div id="debug"></div>
+              <script>
+                // Log any Mermaid errors
+                window.onerror = function(msg, url, lineNo, columnNo, error) {
+                  document.getElementById('debug').innerHTML += '<pre>' + msg + '</pre>';
+                  return false;
+                };
+              </script>
+            </body>
+          </html>
+          EOL
+          }
+          
+          # Test main schema diagrams
+          echo "=== Testing main schema diagrams ==="
+          for f in public/diagrams/*.mmd; do
+            if [[ ! $f =~ citizen_ ]]; then
+              create_test_html "$f"
+            fi
+          done
+          
+          # Test citizen schema diagrams
+          echo "=== Testing citizen schema diagrams ==="
+          for f in public/diagrams/citizen_*.mmd; do
+            create_test_html "$f"
+          done
+          
+          # List generated test files
+          echo "=== Generated test files ==="
+          ls -l public/diagrams/debug/
+
 
       - name: Create diagrams index page
         run: |
