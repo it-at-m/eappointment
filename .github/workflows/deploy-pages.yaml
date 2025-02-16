@@ -57,7 +57,7 @@ jobs:
           from pathlib import Path
           from jsonschema import validators
           from typing import Dict, Any, Set, Union, List, Tuple
-          from jinja2 import Template 
+          from jinja2 import Template
 
           def sanitize_name(name: str, prefix: str = '') -> str:
               """Sanitize name for Mermaid compatibility."""
@@ -98,7 +98,81 @@ jobs:
               if prefix_filter is not None:
                   schemas = [(name, schema, prefix) for name, schema, prefix in schemas if prefix == prefix_filter]
               
-              # Rest of the conversion logic remains the same...
+              classes = []
+              relationships = []
+              processed = set()
+              schema_classes = {}  # Map schema names to their class names
+
+              def process_schema(schema: Dict[str, Any], class_name: str) -> None:
+                  if class_name in processed:
+                      return
+                  processed.add(class_name)
+                  
+                  class_def = [f'class {class_name} {{']
+                  properties = schema.get('properties', {})
+                  required = schema.get('required', [])
+                  
+                  if not properties:
+                      class_def.append('    +any _empty')
+                  
+                  for prop_name, prop_schema in properties.items():
+                      prop_type = get_type_name(prop_schema.get('type', 'any'))
+                      is_required = prop_name in required
+                      
+                      # Check for references to other schemas
+                      ref = prop_schema.get('$ref', '')
+                      if ref:
+                          ref_name = ref.split('/')[-1].replace('.json', '')
+                          if ref_name in schema_classes:
+                              relationships.append(f'{class_name} --> {schema_classes[ref_name]}')
+                              class_def.append(f'    +{schema_classes[ref_name]} {prop_name}{"" if is_required else "?"}')
+                              continue
+                      
+                      if prop_type == 'array':
+                          items = prop_schema.get('items', {})
+                          item_ref = items.get('$ref', '')
+                          if item_ref:
+                              ref_name = item_ref.split('/')[-1].replace('.json', '')
+                              if ref_name in schema_classes:
+                                  relationships.append(f'{class_name} --> "*" {schema_classes[ref_name]}')
+                                  class_def.append(f'    +{schema_classes[ref_name]}[] {prop_name}{"" if is_required else "?"}')
+                                  continue
+                          
+                          if items.get('type') == 'object':
+                              item_class_name = f'{class_name}_{sanitize_name(prop_name)}_Item'
+                              relationships.append(f'{class_name} --> "*" {item_class_name}')
+                              process_schema(items, item_class_name)
+                              class_def.append(f'    +{item_class_name}[] {prop_name}{"" if is_required else "?"}')
+                          else:
+                              item_type = get_type_name(items.get('type', 'any'))
+                              class_def.append(f'    +{item_type}[] {prop_name}{"" if is_required else "?"}')
+                      elif prop_type == 'object':
+                          nested_class_name = f'{class_name}_{sanitize_name(prop_name)}'
+                          relationships.append(f'{class_name} --> {nested_class_name}')
+                          process_schema(prop_schema, nested_class_name)
+                          class_def.append(f'    +{nested_class_name} {prop_name}{"" if is_required else "?"}')
+                      else:
+                          class_def.append(f'    +{prop_type} {prop_name}{"" if is_required else "?"}')
+                  
+                  class_def.append('}')
+                  classes.append('\n'.join(class_def))
+
+              # First pass: collect all schema class names
+              for name, schema, prefix in schemas:
+                  class_name = sanitize_name(name, prefix)
+                  schema_classes[name] = class_name
+
+              # Second pass: process all schemas
+              for name, schema, prefix in schemas:
+                  class_name = schema_classes[name]
+                  process_schema(schema, class_name)
+
+              # Combine all elements
+              mermaid = ['classDiagram']
+              mermaid.extend(classes)
+              mermaid.extend(relationships)
+              
+              return '\n'.join(mermaid)
 
           def create_diagram_page(title: str, mermaid: str) -> str:
               """Create HTML page with diagram."""
@@ -114,7 +188,11 @@ jobs:
                   securityLevel: 'loose',
                   logLevel: 'debug',
                   maxTextSize: 900000,
-                  startZoom: 0.6
+                  theme: 'default',
+                  flowchart: {
+                    useMaxWidth: false,
+                    htmlLabels: true
+                  }
                 });
               </script>
               <style>
@@ -145,6 +223,8 @@ jobs:
                   transform: translate(-50%, -50%) scale(0.6);
                   transform-origin: center center;
                   cursor: grab;
+                  min-width: 100%;
+                  min-height: 100%;
                 }
                 .diagram:active {
                   cursor: grabbing;
@@ -206,7 +286,90 @@ jobs:
               </div>
 
               <script>
-                // Previous zoom and pan script remains the same...
+                let zoom = 0.6;
+                let offsetX = 0;
+                let offsetY = 0;
+                let isDragging = false;
+                let startX = 0;
+                let startY = 0;
+                
+                const container = document.querySelector('.diagram-container');
+                const diagram = document.querySelector('.diagram');
+                const zoomLevel = document.getElementById('zoom-level');
+                
+                function updateTransform() {
+                  diagram.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(${zoom})`;
+                  zoomLevel.textContent = Math.round(zoom * 100) + '%';
+                }
+                
+                function zoomIn() {
+                  zoom *= 1.5;
+                  updateTransform();
+                }
+                
+                function zoomOut() {
+                  zoom = Math.max(0.1, zoom / 1.5);
+                  updateTransform();
+                }
+                
+                function resetZoom() {
+                  zoom = 0.6;
+                  offsetX = 0;
+                  offsetY = 0;
+                  updateTransform();
+                }
+                
+                diagram.addEventListener('mousedown', (e) => {
+                  isDragging = true;
+                  startX = e.clientX - offsetX;
+                  startY = e.clientY - offsetY;
+                  diagram.style.cursor = 'grabbing';
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                  if (!isDragging) return;
+                  offsetX = e.clientX - startX;
+                  offsetY = e.clientY - startY;
+                  updateTransform();
+                });
+                
+                document.addEventListener('mouseup', () => {
+                  isDragging = false;
+                  diagram.style.cursor = 'grab';
+                });
+                
+                container.addEventListener('wheel', (e) => {
+                  e.preventDefault();
+                  const rect = container.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  
+                  const mouseX = (x - offsetX) / zoom;
+                  const mouseY = (y - offsetY) / zoom;
+                  
+                  if (e.deltaY < 0) {
+                    zoom *= 1.1;
+                  } else {
+                    zoom = Math.max(0.1, zoom / 1.1);
+                  }
+                  
+                  offsetX = x - mouseX * zoom;
+                  offsetY = y - mouseY * zoom;
+                  
+                  updateTransform();
+                });
+                
+                document.getElementById('search').addEventListener('input', (e) => {
+                  const text = e.target.value.toLowerCase();
+                  const svgText = document.querySelectorAll('text');
+                  svgText.forEach(t => {
+                    if (t.textContent.toLowerCase().includes(text)) {
+                      t.style.fill = 'red';
+                    } else {
+                      t.style.fill = '';
+                    }
+                  });
+                });
               </script>
             </body>
           </html>
