@@ -287,7 +287,6 @@ jobs:
                       </div>
                       
                       <div class="controls">
-                          <input type="text" id="search" placeholder="Search classes...">
                           <button onclick="zoomIn()">Zoom In</button>
                           <button onclick="zoomOut()">Zoom Out</button>
                           <button onclick="resetZoom()">Reset</button>
