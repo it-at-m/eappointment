@@ -150,16 +150,6 @@ jobs:
 
           python create_pages.py
 
-      - name: Generate schema diagrams
-        run: python convert_schema.py
-
-      - name: Debug - List generated files
-        run: |
-          echo "=== Generated Mermaid Files ==="
-          ls -la public/diagrams/
-      - name: Generate schema diagrams
-        run: python convert_schema.py
-
       - name: Create debug page
         run: |
           cat > public/diagrams/debug.html <<EOL
