@@ -53,6 +53,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install jsonschema
+          pip install jsonschema jinja2
 
       - name: Create schema converter script
         run: |
