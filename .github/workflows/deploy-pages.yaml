@@ -277,7 +277,6 @@ jobs:
 
       - name: Create diagrams index page
         run: |
-          # Create diagrams index page
           cat > public/diagrams/index.html <<EOL
           <!DOCTYPE html>
           <html>
@@ -285,7 +284,11 @@ jobs:
               <title>API Schema Class Diagrams</title>
               <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
               <script>
-                mermaid.initialize({ startOnLoad: true });
+                mermaid.initialize({
+                  startOnLoad: true,
+                  securityLevel: 'loose',
+                  logLevel: 'debug'
+                });
               </script>
               <style>
                 body {
@@ -310,17 +313,16 @@ jobs:
 
           # Add main schema diagrams
           for f in public/diagrams/*.mmd; do
-            if [[ ! $f =~ citizen_ ]]; then
+            if [[ ! \$f =~ citizen_ ]]; then
               echo "<div class='diagram'>" >> public/diagrams/index.html
-              echo "<h3>$(basename "$f" .mmd)</h3>" >> public/diagrams/index.html
+              echo "<h3>\$(basename "\$f" .mmd)</h3>" >> public/diagrams/index.html
               echo "<pre class='mermaid'>" >> public/diagrams/index.html
-              cat "$f" >> public/diagrams/index.html
+              cat "\$f" >> public/diagrams/index.html
               echo "</pre>" >> public/diagrams/index.html
               echo "</div>" >> public/diagrams/index.html
             fi
           done
 
-          # Add citizen schema section
           cat >> public/diagrams/index.html <<EOL
               </div>
 
@@ -331,20 +333,18 @@ jobs:
           # Add citizen schema diagrams
           for f in public/diagrams/citizen_*.mmd; do
             echo "<div class='diagram'>" >> public/diagrams/index.html
-            echo "<h3>$(basename "$f" .mmd | sed 's/citizen_//')</h3>" >> public/diagrams/index.html
+            echo "<h3>\$(basename "\$f" .mmd | sed 's/citizen_//')</h3>" >> public/diagrams/index.html
             echo "<pre class='mermaid'>" >> public/diagrams/index.html
-            cat "$f" >> public/diagrams/index.html
+            cat "\$f" >> public/diagrams/index.html
             echo "</pre>" >> public/diagrams/index.html
             echo "</div>" >> public/diagrams/index.html
           done
 
-          # Close HTML
           cat >> public/diagrams/index.html <<EOL
               </div>
             </body>
           </html>
           EOL
-
 
 
       - name: Download coverage reports
