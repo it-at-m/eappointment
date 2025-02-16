@@ -2,7 +2,7 @@ name: Combined Workflow with Documentation
 
 on:
   push:
-    branches: [feature-gh-881-schema-diagram-generation]
+    branches: [next]
 
 permissions:
   contents: read

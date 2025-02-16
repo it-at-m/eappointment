@@ -2,7 +2,7 @@ name: Combined Workflow
 
 on:
   push:
-    branches-ignore: [feature-gh-881-schema-diagram-generation]
+    branches-ignore: [next]
   workflow_call:
 
 permissions:
