@@ -139,6 +139,52 @@ jobs:
               
               return '\n'.join(mermaid)
 
+          def process_schema_files(directory: str, prefix: str = '') -> None:
+              """Process all JSON Schema files in a directory."""
+              diagrams_dir = Path('public/diagrams')
+              diagrams_dir.mkdir(parents=True, exist_ok=True)
+              
+              schema_dir = Path(directory)
+              if not schema_dir.exists():
+                  print(f"Warning: Schema directory {directory} does not exist")
+                  return
+              
+              for file in schema_dir.glob('*.json'):
+                  try:
+                      print(f"Processing {file}...")
+                      # Load and validate schema
+                      with open(file) as f:
+                          schema = json.load(f)
+                      
+                      # Validate schema
+                      validators.Draft7Validator.check_schema(schema)
+                      
+                      # Convert to Mermaid
+                      mermaid = convert_to_mermaid(schema, file.stem)
+                      
+                      # Save diagram
+                      output_path = diagrams_dir / f'{prefix}{file.stem}.mmd'
+                      output_path.write_text(mermaid)
+                      print(f'Successfully processed {file} -> {output_path}')
+                  except Exception as e:
+                      print(f'Error processing {file}: {e}')
+
+          if __name__ == '__main__':
+              print("Starting schema conversion...")
+              # Process main API schema
+              process_schema_files('zmsentities/schema')
+              # Process citizen API schema
+              process_schema_files('zmsentities/schema/citizenapi', 'citizen_')
+              print("Schema conversion complete")
+          EOL
+
+      - name: Generate schema diagrams
+        run: python convert_schema.py
+
+      - name: Debug - List generated files
+        run: |
+          echo "=== Generated Mermaid Files ==="
+          ls -la public/diagrams/
       - name: Generate schema diagrams
         run: python convert_schema.py
 
