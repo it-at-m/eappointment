@@ -61,11 +61,19 @@ jobs:
           import os
           from pathlib import Path
           from jsonschema import validators
-          from typing import Dict, Any, Set
+          from typing import Dict, Any, Set, Union
 
           def sanitize_name(name: str) -> str:
               """Sanitize name for Mermaid compatibility."""
               return name.replace('-', '_').replace(' ', '_')
+
+          def get_type_name(type_def: Union[str, list, dict]) -> str:
+              """Convert JSON Schema type to Mermaid type."""
+              if isinstance(type_def, list):
+                  return 'any'  # Convert union types to 'any'
+              if isinstance(type_def, dict):
+                  return type_def.get('type', 'any')
+              return type_def
 
           def convert_to_mermaid(schema: Dict[str, Any], root_name: str) -> str:
               """Convert JSON Schema to Mermaid class diagram."""
@@ -91,7 +99,7 @@ jobs:
                       class_def.append('    +any _empty')
                   
                   for prop_name, prop_schema in properties.items():
-                      prop_type = prop_schema.get('type', 'any')
+                      prop_type = get_type_name(prop_schema.get('type', 'any'))
                       is_required = prop_name in required
                       
                       # Handle different property types
@@ -104,7 +112,7 @@ jobs:
                               process_schema(items, item_class_name)
                               class_def.append(f'    +{item_class_name}[] {prop_name}{"" if is_required else "?"}')
                           else:
-                              item_type = items.get('type', 'any')
+                              item_type = get_type_name(items.get('type', 'any'))
                               class_def.append(f'    +{item_type}[] {prop_name}{"" if is_required else "?"}')
                       elif prop_type == 'object':
                           # Create a new class for nested objects
@@ -157,8 +165,6 @@ jobs:
           # Process citizen API schema
           process_schema_files('zmsentities/schema/citizenapi', 'citizen_')
           EOL
-
-
       - name: Generate schema diagrams
         run: python convert_schema.py
 
