@@ -80,42 +80,38 @@ jobs:
                   processed.add(class_name)
                   
                   # Start class definition
-                  class_def = [f'class {class_name}']
+                  class_def = [f'class {class_name} {{']
                   
                   # Process properties
                   properties = schema.get('properties', {})
                   required = schema.get('required', [])
                   
-                  if properties:
-                      class_def.append(f'{class_name} : {{')
+                  for prop_name, prop_schema in properties.items():
+                      prop_type = prop_schema.get('type', 'any')
+                      is_required = prop_name in required
                       
-                      for prop_name, prop_schema in properties.items():
-                          prop_type = prop_schema.get('type', 'any')
-                          is_required = prop_name in required
-                          
-                          # Handle different property types
-                          if prop_type == 'array':
-                              items = prop_schema.get('items', {})
-                              if items.get('type') == 'object':
-                                  # Create a new class for array items
-                                  item_class_name = f'{class_name}_{sanitize_name(prop_name)}_Item'
-                                  relationships.append(f'{class_name} --> "*" {item_class_name}')
-                                  process_schema(items, item_class_name)
-                                  class_def.append(f'    +{item_class_name}[] {prop_name}{"" if is_required else "?"}')
-                              else:
-                                  item_type = items.get('type', 'any')
-                                  class_def.append(f'    +{item_type}[] {prop_name}{"" if is_required else "?"}')
-                          elif prop_type == 'object':
-                              # Create a new class for nested objects
-                              nested_class_name = f'{class_name}_{sanitize_name(prop_name)}'
-                              relationships.append(f'{class_name} --> {nested_class_name}')
-                              process_schema(prop_schema, nested_class_name)
-                              class_def.append(f'    +{nested_class_name} {prop_name}{"" if is_required else "?"}')
+                      # Handle different property types
+                      if prop_type == 'array':
+                          items = prop_schema.get('items', {})
+                          if items.get('type') == 'object':
+                              # Create a new class for array items
+                              item_class_name = f'{class_name}_{sanitize_name(prop_name)}_Item'
+                              relationships.append(f'{class_name} --> "*" {item_class_name}')
+                              process_schema(items, item_class_name)
+                              class_def.append(f'    +{item_class_name}[] {prop_name}{"" if is_required else "?"}')
                           else:
-                              class_def.append(f'    +{prop_type} {prop_name}{"" if is_required else "?"}')
-                      
-                      class_def.append('}')
+                              item_type = items.get('type', 'any')
+                              class_def.append(f'    +{item_type}[] {prop_name}{"" if is_required else "?"}')
+                      elif prop_type == 'object':
+                          # Create a new class for nested objects
+                          nested_class_name = f'{class_name}_{sanitize_name(prop_name)}'
+                          relationships.append(f'{class_name} --> {nested_class_name}')
+                          process_schema(prop_schema, nested_class_name)
+                          class_def.append(f'    +{nested_class_name} {prop_name}{"" if is_required else "?"}')
+                      else:
+                          class_def.append(f'    +{prop_type} {prop_name}{"" if is_required else "?"}')
                   
+                  class_def.append('}')
                   classes.append('\n'.join(class_def))
 
               # Start processing from root
@@ -163,7 +159,7 @@ jobs:
       - name: Create diagrams index page
         run: |
           # Create diagrams index page
-          cat > public/diagrams/index.html <<'EOL'
+          cat > public/diagrams/index.html <<EOL
           <!DOCTYPE html>
           <html>
             <head>
@@ -206,7 +202,7 @@ jobs:
           done
 
           # Add citizen schema section
-          cat >> public/diagrams/index.html <<'EOL'
+          cat >> public/diagrams/index.html <<EOL
               </div>
 
               <h2>Citizen API Schema</h2>
@@ -224,12 +220,11 @@ jobs:
           done
 
           # Close HTML
-          cat >> public/diagrams/index.html <<'EOL'
+          cat >> public/diagrams/index.html <<EOL
               </div>
             </body>
           </html>
           EOL
-
       - name: Download coverage reports
         uses: actions/download-artifact@v4
         with:
