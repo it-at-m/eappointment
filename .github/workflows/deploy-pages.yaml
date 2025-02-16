@@ -22,6 +22,7 @@ on:
 permissions:
   pages: write
   id-token: write
+  contents: read
 
 concurrency:
   group: "pages"
@@ -36,6 +37,12 @@ jobs:
     steps:
       - name: Create public directory
         run: mkdir -p public
+
+      - name: Download schema diagrams
+        uses: actions/download-artifact@v4
+        with:
+          name: schema-diagrams
+          path: public/diagrams
 
       - name: Download coverage reports
         uses: actions/download-artifact@v4
@@ -54,11 +61,6 @@ jobs:
         with:
           name: ${{ inputs.security_artifact }}
           path: public
-
-      - name: Debug - List directory structure
-        run: |
-          echo "=== Directory Structure ==="
-          ls -R public/
 
       - name: Create index page
         run: |
@@ -123,8 +125,10 @@ jobs:
                 <div class="card">
                   <h2>API Documentation</h2>
                   <ul>
-                    <li><a href="https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html">Zmscitizenapi API Documentation</a></li>
+                    <li><a href="https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html">Zmscitizenapi Documentation</a></li>
                     <li><a href="https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html">Zmsapi Documentation</a></li>
+                    <li><a href="diagrams/zmsapi.html">Zmscitizenapi Schema</a></li>
+                    <li><a href="diagrams/zmscitizenapi.html">Zmsapi Schema</a></li>
                   </ul>
                 </div>
 
@@ -168,6 +172,29 @@ jobs:
             </body>
           </html>
           EOL
+
+      - name: Download coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.coverage_artifact }}
+          path: public
+
+      - name: Download API docs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.api_docs_artifact }}
+          path: public
+
+      - name: Download security reports
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.security_artifact }}
+          path: public
+
+      - name: Debug - List directory structure
+        run: |
+          echo "=== Directory Structure ==="
+          ls -R public/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
