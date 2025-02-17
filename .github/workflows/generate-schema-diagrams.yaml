@@ -74,10 +74,6 @@ jobs:
 
           def convert_schemas_to_mermaid(schemas: List[Tuple[str, Dict[str, Any], str]], prefix_filter: str = None) -> str:
               """Convert schemas to a Mermaid diagram, optionally filtering by prefix."""
-              # Filter schemas if prefix is provided
-              if prefix_filter is not None:
-                  schemas = [(name, schema, prefix) for name, schema, prefix in schemas if prefix == prefix_filter]
-              
               classes = []
               relationships = []
               processed = set()
@@ -137,13 +133,17 @@ jobs:
                   class_def.append('}\n\n')
                   classes.append(''.join(class_def))
 
-              # First pass: collect all schema class names
+              # First pass: collect ALL schema class names regardless of filter
               for name, schema, prefix in schemas:
                   class_name = sanitize_name(name, prefix)
                   schema_classes[name] = class_name
 
-              # Second pass: process all schemas
-              for name, schema, prefix in schemas:
+              # Second pass: process only filtered schemas
+              filtered_schemas = schemas
+              if prefix_filter is not None:
+                  filtered_schemas = [(name, schema, prefix) for name, schema, prefix in schemas if prefix == prefix_filter]
+
+              for name, schema, prefix in filtered_schemas:
                   class_name = schema_classes[name]
                   process_schema(schema, class_name)
 
@@ -246,31 +246,6 @@ jobs:
                       .nav a:hover {
                           text-decoration: underline;
                       }
-                      .mermaid {
-                          font-size: 14px;
-                          line-height: 1.8;
-                      }
-                      .mermaid .node rect {
-                          padding: 20px;
-                      }
-                      .mermaid .node .label-container {
-                          line-height: 2;
-                      }
-                      .mermaid .node text {
-                          font-size: 14px !important;
-                          line-height: 1.8 !important;
-                      }
-                      .mermaid .node .label {
-                          padding: 10px;
-                      }
-                      .mermaid .node .label foreignObject {
-                          overflow: visible;
-                      }
-                      .mermaid .node .label div {
-                          white-space: nowrap;
-                          line-height: 2 !important;
-                          padding: 4px 0;
-                      }
                   </style>
               </head>
               <body>
@@ -278,20 +253,22 @@ jobs:
                   <div class="nav">
                       <a href="zmsapi.html">ZMS API Schema</a>
                       <a href="zmscitizenapi.html">ZMS Citizen API Schema</a>
-                      <!--<a href="index.html">Combined View</a>-->
+                      <a href="index.html">Combined View</a>
                   </div>
                   
                   <div class="controls">
                       <button onclick="zoomIn()">Zoom In</button>
                       <button onclick="zoomOut()">Zoom Out</button>
                       <button onclick="resetZoom()">Reset</button>
-                      <span id="zoom-level">90%</span>
+                      <button onclick="downloadMermaid()">Download Mermaid</button>
+                      <span id="zoom-level">60%</span>
                   </div>
                   
                   <div class="diagram-container">
                       <div class="diagram">
                           <pre class="mermaid">{{ mermaid }}</pre>
                       </div>
+                      <textarea id="raw-mermaid" style="display: none;">{{ mermaid }}</textarea>
                   </div>
 
                   <script>
@@ -326,6 +303,19 @@ jobs:
                           offsetX = 0;
                           offsetY = 0;
                           updateTransform();
+                      }
+                      
+                      function downloadMermaid() {
+                          const mermaidCode = document.getElementById('raw-mermaid').value;
+                          const blob = new Blob([mermaidCode], { type: 'text/plain' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = '{{ title.lower().replace(" ", "_") }}.mmd';
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                          URL.revokeObjectURL(url);
                       }
                       
                       diagram.addEventListener('mousedown', (e) => {
@@ -398,6 +388,10 @@ jobs:
               
               print("Schema conversion complete")
           EOL
+
+          # Make script executable
+          chmod +x convert_schema.py
+
 
       - name: Generate schema diagrams and pages
         run: python convert_schema.py
