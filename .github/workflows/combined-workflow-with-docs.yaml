@@ -94,6 +94,8 @@ jobs:
       coverage_artifact: aggregated-reports
       api_docs_artifact: api-docs
       security_artifact: aggregated-reports
+      git_commit: ${{ github.sha }}
+      git_branch: ${{ github.ref_name }}
 
   call-php-build-images:
     needs: [call-php-code-quality, call-php-unit-tests]

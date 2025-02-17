@@ -18,6 +18,14 @@ on:
         required: true
         type: string
         default: 'security-reports'
+      git_commit:
+        description: 'Git commit hash'
+        required: true
+        type: string
+      git_branch:
+        description: 'Git branch name'
+        required: true
+        type: string
 
 permissions:
   pages: write
