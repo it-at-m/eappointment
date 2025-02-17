@@ -145,17 +145,8 @@ class AvailabilityConflicts extends BaseController
         foreach ($conflictList as $conflict) {
             $availability1 = $conflict->getFirstAppointment()->getAvailability();
             $availability2 = self::findMatchingAvailability($conflict, $conflictList);
-
-            // Use the availability's start date for weekday calculation
             $availabilityDate = (new DateTimeImmutable())->setTimestamp($availability1->startDate);
             $weekdayKey = strtolower($availabilityDate->format('l'));
-
-            error_log("Availability date: " . $availabilityDate->format('Y-m-d'));
-            error_log("Weekday key: " . $weekdayKey);
-            error_log("Availability1 weekdays: " . json_encode($availability1->weekday));
-            if ($availability2) {
-                error_log("Availability2 weekdays: " . json_encode($availability2->weekday));
-            }
 
             if (self::doesConflictAffectWeekday($availability1, $availability2, $weekdayKey)) {
                 $filteredConflictList->addEntity($conflict);
