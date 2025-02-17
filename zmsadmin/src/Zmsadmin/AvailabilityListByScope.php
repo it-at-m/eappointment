@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -43,12 +44,12 @@ class AvailabilityListByScope extends BaseController
                 )
                 ->getCollection()
                 ->sortByCustomKey('startDate');
-        
+
             $data = $availabilityList->getArrayCopy();
             if (!is_array($data) && is_object($data)) {
                 $data = array_values((array)$data);
             }
-        
+
             return \BO\Slim\Render::withJson($response, [
                 'meta' => [],
                 'data' => $data

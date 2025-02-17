@@ -44,9 +44,9 @@ class AvailabilityAdd extends BaseController
 
         if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
             throw new BadRequestException('Missing or invalid availabilityList.');
-        } else if (empty($input['availabilityList']) || !isset($input['availabilityList'][0]['scope'])) {
+        } elseif (empty($input['availabilityList']) || !isset($input['availabilityList'][0]['scope'])) {
             throw new BadRequestException('Missing or invalid scope.');
-        } else if (!isset($input['selectedDate'])) {
+        } elseif (!isset($input['selectedDate'])) {
             throw new BadRequestException("'selectedDate' is required.");
         }
 
@@ -128,8 +128,10 @@ class AvailabilityAdd extends BaseController
             $availability1 = $conflict->getFirstAppointment()->getAvailability();
             $availability2 = null;
             foreach ($mergedCollectionWithoutExclusions as $avail) {
-                if ($avail->id === $availability1->id || 
-                    (isset($avail->tempId) && isset($availability1->tempId) && $avail->tempId === $availability1->tempId)) {
+                if (
+                    $avail->id === $availability1->id ||
+                    (isset($avail->tempId) && isset($availability1->tempId) && $avail->tempId === $availability1->tempId)
+                ) {
                     $availability2 = $avail;
                     break;
                 }
@@ -201,5 +203,4 @@ class AvailabilityAdd extends BaseController
             (new AvailabilityRepository())->writeEntity($doubleTypesEntity);
         }
     }
-
 }

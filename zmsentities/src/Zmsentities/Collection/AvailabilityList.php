@@ -172,13 +172,14 @@ class AvailabilityList extends Base
         array $weekday
     ): array {
         $errorList = [];
-    
+
         $today = new \DateTimeImmutable();
         $yesterday = $selectedDate->modify('-1 day');
         $tomorrow = $selectedDate->modify('+1 day');
-    
+
         foreach ($this as $availability) {
-            $errorList = array_merge($errorList,
+            $errorList = array_merge(
+                $errorList,
                 $availability->validateWeekdays($startDate, $endDate, $weekday),
                 $availability->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $kind),
                 $availability->validateEndTime($startDate, $endDate),
@@ -235,16 +236,16 @@ class AvailabilityList extends Base
     public function hasNewVsNewConflicts(\DateTimeImmutable $selectedDate): \BO\Zmsentities\Collection\ProcessList
     {
         $conflicts = new \BO\Zmsentities\Collection\ProcessList();
-    
+
         $newAvailabilities = array_filter(iterator_to_array($this), function ($availability) {
             return isset($availability->tempId);
         });
-    
+
         foreach ($newAvailabilities as $availability1) {
             foreach ($newAvailabilities as $availability2) {
                 $scope1Id = is_array($availability1->scope) ? ($availability1->scope['id'] ?? null) : ($availability1->scope->id ?? null);
                 $scope2Id = is_array($availability2->scope) ? ($availability2->scope['id'] ?? null) : ($availability2->scope->id ?? null);
-    
+
                 if (
                     $availability1 !== $availability2 &&
                     $availability1->type == $availability2->type &&
@@ -255,26 +256,26 @@ class AvailabilityList extends Base
                     $date1End = (new \DateTimeImmutable())->setTimestamp($availability1->endDate);
                     $date2Start = (new \DateTimeImmutable())->setTimestamp($availability2->startDate);
                     $date2End = (new \DateTimeImmutable())->setTimestamp($availability2->endDate);
-    
+
                     // Only check time overlap if the dates overlap
                     if ($date1Start <= $date2End && $date2Start <= $date1End) {
                         $time1Start = strtotime($availability1->startTime);
                         $time1End = strtotime($availability1->endTime);
                         $time2Start = strtotime($availability2->startTime);
                         $time2End = strtotime($availability2->endTime);
-    
+
                         if ($time1Start < $time2End && $time2Start < $time1End) {
                             $process = new \BO\Zmsentities\Process();
-    
+
                             $dateRange1 = date('d.m.Y', $availability1->startDate) . ' - ' . date('d.m.Y', $availability1->endDate);
                             $dateRange2 = date('d.m.Y', $availability2->startDate) . ' - ' . date('d.m.Y', $availability2->endDate);
                             $timeRange1 = date('H:i', $time1Start) . ' - ' . date('H:i', $time1End);
                             $timeRange2 = date('H:i', $time2Start) . ' - ' . date('H:i', $time2End);
-    
+
                             $process->amendment = "Konflikt: Zwei Öffnungszeiten überschneiden sich.\n"
                                 . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$dateRange1, $timeRange1, Wochentag(e): " . $availability1->getWeekdayNames() . "]\n"
                                 . "Neue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[$dateRange2, $timeRange2, Wochentag(e): " . $availability2->getWeekdayNames() . "]";
-    
+
                             $appointment = new \BO\Zmsentities\Appointment();
                             $appointment->date = $availability1->startDate;
                             $appointment->availability = $availability1;

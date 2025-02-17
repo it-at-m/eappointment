@@ -1,12 +1,13 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
 namespace BO\Mellon;
 
-use \DateTimeImmutable;
-use \DateTime;
+use DateTimeImmutable;
+use DateTime;
 
 class ValidDatetime extends Valid
 {
