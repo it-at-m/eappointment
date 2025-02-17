@@ -64,6 +64,9 @@ jobs:
 
       - name: Create index page
         run: |
+          COMMIT_HASH=$(git rev-parse HEAD)
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          REPO_URL="https://github.com/it-at-m/eappointment"
           cat > public/index.html <<'EOL'
           <!DOCTYPE html>
           <html>
@@ -115,6 +118,13 @@ jobs:
                 }
                 a:hover {
                   text-decoration: underline;
+                }
+                .footer {
+                  margin-top: 2rem;
+                  padding-top: 1rem;
+                  border-top: 1px solid #eaecef;
+                  color: #586069;
+                  font-size: 12px;
                 }
               </style>
             </head>
@@ -168,6 +178,9 @@ jobs:
                     <li><a href="security/zap/zap-scan-report.html">ZAP Scan Reports</a></li>
                   </ul>
                 </div>
+              </div>
+              <div class="footer">
+                Generated from branch <a href="${REPO_URL}/tree/${BRANCH_NAME}">${BRANCH_NAME}</a> at commit <a href="${REPO_URL}/commit/${COMMIT_HASH}">${COMMIT_HASH:0:7}</a>
               </div>
             </body>
           </html>
