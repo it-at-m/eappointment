@@ -396,6 +396,54 @@ class MapperServiceTest extends TestCase
         $this->assertEquals($expectedResponse, $resultArray);
     }
 
+    public function testDontReturnNotPublicServices()
+    {
+        $request1 = new Request();
+        $request1->id = 1;
+        $request1->name = 'Service 111';
+        $request1->data = [
+            'maxQuantity' => 22,
+            'public' => false
+        ];
+
+        $request2 = new Request();
+        $request2->id = 2;
+        $request2->name = 'Service 2';
+        $request2->data = ['maxQuantity' => 1];
+
+        $requestList = new RequestList([$request1, $request2]);
+
+        $provider = new Provider();
+        $provider->id = 100;
+
+        $relation1 = new RequestRelation();
+        $relation1->request = $request1;
+        $relation1->provider = $provider;
+        $relation1->slots = 5;
+
+        $relation2 = new RequestRelation();
+        $relation2->request = $request2;
+        $relation2->provider = $provider;
+        $relation2->slots = 3;
+
+        $expectedResponse = [
+            "services" => [
+                [
+                    "id" => 2,
+                    "name" => "Service 2",
+                    "maxQuantity" => 1,
+                    "combinable" => new Combinable(),
+                ]
+            ]
+        ];
+
+        $relationList = new RequestRelationList([$relation1, $relation2]);
+        $result = MapperService::mapServicesWithCombinations($requestList, $relationList);
+        $resultArray = $result->toArray();
+
+        $this->assertEquals($expectedResponse, $resultArray);
+    }
+
     public function testScopeToThinnedScope()
     {
         // Create provider with contact

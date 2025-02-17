@@ -37,7 +37,7 @@ jobs:
           cd zmscitizenapi && bin/configure && composer run-script post-install-cmd && cd ..
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '16'
 
@@ -67,6 +67,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: api-docs
+          retention-days: 7
           path: |
             zmsapi/public/doc/
             zmscitizenapi/public/doc/

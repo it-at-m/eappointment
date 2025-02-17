@@ -1,3 +1,39 @@
+## Release Muc-20 (14.02.2025)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3212'>ZMS-3212</a>] -         Tresen-Notruf lässt sich nicht mehr abschalten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3272'>ZMS-3272</a>] -         [ZMS-Admin] Ein Slot am aktuellen Tag soll noch 5 Minuten davor buchbar sein
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3513'>ZMS-3513</a>] -         Bürgeransicht Anzeigefehler: erste Dienstleistung wird fälschlicherweise als &#39;0x&#39; angezeigt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3519'>ZMS-3519</a>] -         Clusteransicht Sortierung nach Uhrzeit 
+</li>
+</ul>
+    
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3430'>ZMS-3430</a>] -         DB-Indexen erstellen
+</li>
+</ul>
+                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3499'>ZMS-3499</a>] -         Automatisches Aktualisieren der Warteschlange mit Spontankunden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3503'>ZMS-3503</a>] -         Notruf über Standorteinstellugen zurücksetzen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3507'>ZMS-3507</a>] -         Weiterleiten von Spontankunden 
+</li>
+</ul>
+                                                        
+
+
+
 ## Release Muc-19 (17.01.2025)
 
 <h2>        Bug

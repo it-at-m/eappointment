@@ -28,6 +28,10 @@ use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
 
+/**
+* @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+* @TODO: Extract class has ExcessiveClassComplexity 101 vs 100
+*/
 class MapperService
 {
     public static function mapScopeForProvider(int $providerId, ?ThinnedScopeList $scopes): ThinnedScope
@@ -52,7 +56,7 @@ class MapperService
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract mapping logic into specialized mapper classes for each entity type
      */
-    public static function mapOfficesWithScope(ProviderList $providerList): OfficeList
+    public static function mapOfficesWithScope(ProviderList $providerList, bool $showUnpublished = false): OfficeList
     {
         $offices = [];
         $scopes = ZmsApiFacadeService::getScopes();
@@ -62,7 +66,34 @@ class MapperService
 
         foreach ($providerList as $provider) {
             $providerScope = self::mapScopeForProvider((int) $provider->id, $scopes);
-            $offices[] = new Office(id: isset($provider->id) ? (int) $provider->id : 0, name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null), address: isset($provider->data['address']) ? $provider->data['address'] : null, showAlternativeLocations: isset($provider->data['showAlternativeLocations']) ? $provider->data['showAlternativeLocations'] : null, displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [], organization: $provider->data['organization'] ?? null, organizationUnit: $provider->data['organizationUnit'] ?? null, slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null, geo: isset($provider->data['geo']) ? $provider->data['geo'] : null, scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(id: isset($providerScope->id) ? (int) $providerScope->id : 0, provider: isset($providerScope->provider) ? $providerScope->provider : null, shortName: isset($providerScope->shortName) ? $providerScope->shortName : null, telephoneActivated: isset($providerScope->telephoneActivated) ? (bool) $providerScope->telephoneActivated : null, telephoneRequired: isset($providerScope->telephoneRequired) ? (bool) $providerScope->telephoneRequired : null, customTextfieldActivated: isset($providerScope->customTextfieldActivated) ? (bool) $providerScope->customTextfieldActivated : null, customTextfieldRequired: isset($providerScope->customTextfieldRequired) ? (bool) $providerScope->customTextfieldRequired : null, customTextfieldLabel: isset($providerScope->customTextfieldLabel) ? $providerScope->customTextfieldLabel : null, captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? (bool) $providerScope->captchaActivatedRequired : null, displayInfo: isset($providerScope->displayInfo) ? $providerScope->displayInfo : null) : null);
+
+            if (! $showUnpublished && isset($provider->data['public']) && ! (bool) $provider->data['public']) {
+                continue;
+            }
+
+            $offices[] = new Office(
+                id: isset($provider->id) ? (int) $provider->id : 0,
+                name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null),
+                address: isset($provider->data['address']) ? $provider->data['address'] : null,
+                showAlternativeLocations: isset($provider->data['showAlternativeLocations']) ? $provider->data['showAlternativeLocations'] : null,
+                displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
+                organization: $provider->data['organization'] ?? null,
+                organizationUnit: $provider->data['organizationUnit'] ?? null,
+                slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
+                geo: isset($provider->data['geo']) ? $provider->data['geo'] : null,
+                scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(
+                    id: isset($providerScope->id) ? (int) $providerScope->id : 0,
+                    provider: isset($providerScope->provider) ? $providerScope->provider : null,
+                    shortName: isset($providerScope->shortName) ? $providerScope->shortName : null,
+                    telephoneActivated: isset($providerScope->telephoneActivated) ? (bool) $providerScope->telephoneActivated : null,
+                    telephoneRequired: isset($providerScope->telephoneRequired) ? (bool) $providerScope->telephoneRequired : null,
+                    customTextfieldActivated: isset($providerScope->customTextfieldActivated) ? (bool) $providerScope->customTextfieldActivated : null,
+                    customTextfieldRequired: isset($providerScope->customTextfieldRequired) ? (bool) $providerScope->customTextfieldRequired : null,
+                    customTextfieldLabel: isset($providerScope->customTextfieldLabel) ? $providerScope->customTextfieldLabel : null,
+                    captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? (bool) $providerScope->captchaActivatedRequired : null,
+                    displayInfo: isset($providerScope->displayInfo) ? $providerScope->displayInfo : null
+                ) : null
+            );
         }
 
         return new OfficeList($offices);
@@ -80,8 +111,11 @@ class MapperService
      * @param RequestRelationList $relationList
      * @return ServiceList
      */
-    public static function mapServicesWithCombinations(RequestList $requestList, RequestRelationList $relationList): ServiceList
-    {
+    public static function mapServicesWithCombinations(
+        RequestList $requestList,
+        RequestRelationList $relationList,
+        bool $showUnpublished = false
+    ): ServiceList {
         /** @var array<string, array<int>> $servicesProviderIds */
         $servicesProviderIds = [];
         foreach ($relationList as $relation) {
@@ -99,6 +133,14 @@ class MapperService
             // Sorting by service ID (ascending order)
         });
         foreach ($requestArray as $service) {
+            if (
+                ! $showUnpublished
+                && isset($service->getAdditionalData()['public'])
+                && !$service->getAdditionalData()['public']
+            ) {
+                continue;
+            }
+
             /** @var array<string, array<int>> $serviceCombinations */
             $serviceCombinations = [];
             $combinableData = $service->getAdditionalData()['combinable'] ?? [];
