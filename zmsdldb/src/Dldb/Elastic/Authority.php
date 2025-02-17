@@ -1,19 +1,20 @@
 <?php
+
 /**
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\Elastic;
 
-use \BO\Dldb\Entity\Authority as Entity;
-use \BO\Dldb\Collection\Authorities as Collection;
-use \BO\Dldb\File\Authority as Base;
+use BO\Dldb\Entity\Authority as Entity;
+use BO\Dldb\Collection\Authorities as Collection;
+use BO\Dldb\File\Authority as Base;
 
 /**
  */
 class Authority extends Base
 {
-
     /**
      * fetch locations for a list of service and group by authority
      *

@@ -2,10 +2,10 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Mail as Entity;
-use \BO\Zmsentities\Mimepart;
-use \BO\Zmsentities\Process as ProcessEntity;
-use \BO\Zmsentities\Collection\MailList as Collection;
+use BO\Zmsentities\Mail as Entity;
+use BO\Zmsentities\Mimepart;
+use BO\Zmsentities\Process as ProcessEntity;
+use BO\Zmsentities\Collection\MailList as Collection;
 
 /**
  *
@@ -13,7 +13,6 @@ use \BO\Zmsentities\Collection\MailList as Collection;
  */
 class Mail extends Base
 {
-
     /**
      * Fetch status from db
      *
@@ -31,7 +30,7 @@ class Mail extends Base
         }
         return $mail;
     }
-    
+
     public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC')
     {
         $mailList = new Collection();
@@ -39,7 +38,7 @@ class Mail extends Base
         $query->addEntityMapping()
               ->addResolvedReferences($resolveReferences)
               ->addWhereIn('id', $itemIds)
-              ->addOrderBy('createTimestamp', 'ASC')
+              ->addOrderBy('createTimestamp', $order)
               ->addLimit($limit);
         $result = $this->fetchList($query, new Entity());
 
@@ -50,11 +49,11 @@ class Mail extends Base
                 $mailList->addEntity($entity);
             }
         }
-        
+
         return $mailList;
-    }    
-    
-    
+    }
+
+
     public function readEntitiesIds(array $itemIds, $resolveReferences = 1, $limit = 300, $order = 'ASC')
     {
 
@@ -67,8 +66,7 @@ class Mail extends Base
               ->addLimit($limit);
 
         return $this->fetchList($query, new Entity());
-
-    } 
+    }
 
     public function readList($resolveReferences = 1, $limit = 300, $order = 'ASC')
     {
@@ -79,7 +77,7 @@ class Mail extends Base
               ->addOrderBy('createTimestamp', $order)
               ->addLimit($limit);
         $result = $this->fetchList($query, new Entity());
-        
+
         foreach ($result as $item) {
             $entity = new Entity($item);
             $entity = $this->readResolvedReferences($entity, $resolveReferences);
@@ -87,7 +85,7 @@ class Mail extends Base
                 $mailList->addEntity($entity);
             }
         }
-        
+
         return $mailList;
     }
 
@@ -102,7 +100,6 @@ class Mail extends Base
               ->addLimit($limit);
 
         return $this->fetchList($query, new Entity());
-
     }
 
 
@@ -243,7 +240,7 @@ class Mail extends Base
 
     public function readReminderLastRun($now)
     {
-        $lastRun = (new \BO\Zmsdb\Config)->readProperty('status__mailReminderLastRun', false);
+        $lastRun = (new \BO\Zmsdb\Config())->readProperty('status__mailReminderLastRun', false);
         $lastRunDateTime = ($lastRun) ? new \DateTimeImmutable($lastRun) : $now;
         return $lastRunDateTime;
     }

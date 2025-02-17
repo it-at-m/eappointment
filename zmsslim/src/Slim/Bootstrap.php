@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Slim;
 
 use App;
@@ -77,9 +78,9 @@ class Bootstrap
         App::$log = new Logger($identifier);
         $level = $this->parseDebugLevel($level);
         $handler = new StreamHandler('php://stderr', $level);
-        
+
         $formatter = new JsonFormatter();
-        
+
         // Add processor to format time_local first
         App::$log->pushProcessor(function ($record) {
             return array(
@@ -94,7 +95,7 @@ class Bootstrap
                 'extra' => $record['extra']
             );
         });
-        
+
         $handler->setFormatter($formatter);
         App::$log->pushHandler($handler);
     }

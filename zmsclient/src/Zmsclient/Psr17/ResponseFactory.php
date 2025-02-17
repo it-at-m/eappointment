@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/

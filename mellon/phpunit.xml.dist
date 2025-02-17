@@ -22,5 +22,13 @@
         <include>
             <directory suffix=".php">./src</directory>
         </include>
+        <exclude>
+            <directory>./vendor</directory>
+            <directory>./tests</directory>
+        </exclude>
+        <report>
+            <html outputDirectory="./coverage/html" />
+            <clover outputFile="./coverage/clover.xml" />
+        </report>
     </coverage>
 </phpunit>

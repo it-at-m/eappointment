@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -21,7 +22,7 @@ class WarehouseSubject extends Base
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $title = 'raw_statistic_'. $args['subject'];
+        $title = 'raw_statistic_' . $args['subject'];
         $download = (new Download($request))->setSpreadSheet($title);
 
         $this->writeRawReport($args['reports'][0], $download->getSpreadSheet());
@@ -41,7 +42,7 @@ class WarehouseSubject extends Base
                 $reportData[$row][] = (is_numeric($item)) ? (string)($item) : $item;
             }
         }
-        $sheet->fromArray($reportData, null, 'A'. ($sheet->getHighestRow()));
+        $sheet->fromArray($reportData, null, 'A' . ($sheet->getHighestRow()));
         return $spreadsheet;
     }
 }

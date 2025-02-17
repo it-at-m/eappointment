@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Cluster as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Cluster as Query;
 
 class ClusterByScopeId extends BaseController
 {
@@ -31,7 +32,7 @@ class ClusterByScopeId extends BaseController
             $message->meta->reducedData = true;
         }
 
-        $cluster = (new Query)->readByScopeId($args['id'], $resolveReferences);
+        $cluster = (new Query())->readByScopeId($args['id'], $resolveReferences);
         $message->data = ($cluster) ? $cluster : array();
 
         $response = Render::withLastModified($response, time(), '0');

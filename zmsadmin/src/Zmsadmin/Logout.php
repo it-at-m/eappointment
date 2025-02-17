@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsclient\Auth;
+use BO\Zmsclient\Auth;
 
 class Logout extends BaseController
 {
@@ -21,7 +22,7 @@ class Logout extends BaseController
     ) {
         try {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
-            \App::$http->readDeleteResult('/workstation/login/'. $workstation->useraccount['id'] .'/')->getEntity();
+            \App::$http->readDeleteResult('/workstation/login/' . $workstation->useraccount['id'] . '/')->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ("BO\Zmsentities\Exception\UseraccountMissingLogin" !== $exception->template) {
                 throw $exception;

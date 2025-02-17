@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
 class MailtemplateList extends Base
@@ -27,5 +28,5 @@ class MailtemplateList extends Base
         $this->exchangeArray($mergedList);
 
         return $this;
-    }    
+    }
 }
