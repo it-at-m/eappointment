@@ -28,17 +28,17 @@ class AvailabilityConflicts extends BaseController
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $selectedDateTime = (new DateTimeImmutable($input['selectedDate']))
             ->modify(\App::$now->format('H:i:s'));
-        
+
         [$hasExclusionSplit, $originId] = self::processAvailabilityKinds($availabilityList);
-        
+
         $conflictList = self::getConflictList(
-            $availabilityList, 
-            $selectedDateTime, 
-            $input, 
-            $hasExclusionSplit, 
+            $availabilityList,
+            $selectedDateTime,
+            $input,
+            $hasExclusionSplit,
             $originId
         );
-        
+
         return self::filterAndSortConflicts($conflictList, $selectedDateTime);
     }
 
@@ -63,7 +63,7 @@ class AvailabilityConflicts extends BaseController
             if (!isset($availability->kind)) {
                 continue;
             }
-            
+
             if ($availability->kind === 'origin' && isset($availability->id)) {
                 $originId = $availability->id;
                 $hasExclusionSplit = true;
@@ -82,13 +82,13 @@ class AvailabilityConflicts extends BaseController
         ?string $originId
     ) {
         $conflictList = new ProcessList();
-        
+
         $overlapConflicts = $availabilityList->hasNewVsNewConflicts();
         $conflictList->addList($overlapConflicts);
 
         $scope = new Scope($input['availabilityList'][0]['scope']);
         $futureAvailabilityList = self::getAvailabilityList($scope, $selectedDateTime);
-        
+
         $filteredAvailabilityList = self::getFilteredAvailabilityList(
             $availabilityList,
             $futureAvailabilityList,
@@ -99,7 +99,7 @@ class AvailabilityConflicts extends BaseController
         [$earliestStartDateTime, $latestEndDateTime] = $filteredAvailabilityList
             ->getDateTimeRangeFromList($selectedDateTime);
         $filteredAvailabilityList = $filteredAvailabilityList->sortByCustomStringKey('endTime');
-        
+
         $existingConflicts = $filteredAvailabilityList->checkAllVsExistingConflicts(
             $earliestStartDateTime,
             $latestEndDateTime
@@ -116,14 +116,15 @@ class AvailabilityConflicts extends BaseController
         ?string $originId
     ) {
         $filteredAvailabilityList = new AvailabilityList();
-        
+
         foreach ($availabilityList as $availability) {
-            $isSpecialKind = isset($availability->kind) && 
+            $isSpecialKind = isset($availability->kind) &&
                 in_array($availability->kind, ['origin', 'exclusion', 'future']);
 
             foreach ($futureAvailabilityList as $futureAvailability) {
-                if (!$isSpecialKind || !$hasExclusionSplit || 
-                    !isset($futureAvailability->id) || 
+                if (
+                    !$isSpecialKind || !$hasExclusionSplit ||
+                    !isset($futureAvailability->id) ||
                     $futureAvailability->id !== $originId
                 ) {
                     $filteredAvailabilityList->addEntity($futureAvailability);
@@ -140,30 +141,30 @@ class AvailabilityConflicts extends BaseController
     {
         $filteredConflictList = new ProcessList();
         $conflictedList = [];
-    
+
         foreach ($conflictList as $conflict) {
             $availability1 = $conflict->getFirstAppointment()->getAvailability();
             $availability2 = self::findMatchingAvailability($conflict, $conflictList);
-            
+
             // Use the availability's start date for weekday calculation
             $availabilityDate = (new DateTimeImmutable())->setTimestamp($availability1->startDate);
             $weekdayKey = strtolower($availabilityDate->format('l'));
-            
+
             error_log("Availability date: " . $availabilityDate->format('Y-m-d'));
             error_log("Weekday key: " . $weekdayKey);
             error_log("Availability1 weekdays: " . json_encode($availability1->weekday));
             if ($availability2) {
                 error_log("Availability2 weekdays: " . json_encode($availability2->weekday));
             }
-    
+
             if (self::doesConflictAffectWeekday($availability1, $availability2, $weekdayKey)) {
                 $filteredConflictList->addEntity($conflict);
                 self::addToConflictedList($conflictedList, $availability1, $availability2);
             }
         }
-    
+
         usort($conflictedList, [self::class, 'sortConflictedList']);
-    
+
         return [
             'conflictList' => $filteredConflictList->toConflictListByDay(),
             'conflictIdList' => (count($conflictedList)) ? $conflictedList : []
@@ -174,7 +175,8 @@ class AvailabilityConflicts extends BaseController
     {
         $availability1 = $conflict->getFirstAppointment()->getAvailability();
         foreach ($filteredAvailabilityList as $avail) {
-            if ($avail->id === $availability1->id ||
+            if (
+                $avail->id === $availability1->id ||
                 (isset($avail->tempId) && isset($availability1->tempId) &&
                 $avail->tempId === $availability1->tempId)
             ) {
@@ -186,18 +188,20 @@ class AvailabilityConflicts extends BaseController
 
     private static function doesConflictAffectWeekday($availability1, $availability2, $weekdayKey)
     {
-        if (isset($availability1->weekday[$weekdayKey]) && 
+        if (
+            isset($availability1->weekday[$weekdayKey]) &&
             (int)$availability1->weekday[$weekdayKey] > 0
         ) {
             return true;
         }
-        
-        if ($availability2 && isset($availability2->weekday[$weekdayKey]) && 
+
+        if (
+            $availability2 && isset($availability2->weekday[$weekdayKey]) &&
             (int)$availability2->weekday[$weekdayKey] > 0
         ) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -207,7 +211,7 @@ class AvailabilityConflicts extends BaseController
         if (!in_array($availabilityId, $conflictedList)) {
             $conflictedList[] = $availabilityId;
         }
-        
+
         if ($availability2) {
             $availabilityId2 = $availability2->getId() ?: $availability2->tempId;
             if (!in_array($availabilityId2, $conflictedList)) {
@@ -220,7 +224,7 @@ class AvailabilityConflicts extends BaseController
     {
         $aIsTemp = strpos($a, '__temp__') === 0;
         $bIsTemp = strpos($b, '__temp__') === 0;
-        
+
         if ($aIsTemp && !$bIsTemp) {
             return 1;
         }
