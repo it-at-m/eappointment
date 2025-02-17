@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co.
@@ -8,16 +9,12 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-
 use BO\Zmsdb\Availability as AvailabilityRepository;
 use BO\Zmsdb\Connection\Select as DbConnection;
-
 use BO\Zmsentities\Availability as Entity;
 use BO\Zmsentities\Collection\AvailabilityList as Collection;
-
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-
 use BO\Zmsapi\AvailabilitySlotsUpdate;
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
 use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotFoundException;
@@ -48,11 +45,11 @@ class AvailabilityUpdate extends BaseController
 
         if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
             throw new BadRequestException('Missing or invalid availabilityList.');
-        } else if (empty($input['availabilityList']) || !isset($input['availabilityList'][0]['scope'])) {
+        } elseif (empty($input['availabilityList']) || !isset($input['availabilityList'][0]['scope'])) {
             throw new BadRequestException('Missing or invalid scope.');
-        } else if (!isset($input['selectedDate'])) {
+        } elseif (!isset($input['selectedDate'])) {
             throw new BadRequestException("'selectedDate' is required.");
-        }   
+        }
         $availabilityRepo = new AvailabilityRepository();
         $newCollection = new Collection();
         foreach ($input['availabilityList'] as $item) {
@@ -90,7 +87,7 @@ class AvailabilityUpdate extends BaseController
             $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate);
             $startDateTime = new \DateTimeImmutable("{$startDate->format('Y-m-d')} {$newAvailability->startTime}");
             $endDateTime = new \DateTimeImmutable("{$endDate->format('Y-m-d')} {$newAvailability->endTime}");
-            
+
             $currentValidation = $mergedCollection->validateInputs(
                 $startDateTime,
                 $endDateTime,
@@ -107,8 +104,8 @@ class AvailabilityUpdate extends BaseController
 
         if (count($validations) > 0) {
             throw new AvailabilityUpdateFailed();
-        }        
-    
+        }
+
         $originId = null;
         foreach ($mergedCollection as $availability) {
             if (isset($availability->kind) && $availability->kind === 'origin' && isset($availability->id)) {
@@ -116,15 +113,17 @@ class AvailabilityUpdate extends BaseController
                 break;
             }
         }
-        
+
         $mergedCollectionWithoutExclusions = new Collection();
         foreach ($mergedCollection as $availability) {
-            if ((!isset($availability->kind) || $availability->kind !== 'exclusion') && 
-                (!isset($availability->id) || $availability->id !== $originId)) {
+            if (
+                (!isset($availability->kind) || $availability->kind !== 'exclusion') &&
+                (!isset($availability->id) || $availability->id !== $originId)
+            ) {
                 $mergedCollectionWithoutExclusions->addEntity($availability);
             }
         }
-        
+
         [$earliestStartDateTime, $latestEndDateTime] = $mergedCollectionWithoutExclusions->getDateTimeRangeFromList(
             \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00')
         );
@@ -137,8 +136,10 @@ class AvailabilityUpdate extends BaseController
             $availability1 = $conflict->getFirstAppointment()->getAvailability();
             $availability2 = null;
             foreach ($mergedCollectionWithoutExclusions as $avail) {
-                if ($avail->id === $availability1->id || 
-                    (isset($avail->tempId) && isset($availability1->tempId) && $avail->tempId === $availability1->tempId)) {
+                if (
+                    $avail->id === $availability1->id ||
+                    (isset($avail->tempId) && isset($availability1->tempId) && $avail->tempId === $availability1->tempId)
+                ) {
                     $availability2 = $avail;
                     break;
                 }
@@ -214,5 +215,4 @@ class AvailabilityUpdate extends BaseController
             (new AvailabilityRepository())->writeEntity($doubleTypesEntity);
         }
     }
-
 }

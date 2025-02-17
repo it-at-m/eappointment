@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -11,7 +12,6 @@ namespace BO\Mellon;
   */
 class ValidString extends Valid
 {
-
     /**
      * Allow strings smaller than 64kb and do htmlspecialchars()
      *
