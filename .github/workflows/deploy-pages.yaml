@@ -72,8 +72,6 @@ jobs:
 
       - name: Create index page
         run: |
-          COMMIT_HASH=$(git rev-parse HEAD)
-          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           REPO_URL="https://github.com/it-at-m/eappointment"
           cat > public/index.html <<'EOL'
           <!DOCTYPE html>
