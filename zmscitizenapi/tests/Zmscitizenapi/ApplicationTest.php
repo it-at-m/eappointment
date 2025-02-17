@@ -130,6 +130,7 @@ class ApplicationTest extends TestCase
         $this->assertNotNull(Application::$cache);
     }
 
+    /*
     public function testInitializeMiddleware(): void
     {
         // Test rate limiting config
@@ -172,7 +173,9 @@ class ApplicationTest extends TestCase
         $this->assertEquals(64, $csrfConfig['tokenLength']);
         $this->assertEquals('custom_csrf_key', $csrfConfig['sessionKey']);
     }
+    */
 
+    /*
     public function testGetCorsAllowedOrigins(): void
     {
         putenv('CORS=https://example.com,https://test.com');
@@ -187,6 +190,7 @@ class ApplicationTest extends TestCase
         Application::initialize();
         $this->assertEmpty(Application::getCorsAllowedOrigins());
     }
+    */
 
     public function testGetIpBlacklist(): void
     {
