@@ -72,7 +72,6 @@ jobs:
 
       - name: Create index page
         run: |
-          REPO_URL="https://github.com/it-at-m/eappointment"
           cat > public/index.html <<'EOL'
           <!DOCTYPE html>
           <html>
@@ -186,7 +185,7 @@ jobs:
                 </div>
               </div>
               <div class="footer">
-                Generated from branch <a href="${REPO_URL}/tree/${{ inputs.git_branch }}">${{ inputs.git_branch }}</a> at commit <a href="${REPO_URL}/commit/${{ inputs.git_commit }}">${{ inputs.git_commit }}</a>
+                Generated from branch <a href="https://github.com/it-at-m/eappointment/tree/${{ inputs.git_branch }}">${{ inputs.git_branch }}</a> at commit <a href="https://github.com/it-at-m/eappointment/commit/${{ inputs.git_commit }}">${{ inputs.git_commit }}</a>
               </div>
             </body>
           </html>
