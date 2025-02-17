@@ -353,7 +353,7 @@ class AvailabilityUpdate extends BaseController
                 throw new AvailabilityUpdateFailed("Entity with ID {$entity->id} not found.");
             }
         } else {
-            $updatedEntity = $repository->writeEntity($entity, 2);
+            $updatedEntity = $repository->writeEntity($entity, $resolveReferences);
         }
 
         if (!$updatedEntity) {
