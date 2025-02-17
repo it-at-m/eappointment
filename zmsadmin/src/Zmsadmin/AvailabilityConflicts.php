@@ -212,6 +212,7 @@ class AvailabilityConflicts extends BaseController
         }
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedPrivateMethod) */
     private static function sortConflictedList($a, $b)
     {
         $aIsTemp = strpos($a, '__temp__') === 0;
