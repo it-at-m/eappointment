@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Mellon
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -12,7 +13,6 @@ namespace BO\Mellon;
   */
 abstract class Parameter
 {
-
     /**
       * value of parameter
       *
