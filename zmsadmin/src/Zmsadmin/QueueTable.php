@@ -64,7 +64,7 @@ class QueueTable extends BaseController
                 '/useraccount/queue/',
                 [
                     'resolveReferences' => 2,
-                    'status' => 'called',
+                    'status' => 'called,processing',
                 ]
             )
             ->getCollection() ?? []) : false;
