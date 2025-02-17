@@ -39,7 +39,7 @@ class AvailabilityConflicts extends BaseController
             $originId
         );
 
-        return self::filterAndSortConflicts($conflictList, $selectedDateTime);
+        return self::filterAndSortConflicts($conflictList);
     }
 
     private static function validateInput($input)
@@ -137,7 +137,7 @@ class AvailabilityConflicts extends BaseController
         return $filteredAvailabilityList;
     }
 
-    private static function filterAndSortConflicts(ProcessList $conflictList, DateTimeImmutable $selectedDateTime)
+    private static function filterAndSortConflicts(ProcessList $conflictList)
     {
         $filteredConflictList = new ProcessList();
         $conflictedList = [];
@@ -220,6 +220,7 @@ class AvailabilityConflicts extends BaseController
         }
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedPrivateMethod) */
     private static function sortConflictedList($a, $b)
     {
         $aIsTemp = strpos($a, '__temp__') === 0;
