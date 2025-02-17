@@ -69,6 +69,19 @@ class QueueTable extends BaseController
             )
             ->getCollection() ?? []) : false;
 
+        $queueListCalled->uasort(function ($queueA, $queueB) {
+
+            $statusOrder = ['called' => 0, 'processing' => 1];
+
+            $cmp = $statusOrder[$queueA->status] <=> $statusOrder[$queueB->status];
+            if ($cmp !== 0) {
+                return $cmp;
+            }
+
+            return $queueB->callTime <=> $queueA->callTime;
+        });
+
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/queue/table.twig',
