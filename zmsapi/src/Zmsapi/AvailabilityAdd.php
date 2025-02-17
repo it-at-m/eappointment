@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -8,16 +9,12 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-
 use BO\Zmsentities\Availability as Entity;
 use BO\Zmsentities\Collection\AvailabilityList as Collection;
-
 use BO\Zmsdb\Availability as AvailabilityRepository;
 use BO\Zmsdb\Connection\Select as DbConnection;
-
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-
 use BO\Zmsapi\AvailabilitySlotsUpdate;
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
 use BO\Zmsapi\Exception\Availability\AvailabilityAddFailed;

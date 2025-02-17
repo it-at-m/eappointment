@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -7,7 +8,7 @@
 namespace BO\Dldb\File;
 
 use BO\Dldb\Collection\Settings;
-use \BO\Dldb\Entity\Setting as Entity;
+use BO\Dldb\Entity\Setting as Entity;
 
 /**
   * Common methods shared by access classes
@@ -15,7 +16,6 @@ use \BO\Dldb\Entity\Setting as Entity;
   */
 class Setting extends Base
 {
-
     protected function parseData($data)
     {
         return new Settings($data['data']['settings']);

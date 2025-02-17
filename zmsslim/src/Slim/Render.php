@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -16,7 +17,6 @@ use BO\Slim\Response;
 
 class Render
 {
-
     /**
      * @var ContainerInterface $containerInterface
      *
@@ -143,7 +143,7 @@ class Render
 
         $maxAge = strtotime($expires) - time();
         if (false === strtotime($expires)) {
-            $expires = '+'. $expires .' seconds';
+            $expires = '+' . $expires . ' seconds';
             $maxAge = intval($expires);
         }
         $response = $response->withAddedHeader('Cache-Control', 'max-age=' . $maxAge);

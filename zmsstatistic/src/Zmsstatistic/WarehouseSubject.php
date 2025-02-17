@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -23,11 +24,11 @@ class WarehouseSubject extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $subjectList = \App::$http->readGetResult('/warehouse/'. $args['subject'] .'/')->getEntity();
+        $subjectList = \App::$http->readGetResult('/warehouse/' . $args['subject'] . '/')->getEntity();
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
-            $args['category'] = 'raw-'.$args['subject'];
+            $args['category'] = 'raw-' . $args['subject'];
             $args['reports'][] = $subjectList;
             $args['department'] = $this->department;
             $args['organisation'] = $this->organisation;

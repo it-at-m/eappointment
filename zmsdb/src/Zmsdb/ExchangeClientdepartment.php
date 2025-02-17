@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
+use BO\Zmsentities\Exchange;
 
 class ExchangeClientdepartment extends Base
 {
@@ -18,7 +18,7 @@ class ExchangeClientdepartment extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
-        $config = (new Config)->readEntity();
+        $config = (new Config())->readEntity();
         $costs = $config->getNotificationPreferences()['costs'];
 
         $department = (new Department())->readEntity($subjectid);

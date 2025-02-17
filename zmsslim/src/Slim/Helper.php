@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -30,7 +31,7 @@ class Helper
         return $dateFormatter->format($timestamp);
     }
 
-    
+
     public static function hashQueryParameters(
         string $section,
         array $queryVariables,

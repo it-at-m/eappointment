@@ -1,12 +1,13 @@
 <?php
+
 /**
  * @package ZMS API
  **/
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Mail as Query;
+use BO\Slim\Render;
+use BO\Zmsdb\Mail as Query;
 
 class MailDelete extends BaseController
 {

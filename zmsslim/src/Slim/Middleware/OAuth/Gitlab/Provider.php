@@ -2,8 +2,8 @@
 
 namespace BO\Slim\Middleware\OAuth\Gitlab;
 
-use \BO\Zmsclient\Psr7\ClientInterface as HttpClientInterface;
-use \BO\Zmsclient\Psr7\Client;
+use BO\Zmsclient\Psr7\ClientInterface as HttpClientInterface;
+use BO\Zmsclient\Psr7\Client;
 use League\OAuth2\Client\Tool\Request;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -132,7 +132,7 @@ class Provider extends AbstractProvider
 
     private function getOptionsFromJsonFile()
     {
-        $config_data = file_get_contents(\App::APP_PATH . '/'. static::PROVIDERNAME .'.json');
+        $config_data = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');
         if (gettype($config_data) === 'string') {
             $config_data = json_decode($config_data, true);
         }
@@ -145,7 +145,7 @@ class Provider extends AbstractProvider
 
     public function getBasicOptionsFromJsonFile()
     {
-        $config_data = file_get_contents(\App::APP_PATH . '/'. static::PROVIDERNAME .'.json');
+        $config_data = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');
         if (gettype($config_data) === 'string') {
             $config_data = json_decode($config_data, true);
         }
@@ -166,7 +166,7 @@ class Provider extends AbstractProvider
      */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return $this->getBaseUrl().'/userinfo';
+        return $this->getBaseUrl() . '/userinfo';
     }
 
     /**
@@ -214,7 +214,7 @@ class Provider extends AbstractProvider
     public function getResourceOwnerData(AccessToken $token)
     {
         $resourceOwner = $this->getResourceOwner($token);
-        $ownerData['username'] = $resourceOwner->getName(). '@' . static::PROVIDERNAME;
+        $ownerData['username'] = $resourceOwner->getName() . '@' . static::PROVIDERNAME;
         if ($resourceOwner->getVerifiedEmail()) {
             $ownerData['email'] = $resourceOwner->getVerifiedEmail();
         }
@@ -270,7 +270,7 @@ class Provider extends AbstractProvider
         if (!empty($data['error'])) {
             $error = $data['error'];
             if (isset($data['error_description'])) {
-                $error.=': '.$data['error_description'];
+                $error .= ': ' . $data['error_description'];
             }
             throw new IdentityProviderException($error, 0, $data);
         }

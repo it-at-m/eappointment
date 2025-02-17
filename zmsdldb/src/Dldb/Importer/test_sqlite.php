@@ -89,7 +89,7 @@ $fileAccess->loadFromPath(__DIR__ . '/../../../data/');
 $sqLiteIporter = new SQLite(
     new \BO\Dldb\SQLiteAccess(['databasePath' => __DIR__ . \DIRECTORY_SEPARATOR]),
     $fileAccess,
-    SQLite::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES|SQLite::OPTION_CLEAR_ENTITIY_TABLE
+    SQLite::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES | SQLite::OPTION_CLEAR_ENTITIY_TABLE
 );
 try {
     $sqLiteIporter->beginTransaction();

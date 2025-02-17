@@ -1,15 +1,16 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 class Application extends \BO\Slim\Application
 {
-
     /**
      * Name of the application
      */
@@ -25,13 +26,13 @@ class Application extends \BO\Slim\Application
     public static $supportedLanguages = array(
         // Default language
         'de' => array(
-            'name'    => 'Deutsch',
-            'locale'  => 'de_DE.utf-8',
+            'name' => 'Deutsch',
+            'locale' => 'de_DE.utf-8',
             'default' => true,
         ),
         'en' => array(
-            'name'    => 'English',
-            'locale'  => 'en_GB.utf-8',
+            'name' => 'English',
+            'locale' => 'en_GB.utf-8',
             'default' => false,
         )
     );

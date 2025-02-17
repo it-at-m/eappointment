@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Mellon\Validator;
-use \BO\Slim\Render;
-use \BO\Zmsdb\Useraccount;
-use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsdb\Useraccount;
+use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -29,7 +30,7 @@ class UseraccountList extends BaseController
 
         /** @var Useraccount $useraccount */
         $useraccountList = new Collection();
-        $useraccountList = (new Useraccount)->readList($resolveReferences)->withLessData();
+        $useraccountList = (new Useraccount())->readList($resolveReferences)->withLessData();
 
         $validUserAccounts = [];
         foreach ($useraccountList as $useraccount) {
@@ -48,5 +49,4 @@ class UseraccountList extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);
     }
-    
 }

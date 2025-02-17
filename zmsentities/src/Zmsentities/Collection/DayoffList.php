@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
 class DayoffList extends Base
@@ -48,7 +49,7 @@ class DayoffList extends Base
     {
         foreach ($this as $data) {
             $entity = new \BO\Zmsentities\Dayoff($data); // if source is an array
-            $entityYear = (new \DateTimeImmutable)->setTimestamp($entity->date)->format('Y');
+            $entityYear = (new \DateTimeImmutable())->setTimestamp($entity->date)->format('Y');
             if ($entityYear != $year) {
                 throw new \BO\Zmsentities\Exception\DayoffWrongYear();
             }

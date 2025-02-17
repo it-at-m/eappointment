@@ -32,8 +32,7 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 * collecting statistics like waiting time or served clients per day
 * emergency call for employees
 
-[ZMSAPI Documentation](https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html)
-[ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html)
+[Code Coverage ZMSAPI and ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/)
 
 ## Contact
 [Overview](https://opensource.muenchen.de/software/zeitmanagementsystem.html)
@@ -79,8 +78,7 @@ Das ZMS-System dient zur Verwaltung von Warteschlangen für Menschen. Es bietet 
 * Sammeln von Statistiken wie Wartezeiten oder bedienten Kunden pro Tag
 * Notruf für Mitarbeiter
 
-[ZMSAPI-Dokumentation](https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html)
-[ZMSCITIZENAPI-Dokumentation](https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html)
+[Code-Abdeckung ZMSAPI und ZMSCITIZENAPI Dokumentation](https://it-at-m.github.io/eappointment/)
 
 ## Kontakt
 BerlinOnline Stadtportal GmbH & Co KG Kontakt: 
@@ -116,6 +114,30 @@ e.g.
 - `ddev exec ./cli modules check-upgrade 8.1`
 - `ddev exec ./cli modules check-upgrade 8.2`
 - `ddev exec ./cli modules check-upgrade 8.3`
+
+## Code Quality Checks
+We use PHPCS (following PSR-12 standards) and PHPMD to maintain code quality and detect possible issues early. These checks run automatically in our GitHub Actions pipeline but can also be executed locally.
+
+To run Checks locally in your local docker container:
+
+0. Run all at once:
+- `ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'"`
+
+1. **Enter the container** (if using DDEV or Docker):
+- `ddev ssh`
+
+2. **Go to the desired module directory:
+- `cd zmsadmin`
+3. Run PHPCS (PSR-12 standard):
+- `vendor/bin/phpcs --standard=psr12 src/`
+- ```
+  You can automatically fix many PHPCS formatting issues by running:
+  - vendor/bin/phpcbf --standard=psr12 src/
+  or
+  - phpcs --standard=psr12 --fix src/
+  ```
+4. Run PHPMD (using the phpmd.rules.xml in the project root):
+- `vendor/bin/phpmd src/ text ../phpmd.rules.xml`
 
 ## Unit Testing
 To run unit tests locally refer to the Github Workflows: https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml and in your local docker container run:

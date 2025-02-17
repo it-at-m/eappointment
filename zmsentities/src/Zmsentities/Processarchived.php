@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
-use \BO\Zmsentities\Process;
+use BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Process;
 
 /**
  * @SuppressWarnings(Complexity)

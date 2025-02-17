@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -24,7 +25,7 @@ class WaitingReport extends Base
         'waytime' => 'gemessene Wegezeit Spontankunden',
         'waytime_termin' => 'gemessene Wegezeit Terminkunden',
     ];
-    
+
     /**
      * @SuppressWarnings(Param)
      * @return ResponseInterface
@@ -34,7 +35,7 @@ class WaitingReport extends Base
         ResponseInterface $response,
         array $args
     ) {
-        $title = 'waitingstatistic_'. $args['period'];
+        $title = 'waitingstatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
 
         $this->writeInfoHeader($args, $download->getSpreadSheet());
@@ -67,7 +68,7 @@ class WaitingReport extends Base
 
     public function writeHeader(ReportEntity $report, $sheet, $datePatternCol1, $datePatternCol2)
     {
-        $dateString = $report->firstDay->year .'-'. $report->firstDay->month .'-'. $report->firstDay->day;
+        $dateString = $report->firstDay->year . '-' . $report->firstDay->month . '-' . $report->firstDay->day;
         $reportHeader = [];
         $reportHeader[] = null;
         $reportHeader[] = $this->getFormatedDates($this->setDateTime($dateString), $datePatternCol1);
@@ -77,7 +78,7 @@ class WaitingReport extends Base
                 $reportHeader[] = $date;
             }
         }
-        $sheet->fromArray($reportHeader, null, 'A'. ($sheet->getHighestRow() + 2));
+        $sheet->fromArray($reportHeader, null, 'A' . ($sheet->getHighestRow() + 2));
     }
 
     public function writeTotals(ReportEntity $report, $sheet)
@@ -95,7 +96,7 @@ class WaitingReport extends Base
             $reportTotal['average'][] = $entry['average_waitingtime'];
             $reportTotal['average_waytime'][] = $entry['average_waytime'];
         }
-        $sheet->fromArray($reportTotal, null, 'A'. ($sheet->getHighestRow() + 1));
+        $sheet->fromArray($reportTotal, null, 'A' . ($sheet->getHighestRow() + 1));
 
         $reportTotal2['max'][] = 'Tagesmaximum Terminkunden der gemessenen Zeit';
         $reportTotal2['average'][] = 'Tagesdurchschnitt Terminkunden der gemessenen Zeit';
@@ -108,7 +109,7 @@ class WaitingReport extends Base
             $reportTotal2['average'][] = $entry['average_waitingtime_termin'];
             $reportTotal2['average_waytime'][] = $entry['average_waytime_termin'];
         }
-        $sheet->fromArray($reportTotal2, null, 'A'. ($sheet->getHighestRow() + 1));
+        $sheet->fromArray($reportTotal2, null, 'A' . ($sheet->getHighestRow() + 1));
     }
 
     public function writeReportPart(ReportEntity $report, $sheet, $rangeName, $headline)
@@ -123,7 +124,7 @@ class WaitingReport extends Base
                     if (! isset($reportData[$hour])) {
                         $reportData[$hour] = [];
                     }
-                    $range = $hour .'-'. ($hour + 1) .' Uhr';
+                    $range = $hour . '-' . ($hour + 1) . ' Uhr';
                     if (! in_array($range, $reportData[$hour])) {
                         $reportData[$hour][] = $range;
                         $reportData[$hour][] = $totals[$hour][$rangeName];
@@ -132,6 +133,6 @@ class WaitingReport extends Base
                 }
             }
         }
-        $sheet->fromArray($reportData, null, 'A'. ($sheet->getHighestRow() + 2));
+        $sheet->fromArray($reportData, null, 'A' . ($sheet->getHighestRow() + 2));
     }
 }

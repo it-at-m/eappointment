@@ -1,10 +1,11 @@
 <?php
+
 namespace BO\Zmsdb;
 
 use BO\Zmsentities\Collection\AppointmentList;
-use \BO\Zmsentities\Process as Entity;
-use \BO\Zmsentities\Scope as ScopeEntity;
-use \BO\Zmsentities\Collection\ProcessList as Collection;
+use BO\Zmsentities\Process as Entity;
+use BO\Zmsentities\Scope as ScopeEntity;
+use BO\Zmsentities\Collection\ProcessList as Collection;
 use BO\Zmsdb\Helper\ProcessStatus;
 
 /**
@@ -57,7 +58,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
-        
+
     /**
      * Update a process without changing appointment or scope
      */
@@ -73,7 +74,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
         $query->addValuesUpdateProcess($process, $now, 0, $previousStatus);
-        
+
         if ($this->perform($query->getLockProcessId(), ['processId' => $process->getId()])) {
             $this->writeItem($query);
             $this->writeRequestsToDb($process);
@@ -125,14 +126,14 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
         $process = clone $process;
         $appointment = $process->getAppointments()->getFirst();
-        $slotList = (new Slot)->readByAppointment($appointment, $slotsRequired, true);
+        $slotList = (new Slot())->readByAppointment($appointment, $slotsRequired, true);
         $processEntityList = $this->readEntityList($process->getId());
         foreach ($processEntityList as $entity) {
             if ($process->getId() != $entity->getId()) {
                 $this->writeDeletedEntity($entity->getId());
             }
         }
-    
+
         foreach ($slotList as $slot) {
             $newProcess = clone $process;
             $newProcess->getFirstAppointment()->setTime($slot->time);
@@ -163,15 +164,15 @@ class Process extends Base implements Interfaces\ResolveReferences
         \DateTimeInterface $dateTime,
         $newQueueNumber = 0,
         \BO\Zmsentities\Useraccount $useraccount = null
-    )
-    {
+    ) {
         $process = Entity::createFromScope($scope, $dateTime);
         $process->setStatus('pending');
         if (!$newQueueNumber) {
             $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
         }
         $process->addQueue($newQueueNumber, $dateTime);
-        Log::writeProcessLog("CREATE (Process::writeNewPickup) $process ",
+        Log::writeProcessLog(
+            "CREATE (Process::writeNewPickup) $process ",
             Log::ACTION_NEW_PICKUP,
             $process,
             $useraccount
@@ -184,8 +185,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         \BO\Zmsentities\Scope $scope,
         int $waitingNumber,
         ?\BO\Zmsentities\Useraccount $useraccount = null
-    )
-    {
+    ) {
         $datetime = \App::$now;
         $process->setStatus('confirmed');
 
@@ -272,7 +272,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             Log::ACTION_EDITED,
             $process
         );
-        
+
         $status = ($keepReserved) ? Entity::STATUS_RESERVED : ENTITY::STATUS_CONFIRMED;
         return $this->updateProcessStatus($processNew, $status, $now, $resolveReferences);
     }
@@ -366,7 +366,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         if (!$process->toQueue($dateTime)->withAppointment) {
             (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime, false);
         }
-        
+
         return $process;
     }
 
@@ -599,7 +599,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function readProcessListByClusterAndTime($clusterId, \DateTimeInterface $dateTime)
     {
         $processList = new Collection();
-        $cluster = (new Cluster)->readEntity($clusterId, 1);
+        $cluster = (new Cluster())->readEntity($clusterId, 1);
         if ($cluster->scopes->count()) {
             foreach ($cluster->scopes as $scope) {
                 $processList->addList($this->readProcessListByScopeAndTime($scope->id, $dateTime));
@@ -639,7 +639,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         int $scopeId = null,
         $resolveReferences = 0,
         $limit = 2000
-    ) : Collection {
+    ): Collection {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
@@ -666,7 +666,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         array $statusList,
         $resolveReferences = 1,
         $limit = 300
-    ) : Collection {
+    ): Collection {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
@@ -730,7 +730,7 @@ class Process extends Base implements Interfaces\ResolveReferences
                 }
             }
         }
-       
+
         return $status;
     }
 
@@ -792,8 +792,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         \BO\Zmsentities\Process $process,
         bool $releaseSlots = false,
         ?\BO\Zmsentities\Useraccount $useraccount = null
-    )
-    {
+    ) {
         $amendment = $process->toDerefencedAmendment();
         $customTextfield = $process->toDerefencedcustomTextfield();
 
@@ -887,7 +886,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $offset = null,
         $resolveReferences = 0
     ) {
-        
+
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()

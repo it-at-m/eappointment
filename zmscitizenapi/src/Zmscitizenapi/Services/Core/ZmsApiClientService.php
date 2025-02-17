@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
@@ -17,11 +18,9 @@ use BO\Zmsentities\Collection\ScopeList;
 
 class ZmsApiClientService
 {
-
     private static function fetchSourceData(): Source
     {
         $cacheKey = 'source_' . \App::$source_name;
-    
         if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
             return $data;
         }
@@ -29,7 +28,6 @@ class ZmsApiClientService
         $result = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
             'resolveReferences' => 2,
         ]);
-
         $entity = $result?->getEntity();
         if (!$entity instanceof Source) {
             return new Source();
@@ -111,7 +109,6 @@ class ZmsApiClientService
             $calendar->lastDay = $lastDay;
             $calendar->providers = $providers;
             $calendar->requests = $requests;
-
             $result = \App::$http->readPostResult('/calendar/', $calendar);
             $entity = $result?->getEntity();
             if (!$entity instanceof Calendar) {
@@ -131,9 +128,7 @@ class ZmsApiClientService
             $calendar->lastDay = $lastDay;
             $calendar->providers = $providers;
             $calendar->requests = $requests;
-
             $result = \App::$http->readPostResult('/process/status/free/', $calendar);
-
             $collection = $result?->getCollection();
             if (!$collection instanceof ProcessList) {
                 return new ProcessList();
@@ -168,7 +163,6 @@ class ZmsApiClientService
             $processEntity->lastChange = $appointmentProcess->lastChange ?? time();
             $processEntity->createIP = ClientIpHelper::getClientIp();
             $processEntity->createTimestamp = time();
-
             if (isset($appointmentProcess->queue)) {
                 $processEntity->queue = $appointmentProcess->queue;
             }
@@ -233,7 +227,8 @@ class ZmsApiClientService
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/";
-            $result = \App::$http->readDeleteResult($url, [], null);  // Changed to match test expectations
+            $result = \App::$http->readDeleteResult($url, [], null);
+// Changed to match test expectations
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
                 return new Process();
@@ -322,5 +317,4 @@ class ZmsApiClientService
             ExceptionService::handleException($e, __FUNCTION__);
         }
     }
-
 }

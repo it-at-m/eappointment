@@ -2,11 +2,11 @@
 
 namespace BO\Slim\Middleware\OAuth\Keycloak;
 
-use \Stevenmaguire\OAuth2\Client\Provider\Keycloak;
-use \BO\Zmsclient\Psr7\ClientInterface as HttpClientInterface;
-use \BO\Zmsclient\PSR7\Client;
-use \Psr\Http\Message\ServerRequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
+use BO\Zmsclient\Psr7\ClientInterface as HttpClientInterface;
+use BO\Zmsclient\PSR7\Client;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use League\OAuth2\Client\Token\AccessToken;
 
 /**
@@ -16,7 +16,7 @@ use League\OAuth2\Client\Token\AccessToken;
 class Provider extends Keycloak
 {
     const PROVIDERNAME = 'keycloak';
-    
+
     /**
      * Sets the config options for keycloak access from json file.
      *
@@ -31,7 +31,7 @@ class Provider extends Keycloak
         $options = $this->getOptionsFromJsonFile();
         return parent::__construct($options, ['httpClient' => $client]);
     }
-    
+
     /**
      * Sets the HTTP client instance.
      *
@@ -66,7 +66,7 @@ class Provider extends Keycloak
     {
         $resourceOwner = $this->getResourceOwner($token);
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
-        $ownerData['username'] = $resourceOwner->getName(). '@' . static::PROVIDERNAME;
+        $ownerData['username'] = $resourceOwner->getName() . '@' . static::PROVIDERNAME;
         if (1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {
             if ($resourceOwner->getVerifiedEmail()) {
                 $ownerData['email'] = $resourceOwner->getVerifiedEmail();
@@ -79,7 +79,7 @@ class Provider extends Keycloak
 
     private function getOptionsFromJsonFile()
     {
-        $config_data = file_get_contents(\App::APP_PATH . '/'. static::PROVIDERNAME .'.json');
+        $config_data = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');
         if (gettype($config_data) === 'string') {
             $config_data = json_decode($config_data, true);
         }
@@ -89,10 +89,10 @@ class Provider extends Keycloak
         $realmData['verify'] = $config_data['ssl-verify'] ?? true;
         return $realmData;
     }
-    
+
     public function getBasicOptionsFromJsonFile()
     {
-        $config_data = file_get_contents(\App::APP_PATH . '/'. static::PROVIDERNAME .'.json');
+        $config_data = file_get_contents(\App::APP_PATH . '/' . static::PROVIDERNAME . '.json');
         if (gettype($config_data) === 'string') {
             $config_data = json_decode($config_data, true);
         }

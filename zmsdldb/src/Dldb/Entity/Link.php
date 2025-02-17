@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -12,7 +13,6 @@ namespace BO\Dldb\Entity;
   */
 class Link extends Base
 {
-    
     /**
      * return an ID for this entity
      *

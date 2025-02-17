@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Localization;
@@ -8,35 +9,21 @@ use BO\Zmscitizenapi\Middleware\LanguageMiddleware;
 class ErrorMessages
 {
     private const HTTP_OK = 200;
-
     private const HTTP_BAD_REQUEST = 400;
-
     private const HTTP_FORBIDDEN = 403;
-
     private const HTTP_NOT_FOUND = 404;
-
     private const HTTP_INVALID_REQUEST_METHOD = 405;
-
     private const HTTP_NOT_ACCEPTABLE = 406;
-
     private const HTTP_CONFLICT = 409;
-
     private const HTTP_REQUEST_ENTITY_TOO_LARGE = 413;
-
     private const HTTP_TOO_MANY_REQUESTS = 429;
-
     private const HTTP_INTERNAL_SERVER_ERROR = 500;
-
     private const HTTP_NOT_IMPLEMENTED = 501;
-
     private const HTTP_UNAVAILABLE = 503;
-
     private const HTTP_UNKNOWN = 520;
-
     private const DEFAULT_LANGUAGE = 'DE';
     private const FALLBACK_LANGUAGE = 'EN';
-
-    // English messages
+// English messages
     public const EN = [
         'notImplemented' => [
             'errorCode' => 'notImplemented',
@@ -324,8 +311,7 @@ class ErrorMessages
         ]
 
     ];
-
-    // German messages
+// German messages
     public const DE = [
         'notImplemented' => [
             'errorCode' => 'notImplemented',
@@ -613,7 +599,6 @@ class ErrorMessages
         ]
 
     ];
-
     public const UA = [
         'notImplemented' => [
             'errorCode' => 'notImplemented',
@@ -896,8 +881,7 @@ class ErrorMessages
             'errorMessage' => 'Порушення політики безпеки.'
         ]
     ];
-
-    /**
+/**
      * Get an error message by key with fallback logic.
      *
      * @param string $key The error message key.
@@ -907,20 +891,17 @@ class ErrorMessages
     public static function get(string $key, ?string $language = null): array
     {
         $language = LanguageMiddleware::normalizeLanguage($language);
-
         $messages = match ($language) {
             'en' => self::EN,
             'de' => self::DE,
             'ua' => self::UA,
             default => constant('self::' . strtoupper(LanguageMiddleware::getDefaultLanguage())),
         };
-
         if (isset($messages[$key])) {
             return $messages[$key];
         }
 
         $fallbackMessages = constant('self::' . strtoupper(LanguageMiddleware::getFallbackLanguage()));
-
         if (isset($fallbackMessages[$key])) {
             return $fallbackMessages[$key];
         }
@@ -946,7 +927,7 @@ class ErrorMessages
 
     /**
      * Get the highest status code from an array of errors.
-     * 
+     *
      * @param array $errors Array of error messages
      * @return int The highest status code found, or HTTP_OK (200) if no errors
      * @throws \InvalidArgumentException If any error has an invalid structure
@@ -967,5 +948,4 @@ class ErrorMessages
 
         return max($errorCodes);
     }
-
 }

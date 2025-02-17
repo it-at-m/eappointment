@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Appointment;
@@ -13,23 +14,17 @@ class AppointmentUpdateService
     public function processUpdate(array $body): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($body);
-
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
         }
 
-        $reservedProcess = $this->getReservedProcess(
-            $clientData->processId,
-            $clientData->authKey
-        );
-
+        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey);
         if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
             return $reservedProcess;
         }
 
         $updatedProcess = $this->updateProcessWithClientData($reservedProcess, $clientData);
-
         return $this->saveProcessUpdate($updatedProcess);
     }
 
@@ -51,14 +46,7 @@ class AppointmentUpdateService
 
     private function validateClientData(object $data): array
     {
-        return ValidationService::validateUpdateAppointmentInputs(
-            $data->processId,
-            $data->authKey,
-            $data->familyName,
-            $data->email,
-            $data->telephone,
-            $data->customTextfield
-        );
+        return ValidationService::validateUpdateAppointmentInputs($data->processId, $data->authKey, $data->familyName, $data->email, $data->telephone, $data->customTextfield);
     }
 
     private function getReservedProcess(int $processId, string $authKey): ThinnedProcess|array
@@ -72,7 +60,6 @@ class AppointmentUpdateService
         $process->email = $data->email ?? $process->email ?? null;
         $process->telephone = $data->telephone ?? $process->telephone ?? null;
         $process->customTextfield = $data->customTextfield ?? $process->customTextfield ?? null;
-
         return $process;
     }
 
@@ -80,7 +67,6 @@ class AppointmentUpdateService
     {
         $processEntity = MapperService::thinnedProcessToProcess($process);
         $result = ZmsApiFacadeService::updateClientData($processEntity);
-
         if (is_array($result) && !empty($result['errors'])) {
             return $result;
         }
