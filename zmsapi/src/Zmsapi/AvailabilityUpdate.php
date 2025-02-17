@@ -117,7 +117,7 @@ class AvailabilityUpdate extends BaseController
         DateTimeImmutable $selectedDate
     ): void {
         $conflicts = $this->getInitialConflicts($newCollection);
-        $mergedCollection = $this->getMergedCollection($newCollection, $scope);
+        $mergedCollection = $this->getMergedCollection($scope);
 
         $this->validateNewAvailabilities($newCollection, $mergedCollection, $selectedDate);
 
@@ -144,7 +144,7 @@ class AvailabilityUpdate extends BaseController
         return $conflicts;
     }
 
-    private function getMergedCollection(Collection $newCollection, Scope $scope): Collection
+    private function getMergedCollection(Scope $scope): Collection
     {
         $availabilityRepo = new AvailabilityRepository();
         $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
