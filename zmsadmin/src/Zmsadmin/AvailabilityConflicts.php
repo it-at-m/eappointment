@@ -83,11 +83,9 @@ class AvailabilityConflicts extends BaseController
     ) {
         $conflictList = new ProcessList();
         
-        // Add conflicts between new availabilities
-        $overlapConflicts = $availabilityList->hasNewVsNewConflicts($selectedDateTime);
+        $overlapConflicts = $availabilityList->hasNewVsNewConflicts();
         $conflictList->addList($overlapConflicts);
 
-        // Get and filter existing availabilities
         $scope = new Scope($input['availabilityList'][0]['scope']);
         $futureAvailabilityList = self::getAvailabilityList($scope, $selectedDateTime);
         
@@ -98,7 +96,6 @@ class AvailabilityConflicts extends BaseController
             $originId
         );
 
-        // Add conflicts with existing availabilities
         [$earliestStartDateTime, $latestEndDateTime] = $filteredAvailabilityList
             ->getDateTimeRangeFromList($selectedDateTime);
         $filteredAvailabilityList = $filteredAvailabilityList->sortByCustomStringKey('endTime');

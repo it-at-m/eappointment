@@ -524,7 +524,7 @@ class Availability extends Schema\Entity
         return $errorList;
     }
 
-    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
     {
         $errorList = [];
         $endHour = (int) $endDate->format('H');

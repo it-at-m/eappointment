@@ -1201,18 +1201,17 @@ class AvailabilityTest extends EntityCommonTests
         $yesterday = new \DateTimeImmutable('2024-01-14 12:00:00');
         $selectedDate = new \DateTimeImmutable('2024-01-16 12:00:00');
 
-        $startDate = new \DateTimeImmutable('2024-01-15 12:00:00');
         $endDate = new \DateTimeImmutable('2024-01-14 10:00:00');
-        $errors = $entity->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, 'current');
+        $errors = $entity->validateOriginEndTime($today, $yesterday, $endDate, $selectedDate, 'current');
         $this->assertCount(2, $errors);
         $this->assertEquals('endTimeFuture', $errors[0]['type']);
         $this->assertEquals('endTimePast', $errors[1]['type']);
 
-        $errors = $entity->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, 'origin');
+        $errors = $entity->validateOriginEndTime($today, $yesterday, $endDate, $selectedDate, 'origin');
         $this->assertCount(0, $errors);
 
         $endDate = new \DateTimeImmutable('2024-01-16 16:00:00');
-        $errors = $entity->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, 'current');
+        $errors = $entity->validateOriginEndTime($today, $yesterday, $endDate, $selectedDate, 'current');
         $this->assertCount(0, $errors);
     }
 
