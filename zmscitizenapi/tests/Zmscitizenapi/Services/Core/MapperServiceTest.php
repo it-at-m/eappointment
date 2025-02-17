@@ -203,6 +203,7 @@ class MapperServiceTest extends TestCase
                 'id' => 0,
                 'provider' => new ThinnedProvider(),
                 'shortName' => null,
+                'emailFrom' => '',
                 'telephoneActivated' => null,
                 'telephoneRequired' => null,
                 'customTextfieldActivated' => null,
