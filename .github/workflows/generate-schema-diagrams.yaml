@@ -153,9 +153,6 @@ jobs:
               mermaid.extend(f'{r}\n' for r in relationships)
               
               return ''.join(mermaid)
-              
-
-
 
           def create_diagram_page(title: str, mermaid: str) -> str:
               """Create HTML page with diagram."""
