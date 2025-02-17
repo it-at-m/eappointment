@@ -105,7 +105,7 @@ class AvailabilityAdd extends BaseController
         \DateTimeImmutable $selectedDate
     ): void {
         $conflicts = $this->getInitialConflicts($newCollection);
-        $mergedCollection = $this->getMergedCollection( $scope);
+        $mergedCollection = $this->getMergedCollection($scope);
 
         $this->validateNewAvailabilities($newCollection, $mergedCollection, $selectedDate);
 
