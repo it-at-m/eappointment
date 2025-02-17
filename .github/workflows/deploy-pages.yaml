@@ -188,7 +188,7 @@ jobs:
                 </div>
               </div>
               <div class="footer">
-                Generated from branch <a href="${REPO_URL}/tree/${BRANCH_NAME}">${BRANCH_NAME}</a> at commit <a href="${REPO_URL}/commit/${COMMIT_HASH}">${COMMIT_HASH:0:7}</a>
+                Generated from branch <a href="${REPO_URL}/tree/${{ inputs.git_branch }}">${{ inputs.git_branch }}</a> at commit <a href="${REPO_URL}/commit/${{ inputs.git_commit }}">${{ inputs.git_commit }}</a>
               </div>
             </body>
           </html>
