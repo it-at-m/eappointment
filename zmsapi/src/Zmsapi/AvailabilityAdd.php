@@ -63,7 +63,7 @@ class AvailabilityAdd extends BaseController
         $weekday = (int)$selectedDate->format('N');
 
         $conflicts = new \BO\Zmsentities\Collection\ProcessList();
-        $newVsNewConflicts = $newCollection->hasNewVsNewConflicts($selectedDate);
+        $newVsNewConflicts = $newCollection->hasNewVsNewConflicts();
         $conflicts->addList($newVsNewConflicts);
 
         $availabilityRepo = new AvailabilityRepository();

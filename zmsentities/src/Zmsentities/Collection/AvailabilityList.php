@@ -183,7 +183,7 @@ class AvailabilityList extends Base
                 $availability->validateWeekdays($startDate, $endDate, $weekday),
                 $availability->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $kind),
                 $availability->validateEndTime($startDate, $endDate),
-                $availability->validateOriginEndTime($today, $yesterday, $startDate, $endDate, $selectedDate, $kind),
+                $availability->validateOriginEndTime($today, $yesterday, $endDate, $selectedDate, $kind),
                 $availability->validateType($kind),
                 $availability->validateSlotTime($startDate, $endDate),
                 $availability->validateBookableDayRange((int)$startInDays, (int)$endInDays)
@@ -233,7 +233,7 @@ class AvailabilityList extends Base
         return [$earliestStartDateTime, $latestEndDateTime];
     }
 
-    public function hasNewVsNewConflicts(\DateTimeImmutable $selectedDate): \BO\Zmsentities\Collection\ProcessList
+    public function hasNewVsNewConflicts(): \BO\Zmsentities\Collection\ProcessList
     {
         $conflicts = new \BO\Zmsentities\Collection\ProcessList();
 
