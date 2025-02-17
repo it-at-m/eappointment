@@ -18,6 +18,14 @@ on:
         required: true
         type: string
         default: 'security-reports'
+      git_commit:
+        description: 'Git commit hash'
+        required: true
+        type: string
+      git_branch:
+        description: 'Git branch name'
+        required: true
+        type: string
 
 permissions:
   pages: write
@@ -116,6 +124,13 @@ jobs:
                 a:hover {
                   text-decoration: underline;
                 }
+                .footer {
+                  margin-top: 2rem;
+                  padding-top: 1rem;
+                  border-top: 1px solid #eaecef;
+                  color: #586069;
+                  font-size: 12px;
+                }
               </style>
             </head>
             <body>
@@ -127,8 +142,8 @@ jobs:
                   <ul>
                     <li><a href="https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html">Zmscitizenapi Documentation</a></li>
                     <li><a href="https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html">Zmsapi Documentation</a></li>
-                    <li><a href="diagrams/zmsapi.html">Zmscitizenapi Schema</a></li>
-                    <li><a href="diagrams/zmscitizenapi.html">Zmsapi Schema</a></li>
+                    <li><a href="diagrams/zmscitizenapi.html">Zmscitizenapi Schema</a></li>
+                    <li><a href="diagrams/zmsapi.html">Zmsapi Schema</a></li>
                   </ul>
                 </div>
 
@@ -168,6 +183,9 @@ jobs:
                     <li><a href="security/zap/zap-scan-report.html">ZAP Scan Reports</a></li>
                   </ul>
                 </div>
+              </div>
+              <div class="footer">
+                Generated from branch <a href="https://github.com/it-at-m/eappointment/tree/${{ inputs.git_branch }}">${{ inputs.git_branch }}</a> at commit <a href="https://github.com/it-at-m/eappointment/commit/${{ inputs.git_commit }}">${{ inputs.git_commit }}</a>
               </div>
             </body>
           </html>
