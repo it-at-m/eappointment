@@ -1,5 +1,9 @@
 {
-  "type": ["array", "object", "null"],
+  "type": [
+    "array",
+    "object",
+    "null"
+  ],
   "properties": {
     "scopes": {
       "type": "array",
@@ -31,6 +35,20 @@
           "shortName": {
             "type": "string"
           },
+          "emailFrom": {
+            "type": "string",
+            "description": "Mail address for sending mails to clients",
+            "default": "",
+            "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+            "x-locale": {
+              "de_DE": {
+                "pointer": "Absender E-Mail",
+                "messages": {
+                  "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                }
+              }
+            }
+          },
           "telephoneActivated": {
             "type": "boolean"
           },
@@ -57,6 +75,7 @@
           "id",
           "provider",
           "shortName",
+          "emailFrom",
           "telephoneActivated",
           "telephoneRequired",
           "customTextfieldActivated",

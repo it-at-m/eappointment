@@ -122,6 +122,7 @@ To run Checks locally in your local docker container:
 
 0. Run all at once:
 - `ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'"`
+- `ddev exec "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src/'"`
 
 1. **Enter the container** (if using DDEV or Docker):
 - `ddev ssh`

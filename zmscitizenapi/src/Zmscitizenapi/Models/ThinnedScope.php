@@ -12,31 +12,34 @@ use JsonSerializable;
 class ThinnedScope extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/thinnedScope.json';
-/** @var int */
+    /** @var int */
     public int $id;
-/** @var ThinnedProvider|null */
+    /** @var ThinnedProvider|null */
     public ?ThinnedProvider $provider;
-/** @var string|null */
+    /** @var string|null */
     public ?string $shortName;
-/** @var bool|null */
+    /** @var string|null */
+    public ?string $emailFrom;
+    /** @var bool|null */
     public ?bool $telephoneActivated;
-/** @var bool|null */
+    /** @var bool|null */
     public ?bool $telephoneRequired;
-/** @var bool|null */
+    /** @var bool|null */
     public ?bool $customTextfieldActivated;
-/** @var bool|null */
+    /** @var bool|null */
     public ?bool $customTextfieldRequired;
-/** @var string|null */
+    /** @var string|null */
     public ?string $customTextfieldLabel;
-/** @var bool|null */
+    /** @var bool|null */
     public ?bool $captchaActivatedRequired;
-/** @var string|null */
+    /** @var string|null */
     public ?string $displayInfo;
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null)
     {
         $this->id = $id;
         $this->provider = $provider;
         $this->shortName = $shortName;
+        $this->emailFrom = $emailFrom;
         $this->telephoneActivated = $telephoneActivated;
         $this->telephoneRequired = $telephoneRequired;
         $this->customTextfieldActivated = $customTextfieldActivated;
@@ -62,6 +65,11 @@ class ThinnedScope extends Entity implements JsonSerializable
     public function getShortName(): ?string
     {
         return $this->shortName;
+    }
+
+    public function getEmailFrom(): ?string
+    {
+        return $this->emailFrom;
     }
 
     public function getTelephoneActivated(): ?bool
@@ -105,6 +113,7 @@ class ThinnedScope extends Entity implements JsonSerializable
             'id' => $this->id,
             'provider' => $this->provider,
             'shortName' => $this->shortName,
+            'emailFrom' => $this->emailFrom,
             'telephoneActivated' => $this->telephoneActivated,
             'telephoneRequired' => $this->telephoneRequired,
             'customTextfieldActivated' => $this->customTextfieldActivated,

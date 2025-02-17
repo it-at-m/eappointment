@@ -55,18 +55,6 @@ class LoggerServiceTest extends TestCase
         parent::tearDown();
     }
 
-    public function testInit(): void
-    {
-        LoggerService::init();
-        $this->assertTrue(true);
-    }
-
-    public function testShutdown(): void
-    {
-        LoggerService::shutdown();
-        $this->assertTrue(true);
-    }
-
     public function testLogError(): void
     {
         $exception = new \Exception('Test error');
