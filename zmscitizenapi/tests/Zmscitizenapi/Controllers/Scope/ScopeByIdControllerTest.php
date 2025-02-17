@@ -55,6 +55,7 @@ class ScopeByIdControllerTest extends ControllerTestCase
                 ]
             ],
             "shortName" => "Scope 1",
+            "emailFrom" => "no-reply@muenchen.de",
             "telephoneActivated" => true,
             "telephoneRequired" => false,
             "customTextfieldActivated" => true,

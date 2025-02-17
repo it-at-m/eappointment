@@ -29,9 +29,9 @@ use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
 
 /**
-* @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
-* @TODO: Extract class has ExcessiveClassComplexity 101 vs 100
-*/
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @TODO: Extract class has ExcessiveClassComplexity 101 vs 100
+ */
 class MapperService
 {
     public static function mapScopeForProvider(int $providerId, ?ThinnedScopeList $scopes): ThinnedScope
@@ -67,7 +67,7 @@ class MapperService
         foreach ($providerList as $provider) {
             $providerScope = self::mapScopeForProvider((int) $provider->id, $scopes);
 
-            if (! $showUnpublished && isset($provider->data['public']) && ! (bool) $provider->data['public']) {
+            if (!$showUnpublished && isset($provider->data['public']) && !(bool) $provider->data['public']) {
                 continue;
             }
 
@@ -85,6 +85,7 @@ class MapperService
                     id: isset($providerScope->id) ? (int) $providerScope->id : 0,
                     provider: isset($providerScope->provider) ? $providerScope->provider : null,
                     shortName: isset($providerScope->shortName) ? $providerScope->shortName : null,
+                    emailFrom: isset($providerScope->emailFrom) ? $providerScope->emailFrom : null,
                     telephoneActivated: isset($providerScope->telephoneActivated) ? (bool) $providerScope->telephoneActivated : null,
                     telephoneRequired: isset($providerScope->telephoneRequired) ? (bool) $providerScope->telephoneRequired : null,
                     customTextfieldActivated: isset($providerScope->customTextfieldActivated) ? (bool) $providerScope->customTextfieldActivated : null,
@@ -134,7 +135,7 @@ class MapperService
         });
         foreach ($requestArray as $service) {
             if (
-                ! $showUnpublished
+                !$showUnpublished
                 && isset($service->getAdditionalData()['public'])
                 && !$service->getAdditionalData()['public']
             ) {
@@ -184,7 +185,19 @@ class MapperService
             $thinnedProvider = null;
         }
 
-        return new ThinnedScope(id: (int) ($scope->id ?? 0), provider: $thinnedProvider, shortName: $scope->shortName ?? null, telephoneActivated: isset($scope->data['telephoneActivated']) ? (bool) $scope->data['telephoneActivated'] : null, telephoneRequired: isset($scope->data['telephoneRequired']) ? (bool) $scope->data['telephoneRequired'] : null, customTextfieldActivated: isset($scope->data['customTextfieldActivated']) ? (bool) $scope->data['customTextfieldActivated'] : null, customTextfieldRequired: isset($scope->data['customTextfieldRequired']) ? (bool) $scope->data['customTextfieldRequired'] : null, customTextfieldLabel: $scope->data['customTextfieldLabel'] ?? null, captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null, displayInfo: $scope->data['displayInfo'] ?? null);
+        return new ThinnedScope(
+            id: (int) ($scope->id ?? 0),
+            provider: $thinnedProvider,
+            shortName: $scope->shortName ?? null,
+            emailFrom: (string) $scope->getEmailFrom() ?? null,
+            telephoneActivated: isset($scope->data['telephoneActivated']) ? (bool) $scope->data['telephoneActivated'] : null,
+            telephoneRequired: isset($scope->data['telephoneRequired']) ? (bool) $scope->data['telephoneRequired'] : null,
+            customTextfieldActivated: isset($scope->data['customTextfieldActivated']) ? (bool) $scope->data['customTextfieldActivated'] : null,
+            customTextfieldRequired: isset($scope->data['customTextfieldRequired']) ? (bool) $scope->data['customTextfieldRequired'] : null,
+            customTextfieldLabel: $scope->data['customTextfieldLabel'] ?? null,
+            captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
+            displayInfo: $scope->data['displayInfo'] ?? null
+        );
     }
 
     /**
@@ -222,7 +235,22 @@ class MapperService
             }
         }
 
-        return new ThinnedProcess(processId: isset($myProcess->id) ? (int) $myProcess->id : 0, timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null, authKey: isset($myProcess->authKey) ? $myProcess->authKey : null, familyName: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->familyName)) ? $myProcess->clients[0]->familyName : null, customTextfield: isset($myProcess->customTextfield) ? $myProcess->customTextfield : null, email: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->email)) ? $myProcess->clients[0]->email : null, telephone: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->telephone)) ? $myProcess->clients[0]->telephone : null, officeName: (isset($myProcess->scope->contact) && isset($myProcess->scope->contact->name)) ? $myProcess->scope->contact->name : null, officeId: (isset($myProcess->scope->provider) && isset($myProcess->scope->provider->id)) ? (int) $myProcess->scope->provider->id : 0, scope: isset($myProcess->scope) ? self::scopeToThinnedScope($myProcess->scope) : null, subRequestCounts: isset($subRequestCounts) ? array_values($subRequestCounts) : [], serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0, serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0, status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null);
+        return new ThinnedProcess(
+            processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
+            timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null,
+            authKey: isset($myProcess->authKey) ? $myProcess->authKey : null,
+            familyName: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->familyName)) ? $myProcess->clients[0]->familyName : null,
+            customTextfield: isset($myProcess->customTextfield) ? $myProcess->customTextfield : null,
+            email: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->email)) ? $myProcess->clients[0]->email : null,
+            telephone: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->telephone)) ? $myProcess->clients[0]->telephone : null,
+            officeName: (isset($myProcess->scope->contact) && isset($myProcess->scope->contact->name)) ? $myProcess->scope->contact->name : null,
+            officeId: (isset($myProcess->scope->provider) && isset($myProcess->scope->provider->id)) ? (int) $myProcess->scope->provider->id : 0,
+            scope: isset($myProcess->scope) ? self::scopeToThinnedScope($myProcess->scope) : null,
+            subRequestCounts: isset($subRequestCounts) ? array_values($subRequestCounts) : [],
+            serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0,
+            serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
+            status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null
+        );
     }
 
     public static function thinnedProcessToProcess(ThinnedProcess $thinnedProcess): Process
@@ -235,7 +263,6 @@ class MapperService
         $processEntity->id = $thinnedProcess->processId;
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
         $processEntity->customTextfield = $thinnedProcess->customTextfield ?? null;
-        // Moved to Process level
 
         $client = new Client();
         $client->familyName = $thinnedProcess->familyName ?? null;
@@ -245,7 +272,27 @@ class MapperService
         $appointment = new Appointment();
         $appointment->date = $thinnedProcess->timestamp ?? null;
         $processEntity->appointments = [$appointment];
+        // Set scope with all required fields
         $scope = new Scope();
+        if ($thinnedProcess->scope) {
+            $scope->id = $thinnedProcess->scope->id;
+            $scope->source = \App::$source_name;
+
+            // Set preferences as array structure
+            $scope->preferences = [
+                'client' => [
+                    'emailFrom' => $thinnedProcess->scope->getEmailFrom() ?? null,
+                    'telephoneActivated' => $thinnedProcess->scope->getTelephoneActivated() ?? false,
+                    'telephoneRequired' => $thinnedProcess->scope->getTelephoneRequired() ?? false,
+                    'customTextfieldActivated' => $thinnedProcess->scope->getCustomTextfieldActivated() ?? false,
+                    'customTextfieldRequired' => $thinnedProcess->scope->getCaptchaActivatedRequired() ?? false,
+                    'customTextfieldLabel' => $thinnedProcess->scope->getCustomTextfieldLabel() ?? null
+                ],
+                'notifications' => [
+                    'enabled' => true
+                ]
+            ];
+        }
         if (isset($thinnedProcess->officeName)) {
             $scope->contact = new Contact();
             $scope->contact->name = $thinnedProcess->officeName;
@@ -310,6 +357,6 @@ class MapperService
      */
     public static function providerToThinnedProvider(Provider $provider): ThinnedProvider
     {
-        return new ThinnedProvider(id: isset($provider->id) ? (int) $provider->id : null, name: isset($provider->name) ? $provider->name : null, source: isset($provider->source) ? $provider->source : null, lon: isset($provider->data['geo']['lon']) ? (float) $provider->data['geo']['lon'] : null, lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null, contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null,);
+        return new ThinnedProvider(id: isset($provider->id) ? (int) $provider->id : null, name: isset($provider->name) ? $provider->name : null, source: isset($provider->source) ? $provider->source : null, lon: isset($provider->data['geo']['lon']) ? (float) $provider->data['geo']['lon'] : null, lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null, contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null);
     }
 }
