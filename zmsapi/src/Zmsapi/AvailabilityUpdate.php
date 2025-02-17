@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @package ZMS API
- * @copyright BerlinOnline Stadtportal GmbH & Co.
- **/
-
 namespace BO\Zmsapi;
 
 use BO\Slim\Render;
@@ -13,170 +8,335 @@ use BO\Zmsdb\Availability as AvailabilityRepository;
 use BO\Zmsdb\Connection\Select as DbConnection;
 use BO\Zmsentities\Availability as Entity;
 use BO\Zmsentities\Collection\AvailabilityList as Collection;
+use BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Scope;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use BO\Zmsapi\AvailabilitySlotsUpdate;
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
 use BO\Zmsapi\Exception\Availability\AvailabilityNotFound as NotFoundException;
 use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed;
+use DateTimeImmutable;
 
-/**
- * @SuppressWarnings(Coupling)
- */
 class AvailabilityUpdate extends BaseController
 {
-    /**
-     * @return ResponseInterface
-     */
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
     ): ResponseInterface {
         (new Helper\User($request))->checkRights();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $input = Validator::input()->isJson()->assertValid()->getValue();
+        $input = $this->validateAndGetInput();
+        $resolveReferences = $this->getResolveReferences();
 
+        DbConnection::getWriteConnection();
+
+        $result = $this->processAvailabilityUpdate($input, $resolveReferences);
+
+        return $this->generateResponse($request, $response, $result);
+    }
+
+    private function validateAndGetInput(): array
+    {
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         if (!$input || count($input) === 0) {
             throw new BadRequestException();
         }
 
-        DbConnection::getWriteConnection();
+        $this->validateInputStructure($input);
+        return $input;
+    }
 
+    private function validateInputStructure(array $input): void
+    {
         if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
             throw new BadRequestException('Missing or invalid availabilityList.');
-        } elseif (empty($input['availabilityList']) || !isset($input['availabilityList'][0]['scope'])) {
+        }
+        if (empty($input['availabilityList']) || !isset($input['availabilityList'][0]['scope'])) {
             throw new BadRequestException('Missing or invalid scope.');
-        } elseif (!isset($input['selectedDate'])) {
+        }
+        if (!isset($input['selectedDate'])) {
             throw new BadRequestException("'selectedDate' is required.");
         }
+    }
+
+    private function getResolveReferences(): int
+    {
+        return Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
+    }
+
+    private function processAvailabilityUpdate(array $input, int $resolveReferences): Collection
+    {
+        $newCollection = $this->createAndValidateCollection($input['availabilityList'], $resolveReferences);
+        $selectedDate = $this->createSelectedDateTime($input['selectedDate']);
+        $scope = new Scope($input['availabilityList'][0]['scope']);
+
+        $this->validateAndCheckConflicts($newCollection, $scope, $selectedDate);
+
+        return $this->updateEntities($newCollection, $resolveReferences);
+    }
+
+    private function createAndValidateCollection(array $availabilityList, int $resolveReferences): Collection
+    {
         $availabilityRepo = new AvailabilityRepository();
         $newCollection = new Collection();
-        foreach ($input['availabilityList'] as $item) {
+
+        foreach ($availabilityList as $item) {
             $entity = new Entity($item);
             $entity->testValid();
+
             if (isset($entity->id)) {
-                $existingEntity = $availabilityRepo->readEntity($entity->id, $resolveReferences);
-                if (!$existingEntity || !$existingEntity->hasId()) {
-                    throw new NotFoundException("Availability with ID {$entity->id} not found.");
-                }
+                $this->validateExistingEntity($entity, $availabilityRepo, $resolveReferences);
             }
 
             $newCollection->addEntity($entity);
         }
 
-        $scopeData = $input['availabilityList'][0]['scope'];
-        $scope = new \BO\Zmsentities\Scope($scopeData);
-        $selectedDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00');
-        $weekday = (int)$selectedDate->format('N');
+        return $newCollection;
+    }
 
-        $conflicts = new \BO\Zmsentities\Collection\ProcessList();
+    private function validateExistingEntity(Entity $entity, AvailabilityRepository $repo, int $resolveReferences): void
+    {
+        $existingEntity = $repo->readEntity($entity->id, $resolveReferences);
+        if (!$existingEntity || !$existingEntity->hasId()) {
+            throw new NotFoundException("Availability with ID {$entity->id} not found.");
+        }
+    }
+
+    private function createSelectedDateTime(string $selectedDate): DateTimeImmutable
+    {
+        return DateTimeImmutable::createFromFormat(
+            'Y-m-d H:i:s',
+            $selectedDate . ' 00:00:00'
+        );
+    }
+
+    private function validateAndCheckConflicts(
+        Collection $newCollection,
+        Scope $scope,
+        DateTimeImmutable $selectedDate
+    ): void {
+        $conflicts = $this->getInitialConflicts($newCollection);
+        $mergedCollection = $this->getMergedCollection($newCollection, $scope);
+
+        $this->validateNewAvailabilities($newCollection, $mergedCollection, $selectedDate);
+
+        $filteredCollection = $this->getFilteredCollection($mergedCollection);
+        $this->checkExistingConflicts($conflicts, $filteredCollection, $selectedDate);
+
+        $weekday = (int)$selectedDate->format('N');
+        $filteredConflicts = $this->filterConflictsByWeekday(
+            $conflicts,
+            $filteredCollection,
+            $weekday
+        );
+
+        if ($filteredConflicts->count() > 0) {
+            throw new AvailabilityUpdateFailed();
+        }
+    }
+
+    private function getInitialConflicts(Collection $newCollection): ProcessList
+    {
+        $conflicts = new ProcessList();
         $newVsNewConflicts = $newCollection->hasNewVsNewConflicts();
         $conflicts->addList($newVsNewConflicts);
+        return $conflicts;
+    }
 
+    private function getMergedCollection(Collection $newCollection, Scope $scope): Collection
+    {
+        $availabilityRepo = new AvailabilityRepository();
         $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
 
         $mergedCollection = new Collection();
         foreach ($existingCollection as $existingAvailability) {
             $mergedCollection->addEntity($existingAvailability);
         }
+        return $mergedCollection;
+    }
 
+    private function validateNewAvailabilities(
+        Collection $newCollection,
+        Collection $mergedCollection,
+        DateTimeImmutable $selectedDate
+    ): void {
         $validations = [];
         foreach ($newCollection as $newAvailability) {
-            $startDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->startDate);
-            $endDate = (new \DateTimeImmutable())->setTimestamp($newAvailability->endDate);
-            $startDateTime = new \DateTimeImmutable("{$startDate->format('Y-m-d')} {$newAvailability->startTime}");
-            $endDateTime = new \DateTimeImmutable("{$endDate->format('Y-m-d')} {$newAvailability->endTime}");
-
-            $currentValidation = $mergedCollection->validateInputs(
-                $startDateTime,
-                $endDateTime,
-                $selectedDate,
-                $newAvailability->kind ?? 'default',
-                $newAvailability->bookable['startInDays'],
-                $newAvailability->bookable['endInDays'],
-                $newAvailability->weekday
+            $validations = array_merge(
+                $validations,
+                $this->validateSingleAvailability($newAvailability, $mergedCollection, $selectedDate)
             );
-            $validations = array_merge($validations, $currentValidation);
-
             $mergedCollection->addEntity($newAvailability);
         }
 
         if (count($validations) > 0) {
             throw new AvailabilityUpdateFailed();
         }
+    }
 
-        $originId = null;
-        foreach ($mergedCollection as $availability) {
-            if (isset($availability->kind) && $availability->kind === 'origin' && isset($availability->id)) {
-                $originId = $availability->id;
-                break;
-            }
-        }
-
-        $mergedCollectionWithoutExclusions = new Collection();
-        foreach ($mergedCollection as $availability) {
-            if (
-                (!isset($availability->kind) || $availability->kind !== 'exclusion') &&
-                (!isset($availability->id) || $availability->id !== $originId)
-            ) {
-                $mergedCollectionWithoutExclusions->addEntity($availability);
-            }
-        }
-
-        [$earliestStartDateTime, $latestEndDateTime] = $mergedCollectionWithoutExclusions->getDateTimeRangeFromList(
-            \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input['selectedDate'] . ' 00:00:00')
+    private function validateSingleAvailability(
+        Entity $availability,
+        Collection $mergedCollection,
+        DateTimeImmutable $selectedDate
+    ): array {
+        $startDate = (new DateTimeImmutable())->setTimestamp($availability->startDate);
+        $endDate = (new DateTimeImmutable())->setTimestamp($availability->endDate);
+        $startDateTime = new DateTimeImmutable(
+            "{$startDate->format('Y-m-d')} {$availability->startTime}"
         );
-        $existingConflicts = $mergedCollectionWithoutExclusions->checkAllVsExistingConflicts($earliestStartDateTime, $latestEndDateTime);
-        $conflicts->addList($existingConflicts);
+        $endDateTime = new DateTimeImmutable(
+            "{$endDate->format('Y-m-d')} {$availability->endTime}"
+        );
 
-        // Filter conflicts by weekday
-        $filteredConflicts = new \BO\Zmsentities\Collection\ProcessList();
+        return $mergedCollection->validateInputs(
+            $startDateTime,
+            $endDateTime,
+            $selectedDate,
+            $availability->kind ?? 'default',
+            $availability->bookable['startInDays'],
+            $availability->bookable['endInDays'],
+            $availability->weekday
+        );
+    }
+
+    private function getFilteredCollection(Collection $mergedCollection): Collection
+    {
+        $originId = $this->findOriginId($mergedCollection);
+
+        $filtered = new Collection();
+        foreach ($mergedCollection as $availability) {
+            if ($this->shouldIncludeAvailability($availability, $originId)) {
+                $filtered->addEntity($availability);
+            }
+        }
+        return $filtered;
+    }
+
+    private function findOriginId(Collection $collection): ?string
+    {
+        foreach ($collection as $availability) {
+            if (
+                isset($availability->kind) &&
+                $availability->kind === 'origin' &&
+                isset($availability->id)
+            ) {
+                return $availability->id;
+            }
+        }
+        return null;
+    }
+
+    private function shouldIncludeAvailability(Entity $availability, ?string $originId): bool
+    {
+        return (!isset($availability->kind) || $availability->kind !== 'exclusion') &&
+            (!isset($availability->id) || $availability->id !== $originId);
+    }
+
+    private function checkExistingConflicts(
+        ProcessList $conflicts,
+        Collection $filteredCollection,
+        DateTimeImmutable $selectedDate
+    ): void {
+        [$earliestStartDateTime, $latestEndDateTime] = $filteredCollection
+            ->getDateTimeRangeFromList($selectedDate);
+
+        $existingConflicts = $filteredCollection->checkAllVsExistingConflicts(
+            $earliestStartDateTime,
+            $latestEndDateTime
+        );
+        $conflicts->addList($existingConflicts);
+    }
+
+    private function filterConflictsByWeekday(
+        ProcessList $conflicts,
+        Collection $filteredCollection,
+        int $weekday
+    ): ProcessList {
+        $filteredConflicts = new ProcessList();
+
         foreach ($conflicts as $conflict) {
             $availability1 = $conflict->getFirstAppointment()->getAvailability();
-            $availability2 = null;
-            foreach ($mergedCollectionWithoutExclusions as $avail) {
-                if (
-                    $avail->id === $availability1->id ||
-                    (isset($avail->tempId) && isset($availability1->tempId) && $avail->tempId === $availability1->tempId)
-                ) {
-                    $availability2 = $avail;
-                    break;
-                }
-            }
+            $availability2 = $this->findMatchingAvailability(
+                $availability1,
+                $filteredCollection
+            );
 
-            // Check if either availability has the weekday bit set
-            $affectsSelectedDay = false;
-            if (isset($availability1->weekday[$weekday]) && (int)$availability1->weekday[$weekday] > 0) {
-                $affectsSelectedDay = true;
-            }
-            if ($availability2 && isset($availability2->weekday[$weekday]) && (int)$availability2->weekday[$weekday] > 0) {
-                $affectsSelectedDay = true;
-            }
-
-            // Only keep conflicts that affect the selected day
-            if ($affectsSelectedDay) {
+            if ($this->doesConflictAffectWeekday($availability1, $availability2, $weekday)) {
                 $filteredConflicts->addEntity($conflict);
             }
         }
 
-        if ($filteredConflicts->count() > 0) {
-            throw new AvailabilityUpdateFailed();
+        return $filteredConflicts;
+    }
+
+    private function findMatchingAvailability(
+        Entity $availability1,
+        Collection $collection
+    ): ?Entity {
+        foreach ($collection as $avail) {
+            if (
+                $avail->id === $availability1->id ||
+                (isset($avail->tempId) &&
+                 isset($availability1->tempId) &&
+                 $avail->tempId === $availability1->tempId)
+            ) {
+                return $avail;
+            }
+        }
+        return null;
+    }
+
+    private function doesConflictAffectWeekday(
+        Entity $availability1,
+        ?Entity $availability2,
+        int $weekday
+    ): bool {
+        $weekdayKey = strtolower(date('l', strtotime("Sunday +{$weekday} days")));
+
+        if (
+            isset($availability1->weekday[$weekdayKey]) &&
+            (int)$availability1->weekday[$weekdayKey] > 0
+        ) {
+            return true;
         }
 
+        if (
+            $availability2 &&
+            isset($availability2->weekday[$weekdayKey]) &&
+            (int)$availability2->weekday[$weekdayKey] > 0
+        ) {
+            return true;
+        }
 
+        return false;
+    }
+
+    private function updateEntities(Collection $newCollection, int $resolveReferences): Collection
+    {
         $updatedCollection = new Collection();
         foreach ($newCollection as $entity) {
             $updatedEntity = $this->writeEntityUpdate($entity, $resolveReferences);
             AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
             $updatedCollection->addEntity($updatedEntity);
         }
+        return $updatedCollection;
+    }
 
+    private function generateResponse(
+        RequestInterface $request,
+        ResponseInterface $response,
+        Collection $updatedCollection
+    ): ResponseInterface {
         $message = Response\Message::create($request);
         $message->data = $updatedCollection->getArrayCopy();
 
         $response = Render::withLastModified($response, time(), '0');
-        return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return Render::withJson(
+            $response,
+            $message->setUpdatedMetaData(),
+            $message->getStatuscode()
+        );
     }
 
     protected function writeEntityUpdate($entity, $resolveReferences): Entity
