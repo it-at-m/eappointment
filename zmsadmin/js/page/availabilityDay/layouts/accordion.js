@@ -134,11 +134,6 @@ class Accordion extends Component {
                                 onClick={onToggle}
                                 className="accordion__trigger"
                                 aria-expanded={accordionExpanded}
-                                style={(() => {
-                                    const hasDescriptionText = (text) =>
-                                        availability?.description?.includes(text);
-                                    return null;
-                                })()}
                             >
                                 <span className="accordion__title">{title}</span>
                             </button>
