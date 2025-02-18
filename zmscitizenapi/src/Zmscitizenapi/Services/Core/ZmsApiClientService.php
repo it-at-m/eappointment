@@ -111,9 +111,18 @@ class ZmsApiClientService
             $calendar->requests = $requests;
             $result = \App::$http->readPostResult('/calendar/', $calendar);
             $entity = $result?->getEntity();
+
             if (!$entity instanceof Calendar) {
                 return new Calendar();
             }
+            $bookableDays = new \BO\Zmsentities\Collection\DayList();
+            foreach ($entity->days as $day) {
+                if (isset($day['status']) && $day['status'] === 'bookable') {
+                    $bookableDays->addEntity($day);
+                }
+            }
+            $entity->days = $bookableDays;
+
             return $entity;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);

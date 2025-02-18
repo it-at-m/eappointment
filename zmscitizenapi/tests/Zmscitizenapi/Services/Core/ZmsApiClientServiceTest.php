@@ -386,27 +386,32 @@ class ZmsApiClientServiceTest extends TestCase
         ZmsApiClientService::getScopesByProviderId('unittest', 100);
     }
 
-    // Methods making direct API calls
     public function testGetFreeDaysSuccess(): void
     {
         $providers = new ProviderList([['id' => 1]]);
         $requests = new RequestList([['id' => 1]]);
         $firstDay = ['year' => 2025, 'month' => 1, 'day' => 1];
         $lastDay = ['year' => 2025, 'month' => 1, 'day' => 31];
-
+    
         $calendar = new Calendar();
-        $calendar->days = [
-            (object) ['year' => 2025, 'month' => 1, 'day' => 15]
-        ];
-
+        $dayList = new \BO\Zmsentities\Collection\DayList();
+        $day = new \BO\Zmsentities\Day([
+            'year' => 2025,
+            'month' => 1,
+            'day' => 15,
+            'status' => 'bookable'
+        ]);
+        $dayList->addEntity($day);
+        $calendar->days = $dayList;
+    
         $result = $this->createMock(Result::class);
         $result->method('getEntity')->willReturn($calendar);
-
+    
         $this->httpMock->expects($this->once())
             ->method('readPostResult')
             ->with('/calendar/', $this->isInstanceOf(Calendar::class))
             ->willReturn($result);
-
+    
         $result = ZmsApiClientService::getFreeDays($providers, $requests, $firstDay, $lastDay);
         $this->assertInstanceOf(Calendar::class, $result);
         $this->assertCount(1, $result->days);

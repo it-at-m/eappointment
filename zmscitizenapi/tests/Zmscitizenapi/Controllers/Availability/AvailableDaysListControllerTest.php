@@ -12,7 +12,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
     public function setUp(): void
     {
         parent::setUp();
-        
+
         \App::$source_name = 'unittest';
 
         if (\App::$cache) {
@@ -39,12 +39,31 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceCount' => '1',
         ];
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'availableDays' => [
-                "2024-08-21", "2024-08-22", "2024-08-23", "2024-08-26", "2024-08-27", "2024-08-28", "2024-08-29", "2024-08-30", 
-                "2024-09-02", "2024-09-03", "2024-09-04", "2024-09-05", "2024-09-06", "2024-09-09", "2024-09-10", "2024-09-11", 
-                "2024-09-12", "2024-09-13", "2024-09-16", "2024-09-17", "2024-09-18", "2024-09-19", "2024-09-20"
+                "2024-08-22",
+                "2024-08-23",
+                "2024-08-26",
+                "2024-08-27",
+                "2024-08-28",
+                "2024-08-29",
+                "2024-08-30",
+                "2024-09-02",
+                "2024-09-03",
+                "2024-09-04",
+                "2024-09-05",
+                "2024-09-06",
+                "2024-09-09",
+                "2024-09-10",
+                "2024-09-11",
+                "2024-09-12",
+                "2024-09-13",
+                "2024-09-16",
+                "2024-09-17",
+                "2024-09-18",
+                "2024-09-19",
+                "2024-09-20"
             ]
         ];
         $this->assertEquals(200, $response->getStatusCode());
@@ -72,7 +91,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'endDate' => '2024-08-23',
         ];
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('noAppointmentForThisDay')
@@ -92,7 +111,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'endDate' => 'invalid-date',
         ];
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidStartDate'),
@@ -113,9 +132,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidStartDate')
@@ -124,7 +143,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidStartDate')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
-   
+
     public function testMissingEndDate()
     {
         $parameters = [
@@ -133,18 +152,18 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidEndDate')
             ],
         ];
-        $this->assertEquals(ErrorMessages::get('invalidEndDate')['statusCode'], $response->getStatusCode()); 
+        $this->assertEquals(ErrorMessages::get('invalidEndDate')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
-    
+    }
+
     public function testMissingOfficeId()
     {
         $parameters = [
@@ -153,9 +172,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidOfficeId')
@@ -163,8 +182,8 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         ];
         $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
-    
+    }
+
     public function testMissingServiceId()
     {
         $parameters = [
@@ -173,9 +192,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'officeId' => '102522',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidServiceId')
@@ -183,7 +202,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         ];
         $this->assertEquals(ErrorMessages::get('invalidServiceId')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
+    }
 
     public function testMissingServiceCount()
     {
@@ -193,9 +212,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'officeId' => '102522',
             'serviceId' => '1063424',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidServiceCount')
@@ -203,8 +222,8 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         ];
         $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
-    
+    }
+
     public function testEmptyServiceCount()
     {
         $parameters = [
@@ -214,9 +233,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => '',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidServiceCount')
@@ -224,8 +243,8 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         ];
         $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
-        
+    }
+
     public function testInvalidServiceCountFormat()
     {
         $parameters = [
@@ -235,9 +254,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => 'one,two',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidServiceCount')
@@ -245,14 +264,14 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         ];
         $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
+    }
 
     public function testAllParametersMissing()
     {
         $parameters = [];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidStartDate'),
@@ -277,9 +296,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidStartDate'),
@@ -289,8 +308,8 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidStartDate')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidEndDate')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
-    
+    }
+
     public function testMissingOfficeIdAndServiceId()
     {
         $parameters = [
@@ -298,9 +317,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'endDate' => '2024-09-04',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidOfficeId'),
@@ -310,7 +329,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidServiceId')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
+    }
 
     public function testMissingServiceIdAndServiceCount()
     {
@@ -319,9 +338,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'endDate' => '2024-09-04',
             'officeId' => '102522',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidServiceId'),
@@ -331,8 +350,8 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidServiceId')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
-    
+    }
+
     public function testMissingStartDateAndOfficeId()
     {
         $parameters = [
@@ -340,9 +359,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidStartDate'),
@@ -353,7 +372,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
-     
+
     public function testMissingEndDateAndServiceCount()
     {
         $parameters = [
@@ -361,9 +380,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'officeId' => '102522',
             'serviceId' => '1063424',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidEndDate'),
@@ -373,7 +392,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidEndDate')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
+    }
 
     public function testMissingOfficeIdAndServiceCount()
     {
@@ -382,9 +401,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'endDate' => '2024-09-04',
             'serviceId' => '1063424',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidOfficeId'),
@@ -394,17 +413,17 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
-    
+    }
+
     public function testMissingStartDateEndDateAndOfficeId()
     {
         $parameters = [
             'serviceId' => '1063424',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidStartDate'),
@@ -416,17 +435,17 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidEndDate')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
- 
+    }
+
     public function testMissingStartDateEndDateAndServiceId()
     {
         $parameters = [
             'officeId' => '102522',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidStartDate'),
@@ -438,7 +457,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidEndDate')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidServiceId')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
+    }
 
     public function testMissingStartDateOfficeIdAndServiceCount()
     {
@@ -446,9 +465,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'endDate' => '2024-09-04',
             'serviceId' => '1063424',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidStartDate'),
@@ -460,17 +479,17 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
-   
+    }
+
     public function testMissingEndDateOfficeIdAndServiceCount()
     {
         $parameters = [
             'startDate' => '2024-08-29',
             'serviceId' => '1063424',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidEndDate'),
@@ -482,7 +501,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
+    }
 
     public function testEmptyStartDateAndEndDate()
     {
@@ -493,9 +512,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidStartDate'),
@@ -505,7 +524,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidStartDate')['statusCode'], $response->getStatusCode());
         $this->assertEquals(ErrorMessages::get('invalidEndDate')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
-    }    
+    }
 
     public function testNonNumericServiceCount()
     {
@@ -516,9 +535,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => 'abc,123',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidServiceCount')
@@ -527,7 +546,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidServiceCount')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
-    
+
     public function testInvalidOfficeIdFormat()
     {
         $parameters = [
@@ -537,9 +556,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidOfficeId')
@@ -548,7 +567,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidOfficeId')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
-    
+
     public function testInvalidServiceIdFormat()
     {
         $parameters = [
@@ -558,9 +577,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => 'invalid',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidServiceId')
@@ -574,7 +593,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
     {
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\\Zmsapi\\Exception\\Calendar\\InvalidFirstDay';
-        
+
         $this->setApiCalls([
             [
                 'function' => 'readPostResult',
@@ -582,7 +601,7 @@ class AvailableDaysListControllerTest extends ControllerTestCase
                 'exception' => $exception
             ]
         ]);
-    
+
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
@@ -590,9 +609,9 @@ class AvailableDaysListControllerTest extends ControllerTestCase
             'serviceId' => '1063424',
             'serviceCount' => '1',
         ];
-    
+
         $response = $this->render([], $parameters, []);
-        $responseBody = json_decode((string)$response->getBody(), true);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('invalidDateRange')
@@ -601,5 +620,5 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('invalidDateRange')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
-         
+
 }
