@@ -207,7 +207,7 @@ class Slot extends Base
         $slotlist = $availability->getSlotList();
         $slotlistIntern = $slotlist->withValueFor('callcenter', 0)->withValueFor('public', 0);
         $time = $now->modify('00:00:00');
-        if (!$generateNew)  {
+        if (!$generateNew) {
             $time = $lastGeneratedSlotDate->modify('+1 day')->modify('00:00:00');
         }
         $status = false;
