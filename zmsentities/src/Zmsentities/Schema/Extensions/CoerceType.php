@@ -11,8 +11,7 @@ class CoerceType implements Keyword
     public function validate($data, ValidationContext $context, $value): ?ValidationError
     {
         $type = $value;
-        
-        // Perform type coercion
+
         switch ($type) {
             case 'string':
                 if (is_numeric($data) || is_bool($data)) {
@@ -39,7 +38,7 @@ class CoerceType implements Keyword
                 }
                 break;
         }
-        
-        return null; // Return null if validation passes
+
+        return null;
     }
 }

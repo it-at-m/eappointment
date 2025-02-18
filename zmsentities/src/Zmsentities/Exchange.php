@@ -9,7 +9,7 @@ namespace BO\Zmsentities;
  */
 class Exchange extends Schema\Entity
 {
-    const PRIMARY = 'firstDay';
+    public const PRIMARY = 'firstDay';
 
     public static $schema = "exchange.json";
 

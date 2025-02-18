@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Exception;
 
-use \BO\Zmsentities\Schema\Validator;
+use BO\Zmsentities\Schema\Validator;
 use Opis\JsonSchema\ValidationError;
 
 class SchemaValidation extends \Exception
@@ -29,27 +29,24 @@ class SchemaValidation extends \Exception
     protected function setMessages($validationErrorList)
     {
         foreach ($validationErrorList as $error) {
-            // JSON Pointer auslesen
-            $pointer = is_array($error->data()->path()) 
-                ? "/" . implode("/", $error->data()->path()) 
+            $pointer = is_array($error->data()->path())
+                ? "/" . implode("/", $error->data()->path())
                 : (string) ($error->data()->path() ?? "(root)");
 
-            // Fehlernachricht mit Platzhaltern ersetzen
             $message = $error->message();
             foreach ($error->args() as $key => $value) {
                 $message = str_replace("{" . $key . "}", json_encode($value, JSON_UNESCAPED_SLASHES), $message);
             }
 
-            // Fehlermeldung speichern
             $this->data[$pointer]['messages'][$error->keyword()] = $message;
             $this->data[$pointer]['headline'] = $pointer;
             $this->data[$pointer]['failed'] = 1;
             $this->data[$pointer]['data'] = $error->data() !== null ? $error->data()->value() : null;
 
-            // Exception-Message korrekt setzen
-            $this->message .= ($this->message ? " | " : "") . '[property ' . $pointer . '] ' . json_encode($this->data[$pointer]['messages'], JSON_UNESCAPED_SLASHES);
+            $this->message .= ($this->message ? " | " : "")
+                . '[property ' . $pointer . '] '
+                . json_encode($this->data[$pointer]['messages'], JSON_UNESCAPED_SLASHES);
         }
         return $this;
     }
-
 }

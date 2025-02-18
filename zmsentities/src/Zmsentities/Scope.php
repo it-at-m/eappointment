@@ -7,7 +7,7 @@ namespace BO\Zmsentities;
  */
 class Scope extends Schema\Entity implements Useraccount\AccessInterface
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "scope.json";
 

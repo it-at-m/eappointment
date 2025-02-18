@@ -8,7 +8,7 @@ use Opis\JsonSchema\Errors\ValidationError;
 
 class SameValues implements KeywordValidator
 {
-    public function validate($value, $schemaKeyword, ValidationContext $context)
+    public function validate($value, ValidationContext $context)
     {
         if (is_array($value) && count($value) >= 2 && $value[0] === $value[1]) {
             return null;

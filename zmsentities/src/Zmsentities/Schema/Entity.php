@@ -15,7 +15,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * primary id for entity
      *
      */
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     /**
      * @var String $schema Filename of JSON-Schema file

@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Collection;
 
 class RequestRelationList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\RequestRelation';
+    public const ENTITY_CLASS = '\BO\Zmsentities\RequestRelation';
 
     public function hasRequest($requestIdCsv)
     {
