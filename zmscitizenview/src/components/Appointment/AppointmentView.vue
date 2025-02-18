@@ -18,7 +18,7 @@
               <service-finder
                 :base-url="baseUrl"
                 :preselected-service-id="serviceId"
-                :preselected-offive-id="locationId"
+                :preselected-office-id="locationId"
                 :exclusive-location="exclusiveLocation"
                 :t="t"
                 @next="setServices"
@@ -340,7 +340,7 @@ const setRebookData = () => {
       rebookedAppointment.value.customTextfield;
     updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
       (data) => {
-        if ((data as AppointmentDTO).processId !== undefined) {
+        if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
           if (
@@ -366,7 +366,7 @@ const nextReserveAppointment = () => {
     selectedProvider.value.id,
     props.baseUrl ?? undefined
   ).then((data) => {
-    if ((data as AppointmentDTO).processId !== undefined) {
+    if ((data as AppointmentDTO).processId != undefined) {
       if (appointment.value && !isRebooking.value) {
         cancelAppointment(appointment.value, props.baseUrl ?? undefined);
       }
@@ -398,7 +398,7 @@ const nextUpdateAppointment = () => {
 
     updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
       (data) => {
-        if ((data as AppointmentDTO).processId !== undefined) {
+        if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
           if (
@@ -419,7 +419,7 @@ const nextBookAppointment = () => {
   if (appointment.value) {
     preconfirmAppointment(appointment.value, props.baseUrl ?? undefined).then(
       (data) => {
-        if ((data as AppointmentDTO).processId !== undefined) {
+        if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
           if (isRebooking.value && rebookedAppointment.value) {
             cancelAppointment(
@@ -427,10 +427,8 @@ const nextBookAppointment = () => {
               props.baseUrl ?? undefined
             );
           }
-        } else {
-          // error.value = true;
+          increaseCurrentView();
         }
-        increaseCurrentView();
       }
     );
   }
@@ -440,7 +438,7 @@ const nextCancelAppointment = () => {
   if (appointment.value) {
     cancelAppointment(appointment.value, props.baseUrl ?? undefined).then(
       (data) => {
-        if ((data as AppointmentDTO).processId !== undefined) {
+        if ((data as AppointmentDTO).processId != undefined) {
           cancelAppointmentSuccess.value = true;
         } else {
           cancelAppointmentError.value = true;
@@ -491,8 +489,8 @@ onMounted(() => {
     try {
       appointmentData = JSON.parse(window.atob(props.confirmAppointmentHash));
       if (
-        appointmentData.id === undefined ||
-        appointmentData.authKey === undefined
+        appointmentData.id == undefined ||
+        appointmentData.authKey == undefined
       ) {
         confirmAppointmentError.value = true;
         return;
@@ -503,7 +501,7 @@ onMounted(() => {
     }
     confirmAppointment(appointmentData, props.baseUrl ?? undefined).then(
       (data) => {
-        if ((data as AppointmentDTO).processId !== undefined) {
+        if ((data as AppointmentDTO).processId != undefined) {
           confirmAppointmentSuccess.value = true;
         } else {
           confirmAppointmentError.value = true;
@@ -527,8 +525,8 @@ onMounted(() => {
       try {
         appointmentData = JSON.parse(window.atob(props.appointmentHash));
         if (
-          appointmentData.id === undefined ||
-          appointmentData.authKey === undefined
+          appointmentData.id == undefined ||
+          appointmentData.authKey == undefined
         ) {
           confirmAppointmentError.value = true;
           return;
@@ -539,7 +537,7 @@ onMounted(() => {
       }
       fetchAppointment(appointmentData, props.baseUrl ?? undefined).then(
         (data) => {
-          if ((data as AppointmentDTO).processId !== undefined) {
+          if ((data as AppointmentDTO).processId != undefined) {
             appointment.value = data as AppointmentDTO;
             selectedService.value = services.value.find(
               (service) => service.id == appointment.value.serviceId
