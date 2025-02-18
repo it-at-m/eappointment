@@ -23,6 +23,8 @@ class Validator
 
         // Register schema loader for resolving $refs
         $schemaPath = '/var/www/html/zmsentities/schema/';
+        error_log("Resolved schemaPath: " . $schemaPath);
+        error_log("Current working directory: " . getcwd());
 
         // Register all schema files
         $commonSchemas = [
