@@ -8,10 +8,12 @@ use BO\Zmscitizenapi\Services\Core\ZmsApiClientService;
 use BO\Zmsclient\Http;
 use BO\Zmsclient\Result;
 use BO\Zmsentities\Calendar;
+use BO\Zmsentities\Day;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Provider;
 use BO\Zmsentities\Scope;
 use BO\Zmsentities\Source;
+use BO\Zmsentities\Collection\DayList;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
@@ -394,8 +396,8 @@ class ZmsApiClientServiceTest extends TestCase
         $lastDay = ['year' => 2025, 'month' => 1, 'day' => 31];
     
         $calendar = new Calendar();
-        $dayList = new \BO\Zmsentities\Collection\DayList();
-        $day = new \BO\Zmsentities\Day([
+        $dayList = new DayList();
+        $day = new Day([
             'year' => 2025,
             'month' => 1,
             'day' => 15,
