@@ -122,7 +122,7 @@ import {
 const props = defineProps<{
   baseUrl: string | undefined;
   preselectedServiceId: string | undefined;
-  preselectedOffiveId: string | undefined;
+  preselectedOfficeId: string | undefined;
   exclusiveLocation: string | undefined;
   t: any;
 }>();
@@ -189,9 +189,9 @@ const setServiceData = (selectedService: ServiceImpl) => {
       })
       .filter((subService) => {
         if (subService === undefined) return false;
-        if (props.preselectedOffiveId) {
+        if (props.preselectedOfficeId) {
           return subService.providers.some(
-            (provider) => provider.id == props.preselectedOffiveId
+            (provider) => provider.id == props.preselectedOfficeId
           );
         }
         return true;
@@ -314,7 +314,7 @@ onMounted(() => {
   } else {
     fetchServicesAndProviders(
       props.preselectedServiceId ?? undefined,
-      props.preselectedOffiveId ?? undefined,
+      props.preselectedOfficeId ?? undefined,
       props.baseUrl ?? undefined
     ).then((data) => {
       services.value = data.services;
