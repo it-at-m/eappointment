@@ -8,7 +8,7 @@
     "packages": [
         {
             "name": "eappointment/mellon",
-            "version": "dev-chore-zms-3235-replace-json-guard-dependency",
+            "version": "v2.06.01",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
