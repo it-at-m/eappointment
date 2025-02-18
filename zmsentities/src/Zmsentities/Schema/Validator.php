@@ -25,6 +25,7 @@ class Validator
         $schemaPath = '/var/www/html/zmsentities/schema/';
         error_log("Resolved schemaPath: " . $schemaPath);
         error_log("Current working directory: " . getcwd());
+        error_log("Checking if availability.json exists: " . (file_exists($schemaPath . 'availability.json') ? 'Yes' : 'No'));
 
         // Register all schema files
         $commonSchemas = [
@@ -83,6 +84,8 @@ class Validator
                 );
             }
         }
+
+        // error_log(print_r($this->validator->resolver(), true));
 
         // Convert schema to JSON and create schema object
         $schemaJson = json_encode($schemaObject->toJsonObject());
