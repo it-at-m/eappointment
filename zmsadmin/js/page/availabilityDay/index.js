@@ -159,9 +159,9 @@ class AvailabilityPage extends Component {
                     if (availability.tempId) {
                         delete sendAvailability.tempId;
                     }
-                    if (sendAvailability.kind === 'new') {
-                        sendAvailability.description = 'Öffnungszeit für Terminvergabe';
-                    }
+                    if (sendAvailability.kind === 'new' && sendAvailability.description.includes("Neue Öffnungszeit")) {
+                        sendAvailability.description = sendAvailability.description.replace("Neue Öffnungszeit", "");
+                    }                                        
                     return {
                         ...sendAvailability,
                         kind: availability.kind || 'default',
