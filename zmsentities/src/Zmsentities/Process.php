@@ -623,7 +623,7 @@ class Process extends Schema\Entity
             array(
                 'BuergerID' => $this->id,
                 'StandortID' => $this->scope['id'],
-                'Anmerkung' => $this->amendment,
+                'Anmerkung' => NULL,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
             ),
@@ -638,7 +638,7 @@ class Process extends Schema\Entity
             array(
                 'BuergerID' => $this->id,
                 'StandortID' => $this->scope['id'],
-                'CustomTextfield' => $this->customTextfield,
+                'CustomTextfield' => NULL,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
             ),
