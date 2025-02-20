@@ -138,6 +138,7 @@ jobs:
           echo "Setup fixtures..."
           rm -rf data
           ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
+          ls -la /__w/eappointment/eappointment/zmsentities/schema/
           echo "Importing test data..."
           vendor/bin/importTestData --commit
           mkdir -p coverage
