@@ -4,42 +4,48 @@
     "appointments": [
         {
             "scope": {
-                "id": "112"
+                "id": 112,
+                "provider": {
+                    "id": 123456,
+                    "name": "Flughafen Schönefeld, Aufsicht",
+                    "source": "dldb"
+                },
+                "shortName": "Zentrale"
             },
             "availability": {
                 "id": "98153",
                 "weekday": {
-                    "monday": "0",
-                    "tuesday": "0",
-                    "wednesday": "0",
-                    "thursday": "0",
-                    "friday": "16",
-                    "saturday": "0",
-                    "sunday": "0"
+                    "monday": 0,
+                    "tuesday": 0,
+                    "wednesday": 0,
+                    "thursday": 0,
+                    "friday": 16,
+                    "saturday": 0,
+                    "sunday": 0
                 },
                 "repeat": {
-                    "afterWeeks": "1",
-                    "weekOfMonth": "0"
+                    "afterWeeks": 1,
+                    "weekOfMonth": 0
                 },
                 "bookable": {
-                    "startInDays": "0",
-                    "endInDays": "60"
+                    "startInDays": 0,
+                    "endInDays": 60
                 },
                 "workstationCount": {
-                    "public": "1",
-                    "callcenter": "2",
-                    "intern": "2"
+                    "public": 1,
+                    "callcenter": 2,
+                    "intern": 2
                 },
-                "multipleSlotsAllowed": "1",
-                "slotTimeInMinutes": "6",
-                "startDate": "1458255600",
-                "endDate": "1467237600",
+                "multipleSlotsAllowed": 1,
+                "slotTimeInMinutes": 6,
+                "startDate": 1458255600,
+                "endDate": 1467237600,
                 "startTime": "10:00:00",
                 "endTime": "12:36:00",
                 "type": "appointment"
             },
             "slotCount": 0,
-            "date": "1464250320"
+            "date": 1464250320
         }
     ],
     "authKey": "",
@@ -69,7 +75,7 @@
     ],
     "scope": {
         "hint": "NUR EIN KUNDE PRO TERMIN",
-        "id": "112",
+        "id": 112,
         "contact": {
             "name": "Bürgeramt Biesdorf - Center",
             "street": "Elsterwerdaer Platz 3, 12683 Berlin",
@@ -79,8 +85,8 @@
         "shortName": "Bürgeramt",
         "provider": {
             "source": "dldb",
-            "id": "122271",
-            "displayName":"001",
+            "id": 122271,
+            "displayName": "001",
             "link": "https://service.berlin.de/standort/122271/",
             "name": "Bürgeramt Biesdorf - Center",
             "contact": {

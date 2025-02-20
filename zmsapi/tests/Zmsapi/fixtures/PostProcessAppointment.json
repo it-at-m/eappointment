@@ -5,45 +5,51 @@
         {
             "date": 1464685200,
             "scope": {
-                "id": "141"
+                "id": 141
             },
             "availability": {
                 "id": "94669",
                 "weekday": {
-                    "sunday": "0",
-                    "monday": "0",
-                    "tuesday": "4",
-                    "wednesday": "0",
-                    "thursday": "0",
-                    "friday": "0",
-                    "saturday": "0"
+                    "sunday": 0,
+                    "monday": 0,
+                    "tuesday": 4,
+                    "wednesday": 0,
+                    "thursday": 0,
+                    "friday": 0,
+                    "saturday": 0
                 },
                 "repeat": {
-                    "afterWeeks": "1",
-                    "weekOfMonth": "0"
+                    "afterWeeks": 1,
+                    "weekOfMonth": 0
                 },
                 "bookable": {
-                    "startInDays": "0",
-                    "endInDays": "60"
+                    "startInDays": 0,
+                    "endInDays": 60
                 },
                 "workstationCount": {
-                    "public": "2",
-                    "callcenter": "2",
-                    "intern": "2"
+                    "public": 2,
+                    "callcenter": 2,
+                    "intern": 2
                 },
-                "multipleSlotsAllowed": "0",
-                "slotTimeInMinutes": "10",
+                "multipleSlotsAllowed": 0,
+                "slotTimeInMinutes": 10,
                 "startDate": 1463954400,
                 "endDate": 1609369200,
                 "startTime": "11:00:00",
                 "endTime": "17:50:00",
                 "type": "appointment",
                 "scope": {
-                    "id": "141"
+                    "id": 141,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
                 },
                 "description": ""
             },
-            "slotCount": "1"
+            "slotCount": 1
         }
     ],
     "authKey": "da4a",
@@ -58,13 +64,13 @@
         }
     ],
     "createIP": "",
-    "createTimestamp": "1459504500",
-    "id": "154776",
+    "createTimestamp": 1459504500,
+    "id": 154776,
     "archiveId": 0,
     "queue": {
         "$schema": "https:\/\/schema.berlin.de\/queuemanagement\/queue.json",
         "arrivalTime": 1464685200,
-        "callCount": "0",
+        "callCount": 0,
         "callTime": 0,
         "number": "100009",
         "waitingTime": null,
@@ -72,7 +78,7 @@
         "lastCallTime": 0,
         "destination": null,
         "destinationHint": null,
-        "withAppointment": "1"
+        "withAppointment": 1
     },
     "reminderTimestamp": 0,
     "requests": [
@@ -85,7 +91,7 @@
         }
     ],
     "scope": {
-        "id": "141",
+        "id": 141,
         "provider": {
             "contact": {
                 "city": "Berlin",
@@ -97,7 +103,7 @@
                 "streetNumber": "12"
             },
             "source": "dldb",
-            "id": "122217",
+            "id": 122217,
             "link": "https:\/\/service.berlin.de\/standort\/122217\/",
             "name": "B\u00fcrgeramt Heerstra\u00dfe",
             "displayName":"001"
@@ -111,76 +117,76 @@
         },
         "preferences": {
             "appointment": {
-                "deallocationDuration": "10",
+                "deallocationDuration": 10,
                 "infoForAppointment": "",
-                "endInDaysDefault": "60",
-                "multipleSlotsEnabled": "0",
-                "reservationDuration": "20",
-                "startInDaysDefault": "0",
-                "notificationConfirmationEnabled": "1",
-                "notificationHeadsUpEnabled": "1"
+                "endInDaysDefault": 60,
+                "multipleSlotsEnabled": 0,
+                "reservationDuration": 20,
+                "startInDaysDefault": 0,
+                "notificationConfirmationEnabled": 1,
+                "notificationHeadsUpEnabled": 1
             },
             "client": {
                 "alternateAppointmentUrl": "",
-                "amendmentActivated": "0",
+                "amendmentActivated": 0,
                 "amendmentLabel": "0",
                 "emailFrom": "test@example.com",
-                "emailRequired": "0",
-                "telephoneActivated": "0",
-                "telephoneRequired": "0"
+                "emailRequired": 0,
+                "telephoneActivated": 0,
+                "telephoneRequired": 0
             },
             "notifications": {
                 "confirmationContent": "",
                 "headsUpContent": "Ihre Wartezeit betr\u00e4gt noch ca. 30 Min., bitte informieren Sie sich \u00fcber die Aufrufanzeige im B\u00fcrgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
-                "headsUpTime": "30"
+                "headsUpTime": 30
             },
             "pickup": {
                 "alternateName": "Ausgabe",
-                "isDefault": "0"
+                "isDefault": 0
             },
             "queue": {
-                "callCountMax": "0",
+                "callCountMax": 0,
                 "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp:\/\/www.berlin.de\/ba-charlottenburg-wilmersdorf\/org\/buergerdienste\/buergeraemter.html",
-                "firstNumber": "1",
-                "lastNumber": "499",
-                "maxNumberContingent": "0",
-                "processingTimeAverage": "15",
-                "publishWaitingTimeEnabled": "1",
-                "statisticsEnabled": "1"
+                "firstNumber": 1,
+                "lastNumber": 499,
+                "maxNumberContingent": 0,
+                "processingTimeAverage": 15,
+                "publishWaitingTimeEnabled": 1,
+                "statisticsEnabled": 1
             },
             "survey": {
                 "emailContent": "Test Anfrage KB mit Linkpr\u00fcfung:\r\n\r\nhttps:\/\/service.berlin.de\/app\/\r\n\r\n\u003Ch3\u003EHTML Pr\u00fcfung\u003C\/h3\u003E\r\n\u003Cp\u003EMein Text mit \u003Ca href=\"mailto:test@example.com\"\u003EKontakt\u003C\/a\u003E.\r\n",
-                "enabled": "1",
+                "enabled": 1,
                 "label": "Zustimmung KB"
             },
             "ticketprinter": {
                 "buttonName": "B\u00fcrgeramt",
-                "confirmationEnabled": "0",
+                "confirmationEnabled": 0,
                 "deactivatedText": "0",
-                "notificationsAmendmentEnabled": "0",
-                "notificationsEnabled": "0",
-                "notificationsDelay": "0"
+                "notificationsAmendmentEnabled": 0,
+                "notificationsEnabled": 0,
+                "notificationsDelay": 0
             },
             "workstation": {
-                "emergencyEnabled": "1",
-                "emergencyRefreshInterval": "5"
+                "emergencyEnabled": 1,
+                "emergencyRefreshInterval": 5
             }
         },
         "shortName": "",
         "status": {
             "emergency": {
                 "acceptedByWorkstation": "-1",
-                "activated": "0",
+                "activated": 0,
                 "calledByWorkstation": "-1"
             },
             "queue": {
-                "ghostWorkstationCount": "5",
-                "givenNumberCount": "2",
-                "lastGivenNumber": "3",
+                "ghostWorkstationCount": 5,
+                "givenNumberCount": 2,
+                "lastGivenNumber": 3,
                 "lastGivenNumberTimestamp": 1459461600
             },
             "ticketprinter": {
-                "deactivated": "0"
+                "deactivated": 0
             }
         }
     },

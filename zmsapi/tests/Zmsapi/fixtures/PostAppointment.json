@@ -1,8 +1,14 @@
 {
     "$schema": "https:\/\/schema.berlin.de\/queuemanagement\/appointment.json",
-    "date": "1464588000",
+    "date": 1464588000,
     "scope": {
-        "id": "141"
+        "id": 141,
+        "provider": {
+            "id": 123456,
+            "name": "Flughafen Schönefeld, Aufsicht",
+            "source": "dldb"
+        },
+        "shortName": "Zentrale"
     },
     "availability": {
         "id": 0,
@@ -37,5 +43,5 @@
         "endTime": "23:59",
         "type": "appointment"
     },
-    "slotCount": "1"
+    "slotCount": 1
 }
