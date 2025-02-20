@@ -47,6 +47,7 @@ jobs:
         run: |
           cd "${{ matrix.module }}"
           mkdir -p coverage
+          ls -la /__w/eappointment/eappointment/zmsentities/schema/
           echo "Running tests with coverage for ${{ matrix.module }}"
           php -dmemory_limit=-1 \
             ./vendor/bin/phpunit -c phpunit.xml \
