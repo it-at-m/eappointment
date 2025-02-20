@@ -31,6 +31,11 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->toProperty()->shortName->get();
     }
 
+    public function getEmailFrom()
+    {
+        return $this->getPreference('client', 'emailFrom', null);
+    }
+
     public function getTelephoneActivated()
     {
         return $this->getPreference('client', 'telephoneActivated', null);

@@ -69,6 +69,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                             ]
                         ],
                         "shortName" => "Scope 1",
+                        "emailFrom" => "no-reply@muenchen.de",
                         "telephoneActivated" => true,
                         "telephoneRequired" => false,
                         "customTextfieldActivated" => true,
@@ -110,6 +111,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                             ]
                         ],
                         "shortName" => "Scope 2",
+                        "emailFrom" => "no-reply@muenchen.de",
                         "telephoneActivated" => false,
                         "telephoneRequired" => true,
                         "customTextfieldActivated" => false,
@@ -201,6 +203,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                             ]
                         ],
                         "shortName" => "Scope 1",
+                        "emailFrom" => "no-reply@muenchen.de",
                         "telephoneActivated" => true,
                         "telephoneRequired" => false,
                         "customTextfieldActivated" => true,
@@ -242,6 +245,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                             ]
                         ],
                         "shortName" => "Scope 2",
+                        "emailFrom" => "no-reply@muenchen.de",
                         "telephoneActivated" => false,
                         "telephoneRequired" => true,
                         "customTextfieldActivated" => false,

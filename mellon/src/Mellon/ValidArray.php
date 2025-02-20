@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -11,7 +12,6 @@ namespace BO\Mellon;
   */
 class ValidArray extends \BO\Mellon\Valid
 {
-
     /**
      * Allow native arrays anc class replacements
      *
@@ -21,7 +21,8 @@ class ValidArray extends \BO\Mellon\Valid
      */
     public function isArray($message = 'no valid array')
     {
-        if (is_array($this->value)
+        if (
+            is_array($this->value)
             || (
                 $this->value instanceof \Traversable
                 && $this->value instanceof \Countable

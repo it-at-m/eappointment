@@ -80,6 +80,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'source'=> null
                 ],
                 "shortName" => null,
+                "emailFrom" => null,
                 "telephoneActivated" => null,
                 "telephoneRequired" => null,
                 "customTextfieldActivated" => null,

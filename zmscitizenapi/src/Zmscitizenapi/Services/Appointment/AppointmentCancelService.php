@@ -33,7 +33,6 @@ class AppointmentCancelService
             ]];
         }
 
-        // Send cancellation email before cancelling the appointment
         $this->sendCancellationEmail($process);
         return $this->cancelProcess($process);
     }
@@ -80,6 +79,6 @@ class AppointmentCancelService
     private function sendCancellationEmail(ThinnedProcess $process): void
     {
         $processEntity = MapperService::thinnedProcessToProcess($process);
-        ZmsApiFacadeService::sendCancelationEmail($processEntity);
+        ZmsApiFacadeService::sendCancellationEmail($processEntity);
     }
 }

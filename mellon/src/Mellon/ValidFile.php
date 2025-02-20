@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Mellon
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -44,7 +45,8 @@ class ValidFile extends Valid
     public function hasType($type = 'jpeg', $message = 'Invalid file type.')
     {
         if (isset($_FILES[$this->fileName])) {
-            if ((! empty($_FILES[$this->fileName]["type"])) &&
+            if (
+                (! empty($_FILES[$this->fileName]["type"])) &&
                 ($_FILES[$this->fileName]['type'] != $this->acceptableTypes[$type])
             ) {
                 $this->setFailure($message);
