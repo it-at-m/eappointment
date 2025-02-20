@@ -60,6 +60,7 @@
         "displayInfo": "Infos zum Standort.",
         "preferences": {
           "client": {
+            "emailFrom": "no-reply@muenchen.de",
             "telephoneActivated": "0",
             "telephoneRequired": "1",
             "customTextfieldActivated": "0",

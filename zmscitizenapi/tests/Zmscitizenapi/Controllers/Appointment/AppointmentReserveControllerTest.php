@@ -86,6 +86,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                     ]
                 ],
                 "shortName" => "Gewerbemeldungen",
+                "emailFrom" => "no-reply@muenchen.de",
                 "telephoneActivated" => false,
                 "telephoneRequired" => true,
                 "customTextfieldActivated" => false,

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e6cea63ceca469d9ab61b8bfbc05cd3",
+    "content-hash": "6a9a1e773ba9c137a28de3ea88af658d",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -393,16 +393,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.13.54",
+            "version": "8.13.55",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "42d3a03d4f47fcb784666743f4323a7b87a2b2ba"
+                "reference": "6e28b3d53cf96d7f41c83d9b80b6021ecbd00537"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/42d3a03d4f47fcb784666743f4323a7b87a2b2ba",
-                "reference": "42d3a03d4f47fcb784666743f4323a7b87a2b2ba",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/6e28b3d53cf96d7f41c83d9b80b6021ecbd00537",
+                "reference": "6e28b3d53cf96d7f41c83d9b80b6021ecbd00537",
                 "shasum": ""
             },
             "require": {
@@ -466,7 +466,7 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2025-01-31T14:50:26+00:00"
+            "time": "2025-02-14T08:14:08+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -7171,7 +7171,6 @@
         "eappointment/zmsclient": 20,
         "eappointment/zmsentities": 20,
         "eappointment/zmsslim": 20,
-        "phpmd/phpmd": 0,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
