@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests\Services\Core;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Process;
@@ -205,110 +206,106 @@ class ValidationServiceTest extends TestCase
         );
     }
 
-    public function testValidateUpdateAppointmentInputs(): void
+    public function testValidateAppointmentUpdateAuth(): void
     {
-        // Test valid input
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            'valid-key',
-            'John Doe',
-            'john@example.com',
-            '+1234567890',
-            'Custom text'
-        );
+        $result = ValidationService::validateAppointmentUpdateAuth(1, 'valid-key');
         $this->assertEmpty($result['errors']);
-
-        // Test invalid process ID
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            0,
-            'valid-key',
-            'John Doe',
-            'john@example.com',
-            '+1234567890',
-            'Custom text'
-        );
+    
+        $result = ValidationService::validateAppointmentUpdateAuth(0, 'valid-key');
         $this->assertContains(
             ErrorMessages::get('invalidProcessId'),
             $result['errors']
         );
-
-        // Test invalid auth key
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            '',
-            'John Doe',
-            'john@example.com',
-            '+1234567890',
-            'Custom text'
-        );
+    
+        $result = ValidationService::validateAppointmentUpdateAuth(1, '');
         $this->assertContains(
             ErrorMessages::get('invalidAuthKey'),
             $result['errors']
         );
-
-        // Test invalid family name
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            'valid-key',
+    }
+    
+    public function testValidateAppointmentUpdateFields(): void
+    {
+        $scope = new ThinnedScope();
+        $scope->customTextfieldActivated = true;
+        $scope->customTextfieldRequired = true;
+        $scope->telephoneActivated = true;
+        $scope->telephoneRequired = true;
+        $scope->emailRequired = true;
+    
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            'john@example.com',
+            '+1234567890',
+            'Custom text',
+            $scope
+        );
+        $this->assertEmpty($result['errors']);
+    
+        $result = ValidationService::validateAppointmentUpdateFields(
             '',
             'john@example.com',
             '+1234567890',
-            'Custom text'
+            'Custom text',
+            $scope
         );
         $this->assertContains(
             ErrorMessages::get('invalidFamilyName'),
             $result['errors']
         );
-
-        // Test invalid email
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            'valid-key',
+    
+        $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
             'invalid-email',
             '+1234567890',
-            'Custom text'
+            'Custom text',
+            $scope
         );
         $this->assertContains(
             ErrorMessages::get('invalidEmail'),
             $result['errors']
         );
-
-        // Test invalid telephone
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            'valid-key',
+    
+        $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
             'john@example.com',
             'invalid',
-            'Custom text'
+            'Custom text',
+            $scope
         );
         $this->assertContains(
             ErrorMessages::get('invalidTelephone'),
             $result['errors']
         );
-
-        // Test invalid custom textfield
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            'valid-key',
+    
+        $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
             'john@example.com',
             '+1234567890',
-            ''
+            '',
+            $scope
         );
         $this->assertContains(
             ErrorMessages::get('invalidCustomTextfield'),
             $result['errors']
         );
+    
+        $optionalScope = new ThinnedScope();
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            null,
+            null,
+            null,
+            $optionalScope
+        );
+        $this->assertEmpty($result['errors']);
     }
 
     public function testValidateGetScopeById(): void
     {
-        // Test valid scope ID
+
         $this->assertEmpty(ValidationService::validateGetScopeById(1));
 
-        // Test invalid scope ID
         $result = ValidationService::validateGetScopeById(0);
         $this->assertEquals(
             ['errors' => [ErrorMessages::get('invalidScopeId')]],
@@ -318,10 +315,8 @@ class ValidationServiceTest extends TestCase
 
     public function testValidateGetServicesByOfficeId(): void
     {
-        // Test valid office ID
         $this->assertEmpty(ValidationService::validateGetServicesByOfficeId(1));
 
-        // Test invalid office ID
         $result = ValidationService::validateGetServicesByOfficeId(0);
         $this->assertEquals(
             ['errors' => [ErrorMessages::get('invalidOfficeId')]],
@@ -331,10 +326,8 @@ class ValidationServiceTest extends TestCase
 
     public function testValidateGetOfficeListByServiceId(): void
     {
-        // Test valid service ID
         $this->assertEmpty(ValidationService::validateGetOfficeListByServiceId(1));
 
-        // Test invalid service ID
         $result = ValidationService::validateGetOfficeListByServiceId(0);
         $this->assertEquals(
             ['errors' => [ErrorMessages::get('invalidServiceId')]],

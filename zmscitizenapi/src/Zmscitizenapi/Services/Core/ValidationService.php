@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
-use BO\Zmscitizenapi\Middleware\LanguageMiddleware;
+use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Collection\ProcessList;
@@ -22,7 +22,7 @@ class ValidationService
     private static ?string $currentLanguage = null;
     private const DATE_FORMAT = 'Y-m-d';
     private const MIN_PROCESS_ID = 1;
-    private const PHONE_PATTERN = '/^\+?[1-9]\d{6,14}$/';
+    private const PHONE_PATTERN = '/^+?\d[\d\s]*$/';
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
@@ -187,31 +187,53 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateUpdateAppointmentInputs(?int $processId, ?string $authKey, ?string $familyName, ?string $email, ?string $telephone, ?string $customTextfield): array
+    public static function validateAppointmentUpdateAuth(?int $processId, ?string $authKey): array
     {
         $errors = [];
         if (!self::isValidProcessId($processId)) {
             $errors[] = self::getError('invalidProcessId');
         }
-
         if (!self::isValidAuthKey($authKey)) {
             $errors[] = self::getError('invalidAuthKey');
         }
+        return ['errors' => $errors];
+    }
+
+    public static function validateAppointmentUpdateFields(
+        ?string $familyName,
+        ?string $email,
+        ?string $telephone,
+        ?string $customTextfield,
+        ?ThinnedScope $scope
+    ): array {
+        $errors = [];
 
         if (!self::isValidFamilyName($familyName)) {
             $errors[] = self::getError('invalidFamilyName');
         }
 
-        if (!self::isValidEmail($email)) {
-            $errors[] = self::getError('invalidEmail');
+        if ($scope && $scope->emailRequired) {
+            if ($email === null || !self::isValidEmail($email)) {
+                $errors[] = self::getError('invalidEmail');
+            } elseif ($email !== null && !self::isValidEmail($email)) {
+                $errors[] = self::getError('invalidEmail');
+            }
         }
 
-        if (!self::isValidTelephone($telephone)) {
-            $errors[] = self::getError('invalidTelephone');
+        if ($scope && $scope->telephoneActivated) {
+            if ($scope->telephoneRequired && ($telephone === null || !self::isValidTelephone($telephone))) {
+                $errors[] = self::getError('invalidTelephone');
+            } elseif ($telephone !== null && !self::isValidTelephone($telephone)) {
+                $errors[] = self::getError('invalidTelephone');
+            }
         }
 
-        if (!self::isValidCustomTextfield($customTextfield)) {
-            $errors[] = self::getError('invalidCustomTextfield');
+        if ($scope && $scope->customTextfieldActivated) {
+            if ($scope->customTextfieldRequired && ($customTextfield === null || !self::isValidCustomTextfield($customTextfield))) {
+                $errors[] = self::getError('invalidCustomTextfield');
+            } elseif ($customTextfield !== null && !self::isValidCustomTextfield($customTextfield)) {
+                $errors[] = self::getError('invalidCustomTextfield');
+            }
         }
 
         return ['errors' => $errors];

@@ -14,18 +14,50 @@ class AppointmentUpdateService
     public function processUpdate(array $body): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($body);
+
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
         }
 
         $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey);
-        if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
+        if (!($reservedProcess instanceof ThinnedProcess)) {
             return $reservedProcess;
         }
 
         $updatedProcess = $this->updateProcessWithClientData($reservedProcess, $clientData);
         return $this->saveProcessUpdate($updatedProcess);
+    }
+
+    private function validateClientData(object $data): array
+    {
+        $allErrors = [];
+
+        $basicErrors = ValidationService::validateAppointmentUpdateAuth($data->processId, $data->authKey);
+        if (!empty($basicErrors['errors'])) {
+            $allErrors = array_merge($allErrors, $basicErrors['errors']);
+        }
+
+        $reservedProcess = null;
+        if (is_int($data->processId) && is_string($data->authKey)) {
+            $reservedProcess = $this->getReservedProcess($data->processId, $data->authKey);
+            if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
+                $allErrors = array_merge($allErrors, $reservedProcess['errors']);
+            }
+        }
+
+        $fieldErrors = ValidationService::validateAppointmentUpdateFields(
+            $data->familyName,
+            $data->email,
+            $data->telephone,
+            $data->customTextfield,
+            $reservedProcess instanceof ThinnedProcess ? $reservedProcess->scope : null
+        );
+        if (!empty($fieldErrors['errors'])) {
+            $allErrors = array_merge($allErrors, $fieldErrors['errors']);
+        }
+
+        return ['errors' => $allErrors];
     }
 
     private function extractClientData(array $body): object
@@ -42,11 +74,6 @@ class AppointmentUpdateService
             'telephone' => isset($body['telephone']) && is_string($body['telephone']) ? (string) $body['telephone'] : null,
             'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield']) ? (string) $body['customTextfield'] : null,
         ];
-    }
-
-    private function validateClientData(object $data): array
-    {
-        return ValidationService::validateUpdateAppointmentInputs($data->processId, $data->authKey, $data->familyName, $data->email, $data->telephone, $data->customTextfield);
     }
 
     private function getReservedProcess(int $processId, string $authKey): ThinnedProcess|array
