@@ -614,7 +614,7 @@ class Process extends Schema\Entity
         return var_export(array(
                 'BuergerID' => $this->id,
                 'StandortID' => $this->scope['id'],
-                'Anmerkung' => $this->amendment,
+                'Anmerkung' => NULL,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
             ), 1);
@@ -626,7 +626,7 @@ class Process extends Schema\Entity
         return var_export(array(
                 'BuergerID' => $this->id,
                 'StandortID' => $this->scope['id'],
-                'CustomTextfield' => $this->customTextfield,
+                'CustomTextfield' => NULL,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
             ), 1);
