@@ -22,7 +22,7 @@ class ValidationService
     private static ?string $currentLanguage = null;
     private const DATE_FORMAT = 'Y-m-d';
     private const MIN_PROCESS_ID = 1;
-    private const PHONE_PATTERN = '/^+?\d[\d\s]*$/';
+    private const PHONE_PATTERN = '/^\+?[1-9]\d{6,14}$/';
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
@@ -208,35 +208,54 @@ class ValidationService
     ): array {
         $errors = [];
 
+        self::validateFamilyNameField($familyName, $errors);
+        self::validateEmailField($email, $scope, $errors);
+        self::validateTelephoneField($telephone, $scope, $errors);
+        self::validateCustomTextField($customTextfield, $scope, $errors);
+
+        return ['errors' => $errors];
+    }
+
+    private static function validateFamilyNameField(?string $familyName, array &$errors): void
+    {
         if (!self::isValidFamilyName($familyName)) {
             $errors[] = self::getError('invalidFamilyName');
         }
+    }
 
-        if ($scope && $scope->emailRequired) {
-            if ($email === null || !self::isValidEmail($email)) {
-                $errors[] = self::getError('invalidEmail');
-            } elseif ($email !== null && !self::isValidEmail($email)) {
-                $errors[] = self::getError('invalidEmail');
-            }
+    private static function validateEmailField(?string $email, ?ThinnedScope $scope, array &$errors): void
+    {
+        if ($scope && $scope->emailRequired && !self::isValidEmail($email)) {
+            $errors[] = self::getError('invalidEmail');
+        }
+    }
+
+    private static function validateTelephoneField(?string $telephone, ?ThinnedScope $scope, array &$errors): void
+    {
+        if (!$scope || !$scope->telephoneActivated) {
+            return;
         }
 
-        if ($scope && $scope->telephoneActivated) {
-            if ($scope->telephoneRequired && ($telephone === null || !self::isValidTelephone($telephone))) {
-                $errors[] = self::getError('invalidTelephone');
-            } elseif ($telephone !== null && !self::isValidTelephone($telephone)) {
-                $errors[] = self::getError('invalidTelephone');
-            }
+        if (
+            ($scope->telephoneRequired && !self::isValidTelephone($telephone)) ||
+            ($telephone !== null && !self::isValidTelephone($telephone))
+        ) {
+            $errors[] = self::getError('invalidTelephone');
+        }
+    }
+
+    private static function validateCustomTextField(?string $customTextfield, ?ThinnedScope $scope, array &$errors): void
+    {
+        if (!$scope || !$scope->customTextfieldActivated) {
+            return;
         }
 
-        if ($scope && $scope->customTextfieldActivated) {
-            if ($scope->customTextfieldRequired && ($customTextfield === null || !self::isValidCustomTextfield($customTextfield))) {
-                $errors[] = self::getError('invalidCustomTextfield');
-            } elseif ($customTextfield !== null && !self::isValidCustomTextfield($customTextfield)) {
-                $errors[] = self::getError('invalidCustomTextfield');
-            }
+        if (
+            ($scope->customTextfieldRequired && !self::isValidCustomTextfield($customTextfield)) ||
+            ($customTextfield !== null && !self::isValidCustomTextfield($customTextfield))
+        ) {
+            $errors[] = self::getError('invalidCustomTextfield');
         }
-
-        return ['errors' => $errors];
     }
 
     public static function validateGetScopeById(?int $scopeId): array
