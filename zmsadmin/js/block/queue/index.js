@@ -10,7 +10,7 @@ class View extends BaseView {
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
-        this.load();
+        this.load(this.withCalled);
     }
 
     setOptions(options) {
