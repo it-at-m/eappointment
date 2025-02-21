@@ -110,7 +110,9 @@
                 }
             }
         },
-        "scope": {}
+        "scope": {
+            "$ref": "./ThinnedScope.json"
+        }
     },
     "required": [
         "id"

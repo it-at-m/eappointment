@@ -10,8 +10,6 @@ use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Models\Office;
-use BO\Zmscitizenapi\Models\ProcessFreeSlots;
-use BO\Zmscitizenapi\Models\ProcessFreeSlotsGroupByOffice;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;

@@ -13,15 +13,7 @@
             "description": "Office ID"
           },
           "appointmentTimestamps": {
-            "type": "array",
-            "description": "Array of available appointment timestamps in seconds since epoch",
-            "items": {
-              "type": "integer",
-              "description": "Timestamp in seconds since epoch",
-              "minimum": 0
-            },
-            "uniqueItems": true,
-            "minItems": 0
+            "$ref": "./appointmentTimestamps.json"
           }
         },
         "required": ["offices"]

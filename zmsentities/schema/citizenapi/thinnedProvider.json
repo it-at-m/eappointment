@@ -36,64 +36,7 @@
             "description": "Data source"
         },
         "contact": {
-            "title": "ThinnedContact",
-            "description": "Represents a simplified contact object for the citizen API.",
-            "type": [
-                "array",
-                "object",
-                "null"
-            ],
-            "properties": {
-                "city": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "description": "The city name."
-                },
-                "country": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "description": "The country name."
-                },
-                "name": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "description": "Optional name field displayed for contact."
-                },
-                "postalCode": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "description": "The postal (ZIP) code."
-                },
-                "region": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "description": "The region or state name."
-                },
-                "street": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "description": "The street name."
-                },
-                "streetNumber": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "description": "The house/street number."
-                }
-            }
+            "$ref": "./thinnedContact.json"
         }
     }
 }
