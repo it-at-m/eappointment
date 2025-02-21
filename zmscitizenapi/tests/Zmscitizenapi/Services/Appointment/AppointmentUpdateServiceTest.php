@@ -21,7 +21,6 @@ class AppointmentUpdateServiceTest extends TestCase
         $this->service = new AppointmentUpdateService();
         $this->reflector = new \ReflectionClass(AppointmentUpdateService::class);
         
-        // Store original facade
         $facadeReflection = new \ReflectionClass(ZmsApiFacadeService::class);
         $staticProperties = $facadeReflection->getStaticProperties();
         self::$originalFacade = reset($staticProperties);
@@ -30,7 +29,6 @@ class AppointmentUpdateServiceTest extends TestCase
     protected function tearDown(): void
     {
         parent::tearDown();
-        // Restore original facade
         $facadeReflection = new \ReflectionClass(ZmsApiFacadeService::class);
         $staticProperty = $facadeReflection->getProperties(\ReflectionProperty::IS_STATIC)[0];
         $staticProperty->setAccessible(true);

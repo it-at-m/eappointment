@@ -490,7 +490,6 @@ class ZmsApiFacadeService
         $currentTimestamp = time();
         $allTimestamps = [];
 
-        // Collect all timestamps
         foreach ($freeSlots as $slot) {
             if (isset($slot->appointments) && is_iterable($slot->appointments)) {
                 foreach ($slot->appointments as $appointment) {
@@ -504,7 +503,6 @@ class ZmsApiFacadeService
             }
         }
 
-        // Final deduplication and sorting
         $uniqueTimestamps = array_values(array_unique($allTimestamps));
         sort($uniqueTimestamps);
 
