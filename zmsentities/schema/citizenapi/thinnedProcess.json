@@ -70,7 +70,7 @@
       "description": "Unique identifier for the office"
     },
     "scope": {
-      "$ref": "./ThinnedScope.json"
+      "$ref": "./thinnedScope.json"
     },
     "status": {
       "type": [

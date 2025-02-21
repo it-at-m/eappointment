@@ -111,7 +111,7 @@
             }
         },
         "scope": {
-            "$ref": "./ThinnedScope.json"
+            "$ref": "./thinnedScope.json"
         }
     },
     "required": [

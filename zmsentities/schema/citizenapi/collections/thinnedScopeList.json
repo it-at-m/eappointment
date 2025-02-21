@@ -8,7 +8,7 @@
     "scopes": {
       "type": "array",
       "items": {
-        "$ref": "../ThinnedScope.json"
+        "$ref": "../thinnedScope.json"
       }
     }
   },
