@@ -482,40 +482,39 @@ class ZmsApiFacadeService
         return new AvailableAppointments(array_values($timestamps)[0]);
     }
 
-    private static function processFreeSlots(ProcessList $freeSlots): array
-    {
+    private static function processFreeSlots(ProcessList $freeSlots): array {
         $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
-
+    
         $currentTimestamp = time();
-        $appointmentTimestamps = array_reduce(iterator_to_array($freeSlots), function ($timestamps, $slot) use ($currentTimestamp) {
-
+        $allTimestamps = [];
+    
+        // Collect all timestamps
+        foreach ($freeSlots as $slot) {
             if (isset($slot->appointments) && is_iterable($slot->appointments)) {
-                $providerId = (int) $slot->scope->provider->id;
                 foreach ($slot->appointments as $appointment) {
                     if (isset($appointment->date)) {
                         $timestamp = (int) $appointment->date;
                         if ($timestamp > $currentTimestamp) {
-                            $timestamps[$providerId][$timestamp] = true;
+                            $allTimestamps[] = $timestamp;
                         }
                     }
                 }
             }
-            return $timestamps;
-        }, []);
-        foreach ($appointmentTimestamps as $providerId => &$timestamps) {
-            $timestamps = array_keys($timestamps);
-            asort($timestamps);
         }
-
-        $errors = ValidationService::validateGetProcessByIdTimestamps($appointmentTimestamps);
+    
+        // Final deduplication and sorting
+        $uniqueTimestamps = array_values(array_unique($allTimestamps));
+        sort($uniqueTimestamps);
+    
+        $errors = ValidationService::validateGetProcessByIdTimestamps($uniqueTimestamps);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
-
-        return $appointmentTimestamps;
+    
+        return ['appointmentTimestamps' => $uniqueTimestamps];
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
