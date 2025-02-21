@@ -67,20 +67,17 @@ class QueueTable extends BaseController
                     'status' => 'called,processing',
                 ]
             )
-            ->getCollection() ?? []) : false;
+            ->getCollection() ?? []) : [];
 
-        $queueListCalled->uasort(function ($queueA, $queueB) {
-
-            $statusOrder = ['called' => 0, 'processing' => 1];
-
-            $cmp = $statusOrder[$queueA->status] <=> $statusOrder[$queueB->status];
-            if ($cmp !== 0) {
-                return $cmp;
-            }
-
-            return $queueB->callTime <=> $queueA->callTime;
-        });
-
+        if ($queueListCalled instanceof \BO\Zmsentities\Collection\QueueList) {
+            $queueListCalled->uasort(function ($queueA, $queueB) {
+                $statusOrder = ['called' => 0, 'processing' => 1];
+                $cmp = $statusOrder[$queueA->status] <=> $statusOrder[$queueB->status];
+                return $cmp !== 0 ? $cmp : $queueB->callTime <=> $queueA->callTime;
+            });
+        } else {
+            $queueListCalled = [];
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,
