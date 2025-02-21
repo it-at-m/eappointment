@@ -5,3 +5,40 @@ reviews:
     base_branches:
       - next
     drafts: true
+  path_instructions:
+    - path: "**/*.php"
+      instructions: |
+        Flag any usage of error_log() as it should be replaced with proper logging mechanisms:
+        1. For error handling: Use a proper logging framework with error levels (PSR-3 LoggerInterface)
+        2. For debugging: Use a dedicated debug logger or remove debug statements
+        3. For CLI output: Use a CLI output handler or symfony/console
+        4. For application events: Use structured logging with proper log levels
+
+        Example replacement:
+        ```php
+        // Instead of:
+        error_log("Import failed - " . $e->getMessage());
+        
+        // Use:
+        $logger->error("Import failed", ['error' => $e->getMessage()]);
+        ```
+    - path: "**/*.{js,jsx,ts,tsx}"
+      instructions: |
+        Flag any usage of console.log() as it should be replaced with proper logging:
+        1. For development: Use proper debug tools or logging libraries
+        2. For production: Remove console.log() statements or use structured logging
+        3. For errors: Use error tracking services (e.g., Sentry)
+        4. For debugging: Consider using debug libraries that can be enabled/disabled
+
+        Example replacement:
+        ```javascript
+        // Instead of:
+        console.log('User data:', userData);
+        
+        // Use:
+        logger.debug('Processing user data', { userData });
+        // or for development only:
+        if (process.env.NODE_ENV === 'development') {
+          debug('User data:', userData);
+        }
+        ```
