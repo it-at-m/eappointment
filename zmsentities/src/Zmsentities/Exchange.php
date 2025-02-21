@@ -259,13 +259,19 @@ class Exchange extends Schema\Entity
             $field = array_shift($fields);
             $fieldposition = $this->getPositionByName($field);
 
+            $requestscountPosition = $this->getPositionByName('requestscount');
+
+
             foreach ($this->data as $element) {
-                // Check if $fieldposition exists in $element
                 if (isset($element[$fieldposition])) {
                     if (!isset($list[$element[$fieldposition]])) {
                         $list[$element[$fieldposition]] = clone $this;
                         $list[$element[$fieldposition]]->data = [];
                     }
+                    if ($requestscountPosition !== false && isset($element[$requestscountPosition])) {
+                        $element[$requestscountPosition] = (int) $element[$requestscountPosition];
+                    }
+
                     $list[$element[$fieldposition]]->data[] = $element;
                 }
             }
