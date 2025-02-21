@@ -480,15 +480,16 @@ class ZmsApiFacadeService
         return new AvailableAppointments(array_values($timestamps)[0]);
     }
 
-    private static function processFreeSlots(ProcessList $freeSlots): array {
+    private static function processFreeSlots(ProcessList $freeSlots): array
+    {
         $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
-    
+
         $currentTimestamp = time();
         $allTimestamps = [];
-    
+
         // Collect all timestamps
         foreach ($freeSlots as $slot) {
             if (isset($slot->appointments) && is_iterable($slot->appointments)) {
@@ -502,16 +503,16 @@ class ZmsApiFacadeService
                 }
             }
         }
-    
+
         // Final deduplication and sorting
         $uniqueTimestamps = array_values(array_unique($allTimestamps));
         sort($uniqueTimestamps);
-    
+
         $errors = ValidationService::validateGetProcessByIdTimestamps($uniqueTimestamps);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
-    
+
         return ['appointmentTimestamps' => $uniqueTimestamps];
     }
 
