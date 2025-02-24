@@ -238,7 +238,7 @@ import {
   MucSlider,
   MucSliderItem,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, onMounted, ref, watch } from "vue";
+import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
@@ -416,9 +416,13 @@ const handleProviderSelection = (id: number) => {
   showSelectionForProvider(selectableProviders.value[id]);
 };
 
-const handleTimeSlotSelection = (timeSlot: number) => {
+const handleTimeSlotSelection = async (timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
-  if (summary.value) summary.value.focus();
+  if (summary.value) {
+    await nextTick();
+    summary.value.focus();
+    summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 };
 
 /**
