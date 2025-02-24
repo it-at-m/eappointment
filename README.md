@@ -163,6 +163,7 @@ To keep our branch names organized and easily understandable, we follow a specif
 
 2. **project**: The project identifier. This should be:
    - `zms` for the ZMS project.
+   - `zmskvr` for the ZMSKVR project.
    - `mpdzbs` for the MPDZBS project.
 
 3. **issue number**: The ticket or issue number related to this branch (use digits only). This helps track the branch to a specific issue in the project management system.
@@ -177,17 +178,22 @@ To keep our branch names organized and easily understandable, we follow a specif
 
 - **Feature Branch**: `feature-zms-12345-this-is-a-feature-in-the-zms-project`
 - **Bugfix Branch**: `bugfix-mpdzbs-67890-fix-crash-on-startup`
-- **Hotfix Branch**: `hotfix-zms-98765-critical-fix-for-login`
+- **Hotfix Branch**: `hotfix-zmskvr-98765-critical-fix-for-login`
 - **Cleanup Branch**: `cleanup-mpdzbs-11111-remove-unused-code`
 - **Chore Branch**: `chore-zms-2964-composer-update`
-- **Docs Branch**: `docs-zms-0000-update-readme` `docs-zms-release-40-update-changelog`
+- **Docs Branch**: `docs-zmskvr-0000-update-readme` `docs-zms-release-40-update-changelog`
 
 #### Regular Expression
 
 The branch name must match the following regular expression:
-`^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|mpdzbs)-[0-9]+-[a-z0-9-]+$`
+`^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|zmskvr|mpdzbs)-[0-9]+-[a-z0-9-]+$`
 
 **For further commit rules please refer to https://www.conventionalcommits.org/en/v1.0.0-beta.4/**
+- **feat(ZMS-123): commit message**
+- **fix(ZMSKVR-123): commit message**
+- **clean(ZMS-123): commit message**
+- **chore(ZMSKVR-123): commit message**
+- **docs(ZMS-123): commit message**
 
 ## Screenshot
 ![screenshot](https://github.com/user-attachments/assets/54d360e9-c47b-4f3c-b849-5966a8766af9)
