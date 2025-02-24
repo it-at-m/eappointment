@@ -28,6 +28,7 @@
   "errorMessageTelephoneNumberRequired": "Bitte geben Sie Ihre Telefonnummer an.",
   "errorMessageTelephoneNumberValidation": "Ihre Telefonnummer entspricht nicht dem vorgegebenen Format. Bitte geben Sie nur ein +-Zeichen,  Zahlen und Leerzeichen ein.",
   "contact": "Kontakt",
+  "contactDetails": "Kontaktdaten",
   "estimatedDuration": "Voraussichtliche Termindauer:",
   "firstName": "Vorname",
   "hint": "Hinweis",

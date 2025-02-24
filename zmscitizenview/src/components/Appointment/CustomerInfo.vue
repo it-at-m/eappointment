@@ -3,7 +3,7 @@
     class="m-component-form__title"
     tabindex="0"
   >
-    Kontaktdaten
+    {{ t("contactDetails") }}
   </h2>
   <form class="m-form m-form--default">
     <muc-input

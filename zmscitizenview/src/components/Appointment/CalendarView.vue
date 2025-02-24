@@ -108,7 +108,7 @@
       />
     </div>
     <div
-      v-if="selectedDay"
+      v-if="selectedDay && timeSlotsInHours.size > 0"
       class="m-component"
     >
       <div class="m-content">
@@ -118,7 +118,7 @@
         <b tabindex="0">{{ formatDay(selectedDay) }}</b>
       </div>
       <div
-        v-for="[timeslot, times] in timeSlotsInHours()"
+        v-for="[timeslot, times] in timeSlotsInHours"
         :key="timeslot"
       >
         <div class="wrapper">
@@ -238,7 +238,7 @@ import {
   MucSlider,
   MucSliderItem,
 } from "@muenchen/muc-patternlab-vue";
-import { inject, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
@@ -273,13 +273,17 @@ const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
 
 const selectableProviders = ref<OfficeImpl[]>();
 const availableDays = ref<string[]>();
-const appointmentTimestamps = ref<number[]>();
+const appointmentTimestamps = ref<number[]>([]);
 
 const selectedDay = ref<Date>();
 const error = ref<boolean>(false);
 const minDate = ref<Date>();
 const maxDate = ref<Date>();
 
+/**
+ * Reference to the appointment summary.
+ * After selecting a time slot, the focus is placed on the appointment summary.
+ */
 const summary = ref<HTMLElement | null>(null);
 
 const TODAY = new Date();
@@ -323,9 +327,9 @@ const formatTime = (time: any) => {
   return formatterTime.format(date);
 };
 
-const timeSlotsInHours = () => {
+const timeSlotsInHours = computed(() => {
   const timesByHours = new Map<number, number[]>();
-  appointmentTimestamps.value?.forEach((time) => {
+  appointmentTimestamps.value.forEach((time) => {
     const berlinDate = new Date(time * 1000);
     const hour = parseInt(berlinHourFormatter.format(berlinDate));
     if (!timesByHours.has(hour)) {
@@ -334,7 +338,7 @@ const timeSlotsInHours = () => {
     timesByHours.get(hour)?.push(time);
   });
   return timesByHours;
-};
+});
 
 const showSelectionForProvider = (provider: OfficeImpl) => {
   selectedProvider.value = provider;
@@ -363,6 +367,7 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
 };
 
 const getAppointmentsOfDay = (date: string) => {
+  appointmentTimestamps.value = [];
   fetchAvailableTimeSlots(
     date,
     selectedProvider.value,
@@ -374,7 +379,6 @@ const getAppointmentsOfDay = (date: string) => {
       appointmentTimestamps.value = (
         data as AvailableTimeSlotsDTO
       ).appointmentTimestamps;
-      timeSlotsInHours();
     } else {
       error.value = true;
     }
@@ -417,6 +421,10 @@ const handleTimeSlotSelection = (timeSlot: number) => {
   if (summary.value) summary.value.focus();
 };
 
+/**
+ * This function determines the expected duration of the appointment.
+ * The provider is queried for the service and each subservice because the slots for the respective service are stored in this provider.
+ */
 const estimatedDuration = () => {
   let time = 0;
   const serviceProvider = selectedService.value?.providers?.find(
@@ -424,8 +432,9 @@ const estimatedDuration = () => {
   );
   if (
     serviceProvider &&
-    selectedService.value?.count &&
-    serviceProvider?.slots
+    serviceProvider.slots &&
+    selectedService.value &&
+    selectedService.value.count
   ) {
     time =
       selectedService.value.count *
@@ -434,7 +443,7 @@ const estimatedDuration = () => {
   }
 
   if (selectedService.value?.subServices) {
-    selectedService.value?.subServices?.forEach((subservice) => {
+    selectedService.value.subServices.forEach((subservice) => {
       const subserviceProvider = subservice.providers?.find(
         (provider) => provider.id == selectedProvider.value?.id
       );
@@ -454,6 +463,7 @@ const previousStep = () => emit("back");
 
 onMounted(() => {
   if (selectedService.value && selectedService.value.providers) {
+    // Checks whether a provider is already selected so that it is displayed first in the slider.
     let offices = selectedService.value.providers.filter((office) => {
       if (props.preselectedOfficeId) {
         return office.id == props.preselectedOfficeId;
@@ -462,6 +472,7 @@ onMounted(() => {
       }
     });
 
+    // Checks whether there are restrictions on the providers due to the subservices.
     if (selectedService.value.subServices) {
       const choosenSubservices = selectedService.value.subServices.filter(
         (subservice) => subservice.count > 0
@@ -479,6 +490,7 @@ onMounted(() => {
       selectableProviders.value = selectedService.value.providers;
     }
 
+    // If alternative locations are allowed to be selected, they will be added to the slider.
     if (
       !props.exclusiveLocation &&
       ((offices.length > 0 && offices[0].showAlternativeLocations) ||
