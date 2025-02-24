@@ -7,7 +7,7 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
+use BO\Slim\Render;
 
 class StatusDeadlock extends BaseController
 {

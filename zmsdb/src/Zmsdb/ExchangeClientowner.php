@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
+use BO\Zmsentities\Exchange;
 
 class ExchangeClientowner extends Base
 {
@@ -18,7 +18,7 @@ class ExchangeClientowner extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
-        $config = (new Config)->readEntity();
+        $config = (new Config())->readEntity();
         $costs = $config->getNotificationPreferences()['costs'];
 
         $owner = (new Owner())->readEntity($subjectid);

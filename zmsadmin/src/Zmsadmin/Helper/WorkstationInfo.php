@@ -1,13 +1,15 @@
 <?php
+
 /**
  *
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin\Helper;
 
-use \BO\Mellon\Validator;
+use BO\Mellon\Validator;
 
 class WorkstationInfo
 {
@@ -20,17 +22,43 @@ class WorkstationInfo
             'waitingClientsBeforeNext' => 0,
             'waitingClientsEffective' => 0
         );
-        $scope = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/workstationcount/')->getEntity();
+        $scope = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/workstationcount/')->getEntity();
 
         $clusterHelper = (new ClusterHelper($workstation));
-       
+
         $infoData['workstationGhostCount'] = $scope->status['queue']['ghostWorkstationCount'];
         $infoData['workstationList'] = ($clusterHelper->isClusterEnabled()) ?
             static::getWorkstationsByCluster($clusterHelper->getEntity()->getId()) :
             static::getWorkstationsByScope($scope->getId());
 
         $queueListHelper = (new QueueListHelper($clusterHelper, $selectedDate));
-        
+
+        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
+        $processList = $workstationRequest->readProcessListByDate(
+            new \DateTime($selectedDate)
+        );
+
+        $withAppointment = [];
+        $withoutAppointment = [];
+
+        foreach ($processList as $process) {
+            if (!in_array($process->queue->status, ['queued', 'confirmed']) || $process->queue->waitingTime === 0) {
+                continue;
+            }
+
+            if ($process->queue->withAppointment) {
+                $withAppointment[] = self::stringTimeToMinute($process->queue->waitingTime);
+                continue;
+            }
+
+            $withoutAppointment[] = self::stringTimeToMinute($process->queue->waitingTime);
+        }
+
+        $infoData['averageWaitingTimeWithAppointment'] =
+            count($withAppointment) ? array_sum($withAppointment) / count($withAppointment) : 0;
+        $infoData['averageWaitingTimeWithoutAppointment'] =
+            count($withoutAppointment) ? array_sum($withoutAppointment) / count($withoutAppointment) : 0;
+
         $infoData['countCurrentlyProcessing'] = count($queueListHelper->getFullList()->withStatus(['called', 'processing']));
 
         if ($queueListHelper->getWaitingCount()) {
@@ -42,18 +70,33 @@ class WorkstationInfo
         return $infoData;
     }
 
+    public static function stringTimeToMinute($time)
+    {
+        $timeArray = explode(':', $time);
+
+        if (count($timeArray) === 3) {
+            $minutes = (int) $timeArray[0] * 60 * 24 + (int) $timeArray[1] * 60 + (int) $timeArray[2];
+        } elseif (count($timeArray) === 2) {
+            $minutes = (int) $timeArray[0] * 60 + (int) $timeArray[1];
+        } else {
+            $minutes = (int) $timeArray[0];
+        }
+
+        return $minutes;
+    }
+
 
     public static function getWorkstationsByScope($scopeId)
     {
         return \App::$http
-            ->readGetResult('/scope/'. $scopeId . '/workstation/', ['resolveReferences' => 1])
+            ->readGetResult('/scope/' . $scopeId . '/workstation/', ['resolveReferences' => 1])
             ->getCollection();
     }
 
     public static function getWorkstationsByCluster($clusterId)
     {
         return \App::$http
-            ->readGetResult('/cluster/'. $clusterId . '/workstation/', ['resolveReferences' => 1])
+            ->readGetResult('/cluster/' . $clusterId . '/workstation/', ['resolveReferences' => 1])
             ->getCollection();
     }
 

@@ -2,8 +2,8 @@
 
 namespace BO\Slim\Controller;
 
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class TwigExceptionViewer extends \BO\Slim\Controller
 {

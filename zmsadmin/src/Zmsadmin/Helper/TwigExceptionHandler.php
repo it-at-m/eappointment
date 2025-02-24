@@ -2,8 +2,8 @@
 
 namespace BO\Zmsadmin\Helper;
 
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
 {

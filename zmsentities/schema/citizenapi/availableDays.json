@@ -1,0 +1,17 @@
+{
+  "title": "AvailableDays",
+  "type": ["array", "object", "null"],
+  "properties": {
+    "availableDays": {
+      "type": ["array", "null"],
+      "description": "Array of dates on which appointments are available",
+      "items": {
+        "type": "string",
+        "format": "date",
+        "description": "Date in YYYY-MM-DD format"
+      }
+    }
+  },
+  "required": ["availableDays"],
+  "description": "Schema defining the available days for an office and service"
+}

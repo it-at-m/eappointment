@@ -2,8 +2,8 @@
 
 namespace BO\Zmsapi\Helper;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Useraccount;
+use BO\Slim\Render;
+use BO\Zmsdb\Useraccount;
 
 class TicketprinterAccess
 {
@@ -15,7 +15,7 @@ class TicketprinterAccess
     public static function testTicketprinter($entity)
     {
         if ($entity->hasId()) {
-            $organisation = (new \BO\Zmsdb\Organisation)->readByHash($entity->hash);
+            $organisation = (new \BO\Zmsdb\Organisation())->readByHash($entity->hash);
         }
         self::testTicketprinterNotFound($entity);
         self::testTicketprinterValidHash($entity);
@@ -25,7 +25,7 @@ class TicketprinterAccess
     public static function testMatchingClusterAndScopes($entity, $organisationId)
     {
         if (isset($entity->buttons) && $entity->buttons) {
-            $departmentList = (new \BO\Zmsdb\Department)->readByOrganisationId($organisationId, 1);
+            $departmentList = (new \BO\Zmsdb\Department())->readByOrganisationId($organisationId, 1);
             $scopeList = $departmentList->getUniqueScopeList();
             //$clusterList = $departmentList->getUniqueClusterList();
             foreach ($entity->buttons as $button) {
@@ -40,7 +40,7 @@ class TicketprinterAccess
 
     public static function testTicketprinterNotFound($entity)
     {
-        if (! $entity->hasId() || ! (new \BO\Zmsdb\Ticketprinter)->readByHash($entity->getId())->hasId()) {
+        if (! $entity->hasId() || ! (new \BO\Zmsdb\Ticketprinter())->readByHash($entity->getId())->hasId()) {
             throw new \BO\Zmsapi\Exception\Ticketprinter\TicketprinterNotFound();
         }
     }
@@ -53,10 +53,12 @@ class TicketprinterAccess
     }
 
     public static function testTicketprinterValidHash($entity)
-    {       
-        if (isset($entity->id) &&
+    {
+        if (
+            isset($entity->id) &&
             $entity->id &&
-            (new \BO\Zmsdb\Ticketprinter)->readByHash($entity->hash)->id != $entity->id) {
+            (new \BO\Zmsdb\Ticketprinter())->readByHash($entity->hash)->id != $entity->id
+        ) {
             throw new \BO\Zmsapi\Exception\Ticketprinter\TicketprinterHashNotValid();
         }
     }

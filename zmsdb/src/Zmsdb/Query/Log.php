@@ -16,8 +16,8 @@ class Log extends Base
 
     const QUERY_DELETE_BY_PROCESS = '
         DELETE mq,  mp
-        FROM '. self::TABLE .' mq
-        LEFT JOIN '. Mimepart::TABLE .' mp ON mp.queueId = mq.id
+        FROM ' . self::TABLE . ' mq
+        LEFT JOIN ' . Mimepart::TABLE . ' mp ON mp.queueId = mq.id
         WHERE mq.processID=?
     ';
 
@@ -51,5 +51,16 @@ class Log extends Base
     public function addConditionOlderThan(\DateTime $olderThanDate)
     {
         $this->query->where('log.ts', '<', $olderThanDate->format('Y-m-d H:i:s'));
+    }
+
+    public function addConditionDataSearch(string $search)
+    {
+        $this->query->where('log.data', 'LIKE', '%' . $search . '%');
+
+        if (is_numeric($search)) {
+            $this->query->orWhere('log.reference_id', '=', $search);
+        }
+
+        $this->query->orderBy('log.ts', 'DESC');
     }
 }

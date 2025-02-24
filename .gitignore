@@ -7,3 +7,4 @@
 .vscode/settings.json
 .vscode/tasks.json
 .vscode/terminals.json
+coverage/

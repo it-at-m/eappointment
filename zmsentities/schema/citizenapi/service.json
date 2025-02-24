@@ -1,0 +1,38 @@
+{
+    "title": "Service",
+    "type": ["array", "object", "null"],
+    "properties": {
+      "id": {
+        "type": ["integer", "null"],
+        "description": "Unique identifier for the service"
+      },
+      "name": {
+        "type": ["string", "null"],
+        "description": "Name of the service"
+      },
+      "maxQuantity": {
+        "type": ["integer", "null"],
+        "description": "Maximum quantity of the service"
+      },
+      "combinable": {
+        "type": ["object", "array", "null"],
+        "description": "Combinable services",
+        "additionalProperties": {
+          "type": ["array", "null"],
+          "items": {
+            "type": ["integer", "null"]
+          }
+        },
+        "items": {
+          "type": ["integer", "null"]
+        }
+      },
+      "public": {
+        "type": ["boolean", "null"],
+        "description": "Indicates whether the service is publicly visible"
+      }
+    },
+    "required": ["id", "name"],
+    "description": "Schema definition for the Service entity"
+  }
+  

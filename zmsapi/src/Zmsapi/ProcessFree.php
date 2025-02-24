@@ -1,13 +1,15 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\ProcessStatusFree as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\ProcessStatusFree as Query;
 
 class ProcessFree extends BaseController
 {
@@ -35,7 +37,7 @@ class ProcessFree extends BaseController
         $calendar = new \BO\Zmsentities\Calendar($calendarData);
         $message = Response\Message::create($request);
         $processList = (new Query())
-            ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired, $groupData ? true: false)
+            ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired, $groupData ? true : false)
             ->withLessData($keepLessData)
         ;
         if ($groupData && count($processList) >= $groupData) {

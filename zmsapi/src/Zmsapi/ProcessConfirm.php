@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,11 +7,11 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Process;
-use \BO\Zmsdb\Mail;
-use \BO\Zmsdb\Config;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsdb\Process;
+use BO\Zmsdb\Mail;
+use BO\Zmsdb\Config;
+use BO\Mellon\Validator;
 
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
@@ -39,7 +40,7 @@ class ProcessConfirm extends BaseController
         if ('preconfirmed' != $process->status && 'reserved' != $process->status) {
             throw new Exception\Process\ProcessNotPreconfirmedAnymore();
         }
-        
+
         $process = (new Process())->updateProcessStatus(
             $process,
             'confirmed',

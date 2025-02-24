@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Scope;
+use BO\Zmsentities\Scope;
 
 class AppointmentForm extends BaseController
 {
@@ -39,7 +40,7 @@ class AppointmentForm extends BaseController
         $selectedTime = ($selectedProcess && $selectedProcess->hasId())
             ? $selectedProcess->getFirstAppointment()->getStartTime()->format('H-i')
             : $validator->getParameter('selectedtime')->isString()->getValue();
-        
+
         $selectedScope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation, $selectedProcess, 2);
 
         $requestList = ($selectedScope && $selectedScope->hasId())
@@ -49,11 +50,11 @@ class AppointmentForm extends BaseController
         $freeProcessList = ($selectedScope)
             ? Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation, 2)
             : null;
-           
+
         $slotTimeInMinutes = null;
         if ($selectedProcess && $selectedProcess->hasId()) {
             $slotTimeInMinutes = $selectedProcess->getAppointments()->getFirst()->getAvailability()['slotTimeInMinutes'];
-        } else if ($selectedScope) {
+        } elseif ($selectedScope) {
             $provider = $selectedScope->getProvider();
             $slotTimeInMinutes = $provider->getSlotTimeInMinutes();
         }

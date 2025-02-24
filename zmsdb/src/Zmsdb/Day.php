@@ -1,14 +1,14 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Day as Entity;
+use BO\Zmsentities\Day as Entity;
 
 /**
  *
  */
 class Day extends Base
 {
-
     protected $tempScopeListExists = false;
 
     public function writeTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)

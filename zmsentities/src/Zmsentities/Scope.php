@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsentities;
 
 /**
@@ -23,6 +24,51 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getSource()
     {
         return $this->toProperty()->source->get();
+    }
+
+    public function getShortName()
+    {
+        return $this->toProperty()->shortName->get();
+    }
+
+    public function getEmailFrom()
+    {
+        return $this->getPreference('client', 'emailFrom', null);
+    }
+
+    public function getTelephoneActivated()
+    {
+        return $this->getPreference('client', 'telephoneActivated', null);
+    }
+
+    public function getTelephoneRequired()
+    {
+        return $this->getPreference('client', 'telephoneRequired', null);
+    }
+
+    public function getCustomTextfieldActivated()
+    {
+        return $this->getPreference('client', 'customTextfieldActivated', null);
+    }
+
+    public function getCustomTextfieldRequired()
+    {
+        return $this->getPreference('client', 'customTextfieldRequired', null);
+    }
+
+    public function getCustomTextfieldLabel()
+    {
+        return $this->getPreference('client', 'customTextfieldLabel', '');
+    }
+
+    public function getCaptchaActivatedRequired()
+    {
+        return $this->getPreference('client', 'captchaActivatedRequired', null);
+    }
+
+    public function getDisplayInfo()
+    {
+        return $this->getPreference('appointment', 'infoForAppointment', null);
     }
 
     public function getProvider()
