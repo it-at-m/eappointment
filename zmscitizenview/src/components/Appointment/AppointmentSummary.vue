@@ -278,6 +278,7 @@ const formatTime = (time: any) => {
 };
 
 const clickPrivacyPolicy = () => (privacyPolicy.value = !privacyPolicy.value);
+
 const clickElectronicCommunication = () =>
   (electronicCommunication.value = !electronicCommunication.value);
 
@@ -291,6 +292,10 @@ const cancelAppointment = () => emit("cancelAppointment");
 const cancelReschedule = () => emit("cancelReschedule");
 const rescheduleAppointment = () => emit("rescheduleAppointment");
 
+/**
+ * This function determines the expected duration of the appointment.
+ * The provider is queried for the service and each subservice because the slots for the respective service are stored in this provider.
+ */
 const estimatedDuration = () => {
   let time = 0;
   const serviceProvider = selectedService.value?.providers?.find(
@@ -298,8 +303,9 @@ const estimatedDuration = () => {
   );
   if (
     serviceProvider &&
-    selectedService.value?.count &&
-    serviceProvider?.slots
+    serviceProvider.slots &&
+    selectedService.value &&
+    selectedService.value.count
   ) {
     time =
       selectedService.value.count *
@@ -308,7 +314,7 @@ const estimatedDuration = () => {
   }
 
   if (selectedService.value?.subServices) {
-    selectedService.value?.subServices?.forEach((subservice) => {
+    selectedService.value.subServices.forEach((subservice) => {
       const subserviceProvider = subservice.providers?.find(
         (provider) => provider.id == selectedProvider.value?.id
       );

@@ -301,12 +301,18 @@ const increaseCurrentView = () => currentView.value++;
 
 const decreaseCurrentView = () => currentView.value--;
 
+/**
+ * Adjusts the current view to the active step in the stepper
+ */
 const changeStep = (step: string) => {
   if (parseInt(step) < parseInt(activeStep.value)) {
     currentView.value = parseInt(step);
   }
 };
 
+/**
+ * Creation of a map that prepares the services and their counts for the backend call.
+ */
 const setServices = () => {
   selectedServiceMap.value = new Map<string, number>();
   if (selectedService.value) {
@@ -461,6 +467,9 @@ const nextCancelReschedule = () => {
   rebookOrCanelDialog.value = true;
 };
 
+/**
+ * Adjusts the active step in the stepper to the current view
+ */
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
 });

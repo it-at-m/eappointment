@@ -140,8 +140,16 @@ const { selectedService, updateSelectedService } =
 const service = ref<ServiceImpl>(selectedService.value);
 const maxSlotsPerAppointment = ref<number>(25);
 const currentSlots = ref<number>(0);
+
+/**
+ * Count of the selected service
+ */
 const countOfService = ref<number>(1);
 
+/**
+ * Reference to the duration info.
+ * If a screen reader user wants to skip the subservices, the focus is placed on the duration info.
+ */
 const durationInfo = ref<HTMLElement | null>(null);
 
 watch(service, (newService) => {
@@ -152,6 +160,9 @@ watch(service, (newService) => {
   updateSelectedService(newService);
 });
 
+/**
+ * Calculation of the currently required slots by changing the count of the selected service.
+ */
 watch(countOfService, (newCountOfService) => {
   if (service.value.count < newCountOfService) {
     currentSlots.value += getMinSlotOfProvider(service.value.providers);
@@ -228,6 +239,9 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
   return officesAtService;
 };
 
+/**
+ * Calculation of the currently required slots by changing the count of a subservice.
+ */
 const changeAppointmentCountOfSubservice = (id: string, count: number) => {
   const subservice = service.value.subServices?.find(
     (subService) => subService.id == id
@@ -249,6 +263,9 @@ const estimatedDuration = computed(() => {
     : 0;
 });
 
+/**
+ * Calculates whether the count of selected service may be increased, depending on the maxQuantity of the service and the maxSlotsPerAppointment.
+ */
 const maxValueOfService = computed(() => {
   return checkPlusEndabled.value
     ? service.value.maxQuantity
@@ -295,6 +312,7 @@ const skipSubservices = () => {
 };
 
 onMounted(() => {
+  //If a selected service already exists, the variables required for the calculation are calculated and initialized with the existing values.
   if (service.value) {
     let slots = 0;
     countOfService.value = service.value.count
