@@ -8,13 +8,13 @@
     "id": 1,
     "multipart": [
         {
-            "queueId": "1234",
+            "queueId": 1234,
             "mime": "text/html",
             "content": "<h1>Title</h1><p>Message</p>",
             "base64": false
         },
         {
-            "queueId": "1234",
+            "queueId": 1234,
             "mime": "text/plain",
             "content": "Title\nMessage",
             "base64": false
@@ -32,7 +32,14 @@
         "authKey": "1c56",
         "reminderTimestamp": 1447931730000,
         "scope": {
-            "id": 151
+            "id": 151,
+            "provider": {
+                "id": 123456,
+                "name": "Flughafen Schönefeld, Aufsicht",
+                "source": "dldb"
+            },
+            "shortName": "Zentrale",
+            "source": "dldb"
         },
         "status": "confirmed"
     },

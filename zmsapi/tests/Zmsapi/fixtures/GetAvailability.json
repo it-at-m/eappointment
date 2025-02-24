@@ -2,29 +2,29 @@
     "$schema": "https://schema.berlin.de/queuemanagement/availability.json",
     "id": "21202",
     "weekday": {
-        "sunday": "0",
-        "monday": "0",
-        "tuesday": "0",
-        "wednesday": "0",
-        "thursday": "0",
-        "friday": "0",
-        "saturday": "64"
+        "sunday": 0,
+        "monday": 0,
+        "tuesday": 0,
+        "wednesday": 0,
+        "thursday": 0,
+        "friday": 0,
+        "saturday": 64
     },
     "repeat": {
-        "afterWeeks": "0",
-        "weekOfMonth": "2"
+        "afterWeeks": 0,
+        "weekOfMonth": 2
     },
     "bookable": {
-        "startInDays": "0",
-        "endInDays": "60"
+        "startInDays": 0,
+        "endInDays": 60
     },
     "workstationCount": {
         "public": "0",
         "callcenter": "0",
         "intern": "4"
     },
-    "multipleSlotsAllowed": "1",
-    "slotTimeInMinutes": "15",
+    "multipleSlotsAllowed": 1,
+    "slotTimeInMinutes": 15,
     "startDate": 1401573600,
     "endDate": 1467237600,
     "startTime": "09:00:00",
@@ -32,7 +32,7 @@
     "type": "appointment",
     "description": "",
     "scope": {
-        "id": "312",
+        "id": 312,
         "$ref": "/scope/312/"
     }
 }
