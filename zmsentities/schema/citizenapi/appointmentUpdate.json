@@ -1,0 +1,10 @@
+{
+    "type": "object",
+    "description": "Provides a message indicating the result of an appointment update operation.",
+    "properties": {
+      "message": {
+        "type": "string"
+      }
+    },
+    "required": ["message"]
+}

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Useraccount as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Useraccount as Query;
 
 class WorkstationPassword extends BaseController
 {
@@ -35,7 +36,7 @@ class WorkstationPassword extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Query)->writeUpdatedEntity($useraccount->getId(), $useraccount);
+        $message->data = (new Query())->writeUpdatedEntity($useraccount->getId(), $useraccount);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

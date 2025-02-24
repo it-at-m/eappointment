@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Mellon\Validator;
-use \BO\Slim\Render;
-use \BO\Zmsdb\Useraccount;
+use BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsdb\Useraccount;
 
 class UseraccountGet extends BaseController
 {
@@ -23,7 +24,7 @@ class UseraccountGet extends BaseController
     ) {
         (new Helper\User($request, 2))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $useraccount = (new Useraccount)->readEntity($args['loginname'], $resolveReferences);
+        $useraccount = (new Useraccount())->readEntity($args['loginname'], $resolveReferences);
         if (! $useraccount->hasId()) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }

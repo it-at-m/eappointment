@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\Indexer;
 
 use BO\Dldb\FileAccess;
@@ -12,7 +14,6 @@ use BO\Dldb\FileAccess;
  */
 class ElasticSearch
 {
-
     const ES_INDEX_PREFIX = 'dldb-';
 
     const ES_INDEX_DATE = 'Ymd-His';

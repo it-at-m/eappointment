@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
 use BO\Zmsentities\Collection\RequestList;
-use \BO\Zmsentities\Log as Entity;
+use BO\Zmsentities\Log as Entity;
 
 /**
  * Logging for actions
@@ -72,7 +73,7 @@ class Log extends Base
 
         $requests = new RequestList();
         if (! empty($process->getRequestIds())) {
-            $requests = (new Request)->readRequestsByIds($process->getRequestIds());
+            $requests = (new Request())->readRequestsByIds($process->getRequestIds());
         }
 
         $data = json_encode(array_filter([
@@ -87,7 +88,7 @@ class Log extends Base
             "Anmerkung" => $process->getAmendment(),
             "E-Mail" => $process->getFirstClient()->email,
             "Telefon" => $process->getFirstClient()->telephone,
-        ]));
+        ]), JSON_UNESCAPED_UNICODE);
 
         Log::writeLogEntry(
             $method,
@@ -108,6 +109,16 @@ class Log extends Base
         return $logList;
     }
 
+    public function readByProcessData($search)
+    {
+        $query = new Query\Log(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionDataSearch($search);
+        $query->addLimit(1000);
+
+        return new \BO\Zmsentities\Collection\LogList($this->fetchList($query, new Entity()));
+    }
+
     public function delete($processId)
     {
         $query = new Query\Log(Query\Base::SELECT);
@@ -122,11 +133,12 @@ class Log extends Base
         $trace = debug_backtrace();
         $short = '';
         foreach ($trace as $step) {
-            if (isset($step['file'])
+            if (
+                isset($step['file'])
                 && isset($step['line'])
                 && !strpos($step['file'], 'Zmsdb')
             ) {
-                return ' ('.basename($step['file'], '.php') .')';
+                return ' (' . basename($step['file'], '.php') . ')';
             }
         }
         return $short;

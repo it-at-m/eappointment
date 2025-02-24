@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
@@ -16,7 +17,6 @@ use BO\Slim\Render;
  */
 class ProcessDelete extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -29,11 +29,11 @@ class ProcessDelete extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $initiator = Validator::param('initiator')->isString()->getValue();
-        $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
+        $process = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
         $process->status = 'deleted';
         $workstation->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList(), $process);
 
-        \App::$http->readDeleteResult('/process/'. $process->getId() .'/', ['initiator' => $initiator]);
+        \App::$http->readDeleteResult('/process/' . $process->getId() . '/', ['initiator' => $initiator]);
         static::writeDeleteMailNotifications($process);
 
         return \BO\Slim\Render::withHtml(
@@ -49,23 +49,25 @@ class ProcessDelete extends BaseController
     public static function writeDeleteMailNotifications($process)
     {
         #email only for clients with appointment if email address is given
-        if ($process->getFirstClient()->hasEmail() &&
+        if (
+            $process->getFirstClient()->hasEmail() &&
             $process->isWithAppointment() &&
             $process->scope->hasEmailFrom()
         ) {
             \App::$http
                 ->readPostResult(
-                    '/process/'. $process->getId() .'/'. $process->getAuthKey() .'/delete/mail/',
+                    '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/delete/mail/',
                     $process
                 )->getEntity();
         }
         #sms notifications for clients with and without appointment if telephone number is given
-        if ($process->scope->hasNotificationEnabled() &&
+        if (
+            $process->scope->hasNotificationEnabled() &&
             $process->getFirstClient()->hasTelephone()
         ) {
             \App::$http
                 ->readPostResult(
-                    '/process/'. $process->getId() .'/'. $process->getAuthKey() .'/delete/notification/',
+                    '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/delete/notification/',
                     $process
                 )->getEntity();
         }

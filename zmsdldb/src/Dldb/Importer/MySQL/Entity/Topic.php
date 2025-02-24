@@ -172,7 +172,7 @@ class Topic extends Base
             throw $e;
         }
     }
-    
+
     public function preSetup()
     {
         try {
@@ -201,7 +201,7 @@ class Topic extends Base
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool
+    public function clearEntity(array $addWhere = []): bool
     {
         try {
             return $this->deleteWith(

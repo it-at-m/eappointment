@@ -1,0 +1,4 @@
+7f700a62cf9c402a09313486b461a06233a4f46ed29d8e38f27f07668fc60591  public/doc/assets/redoc.min.js
+73cc9ec630f285bebd75544742055fa89792543ef989e985cbfed217412f6d34  public/_test/assets/swagger-ui-bundle.js
+f9e1d39b7fe5b0b472743b42be2b472249feae67c89d63593ce72674c33ca4dd  public/_test/assets/swagger-ui.css
+68a210d666aa74d72f3001757474a52ba3c5dd03deac11803d2e9ec9c8d6a3c1  public/_test/assets/swagger-ui-standalone-preset.js

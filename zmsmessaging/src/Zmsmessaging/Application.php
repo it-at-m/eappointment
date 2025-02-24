@@ -1,9 +1,11 @@
 <?php
+
 /**
  *
  * @package Zmsmessaging
  *
  */
+
 namespace BO\Zmsmessaging;
 
 /**
@@ -11,7 +13,6 @@ namespace BO\Zmsmessaging;
  */
 class Application
 {
-
     /**
      * Name of the application
      */

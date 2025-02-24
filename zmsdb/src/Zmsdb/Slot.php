@@ -1,10 +1,11 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Slot as Entity;
-use \BO\Zmsentities\Collection\SlotList as Collection;
-use \BO\Zmsentities\Availability as AvailabilityEntity;
-use \BO\Zmsentities\Scope as ScopeEntity;
+use BO\Zmsentities\Slot as Entity;
+use BO\Zmsentities\Collection\SlotList as Collection;
+use BO\Zmsentities\Availability as AvailabilityEntity;
+use BO\Zmsentities\Scope as ScopeEntity;
 
 /**
  * @SuppressWarnings(Public)
@@ -13,7 +14,6 @@ use \BO\Zmsentities\Scope as ScopeEntity;
  */
 class Slot extends Base
 {
-
     /**
      * maximum number of slots per appointment
      */
@@ -73,7 +73,8 @@ class Slot extends Base
             ->readProperty('scope', $scope->id, 'appointment', 'startInDaysDefault');
         $endInDaysDefault = (new Preferences())
             ->readProperty('scope', $scope->id, 'appointment', 'endInDaysDefault');
-        if ($scope->preferences['appointment']['startInDaysDefault'] != $startInDaysDefault
+        if (
+            $scope->preferences['appointment']['startInDaysDefault'] != $startInDaysDefault
             || $scope->preferences['appointment']['endInDaysDefault'] != $endInDaysDefault
         ) {
             (new Scope())->replacePreferences($scope); //TODO remove after ZMS1 is deactivated
@@ -83,8 +84,10 @@ class Slot extends Base
             ->readChangeDateTime('scope', $scope->id, 'appointment', 'startInDaysDefault');
         $endInDaysChange = (new Preferences())
             ->readChangeDateTime('scope', $scope->id, 'appointment', 'endInDaysDefault');
-        if ($startInDaysChange->getTimestamp() > $slotLastChange->getTimestamp()
-            || $endInDaysChange->getTimestamp() > $slotLastChange->getTimestamp()) {
+        if (
+            $startInDaysChange->getTimestamp() > $slotLastChange->getTimestamp()
+            || $endInDaysChange->getTimestamp() > $slotLastChange->getTimestamp()
+        ) {
             return true;
         }
     }
@@ -101,7 +104,8 @@ class Slot extends Base
             $availability['processingNote'][] = 'outdated: availability change';
             return true;
         }
-        if ($formerChange->hasOutdatedScope()
+        if (
+            $formerChange->hasOutdatedScope()
             && $this->hasScopeRelevantChanges($availability->scope, $slotLastChange)
         ) {
             $availability['processingNote'][] = 'outdated: scope change';
@@ -113,7 +117,8 @@ class Slot extends Base
         }
         // Be aware, that last slot change and current time might differ serval days
         //  if the rebuild fails in some way
-        if (1
+        if (
+            1
             // First check if the bookable end date on current time was already calculated on last slot change
             && !$formerChange->hasBookableDateTime($proposedChange->getLastBookableDateTime())
             // Second check if between last slot change and current time could be a bookable slot
@@ -142,7 +147,8 @@ class Slot extends Base
             $availability['processingNote'][] = 'outdated: new slots required';
             return true;
         }
-        if ($availability->getBookableStart($slotLastChange) != $availability->getBookableStart($now)
+        if (
+            $availability->getBookableStart($slotLastChange) != $availability->getBookableStart($now)
             // First check, if bookable start from lastChange was not included in bookable time from now
             && !$availability->hasDate($availability->getBookableStart($slotLastChange), $now)
             // Second check, if availability had a bookable time on lastChange before bookable start from now
@@ -171,7 +177,7 @@ class Slot extends Base
         if (!$slotLastChange) {
             $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
         }
-        $availability['processingNote'][] = 'lastchange='.$slotLastChange->format('c');
+        $availability['processingNote'][] = 'lastchange=' . $slotLastChange->format('c');
         if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange)) {
             return false;
         }
@@ -210,7 +216,7 @@ class Slot extends Base
     public function writeByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
     {
         $slotLastChange = $this->readLastChangedTimeByScope($scope);
-        $availabilityList = (new \BO\Zmsdb\Availability)
+        $availabilityList = (new \BO\Zmsdb\Availability())
             ->readAvailabilityListByScope($scope, 0, $slotLastChange->modify('-1 day'))
             ;
         $updatedList = new \BO\Zmsentities\Collection\AvailabilityList();
@@ -254,7 +260,7 @@ class Slot extends Base
             $status = $writeStatus ? $writeStatus : $status;
         }
         if ($hasAddedSlots) {
-            $availability['processingNote'][] = 'Added '.$time->format('Y-m-d');
+            $availability['processingNote'][] = 'Added ' . $time->format('Y-m-d');
         }
         return $status;
     }

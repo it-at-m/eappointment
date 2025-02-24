@@ -13,7 +13,8 @@ use BO\Dldb\FileAccess
 
 abstract class Base implements Options
 {
-    use PDOTrait, OptionsTrait;
+    use PDOTrait;
+    use OptionsTrait;
 
     protected $fileAccess;
 
@@ -94,7 +95,8 @@ abstract class Base implements Options
     public function clearDatabase()
     {
         try {
-            if ($this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES) ||
+            if (
+                $this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_REFERENCES_TABLES) ||
                 $this->checkOptionFlag(static::OPTION_CLEAR_ENTITIY_TABLE)
             ) {
                 /*
@@ -107,7 +109,7 @@ abstract class Base implements Options
                 ];
                 */
                 $tablesToClear = [];
-                
+
                 foreach (array_keys($this->importTypes) as $type) {
                     $importer = $this->__call(
                         'get' . $type . 'Importer',

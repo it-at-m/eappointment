@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Cluster as Query;
-use \BO\Zmsentities\Helper\DateTime;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Cluster as Query;
+use BO\Zmsentities\Helper\DateTime;
 
 class ProcessNextByCluster extends BaseController
 {
@@ -39,7 +40,7 @@ class ProcessNextByCluster extends BaseController
             ->withScopeId($workstation->getScope()->getId())
             ->toQueueList($dateTime);
         }
-        
+
         $message = Response\Message::create($request);
         $message->data = ProcessNextByScope::getProcess($queueList, $dateTime, $exclude);
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -7,7 +8,6 @@
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
-
 use BO\Zmsentities\Mail as Entity;
 
 class Mail extends BaseController
@@ -31,7 +31,7 @@ class Mail extends BaseController
         $formResponse = null;
         $input = $request->getParsedBody();
         $process = ($selectedProcessId) ?
-            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
+            \App::$http->readGetResult('/process/' . $selectedProcessId . '/')->getEntity() :
             null;
         if (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
             $formResponse = $this->writeValidatedMail($process, $department);
@@ -80,7 +80,7 @@ class Mail extends BaseController
             ->isBiggerThan(2, "Es muss eine aussagekräftige Nachricht eingegeben werden");
         $collection = Validator::collection($collection);
         if (! $collection->hasFailed()) {
-            $mail = (new Entity)->toCustomMessageEntity($process, $collection->getValues());
+            $mail = (new Entity())->toCustomMessageEntity($process, $collection->getValues());
             $mail = \App::$http->readPostResult('/mails/', $mail->withDepartment($department))->getEntity();
             return $mail;
         }

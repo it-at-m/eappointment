@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26852f0ad94d49daea32d6996e74b9bb",
+    "content-hash": "664b1b0fc721ddf6ed24857a72f32b15",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -233,11 +233,11 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-roave-test-2",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "249f1aa96e13e3c2379353bf33539f0174fced53"
+                "reference": "f37d3a5ad27043e12c9d5ebd3dc40c7b660456d6"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -260,7 +260,7 @@
                 "phpmd/phpmd": "@stable",
                 "phpspec/prophecy-phpunit": "^2.0.0",
                 "phpunit/phpunit": "^9.5.4",
-                "squizlabs/php_codesniffer": "^3.5.8"
+                "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
             "autoload": {
@@ -291,17 +291,20 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-roave-test-2",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
+                "reference": "b9c944963b2c6984b9aaa90aa0997d4e1bcb5917"
             },
             "require": {
                 "aura/sql": "^4",
                 "eappointment/mellon": "@dev",
+                "eappointment/zmsapi": "@dev",
+                "eappointment/zmsclient": "@dev",
                 "eappointment/zmsdldb": "@dev",
                 "eappointment/zmsentities": "@dev",
+                "eappointment/zmsslim": "@dev",
                 "ext-intl": "*",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -312,9 +315,9 @@
             },
             "require-dev": {
                 "mockery/mockery": "^0.9.4",
-                "phpmd/phpmd": "^2.3",
+                "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.5.4",
-                "squizlabs/php_codesniffer": "^2.4"
+                "squizlabs/php_codesniffer": "^3.5"
             },
             "bin": [
                 "bin/archiveStatisticData",
@@ -328,6 +331,7 @@
                 "bin/deleteDayoffData",
                 "bin/deleteOldAvailabilityData",
                 "bin/deleteOldEventLogEntries",
+                "bin/deleteOldLogs",
                 "bin/deleteReservedData",
                 "bin/deleteSessionData",
                 "bin/deleteTicketprinterData",
@@ -370,13 +374,19 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-roave-test-2",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
+                "reference": "1c02fdbeeefac41d1a9c54bfe8b0f456d8c1f7d1"
             },
             "require": {
+                "eappointment/mellon": "@dev",
+                "eappointment/zmsapi": "@dev",
+                "eappointment/zmsclient": "@dev",
+                "eappointment/zmsdb": "@dev",
+                "eappointment/zmsentities": "@dev",
+                "eappointment/zmsslim": "@dev",
                 "ext-curl": ">=0",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -431,11 +441,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-roave-test-2",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
+                "reference": "4c07e846593be4b45f201db71b48a45f9b6e1efe"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -457,7 +467,7 @@
                 "league/json-reference": "^1.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.6",
-                "squizlabs/php_codesniffer": "^3.5.8",
+                "squizlabs/php_codesniffer": "*",
                 "yuloh/json-guard-cli": "^0.3.0"
             },
             "type": "library",
@@ -489,11 +499,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-roave-test-2",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "132bd01dbec27ad473955fb9bb3d410515f9c98f"
+                "reference": "13a59e7a34592936e535a28e485c504f8719b5f0"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -1119,16 +1129,16 @@
         },
         {
             "name": "league/climate",
-            "version": "3.8.2",
+            "version": "3.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/climate.git",
-                "reference": "a785a3ac8f584eed4abd45e4e16fe64c46659a28"
+                "reference": "237f70e1032b16d32ff3f65dcda68706911e1c74"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/climate/zipball/a785a3ac8f584eed4abd45e4e16fe64c46659a28",
-                "reference": "a785a3ac8f584eed4abd45e4e16fe64c46659a28",
+                "url": "https://api.github.com/repos/thephpleague/climate/zipball/237f70e1032b16d32ff3f65dcda68706911e1c74",
+                "reference": "237f70e1032b16d32ff3f65dcda68706911e1c74",
                 "shasum": ""
             },
             "require": {
@@ -1137,9 +1147,10 @@
                 "seld/cli-prompt": "^1.0"
             },
             "require-dev": {
-                "mikey179/vfsstream": "^1.6.10",
-                "mockery/mockery": "^1.4.2",
-                "phpunit/phpunit": "^9.5.10"
+                "mikey179/vfsstream": "^1.6.12",
+                "mockery/mockery": "^1.6.12",
+                "phpunit/phpunit": "^9.5.10",
+                "squizlabs/php_codesniffer": "^3.10"
             },
             "suggest": {
                 "ext-mbstring": "If ext-mbstring is not available you MUST install symfony/polyfill-mbstring"
@@ -1178,9 +1189,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/climate/issues",
-                "source": "https://github.com/thephpleague/climate/tree/3.8.2"
+                "source": "https://github.com/thephpleague/climate/tree/3.10.0"
             },
-            "time": "2022-06-18T14:42:08+00:00"
+            "time": "2024-11-18T09:09:55+00:00"
         },
         {
             "name": "league/html-to-markdown",
@@ -4268,16 +4279,16 @@
         },
         {
             "name": "helmich/phpunit-json-assert",
-            "version": "v3.5.1",
+            "version": "v3.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/martin-helmich/phpunit-json-assert.git",
-                "reference": "5a3a53e46f4d1f1b324c5cc2e33d87ad2d37260c"
+                "reference": "f8958119e9e9ea1339d6b4d6fd2df24536261b50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/5a3a53e46f4d1f1b324c5cc2e33d87ad2d37260c",
-                "reference": "5a3a53e46f4d1f1b324c5cc2e33d87ad2d37260c",
+                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/f8958119e9e9ea1339d6b4d6fd2df24536261b50",
+                "reference": "f8958119e9e9ea1339d6b4d6fd2df24536261b50",
                 "shasum": ""
             },
             "require": {
@@ -4286,10 +4297,10 @@
                 "softcreatr/jsonpath": "^0.8"
             },
             "conflict": {
-                "phpunit/phpunit": "<8.0 || >= 11.0"
+                "phpunit/phpunit": "<8.0 || >= 12.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0"
+                "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0 || ^11.0"
             },
             "type": "library",
             "autoload": {
@@ -4310,7 +4321,7 @@
             "description": "PHPUnit assertions for JSON documents",
             "support": {
                 "issues": "https://github.com/martin-helmich/phpunit-json-assert/issues",
-                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.5.1"
+                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.5.2"
             },
             "funding": [
                 {
@@ -4322,33 +4333,34 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-03-03T14:09:38+00:00"
+            "time": "2024-05-20T11:18:46+00:00"
         },
         {
             "name": "helmich/phpunit-psr7-assert",
-            "version": "v4.3.0",
+            "version": "v4.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/martin-helmich/phpunit-psr7-assert.git",
-                "reference": "dfe594a09f55ea7f87120363d6720ca1a94c0878"
+                "reference": "f35fa69e07cc16977b52805d3abd873cc16747fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/martin-helmich/phpunit-psr7-assert/zipball/dfe594a09f55ea7f87120363d6720ca1a94c0878",
-                "reference": "dfe594a09f55ea7f87120363d6720ca1a94c0878",
+                "url": "https://api.github.com/repos/martin-helmich/phpunit-psr7-assert/zipball/f35fa69e07cc16977b52805d3abd873cc16747fd",
+                "reference": "f35fa69e07cc16977b52805d3abd873cc16747fd",
                 "shasum": ""
             },
             "require": {
                 "helmich/phpunit-json-assert": "^3.4",
-                "php": "^7.2 || ^8.0",
-                "psr/http-message": "^1.0"
+                "php": "^8.0",
+                "psr/http-message": "^1.1 || ^2.0"
             },
             "conflict": {
-                "phpunit/phpunit": "<8.0 || >= 10.0"
+                "phpunit/phpunit": "<8.0 || >= 11.0"
             },
             "require-dev": {
-                "guzzlehttp/psr7": "^1.2",
-                "phpunit/phpunit": "^8.0 || ^9.0"
+                "guzzlehttp/psr7": "^2.4",
+                "mockery/mockery": "^1.4.1",
+                "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0"
             },
             "type": "library",
             "autoload": {
@@ -4369,7 +4381,7 @@
             "description": "PHPUnit assertions for testing PSR7-compliant applications",
             "support": {
                 "issues": "https://github.com/martin-helmich/phpunit-psr7-assert/issues",
-                "source": "https://github.com/martin-helmich/phpunit-psr7-assert/tree/v4.3.0"
+                "source": "https://github.com/martin-helmich/phpunit-psr7-assert/tree/v4.4.1"
             },
             "funding": [
                 {
@@ -4381,24 +4393,24 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-12-22T06:27:54+00:00"
+            "time": "2023-07-26T19:04:29+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "v5.2.13",
+            "version": "5.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/justinrainbow/json-schema.git",
-                "reference": "fbbe7e5d79f618997bc3332a6f49246036c45793"
+                "url": "https://github.com/jsonrainbow/json-schema.git",
+                "reference": "feb2ca6dd1cebdaf1ed60a4c8de2e53ce11c4fd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/fbbe7e5d79f618997bc3332a6f49246036c45793",
-                "reference": "fbbe7e5d79f618997bc3332a6f49246036c45793",
+                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/feb2ca6dd1cebdaf1ed60a4c8de2e53ce11c4fd8",
+                "reference": "feb2ca6dd1cebdaf1ed60a4c8de2e53ce11c4fd8",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=7.1"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "~2.2.20||~2.15.1",
@@ -4409,11 +4421,6 @@
                 "bin/validate-json"
             ],
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "5.0.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "JsonSchema\\": "src/JsonSchema/"
@@ -4448,10 +4455,10 @@
                 "schema"
             ],
             "support": {
-                "issues": "https://github.com/justinrainbow/json-schema/issues",
-                "source": "https://github.com/justinrainbow/json-schema/tree/v5.2.13"
+                "issues": "https://github.com/jsonrainbow/json-schema/issues",
+                "source": "https://github.com/jsonrainbow/json-schema/tree/5.3.0"
             },
-            "time": "2023-09-26T02:20:38+00:00"
+            "time": "2024-07-06T21:00:26+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -6351,16 +6358,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.7.2",
+            "version": "3.11.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "ed8e00df0a83aa96acf703f8c2979ff33341f879"
+                "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
+                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/ed8e00df0a83aa96acf703f8c2979ff33341f879",
-                "reference": "ed8e00df0a83aa96acf703f8c2979ff33341f879",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/1368f4a58c3c52114b86b1abe8f4098869cb0079",
+                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079",
                 "shasum": ""
             },
             "require": {
@@ -6370,11 +6377,11 @@
                 "php": ">=5.4.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0"
+                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.3.4"
             },
             "bin": [
-                "bin/phpcs",
-                "bin/phpcbf"
+                "bin/phpcbf",
+                "bin/phpcs"
             ],
             "type": "library",
             "extra": {
@@ -6389,22 +6396,45 @@
             "authors": [
                 {
                     "name": "Greg Sherwood",
-                    "role": "lead"
+                    "role": "Former lead"
+                },
+                {
+                    "name": "Juliette Reinders Folmer",
+                    "role": "Current lead"
+                },
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer/graphs/contributors"
                 }
             ],
             "description": "PHP_CodeSniffer tokenizes PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
-            "homepage": "https://github.com/squizlabs/PHP_CodeSniffer",
+            "homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer",
             "keywords": [
                 "phpcs",
                 "standards",
                 "static analysis"
             ],
             "support": {
-                "issues": "https://github.com/squizlabs/PHP_CodeSniffer/issues",
-                "source": "https://github.com/squizlabs/PHP_CodeSniffer",
-                "wiki": "https://github.com/squizlabs/PHP_CodeSniffer/wiki"
+                "issues": "https://github.com/PHPCSStandards/PHP_CodeSniffer/issues",
+                "security": "https://github.com/PHPCSStandards/PHP_CodeSniffer/security/policy",
+                "source": "https://github.com/PHPCSStandards/PHP_CodeSniffer",
+                "wiki": "https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki"
             },
-            "time": "2023-02-22T23:07:41+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/PHPCSStandards",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/jrfnl",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/php_codesniffer",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2024-12-11T16:04:26+00:00"
         },
         {
             "name": "symfony/config",
@@ -6854,17 +6884,18 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "eappointment/zmsslim": 20,
+        "eappointment/mellon": 20,
         "eappointment/zmsclient": 20,
-        "eappointment/zmsdldb": 20,
         "eappointment/zmsdb": 20,
+        "eappointment/zmsdldb": 20,
         "eappointment/zmsentities": 20,
+        "eappointment/zmsslim": 20,
         "phpmd/phpmd": 0
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
+    "platform": {},
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.0"
     },

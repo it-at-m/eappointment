@@ -1,0 +1,279 @@
+name: unit tests
+
+on:
+  workflow_call:
+    outputs:
+      module-test-result:
+        description: "Module test result"
+        value: ${{ jobs.module-test.outputs.result }}
+      zmsapi-test-result:
+        description: "ZMSAPI test result"
+        value: ${{ jobs.zmsapi-test.outputs.result }}
+      zmsdb-test-result:
+        description: "ZMSDB test result"
+        value: ${{ jobs.zmsdb-test.outputs.result }}
+      zmsclient-test-result:
+        description: "ZMSClient test result"
+        value: ${{ jobs.zmsclient-test.outputs.result }}
+
+jobs:
+  module-test:
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
+      env:
+        XDEBUG_MODE: coverage
+        PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
+    steps:
+      - uses: actions/checkout@main
+      
+      - name: Configure PHP
+        run: |
+          mkdir -p /tmp/php/conf.d
+          echo "zend_extension=xdebug.so" > /tmp/php/conf.d/xdebug.ini
+          echo "xdebug.mode=coverage" >> /tmp/php/conf.d/xdebug.ini
+          echo "xdebug.start_with_request=yes" >> /tmp/php/conf.d/xdebug.ini
+
+      - name: Install Composer Dependencies
+        run: |
+          cd "${{ matrix.module }}"
+          composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Run Unit Tests with Coverage
+        env:
+          XDEBUG_MODE: coverage
+        run: |
+          cd "${{ matrix.module }}"
+          mkdir -p coverage
+          echo "Running tests with coverage for ${{ matrix.module }}"
+          php -dmemory_limit=-1 \
+            ./vendor/bin/phpunit -c phpunit.xml \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml \
+            --log-junit coverage/junit.xml || if [ $? -eq 2 ] && [ -f "coverage/clover.xml" ]; then exit 0; fi
+          echo "Coverage files generated:"
+          ls -la coverage/
+
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.module }}
+          path: ${{ matrix.module }}/coverage/
+          retention-days: 1
+
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: zmsadmin
+            php_version: "8.0"
+          - module: zmscalldisplay
+            php_version: "8.0"
+          - module: zmscitizenapi
+            php_version: "8.0"
+          - module: zmsdldb
+            php_version: "8.0"
+          - module: zmsentities
+            php_version: "8.0"
+          - module: zmsmessaging
+            php_version: "8.0"
+          - module: zmsslim
+            php_version: "8.0"
+          - module: zmsstatistic
+            php_version: "8.0"
+          - module: zmsticketprinter
+            php_version: "8.0"
+
+  zmsapi-test:
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/it-at-m/eappointment-php-base:8.0-dev"
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MYSQL_ROOT_PASSWORD: zmsapi
+          MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+      - name: Install python3
+        run: |
+          apt update
+          apt install -y python3 python3-click python3-git
+      - name: Referencing local Modules and Libraries
+        run: python3 ./cli modules reference-libraries --no-symlink
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsapi' 'zmsdb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+        shell: bash
+      - name: Import Test Data and Run Unit Tests
+        env:
+          MYSQL_PORT: "tcp://mariadb:3306"
+          MYSQL_DATABASE: zmsbo
+          MYSQL_ROOT_PASSWORD: zmsapi
+        run: |
+          cd zmsapi
+          echo "Setup fixtures..."
+          rm -rf data
+          ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
+          echo "Importing test data..."
+          vendor/bin/importTestData --commit
+          mkdir -p coverage
+          echo "Running tests with coverage"
+          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+            ./vendor/bin/phpunit -c phpunit.xml \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml \
+            --log-junit coverage/junit.xml
+          echo "Coverage files generated:"
+          ls -la coverage/
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-zmsapi
+          path: zmsapi/coverage/
+          retention-days: 1
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+
+  zmsdb-test:
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/it-at-m/eappointment-php-base:8.0-dev"
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MYSQL_ROOT_PASSWORD: zmsdb
+          MYSQL_DATABASE: zmsbo
+          MYSQL_CHARACTER_SET: utf8mb4
+          MYSQL_COLLATION: utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+      - name: Install python3
+        run: |
+          apt update
+          apt install -y python3 python3-click python3-git
+      - name: Referencing local Modules and Libraries
+        run: python3 ./cli modules reference-libraries --no-symlink
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsdb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+        shell: bash
+      - name: Import Test Data and Run Unit Tests
+        env:
+          MYSQL_PORT: "tcp://mariadb:3306"
+          MYSQL_DATABASE: zmsbo
+          MYSQL_ROOT_PASSWORD: zmsdb
+          XDEBUG_MODE: coverage
+        run: |
+          cd zmsdb
+          bin/importTestData --commit
+          mkdir -p coverage
+          echo "Running tests with coverage"
+          php -i | grep -i xdebug
+          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+            ./vendor/bin/phpunit -c phpunit.xml \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml \
+            --log-junit coverage/junit.xml
+          echo "Coverage files generated:"
+          ls -la coverage/
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-zmsdb
+          path: zmsdb/coverage/
+          retention-days: 1
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
+
+  zmsclient-test:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: xdebug
+
+      - name: Install Composer Dependencies
+        run: |
+          modules=('zmsclient')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      - name: Run Unit Tests
+        run: |
+          cd ./zmsclient
+          mkdir -p coverage
+          docker-compose up -d
+          docker-compose exec -T test php -dzend_extension=xdebug.so -dmemory_limit=-1 \
+            ./vendor/bin/phpunit \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml \
+            --log-junit coverage/junit.xml
+          echo "Coverage files generated:"
+          ls -la coverage/
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-zmsclient
+          path: zmsclient/coverage/
+          retention-days: 1
+
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT

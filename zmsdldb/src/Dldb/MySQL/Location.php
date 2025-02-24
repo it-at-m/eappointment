@@ -1,13 +1,15 @@
 <?php
+
 /**
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\MySQL\Entity\Location as Entity;
-use \BO\Dldb\MySQL\Collection\Locations as Collection;
-use \BO\Dldb\Elastic\Location as Base;
+use BO\Dldb\MySQL\Entity\Location as Entity;
+use BO\Dldb\MySQL\Collection\Locations as Collection;
+use BO\Dldb\Elastic\Location as Base;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -22,7 +24,7 @@ class Location extends Base
                 $sql = 'SELECT data_json FROM location WHERE locale = ? AND id = ?';
 
                 $stm = $this->access()->prepare($sql);
-                $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
+                $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Location');
                 $stm->execute($sqlArgs);
                 if (!$stm || ($stm && $stm->rowCount() == 0)) {
                     return false;
@@ -78,7 +80,7 @@ class Location extends Base
             $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
-                
+
                 $locationList[$location['id']] = $location;
             });
 
@@ -108,10 +110,10 @@ class Location extends Base
             }
             $where[] = "l.category_identifier = ?";
             $sqlArgs[] = $office;
-                
+
             $sql .= " " . implode(' ', $join);
             $sql .= " WHERE " . implode(' AND ', $where);
-            
+
             $sql .= " " . $groupBy;
 
             $locationList = new Collection();
@@ -120,7 +122,7 @@ class Location extends Base
             $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
-                
+
                 $locationList[$location['id']] = $location;
             });
 
@@ -165,7 +167,7 @@ class Location extends Base
             $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
-                
+
                 $locationList[$location['id']] = $location;
             });
 
@@ -196,7 +198,7 @@ class Location extends Base
                 $sql .= ' AND category_identifier = ?';
             }
             $sql .= ' ORDER BY l.category_identifier, l.name';
-            
+
             $locationList = new Collection();
 
             $stm = $this->access()->prepare($sql);
@@ -220,7 +222,7 @@ class Location extends Base
                 $location->offsetSet('address_json', $address_json);
                 $location->offsetSet('geo_json', $geo_json);
                 $location->offsetSet('meta__url', $meta__url);
-                
+
                 $locationList[$location['id']] = $location;
             });
 
@@ -292,7 +294,7 @@ class Location extends Base
             $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
-                
+
                 $locationList[$location['id']] = $location;
             });
 
@@ -330,7 +332,7 @@ class Location extends Base
             $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($locationList) {
                 $location = new \BO\Dldb\MySQL\Entity\Location();
                 $location->offsetSet('data_json', $data_json);
-                
+
                 $locationList[$location['id']] = $location;
             });
 

@@ -1,3 +1,152 @@
+## Release Muc-20 (14.02.2025)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3212'>ZMS-3212</a>] -         Tresen-Notruf lässt sich nicht mehr abschalten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3272'>ZMS-3272</a>] -         [ZMS-Admin] Ein Slot am aktuellen Tag soll noch 5 Minuten davor buchbar sein
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3513'>ZMS-3513</a>] -         Bürgeransicht Anzeigefehler: erste Dienstleistung wird fälschlicherweise als &#39;0x&#39; angezeigt
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3519'>ZMS-3519</a>] -         Clusteransicht Sortierung nach Uhrzeit 
+</li>
+</ul>
+    
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3430'>ZMS-3430</a>] -         DB-Indexen erstellen
+</li>
+</ul>
+                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3499'>ZMS-3499</a>] -         Automatisches Aktualisieren der Warteschlange mit Spontankunden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3503'>ZMS-3503</a>] -         Notruf über Standorteinstellugen zurücksetzen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3507'>ZMS-3507</a>] -         Weiterleiten von Spontankunden 
+</li>
+</ul>
+                                                        
+
+
+
+## Release Muc-19 (17.01.2025)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2871'>ZMS-2871</a>] -         [Orthographie] Standort löschen: Löschtext hat ein Bindestrich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2874'>ZMS-2874</a>] -         [Orthographie] Mail-Popup Warteschlange: Button-Beschriftungen klein- statt großgeschrieben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3399'>ZMS-3399</a>] -         Bug Deadlock Daily Cronjob Prod writeCanceledByTime
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3463'>ZMS-3463</a>] -         Alte Betreff-Texte in den Mail-Templates
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3500'>ZMS-3500</a>] -         Die ausgewählte Dienstleistung wird nach Tagänderung nicht mehr angezeigt - NEUBUCHUNG
+</li>
+</ul>
+                                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2375'>ZMS-2375</a>] -         Webseiten Titel (Tab) von Admin/Statistik anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3268'>ZMS-3268</a>] -         Visuelles Unterscheidungsmerkmal  einer ZMS-Admin-Umgebung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3434'>ZMS-3434</a>] -         Ausdruck aus dem Kiosk ist pro Standort anpassbar
+</li>
+</ul>
+
+## Release Muc-18 (13.12.2024)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-1268'>ZMS-1268</a>] -         Cursor Fokus auf Anzahl der DL wird im Screenreader als &quot;Überschrift - Ebene - 3 - 1&quot; ausgegeben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2670'>ZMS-2670</a>] -         [zms-admin] Aktion &quot;wieder aufrufen&quot; aus Geparkten Termine &amp; &quot;wieder aufnehmen&quot; aus  Verpasste Termine ist ohne Platzauswahl möglich 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3436'>ZMS-3436</a>] -         Mehrfachklick auf Termin führt zu mehrfachen Reservierungen und Überbuchung der Öffnungszeiten
+</li>
+</ul>
+                                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2872'>ZMS-2872</a>] -         Fehlt der Standortname?
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3152'>ZMS-3152</a>] -         Ampelsystem für die Wartezeit
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3377'>ZMS-3377</a>] -         Labelanpassungen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3401'>ZMS-3401</a>] -         Neues Layout für Aufrufanlage erstellen - Tisch/Desk
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3418'>ZMS-3418</a>] -         Zwei Standorte Ekiosk - keine OU Angabe
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3420'>ZMS-3420</a>] -         &quot;Kundenservice geschlossen&quot; nicht anzeigen wenn es Öffnungszeigen von anderem Standort vorhanden sind 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3433'>ZMS-3433</a>] -         Folgeanforderungen aus Innenrevision
+</li>
+</ul>
+
+## Release Muc-17 (29.11.2024)
+                        
+<h2>        Aufgabe
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2184'>ZMS-2184</a>] -         Alle SCSS und JS Builds in der Pipeline
+</li>
+</ul>
+    
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3240'>ZMS-3240</a>] -         Nicht aktivierte Termine in Warteschlange aufrufbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3258'>ZMS-3258</a>] -         Ungewollter Wiederaufruf von Terminen im Status &quot;nicht erschienen&quot; und Parken
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3267'>ZMS-3267</a>] -          Ungewollter Wiederaufruf von Terminen bei Clusteransicht im Status &quot;nicht erschienen&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3271'>ZMS-3271</a>] -         Vorlaufzeit Öffnungszeitenprofil
+</li>
+</ul>
+                                                                                                                                                                                        
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2333'>ZMS-2333</a>] -         Anpassung des Textes bei User*in Erstellung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2528'>ZMS-2528</a>] -         Minimallösung: Benutzeroberfläche am eKiosk ist mehrsprachig verfügbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-2981'>ZMS-2981</a>] -         Aktivierungsmail - Globales Template anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3133'>ZMS-3133</a>] -         Standesamt - eine Dienstleistung mehrere Standorte -&gt; Zuweisung der Kunden zu einem bestimmten Standort
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3150'>ZMS-3150</a>] -         Offene Aufrufe für Sachbearbeiter*innen sichtbar machen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3180'>ZMS-3180</a>] -         Verschiedene Felder von Standorteinstellungen und Clustereinstellungen ausblenden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3187'>ZMS-3187</a>] -         Bestätigungsmail - Globales Template anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3190'>ZMS-3190</a>] -         Verschiedene Felder auf ZMS Admin für nicht technische User ausblenden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3199'>ZMS-3199</a>] -         Terminerinnerung - Globales Template anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3200'>ZMS-3200</a>] -         Terminabsage - Globales Template anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3201'>ZMS-3201</a>] -         ics-Template - Globales Template anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3229'>ZMS-3229</a>] -         Ausnahme erstellen - Aufklappen des Konfigurationsfensters nur für Ausnahme
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMS-3374'>ZMS-3374</a>] -         Berliner Changelog über Münchener Changelog Anhängen
+</li>
+</ul>
+                                                        
 ## Release Muc-16 (08.11.2024)
 
 <h2>        Aufgabe</h2>

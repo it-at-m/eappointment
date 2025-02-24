@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @copyright BerlinOnline Stadtportal GmbH & Co. KG
+ **/
+
 namespace BO\Zmsdb\Helper;
 
 /**
@@ -125,9 +129,9 @@ class ReservedDataDeleteByCron
         }
 
         $this->log(
-            "\nNow: ". $this->nowTime->format('H:i:s') .
-            "\nTime of expiration: ". $expirationTime->format('H:i:s') ." | scope ". $scope->id .
-            " | $reservationDuration minutes reservation time (". $processList->count() . " found)" .
+            "\nNow: " . $this->nowTime->format('H:i:s') .
+            "\nTime of expiration: " . $expirationTime->format('H:i:s') . " | scope " . $scope->id .
+            " | $reservationDuration minutes reservation time (" . $processList->count() . " found)" .
             "\n-------------------------------------------------------------------"
         );
 

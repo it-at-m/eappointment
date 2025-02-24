@@ -1,16 +1,18 @@
 <?php
+
 /**
  *
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin\Helper;
 
-use \BO\Zmsentities\Calendar as Entity;
-use \BO\Zmsentities\Day;
-use \BO\Zmsentities\Collection\DayList;
-use \BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Calendar as Entity;
+use BO\Zmsentities\Day;
+use BO\Zmsentities\Collection\DayList;
+use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Scope;
 
 class Calendar
@@ -109,11 +111,11 @@ class Calendar
 
         if ($showAllInCluster) {
             $bookedProcessList = \App::$http
-                ->readGetResult('/cluster/'. $cluster->id .'/process/'. $this->dateTime->format('Y-m-d') . '/', ['showWeek' => 1])
+                ->readGetResult('/cluster/' . $cluster->id . '/process/' . $this->dateTime->format('Y-m-d') . '/', ['showWeek' => 1])
                 ->getCollection();
         } else {
             $bookedProcessList = \App::$http
-                ->readGetResult('/scope/'. $scope->id .'/process/'. $this->dateTime->format('Y-m-d') . '/', ['showWeek' => 1])
+                ->readGetResult('/scope/' . $scope->id . '/process/' . $this->dateTime->format('Y-m-d') . '/', ['showWeek' => 1])
                 ->getCollection();
         }
 
@@ -134,7 +136,7 @@ class Calendar
         $freeProcessListByDate = $freeProcessList ? $this->splitByDate($freeProcessList) : [];
 
         while ($currentDate <= $endDate) {
-            $day = (new Day)->setDateTime($currentDate);
+            $day = (new Day())->setDateTime($currentDate);
             $day->status = Day::DETAIL;
             $processList = new \BO\Zmsentities\Collection\ProcessList();
 
@@ -184,7 +186,7 @@ class Calendar
                 ksort($list[$hour]);
             }
         }
-        
+
         ksort($list);
         return $list;
     }
@@ -196,7 +198,7 @@ class Calendar
         $dayKeys = array();
         foreach ($dayList as $day) {
             $list['days'][] = $day;
-            $dayKey = $day->year .'-'. $day->month .'-'. $day->day;
+            $dayKey = $day->year . '-' . $day->month . '-' . $day->day;
             $dayKeys[$dayKey] = $dayKey;
             foreach ($day['processList'] as $hour => $processList) {
                 $list['hours'][$hour][$dayKey] = $processList;
@@ -226,7 +228,8 @@ class Calendar
         foreach ($processList as $process) {
             $dayKey = $process->getFirstAppointment()->toDateTime()->format("Y-m-d");
             if (! isset($list[$dayKey])) {
-                $list[$dayKey] = new \BO\Zmsentities\Collection\ProcessList();;
+                $list[$dayKey] = new \BO\Zmsentities\Collection\ProcessList();
+                ;
             }
 
             $list[$dayKey]->addEntity($process);

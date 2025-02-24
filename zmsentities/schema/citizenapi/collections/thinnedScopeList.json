@@ -1,0 +1,92 @@
+{
+  "type": [
+    "array",
+    "object",
+    "null"
+  ],
+  "properties": {
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "provider": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {},
+              "source": {
+                "type": "string"
+              },
+              "contact": {}
+            },
+            "required": [
+              "id",
+              "name",
+              "source",
+              "contact"
+            ]
+          },
+          "shortName": {
+            "type": "string"
+          },
+          "emailFrom": {
+            "type": "string",
+            "description": "Mail address for sending mails to clients",
+            "default": "",
+            "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+            "x-locale": {
+              "de_DE": {
+                "pointer": "Absender E-Mail",
+                "messages": {
+                  "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                }
+              }
+            }
+          },
+          "telephoneActivated": {
+            "type": "boolean"
+          },
+          "telephoneRequired": {
+            "type": "boolean"
+          },
+          "customTextfieldActivated": {
+            "type": "boolean"
+          },
+          "customTextfieldRequired": {
+            "type": "boolean"
+          },
+          "customTextfieldLabel": {
+            "type": "string"
+          },
+          "captchaActivatedRequired": {
+            "type": "boolean"
+          },
+          "displayInfo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "provider",
+          "shortName",
+          "emailFrom",
+          "telephoneActivated",
+          "telephoneRequired",
+          "customTextfieldActivated",
+          "customTextfieldRequired",
+          "customTextfieldLabel",
+          "captchaActivatedRequired"
+        ]
+      }
+    }
+  },
+  "required": [
+    "scopes"
+  ]
+}

@@ -32,8 +32,7 @@ The ZMS system is intended to manage human waiting queues. It has the following 
 * collecting statistics like waiting time or served clients per day
 * emergency call for employees
 
-[ZMSAPI Documentation](https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html)
-[ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html)
+[Code Coverage ZMSAPI and ZMSCITIZENAPI Documentation](https://it-at-m.github.io/eappointment/)
 
 ## Contact
 [Overview](https://opensource.muenchen.de/software/zeitmanagementsystem.html)
@@ -43,14 +42,14 @@ Munich Contact: it@M - opensource@muenchen.de
 
 BerlinOnline Stadtportal GmbH & Co KG and it@M.
 
-<!-- <table border="0" cellpadding="0" cellspacing="0">
+<table border="0" cellpadding="0" cellspacing="0">
   <tr>
     <td><img src="https://service.berlin.de/i9f/r1/images/logo_berlin_m_srgb.svg" height="30" align="center"></td>
     <td style="padding-right: 30px;"><img src="https://gitlab.com/eappointment/zmsstatistic/-/raw/main/public/_css/images/bo_logo.svg?ref_type=heads" height="30" align="center"></td>
     <td><img src="https://muenchen.digital/.resources/lhm-ms-templates-digitalradar/resources/img/logo-lhm.svg" height="30" align="center"></td>
     <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
   </tr>
-</table> -->
+</table>
 
 ---
 
@@ -79,8 +78,7 @@ Das ZMS-System dient zur Verwaltung von Warteschlangen für Menschen. Es bietet 
 * Sammeln von Statistiken wie Wartezeiten oder bedienten Kunden pro Tag
 * Notruf für Mitarbeiter
 
-[ZMSAPI-Dokumentation](https://it-at-m.github.io/eappointment/zmsapi/public/doc/index.html)
-[ZMSCITIZENAPI-Dokumentation](https://it-at-m.github.io/eappointment/zmscitizenapi/public/doc/index.html)
+[Code-Abdeckung ZMSAPI und ZMSCITIZENAPI Dokumentation](https://it-at-m.github.io/eappointment/)
 
 ## Kontakt
 BerlinOnline Stadtportal GmbH & Co KG Kontakt: 
@@ -89,14 +87,14 @@ Munich Kontakt: it@M - opensource@muenchen.de
 
 BerlinOnline Stadtportal GmbH & Co KG und it@M.
 
-<!-- <table border="0" cellpadding="0" cellspacing="0">
+<table border="0" cellpadding="0" cellspacing="0">
   <tr>
     <td><img src="https://service.berlin.de/i9f/r1/images/logo_berlin_m_srgb.svg" height="30" align="center"></td>
     <td style="padding-right: 30px;"><img src="https://gitlab.com/eappointment/zmsstatistic/-/raw/main/public/_css/images/bo_logo.svg?ref_type=heads" height="30" align="center"></td>
     <td><img src="https://muenchen.digital/.resources/lhm-ms-templates-digitalradar/resources/img/logo-lhm.svg" height="30" align="center"></td>
     <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
   </tr>
-</table> -->
+</table>
 
 ----
 
@@ -116,6 +114,31 @@ e.g.
 - `ddev exec ./cli modules check-upgrade 8.1`
 - `ddev exec ./cli modules check-upgrade 8.2`
 - `ddev exec ./cli modules check-upgrade 8.3`
+
+## Code Quality Checks
+We use PHPCS (following PSR-12 standards) and PHPMD to maintain code quality and detect possible issues early. These checks run automatically in our GitHub Actions pipeline but can also be executed locally.
+
+To run Checks locally in your local docker container:
+
+0. Run all at once:
+- `ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'"`
+- `ddev exec "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src/'"`
+
+1. **Enter the container** (if using DDEV or Docker):
+- `ddev ssh`
+
+2. **Go to the desired module directory:
+- `cd zmsadmin`
+3. Run PHPCS (PSR-12 standard):
+- `vendor/bin/phpcs --standard=psr12 src/`
+- ```
+  You can automatically fix many PHPCS formatting issues by running:
+  - vendor/bin/phpcbf --standard=psr12 src/
+  or
+  - phpcs --standard=psr12 --fix src/
+  ```
+4. Run PHPMD (using the phpmd.rules.xml in the project root):
+- `vendor/bin/phpmd src/ text ../phpmd.rules.xml`
 
 ## Unit Testing
 To run unit tests locally refer to the Github Workflows: https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml and in your local docker container run:
@@ -140,6 +163,7 @@ To keep our branch names organized and easily understandable, we follow a specif
 
 2. **project**: The project identifier. This should be:
    - `zms` for the ZMS project.
+   - `zmskvr` for the ZMSKVR project.
    - `mpdzbs` for the MPDZBS project.
 
 3. **issue number**: The ticket or issue number related to this branch (use digits only). This helps track the branch to a specific issue in the project management system.
@@ -154,20 +178,27 @@ To keep our branch names organized and easily understandable, we follow a specif
 
 - **Feature Branch**: `feature-zms-12345-this-is-a-feature-in-the-zms-project`
 - **Bugfix Branch**: `bugfix-mpdzbs-67890-fix-crash-on-startup`
-- **Hotfix Branch**: `hotfix-zms-98765-critical-fix-for-login`
+- **Hotfix Branch**: `hotfix-zmskvr-98765-critical-fix-for-login`
 - **Cleanup Branch**: `cleanup-mpdzbs-11111-remove-unused-code`
 - **Chore Branch**: `chore-zms-2964-composer-update`
-- **Docs Branch**: `docs-zms-0000-update-readme` `docs-zms-release-40-update-changelog`
+- **Docs Branch**: `docs-zmskvr-0000-update-readme` `docs-zms-release-40-update-changelog`
 
 #### Regular Expression
 
 The branch name must match the following regular expression:
-`^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|mpdzbs)-[0-9]+-[a-z0-9-]+$`
+`^(feature|hotfix|bugfix|cleanup|maintenance|docs)-(zms|zmskvr|mpdzbs)-[0-9]+-[a-z0-9-]+$`
 
 **For further commit rules please refer to https://www.conventionalcommits.org/en/v1.0.0-beta.4/**
+- **feat(ZMS-123): commit message**
+- **fix(ZMSKVR-123): commit message**
+- **clean(ZMS-123): commit message**
+- **chore(ZMSKVR-123): commit message**
+- **docs(ZMS-123): commit message**
 
 ## Screenshot
 ![screenshot](https://github.com/user-attachments/assets/54d360e9-c47b-4f3c-b849-5966a8766af9)
+![combined_image](https://github.com/user-attachments/assets/87902e60-fe90-48a0-bf60-c5edec210dc9)
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -184,4 +215,3 @@ The branch name must match the following regular expression:
 [license-shield]: https://img.shields.io/github/license/it-at-m/eappointment.svg?style=for-the-badge
 [license-url]: https://github.com/it-at-m/eappointment/blob/main/LICENSE
 [product-screenshot]: images/screenshot.png
-

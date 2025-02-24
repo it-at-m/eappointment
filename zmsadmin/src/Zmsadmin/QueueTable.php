@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Collection\QueueList;
+use BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
 {
@@ -24,12 +25,13 @@ class QueueTable extends BaseController
         // parameters
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
+        $withCalledList = $validator->getParameter('withCalled')->isBool()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
         $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
 
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-        
+
         // HTTP requests
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
@@ -42,19 +44,22 @@ class QueueTable extends BaseController
             Helper\GraphDefaults::getProcess()
         );
         $changedProcess = ($selectedProcessId)
-          ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
+          ? \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
             'gql' => Helper\GraphDefaults::getProcess()
           ])->getEntity()
           : null;
 
         // data refinement
         $queueList = $processList->toQueueList(\App::$now);
+        $queueList->uasort(function ($queueA, $queueB) {
+            return $queueA->arrivalTime - $queueB->arrivalTime;
+        });
         $queueListVisible = $queueList->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
         $queueListMissed = $queueList->withStatus(['missed']);
         $queueListParked = $queueList->withStatus(['parked']);
         $queueListFinished = $queueList->withStatus(['finished']);
 
-        $clusterQueueList = \App::$http
+        $queueListCalled = $withCalledList ? (\App::$http
             ->readGetResult(
                 '/useraccount/queue/',
                 [
@@ -62,7 +67,7 @@ class QueueTable extends BaseController
                     'status' => 'called',
                 ]
             )
-            ->getCollection() ?? [];
+            ->getCollection() ?? []) : false;
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -78,7 +83,8 @@ class QueueTable extends BaseController
                 'processListMissed' => $queueListMissed->toProcessList(),
                 'processListParked' => $queueListParked->toProcessList(),
                 'processListFinished' => $queueListFinished->toProcessList(),
-                'clusterQueueListCalled' => $clusterQueueList,
+                'showCalledList' => $withCalledList,
+                'queueListCalled' => $queueListCalled,
                 'changedProcess' => $changedProcess,
                 'success' => $success,
                 'debug' => \App::DEBUG,
