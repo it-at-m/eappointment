@@ -12,6 +12,15 @@
     },
     "availability": {
         "id": 0,
+        "scope": {
+            "id": 141,
+            "provider": {
+                "id": 123456,
+                "name": "Flughafen Schönefeld, Aufsicht",
+                "source": "dldb"
+            },
+            "shortName": "Zentrale"
+        },
         "weekday": {
             "sunday": 0,
             "monday": 0,

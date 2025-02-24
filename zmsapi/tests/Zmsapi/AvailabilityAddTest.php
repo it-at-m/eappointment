@@ -15,14 +15,26 @@ class AvailabilityAddTest extends Base
                     "id": 21202,
                     "description": "Test Öffnungszeit update",
                     "scope": {
-                        "id": 312
-                    }
+                        "id": 312,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    },
                 },
                 {
                     "description": "Test Öffnungszeit ohne id",
                     "scope": {
-                        "id": 141
-                    }
+                        "id": 141,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    },
                 }
             ]'
         ], []);
