@@ -11,6 +11,7 @@ class Apiclient extends Schema\Entity
     public function getDefaults()
     {
         return [
+            'clientKey' => 'wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs',
             'shortname' => 'default',
         ];
     }

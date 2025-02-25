@@ -18,6 +18,7 @@ class Useraccount extends Schema\Entity
     public function getDefaults()
     {
         return [
+            'id' => 'johndoe',
             'rights' => [
                 "availability" => false,
                 "basic" => true,
