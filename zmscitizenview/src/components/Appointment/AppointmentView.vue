@@ -55,7 +55,6 @@
               />
             </div>
             <div v-if="currentView === 3">
-              <!-- Delete tooManyAppointmentsWithSameMailError if contact is transferred from backend call offices-and-services    -->
               <appointment-summary
                 v-if="
                   !updateAppointmentError &&
@@ -174,7 +173,7 @@
 
 <script setup lang="ts">
 import { MucCallout, MucStepper } from "@muenchen/muc-patternlab-vue";
-import { onMounted, provide, ref, watch } from "vue";
+import { nextTick, onMounted, provide, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
@@ -472,7 +471,16 @@ const nextCancelReschedule = () => {
  */
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
+  goToTop();
 });
+
+/**
+ * Sets the view to the top of the page after change the current view
+ */
+const goToTop = async () => {
+  await nextTick();
+  window.scrollTo({ top: 0, behavior: "instant" });
+};
 
 const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
