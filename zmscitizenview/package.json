@@ -9,7 +9,8 @@
     "post-build": "node ./processes/post-build.js",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "lint": "prettier src/ --check",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "test": "vitest run"
   },
   "dependencies": {
     "@muenchen/muc-patternlab-vue": "4.0.0-beta.1",
