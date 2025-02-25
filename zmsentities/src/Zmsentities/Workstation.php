@@ -17,7 +17,7 @@ class Workstation extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'id' => 123,
+            'id' => 0,
             'useraccount' => new Useraccount(),
             'process' => new Process(),
             'name' => '',

@@ -10,7 +10,7 @@
         "date",
         "name"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "id": {
             "type": "number"
