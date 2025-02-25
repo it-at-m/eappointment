@@ -6,7 +6,7 @@ use BO\Zmsentities\Helper\Property;
 
 class Appointment extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "appointment.json";
 

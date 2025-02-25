@@ -16,7 +16,12 @@
       "afterWeeks": 0
     },
     "scope": {
-      "id": 141
+      "provider": {
+        "id": 123456,
+        "name": "Flughafen Schönefeld, Aufsicht",
+        "source": "dldb"
+      },
+      "shortName": "Zentrale"
     },
     "slotTimeInMinutes": 12,
     "startDate": 1447919543,
@@ -37,7 +42,7 @@
     "type",
     "weekday"
   ],
-  "additionalProperties": false,
+  "additionalProperties": true,
   "properties": {
     "bookable": {
       "type": "object",

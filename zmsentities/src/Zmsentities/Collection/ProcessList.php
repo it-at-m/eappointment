@@ -15,7 +15,7 @@ use BO\Zmsentities\Process;
  */
 class ProcessList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Process';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Process';
 
     public function toProcessListByTime($format = null)
     {
@@ -268,7 +268,10 @@ class ProcessList extends Base
         foreach ($this as $process) {
             $process->amendment = 'Die Slots für diesen Zeitraum wurden überbucht';
             if (! $process->getFirstAppointment()->availability->hasId()) {
-                $process->amendment = 'Der Vorgang (' . $process->getId() . ') befindet sich außerhalb der Öffnungszeit!';
+                $process->amendment = sprintf(
+                    'Der Vorgang (%s) befindet sich außerhalb der Öffnungszeit!',
+                    $process->getId()
+                );
             }
         }
         return $this;

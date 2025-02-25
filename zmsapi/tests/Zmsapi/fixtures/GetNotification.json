@@ -21,7 +21,14 @@
             {
                 "date": 1460971800,
                 "scope": {
-                    "id": "167"
+                    "id": 167,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale",
+                    "source": "dldb"
                 },
                 "availability": {
                     "weekday": {
@@ -54,7 +61,7 @@
                     "endTime": "23:59",
                     "type": "appointment"
                 },
-                "slotCount": "1"
+                "slotCount": 1
             }
         ],
         "authKey": "1c56",
@@ -62,27 +69,34 @@
             {
                 "familyName": "J525",
                 "email": "test@example.com",
-                "emailSendCount": "0",
-                "notificationsSendCount": "0",
-                "surveyAccepted": "0",
+                "emailSendCount": 0,
+                "notificationsSendCount": 0,
+                "surveyAccepted": 0,
                 "telephone": "0987654321"
             }
         ],
         "createIP": "127.0.0.1",
-        "createTimestamp": "1456312139",
-        "id": "10029",
+        "createTimestamp": 1456312139,
+        "id": 10029,
         "queue": {
             "arrivalTime": 1460971800,
-            "callCount": "0",
+            "callCount": 0,
             "callTime": 0,
             "number": "10029",
             "status": "confirmed",
             "lastCallTime": 0,
-            "withAppointment": "1"
+            "withAppointment": 1
         },
-        "reminderTimestamp": "0",
+        "reminderTimestamp": 0,
         "scope": {
-            "id": "167"
+            "id": 167,
+            "provider": {
+                "id": 123456,
+                "name": "Flughafen Schönefeld, Aufsicht",
+                "source": "dldb"
+            },
+            "shortName": "Zentrale",
+            "source": "dldb"
         },
         "status": "confirmed"
     },

@@ -6,7 +6,13 @@
             {
                 "date": 1464334200,
                 "scope": {
-                    "id": "380"
+                    "id": 380,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
                 },
                 "availability": {
                     "weekday": {
@@ -39,7 +45,7 @@
                     "endTime": "23:59",
                     "type": "appointment"
                 },
-                "slotCount": "1"
+                "slotCount": 1
             }
         ],
         "authKey": "dd51",
@@ -47,27 +53,33 @@
             {
                 "familyName": "webreservierung",
                 "email": "test@example.com",
-                "emailSendCount": "0",
-                "notificationsSendCount": "0",
-                "surveyAccepted": "0",
+                "emailSendCount": 0,
+                "notificationsSendCount": 0,
+                "surveyAccepted": false,
                 "telephone": ""
             }
         ],
         "createIP": "2003",
-        "createTimestamp": "1459199478",
-        "id": "137232",
+        "createTimestamp": 1459199478,
+        "id": 137232,
         "queue": {
             "arrivalTime": 1464334200,
-            "callCount": "0",
+            "callCount": 0,
             "callTime": 0,
             "number": "137232",
             "status": "reserved",
             "lastCallTime": 0,
-            "withAppointment": "1"
+            "withAppointment": true
         },
-        "reminderTimestamp": "0",
+        "reminderTimestamp": 0,
         "scope": {
-            "id": "380"
+            "id": 380,
+            "provider": {
+                "id": 123456,
+                "name": "Flughafen Schönefeld, Aufsicht",
+                "source": "dldb"
+            },
+            "shortName": "Zentrale"
         },
         "status": "reserved"
     },
@@ -78,7 +90,13 @@
             {
                 "date": 1464335100,
                 "scope": {
-                    "id": "380"
+                    "id": 380,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
                 },
                 "availability": {
                     "weekday": {
@@ -111,7 +129,7 @@
                     "endTime": "23:59",
                     "type": "appointment"
                 },
-                "slotCount": "1"
+                "slotCount": 1
             }
         ],
         "authKey": "dd51",
@@ -119,27 +137,33 @@
             {
                 "familyName": "webreservierung",
                 "email": "test@example.com",
-                "emailSendCount": "0",
-                "notificationsSendCount": "0",
-                "surveyAccepted": "0",
+                "emailSendCount": 0,
+                "notificationsSendCount": 0,
+                "surveyAccepted": false,
                 "telephone": ""
             }
         ],
         "createIP": "2003",
-        "createTimestamp": "1459200792",
-        "id": "138090",
+        "createTimestamp": 1459200792,
+        "id": 138090,
         "queue": {
             "arrivalTime": 1464335100,
-            "callCount": "0",
+            "callCount": 0,
             "callTime": 0,
             "number": "138090",
             "status": "reserved",
             "lastCallTime": 0,
-            "withAppointment": "1"
+            "withAppointment": true
         },
-        "reminderTimestamp": "0",
+        "reminderTimestamp": 0,
         "scope": {
-            "id": "380"
+            "id": 380,
+            "provider": {
+                "id": 123456,
+                "name": "Flughafen Schönefeld, Aufsicht",
+                "source": "dldb"
+            },
+            "shortName": "Zentrale"
         },
         "status": "reserved"
     },
@@ -150,7 +174,13 @@
             {
                 "date": 1464334200,
                 "scope": {
-                    "id": "380"
+                    "id": 380,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
                 },
                 "availability": {
                     "weekday": {
@@ -183,7 +213,7 @@
                     "endTime": "23:59",
                     "type": "appointment"
                 },
-                "slotCount": "1"
+                "slotCount": 1
             }
         ],
         "authKey": "dd51",
@@ -191,27 +221,33 @@
             {
                 "familyName": "webreservierung",
                 "email": "test@example.com",
-                "emailSendCount": "0",
-                "notificationsSendCount": "0",
-                "surveyAccepted": "0",
+                "emailSendCount": 0,
+                "notificationsSendCount": 0,
+                "surveyAccepted": false,
                 "telephone": ""
             }
         ],
         "createIP": "85.178.65.144",
-        "createTimestamp": "1459200805",
-        "id": "138096",
+        "createTimestamp": 1459200805,
+        "id": 138096,
         "queue": {
             "arrivalTime": 1464334200,
-            "callCount": "0",
+            "callCount": 0,
             "callTime": 0,
             "number": "138096",
             "status": "reserved",
             "lastCallTime": 0,
-            "withAppointment": "1"
+            "withAppointment": true
         },
-        "reminderTimestamp": "0",
+        "reminderTimestamp": 0,
         "scope": {
-            "id": "380"
+            "id": 380,
+            "provider": {
+                "id": 123456,
+                "name": "Flughafen Schönefeld, Aufsicht",
+                "source": "dldb"
+            },
+            "shortName": "Zentrale"
         },
         "status": "reserved"
     },
@@ -222,7 +258,13 @@
             {
                 "date": 1464341400,
                 "scope": {
-                    "id": "142"
+                    "id": 142,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
                 },
                 "availability": {
                     "weekday": {
@@ -255,7 +297,7 @@
                     "endTime": "23:59",
                     "type": "appointment"
                 },
-                "slotCount": "1"
+                "slotCount": 1
             }
         ],
         "authKey": "dd51",
@@ -263,27 +305,33 @@
             {
                 "familyName": "webreservierung",
                 "email": "test@example.com",
-                "emailSendCount": "0",
-                "notificationsSendCount": "0",
-                "surveyAccepted": "0",
+                "emailSendCount": 0,
+                "notificationsSendCount": 0,
+                "surveyAccepted": false,
                 "telephone": ""
             }
         ],
         "createIP": "2a02",
-        "createTimestamp": "1459201881",
-        "id": "138423",
+        "createTimestamp": 1459201881,
+        "id": 138423,
         "queue": {
             "arrivalTime": 1464341400,
-            "callCount": "0",
+            "callCount": 0,
             "callTime": 0,
             "number": "138423",
             "status": "reserved",
             "lastCallTime": 0,
-            "withAppointment": "1"
+            "withAppointment": true
         },
-        "reminderTimestamp": "0",
+        "reminderTimestamp": 0,
         "scope": {
-            "id": "142"
+            "id": 380,
+            "provider": {
+                "id": 123456,
+                "name": "Flughafen Schönefeld, Aufsicht",
+                "source": "dldb"
+            },
+            "shortName": "Zentrale"
         },
         "status": "reserved"
     },
@@ -294,7 +342,13 @@
             {
                 "date": 1464339000,
                 "scope": {
-                    "id": "140"
+                    "id": 140,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
                 },
                 "availability": {
                     "weekday": {
@@ -327,7 +381,7 @@
                     "endTime": "23:59",
                     "type": "appointment"
                 },
-                "slotCount": "1"
+                "slotCount": 1
             }
         ],
         "authKey": "0a02",
@@ -335,27 +389,33 @@
             {
                 "familyName": "Jeremy Sullivan",
                 "email": "test@example.com",
-                "emailSendCount": "0",
-                "notificationsSendCount": "0",
-                "surveyAccepted": "0",
+                "emailSendCount": 0,
+                "notificationsSendCount": 0,
+                "surveyAccepted": false,
                 "telephone": ""
             }
         ],
         "createIP": "77.179.139.220",
-        "createTimestamp": "1459202804",
-        "id": "138677",
+        "createTimestamp": 1459202804,
+        "id": 138677,
         "queue": {
             "arrivalTime": 1464339000,
-            "callCount": "0",
+            "callCount": 0,
             "callTime": 0,
             "number": "138677",
             "status": "reserved",
             "lastCallTime": 0,
-            "withAppointment": "1"
+            "withAppointment": true
         },
-        "reminderTimestamp": "0",
+        "reminderTimestamp": 0,
         "scope": {
-            "id": "140"
+            "id": 140,
+            "provider": {
+                "id": 123456,
+                "name": "Flughafen Schönefeld, Aufsicht",
+                "source": "dldb"
+            },
+            "shortName": "Zentrale"
         },
         "status": "reserved"
     },
@@ -366,7 +426,13 @@
             {
                 "date": 1464332700,
                 "scope": {
-                    "id": "147"
+                    "id": 147,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
                 },
                 "availability": {
                     "weekday": {
@@ -399,7 +465,7 @@
                     "endTime": "23:59",
                     "type": "appointment"
                 },
-                "slotCount": "2"
+                "slotCount": 2
             }
         ],
         "authKey": "dd51",
@@ -407,27 +473,33 @@
             {
                 "familyName": "webreservierung",
                 "email": "test@example.com",
-                "emailSendCount": "0",
-                "notificationsSendCount": "0",
-                "surveyAccepted": "0",
+                "emailSendCount": 0,
+                "notificationsSendCount": 0,
+                "surveyAccepted": false,
                 "telephone": ""
             }
         ],
         "createIP": "95.90.238.240",
-        "createTimestamp": "1459202914",
-        "id": "138690",
+        "createTimestamp": 1459202914,
+        "id": 138690,
         "queue": {
             "arrivalTime": 1464332700,
-            "callCount": "0",
+            "callCount": 0,
             "callTime": 0,
             "number": "138690",
             "status": "reserved",
             "lastCallTime": 0,
-            "withAppointment": "1"
+            "withAppointment": true
         },
-        "reminderTimestamp": "0",
+        "reminderTimestamp": 0,
         "scope": {
-            "id": "147"
+            "id": 147,
+            "provider": {
+                "id": 123456,
+                "name": "Flughafen Schönefeld, Aufsicht",
+                "source": "dldb"
+            },
+            "shortName": "Zentrale"
         },
         "status": "reserved"
     },
@@ -438,7 +510,13 @@
             {
                 "date": 1464341400,
                 "scope": {
-                    "id": "142"
+                    "id": 142,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
                 },
                 "availability": {
                     "weekday": {
@@ -471,7 +549,7 @@
                     "endTime": "23:59",
                     "type": "appointment"
                 },
-                "slotCount": "1"
+                "slotCount": 1
             }
         ],
         "authKey": "dd51",
@@ -479,27 +557,33 @@
             {
                 "familyName": "webreservierung",
                 "email": "test@example.com",
-                "emailSendCount": "0",
-                "notificationsSendCount": "0",
-                "surveyAccepted": "0",
+                "emailSendCount": 0,
+                "notificationsSendCount":  0 ,
+                "surveyAccepted": 0,
                 "telephone": ""
             }
         ],
         "createIP": "91.66.67.192",
-        "createTimestamp": "1459203125",
-        "id": "138771",
+        "createTimestamp": 1459203125,
+        "id": 138771,
         "queue": {
             "arrivalTime": 1464341400,
-            "callCount": "0",
+            "callCount": 0,
             "callTime": 0,
             "number": "138771",
             "status": "reserved",
             "lastCallTime": 0,
-            "withAppointment": "1"
+            "withAppointment": true
         },
-        "reminderTimestamp": "0",
+        "reminderTimestamp": 0,
         "scope": {
-            "id": "142"
+            "id": 142,
+            "provider": {
+                "id": 123456,
+                "name": "Flughafen Schönefeld, Aufsicht",
+                "source": "dldb"
+            },
+            "shortName": "Zentrale"
         },
         "status": "reserved"
     }

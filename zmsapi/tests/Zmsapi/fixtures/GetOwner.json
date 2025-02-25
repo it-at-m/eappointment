@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.berlin.de/queuemanagement/owner.json",
-    "id": "99",
+    "id": 99,
     "name": "Test Kunde",
     "url": "",
     "contact": {

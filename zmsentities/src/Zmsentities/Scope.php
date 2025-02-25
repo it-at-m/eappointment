@@ -7,7 +7,7 @@ namespace BO\Zmsentities;
  */
 class Scope extends Schema\Entity implements Useraccount\AccessInterface
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "scope.json";
 
@@ -18,6 +18,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
             'source' => 'dldb',
             'contact' => new Contact(),
             'provider' => new Provider(),
+            'shortName' => ''
         ];
     }
 
@@ -73,6 +74,9 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 
     public function getProvider()
     {
+        if (!isset($this->provider)) {
+            throw new Exception\ScopeMissingProvider("Provider is missing", 500);
+        }
         if (!$this->provider instanceof Provider) {
             $this->provider = new Provider($this->toProperty()->provider->get());
         }

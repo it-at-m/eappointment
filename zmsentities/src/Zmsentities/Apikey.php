@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Apikey extends Schema\Entity
 {
-    const PRIMARY = 'key';
+    public const PRIMARY = 'key';
 
     public static $schema = "apikey.json";
 

@@ -35,13 +35,13 @@ class MailAddTest extends Base
               "createTimestamp": 1447931596000,
               "multipart": [
                 {
-                  "queueId": "1234",
+                  "queueId": 1234,
                   "mime": "text/html",
                   "content": "<h1>Title</h1><p>Message</p>",
                   "base64": false
                 },
                 {
-                  "queueId": "1234",
+                  "queueId": 1234,
                   "mime": "text/plain",
                   "content": "Title\nMessage",
                   "base64": false

@@ -4,9 +4,18 @@ namespace BO\Zmsentities;
 
 class Request extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "request.json";
+
+    public function getDefaults()
+    {
+        return [
+            'id' => '123',
+            'name' => '',
+            'source' => 'dldb'
+        ];
+    }
 
     public function withReference($additionalData = [])
     {

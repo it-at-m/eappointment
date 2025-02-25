@@ -17,12 +17,18 @@ class AvailabilityUpdateTest extends Base
         $this->setWorkstation();
         $response = $this->render(["id"=> $entity->getId()], [
             '__body' => '{
-                  "id": '. $entity->getId() .',
-                  "description": "",
-                  "scope": {
-                      "id": 312
-                  }
-              }'
+                    "id": '. $entity->getId() .',
+                    "description": "",
+                    "scope": {
+                        "id": 312,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    },
+                }'
         ], []);
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -42,12 +48,18 @@ class AvailabilityUpdateTest extends Base
         $this->expectExceptionCode(404);
         $this->render(["id"=> 1], [
             '__body' => '{
-                  "id": 1,
-                  "description": "Test Öffnungszeit not found",
-                  "scope": {
-                      "id": 312
-                  }
-              }'
+                    "id": 1,
+                    "description": "Test Öffnungszeit not found",
+                    "scope": {
+                        "id": 312,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    },
+                }'
         ], []);
     }
 }

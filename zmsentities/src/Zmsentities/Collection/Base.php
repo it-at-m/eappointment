@@ -18,7 +18,7 @@ use BO\Zmsentities\Schema\Entity;
  */
 class Base extends \ArrayObject implements \JsonSerializable
 {
-    const ENTITY_CLASS = '';
+    public const ENTITY_CLASS = '';
 
     /**
      * @var Int $resolveLevel indicator on data integrity

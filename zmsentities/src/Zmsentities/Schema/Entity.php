@@ -15,7 +15,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * primary id for entity
      *
      */
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     /**
      * @var String $schema Filename of JSON-Schema file
@@ -118,7 +118,6 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function testValid($locale = 'de_DE', $resolveLevel = 0): bool
     {
         $validator = $this->getValidator($locale, $resolveLevel);
-        $validator = $this->registerExtensions($validator);
         if (!$validator->isValid()) {
             $exception = new \BO\Zmsentities\Exception\SchemaValidation();
             $exception->setSchemaName($this->getEntityName());
@@ -126,12 +125,6 @@ class Entity extends \ArrayObject implements \JsonSerializable
             throw $exception;
         }
         return true;
-    }
-
-    public function registerExtensions($validator)
-    {
-        $validator->registerFormatExtension('sameValues', new Extensions\SameValues());
-        return $validator;
     }
 
     /**

@@ -90,7 +90,7 @@ class ProcessTest extends EntityCommonTests
         $appointment->date = $now->getTimestamp();
         $entity->addAppointment($appointment);
         $this->assertTrue($entity->hasArrivalTime());
-        $this->assertTrue($entity->hasAppointment(1451649000, 123), 'appointment is not accessible');
+        $this->assertTrue($entity->hasAppointment(1451649000, 0), 'appointment is not accessible');
         $this->assertFalse($entity->hasAppointment(1447869173, 123), 'appointment date 1447869173 should not exist');
 
         $appointment = (new \BO\Zmsentities\Appointment())->getExample()->getArrayCopy();

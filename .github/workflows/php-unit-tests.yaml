@@ -47,6 +47,7 @@ jobs:
         run: |
           cd "${{ matrix.module }}"
           mkdir -p coverage
+          ls -la /__w/eappointment/eappointment/zmsentities/schema/
           echo "Running tests with coverage for ${{ matrix.module }}"
           php -dmemory_limit=-1 \
             ./vendor/bin/phpunit -c phpunit.xml \
@@ -137,6 +138,7 @@ jobs:
           echo "Setup fixtures..."
           rm -rf data
           ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
+          ls -la /__w/eappointment/eappointment/zmsentities/schema/
           echo "Importing test data..."
           vendor/bin/importTestData --commit
           mkdir -p coverage

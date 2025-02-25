@@ -15,8 +15,14 @@ class AvailabilitySlotsUpdateTest extends Base
                     "id": 21202,
                     "description": "Test Öffnungszeit update",
                     "scope": {
-                        "id": 312
-                    }
+                        "id": 312,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    },
                 }
             ]'
         ], []);
@@ -49,11 +55,17 @@ class AvailabilitySlotsUpdateTest extends Base
         $this->render([], [
             '__body' => '[
                 {
-                  "id": 99999,
-                  "description": "Test Öffnungszeit not found",
-                  "scope": {
-                      "id": 312
-                  }
+                    "id": 99999,
+                    "description": "Test Öffnungszeit not found",
+                    "scope": {
+                        "id": 312,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    },
                 }
             ]',
             'migrationfix' => 0

@@ -2,75 +2,43 @@
 
 namespace BO\Zmsentities\Schema\Extensions;
 
-final class CoerceType implements \League\JsonGuard\ConstraintInterface
+use Opis\JsonSchema\Keyword;
+use Opis\JsonSchema\ValidationContext;
+use Opis\JsonSchema\Errors\ValidationError;
+
+class CoerceType implements Keyword
 {
-    const KEYWORD = 'type';
-
-    private $typeConstraint;
-
-    public function __construct()
+    public function validate($data, ValidationContext $context, $value): ?ValidationError
     {
-        $this->typeConstraint = new \League\JsonGuard\Constraint\DraftFour\Type();
-    }
+        $type = $value;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function validate($value, $typeList, \League\JsonGuard\Validator $validator)
-    {
-        $error = null;
-        foreach ((array)$typeList as $type) {
-            $value = $this->toCoercedType($value, $type);
-            $error = $this->typeConstraint->validate($value, $type, $validator);
-            if (is_null($error)) {
-                return null;
-            }
+        switch ($type) {
+            case 'string':
+                if (is_numeric($data) || is_bool($data)) {
+                    $context->setData((string)$data);
+                }
+                break;
+            case 'number':
+                if (is_string($data) && is_numeric($data)) {
+                    $context->setData((float)$data);
+                }
+                break;
+            case 'integer':
+                if (is_string($data) && ctype_digit($data)) {
+                    $context->setData((int)$data);
+                }
+                break;
+            case 'boolean':
+                if (is_string($data)) {
+                    if ($data === 'true') {
+                        $context->setData(true);
+                    } elseif ($data === 'false') {
+                        $context->setData(false);
+                    }
+                }
+                break;
         }
-        return $error;
-    }
 
-    private function toCoercedType($value, $type)
-    {
-        if ($type === 'number') {
-            $value = $this->toNumber($value);
-        } elseif ($type === 'string') {
-            $value = $this->toString($value);
-        } elseif ($type === 'integer' && !is_int($value)) {
-            $value = $this->toNumber($value);
-        } elseif ($type === 'boolean' && ($value !== true || $value !== false)) {
-            $value = $this->toBoolean($value);
-        }
-        return $value;
-    }
-
-    private function toNumber($value)
-    {
-        if (is_int($value) || is_float($value)) {
-            //do nothing
-        } elseif ($value === true) {
-            $value  = 1;
-        } elseif ($value === false || $value === null) {
-            $value = 0;
-        } elseif (is_numeric($value)) {
-            $value = (int)$value;
-        }
-        return $value;
-    }
-
-    private function toString($value)
-    {
-        if (is_string($value)) {
-            //do nothing
-        } elseif ($value === true) {
-            $value  = "1";
-        } elseif ($value === false || $value === null) {
-            $value = "";
-        }
-        return $value;
-    }
-
-    private function toBoolean($value)
-    {
-        return $value ? true : false;
+        return null;
     }
 }

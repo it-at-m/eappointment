@@ -2,80 +2,217 @@
 
 namespace BO\Zmsentities\Schema;
 
-use League\JsonGuard\ValidationError;
+use Opis\JsonSchema\{Validator as OpisValidator, ValidationResult, Schema as OpisSchema};
+use Opis\JsonSchema\Errors\ValidationError as OpisValidationError;
 
 class Validator
 {
     protected $schemaObject;
-
     protected $schemaData;
-
     protected $locale;
-
     protected $validator;
+    protected $validationResult;
 
     public function __construct($data, Schema $schemaObject, $locale)
     {
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
-        $ruleset = new \League\JsonGuard\RuleSet\DraftFour();
-        $ruleset->set('type', Extensions\CoerceType::class);
-        $this->validator = new \League\JsonGuard\Validator($data, $schemaObject->toJsonObject(), $ruleset);
+
+        $this->validator = new OpisValidator();
+
+        // Register schema loader for resolving $refs
+        $schemaPath = '/__w/eappointment/eappointment/zmsentities/schema/';
+        // error_log("Resolved schemaPath: " . $schemaPath);
+        // error_log("Current working directory: " . getcwd());
+        // error_log("Checking if availability.json exists: " . (file_exists($schemaPath . 'availability.json') ? 'Yes' : 'No'));
+
+        // Register all schema files
+        $commonSchemas = [
+            'apiclient.json',
+            'apikey.json',
+            'appointment.json',
+            'availability.json',
+            'calendar.json',
+            'calldisplay.json',
+            'client.json',
+            'cluster.json',
+            'config.json',
+            'contact.json',
+            'day.json',
+            'dayoff.json',
+            'department.json',
+            'eventlog.json',
+            'exchange.json',
+            'ics.json',
+            'link.json',
+            'log.json',
+            'mail.json',
+            'mailtemplate.json',
+            'metaresult.json',
+            'mimepart.json',
+            'month.json',
+            'notification.json',
+            'organisation.json',
+            'owner.json',
+            'process.json',
+            'processarchived.json',
+            'provider.json',
+            'queue.json',
+            'request.json',
+            'requestrelation.json',
+            'scope.json',
+            'session.json',
+            'slot.json',
+            'source.json',
+            'status.json',
+            'ticketprinter.json',
+            'useraccount.json',
+            'workstation.json',
+        ];
+
+        // Register schema loader
+        $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
+
+        // Register each schema file
+        foreach ($commonSchemas as $schema) {
+            if (file_exists($schemaPath . $schema)) {
+                $schemaContent = file_get_contents($schemaPath . $schema);
+                $this->validator->resolver()->registerRaw(
+                    $schemaContent,
+                    'schema://' . $schema
+                );
+            }
+        }
+
+        // Convert schema to JSON and create schema object
+        $schemaJson = json_encode($schemaObject->toJsonObject());
+        $schemaJson = json_decode($schemaJson);
+
+        // Convert data to JSON object
+        $data = json_decode(json_encode($data));
+
+        // Debugging
+        // var_dump("Schema:", json_encode($schemaJson, JSON_PRETTY_PRINT));
+        // var_dump("*********************************************");
+        // var_dump("Data:", json_encode($data, JSON_PRETTY_PRINT));
+
+        // Set max errors and validate
+        $this->validator->setMaxErrors(1000);
+        $this->validator->setStopAtFirstError(false);
+        $this->validationResult = $this->validator->validate($data, $schemaJson);
+        //$this->validationResult = $this->validator->dataValidation($data, $schemaData);
     }
 
     public function isValid()
     {
-        return $this->validator->passes();
+        return $this->validationResult->isValid();
     }
 
     public function getErrors()
     {
-        $errorsReducedList = array();
-        $errors = $this->validator->errors();
-        foreach ($errors as $error) {
-            $errorsReducedList[] = new ValidationError(
-                $this->getCustomMessage($error),
-                $error->getKeyword(),
-                $error->getParameter(),
-                $error->getData(),
-                $this->getTranslatedPointer($error),
-                $error->getSchema(),
-                $error->getSchemaPath()
-            );
+        if ($this->validationResult->isValid()) {
+            return [];
         }
+
+        $errorsReducedList = [];
+        $error = $this->validationResult->error();
+
+        if ($error) {
+            $errorsReducedList = $this->extractErrors($error);
+        }
+
         return $errorsReducedList;
     }
 
-    public function getCustomMessage(ValidationError $error)
+    private function extractErrors(OpisValidationError $error)
     {
-        $message = null;
-        $property = new \BO\Zmsentities\Helper\Property($error->getSchema());
-        $message = $property['x-locale'][$this->locale]->messages[$error->getKeyword()]->get();
-        return ($message) ? $message : $error->getMessage();
-    }
+        $errors = [];
 
-    public static function getOriginPointer(ValidationError $error)
-    {
-        $pointer = explode('/', $error->getSchemaPath());
-        $keys = array_keys($pointer, 'properties', true);
-        if (0 < count($keys)) {
-            $pointer = array_values(array_slice($pointer, end($keys) + 1, null, true));
+        $errors[] = new OpisValidationError(
+            $error->keyword(),
+            $error->schema(),
+            $error->data(),
+            $this->getCustomMessage($error),
+            $error->args(),
+            []
+        );
+
+        foreach ($error->subErrors() as $subError) {
+            if ($subError instanceof OpisValidationError) {
+                $errors = array_merge($errors, $this->extractErrors($subError));
+            }
         }
-        return reset($pointer);
+
+        return $errors;
     }
 
-    /**
-     * on error see merge conflict with c05b7e5fca6b52fc8d0936f4fbb653f3cad8f06b
-     */
-    public function getTranslatedPointer(ValidationError $error)
+    public function getCustomMessage(OpisValidationError $error)
     {
-        $property = new \BO\Zmsentities\Helper\Property($error->getSchema());
-        return $property['x-locale'][$this->locale]->pointer->get(static::getOriginPointer($error));
+        $schemaData = $error->schema()->info()->data();
+        if (is_object($schemaData)) {
+            $schemaData = (array) $schemaData;
+        }
+        $property = new \BO\Zmsentities\Helper\Property($schemaData);
+
+        if (
+            isset($property['x-locale'][$this->locale]->messages[$error->keyword()])
+            && $property['x-locale'][$this->locale]->messages[$error->keyword()] !== null
+        ) {
+            return $property['x-locale'][$this->locale]->messages[$error->keyword()]->get();
+        }
+
+        return $error->message();
     }
 
-    public function registerFormatExtension($name, $extension)
+    public static function getOriginPointer(OpisValidationError $error)
     {
-        return $this->validator->getRuleset()->get('format')->addExtension($name, $extension);
+        $dataInfo = $error->data();
+
+        if (empty($dataInfo->path())) {
+            return '/';
+        }
+
+        $pointer = '/' . implode('/', array_map('strval', $dataInfo->path()));
+
+        return $pointer;
+    }
+
+    public function getTranslatedPointer(OpisValidationError $error)
+    {
+        $schemaData = $error->schema()->info()->data();
+        if (is_object($schemaData)) {
+            $schemaData = (array) $schemaData;
+        }
+        $property = new \BO\Zmsentities\Helper\Property($schemaData);
+
+        if (
+            isset($property['x-locale'][$this->locale]->pointer)
+            && $property['x-locale'][$this->locale]->pointer !== null
+        ) {
+            return $property['x-locale'][$this->locale]->pointer->get(self::getOriginPointer($error));
+        }
+
+        return self::getOriginPointer($error);
+    }
+
+    private function resolveRefs(&$schema)
+    {
+        if (is_object($schema)) {
+            foreach ($schema as $key => &$value) {
+                if ($key === '$ref' && is_string($value)) {
+                    // Convert relative path to schema:// protocol
+                    $value = 'schema://' . $value;
+                } elseif (is_object($value) || is_array($value)) {
+                    $this->resolveRefs($value);
+                }
+            }
+        } elseif (is_array($schema)) {
+            foreach ($schema as &$value) {
+                if (is_object($value) || is_array($value)) {
+                    $this->resolveRefs($value);
+                }
+            }
+        }
     }
 }
