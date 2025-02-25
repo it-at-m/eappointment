@@ -364,9 +364,14 @@
       "description": "unix timestamp representing creation of the process"
     },
     "id": {
-      "type": "number",
-      "description": "Number is used to identify appointments like on call displays\n",
-      "minimum": 1000
+      "anyOf": [
+        { "const": 0 },
+        { 
+          "type": "number",
+          "minimum": 1000
+        }
+      ],
+      "description": "Number is used to identify appointments like on call displays"
     },
     "lastChange": {
       "type": "number",

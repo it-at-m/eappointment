@@ -42,7 +42,7 @@ class Process extends Schema\Entity
             'clients' => new Collection\ClientList(),
             'createIP' => '',
             'createTimestamp' => time(),
-            'id' => 1234,
+            'id' => 0,
             'archiveId' => 0,
             'queue' => new Queue(),
             'reminderTimestamp' => 0,
