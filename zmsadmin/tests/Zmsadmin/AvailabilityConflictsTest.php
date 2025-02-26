@@ -1943,16 +1943,34 @@ class AvailabilityConflictsTest extends Base
                 }
             }'
         ], [], 'POST');
-        $this->assertStringContainsString('Zwei \u00d6ffnungszeiten sind gleich', (string) $response->getBody());
-        $this->assertStringContainsString('2016-04-04', (string) $response->getBody());
-        $this->assertStringContainsString('2016-04-11', (string) $response->getBody());
-        $this->assertStringContainsString('2016-04-18', (string) $response->getBody());
-        $this->assertStringContainsString('2016-04-25', (string) $response->getBody());
-        $this->assertStringContainsString('2016-05-02', (string) $response->getBody());
-        $this->assertStringContainsString('2016-05-09', (string) $response->getBody());
-        $this->assertStringNotContainsString('2016-05-16', (string) $response->getBody());
-        $this->assertStringContainsString('"conflictIdList":["81871","__temp__0"]', (string) $response->getBody());
-
+        $expectedResponse = [
+            'conflictList' => [
+                '2016-04-04' => [
+                    [
+                        'message' => "Konflikt: Zwei Öffnungszeiten sind gleich.\nBestehende Öffnungszeit:&thinsp;&thinsp;[12.01.2016 - 22.05.2016, 08:00 - 15:50, Wochentag(e): Montag]\nNeue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[12.01.2016 - 22.05.2016, 08:00 - 15:50, Wochentag(e): Montag]",
+                        'appointments' => [
+                            [
+                                'startTime' => '08:00',
+                                'endTime' => '08:00',
+                                'availability' => '81871'
+                            ]
+                        ]
+                    ],
+                    [
+                        'message' => "Konflikt: Zwei Öffnungszeiten sind gleich.\nBestehende Öffnungszeit:&thinsp;&thinsp;[12.01.2016 - 22.05.2016, 08:00 - 15:50, Wochentag(e): Montag]\nNeue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[12.01.2016 - 22.05.2016, 08:00 - 15:50, Wochentag(e): Montag]",
+                        'appointments' => [
+                            [
+                                'startTime' => '08:00',
+                                'endTime' => '08:00',
+                                'availability' => '__temp__0'
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'conflictIdList' => ['81871', '__temp__0']
+        ];
+        $this->assertEquals($expectedResponse, json_decode((string)$response->getBody(), true));
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -1969,7 +1987,7 @@ class AvailabilityConflictsTest extends Base
                 'response' => $this->readFixture("GET_availability_68985.json")
             ]
         ]);
-    
+
         $response = $this->render([], [
             '__body' => '{
             "availabilityList": [
@@ -2030,10 +2048,10 @@ class AvailabilityConflictsTest extends Base
             "selectedDate": "2016-04-04"
         }'
         ], [], 'POST');
-    
+
         // Updated assertions to expect no conflicts
-        $this->assertStringContainsString('"conflictList":[]', (string)$response->getBody());
-        $this->assertStringContainsString('"conflictIdList":[]', (string)$response->getBody());
+        $this->assertStringContainsString('"conflictList":[]', (string) $response->getBody());
+        $this->assertStringContainsString('"conflictIdList":[]', (string) $response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -2120,7 +2138,7 @@ class AvailabilityConflictsTest extends Base
     public function testInvalidInput()
     {
         $this->expectException(\BO\Zmsadmin\Exception\BadRequest::class);
-        
+
         $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
@@ -2155,7 +2173,7 @@ class AvailabilityConflictsTest extends Base
             '__body' => '{
             "availabilityList": [
                 {
-                    "id": "81871",
+                    "id": null,
                     "weekday": {"monday": "2"},
                     "startDate": 1452553200,
                     "endDate": 1463868000,
@@ -2178,7 +2196,8 @@ class AvailabilityConflictsTest extends Base
                                 "name": "Ostermontag"
                             }
                         ]                    
-                    }
+                    },
+                    "tempId": "__temp__2"
                 },
                 {
                     "id": null,
@@ -2240,11 +2259,11 @@ class AvailabilityConflictsTest extends Base
         ], [], 'POST');
 
         $this->assertStringContainsString('Konflikt', (string) $response->getBody());
-        $this->assertStringContainsString('"conflictIdList":["81871","__temp__0","__temp__1"]', (string) $response->getBody());
+        $this->assertStringContainsString('"conflictIdList":["__temp__0","__temp__1","__temp__2"]', (string) $response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testNoConflictsOnWednesday()
+    public function testConflictsWhileOnAWednesday()
     {
         $this->setApiCalls([
             [
@@ -2257,7 +2276,7 @@ class AvailabilityConflictsTest extends Base
                 'response' => $this->readFixture("GET_availability_68985.json")
             ]
         ]);
-    
+
         $response = $this->render([], [
             '__body' => '{
                 "selectedDate": "2025-02-05",
@@ -2333,12 +2352,42 @@ class AvailabilityConflictsTest extends Base
                 ]
             }'
         ], [], 'POST');
-    
-        $this->assertStringContainsString('"conflictList":[]', (string)$response->getBody());
-        $this->assertStringContainsString('"conflictIdList":[]', (string)$response->getBody());
+
+        $expectedResponse = [
+            "conflictList" => [
+                "2025-02-05" => [
+                    [
+                        "message" => "Konflikt: Zwei Öffnungszeiten sind gleich.\nBestehende Öffnungszeit:&thinsp;&thinsp;[22.10.2024 - 30.06.2025, 14:00 - 17:40, Wochentag(e): Dienstag]\nNeue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[22.10.2024 - 30.06.2025, 14:00 - 17:40, Wochentag(e): Dienstag]",
+                        "appointments" => [
+                            [
+                                "startTime" => "14:00",
+                                "endTime" => "14:00",
+                                "availability" => "8336"
+                            ]
+                        ]
+                    ],
+                    [
+                        "message" => "Konflikt: Zwei Öffnungszeiten sind gleich.\nBestehende Öffnungszeit:&thinsp;&thinsp;[22.10.2024 - 30.06.2025, 14:00 - 17:40, Wochentag(e): Dienstag]\nNeue Öffnungszeit:&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;[22.10.2024 - 30.06.2025, 14:00 - 17:40, Wochentag(e): Dienstag]",
+                        "appointments" => [
+                            [
+                                "startTime" => "14:00",
+                                "endTime" => "14:00",
+                                "availability" => "8351"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "conflictIdList" => [
+                "8336",
+                "8351"
+            ]
+        ];        
+
+        $this->assertEquals($expectedResponse, json_decode((string) $response->getBody(), true));
         $this->assertEquals(200, $response->getStatusCode());
     }
-    
+
     public function testConflictsOnTuesday()
     {
         $this->setApiCalls([
@@ -2352,7 +2401,7 @@ class AvailabilityConflictsTest extends Base
                 'response' => $this->readFixture("GET_availability_68985.json")
             ]
         ]);
-    
+
         $response = $this->render([], [
             '__body' => '{
                 "selectedDate": "2025-02-04",
@@ -2428,9 +2477,9 @@ class AvailabilityConflictsTest extends Base
                 ]
             }'
         ], [], 'POST');
-    
-        $this->assertStringContainsString('"conflictIdList":["8336","8351"]', (string)$response->getBody());
-        $this->assertNotEquals('[]', (string)$response->getBody());
+
+        $this->assertStringContainsString('"conflictIdList":["8336","8351"]', (string) $response->getBody());
+        $this->assertNotEquals('[]', (string) $response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

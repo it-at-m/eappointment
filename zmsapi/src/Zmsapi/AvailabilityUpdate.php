@@ -139,7 +139,7 @@ class AvailabilityUpdate extends BaseController
     private function getInitialConflicts(Collection $newCollection): ProcessList
     {
         $conflicts = new ProcessList();
-        $newVsNewConflicts = $newCollection->hasNewVsNewConflicts();
+        $newVsNewConflicts = $newCollection->checkForConflictsBetweenNewAvailabilities();
         $conflicts->addList($newVsNewConflicts);
         return $conflicts;
     }
@@ -239,9 +239,9 @@ class AvailabilityUpdate extends BaseController
         DateTimeImmutable $selectedDate
     ): void {
         [$earliestStartDateTime, $latestEndDateTime] = $filteredCollection
-            ->getDateTimeRangeFromList($selectedDate);
+            ->getDateTimeRangeFromList();
 
-        $existingConflicts = $filteredCollection->checkAllVsExistingConflicts(
+        $existingConflicts = $filteredCollection->checkForConflictsWithExistingAvailabilities(
             $earliestStartDateTime,
             $latestEndDateTime
         );

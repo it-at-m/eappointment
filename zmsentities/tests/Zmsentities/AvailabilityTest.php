@@ -347,7 +347,6 @@ class AvailabilityTest extends EntityCommonTests
         $entity['startDate'] = $time->modify("-60 day")->getTimestamp();
         $entity['endDate'] = $time->modify("+200 day")->getTimestamp();
         $entity['scope'] = (new \BO\Zmsentities\Scope())->getExample();
-        //error_log(__METHOD__ . ": $entity ". $time->format('c'));
         $this->assertTrue(
             $entity->isBookable($time->modify("+1month"), $time),
             'Availability endInDays is before startInDays'
@@ -867,16 +866,9 @@ class AvailabilityTest extends EntityCommonTests
         ]);
         $startDate = new \DateTimeImmutable('2016-04-19 09:00');
         $endDate = new \DateTimeImmutable('2016-04-19 16:00');
-        $conflicts = $availabilityList->checkAllVsExistingConflicts($startDate, $startDate);
+        $conflicts = $availabilityList->checkForConflictsWithExistingAvailabilities($startDate, $startDate);
         $list = [];
         foreach ($conflicts as $conflict) {
-            /*error_log(
-                "\n$conflict " .
-                $conflict->amendment .
-                "(ID: ". $conflict->getFirstAppointment()->getAvailability()->getId() ." ". $conflict->getFirstAppointment()->getAvailability()->getStartDateTime() ." - ". $conflict->getFirstAppointment()->getAvailability()->getEndDateTime() .")"
-            );
-            */
-
             $id = $conflict->getFirstAppointment()->getAvailability()->getId();
             if (!isset($list[$conflict->amendment])) {
                 $list[$conflict->amendment] = [];
@@ -1006,7 +998,7 @@ class AvailabilityTest extends EntityCommonTests
         ]);
 
         $list = new AvailabilityList([$entity1, $entity2, $entity3, $entity4]);
-        $conflicts = $list->checkAllVsExistingConflicts(
+        $conflicts = $list->checkForConflictsWithExistingAvailabilities(
             new \DateTimeImmutable('2024-01-15 00:00:00'),
             new \DateTimeImmutable('2024-01-15 23:59:59')
         );
@@ -1052,7 +1044,7 @@ class AvailabilityTest extends EntityCommonTests
         ]);
 
         $list = new AvailabilityList([$entity1, $entity2, $entity3]);
-        $conflicts = $list->checkAllVsExistingConflicts(
+        $conflicts = $list->checkForConflictsWithExistingAvailabilities(
             new \DateTimeImmutable('2024-01-15 00:00:00'),
             new \DateTimeImmutable('2024-01-16 23:59:59')
         );
@@ -1100,7 +1092,7 @@ class AvailabilityTest extends EntityCommonTests
         ]);
 
         $list = new AvailabilityList([$entity1, $entity2, $entity3]);
-        $conflicts = $list->checkAllVsExistingConflicts(
+        $conflicts = $list->checkForConflictsWithExistingAvailabilities(
             new \DateTimeImmutable('2024-01-15 00:00:00'),
             new \DateTimeImmutable('2024-01-22 23:59:59')
         );
@@ -1586,7 +1578,7 @@ class AvailabilityTest extends EntityCommonTests
         ]);
 
         $list = new AvailabilityList([$availability1, $availability2]);
-        $conflicts = $list->checkAllVsExistingConflicts(
+        $conflicts = $list->checkForConflictsWithExistingAvailabilities(
             new \DateTimeImmutable('2025-02-05 00:00:00'),  // A Wednesday
             new \DateTimeImmutable('2025-02-05 23:59:59')
         );
@@ -1636,7 +1628,7 @@ class AvailabilityTest extends EntityCommonTests
         ]);
 
         $list = new AvailabilityList([$availability1, $availability2]);
-        $conflicts = $list->checkAllVsExistingConflicts(
+        $conflicts = $list->checkForConflictsWithExistingAvailabilities(
             new \DateTimeImmutable('2025-02-04 00:00:00'),  // A Tuesday
             new \DateTimeImmutable('2025-02-04 23:59:59')
         );
