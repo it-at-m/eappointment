@@ -11,7 +11,7 @@ use BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
 {
-    protected $processStatusList = ['preconfirmed','confirmed', 'queued', 'reserved', 'deleted'];
+    protected $processStatusList = ['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted'];
 
     /**
      * @SuppressWarnings(Param)
@@ -44,10 +44,10 @@ class QueueTable extends BaseController
             Helper\GraphDefaults::getProcess()
         );
         $changedProcess = ($selectedProcessId)
-          ? \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
-            'gql' => Helper\GraphDefaults::getProcess()
-          ])->getEntity()
-          : null;
+            ? \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
+                'gql' => Helper\GraphDefaults::getProcess()
+            ])->getEntity()
+            : null;
 
         // data refinement
         $queueList = $processList->toQueueList(\App::$now);
@@ -72,7 +72,12 @@ class QueueTable extends BaseController
         if ($queueListCalled instanceof \BO\Zmsentities\Collection\QueueList) {
             $queueListCalled->uasort(function ($queueA, $queueB) {
                 $statusOrder = ['called' => 0, 'processing' => 1];
-                $cmp = $statusOrder[$queueA->status] <=> $statusOrder[$queueB->status];
+
+                // Safely handle statuses not in the array by using null coalescing operator
+                $statusValueA = $statusOrder[$queueA->status] ?? PHP_INT_MAX;
+                $statusValueB = $statusOrder[$queueB->status] ?? PHP_INT_MAX;
+
+                $cmp = $statusValueA <=> $statusValueB;
                 return $cmp !== 0 ? $cmp : $queueB->callTime <=> $queueA->callTime;
             });
         } else {
