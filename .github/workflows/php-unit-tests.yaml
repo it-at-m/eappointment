@@ -46,17 +46,27 @@ jobs:
         env:
           XDEBUG_MODE: coverage
         run: |
-          set -e
           cd "${{ matrix.module }}"
           mkdir -p coverage
-          echo "Running tests with coverage for ${{ matrix.module }}"
+          echo "Running tests for ${{ matrix.module }}"
+          
+          # Run tests first and store the result
+          php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
+          TEST_RESULT=$?
+          
+          # Generate coverage reports (but don't fail if this step fails)
+          echo "Generating coverage reports..."
           php -dmemory_limit=-1 \
             ./vendor/bin/phpunit -c phpunit.xml \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
-            --log-junit coverage/junit.xml
-          echo "Coverage files generated:"
-          ls -la coverage/
+            --log-junit coverage/junit.xml || true
+          
+          echo "Coverage files generated (if possible):"
+          ls -la coverage/ || true
+          
+          # Exit with the test result code, not the coverage generation code
+          exit $TEST_RESULT
 
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
