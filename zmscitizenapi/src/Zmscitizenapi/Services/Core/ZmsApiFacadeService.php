@@ -446,6 +446,40 @@ class ZmsApiFacadeService
         return ZmsApiClientService::getFreeTimeslots(new ProviderList([$office]), new RequestList($requests), $date, $date);
     }
 
+    private static function processFreeSlots(ProcessList $freeSlots): array
+    {
+        $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
+        }
+    
+        $currentTimestamp = time();
+        $allTimestamps = [];
+    
+        foreach ($freeSlots as $slot) {
+            if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                foreach ($slot->appointments as $appointment) {
+                    if (isset($appointment->date)) {
+                        $timestamp = (int) $appointment->date;
+                        if ($timestamp > $currentTimestamp) {
+                            $allTimestamps[] = $timestamp;
+                        }
+                    }
+                }
+            }
+        }
+    
+        $uniqueTimestamps = array_values(array_unique($allTimestamps));
+        sort($uniqueTimestamps);
+    
+        $errors = ValidationService::validateGetProcessByIdTimestamps($uniqueTimestamps);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
+        }
+    
+        return $uniqueTimestamps;
+    }
+    
     public static function getAvailableAppointments(string $date, array $officeIds, array $serviceIds, array $serviceCounts, ?bool $groupByOffice = false): AvailableAppointments|AvailableAppointmentsByOffice|array
     {
         $requests = [];
@@ -459,59 +493,25 @@ class ZmsApiFacadeService
                 ];
             }
         }
-
+    
         foreach ($officeIds as $officeId) {
             $providers[] = [
                 'id' => $officeId,
                 'source' => \App::$source_name
             ];
         }
-
+    
         $freeSlots = ZmsApiClientService::getFreeTimeslots(new ProviderList($providers), new RequestList($requests), DateTimeFormatHelper::getInternalDateFromISO($date), DateTimeFormatHelper::getInternalDateFromISO($date)) ?? new ProcessList();
         $timestamps = self::processFreeSlots($freeSlots);
-        if (!empty($timestamps['errors'])) {
+        if (isset($timestamps['errors'])) {
             return $timestamps;
         }
-
+    
         if ($groupByOffice) {
-            return new AvailableAppointmentsByOffice($timestamps);
+            return new AvailableAppointmentsByOffice(['appointmentTimestamps' => $timestamps]);
         }
-
-        return new AvailableAppointments(array_values($timestamps)[0]);
-    }
-
-    private static function processFreeSlots(ProcessList $freeSlots): array
-    {
-        $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        $currentTimestamp = time();
-        $allTimestamps = [];
-
-        foreach ($freeSlots as $slot) {
-            if (isset($slot->appointments) && is_iterable($slot->appointments)) {
-                foreach ($slot->appointments as $appointment) {
-                    if (isset($appointment->date)) {
-                        $timestamp = (int) $appointment->date;
-                        if ($timestamp > $currentTimestamp) {
-                            $allTimestamps[] = $timestamp;
-                        }
-                    }
-                }
-            }
-        }
-
-        $uniqueTimestamps = array_values(array_unique($allTimestamps));
-        sort($uniqueTimestamps);
-
-        $errors = ValidationService::validateGetProcessByIdTimestamps($uniqueTimestamps);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        return ['appointmentTimestamps' => $uniqueTimestamps];
+    
+        return new AvailableAppointments($timestamps);
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
