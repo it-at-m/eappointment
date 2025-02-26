@@ -73,7 +73,6 @@ class QueueTable extends BaseController
             $queueListCalled->uasort(function ($queueA, $queueB) {
                 $statusOrder = ['called' => 0, 'processing' => 1];
 
-                // Safely handle statuses not in the array by using null coalescing operator
                 $statusValueA = $statusOrder[$queueA->status] ?? PHP_INT_MAX;
                 $statusValueB = $statusOrder[$queueB->status] ?? PHP_INT_MAX;
 
