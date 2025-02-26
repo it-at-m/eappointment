@@ -452,10 +452,10 @@ class ZmsApiFacadeService
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
-    
+
         $currentTimestamp = time();
         $allTimestamps = [];
-    
+
         foreach ($freeSlots as $slot) {
             if (isset($slot->appointments) && is_iterable($slot->appointments)) {
                 foreach ($slot->appointments as $appointment) {
@@ -468,18 +468,18 @@ class ZmsApiFacadeService
                 }
             }
         }
-    
+
         $uniqueTimestamps = array_values(array_unique($allTimestamps));
         sort($uniqueTimestamps);
-    
+
         $errors = ValidationService::validateGetProcessByIdTimestamps($uniqueTimestamps);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
-    
+
         return $uniqueTimestamps;
     }
-    
+
     public static function getAvailableAppointments(string $date, array $officeIds, array $serviceIds, array $serviceCounts, ?bool $groupByOffice = false): AvailableAppointments|AvailableAppointmentsByOffice|array
     {
         $requests = [];
@@ -493,24 +493,24 @@ class ZmsApiFacadeService
                 ];
             }
         }
-    
+
         foreach ($officeIds as $officeId) {
             $providers[] = [
                 'id' => $officeId,
                 'source' => \App::$source_name
             ];
         }
-    
+
         $freeSlots = ZmsApiClientService::getFreeTimeslots(new ProviderList($providers), new RequestList($requests), DateTimeFormatHelper::getInternalDateFromISO($date), DateTimeFormatHelper::getInternalDateFromISO($date)) ?? new ProcessList();
         $timestamps = self::processFreeSlots($freeSlots);
         if (isset($timestamps['errors'])) {
             return $timestamps;
         }
-    
+
         if ($groupByOffice) {
             return new AvailableAppointmentsByOffice(['appointmentTimestamps' => $timestamps]);
         }
-    
+
         return new AvailableAppointments($timestamps);
     }
 
