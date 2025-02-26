@@ -50,17 +50,28 @@ jobs:
           mkdir -p coverage
           echo "Running tests for ${{ matrix.module }}"
           
+          # Handle zmsslim's missing phpunit.xml
+          if [ "${{ matrix.module }}" == "zmsslim" ] && [ ! -f "phpunit.xml" ] && [ -f "phpunit.xml.dist" ]; then
+            cp phpunit.xml.dist phpunit.xml
+          fi
+          
           # Run tests first and store the result
           php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
           TEST_RESULT=$?
           
-          # Generate coverage reports (but don't fail if this step fails)
-          echo "Generating coverage reports..."
-          php -dmemory_limit=-1 \
-            ./vendor/bin/phpunit -c phpunit.xml \
-            --coverage-html coverage/html \
-            --coverage-clover coverage/clover.xml \
-            --log-junit coverage/junit.xml || true
+          # Generate coverage reports only for non-problematic modules
+          if [ "${{ matrix.module }}" != "zmsmessaging" ] && [ "${{ matrix.module }}" != "zmsdldb" ] && [ "${{ matrix.module }}" != "zmsslim" ]; then
+            echo "Generating coverage reports..."
+            php -dmemory_limit=-1 \
+              ./vendor/bin/phpunit -c phpunit.xml \
+              --coverage-html coverage/html \
+              --coverage-clover coverage/clover.xml \
+              --log-junit coverage/junit.xml || true
+          else
+            echo "Skipping coverage generation for ${{ matrix.module }} due to known issues"
+            # Create empty placeholder files to prevent upload failures
+            touch coverage/.placeholder
+          fi
           
           echo "Coverage files generated (if possible):"
           ls -la coverage/ || true
