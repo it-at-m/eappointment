@@ -124,7 +124,7 @@ const props = defineProps<{
   preselectedServiceId: string | undefined;
   preselectedOfficeId: string | undefined;
   exclusiveLocation: string | undefined;
-  t: any;
+  t: (key: string) => string;
 }>();
 
 const emit = defineEmits<(e: "next") => void>();

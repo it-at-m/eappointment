@@ -81,7 +81,7 @@ import {
 } from "@/types/ProvideInjectTypes";
 
 const props = defineProps<{
-  t: any;
+  t: (key: string) => string;
 }>();
 
 const emit = defineEmits<(e: "next" | "back") => void>();

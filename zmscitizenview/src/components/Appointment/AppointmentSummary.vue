@@ -228,7 +228,7 @@ import {
 defineProps<{
   isRebooking: boolean;
   rebookOrCancelDialog: boolean;
-  t: any;
+  t: (key: string) => string;
 }>();
 
 const emit =

@@ -214,7 +214,7 @@ const props = defineProps<{
   exclusiveLocation?: string;
   appointmentHash?: string;
   confirmAppointmentHash?: string;
-  t: any;
+  t: (key: string) => string;
 }>();
 
 const STEPPER_ITEMS: StepperItem[] = [
@@ -500,22 +500,29 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
   return officesAtService;
 };
 
+const parseAppointmentHash = (hash: string): AppointmentHash | null => {
+  try {
+    const appointmentData = JSON.parse(window.atob(hash));
+    if (
+      appointmentData.id == undefined ||
+      appointmentData.authKey == undefined
+    ) {
+      return null;
+    }
+    return appointmentData;
+  } catch {
+    return null;
+  }
+};
+
 onMounted(() => {
   if (props.confirmAppointmentHash) {
-    let appointmentData: AppointmentHash;
-    try {
-      appointmentData = JSON.parse(window.atob(props.confirmAppointmentHash));
-      if (
-        appointmentData.id == undefined ||
-        appointmentData.authKey == undefined
-      ) {
-        confirmAppointmentError.value = true;
-        return;
-      }
-    } catch {
+    const appointmentData = parseAppointmentHash(props.confirmAppointmentHash);
+    if (!appointmentData) {
       confirmAppointmentError.value = true;
       return;
     }
+
     confirmAppointment(appointmentData, props.baseUrl ?? undefined).then(
       (data) => {
         if ((data as AppointmentDTO).processId != undefined) {
@@ -538,20 +545,12 @@ onMounted(() => {
       relations.value = data.relations;
       offices.value = data.offices;
 
-      let appointmentData: AppointmentHash;
-      try {
-        appointmentData = JSON.parse(window.atob(props.appointmentHash));
-        if (
-          appointmentData.id == undefined ||
-          appointmentData.authKey == undefined
-        ) {
-          confirmAppointmentError.value = true;
-          return;
-        }
-      } catch {
-        confirmAppointmentError.value = true;
+      const appointmentData = parseAppointmentHash(props.appointmentHash);
+      if (!appointmentData) {
+        appointmentNotFoundError.value = true;
         return;
       }
+
       fetchAppointment(appointmentData, props.baseUrl ?? undefined).then(
         (data) => {
           if ((data as AppointmentDTO).processId != undefined) {

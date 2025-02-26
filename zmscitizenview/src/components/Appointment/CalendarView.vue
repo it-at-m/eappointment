@@ -258,7 +258,7 @@ const props = defineProps<{
   exclusiveLocation: string | undefined;
   preselectedOfficeId: string | undefined;
   selectedServiceMap: Map<string, number>;
-  t: any;
+  t: (key: string) => string;
 }>();
 
 const emit = defineEmits<(e: "next" | "back") => void>();
