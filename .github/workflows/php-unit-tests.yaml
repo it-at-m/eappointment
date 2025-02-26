@@ -38,6 +38,7 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
+          set -e
           cd "${{ matrix.module }}"
           composer install --no-progress --prefer-dist --optimize-autoloader
 
@@ -45,6 +46,7 @@ jobs:
         env:
           XDEBUG_MODE: coverage
         run: |
+          set -e
           cd "${{ matrix.module }}"
           mkdir -p coverage
           echo "Running tests with coverage for ${{ matrix.module }}"
@@ -52,7 +54,7 @@ jobs:
             ./vendor/bin/phpunit -c phpunit.xml \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
-            --log-junit coverage/junit.xml || if [ $? -eq 2 ] && [ -f "coverage/clover.xml" ]; then exit 0; fi
+            --log-junit coverage/junit.xml
           echo "Coverage files generated:"
           ls -la coverage/
 
@@ -256,6 +258,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
+          set -e
           cd ./zmsclient
           mkdir -p coverage
           docker-compose up -d
