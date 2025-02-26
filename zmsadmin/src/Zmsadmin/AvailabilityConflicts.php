@@ -204,40 +204,6 @@ class AvailabilityConflicts extends BaseController
         ];
     }
 
-    private static function findMatchingAvailability($conflict, $filteredAvailabilityList)
-    {
-        $availability1 = $conflict->getFirstAppointment()->getAvailability();
-        foreach ($filteredAvailabilityList as $avail) {
-            if (
-                $avail->id === $availability1->id ||
-                (isset($avail->tempId) && isset($availability1->tempId) &&
-                    $avail->tempId === $availability1->tempId)
-            ) {
-                return $avail;
-            }
-        }
-        return null;
-    }
-
-    private static function doesConflictAffectWeekday($availability1, $availability2, $weekdayKey)
-    {
-        if (
-            isset($availability1->weekday[$weekdayKey]) &&
-            (int) $availability1->weekday[$weekdayKey] > 0
-        ) {
-            return true;
-        }
-
-        if (
-            $availability2 && isset($availability2->weekday[$weekdayKey]) &&
-            (int) $availability2->weekday[$weekdayKey] > 0
-        ) {
-            return true;
-        }
-
-        return false;
-    }
-
     private static function addToConflictedList(&$conflictedList, $availability1, $availability2)
     {
         $availabilityId = $availability1->getId() ?: $availability1->tempId;

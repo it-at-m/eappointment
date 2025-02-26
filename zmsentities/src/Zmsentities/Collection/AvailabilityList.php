@@ -195,7 +195,6 @@ class AvailabilityList extends Base
 
     public function getDateTimeRangeFromList(): array
     {
-        $yesterday = new \DateTimeImmutable('yesterday midnight');
         $startDateTime = null;
         $endDateTime = null;
 
