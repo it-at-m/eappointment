@@ -1,7 +1,9 @@
 <?php
 // @codingStandardsIgnoreFile
 // define the application path as single global constant
-define("APP_PATH", realpath(__DIR__));
+if (!defined('APP_PATH')) {
+    define("APP_PATH", realpath(__DIR__));
+}
 
 chdir(__DIR__);
 // use autoloading offered by composer, see composer.json for path settings
