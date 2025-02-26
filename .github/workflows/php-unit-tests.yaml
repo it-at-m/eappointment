@@ -55,18 +55,22 @@ jobs:
             cp phpunit.xml.dist phpunit.xml
           fi
           
-          # Run tests first and store the result
-          php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
-          TEST_RESULT=$?
-          
-          # Generate coverage reports based on module name
+          # Different approach for problematic modules vs regular modules
           case "${{ matrix.module }}" in
             "zmsmessaging"|"zmsdldb"|"zmsslim")
-              echo "Skipping coverage generation for ${{ matrix.module }} due to known issues"
-              # Create empty placeholder files to prevent upload failures
+              echo "Running tests WITHOUT coverage for ${{ matrix.module }}"
+              # Explicitly disable xdebug for test run
+              XDEBUG_MODE=off php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
+              TEST_RESULT=$?
+              # Create empty placeholder files for artifacts
               touch coverage/.placeholder
               ;;
             *)
+              echo "Running tests WITH coverage for ${{ matrix.module }}"
+              # Run tests with coverage enabled
+              php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
+              TEST_RESULT=$?
+              # Generate detailed coverage reports
               echo "Generating coverage reports..."
               php -dmemory_limit=-1 \
                 ./vendor/bin/phpunit -c phpunit.xml \
@@ -76,10 +80,10 @@ jobs:
               ;;
           esac
           
-          echo "Coverage files generated (if possible):"
+          echo "Files in coverage directory:"
           ls -la coverage/ || true
           
-          # Exit with the test result code, not the coverage generation code
+          # Exit with the test result code
           exit $TEST_RESULT
 
       - name: Upload Coverage
