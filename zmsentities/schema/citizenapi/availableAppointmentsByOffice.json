@@ -13,11 +13,7 @@
             "description": "Office ID"
           },
           "appointmentTimestamps": {
-            "type": ["array", "null"],
-            "description": "Numeric timestamps (seconds) for each available slot.",
-            "items": {
-              "type": "integer"
-            }
+            "$ref": "./appointmentTimestamps.json"
           }
         },
         "required": ["offices"]

@@ -87,6 +87,7 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                 ],
                 'shortName' => null,
                 'emailFrom' => '',
+                'emailRequired' => null,
                 'telephoneActivated' => null,
                 'telephoneRequired' => null,
                 'customTextfieldActivated' => null,
