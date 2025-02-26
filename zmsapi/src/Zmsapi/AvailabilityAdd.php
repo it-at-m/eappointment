@@ -110,7 +110,7 @@ class AvailabilityAdd extends BaseController
         $this->validateNewAvailabilities($newCollection, $mergedCollection, $selectedDate);
 
         $filteredCollection = $this->getFilteredCollection($mergedCollection);
-        $this->checkExistingConflicts($conflicts, $filteredCollection, $selectedDate);
+        $this->checkExistingConflicts($conflicts, $filteredCollection);
 
         $weekday = (int)$selectedDate->format('N');
         $filteredConflicts = $this->filterConflictsByWeekday(
@@ -223,8 +223,7 @@ class AvailabilityAdd extends BaseController
 
     private function checkExistingConflicts(
         \BO\Zmsentities\Collection\ProcessList $conflicts,
-        Collection $filteredCollection,
-        \DateTimeImmutable $selectedDate
+        Collection $filteredCollection
     ): void {
         [$earliestStartDateTime, $latestEndDateTime] = $filteredCollection
             ->getDateTimeRangeFromList();
