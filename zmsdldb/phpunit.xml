@@ -21,7 +21,8 @@
         <exclude>
             <directory>./vendor</directory>
             <directory>./tests</directory>
-            <file>test_mysql.php</file>
+            <file>./src/Dldb/Importer/test_mysql.php</file>
+            <file>./src/Dldb/Importer/test_sqlite.php</file>
         </exclude>
         <report>
             <html outputDirectory="./coverage/html" />
