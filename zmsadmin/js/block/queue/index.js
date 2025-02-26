@@ -10,7 +10,7 @@ class View extends BaseView {
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
-        this.load();
+        this.load(this.withCalled);
     }
 
     setOptions(options) {
@@ -39,9 +39,29 @@ class View extends BaseView {
 
 
     load(withCalled = false) {
-        const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}&withCalled=${withCalled ? 1 : 0}`
-        return this.loadContent(url, 'GET', null, null, this.showLoader).catch(err => this.loadErrorCallback(err));
+        if (withCalled === false) {
+            const storedState = localStorage.getItem('calledPanelOpen');
+            withCalled = (storedState === 'true');
+        }
+
+        const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}&withCalled=${withCalled ? 1 : 0}`;
+
+        return this.loadContent(url, 'GET', null, null, this.showLoader)
+            .then(() => {
+                const storedState = localStorage.getItem('calledPanelOpen');
+                if (storedState === 'true') {
+                    $('#called-appointments').addClass('active');
+                    $('#called-appointments').next('.accordion-panel').css('display', 'block');
+                    this.withCalled = true;
+                } else {
+                    $('#called-appointments').removeClass('active');
+                    $('#called-appointments').next('.accordion-panel').css('display', 'none');
+                    this.withCalled = false;
+                }
+            })
+            .catch(err => this.loadErrorCallback(err));
     }
+
 
     bindEvents() {
         this.$main.off('click').on('click', '.queue-table .reload', (ev) => {
@@ -65,6 +85,7 @@ class View extends BaseView {
             this.onResetProcess(ev);
         }).on('click', '#called-appointments', (ev) => {
             this.withCalled = ! this.withCalled
+            localStorage.setItem('calledPanelOpen', this.withCalled ? 'true' : 'false');
             if (this.withCalled) {
                 this.load(true)
             }
