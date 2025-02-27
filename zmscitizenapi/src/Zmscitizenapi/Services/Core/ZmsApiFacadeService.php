@@ -52,6 +52,17 @@ class ZmsApiFacadeService
         return ErrorMessages::get($key, self::$currentLanguage);
     }
 
+    private static function setMappedCache(string $cacheKey, mixed $data): void
+    {
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $data, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Second-level cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL
+            ]);
+        }
+    }
+
     public static function getOffices(bool $showUnpublished = false): OfficeList
     {
         $cacheKey = self::CACHE_KEY_OFFICES . ($showUnpublished ? '_unpublished' : '');
@@ -105,13 +116,7 @@ class ZmsApiFacadeService
 
         $result = new OfficeList($offices);
 
-        if (\App::$cache) {
-            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
-            LoggerService::logInfo('Second-level cache set', [
-                'key' => $cacheKey,
-                'ttl' => \App::$SOURCE_CACHE_TTL
-            ]);
-        }
+        self::setMappedCache($cacheKey, $result);
 
         return $result;
     }
@@ -159,13 +164,7 @@ class ZmsApiFacadeService
 
         $result = new ThinnedScopeList($scopesProjectionList);
 
-        if (\App::$cache) {
-            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
-            LoggerService::logInfo('Second-level cache set', [
-                'key' => $cacheKey,
-                'ttl' => \App::$SOURCE_CACHE_TTL
-            ]);
-        }
+        self::setMappedCache($cacheKey, $result);
 
         return $result;
     }
@@ -195,13 +194,7 @@ class ZmsApiFacadeService
 
         $result = new ServiceList($services);
 
-        if (\App::$cache) {
-            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
-            LoggerService::logInfo('Second-level cache set', [
-                'key' => $cacheKey,
-                'ttl' => \App::$SOURCE_CACHE_TTL
-            ]);
-        }
+        self::setMappedCache($cacheKey, $result);
 
         return $result;
     }
@@ -228,13 +221,7 @@ class ZmsApiFacadeService
 
         $result = new OfficeServiceAndRelationList($offices, $services, $relations);
 
-        if (\App::$cache) {
-            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
-            LoggerService::logInfo('Second-level cache set', [
-                'key' => $cacheKey,
-                'ttl' => \App::$SOURCE_CACHE_TTL
-            ]);
-        }
+        self::setMappedCache($cacheKey, $result);
 
         return $result;
     }
@@ -347,13 +334,7 @@ class ZmsApiFacadeService
 
         $result = new OfficeList($offices);
 
-        if (\App::$cache) {
-            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
-            LoggerService::logInfo('Second-level cache set', [
-                'key' => $cacheKey,
-                'ttl' => \App::$SOURCE_CACHE_TTL
-            ]);
-        }
+        self::setMappedCache($cacheKey, $result);
 
         return $result;
     }
@@ -448,13 +429,7 @@ class ZmsApiFacadeService
 
         $result = new ServiceList($services);
 
-        if (\App::$cache) {
-            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
-            LoggerService::logInfo('Second-level cache set', [
-                'key' => $cacheKey,
-                'ttl' => \App::$SOURCE_CACHE_TTL
-            ]);
-        }
+        self::setMappedCache($cacheKey, $result);
 
         return $result;
     }
