@@ -54,6 +54,12 @@ class ZmsApiFacadeService
 
     public static function getOffices(bool $showUnpublished = false): OfficeList
     {
+        $cacheKey = self::CACHE_KEY_OFFICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
         $offices = [];
@@ -97,11 +103,27 @@ class ZmsApiFacadeService
             );
         }
 
-        return new OfficeList($offices);
+        $result = new OfficeList($offices);
+
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Second-level cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL
+            ]);
+        }
+
+        return $result;
     }
 
     public static function getScopes(): ThinnedScopeList|array
     {
+        $cacheKey = self::CACHE_KEY_SCOPES;
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
         $scopeMap = [];
@@ -135,11 +157,27 @@ class ZmsApiFacadeService
             }
         }
 
-        return new ThinnedScopeList($scopesProjectionList);
+        $result = new ThinnedScopeList($scopesProjectionList);
+
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Second-level cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL
+            ]);
+        }
+
+        return $result;
     }
 
     public static function getServices(bool $showUnpublished = false): ServiceList|array
     {
+        $cacheKey = self::CACHE_KEY_SERVICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $services = [];
         foreach ($requestList as $request) {
@@ -155,20 +193,27 @@ class ZmsApiFacadeService
             $services[] = new Service(id: (int) $request->getId(), name: $request->getName(), maxQuantity: $additionalData['maxQuantity'] ?? 1);
         }
 
-        return new ServiceList($services);
+        $result = new ServiceList($services);
+
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Second-level cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL
+            ]);
+        }
+
+        return $result;
     }
 
     public static function getServicesAndOffices(bool $showUnpublished = false): OfficeServiceAndRelationList|array
     {
-        // Include showUnpublished in the cache key to differentiate cached results
         $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES . ($showUnpublished ? '_unpublished' : '');
 
-        // Check second-level cache first
         if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
             return $cachedData;
         }
 
-        // Original implementation with showUnpublished parameter preserved
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $relationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
@@ -183,7 +228,6 @@ class ZmsApiFacadeService
 
         $result = new OfficeServiceAndRelationList($offices, $services, $relations);
 
-        // Store in second-level cache
         if (\App::$cache) {
             \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
             LoggerService::logInfo('Second-level cache set', [
@@ -260,6 +304,12 @@ class ZmsApiFacadeService
 
     public static function getOfficeListByServiceId(int $serviceId, bool $showUnpublished = false): OfficeList|array
     {
+        $cacheKey = self::CACHE_KEY_OFFICES_BY_SERVICE_PREFIX . $serviceId . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $providerMap = [];
@@ -295,7 +345,17 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        return new OfficeList($offices);
+        $result = new OfficeList($offices);
+
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Second-level cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL
+            ]);
+        }
+
+        return $result;
     }
 
     public static function getScopeById(?int $scopeId): ThinnedScope|array
@@ -348,6 +408,12 @@ class ZmsApiFacadeService
 
     public static function getServicesByOfficeId(int $officeId, bool $showUnpublished = false): ServiceList|array
     {
+        $cacheKey = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $requestMap = [];
@@ -380,7 +446,17 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        return new ServiceList($services);
+        $result = new ServiceList($services);
+
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Second-level cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL
+            ]);
+        }
+
+        return $result;
     }
 
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
