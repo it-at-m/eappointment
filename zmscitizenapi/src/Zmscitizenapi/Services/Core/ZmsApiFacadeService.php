@@ -10,8 +10,6 @@ use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Models\Office;
-use BO\Zmscitizenapi\Models\ProcessFreeSlots;
-use BO\Zmscitizenapi\Models\ProcessFreeSlotsGroupByOffice;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;
@@ -80,6 +78,7 @@ class ZmsApiFacadeService
                     provider: MapperService::providerToThinnedProvider($provider),
                     shortName: (string) $matchingScope->getShortName(),
                     emailFrom: (string) $matchingScope->getEmailFrom(),
+                    emailRequired: (bool) $matchingScope->getEmailRequired(),
                     telephoneActivated: (bool) $matchingScope->getTelephoneActivated(),
                     telephoneRequired: (bool) $matchingScope->getTelephoneRequired(),
                     customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
@@ -117,6 +116,7 @@ class ZmsApiFacadeService
                     provider: MapperService::providerToThinnedProvider($provider),
                     shortName: (string) $matchingScope->getShortName(),
                     emailFrom: (string) $matchingScope->getEmailFrom(),
+                    emailRequired: (bool) $matchingScope->getEmailRequired(),
                     telephoneActivated: (bool) $matchingScope->getTelephoneActivated(),
                     telephoneRequired: (bool) $matchingScope->getTelephoneRequired(),
                     customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
@@ -198,6 +198,7 @@ class ZmsApiFacadeService
             'provider' => MapperService::providerToThinnedProvider($finalProvider) ?? null,
             'shortName' => (string) $matchingScope->getShortName() ?? null,
             'emailFrom' => (string) $matchingScope->getEmailFrom() ?? null,
+            'emailRequired' => (bool) $matchingScope->getEmailRequired() ?? null,
             'telephoneActivated' => (bool) $matchingScope->getTelephoneActivated() ?? null,
             'telephoneRequired' => (bool) $matchingScope->getTelephoneRequired() ?? null,
             'customTextfieldActivated' => (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
@@ -211,6 +212,7 @@ class ZmsApiFacadeService
             provider: $result['provider'],
             shortName: $result['shortName'],
             emailFrom: $result['emailFrom'],
+            emailRequired: $result['emailRequired'],
             telephoneActivated: $result['telephoneActivated'],
             telephoneRequired: $result['telephoneRequired'],
             customTextfieldActivated: $result['customTextfieldActivated'],
@@ -305,6 +307,7 @@ class ZmsApiFacadeService
             provider: MapperService::providerToThinnedProvider($matchingProv),
             shortName: (string) $matchingScope->getShortName() ?? null,
             emailFrom: (string) $matchingScope->getEmailFrom() ?? null,
+            emailRequired: (bool) $matchingScope->getEmailRequired() ?? null,
             telephoneActivated: (bool) $matchingScope->getTelephoneActivated() ?? null,
             telephoneRequired: (bool) $matchingScope->getTelephoneRequired() ?? null,
             customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
@@ -443,6 +446,40 @@ class ZmsApiFacadeService
         return ZmsApiClientService::getFreeTimeslots(new ProviderList([$office]), new RequestList($requests), $date, $date);
     }
 
+    private static function processFreeSlots(ProcessList $freeSlots): array
+    {
+        $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
+        }
+
+        $currentTimestamp = time();
+        $allTimestamps = [];
+
+        foreach ($freeSlots as $slot) {
+            if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                foreach ($slot->appointments as $appointment) {
+                    if (isset($appointment->date)) {
+                        $timestamp = (int) $appointment->date;
+                        if ($timestamp > $currentTimestamp) {
+                            $allTimestamps[] = $timestamp;
+                        }
+                    }
+                }
+            }
+        }
+
+        $uniqueTimestamps = array_values(array_unique($allTimestamps));
+        sort($uniqueTimestamps);
+
+        $errors = ValidationService::validateGetProcessByIdTimestamps($uniqueTimestamps);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
+        }
+
+        return $uniqueTimestamps;
+    }
+
     public static function getAvailableAppointments(string $date, array $officeIds, array $serviceIds, array $serviceCounts, ?bool $groupByOffice = false): AvailableAppointments|AvailableAppointmentsByOffice|array
     {
         $requests = [];
@@ -466,51 +503,15 @@ class ZmsApiFacadeService
 
         $freeSlots = ZmsApiClientService::getFreeTimeslots(new ProviderList($providers), new RequestList($requests), DateTimeFormatHelper::getInternalDateFromISO($date), DateTimeFormatHelper::getInternalDateFromISO($date)) ?? new ProcessList();
         $timestamps = self::processFreeSlots($freeSlots);
-        if (!empty($timestamps['errors'])) {
+        if (isset($timestamps['errors']) && !empty($timestamps['errors'])) {
             return $timestamps;
         }
 
         if ($groupByOffice) {
-            return new AvailableAppointmentsByOffice($timestamps);
+            return new AvailableAppointmentsByOffice(['appointmentTimestamps' => $timestamps]);
         }
 
-        return new AvailableAppointments(array_values($timestamps)[0]);
-    }
-
-    private static function processFreeSlots(ProcessList $freeSlots): array
-    {
-        $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        $currentTimestamp = time();
-        $appointmentTimestamps = array_reduce(iterator_to_array($freeSlots), function ($timestamps, $slot) use ($currentTimestamp) {
-
-            if (isset($slot->appointments) && is_iterable($slot->appointments)) {
-                $providerId = (int) $slot->scope->provider->id;
-                foreach ($slot->appointments as $appointment) {
-                    if (isset($appointment->date)) {
-                        $timestamp = (int) $appointment->date;
-                        if ($timestamp > $currentTimestamp) {
-                            $timestamps[$providerId][$timestamp] = true;
-                        }
-                    }
-                }
-            }
-            return $timestamps;
-        }, []);
-        foreach ($appointmentTimestamps as $providerId => &$timestamps) {
-            $timestamps = array_keys($timestamps);
-            asort($timestamps);
-        }
-
-        $errors = ValidationService::validateGetProcessByIdTimestamps($appointmentTimestamps);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        return $appointmentTimestamps;
+        return new AvailableAppointments($timestamps);
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
@@ -527,11 +528,11 @@ class ZmsApiFacadeService
     {
 
         $process = ZmsApiClientService::getProcessById($processId, $authKey);
-        $thinnedProcess = MapperService::processToThinnedProcess($process);
         $errors = ValidationService::validateGetProcessNotFound($process);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
+        $thinnedProcess = MapperService::processToThinnedProcess($process);
 
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $providerMap = [];
@@ -551,6 +552,7 @@ class ZmsApiFacadeService
                 provider: $thinnedProvider,
                 shortName: (string) $process->scope->getShortName() ?? null,
                 emailFrom: (string) $process->scope->getEmailFrom() ?? null,
+                emailRequired: (bool) $process->scope->getEmailRequired() ?? false,
                 telephoneActivated: (bool) $process->scope->getTelephoneActivated() ?? false,
                 telephoneRequired: (bool) $process->scope->getTelephoneRequired() ?? false,
                 customTextfieldActivated: (bool) $process->scope->getCustomTextfieldActivated() ?? false,

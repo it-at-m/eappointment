@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
-use BO\Zmscitizenapi\Middleware\LanguageMiddleware;
+use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Collection\ProcessList;
@@ -22,7 +22,7 @@ class ValidationService
     private static ?string $currentLanguage = null;
     private const DATE_FORMAT = 'Y-m-d';
     private const MIN_PROCESS_ID = 1;
-    private const PHONE_PATTERN = '/^\+?[1-9]\d{6,14}$/';
+    private const PHONE_PATTERN = '/^\+?[0-9]\d{6,14}$/';
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
@@ -187,34 +187,63 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateUpdateAppointmentInputs(?int $processId, ?string $authKey, ?string $familyName, ?string $email, ?string $telephone, ?string $customTextfield): array
-    {
+    public static function validateAppointmentUpdateFields(
+        ?string $familyName,
+        ?string $email,
+        ?string $telephone,
+        ?string $customTextfield,
+        ?ThinnedScope $scope
+    ): array {
         $errors = [];
-        if (!self::isValidProcessId($processId)) {
-            $errors[] = self::getError('invalidProcessId');
-        }
 
-        if (!self::isValidAuthKey($authKey)) {
-            $errors[] = self::getError('invalidAuthKey');
-        }
+        self::validateFamilyNameField($familyName, $errors);
+        self::validateEmailField($email, $scope, $errors);
+        self::validateTelephoneField($telephone, $scope, $errors);
+        self::validateCustomTextField($customTextfield, $scope, $errors);
 
+        return ['errors' => $errors];
+    }
+
+    private static function validateFamilyNameField(?string $familyName, array &$errors): void
+    {
         if (!self::isValidFamilyName($familyName)) {
             $errors[] = self::getError('invalidFamilyName');
         }
+    }
 
-        if (!self::isValidEmail($email)) {
+    private static function validateEmailField(?string $email, ?ThinnedScope $scope, array &$errors): void
+    {
+        if ($scope && $scope->emailRequired && !self::isValidEmail($email)) {
             $errors[] = self::getError('invalidEmail');
         }
+    }
 
-        if (!self::isValidTelephone($telephone)) {
+    private static function validateTelephoneField(?string $telephone, ?ThinnedScope $scope, array &$errors): void
+    {
+        if (!$scope || !$scope->telephoneActivated) {
+            return;
+        }
+
+        if (
+            ($scope->telephoneRequired && !self::isValidTelephone($telephone)) ||
+            ($telephone !== null && !self::isValidTelephone($telephone))
+        ) {
             $errors[] = self::getError('invalidTelephone');
         }
+    }
 
-        if (!self::isValidCustomTextfield($customTextfield)) {
-            $errors[] = self::getError('invalidCustomTextfield');
+    private static function validateCustomTextField(?string $customTextfield, ?ThinnedScope $scope, array &$errors): void
+    {
+        if (!$scope || !$scope->customTextfieldActivated) {
+            return;
         }
 
-        return ['errors' => $errors];
+        if (
+            ($scope->customTextfieldRequired && !self::isValidCustomTextfield($customTextfield)) ||
+            ($customTextfield !== null && !self::isValidCustomTextfield($customTextfield))
+        ) {
+            $errors[] = self::getError('invalidCustomTextfield');
+        }
     }
 
     public static function validateGetScopeById(?int $scopeId): array

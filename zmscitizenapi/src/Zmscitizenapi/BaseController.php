@@ -67,7 +67,6 @@ abstract class BaseController extends \BO\Slim\Controller
 
         $response = $response->withStatus($statusCode)
             ->withHeader('Content-Type', 'application/json; charset=utf-8');
-// Translate any errors using the stored language
         if (isset($content['errors'])) {
             foreach ($content['errors'] as &$error) {
                 if (isset($error['errorCode'])) {

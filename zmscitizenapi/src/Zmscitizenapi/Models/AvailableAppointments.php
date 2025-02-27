@@ -11,7 +11,7 @@ use JsonSerializable;
 class AvailableAppointments extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/availableAppointments.json';
-/** @var array */
+    /** @var array */
     public array $appointmentTimestamps = [];
     public function __construct(array $appointmentTimestamps = [])
     {
