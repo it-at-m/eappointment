@@ -289,6 +289,10 @@ class ZmsApiFacadeService
      *
      */
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract providerMap mapping logic into MapperService
+     */
     public static function getOfficeListByServiceId(int $serviceId, bool $showUnpublished = false): OfficeList|array
     {
         $cacheKey = self::CACHE_KEY_OFFICES_BY_SERVICE_PREFIX . $serviceId . ($showUnpublished ? '_unpublished' : '');
