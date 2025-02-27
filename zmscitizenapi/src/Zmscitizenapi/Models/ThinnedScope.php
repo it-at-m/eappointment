@@ -21,6 +21,8 @@ class ThinnedScope extends Entity implements JsonSerializable
     /** @var string|null */
     public ?string $emailFrom;
     /** @var bool|null */
+    public ?bool $emailRequired;
+    /** @var bool|null */
     public ?bool $telephoneActivated;
     /** @var bool|null */
     public ?bool $telephoneRequired;
@@ -34,12 +36,13 @@ class ThinnedScope extends Entity implements JsonSerializable
     public ?bool $captchaActivatedRequired;
     /** @var string|null */
     public ?string $displayInfo;
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null)
     {
         $this->id = $id;
         $this->provider = $provider;
         $this->shortName = $shortName;
         $this->emailFrom = $emailFrom;
+        $this->emailRequired = $emailRequired;
         $this->telephoneActivated = $telephoneActivated;
         $this->telephoneRequired = $telephoneRequired;
         $this->customTextfieldActivated = $customTextfieldActivated;
@@ -70,6 +73,11 @@ class ThinnedScope extends Entity implements JsonSerializable
     public function getEmailFrom(): ?string
     {
         return $this->emailFrom;
+    }
+
+    public function getEmailRequired(): ?bool
+    {
+        return $this->emailRequired;
     }
 
     public function getTelephoneActivated(): ?bool
@@ -114,6 +122,7 @@ class ThinnedScope extends Entity implements JsonSerializable
             'provider' => $this->provider,
             'shortName' => $this->shortName,
             'emailFrom' => $this->emailFrom,
+            'emailRequired' => $this->emailRequired,
             'telephoneActivated' => $this->telephoneActivated,
             'telephoneRequired' => $this->telephoneRequired,
             'customTextfieldActivated' => $this->customTextfieldActivated,
