@@ -162,17 +162,17 @@ class ZmsApiFacadeService
     {
         // Include showUnpublished in the cache key to differentiate cached results
         $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES . ($showUnpublished ? '_unpublished' : '');
-        
+
         // Check second-level cache first
         if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
             return $cachedData;
         }
-        
+
         // Original implementation with showUnpublished parameter preserved
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $relationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-    
+
         $offices = MapperService::mapOfficesWithScope($providerList, $showUnpublished) ?? new OfficeList();
         $services = MapperService::mapServicesWithCombinations(
             $requestList,
@@ -180,9 +180,9 @@ class ZmsApiFacadeService
             $showUnpublished
         ) ?? new ServiceList();
         $relations = MapperService::mapRelations($relationList) ?? new OfficeServiceRelationList();
-        
+
         $result = new OfficeServiceAndRelationList($offices, $services, $relations);
-        
+
         // Store in second-level cache
         if (\App::$cache) {
             \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
@@ -191,7 +191,7 @@ class ZmsApiFacadeService
                 'ttl' => \App::$SOURCE_CACHE_TTL
             ]);
         }
-        
+
         return $result;
     }
 
