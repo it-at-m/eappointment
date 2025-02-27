@@ -187,18 +187,6 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateAppointmentUpdateAuth(?int $processId, ?string $authKey): array
-    {
-        $errors = [];
-        if (!self::isValidProcessId($processId)) {
-            $errors[] = self::getError('invalidProcessId');
-        }
-        if (!self::isValidAuthKey($authKey)) {
-            $errors[] = self::getError('invalidAuthKey');
-        }
-        return ['errors' => $errors];
-    }
-
     public static function validateAppointmentUpdateFields(
         ?string $familyName,
         ?string $email,

@@ -503,7 +503,7 @@ class ZmsApiFacadeService
 
         $freeSlots = ZmsApiClientService::getFreeTimeslots(new ProviderList($providers), new RequestList($requests), DateTimeFormatHelper::getInternalDateFromISO($date), DateTimeFormatHelper::getInternalDateFromISO($date)) ?? new ProcessList();
         $timestamps = self::processFreeSlots($freeSlots);
-        if (isset($timestamps['errors'])) {
+        if (isset($timestamps['errors']) && !empty($timestamps['errors'])) {
             return $timestamps;
         }
 
@@ -528,11 +528,11 @@ class ZmsApiFacadeService
     {
 
         $process = ZmsApiClientService::getProcessById($processId, $authKey);
-        $thinnedProcess = MapperService::processToThinnedProcess($process);
         $errors = ValidationService::validateGetProcessNotFound($process);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
+        $thinnedProcess = MapperService::processToThinnedProcess($process);
 
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $providerMap = [];

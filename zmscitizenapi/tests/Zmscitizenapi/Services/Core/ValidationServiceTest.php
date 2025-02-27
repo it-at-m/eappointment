@@ -205,24 +205,6 @@ class ValidationServiceTest extends TestCase
             $result['errors']
         );
     }
-
-    public function testValidateAppointmentUpdateAuth(): void
-    {
-        $result = ValidationService::validateAppointmentUpdateAuth(1, 'valid-key');
-        $this->assertEmpty($result['errors']);
-    
-        $result = ValidationService::validateAppointmentUpdateAuth(0, 'valid-key');
-        $this->assertContains(
-            ErrorMessages::get('invalidProcessId'),
-            $result['errors']
-        );
-    
-        $result = ValidationService::validateAppointmentUpdateAuth(1, '');
-        $this->assertContains(
-            ErrorMessages::get('invalidAuthKey'),
-            $result['errors']
-        );
-    }
     
     public function testValidateAppointmentUpdateFields(): void
     {

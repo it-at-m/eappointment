@@ -21,9 +21,6 @@ class AppointmentUpdateService
         }
 
         $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey);
-        if (!($reservedProcess instanceof ThinnedProcess)) {
-            return $reservedProcess;
-        }
 
         $updatedProcess = $this->updateProcessWithClientData($reservedProcess, $clientData);
         return $this->saveProcessUpdate($updatedProcess);
@@ -31,19 +28,14 @@ class AppointmentUpdateService
 
     private function validateClientData(object $data): array
     {
-        $allErrors = [];
-
-        $basicErrors = ValidationService::validateAppointmentUpdateAuth($data->processId, $data->authKey);
-        if (!empty($basicErrors['errors'])) {
-            $allErrors = array_merge($allErrors, $basicErrors['errors']);
+        $authErrors = ValidationService::validateGetProcessById($data->processId, $data->authKey);
+        if (is_array($authErrors) && !empty($authErrors['errors'])) {
+            return $authErrors;
         }
 
-        $reservedProcess = null;
-        if (is_int($data->processId) && is_string($data->authKey)) {
-            $reservedProcess = $this->getReservedProcess($data->processId, $data->authKey);
-            if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
-                $allErrors = array_merge($allErrors, $reservedProcess['errors']);
-            }
+        $reservedProcess = $this->getReservedProcess($data->processId, $data->authKey);
+        if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
+            return $reservedProcess;
         }
 
         $fieldErrors = ValidationService::validateAppointmentUpdateFields(
@@ -51,13 +43,13 @@ class AppointmentUpdateService
             $data->email,
             $data->telephone,
             $data->customTextfield,
-            $reservedProcess instanceof ThinnedProcess ? $reservedProcess->scope : null
+            $reservedProcess->scope ?? null
         );
-        if (!empty($fieldErrors['errors'])) {
-            $allErrors = array_merge($allErrors, $fieldErrors['errors']);
+        if (is_array($fieldErrors) && !empty($fieldErrors['errors'])) {
+            return $fieldErrors;
         }
 
-        return ['errors' => $allErrors];
+        return ['errors' => []];
     }
 
     private function extractClientData(array $body): object
