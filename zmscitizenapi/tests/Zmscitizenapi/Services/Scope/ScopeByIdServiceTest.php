@@ -95,6 +95,7 @@ class ScopeByIdServiceTest extends TestCase
             id: 123,
             provider: null,
             shortName: 'Test Scope',
+            emailRequired: false,
             telephoneActivated: false,
             telephoneRequired: false,
             customTextfieldActivated: false,
