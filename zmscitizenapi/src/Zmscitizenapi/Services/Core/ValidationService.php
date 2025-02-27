@@ -22,7 +22,7 @@ class ValidationService
     private static ?string $currentLanguage = null;
     private const DATE_FORMAT = 'Y-m-d';
     private const MIN_PROCESS_ID = 1;
-    private const PHONE_PATTERN = '/^\+?[1-9]\d{6,14}$/';
+    private const PHONE_PATTERN = '/^\+?[0-9]\d{6,14}$/';
     private const SERVICE_COUNT_PATTERN = '/^\d+$/';
     private const MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
