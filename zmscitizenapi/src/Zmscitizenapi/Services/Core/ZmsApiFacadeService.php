@@ -34,6 +34,13 @@ use BO\Zmsentities\Collection\ProcessList;
  */
 class ZmsApiFacadeService
 {
+    private const CACHE_KEY_OFFICES = 'processed_offices';
+    private const CACHE_KEY_SCOPES = 'processed_scopes';
+    private const CACHE_KEY_SERVICES = 'processed_services';
+    private const CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
+    private const CACHE_KEY_OFFICES_BY_SERVICE_PREFIX = 'processed_offices_by_service_';
+    private const CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
+
     private static ?string $currentLanguage = null;
     public static function setLanguageContext(?string $language): void
     {
@@ -153,10 +160,19 @@ class ZmsApiFacadeService
 
     public static function getServicesAndOffices(bool $showUnpublished = false): OfficeServiceAndRelationList|array
     {
+        // Include showUnpublished in the cache key to differentiate cached results
+        $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES . ($showUnpublished ? '_unpublished' : '');
+        
+        // Check second-level cache first
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+        
+        // Original implementation with showUnpublished parameter preserved
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $relationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-
+    
         $offices = MapperService::mapOfficesWithScope($providerList, $showUnpublished) ?? new OfficeList();
         $services = MapperService::mapServicesWithCombinations(
             $requestList,
@@ -164,7 +180,19 @@ class ZmsApiFacadeService
             $showUnpublished
         ) ?? new ServiceList();
         $relations = MapperService::mapRelations($relationList) ?? new OfficeServiceRelationList();
-        return new OfficeServiceAndRelationList($offices, $services, $relations);
+        
+        $result = new OfficeServiceAndRelationList($offices, $services, $relations);
+        
+        // Store in second-level cache
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $result, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Second-level cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL
+            ]);
+        }
+        
+        return $result;
     }
 
     /* Todo add method
