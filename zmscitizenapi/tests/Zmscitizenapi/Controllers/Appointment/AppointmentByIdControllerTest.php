@@ -80,6 +80,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 ],
                 "shortName" => "DEVV",
                 "emailFrom" => "no-reply@muenchen.de",
+                "emailRequired" => true,
                 "telephoneActivated" => true,
                 "telephoneRequired" => true,
                 "customTextfieldActivated" => true,
