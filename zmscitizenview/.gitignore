@@ -6,7 +6,7 @@ target
 # local env files
 .env.local
 .env.*.local
-.env.development
+#.env.development
 #.env.*.development
 
 # Log files
