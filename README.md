@@ -104,9 +104,10 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `ddev exec ./cli modules loop npm install`
 - `ddev exec ./cli modules loop npm build`
 
-- `ddev exec exec -d zmscitizenview npm install` // also works with loops
-- `ddev exec -d zmscitizenview npm run build` // also works with loops
-- `ddev exec -d zmscitizenview npm run dev`
+- `cd zmscitizenview`
+- `npm install`
+- `npm run build`
+- `npm run dev`
 
 ## Import Database
 - `ddev import-db --file=.resources/zms.sql`
