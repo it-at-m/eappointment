@@ -26,14 +26,10 @@ class ScopeAvailabilityDayClosure extends BaseController
         $scopeId = $args['id'];
         $date = $args['date'];
 
-        try {
-            $closureToggled = \App::$http->readPostResult(
-                '/scope/' . $scopeId . '/availability/' . $date . '/closure/toggle/',
-                new \BO\Zmsentities\Closure()
-            )->getEntity();
-        } catch (\Exception $e) {
-            var_dump($e->getMessage());exit;
-        }
+        $closureToggled = \App::$http->readPostResult(
+            '/scope/' . $scopeId . '/availability/' . $date . '/closure/toggle/',
+            new \BO\Zmsentities\Closure()
+        )->getEntity();
 
         return \BO\Slim\Render::withJson(
             $response,
