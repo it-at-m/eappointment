@@ -4141,6 +4141,51 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/scope/{id}/availability/{date}/closure/toggle/":
+ *      get:
+ *          summary: Toogle availability closure for specific day
+ *          x-since: 2.11
+ *          tags:
+ *              - scope
+ *              - closure
+ *          parameters:
+ *              -   name: id
+ *                  description: scope ID
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: date
+ *                  description: day in format YYYY-MM-DD
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, closure is deleted if existed before or created when didn't exist before"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->post(
+    '/scope/{id:\d{1,11}}/availability/{date:\d\d\d\d-\d\d-\d\d}/closure/toggle/',
+    '\BO\Zmsapi\AvailabilityClosureToggle'
+)
+    ->setName("AvailabilityClosureToggle");
+
+
+/**
+ *  @swagger
  *  "/scope/{id}/workstation/":
  *      get:
  *          summary: Get a list of today logged in workstations by scope ID

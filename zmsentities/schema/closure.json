@@ -1,0 +1,25 @@
+{
+    "type": "object",
+    "description": "A closure is a free day where a department and its scopes are closed.",
+    "example": {
+        "id" : 1234,
+        "Datum": 1447924981
+    },
+    "required": [
+        "Datum"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": "number"
+        },
+        "Datum": {
+            "type": "number",
+            "description": "unix timestamp"
+        },
+        "lastChange": {
+            "type": "number",
+            "description": "unix timestamp of the last change on this closure"
+        }
+    }
+}
