@@ -407,7 +407,7 @@ const allowedDates = (date: Date) => {
 
 watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
-  if (newDate) {
+  if (newDate && newDate != selectedDay.value) {
     getAppointmentsOfDay(convertDateToString(newDate));
   }
 });
