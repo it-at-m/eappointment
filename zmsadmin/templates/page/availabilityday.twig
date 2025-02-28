@@ -26,7 +26,7 @@
 
         {% set locked = false %}
         {% for closure in scope.closure %}
-            {% if closure.date|date('Y-m-d') == dateString %}
+            {% if "%04d-%02d-%02d"|format(closure.year, closure.month, closure.day) == dateString %}
                 {% set locked = true %}
             {% endif %}
         {% endfor %}
