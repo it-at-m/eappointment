@@ -9,4 +9,4 @@ CREATE TABLE `closures` (
    PRIMARY KEY (`id`),
    INDEX (StandortID),
    INDEX (StandortID, year, month, day)
-)
+);
