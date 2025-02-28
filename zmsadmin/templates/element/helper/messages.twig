@@ -234,9 +234,10 @@
 			{% set successTitle = "Termin erfolgreich eingetragen" %}
 			{{ block('success_start') }}
 				<dl>
-					{% if selectedprocess.queue.number < 10000 %}<dt>Die Wartenummer {% else %}<dt>Die Vorgangsnummer {% endif %}{% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|raw }}"{% endif %} lautet: {{ selectedprocess.queue.number }}&nbsp;</dt>
-					<dt>Standort: {{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}&nbsp;</dt>
-					{% if selectedprocess.scope.hint %}<dt>Info: {{ selectedprocess.scope.hint }}&nbsp;</dt>{% endif %}
+					<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 1 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
+					<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
+					<dt>{{ selectedprocess.appointments.date|date("d.m.Y") }} um {{ selectedprocess.appointments.date|date("H:i") }}</dt>
+					<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
 				</dl>
 				<div class="form-actions">
 					<div class="right">
@@ -292,9 +293,10 @@
 			{% set successTitle = "Wartenummer wurde hinzugefügt" %}
 			{{ block('success_start') }}
 				<dl>
-					<dt>Die Wartenummer {% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|raw }}"{% endif %} lautet: {{ selectedprocess.queue.number }}&nbsp;</dt>
-					<dt>Standort: {{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}&nbsp;</dt>
-					{% if selectedprocess.scope.hint %}<dt>Info: {{ selectedprocess.scope.hint }}&nbsp;</dt>{% endif %}
+					<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 1 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
+					<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
+					<dt>{{ selectedprocess.appointments.date|date("d.m.Y") }} um {{ selectedprocess.appointments.date|date("H:i") }}</dt>
+					<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
 				</dl>
 				<div class="form-actions">
 		            <div class="right">
