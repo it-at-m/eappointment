@@ -147,7 +147,7 @@ class Application extends \BO\Slim\Application
         //self::$CSRF_TOKEN_LENGTH = (int) (getenv('CSRF_TOKEN_LENGTH') ?: 32);
         //self::$CSRF_SESSION_KEY = getenv('CSRF_SESSION_KEY') ?: 'csrf_token';
         // CORS
-        //self::$CORS_ALLOWED_ORIGINS = getenv('CORS') ?: '';
+        self::$CORS_ALLOWED_ORIGINS = getenv('CORS') ?: '';
         // IP Filter
         self::$IP_BLACKLIST = getenv('IP_BLACKLIST') ?: '';
 

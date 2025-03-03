@@ -1,14 +1,18 @@
 <?php
 // @codingStandardsIgnoreFile
 // define the application path as single global constant
-define("APP_PATH", realpath(__DIR__));
+if (!defined('APP_PATH')) {
+    define("APP_PATH", realpath(__DIR__));
+}
 
 chdir(__DIR__);
 // use autoloading offered by composer, see composer.json for path settings
+if (!defined('VENDOR_PATH')) {
 if (file_exists(APP_PATH . '/vendor/autoload.php')) {
     define('VENDOR_PATH', APP_PATH . '/vendor');
 } else {
     define('VENDOR_PATH', APP_PATH . '/../..');
+}
 }
 require_once(VENDOR_PATH . '/autoload.php');
 

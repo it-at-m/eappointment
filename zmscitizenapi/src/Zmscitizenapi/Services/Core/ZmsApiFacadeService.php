@@ -10,8 +10,6 @@ use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
 use BO\Zmscitizenapi\Models\Office;
-use BO\Zmscitizenapi\Models\ProcessFreeSlots;
-use BO\Zmscitizenapi\Models\ProcessFreeSlotsGroupByOffice;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Models\ThinnedScope;
@@ -36,6 +34,13 @@ use BO\Zmsentities\Collection\ProcessList;
  */
 class ZmsApiFacadeService
 {
+    private const CACHE_KEY_OFFICES = 'processed_offices';
+    private const CACHE_KEY_SCOPES = 'processed_scopes';
+    private const CACHE_KEY_SERVICES = 'processed_services';
+    private const CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
+    private const CACHE_KEY_OFFICES_BY_SERVICE_PREFIX = 'processed_offices_by_service_';
+    private const CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
+
     private static ?string $currentLanguage = null;
     public static function setLanguageContext(?string $language): void
     {
@@ -47,8 +52,25 @@ class ZmsApiFacadeService
         return ErrorMessages::get($key, self::$currentLanguage);
     }
 
+    private static function setMappedCache(string $cacheKey, mixed $data): void
+    {
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $data, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Second-level cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL
+            ]);
+        }
+    }
+
     public static function getOffices(bool $showUnpublished = false): OfficeList
     {
+        $cacheKey = self::CACHE_KEY_OFFICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
         $offices = [];
@@ -80,6 +102,7 @@ class ZmsApiFacadeService
                     provider: MapperService::providerToThinnedProvider($provider),
                     shortName: (string) $matchingScope->getShortName(),
                     emailFrom: (string) $matchingScope->getEmailFrom(),
+                    emailRequired: (bool) $matchingScope->getEmailRequired(),
                     telephoneActivated: (bool) $matchingScope->getTelephoneActivated(),
                     telephoneRequired: (bool) $matchingScope->getTelephoneRequired(),
                     customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
@@ -91,11 +114,21 @@ class ZmsApiFacadeService
             );
         }
 
-        return new OfficeList($offices);
+        $result = new OfficeList($offices);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     public static function getScopes(): ThinnedScopeList|array
     {
+        $cacheKey = self::CACHE_KEY_SCOPES;
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
         $scopeMap = [];
@@ -117,6 +150,7 @@ class ZmsApiFacadeService
                     provider: MapperService::providerToThinnedProvider($provider),
                     shortName: (string) $matchingScope->getShortName(),
                     emailFrom: (string) $matchingScope->getEmailFrom(),
+                    emailRequired: (bool) $matchingScope->getEmailRequired(),
                     telephoneActivated: (bool) $matchingScope->getTelephoneActivated(),
                     telephoneRequired: (bool) $matchingScope->getTelephoneRequired(),
                     customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
@@ -128,11 +162,21 @@ class ZmsApiFacadeService
             }
         }
 
-        return new ThinnedScopeList($scopesProjectionList);
+        $result = new ThinnedScopeList($scopesProjectionList);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     public static function getServices(bool $showUnpublished = false): ServiceList|array
     {
+        $cacheKey = self::CACHE_KEY_SERVICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $services = [];
         foreach ($requestList as $request) {
@@ -148,11 +192,21 @@ class ZmsApiFacadeService
             $services[] = new Service(id: (int) $request->getId(), name: $request->getName(), maxQuantity: $additionalData['maxQuantity'] ?? 1);
         }
 
-        return new ServiceList($services);
+        $result = new ServiceList($services);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     public static function getServicesAndOffices(bool $showUnpublished = false): OfficeServiceAndRelationList|array
     {
+        $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $relationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
@@ -164,7 +218,12 @@ class ZmsApiFacadeService
             $showUnpublished
         ) ?? new ServiceList();
         $relations = MapperService::mapRelations($relationList) ?? new OfficeServiceRelationList();
-        return new OfficeServiceAndRelationList($offices, $services, $relations);
+
+        $result = new OfficeServiceAndRelationList($offices, $services, $relations);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     /* Todo add method
@@ -198,6 +257,7 @@ class ZmsApiFacadeService
             'provider' => MapperService::providerToThinnedProvider($finalProvider) ?? null,
             'shortName' => (string) $matchingScope->getShortName() ?? null,
             'emailFrom' => (string) $matchingScope->getEmailFrom() ?? null,
+            'emailRequired' => (bool) $matchingScope->getEmailRequired() ?? null,
             'telephoneActivated' => (bool) $matchingScope->getTelephoneActivated() ?? null,
             'telephoneRequired' => (bool) $matchingScope->getTelephoneRequired() ?? null,
             'customTextfieldActivated' => (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
@@ -211,6 +271,7 @@ class ZmsApiFacadeService
             provider: $result['provider'],
             shortName: $result['shortName'],
             emailFrom: $result['emailFrom'],
+            emailRequired: $result['emailRequired'],
             telephoneActivated: $result['telephoneActivated'],
             telephoneRequired: $result['telephoneRequired'],
             customTextfieldActivated: $result['customTextfieldActivated'],
@@ -228,8 +289,18 @@ class ZmsApiFacadeService
      *
      */
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract providerMap mapping logic into MapperService
+     */
     public static function getOfficeListByServiceId(int $serviceId, bool $showUnpublished = false): OfficeList|array
     {
+        $cacheKey = self::CACHE_KEY_OFFICES_BY_SERVICE_PREFIX . $serviceId . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $providerMap = [];
@@ -265,7 +336,11 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        return new OfficeList($offices);
+        $result = new OfficeList($offices);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     public static function getScopeById(?int $scopeId): ThinnedScope|array
@@ -305,6 +380,7 @@ class ZmsApiFacadeService
             provider: MapperService::providerToThinnedProvider($matchingProv),
             shortName: (string) $matchingScope->getShortName() ?? null,
             emailFrom: (string) $matchingScope->getEmailFrom() ?? null,
+            emailRequired: (bool) $matchingScope->getEmailRequired() ?? null,
             telephoneActivated: (bool) $matchingScope->getTelephoneActivated() ?? null,
             telephoneRequired: (bool) $matchingScope->getTelephoneRequired() ?? null,
             customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
@@ -317,6 +393,12 @@ class ZmsApiFacadeService
 
     public static function getServicesByOfficeId(int $officeId, bool $showUnpublished = false): ServiceList|array
     {
+        $cacheKey = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $requestMap = [];
@@ -349,7 +431,11 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        return new ServiceList($services);
+        $result = new ServiceList($services);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
@@ -443,6 +529,40 @@ class ZmsApiFacadeService
         return ZmsApiClientService::getFreeTimeslots(new ProviderList([$office]), new RequestList($requests), $date, $date);
     }
 
+    private static function processFreeSlots(ProcessList $freeSlots): array
+    {
+        $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
+        }
+
+        $currentTimestamp = time();
+        $allTimestamps = [];
+
+        foreach ($freeSlots as $slot) {
+            if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                foreach ($slot->appointments as $appointment) {
+                    if (isset($appointment->date)) {
+                        $timestamp = (int) $appointment->date;
+                        if ($timestamp > $currentTimestamp) {
+                            $allTimestamps[] = $timestamp;
+                        }
+                    }
+                }
+            }
+        }
+
+        $uniqueTimestamps = array_values(array_unique($allTimestamps));
+        sort($uniqueTimestamps);
+
+        $errors = ValidationService::validateGetProcessByIdTimestamps($uniqueTimestamps);
+        if (is_array($errors) && !empty($errors['errors'])) {
+            return $errors;
+        }
+
+        return $uniqueTimestamps;
+    }
+
     public static function getAvailableAppointments(string $date, array $officeIds, array $serviceIds, array $serviceCounts, ?bool $groupByOffice = false): AvailableAppointments|AvailableAppointmentsByOffice|array
     {
         $requests = [];
@@ -466,51 +586,15 @@ class ZmsApiFacadeService
 
         $freeSlots = ZmsApiClientService::getFreeTimeslots(new ProviderList($providers), new RequestList($requests), DateTimeFormatHelper::getInternalDateFromISO($date), DateTimeFormatHelper::getInternalDateFromISO($date)) ?? new ProcessList();
         $timestamps = self::processFreeSlots($freeSlots);
-        if (!empty($timestamps['errors'])) {
+        if (isset($timestamps['errors']) && !empty($timestamps['errors'])) {
             return $timestamps;
         }
 
         if ($groupByOffice) {
-            return new AvailableAppointmentsByOffice($timestamps);
+            return new AvailableAppointmentsByOffice(['appointmentTimestamps' => $timestamps]);
         }
 
-        return new AvailableAppointments(array_values($timestamps)[0]);
-    }
-
-    private static function processFreeSlots(ProcessList $freeSlots): array
-    {
-        $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        $currentTimestamp = time();
-        $appointmentTimestamps = array_reduce(iterator_to_array($freeSlots), function ($timestamps, $slot) use ($currentTimestamp) {
-
-            if (isset($slot->appointments) && is_iterable($slot->appointments)) {
-                $providerId = (int) $slot->scope->provider->id;
-                foreach ($slot->appointments as $appointment) {
-                    if (isset($appointment->date)) {
-                        $timestamp = (int) $appointment->date;
-                        if ($timestamp > $currentTimestamp) {
-                            $timestamps[$providerId][$timestamp] = true;
-                        }
-                    }
-                }
-            }
-            return $timestamps;
-        }, []);
-        foreach ($appointmentTimestamps as $providerId => &$timestamps) {
-            $timestamps = array_keys($timestamps);
-            asort($timestamps);
-        }
-
-        $errors = ValidationService::validateGetProcessByIdTimestamps($appointmentTimestamps);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        return $appointmentTimestamps;
+        return new AvailableAppointments($timestamps);
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
@@ -527,11 +611,11 @@ class ZmsApiFacadeService
     {
 
         $process = ZmsApiClientService::getProcessById($processId, $authKey);
-        $thinnedProcess = MapperService::processToThinnedProcess($process);
         $errors = ValidationService::validateGetProcessNotFound($process);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
+        $thinnedProcess = MapperService::processToThinnedProcess($process);
 
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $providerMap = [];
@@ -551,6 +635,7 @@ class ZmsApiFacadeService
                 provider: $thinnedProvider,
                 shortName: (string) $process->scope->getShortName() ?? null,
                 emailFrom: (string) $process->scope->getEmailFrom() ?? null,
+                emailRequired: (bool) $process->scope->getEmailRequired() ?? false,
                 telephoneActivated: (bool) $process->scope->getTelephoneActivated() ?? false,
                 telephoneRequired: (bool) $process->scope->getTelephoneRequired() ?? false,
                 customTextfieldActivated: (bool) $process->scope->getCustomTextfieldActivated() ?? false,
