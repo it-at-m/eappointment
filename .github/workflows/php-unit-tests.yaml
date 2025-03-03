@@ -38,6 +38,7 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
+          set -e
           cd "${{ matrix.module }}"
           composer install --no-progress --prefer-dist --optimize-autoloader
 
@@ -47,14 +48,43 @@ jobs:
         run: |
           cd "${{ matrix.module }}"
           mkdir -p coverage
-          echo "Running tests with coverage for ${{ matrix.module }}"
-          php -dmemory_limit=-1 \
-            ./vendor/bin/phpunit -c phpunit.xml \
-            --coverage-html coverage/html \
-            --coverage-clover coverage/clover.xml \
-            --log-junit coverage/junit.xml || if [ $? -eq 2 ] && [ -f "coverage/clover.xml" ]; then exit 0; fi
-          echo "Coverage files generated:"
-          ls -la coverage/
+          echo "Running tests for ${{ matrix.module }}"
+          
+          # Handle zmsslim's missing phpunit.xml
+          if [ "${{ matrix.module }}" = "zmsslim" ] && [ ! -f "phpunit.xml" ] && [ -f "phpunit.xml.dist" ]; then
+            cp phpunit.xml.dist phpunit.xml
+          fi
+          
+          # Different approach for problematic modules vs regular modules
+          case "${{ matrix.module }}" in
+            "zmsmessaging"|"zmsdldb"|"zmsslim")
+              echo "Running tests WITHOUT coverage for ${{ matrix.module }}"
+              # Explicitly disable xdebug for test run
+              XDEBUG_MODE=off php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
+              TEST_RESULT=$?
+              # Create empty placeholder files for artifacts
+              touch coverage/.placeholder
+              ;;
+            *)
+              echo "Running tests WITH coverage for ${{ matrix.module }}"
+              # Run tests with coverage enabled
+              php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
+              TEST_RESULT=$?
+              # Generate detailed coverage reports
+              echo "Generating coverage reports..."
+              php -dmemory_limit=-1 \
+                ./vendor/bin/phpunit -c phpunit.xml \
+                --coverage-html coverage/html \
+                --coverage-clover coverage/clover.xml \
+                --log-junit coverage/junit.xml || true
+              ;;
+          esac
+          
+          echo "Files in coverage directory:"
+          ls -la coverage/ || true
+          
+          # Exit with the test result code
+          exit $TEST_RESULT
 
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
@@ -256,6 +286,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
+          set -e
           cd ./zmsclient
           mkdir -p coverage
           docker-compose up -d
