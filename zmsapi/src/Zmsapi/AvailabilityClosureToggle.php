@@ -35,7 +35,7 @@ class AvailabilityClosureToggle extends BaseController
         if (! $input || count($input) === 0) {
             throw new BadRequestException();
         }
-        $data = [];
+
         $scopeId = $args['id'];
         $date = $args['date'];
         $closure = null;
