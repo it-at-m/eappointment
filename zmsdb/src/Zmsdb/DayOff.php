@@ -2,7 +2,6 @@
 
 namespace BO\Zmsdb;
 
-use BO\Zmsapi\DayoffList;
 use BO\Zmsentities\Dayoff as Entity;
 use BO\Zmsentities\Collection\DayoffList as Collection;
 
