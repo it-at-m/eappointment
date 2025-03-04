@@ -3,14 +3,12 @@ DIR=$(dirname ${BASH_SOURCE[0]})
 BIN=$DIR/../vendor/bin
 API=$DIR/../bin/api
 EXPORT=$DIR/../data/
-echo 'asdasda'
 set -a
 [ -z "$ZMS_ENV" ] && [ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
 set +a
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     if [[ $ZMS_ENV =~ ^prod|dev|stage$ ]]; then
-        echo 'zzzzzzzzzzzzzzzz'
 	$API config cron deleteUnconfirmedAppointmentData|grep -q "$ZMS_ENV" && $BIN/deleteUnconfirmedAppointmentData --commit
         $API config cron deallocateAppointmentData|grep -q "$ZMS_ENV" && $BIN/deallocateAppointmentData --commit
         $API config cron deleteSessionData|grep -q "$ZMS_ENV" && $BIN/deleteSessionData Zmsappointment 30 --commit

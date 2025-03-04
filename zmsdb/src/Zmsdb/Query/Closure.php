@@ -47,12 +47,6 @@ class Closure extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionClosureId($id)
-    {
-        $this->query->where('closure.id', '=', $id);
-        return $this;
-    }
-
     public function postProcess($data)
     {
         $data[$this->getPrefixed("lastChange")] =

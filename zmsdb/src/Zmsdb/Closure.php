@@ -38,7 +38,7 @@ class Closure extends Base
     public function deleteEntity($itemId)
     {
         $query = new Query\Closure(Query\Base::DELETE);
-        $query->addConditionClosureId($itemId);
+        $query->addConditionId($itemId);
         return ($this->deleteItem($query));
     }
 
