@@ -627,7 +627,12 @@
 
 			<fieldset>
 				<legend>Notruf</legend>
-				<div class="panel--heavy">
+				<div class="panel--heavy emergency-end"
+                    data-scope="{{workstation.scope | json_encode}}"
+                    data-scopestate={{ scopeState|json_encode|e('html_attr') }}
+                    data-labels={{ dataLabels|json_encode|e('html_attr') }}
+                    data-includeurl="{{ includeUrl() }}"
+                >
 					{{ formgroup(
                         {
                             "label": null
@@ -635,10 +640,11 @@
                         [{
                             "type":"checkbox",
                             "parameter": {
-                                "label": "Notruffunktion im Backend",
+                                "label": "Notruffunktion im Backend (Durch das Deaktivieren der Funktion wird auch ein aktuell bestehender Notruf am Standort beendet.)",
                                 "name": "preferences[workstation][emergencyEnabled]",
                                 "value": 1,
                                 "checked": scope.preferences.workstation.emergencyEnabled|default(0),
+                                "class": "emergency__button-end"
                             }
                         }]
                     ) }}

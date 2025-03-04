@@ -24,7 +24,7 @@ class SendProcessListToScopeAdmin
             $scope = (new \BO\Zmsdb\Scope())->readEntity($scopeId);
             $this->scopeList = (new \BO\Zmsentities\Collection\ScopeList())->addEntity($scope);
         } else {
-            $this->scopeList = (new \BO\Zmsdb\Scope)->readListWithScopeAdminEmail(1);
+            $this->scopeList = (new \BO\Zmsdb\Scope())->readListWithScopeAdminEmail(1);
         }
     }
 
@@ -35,7 +35,7 @@ class SendProcessListToScopeAdmin
                 error_log("INFO: Processing $scope");
             }
             if ($commit) {
-                $processList = (new \BO\Zmsdb\Process)
+                $processList = (new \BO\Zmsdb\Process())
                     ->readProcessListByScopeAndTime($scope->getId(), $this->dateTime, 1);
                 $processList = $processList
                    ->toQueueList($this->dateTime)
@@ -44,7 +44,7 @@ class SendProcessListToScopeAdmin
                    ->toProcessList();
                 if (0 <= $processList->count()) {
                     if ($this->sendListToQueue($scope, $processList) && $this->verbose) {
-                        error_log('INFO: Send processList to:'. $scope->getContactEmail());
+                        error_log('INFO: Send processList to:' . $scope->getContactEmail());
                     }
                 } else {
                     error_log("WARNING: Processlist empty for $scope->id");
@@ -55,8 +55,8 @@ class SendProcessListToScopeAdmin
 
     protected function sendListToQueue($scope, $processList)
     {
-        $entity = (new \BO\Zmsentities\Mail)->toScopeAdminProcessList($processList, $scope, $this->dateTime);
-        if (! (new \BO\Zmsdb\Mail)->writeInQueueWithDailyProcessList($scope, $entity)) {
+        $entity = (new \BO\Zmsentities\Mail())->toScopeAdminProcessList($processList, $scope, $this->dateTime);
+        if (! (new \BO\Zmsdb\Mail())->writeInQueueWithDailyProcessList($scope, $entity)) {
             error_log("WARNING: Mail writing in queue not successfull empty!");
         }
     }

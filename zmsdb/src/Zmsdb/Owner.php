@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Owner as Entity;
-use \BO\Zmsentities\Collection\OwnerList as Collection;
+use BO\Zmsentities\Owner as Entity;
+use BO\Zmsentities\Collection\OwnerList as Collection;
 
 class Owner extends Base
 {

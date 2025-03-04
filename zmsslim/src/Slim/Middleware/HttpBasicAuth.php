@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTTP Basic Authentication
  *
@@ -12,8 +13,8 @@
 
 namespace BO\Slim\Middleware;
 
-use \Psr\Http\Message\ServerRequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
 
@@ -32,7 +33,7 @@ class HttpBasicAuth
     public function __construct(callable $isAuthorized, $realm = null)
     {
         $this->isAuthorized = $isAuthorized;
-        $this->realm = $realm ?: "Password ".\App::IDENTIFIER;
+        $this->realm = $realm ?: "Password " . \App::IDENTIFIER;
     }
 
     public static function useAppConfig(): callable

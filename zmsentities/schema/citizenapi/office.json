@@ -1,20 +1,41 @@
 {
     "title": "Office",
-    "type": ["array", "object"],
+    "type": [
+        "array",
+        "object"
+    ],
     "properties": {
         "id": {
             "type": "integer",
             "description": "Unique identifier for the office"
         },
         "name": {
-            "type": ["string", "null"],
+            "type": [
+                "string",
+                "null"
+            ],
             "description": "The name of the office"
         },
+        "showAlternativeLocations": {
+            "type": [
+                "boolean",
+                "null"
+            ],
+            "description": "Show alternative office locations in the citizen calendar"
+        },
         "address": {
-            "type": ["array", "object", "null"],
+            "type": [
+                "array",
+                "object",
+                "null"
+            ],
             "description": "The address of the office",
             "items": {
-                "type": ["array", "object", "null"],
+                "type": [
+                    "array",
+                    "object",
+                    "null"
+                ],
                 "properties": {
                     "house_number": {
                         "type": "string",
@@ -40,23 +61,39 @@
             }
         },
         "displayNameAlternatives": {
-            "type": ["array", "null"],
+            "type": [
+                "array",
+                "null"
+            ],
             "description": "Alternative names of the office"
         },
         "organization": {
-            "type": ["string", "null"],
+            "type": [
+                "string",
+                "null"
+            ],
             "description": "The name of the Organization"
         },
         "organizationUnit": {
-            "type": ["string", "null"],
+            "type": [
+                "string",
+                "null"
+            ],
             "description": "The name of the organization"
         },
         "slotTimeInMinutes": {
-            "type": ["integer", "null"],
+            "type": [
+                "integer",
+                "null"
+            ],
             "description": "Slot time in minutes"
         },
         "geo": {
-            "type": ["array", "object", "null"],
+            "type": [
+                "array",
+                "object",
+                "null"
+            ],
             "description": "Geographical coordinates of the office",
             "properties": {
                 "lat": {
@@ -74,9 +111,11 @@
             }
         },
         "scope": {
-
+            "$ref": "./thinnedScope.json"
         }
     },
-    "required": ["id"],
+    "required": [
+        "id"
+    ],
     "description": "Schema definition for the Office entity"
 }

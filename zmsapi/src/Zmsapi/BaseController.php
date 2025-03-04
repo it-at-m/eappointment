@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsapi
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Zmsapi;
 
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @SuppressWarnings(NumberOfChildren)

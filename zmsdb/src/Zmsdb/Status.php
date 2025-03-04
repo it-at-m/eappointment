@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Status as Entity;
+use BO\Zmsentities\Status as Entity;
 
 class Status extends Base
 {
@@ -27,7 +27,7 @@ class Status extends Base
         $entity['database']['logbin'] =
             array_key_exists('log_bin', $configVariables) ? $configVariables['log_bin'] : 'OFF';
         $entity['processes'] = $includeProcessStats ? $this->readProcessStats($now) : [];
-        
+
         if ($includeProcessStats) {
             $entity['processes'] = $this->readProcessStats($now);
             $outdated = $this->readOutdatedSlots();
@@ -36,11 +36,11 @@ class Status extends Base
             $freeSlots = $this->readFreeSlots();
             $entity['processes']['freeSlots'] = $freeSlots['cnt'];
         }
-        
+
         $entity['mail'] = $this->readMailStats();
         $entity['notification'] = $this->readNotificationStats();
         $entity['sources']['dldb']['last'] = $this->readDdldUpdateStats();
-        $entity['processes']['lastCalculate'] = $this->readLastCalculateSlots();        
+        $entity['processes']['lastCalculate'] = $this->readLastCalculateSlots();
         $entity['useraccounts']['activeSessions'] = $this->getTotalActiveSessions();
         $entity['useraccounts']['departments'] = $this->getActiveSessionsByBehoerdenWithScopes();
 
@@ -229,9 +229,9 @@ class Status extends Base
                 SUM(CASE WHEN name = "(abgesagt)" THEN 1 ELSE NULL END) as deleted,
                 SUM(CASE WHEN nicht_erschienen > 0 AND b.StandortID != 0 THEN 1 ELSE NULL END) as missed,
                 SUM(CASE WHEN vorlaeufigeBuchung = 1 AND b.StandortID != 0 THEN 1 ELSE NULL END) as reserved,
-                SUM(CASE WHEN IPTimeStamp > '.intval($midnight).' AND b.StandortID != 0 
+                SUM(CASE WHEN IPTimeStamp > ' . intval($midnight) . ' AND b.StandortID != 0 
                     AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END) as sincemidnight,
-                SUM(CASE WHEN IPTimeStamp > '.intval($last7days).' AND b.StandortID != 0 
+                SUM(CASE WHEN IPTimeStamp > ' . intval($last7days) . ' AND b.StandortID != 0 
                     AND vorlaeufigeBuchung = 0 AND Abholer = 0 THEN 1 ELSE NULL END) as last7days,
                 FROM_UNIXTIME(MAX(IPTimeStamp)) as lastInsert
              FROM buerger AS b

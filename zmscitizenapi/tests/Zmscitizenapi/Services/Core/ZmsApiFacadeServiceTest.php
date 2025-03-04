@@ -64,7 +64,8 @@ class ZmsApiFacadeServiceTest extends TestCase
                 'city' => 'Test City',
                 'postal_code' => '12345'
             ],
-            'geo' => ['lat' => 48.137154, 'lon' => 11.576124]
+            'geo' => ['lat' => 48.137154, 'lon' => 11.576124],
+            'showAlternativeLocations' => false
         ];
     
         $scope = new Scope();
@@ -137,6 +138,7 @@ class ZmsApiFacadeServiceTest extends TestCase
         $scope->provider = $provider;
         $scope->preferences = [
             'client' => [
+                'emailRequired' => '1',
                 'telephoneActivated' => '1',
                 'telephoneRequired' => '0',
                 'customTextfieldActivated' => '1',
@@ -167,6 +169,7 @@ class ZmsApiFacadeServiceTest extends TestCase
         
         $thinnedScope = $result->getScopes()[0];
         $this->assertEquals(1, $thinnedScope->id);
+        $this->assertTrue($thinnedScope->emailRequired);
         $this->assertTrue($thinnedScope->telephoneActivated);
         $this->assertFalse($thinnedScope->telephoneRequired);
         $this->assertTrue($thinnedScope->customTextfieldActivated);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -26,7 +27,7 @@ class DepartmentAddScope extends Scope
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         $department = \App::$http
-            ->readGetResult('/department/'. $departmentId .'/', ['resolveReferences' => 0])->getEntity();
+            ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 0])->getEntity();
         $organisation = \App::$http->readGetResult('/department/' . $departmentId . '/organisation/')->getEntity();
         $providerList = Helper\ProviderHandler::readProviderList($workstation->getScope()->getSource());
         $sourceList = $this->readSourceList();

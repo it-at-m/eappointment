@@ -43,7 +43,7 @@ class CalculateDayOff
             if (strpos($dateExpr, 'E') === 0) {
                 $dateExpr = ltrim($dateExpr, 'E');
                 $dtCurr = clone $dateEaster;
-                $date = $dtCurr->modify($dateExpr.' day')->format($this->dateFormat);
+                $date = $dtCurr->modify($dateExpr . ' day')->format($this->dateFormat);
                 $entity = new \BO\Zmsentities\Dayoff([
                     'name' => $description,
                     'date' => (new \DateTimeImmutable($date))->getTimestamp()
@@ -67,7 +67,7 @@ class CalculateDayOff
             $date = $date->setDate($year, $date->format('m'), $date->format('d'));
         }
         $easterDate = \easter_date($date->format('Y'));
-        
+
         return $date->setTimestamp($easterDate);
     }
 
@@ -89,7 +89,7 @@ class CalculateDayOff
             return $list->sortByCustomKey('date');
         }
     }
-    
+
     protected function readDayoffList($query, $year)
     {
         $collection = $query->readCommonByYear($year);

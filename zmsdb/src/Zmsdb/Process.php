@@ -362,7 +362,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $process,
             $userAccount
         );
-        
+
         return $process;
     }
 

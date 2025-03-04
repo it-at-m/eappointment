@@ -1,11 +1,28 @@
 name: Combined Workflow
 
-on: [push]
+on:
+  push:
+    branches-ignore: [next]
+  workflow_call:
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-  call-unit-tests:
-    uses: ./.github/workflows/unit-tests.yaml
+  call-php-code-quality:
+    uses: ./.github/workflows/php-code-quality.yaml
 
-  call-build-images:
-    needs: call-unit-tests
-    uses: ./.github/workflows/build-images.yaml
+  call-php-unit-tests:
+    uses: ./.github/workflows/php-unit-tests.yaml
+
+  call-owasp-security-checks:
+    uses: ./.github/workflows/owasp-security-checks.yaml
+
+  call-php-build-images:
+    needs: [call-php-code-quality, call-php-unit-tests]
+    if: |
+      always() &&
+      needs.call-php-code-quality.result == 'success' &&
+      needs.call-php-unit-tests.result == 'success'
+    uses: ./.github/workflows/php-build-images.yaml

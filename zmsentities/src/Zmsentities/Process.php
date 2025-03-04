@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 /**
  * @SuppressWarnings(Complexity)
@@ -12,7 +13,6 @@ use \BO\Zmsentities\Helper\Property;
 class Process extends Schema\Entity
 {
     const PRIMARY = 'id';
-
     public const STATUS_FREE = 'free';
     public const STATUS_RESERVED = 'reserved';
     public const STATUS_CONFIRMED = 'confirmed';
@@ -30,9 +30,7 @@ class Process extends Schema\Entity
     public const STATUS_ANONYMIZED = 'anonymized';
     public const STATUS_BLOCKED = 'blocked';
     public const STATUS_CONFLICT = 'conflict';
-
     public static $schema = "process.json";
-
     public function getDefaults()
     {
         return [
@@ -130,14 +128,10 @@ class Process extends Schema\Entity
         $this->requests = new Collection\RequestList();
         if ($requestCSV) {
             foreach (explode(',', $requestCSV) as $id) {
-                $this->requests->addEntity(
-                    new Request(
-                        array(
+                $this->requests->addEntity(new Request(array(
                             'source' => $source,
                             'id' => $id
-                        )
-                    )
-                );
+                        )));
             }
         }
         return $this;
@@ -192,7 +186,7 @@ class Process extends Schema\Entity
             $dateTime->setTime($time[0], $time[1]);
         }
 
-        $appointment = (new Appointment)
+        $appointment = (new Appointment())
             ->addDate($dateTime->getTimestamp())
             ->addScope($this->scope['id']);
         if (isset($requestData['slotCount'])) {
@@ -489,7 +483,6 @@ class Process extends Schema\Entity
     public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;
-
         if (!in_array('availability', $keepArray)) {
             foreach ($entity['appointments'] as $appointment) {
                 if ($appointment->toProperty()->scope->isAvailable()) {
@@ -508,13 +501,12 @@ class Process extends Schema\Entity
 
         unset($entity['createTimestamp']);
         unset($entity['createIP']);
-
         if ($entity->toProperty()->scope->status->isAvailable()) {
             unset($entity['scope']['status']);
         }
 
         if ($entity->status == 'free') {
-            // delete keys
+// delete keys
             foreach (['authKey', 'queue', 'requests',] as $key) {
                 if (!in_array($key, $keepArray) && $entity->toProperty()->$key->isAvailable()) {
                     unset($entity[$key]);
@@ -642,32 +634,26 @@ class Process extends Schema\Entity
 
     public function toDerefencedAmendment()
     {
-        $lastChange = (new \DateTimeImmutable)->setTimestamp($this->createTimestamp)->format('c');
-        return var_export(
-            array(
+        $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
+        return var_export(array(
                 'BuergerID' => $this->id,
                 'StandortID' => $this->scope['id'],
-                'Anmerkung' => $this->amendment,
+                'Anmerkung' => null,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
-            ),
-            1
-        );
+            ), 1);
     }
 
     public function toDerefencedCustomTextfield()
     {
-        $lastChange = (new \DateTimeImmutable)->setTimestamp($this->createTimestamp)->format('c');
-        return var_export(
-            array(
+        $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
+        return var_export(array(
                 'BuergerID' => $this->id,
                 'StandortID' => $this->scope['id'],
-                'CustomTextfield' => $this->customTextfield,
+                'CustomTextfield' => null,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
-            ),
-            1
-        );
+            ), 1);
     }
 
     public function __toString()

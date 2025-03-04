@@ -61,16 +61,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.13.52",
+            "version": "8.13.55",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "cc9a82b237d79a85be47c0b06e3943f75ab35c32"
+                "reference": "6e28b3d53cf96d7f41c83d9b80b6021ecbd00537"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/cc9a82b237d79a85be47c0b06e3943f75ab35c32",
-                "reference": "cc9a82b237d79a85be47c0b06e3943f75ab35c32",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/6e28b3d53cf96d7f41c83d9b80b6021ecbd00537",
+                "reference": "6e28b3d53cf96d7f41c83d9b80b6021ecbd00537",
                 "shasum": ""
             },
             "require": {
@@ -134,7 +134,7 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2024-12-13T09:08:43+00:00"
+            "time": "2025-02-14T08:14:08+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -1433,16 +1433,16 @@
         },
         {
             "name": "helmich/phpunit-json-assert",
-            "version": "v3.5.1",
+            "version": "v3.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/martin-helmich/phpunit-json-assert.git",
-                "reference": "5a3a53e46f4d1f1b324c5cc2e33d87ad2d37260c"
+                "reference": "f8958119e9e9ea1339d6b4d6fd2df24536261b50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/5a3a53e46f4d1f1b324c5cc2e33d87ad2d37260c",
-                "reference": "5a3a53e46f4d1f1b324c5cc2e33d87ad2d37260c",
+                "url": "https://api.github.com/repos/martin-helmich/phpunit-json-assert/zipball/f8958119e9e9ea1339d6b4d6fd2df24536261b50",
+                "reference": "f8958119e9e9ea1339d6b4d6fd2df24536261b50",
                 "shasum": ""
             },
             "require": {
@@ -1451,10 +1451,10 @@
                 "softcreatr/jsonpath": "^0.8"
             },
             "conflict": {
-                "phpunit/phpunit": "<8.0 || >= 11.0"
+                "phpunit/phpunit": "<8.0 || >= 12.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0"
+                "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0 || ^11.0"
             },
             "type": "library",
             "autoload": {
@@ -1475,7 +1475,7 @@
             "description": "PHPUnit assertions for JSON documents",
             "support": {
                 "issues": "https://github.com/martin-helmich/phpunit-json-assert/issues",
-                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.5.1"
+                "source": "https://github.com/martin-helmich/phpunit-json-assert/tree/v3.5.2"
             },
             "funding": [
                 {
@@ -1487,33 +1487,34 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-03-03T14:09:38+00:00"
+            "time": "2024-05-20T11:18:46+00:00"
         },
         {
             "name": "helmich/phpunit-psr7-assert",
-            "version": "v4.3.0",
+            "version": "v4.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/martin-helmich/phpunit-psr7-assert.git",
-                "reference": "dfe594a09f55ea7f87120363d6720ca1a94c0878"
+                "reference": "f35fa69e07cc16977b52805d3abd873cc16747fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/martin-helmich/phpunit-psr7-assert/zipball/dfe594a09f55ea7f87120363d6720ca1a94c0878",
-                "reference": "dfe594a09f55ea7f87120363d6720ca1a94c0878",
+                "url": "https://api.github.com/repos/martin-helmich/phpunit-psr7-assert/zipball/f35fa69e07cc16977b52805d3abd873cc16747fd",
+                "reference": "f35fa69e07cc16977b52805d3abd873cc16747fd",
                 "shasum": ""
             },
             "require": {
                 "helmich/phpunit-json-assert": "^3.4",
-                "php": "^7.2 || ^8.0",
-                "psr/http-message": "^1.0"
+                "php": "^8.0",
+                "psr/http-message": "^1.1 || ^2.0"
             },
             "conflict": {
-                "phpunit/phpunit": "<8.0 || >= 10.0"
+                "phpunit/phpunit": "<8.0 || >= 11.0"
             },
             "require-dev": {
-                "guzzlehttp/psr7": "^1.2",
-                "phpunit/phpunit": "^8.0 || ^9.0"
+                "guzzlehttp/psr7": "^2.4",
+                "mockery/mockery": "^1.4.1",
+                "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0"
             },
             "type": "library",
             "autoload": {
@@ -1534,7 +1535,7 @@
             "description": "PHPUnit assertions for testing PSR7-compliant applications",
             "support": {
                 "issues": "https://github.com/martin-helmich/phpunit-psr7-assert/issues",
-                "source": "https://github.com/martin-helmich/phpunit-psr7-assert/tree/v4.3.0"
+                "source": "https://github.com/martin-helmich/phpunit-psr7-assert/tree/v4.4.1"
             },
             "funding": [
                 {
@@ -1546,24 +1547,24 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-12-22T06:27:54+00:00"
+            "time": "2023-07-26T19:04:29+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
-            "version": "v5.2.13",
+            "version": "5.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/justinrainbow/json-schema.git",
-                "reference": "fbbe7e5d79f618997bc3332a6f49246036c45793"
+                "url": "https://github.com/jsonrainbow/json-schema.git",
+                "reference": "feb2ca6dd1cebdaf1ed60a4c8de2e53ce11c4fd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/fbbe7e5d79f618997bc3332a6f49246036c45793",
-                "reference": "fbbe7e5d79f618997bc3332a6f49246036c45793",
+                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/feb2ca6dd1cebdaf1ed60a4c8de2e53ce11c4fd8",
+                "reference": "feb2ca6dd1cebdaf1ed60a4c8de2e53ce11c4fd8",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=7.1"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "~2.2.20||~2.15.1",
@@ -1574,11 +1575,6 @@
                 "bin/validate-json"
             ],
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "5.0.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "JsonSchema\\": "src/JsonSchema/"
@@ -1613,10 +1609,10 @@
                 "schema"
             ],
             "support": {
-                "issues": "https://github.com/justinrainbow/json-schema/issues",
-                "source": "https://github.com/justinrainbow/json-schema/tree/v5.2.13"
+                "issues": "https://github.com/jsonrainbow/json-schema/issues",
+                "source": "https://github.com/jsonrainbow/json-schema/tree/5.3.0"
             },
-            "time": "2023-09-26T02:20:38+00:00"
+            "time": "2024-07-06T21:00:26+00:00"
         },
         {
             "name": "league/json-reference",
@@ -2604,16 +2600,16 @@
         },
         {
             "name": "psr/http-message",
-            "version": "1.1",
+            "version": "2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-message.git",
-                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba"
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-message/zipball/cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
-                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/402d35bcb92c70c026d1a6a9883f06b2ead23d71",
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71",
                 "shasum": ""
             },
             "require": {
@@ -2622,7 +2618,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -2637,7 +2633,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common interface for HTTP messages",
@@ -2651,9 +2647,9 @@
                 "response"
             ],
             "support": {
-                "source": "https://github.com/php-fig/http-message/tree/1.1"
+                "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
-            "time": "2023-04-04T09:50:52+00:00"
+            "time": "2023-04-04T09:54:51+00:00"
         },
         {
             "name": "psr/log",

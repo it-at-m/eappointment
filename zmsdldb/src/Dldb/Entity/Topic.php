@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\Entity;
 
 /**
@@ -10,7 +12,6 @@ namespace BO\Dldb\Entity;
  */
 class Topic extends Base
 {
-
     public function getServiceIds()
     {
         $serviceIds = array();

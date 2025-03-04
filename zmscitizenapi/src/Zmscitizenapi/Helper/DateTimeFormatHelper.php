@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Helper;
 
 class DateTimeFormatHelper
 {
-
     private static function formatDateArray(\DateTime $date): array
     {
         return [
@@ -37,5 +37,4 @@ class DateTimeFormatHelper
             throw new \InvalidArgumentException('Invalid timestamp: ' . $e->getMessage());
         }
     }
-
 }

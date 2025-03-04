@@ -1,16 +1,20 @@
 {
   "title": "AvailableAppointments",
-  "type": ["array", "object", "null"],
+  "type": ["array", "object"],
   "properties": {
     "appointmentTimestamps": {
-      "type": ["array", "null"],
+      "type": "array",
       "description": "Array of available appointment timestamps in seconds since epoch",
       "items": {
         "type": "integer",
-        "description": "Timestamp in seconds since epoch"
-      }
+        "description": "Timestamp in seconds since epoch",
+        "minimum": 0
+      },
+      "uniqueItems": true,
+      "minItems": 0
     }
   },
   "required": ["appointmentTimestamps"],
+  "additionalProperties": false,
   "description": "Schema defining the available appointments for a specific date, office, and service"
 }

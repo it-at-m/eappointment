@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 class Department extends Schema\Entity implements Useraccount\AccessInterface
 {

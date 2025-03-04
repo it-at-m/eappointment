@@ -1,137 +1,82 @@
 {
   "title": "ThinnedProcess",
-  "type": ["array", "object", "null"],
+  "type": [
+    "array",
+    "object",
+    "null"
+  ],
   "properties": {
     "processId": {
-      "type": ["integer", "null"],
+      "type": [
+        "integer",
+        "null"
+      ],
       "description": "Unique identifier for the process"
     },
     "authKey": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Authentication key for the process"
     },
     "timestamp": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Timestamp of the process in seconds since epoch"
     },
     "familyName": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Family name associated with the process"
     },
     "customTextfield": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Custom text field for the process"
     },
     "email": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Email associated with the process"
     },
     "telephone": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Telephone number associated with the process"
     },
     "officeName": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Name of the office handling the process"
     },
     "officeId": {
-      "type": ["integer", "null"],
+      "type": [
+        "integer",
+        "null"
+      ],
       "description": "Unique identifier for the office"
     },
     "scope": {
-      "type": ["object", "null"],
-      "description": "Scope of the process",
-      "properties": {
-        "id": {
-          "type": ["integer", "null"],
-          "description": "Unique identifier of the scope"
-        },
-        "provider": {
-          "type": ["object", "null"],
-          "properties": {
-            "id": {
-              "type": ["integer", "null"],
-              "description": "Provider ID"
-            },
-            "name": {
-              "type": ["string", "null"],
-              "description": "Provider name"
-            },
-            "source": {
-              "type": ["string", "null"],
-              "description": "Data source of the provider"
-            },
-            "contact": {
-              "type": ["object", "null"],
-              "properties": {
-                "city": {
-                  "type": ["string", "null"],
-                  "description": "City of the contact"
-                },
-                "country": {
-                  "type": ["string", "null"],
-                  "description": "Country of the contact"
-                },
-                "name": {
-                  "type": ["string", "null"],
-                  "description": "Name of the contact"
-                },
-                "postalCode": {
-                  "type": ["string", "null"],
-                  "description": "Postal code of the contact"
-                },
-                "region": {
-                  "type": ["string", "null"],
-                  "description": "Region of the contact"
-                },
-                "street": {
-                  "type": ["string", "null"],
-                  "description": "Street of the contact"
-                },
-                "streetNumber": {
-                  "type": ["string", "null"],
-                  "description": "Street number of the contact"
-                }
-              }
-            }
-          }
-        },
-        "shortName": {
-          "type": ["string", "null"],
-          "description": "Short name of the scope"
-        },
-        "telephoneActivated": {
-          "type": ["boolean", "null"],
-          "description": "Whether telephone is activated"
-        },
-        "telephoneRequired": {
-          "type": ["boolean", "null"],
-          "description": "Whether telephone is required"
-        },
-        "customTextfieldActivated": {
-          "type": ["boolean", "null"],
-          "description": "Whether custom textfield is activated"
-        },
-        "customTextfieldRequired": {
-          "type": ["boolean", "null"],
-          "description": "Whether custom textfield is required"
-        },
-        "customTextfieldLabel": {
-          "type": ["string", "null"],
-          "description": "Label for the custom textfield"
-        },
-        "captchaActivatedRequired": {
-          "type": ["boolean", "null"],
-          "description": "Whether captcha is activated and required"
-        },
-        "displayInfo": {
-          "type": ["string", "null"],
-          "description": "Additional display information"
-        }
-      }
+      "$ref": "./thinnedScope.json"
     },
     "status": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "enum": [
         "free",
         "reserved",
@@ -154,21 +99,36 @@
       "description": "Status of the process"
     },
     "subRequestCounts": {
-      "type": ["array", "null"],
+      "type": [
+        "array",
+        "null"
+      ],
       "description": "Counts of sub-requests in the process",
       "items": {
-        "type": ["integer", "null"]
+        "type": [
+          "integer",
+          "null"
+        ]
       }
     },
     "serviceId": {
-      "type": ["integer", "null"],
+      "type": [
+        "integer",
+        "null"
+      ],
       "description": "Service ID associated with the process"
     },
     "serviceCount": {
-      "type": ["integer", "null"],
+      "type": [
+        "integer",
+        "null"
+      ],
       "description": "Count of services in the process"
     }
   },
-  "required": ["processId", "authKey"],
+  "required": [
+    "processId",
+    "authKey"
+  ],
   "description": "Schema definition for the process entity"
 }

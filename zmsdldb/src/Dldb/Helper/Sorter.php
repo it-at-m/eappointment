@@ -7,7 +7,6 @@ namespace BO\Dldb\Helper;
  */
 class Sorter
 {
-
     /**
      * @todo check against ISO definition
      */
