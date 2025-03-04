@@ -10,6 +10,7 @@ set +a
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     if [[ $ZMS_ENV =~ ^prod|dev|stage$ ]]; then
         $API config cron migrate|grep -q "$ZMS_ENV" && $BIN/migrate --update
+        $API config cron calculateDailyWaitingStatistic|grep -q "$ZMS_ENV" && $BIN/calculateDailyWaitingStatistic --commit
         $API config cron archiveStatisticData|grep -q "$ZMS_ENV" && $BIN/archiveStatisticData --commit
         $API config cron anonymizeStatisticData|grep -q "$ZMS_ENV" && $BIN/anonymizeStatisticData --commit
         $API config cron resetGhostWorkstationCount|grep -q "$ZMS_ENV" && $BIN/resetGhostWorkstationCount --commit
