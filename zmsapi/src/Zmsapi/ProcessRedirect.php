@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,11 +7,11 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
 use BO\Zmsdb\Process;
-use \BO\Zmsdb\Process as Query;
-use \BO\Zmsdb\ProcessStatusQueued;
+use BO\Zmsdb\Process as Query;
+use BO\Zmsdb\ProcessStatusQueued;
 use BO\Zmsdb\Workstation;
 use BO\Zmsentities\Collection\RequestList;
 
@@ -23,45 +24,25 @@ class ProcessRedirect extends BaseController
      * @SuppressWarnings(Param)
      * @return String
      */
-    public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
-        \Psr\Http\Message\ResponseInterface $response,
-        array $args
-    ) {
+    public function readResponse(\Psr\Http\Message\RequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
+    {
         $workstation = (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $newProcess = new \BO\Zmsentities\Process($input);
         $process = $this->readValidProcess($workstation, $entity, $input, $workstation);
         $newProcess->requests = new RequestList();
-
         $this->testProcessAccess($workstation, $process);
-
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $processStatusArchived = new \BO\Zmsdb\ProcessStatusArchived();
-
         $process->status = 'finished';
-        $process = (new Query)->updateEntity(
-            $process,
-            \App::$now,
-            0,
-            'processing',
-            $workstation->getUseraccount()
-        );
-        (new Workstation)->writeRemovedProcess($workstation);
+        $process = (new Query())->updateEntity($process, \App::$now, 0, 'processing', $workstation->getUseraccount());
+        (new Workstation())->writeRemovedProcess($workstation);
         $processStatusArchived->writeEntityFinished($process, \App::$now, false);
-
-        $newProcess = (new \BO\Zmsdb\Process())->redirectToScope(
-            $newProcess,
-            $process->scope,
-            $process->queue['number'] ?? $process->id,
-            $workstation->getUseraccount()
-        );
-
+        $newProcess = (new \BO\Zmsdb\Process())->redirectToScope($newProcess, $process->scope, $process->queue['number'] ?? $process->id, $workstation->getUseraccount());
         $message = Response\Message::create($request);
         $message->data = $newProcess;
         $response = Render::withLastModified($response, time(), '0');
-
         return Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
     }
 
@@ -78,7 +59,7 @@ class ProcessRedirect extends BaseController
 
     protected function testProcessAccess($workstation, $process)
     {
-        $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
+        $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], 1);
         $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
         if ($workstation->process && $workstation->process->hasId() && $workstation->process->id != $process->id) {
             $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
@@ -94,25 +75,14 @@ class ProcessRedirect extends BaseController
         if ($entity->hasProcessCredentials()) {
             $this->testProcessData($entity);
             $entity->addData($input);
-            $process = (new Query())->updateEntity(
-                $entity,
-                \App::$now,
-                0,
-                null,
-                $workstation->getUseraccount()
-            );
+            $process = (new Query())->updateEntity($entity, \App::$now, 0, null, $workstation->getUseraccount());
         } elseif ($entity->hasQueueNumber()) {
-            // Allow waitingnumbers over 1000 with the fourth parameter
+        // Allow waitingnumbers over 1000 with the fourth parameter
             $process = ProcessStatusQueued::init()
                 ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id'], 0, 100000000);
             if (! $process->id) {
-                $workstation = (new \BO\Zmsdb\Workstation)->readResolvedReferences($workstation, 1);
-                $process = (new Query())->writeNewPickup(
-                    $workstation->scope,
-                    \App::$now,
-                    $entity['queue']['number'],
-                    $workstation->getUseraccount()
-                );
+                $workstation = (new \BO\Zmsdb\Workstation())->readResolvedReferences($workstation, 1);
+                $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number'], $workstation->getUseraccount());
             }
             $process->testValid();
         } else {
