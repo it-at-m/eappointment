@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -26,21 +27,18 @@ class UseraccountByRole extends BaseController
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
 
-        $useraccountList = new Collection;
+        $useraccountList = new Collection();
         if ($workstation->hasSuperUseraccount()) {
-
             try {
                 $useraccountList = \App::$http->readGetResult("/role/$roleLevel/useraccount/")->getCollection();
             } catch (\Exception $e) {
                 false;
             }
-
         } else {
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $departmentList = $workstation->getUseraccount()->getDepartmentList();
 
             foreach ($departmentList as $accountDepartment) {
-
                 try {
                     $departmentUseraccountList = \App::$http
                         ->readGetResult("/role/$roleLevel/department/$accountDepartment->id/useraccount/")
@@ -72,4 +70,3 @@ class UseraccountByRole extends BaseController
         );
     }
 }
-

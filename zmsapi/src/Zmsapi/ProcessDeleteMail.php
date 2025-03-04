@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,13 +7,13 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Mail as Query;
-use \BO\Zmsdb\Config;
-use \BO\Zmsdb\Process as ProcessRepository;
-use \BO\Zmsdb\Department as DepartmentRepository;
-use \BO\Zmsentities\Process;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Mail as Query;
+use BO\Zmsdb\Config;
+use BO\Zmsdb\Process as ProcessRepository;
+use BO\Zmsdb\Department as DepartmentRepository;
+use BO\Zmsentities\Process;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -21,7 +22,7 @@ class ProcessDeleteMail extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return string
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
@@ -30,7 +31,7 @@ class ProcessDeleteMail extends BaseController
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
-        
+
         $process->testValid();
         $this->testProcessData($process);
 
@@ -52,13 +53,13 @@ class ProcessDeleteMail extends BaseController
         $department = (new DepartmentRepository())->readByScopeId($process->scope['id']);
         $collection = ProcessConfirmationMail::getProcessListOverview($process, $config);
 
-        $mail = (new \BO\Zmsentities\Mail)
+        $mail = (new \BO\Zmsentities\Mail())
             ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
             ->toResolvedEntity($collection, $config, 'deleted')
             ->withDepartment($department);
         $mail->testValid();
         if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
-            $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now, false);
+            $mail = (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now, false);
             \App::$log->debug("Send mail", [$mail]);
         }
         return $mail;
@@ -69,7 +70,8 @@ class ProcessDeleteMail extends BaseController
         $authCheck = (new ProcessRepository())->readAuthKeyByProcessId($process->getId());
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($process->toProperty()->scope->preferences->client->emailRequired->get() &&
+        } elseif (
+            $process->toProperty()->scope->preferences->client->emailRequired->get() &&
             ! $process->getFirstClient()->hasEmail()
         ) {
             throw new Exception\Process\EmailRequired();

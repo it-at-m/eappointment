@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models\Captcha;
@@ -10,23 +11,17 @@ use GuzzleHttp\Exception\RequestException;
 class AltchaCaptcha extends Entity implements CaptchaInterface
 {
     public static $schema = "citizenapi/captcha/altchaCaptcha.json";
-
-    /** @var string */
+/** @var string */
     public string $service;
-
-    /** @var string */
+/** @var string */
     public string $siteKey;
-
-    /** @var string */
+/** @var string */
     public string $apiUrl;
-
-    /** @var string */
+/** @var string */
     public string $secretKey;
-
-    /** @var string */
+/** @var string */
     public string $puzzle;
-
-    /**
+/**
      * Constructor.
      */
     public function __construct()
@@ -36,7 +31,6 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         $this->apiUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT;
         $this->secretKey = \App::$ALTCHA_CAPTCHA_SECRET_KEY;
         $this->puzzle = \App::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
-
         $this->ensureValid();
     }
 
@@ -78,9 +72,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
                     'solution' => $solution
                 ]
             ]);
-
             $responseBody = json_decode((string)$response->getBody(), true);
-
             if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['valid'])) {
                 return false;
             }

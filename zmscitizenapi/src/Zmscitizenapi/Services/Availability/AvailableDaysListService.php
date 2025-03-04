@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Availability;
@@ -12,7 +13,6 @@ class AvailableDaysListService
     public function getAvailableDaysList(array $queryParams): AvailableDays|array
     {
         $clientData = $this->extractClientData($queryParams);
-
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
@@ -29,7 +29,6 @@ class AvailableDaysListService
         $serviceCounts = !empty($serviceCount)
             ? array_map('trim', explode(',', (string) $serviceCount))
             : [];
-
         return (object) [
             'officeIds' => array_map('trim', explode(',', $queryParams['officeId'])),
             'serviceIds' => array_map('trim', explode(',', $queryParams['serviceId'])),
@@ -41,24 +40,11 @@ class AvailableDaysListService
 
     private function validateClientData(object $data): array
     {
-        return ValidationService::validateGetBookableFreeDays(
-            $data->officeIds,
-            $data->serviceIds,
-            $data->startDate,
-            $data->endDate,
-            $data->serviceCounts
-        );
+        return ValidationService::validateGetBookableFreeDays($data->officeIds, $data->serviceIds, $data->startDate, $data->endDate, $data->serviceCounts);
     }
 
     private function getAvailableDays(object $data): AvailableDays|array
     {
-        return ZmsApiFacadeService::getBookableFreeDays(
-            $data->officeIds,
-            $data->serviceIds,
-            $data->serviceCounts,
-            $data->startDate,
-            $data->endDate
-        );
+        return ZmsApiFacadeService::getBookableFreeDays($data->officeIds, $data->serviceIds, $data->serviceCounts, $data->startDate, $data->endDate);
     }
 }
-

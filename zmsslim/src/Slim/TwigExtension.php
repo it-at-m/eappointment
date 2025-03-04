@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   BO Slim
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -101,7 +102,7 @@ class TwigExtension extends AbstractExtension
         $new_lines = array();
         foreach ($lines as $line) {
             if (!empty($line)) {
-                $new_lines[]=trim($line);
+                $new_lines[] = trim($line);
             }
         }
         $result = implode("\n", $new_lines);
@@ -111,7 +112,7 @@ class TwigExtension extends AbstractExtension
     public function formatDateTime($dateString)
     {
         $dateTime = new \DateTimeImmutable(
-            $dateString->year.'-'.$dateString->month.'-'.$dateString->day,
+            $dateString->year . '-' . $dateString->month . '-' . $dateString->day,
             new \DateTimezone('Europe/Berlin')
         );
         $formatDate['date']     = Helper::getFormatedDates($dateTime, "EE, dd. MMMM yyyy");
@@ -141,7 +142,7 @@ class TwigExtension extends AbstractExtension
             } elseif (\App::MULTILANGUAGE) {
                 $routeParams['lang'] = ($lang !== null) ? $lang : \App::$language->getCurrentLanguage();
             }
-            
+
             $routeName = $this->container->get('currentRoute');
             $route = array(
                 'name' => $routeName,
@@ -270,9 +271,9 @@ class TwigExtension extends AbstractExtension
         } else {
             $useragent = 'Client-' . (defined("\App::IDENTIFIER") ? constant("\App::IDENTIFIER") : 'ZMS');
             $options = array(
-                'http'=>array(
-                  'method'=>"GET",
-                  'header'=>"Accept-language: de\r\n" .
+                'http' => array(
+                  'method' => "GET",
+                  'header' => "Accept-language: de\r\n" .
                             "Cookie: zms=development\r\n" .
                             "user-agent: $useragent \r\n"
                 )
@@ -305,7 +306,7 @@ class TwigExtension extends AbstractExtension
 
     public function getEsiFromPath($path, $locale = false)
     {
-        $localePath = ($locale && 'de' != $locale) ? '/' .$locale : '';
+        $localePath = ($locale && 'de' != $locale) ? '/' . $locale : '';
         return \App::$esiBaseUrl . $localePath . \App::$$path;
     }
 
@@ -355,7 +356,7 @@ class TwigExtension extends AbstractExtension
     public function dumpAppProfiler()
     {
         $output = '<h2>App Profiles</h2>'
-            .' <p>For debugging: This log contains runtime information.
+            . ' <p>For debugging: This log contains runtime information.
             <strong>DISABLE FOR PRODUCTION!</strong></p><ul>';
         foreach (Profiler::$profileList as $entry) {
             if ($entry instanceof Profiler) {
@@ -364,7 +365,7 @@ class TwigExtension extends AbstractExtension
                 $output .= \Tracy\Debugger::dump($entry, true);
             }
         }
-        return $output .'</ul>';
+        return $output . '</ul>';
     }
 
     public function kindOfPayment($code)

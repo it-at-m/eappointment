@@ -1,19 +1,20 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\File;
 
-use \BO\Dldb\Entity\Topic as Entity;
-use \BO\Dldb\Collection\Topics as Collection;
+use BO\Dldb\Entity\Topic as Entity;
+use BO\Dldb\Collection\Topics as Collection;
 
 /**
  * Common methods shared by access classes
  */
 class Topic extends Base
 {
-
     protected function parseData($data)
     {
         $itemList = new Collection();

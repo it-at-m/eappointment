@@ -6,3 +6,4 @@ public
 .DS_*
 testdataset.sql.gz
 .phpunit.result.cache
+coverage

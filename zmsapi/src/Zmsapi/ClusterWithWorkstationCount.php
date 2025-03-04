@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Cluster as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Cluster as Query;
 
 class ClusterWithWorkstationCount extends BaseController
 {
@@ -23,11 +24,11 @@ class ClusterWithWorkstationCount extends BaseController
     ) {
         (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $cluster = (new Query)->readEntity($args['id']);
+        $cluster = (new Query())->readEntity($args['id']);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
-        $cluster = (new Query)->readWithScopeWorkstationCount($args['id'], \App::$now, $resolveReferences);
+        $cluster = (new Query())->readWithScopeWorkstationCount($args['id'], \App::$now, $resolveReferences);
 
         $message = Response\Message::create($request);
         $message->data = $cluster;

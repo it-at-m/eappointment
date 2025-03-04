@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Condition;
@@ -18,7 +19,6 @@ use BO\Zmsentities\Process as Entity;
  */
 class ProcessChange extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -32,7 +32,7 @@ class ProcessChange extends BaseController
         $input = $request->getParams();
         $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
         $oldProcess = \App::$http
-            ->readGetResult('/process/'. $input['selectedprocess'] .'/')->getEntity();
+            ->readGetResult('/process/' . $input['selectedprocess'] . '/')->getEntity();
         $newProcess = $this->getNewProcess($input, $oldProcess, $scope);
         $validatedForm = static::getValidatedForm($request->getAttribute('validator'), $newProcess);
         if ($validatedForm['failed']) {
@@ -41,7 +41,7 @@ class ProcessChange extends BaseController
                 $validatedForm
             );
         }
-        
+
         $process = static::writeChangedProcess($input, $oldProcess, $newProcess);
         $queryParams = ('confirmed' == $process->getStatus()) ?
             ['selectedprocess' => $process, 'success' => 'process_changed'] :
@@ -58,7 +58,7 @@ class ProcessChange extends BaseController
     {
         $newProcess = clone $process;
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
-        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] .' '. $selectedTime);
+        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] . ' ' . $selectedTime);
         return $newProcess->withUpdatedData($input, $dateTime, $scope);
     }
 
@@ -134,13 +134,13 @@ class ProcessChange extends BaseController
         $oldAppointment = $oldProcess->getFirstAppointment();
         $newAppointment = $newProcess->getFirstAppointment();
         \App::$http->readPostResult(
-            '/process/'. $newProcess['id'] .'/'. $newProcess['authKey'] .'/',
+            '/process/' . $newProcess['id'] . '/' . $newProcess['authKey'] . '/',
             $newProcess,
             ['initiator' => 'admin']
         );
         if (! $oldAppointment->isMatching($newAppointment)) {
             $newProcess = \App::$http->readPostResult(
-                '/process/'. $oldProcess->id .'/'. $oldProcess->authKey .'/appointment/',
+                '/process/' . $oldProcess->id . '/' . $oldProcess->authKey . '/appointment/',
                 $newAppointment,
                 [
                     'resolveReferences' => 1,

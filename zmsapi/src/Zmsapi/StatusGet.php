@@ -7,8 +7,8 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Status;
+use BO\Slim\Render;
+use BO\Zmsdb\Status;
 
 class StatusGet extends BaseController
 {

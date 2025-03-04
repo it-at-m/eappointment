@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -87,7 +88,8 @@ class Request extends \Slim\Psr7\Request
                 return $basePath;
             }
 
-            while (min(strlen($serverParams['REQUEST_URI']), strlen($serverParams['SCRIPT_NAME'])) > strlen($basePath)
+            while (
+                min(strlen($serverParams['REQUEST_URI']), strlen($serverParams['SCRIPT_NAME'])) > strlen($basePath)
                 && strncmp($serverParams['REQUEST_URI'], $serverParams['SCRIPT_NAME'], strlen($basePath) + 1) === 0
             ) {
                 $basePath = substr($serverParams['REQUEST_URI'], 0, strlen($basePath) + 1);
@@ -96,7 +98,7 @@ class Request extends \Slim\Psr7\Request
 
         return rtrim($basePath, '/');
     }
-    
+
     /**
      * Return the fully qualified base URL.
      *

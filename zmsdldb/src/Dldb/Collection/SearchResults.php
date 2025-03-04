@@ -1,15 +1,16 @@
 <?php
+
 /**
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\Collection;
 
 use BO\Dldb\Entity\SearchResult as Entity;
 
 class SearchResults extends Base
 {
-
     public function getNames()
     {
         $nameList = array();

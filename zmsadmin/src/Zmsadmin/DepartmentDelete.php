@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -29,10 +30,10 @@ class DepartmentDelete extends BaseController
 
         $entity = \App::$http->readGetResult('/department/' . $entityId . '/')->getEntity();
         $departmentName = $entity->name;
-        
-        
+
+
         \App::$http->readDeleteResult(
-            '/department/'. $entityId .'/'
+            '/department/' . $entityId . '/'
         )->getEntity();
         return \BO\Slim\Render::redirect(
             'owner_overview',

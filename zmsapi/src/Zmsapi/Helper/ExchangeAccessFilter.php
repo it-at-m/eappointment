@@ -2,7 +2,7 @@
 
 namespace BO\Zmsapi\Helper;
 
-use \BO\Slim\Render;
+use BO\Slim\Render;
 
 /**
  *

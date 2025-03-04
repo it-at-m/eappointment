@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsdb;
 
 class Preferences extends Base
@@ -34,7 +35,7 @@ class Preferences extends Base
         if (!$timeString) {
             $timeString = 'now';
         } else {
-            $timeString .= ' '.\BO\Zmsdb\Connection\Select::$connectionTimezone;
+            $timeString .= ' ' . \BO\Zmsdb\Connection\Select::$connectionTimezone;
         }
         return new \DateTimeImmutable($timeString);
     }

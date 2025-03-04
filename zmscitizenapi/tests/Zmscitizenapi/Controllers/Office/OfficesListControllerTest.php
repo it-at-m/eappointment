@@ -69,6 +69,8 @@ class OfficesListControllerTest extends ControllerTestCase
                             ]
                         ],
                         "shortName" => "Scope 1",
+                        "emailFrom" => "no-reply@muenchen.de",
+                        'emailRequired' => false,
                         "telephoneActivated" => true,
                         "telephoneRequired" => false,
                         "customTextfieldActivated" => true,
@@ -110,6 +112,8 @@ class OfficesListControllerTest extends ControllerTestCase
                             ]
                         ],
                         "shortName" => "Scope 2",
+                        "emailFrom" => "no-reply@muenchen.de",
+                        'emailRequired' => true,
                         "telephoneActivated" => false,
                         "telephoneRequired" => true,
                         "customTextfieldActivated" => false,

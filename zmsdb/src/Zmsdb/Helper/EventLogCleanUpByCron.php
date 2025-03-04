@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -12,7 +13,7 @@ use BO\Zmsdb\EventLog as EventLogRepository;
 class EventLogCleanUpByCron
 {
     protected $verbose = false;
-    
+
     public function __construct($verbose = false)
     {
         if ($verbose) {

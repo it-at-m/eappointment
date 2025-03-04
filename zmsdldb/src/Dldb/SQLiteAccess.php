@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ClientDLDB
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -18,7 +19,7 @@ class SQLiteAccess extends PDOAccess
     {
         try {
             $databasePath = rtrim(($options['databasePath'] ?? static::DEFAULT_DATABASE_PATH), \DIRECTORY_SEPARATOR);
-            
+
             if (!is_dir($databasePath)) {
                 mkdir($databasePath);
             }

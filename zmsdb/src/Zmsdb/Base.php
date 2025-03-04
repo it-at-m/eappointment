@@ -69,7 +69,7 @@ abstract class Base
             return $this->writeDb;
         }
         if (null === $this->readDb) {
-            $this->readDb= Connection\Select::getReadConnection();
+            $this->readDb = Connection\Select::getReadConnection();
         }
         return $this->readDb;
     }
@@ -114,7 +114,7 @@ abstract class Base
             //@codeCoverageIgnoreEnd
             $message = "SQL: "
                 . " Err: "
-                .$pdoException->getMessage()
+                . $pdoException->getMessage()
                 //. " || Statement: "
                 //.$statement->queryString
                 //." || Parameters=". var_export($parameters, true)

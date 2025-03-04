@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Slim\Render;
@@ -14,7 +16,6 @@ use BO\Zmsticketprinter\Helper\QueueListHelper;
 
 class NotificationAssign extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
@@ -29,7 +30,7 @@ class NotificationAssign extends BaseController
         //get process
         $processId = $validator->getParameter('processId')->isNumber()->getValue();
         $authKey = $validator->getParameter('authKey')->isString()->getValue();
-        $process = \App::$http->readGetResult('/process/'. $processId .'/'. $authKey .'/')->getEntity();
+        $process = \App::$http->readGetResult('/process/' . $processId . '/' . $authKey . '/')->getEntity();
 
         if ($telephone->hasFailed()) {
             return Render::redirect(
@@ -75,11 +76,11 @@ class NotificationAssign extends BaseController
         //add notification to queue
         $process->status = 'queued';
         $process = \App::$http
-            ->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process)
+            ->readPostResult('/process/' . $process->id . '/' . $process->authKey . '/', $process)
             ->getEntity();
 
         \App::$http->readPostResult(
-            '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
+            '/process/' . $process->id . '/' . $process->authKey . '/confirmation/notification/',
             $process
         );
 

@@ -1,12 +1,14 @@
 <?php
+
 /**
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\MySQL\Collection\Links as Collection;
-use \BO\Dldb\Elastic\Link as Base;
+use BO\Dldb\MySQL\Collection\Links as Collection;
+use BO\Dldb\Elastic\Link as Base;
 
 /**
  */
