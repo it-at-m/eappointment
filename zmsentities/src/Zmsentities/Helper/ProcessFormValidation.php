@@ -1,14 +1,16 @@
 <?php
+
 /**
  *
  * @package Zmsentities
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsentities\Helper;
 
 use BO\Mellon\Validator;
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 /**
  *
@@ -18,7 +20,6 @@ use \BO\Zmsentities\Helper\Property;
  */
 class ProcessFormValidation
 {
-
     /**
      * form data for reuse in multiple controllers
      */
@@ -43,7 +44,7 @@ class ProcessFormValidation
         $collection = self::getPersonalParameters($collection, $scopePrefs, $withAppointment);
         $collection = self::getAdditionalAdminParameters($collection, $withAppointment);
         $collection = self::getNotificationParameters($collection);
-        
+
         // return validated collection
         $collection = Validator::collection($collection);
         return $collection;
@@ -180,8 +181,8 @@ class ProcessFormValidation
             $collection['email'] = Validator::param('email')
                 ->isMail("Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.")
                 ->hasDNS(
-                    "Zu der angegebenen E-Mail-Adresse können keine Mails verschickt werden. ".
-                    "Der Host zur Domain nach dem '@' ist nicht erreichbar. ".
+                    "Zu der angegebenen E-Mail-Adresse können keine Mails verschickt werden. " .
+                    "Der Host zur Domain nach dem '@' ist nicht erreichbar. " .
                     ""
                 );
         }
@@ -210,7 +211,7 @@ class ProcessFormValidation
         $length = strlen($inputNumber);
         $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
         $phoneNumberObject = $phoneNumberUtil->parse($inputNumber, 'DE');
-        $phoneNumber = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+        $phoneNumber = '+' . $phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
 
         if (self::isPhoneRequired($scopePrefs) && $withAppointment) {
             $collection['telephone'] = Validator::value($phoneNumber, 'telephone')

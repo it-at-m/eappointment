@@ -1,10 +1,12 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Slot as Entity;
-use \BO\Zmsentities\Collection\SlotList as Collection;
-use \BO\Zmsentities\Availability as AvailabilityEntity;
-use \BO\Zmsentities\Scope as ScopeEntity;
+use BO\Dldb\Helper\DateTime;
+use BO\Zmsentities\Slot as Entity;
+use BO\Zmsentities\Collection\SlotList as Collection;
+use BO\Zmsentities\Availability as AvailabilityEntity;
+use BO\Zmsentities\Scope as ScopeEntity;
 
 /**
  * @SuppressWarnings(Public)
@@ -13,11 +15,12 @@ use \BO\Zmsentities\Scope as ScopeEntity;
  */
 class Slot extends Base
 {
-
     /**
      * maximum number of slots per appointment
      */
     const MAX_SLOTS = 25;
+
+    const MAX_DAYS_OF_SLOT_CALCULATION = 180;
 
     /**
      * @return \BO\Zmsentities\Collection\SlotList
@@ -73,7 +76,8 @@ class Slot extends Base
             ->readProperty('scope', $scope->id, 'appointment', 'startInDaysDefault');
         $endInDaysDefault = (new Preferences())
             ->readProperty('scope', $scope->id, 'appointment', 'endInDaysDefault');
-        if ($scope->preferences['appointment']['startInDaysDefault'] != $startInDaysDefault
+        if (
+            $scope->preferences['appointment']['startInDaysDefault'] != $startInDaysDefault
             || $scope->preferences['appointment']['endInDaysDefault'] != $endInDaysDefault
         ) {
             (new Scope())->replacePreferences($scope); //TODO remove after ZMS1 is deactivated
@@ -83,8 +87,10 @@ class Slot extends Base
             ->readChangeDateTime('scope', $scope->id, 'appointment', 'startInDaysDefault');
         $endInDaysChange = (new Preferences())
             ->readChangeDateTime('scope', $scope->id, 'appointment', 'endInDaysDefault');
-        if ($startInDaysChange->getTimestamp() > $slotLastChange->getTimestamp()
-            || $endInDaysChange->getTimestamp() > $slotLastChange->getTimestamp()) {
+        if (
+            $startInDaysChange->getTimestamp() > $slotLastChange->getTimestamp()
+            || $endInDaysChange->getTimestamp() > $slotLastChange->getTimestamp()
+        ) {
             return true;
         }
     }
@@ -101,7 +107,8 @@ class Slot extends Base
             $availability['processingNote'][] = 'outdated: availability change';
             return true;
         }
-        if ($formerChange->hasOutdatedScope()
+        if (
+            $formerChange->hasOutdatedScope()
             && $this->hasScopeRelevantChanges($availability->scope, $slotLastChange)
         ) {
             $availability['processingNote'][] = 'outdated: scope change';
@@ -113,7 +120,8 @@ class Slot extends Base
         }
         // Be aware, that last slot change and current time might differ serval days
         //  if the rebuild fails in some way
-        if (1
+        if (
+            1
             // First check if the bookable end date on current time was already calculated on last slot change
             && !$formerChange->hasBookableDateTime($proposedChange->getLastBookableDateTime())
             // Second check if between last slot change and current time could be a bookable slot
@@ -142,7 +150,8 @@ class Slot extends Base
             $availability['processingNote'][] = 'outdated: new slots required';
             return true;
         }
-        if ($availability->getBookableStart($slotLastChange) != $availability->getBookableStart($now)
+        if (
+            $availability->getBookableStart($slotLastChange) != $availability->getBookableStart($now)
             // First check, if bookable start from lastChange was not included in bookable time from now
             && !$availability->hasDate($availability->getBookableStart($slotLastChange), $now)
             // Second check, if availability had a bookable time on lastChange before bookable start from now
@@ -168,29 +177,39 @@ class Slot extends Base
         \DateTimeInterface $slotLastChange = null
     ) {
         $now = \BO\Zmsentities\Helper\DateTime::create($now);
+        $calculateSlotsUntilDate = \BO\Zmsentities\Helper\DateTime::create($now)->modify('+' . self::MAX_DAYS_OF_SLOT_CALCULATION . ' days');
         if (!$slotLastChange) {
             $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
         }
-        $availability['processingNote'][] = 'lastchange='.$slotLastChange->format('c');
+        $lastGeneratedSlotDate = $this->getLastGeneratedSlotDate($availability);
+
+        $availability['processingNote'][] = 'lastchange=' . $slotLastChange->format('c');
         if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange)) {
             return false;
         }
+
+        $generateNew = $availability->isNewerThan($slotLastChange);
+
         (new Availability())->readLock($availability->id);
-        // Order is import, the following cancels all slots
-        // and should only happen, if rebuild is triggered
-        $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
-            'availabilityID' => $availability->id,
-        ]);
-        if (!$availability->withData(['bookable' => ['startInDays' => 0]])->hasBookableDates($now)) {
-            $availability['processingNote'][] = "cancelled $cancelledSlots slots: availability not bookable ";
-            return ($cancelledSlots > 0) ? true : false;
+        if ($generateNew) {
+            $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
+                'availabilityID' => $availability->id,
+            ]);
+            if (!$availability->withData(['bookable' => ['startInDays' => 0]])->hasBookableDates($now)) {
+                $availability['processingNote'][] = "cancelled $cancelledSlots slots: availability not bookable ";
+                return ($cancelledSlots > 0) ? true : false;
+            }
+            $availability['processingNote'][] = "cancelled $cancelledSlots slots";
         }
-        $availability['processingNote'][] = "cancelled $cancelledSlots slots";
+
         $startDate = $availability->getBookableStart($now)->modify('00:00:00');
         $stopDate = $availability->getBookableEnd($now);
         $slotlist = $availability->getSlotList();
         $slotlistIntern = $slotlist->withValueFor('callcenter', 0)->withValueFor('public', 0);
         $time = $now->modify('00:00:00');
+        if (!$generateNew) {
+            $time = $lastGeneratedSlotDate->modify('+1 day')->modify('00:00:00');
+        }
         $status = false;
         do {
             if ($availability->withData(['bookable' => ['startInDays' => 0]])->hasDate($time, $now)) {
@@ -202,15 +221,15 @@ class Slot extends Base
                 $status = $writeStatus ? $writeStatus : $status;
             }
             $time = $time->modify('+1day');
-        } while ($time->getTimestamp() <= $stopDate->getTimestamp());
+        } while ($time->getTimestamp() <= $stopDate->getTimestamp() && $time->getTimestamp() < $calculateSlotsUntilDate->getTimestamp());
 
-        return $status || ($cancelledSlots > 0);
+        return $status || (isset($cancelledSlots) && $cancelledSlots > 0);
     }
 
     public function writeByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
     {
         $slotLastChange = $this->readLastChangedTimeByScope($scope);
-        $availabilityList = (new \BO\Zmsdb\Availability)
+        $availabilityList = (new \BO\Zmsdb\Availability())
             ->readAvailabilityListByScope($scope, 0, $slotLastChange->modify('-1 day'))
             ;
         $updatedList = new \BO\Zmsentities\Collection\AvailabilityList();
@@ -254,7 +273,7 @@ class Slot extends Base
             $status = $writeStatus ? $writeStatus : $status;
         }
         if ($hasAddedSlots) {
-            $availability['processingNote'][] = 'Added '.$time->format('Y-m-d');
+            $availability['processingNote'][] = 'Added ' . $time->format('Y-m-d');
         }
         return $status;
     }
@@ -444,5 +463,22 @@ class Slot extends Base
         $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_SLOT_PROCESS));
         $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_PROCESS));
         return $status;
+    }
+
+    private function getLastGeneratedSlotDate(AvailabilityEntity $availability)
+    {
+        $date = '1970-01-01 12:00';
+        $last = $this->fetchRow(
+            Query\Slot::QUERY_LAST_IN_AVAILABILITY,
+            [
+                'availabilityID' => $availability->id,
+            ]
+        );
+
+        if (isset($last['dateString'])) {
+            $date = $last['dateString'];
+        }
+
+        return new \DateTimeImmutable($date . \BO\Zmsdb\Connection\Select::$connectionTimezone);
     }
 }

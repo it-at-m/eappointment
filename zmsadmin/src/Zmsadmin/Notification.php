@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -7,7 +8,6 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Notification as Entity;
-
 use BO\Mellon\Validator;
 
 /**
@@ -36,7 +36,7 @@ class Notification extends BaseController
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $input = $request->getParsedBody();
         $process = ($selectedProcessId) ?
-            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
+            \App::$http->readGetResult('/process/' . $selectedProcessId . '/')->getEntity() :
             null;
         $formResponse = $this->getValidatedResponse($input, $process, $config, $department);
         if ($formResponse instanceof Entity) {
@@ -87,7 +87,7 @@ class Notification extends BaseController
 
     protected function getReminderNotification($process, $config, $department)
     {
-        $notification = (new Entity)->toResolvedEntity($process, $config, $department, 'reminder');
+        $notification = (new Entity())->toResolvedEntity($process, $config, $department, 'reminder');
         // maybe should be $notification->department->hasNotificationReminderEnabled()
         return ($notification->department->hasNotificationEnabled())
             ? \App::$http->readPostResult('/notification/', $notification)->getEntity()
@@ -101,7 +101,7 @@ class Notification extends BaseController
             ->isBiggerThan(2, "Es muss eine aussagekräftige Nachricht eingegeben werden");
         $collection = Validator::collection($collection);
         if (! $collection->hasFailed()) {
-            $notification = (new Entity)->toCustomMessageEntity($process, $collection->getValues(), $department);
+            $notification = (new Entity())->toCustomMessageEntity($process, $collection->getValues(), $department);
             return ($notification->department->hasNotificationEnabled())
                 ? \App::$http->readPostResult('/notification/', $notification)->getEntity()
                 : $notification;

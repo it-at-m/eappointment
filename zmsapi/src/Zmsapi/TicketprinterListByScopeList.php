@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
 
 class TicketprinterListByScopeList extends BaseController
 {
@@ -25,10 +26,10 @@ class TicketprinterListByScopeList extends BaseController
 
         $ticketprinterList = new \BO\Zmsentities\Collection\TicketprinterList();
         foreach ($scopeIdList as $scopeId) {
-            $isEnabled = (new \BO\Zmsdb\Scope)->readIsEnabled($scopeId, \App::$now);
+            $isEnabled = (new \BO\Zmsdb\Scope())->readIsEnabled($scopeId, \App::$now);
             $entity = (new \BO\Zmsentities\Ticketprinter([
                 'enabled' => $isEnabled,
-                'buttonlist' => 's'. $scopeId
+                'buttonlist' => 's' . $scopeId
             ]));
             $ticketprinterList->addEntity($entity->toStructuredButtonList());
         }

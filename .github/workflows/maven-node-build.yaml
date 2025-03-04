@@ -1,0 +1,35 @@
+name: Frontend Build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Europe/Berlin # timezone
+    strategy:
+      fail-fast: false
+      matrix:
+        include: # hier müssen die Pfade angegeben werden
+          - app-path: zmscitizenview
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - if:  ${{hashFiles(format('./{0}/package.json', matrix.app-path))!=null}}
+        id: node
+        uses: it-at-m/.github/.github/actions/action-npm-build@main
+        with:
+          app-path:  "${{ matrix.app-path }}"
+      - if:  ${{hashFiles(format('./{0}/pom.xml', matrix.app-path))!=null}}
+        id: maven
+        uses: it-at-m/.github/.github/actions/action-maven-build@main
+        with:
+          app-path: "${{ matrix.app-path }}"
+      - uses: it-at-m/.github/.github/actions/action-build-image@main
+        with:
+          path: "${{  matrix.app-path }}"
+          image-name: "${{  matrix.app-path }}"
+          artifact-name: ${{join(steps.*.outputs.artifact-name)}}
+          registry-password: ${{ secrets.GITHUB_TOKEN }}
+          registry-username: ${{ github.actor }}
+          image-tags: "branch-${{ github.ref_name }}"

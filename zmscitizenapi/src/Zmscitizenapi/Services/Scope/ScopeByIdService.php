@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Scope;
@@ -12,7 +13,6 @@ class ScopeByIdService
     public function getScope(array $queryParams): ThinnedScope|array
     {
         $clientData = $this->extractClientData($queryParams);
-
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;

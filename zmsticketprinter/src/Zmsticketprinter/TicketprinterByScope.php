@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Slim\Render;
@@ -35,11 +37,11 @@ class TicketprinterByScope extends BaseController
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $scope = $ticketprinter->getScopeList()->getFirst();
-        $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
+        $department = \App::$http->readGetResult('/scope/' . $scope->id . '/department/')->getEntity();
         $organisation = $ticketprinterHelper->getOrganisation();
-        
+
         $queueListHelper = new QueueListHelper($scope);
-        
+
         $template = (new TemplateFinder($defaultTemplate))->setCustomizedTemplate($ticketprinter, $organisation);
 
         $hasDisabledButton = false;
@@ -49,7 +51,7 @@ class TicketprinterByScope extends BaseController
                 break;
             }
         }
-        
+
         return Render::withHtml(
             $response,
             $template->getTemplate(),

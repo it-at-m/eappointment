@@ -83,7 +83,8 @@ class Availability extends Schema\Entity
     public function hasDate(\DateTimeInterface $dateTime, \DateTimeInterface $now)
     {
         $dateTime = Helper\DateTime::create($dateTime);
-        if (!$this->isOpenedOnDate($dateTime)
+        if (
+            !$this->isOpenedOnDate($dateTime)
             || !$this->isBookable($dateTime, $now)
         ) {
             // Out of date range
@@ -119,7 +120,8 @@ class Availability extends Schema\Entity
     public function isOpenedOnDate(\DateTimeInterface $dateTime, $type = false)
     {
         $dateTime = Helper\DateTime::create($dateTime);
-        if (!$this->hasWeekDay($dateTime)
+        if (
+            !$this->hasWeekDay($dateTime)
             || ($type !== false && $this->type != $type)
             || !$this->hasDay($dateTime)
             || !$this->hasWeek($dateTime)
@@ -243,7 +245,8 @@ class Availability extends Schema\Entity
         $dateTime = Helper\DateTime::create($dateTime);
         $start = $this->getStartDateTime();
         $monday = "monday this week";
-        if ($this['repeat']['afterWeeks']
+        if (
+            $this['repeat']['afterWeeks']
             && ($this['repeat']['afterWeeks'] == 1
                 || 0 ===
                     $dateTime->modify($monday)->diff($start->modify($monday))->days
@@ -252,7 +255,8 @@ class Availability extends Schema\Entity
         ) {
             return true;
         }
-        if ($this['repeat']['weekOfMonth']
+        if (
+            $this['repeat']['weekOfMonth']
             && (
                 $dateTime->isWeekOfMonth($this['repeat']['weekOfMonth'])
                 // On a value of 5, always take the last week
@@ -384,7 +388,8 @@ class Availability extends Schema\Entity
             //error_log("END " . $bookableCurrentTime->format('c').'>'.$endDate->format('c'). " " . $this);
             return false;
         }
-        if ($bookableDate->format('Y-m-d') == $endDate->format('Y-m-d')
+        if (
+            $bookableDate->format('Y-m-d') == $endDate->format('Y-m-d')
             && $now->format('Y-m-d') != $this->getEndDateTime()->format('Y-m-d')
         ) {
             // Avoid releasing all appointments on midnight, allow smaller contingents distributed over the day
@@ -423,7 +428,7 @@ class Availability extends Schema\Entity
         return $slotList;
     }
 
-    public function getSlotTimeInMinutes() 
+    public function getSlotTimeInMinutes()
     {
         return $this['slotTimeInMinutes'];
     }
@@ -627,7 +632,8 @@ class Availability extends Schema\Entity
     public function getTimeOverlaps(Availability $availability, \DateTimeInterface $currentDate)
     {
         $processList = new Collection\ProcessList();
-        if ($availability->id != $this->id
+        if (
+            $availability->id != $this->id
             && $availability->type == $this->type
             && $this->hasSharedWeekdayWith($availability)
         ) {
@@ -643,7 +649,7 @@ class Availability extends Schema\Entity
             $availabilityEnd = $availability->getEndDateTime()->getSecondsOfDay();
 
             $isEqual = ($availabilityStart == $thisStart && $availabilityEnd == $thisEnd);
-                
+
             if ($availabilityStart < $thisEnd && $thisStart < $availabilityEnd && ! $isEqual) {
                 $process = clone $processTemplate;
                 $process->getFirstAppointment()->date = $this
@@ -706,7 +712,7 @@ class Availability extends Schema\Entity
 
     public function __toString()
     {
-        $info = "Availability.".$this['type']." #" . $this['id'];
+        $info = "Availability." . $this['type'] . " #" . $this['id'];
         $info .= " starting " . $this->startDate . $this->getStartDateTime()->format(' Y-m-d');
         $info .= "||now+" . $this['bookable']['startInDays'] . " ";
         $info .= " until " . $this->getEndDateTime()->format('Y-m-d');

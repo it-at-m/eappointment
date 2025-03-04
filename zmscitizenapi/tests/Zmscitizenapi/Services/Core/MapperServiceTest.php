@@ -203,6 +203,8 @@ class MapperServiceTest extends TestCase
                 'id' => 0,
                 'provider' => new ThinnedProvider(),
                 'shortName' => null,
+                'emailFrom' => '',
+                'emailRequired' => null,
                 'telephoneActivated' => null,
                 'telephoneRequired' => null,
                 'customTextfieldActivated' => null,
@@ -235,6 +237,7 @@ class MapperServiceTest extends TestCase
         $this->assertEquals($scope['id'], $result->scope->id);
         $this->assertInstanceOf(ThinnedProvider::class, $result->scope->provider);
         $this->assertEquals($scope['shortName'], $result->scope->shortName);
+        $this->assertEquals($scope['emailRequired'], $result->scope->emailRequired);
         $this->assertEquals($scope['telephoneActivated'], $result->scope->telephoneActivated);
         $this->assertEquals($scope['telephoneRequired'], $result->scope->telephoneRequired);
         $this->assertEquals($scope['customTextfieldActivated'], $result->scope->customTextfieldActivated);
@@ -396,6 +399,54 @@ class MapperServiceTest extends TestCase
         $this->assertEquals($expectedResponse, $resultArray);
     }
 
+    public function testDontReturnNotPublicServices()
+    {
+        $request1 = new Request();
+        $request1->id = 1;
+        $request1->name = 'Service 111';
+        $request1->data = [
+            'maxQuantity' => 22,
+            'public' => false
+        ];
+
+        $request2 = new Request();
+        $request2->id = 2;
+        $request2->name = 'Service 2';
+        $request2->data = ['maxQuantity' => 1];
+
+        $requestList = new RequestList([$request1, $request2]);
+
+        $provider = new Provider();
+        $provider->id = 100;
+
+        $relation1 = new RequestRelation();
+        $relation1->request = $request1;
+        $relation1->provider = $provider;
+        $relation1->slots = 5;
+
+        $relation2 = new RequestRelation();
+        $relation2->request = $request2;
+        $relation2->provider = $provider;
+        $relation2->slots = 3;
+
+        $expectedResponse = [
+            "services" => [
+                [
+                    "id" => 2,
+                    "name" => "Service 2",
+                    "maxQuantity" => 1,
+                    "combinable" => new Combinable(),
+                ]
+            ]
+        ];
+
+        $relationList = new RequestRelationList([$relation1, $relation2]);
+        $result = MapperService::mapServicesWithCombinations($requestList, $relationList);
+        $resultArray = $result->toArray();
+
+        $this->assertEquals($expectedResponse, $resultArray);
+    }
+
     public function testScopeToThinnedScope()
     {
         // Create provider with contact
@@ -416,6 +467,7 @@ class MapperServiceTest extends TestCase
         $scope->provider = $provider;
         $scope->contact = $contact;
         $scope->data = [
+            'emailRequired' => true,
             'telephoneActivated' => true,
             'telephoneRequired' => false,
             'customTextfieldActivated' => true,
@@ -429,6 +481,7 @@ class MapperServiceTest extends TestCase
         $this->assertInstanceOf(ThinnedScope::class, $result);
         $this->assertEquals(1, $result->id);
         $this->assertEquals('Test Scope', $result->shortName);
+        $this->assertTrue($result->emailRequired);
         $this->assertTrue($result->telephoneActivated);
         $this->assertFalse($result->telephoneRequired);
         $this->assertNotNull($result->provider);
@@ -553,6 +606,7 @@ class MapperServiceTest extends TestCase
         $scope->id = 1;
         $scope->shortName = 'Test Scope';
         $scope->data = [
+            'emailRequired' => false,
             'telephoneActivated' => true,
             'telephoneRequired' => false
         ];
@@ -563,6 +617,7 @@ class MapperServiceTest extends TestCase
         $this->assertInstanceOf(ThinnedScope::class, $result);
         $this->assertEquals(1, $result->id);
         $this->assertEquals('Test Scope', $result->shortName);
+        $this->assertFalse($result->emailRequired);
         $this->assertTrue($result->telephoneActivated);
         $this->assertFalse($result->telephoneRequired);
         $this->assertNull($result->provider);
@@ -577,6 +632,7 @@ class MapperServiceTest extends TestCase
         $result = MapperService::scopeToThinnedScope($scope);
         $this->assertInstanceOf(ThinnedScope::class, $result);
         $this->assertEquals(1, $result->id);
+        $this->assertNull($result->emailRequired);
         $this->assertNull($result->telephoneActivated);
         $this->assertNull($result->telephoneRequired);
         $this->assertNull($result->customTextfieldActivated);

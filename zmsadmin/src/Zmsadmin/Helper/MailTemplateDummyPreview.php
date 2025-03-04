@@ -7,8 +7,8 @@
  use Twig\Error\RuntimeError;
  use Twig\Error\SyntaxError;
 
- class MailTemplateDummyPreview extends BaseController
- {
+class MailTemplateDummyPreview extends BaseController
+{
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -20,7 +20,7 @@
         $providerId = $workstation->scope['provider']['id'];
         $result = \App::$http->readGetResult("/preview-mailtemplates/$mailStatus/$providerId/", ['resolveReferences' => 0]);
         $data = json_decode($result->getResponse()->getBody()->getContents())->data;
-        
+
         try {
             // Twig-Template rendern
             return \BO\Slim\Render::withHtml(
@@ -43,4 +43,4 @@
             );
         }
     }
- }
+}

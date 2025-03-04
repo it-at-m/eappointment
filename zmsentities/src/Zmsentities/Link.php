@@ -21,6 +21,6 @@ class Link extends Schema\Entity
 
     public function __toString()
     {
-        return "Link {$this->name}-{$this->url}- with target ". $this->target;
+        return "Link {$this->name}-{$this->url}- with target " . $this->target;
     }
 }

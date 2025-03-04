@@ -46,6 +46,7 @@
                         "startInDaysDefault": "0"
                     },
                     "client": {
+                        "emailFrom": "no-reply@muenchen.de",
                         "alternateAppointmentUrl": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "",

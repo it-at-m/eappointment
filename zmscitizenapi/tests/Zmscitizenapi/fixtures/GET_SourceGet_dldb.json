@@ -81,7 +81,8 @@
         "data": {
           "json": "data",
           "key": "value",
-          "combinable": ["1", "2"]
+          "combinable": ["1", "2"],
+          "public": false
         }
       }
     ],
@@ -102,6 +103,8 @@
         "shortName": "Scope 1",
         "preferences": {
           "client": {
+            "emailFrom": "no-reply@muenchen.de",
+            "emailRequired": "0",
             "telephoneActivated": "1",
             "telephoneRequired": "0",
             "customTextfieldActivated": "1",
@@ -128,6 +131,8 @@
         "shortName": "Scope 2",
         "preferences": {
           "client": {
+            "emailFrom": "no-reply@muenchen.de",
+            "emailRequired": "1",
             "telephoneActivated": "0",
             "telephoneRequired": "1",
             "customTextfieldActivated": "0",

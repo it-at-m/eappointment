@@ -7,7 +7,6 @@ namespace BO\Mellon;
  */
 class Condition
 {
-
     protected $collection = [];
 
     public function __construct(Valid ...$validList)

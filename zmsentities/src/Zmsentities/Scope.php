@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsentities;
 
 /**
@@ -28,6 +29,16 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getShortName()
     {
         return $this->toProperty()->shortName->get();
+    }
+
+    public function getEmailFrom()
+    {
+        return $this->getPreference('client', 'emailFrom', null);
+    }
+
+    public function getEmailRequired()
+    {
+        return $this->getPreference('client', 'emailRequired', null);
     }
 
     public function getTelephoneActivated()
