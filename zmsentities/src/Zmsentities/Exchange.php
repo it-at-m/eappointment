@@ -129,7 +129,6 @@ class Exchange extends Schema\Entity
         $entity = clone $this;
         $sums = [];
         foreach ($entity->data as $date => $dateItems) {
-
             if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
                 continue;
             }
