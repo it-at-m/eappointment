@@ -49,7 +49,7 @@ class ProcessRedirect extends BaseController
             $workstation->getUseraccount()
         );
         (new Workstation)->writeRemovedProcess($workstation);
-        $processStatusArchived->writeEntityFinished($process, \App::$now, true);
+        $processStatusArchived->writeEntityFinished($process, \App::$now, false);
 
         $newProcess = (new \BO\Zmsdb\Process())->redirectToScope(
             $newProcess,
