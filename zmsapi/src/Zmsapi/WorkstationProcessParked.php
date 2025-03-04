@@ -28,9 +28,6 @@ class WorkstationProcessParked extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
-
-        (new \BO\Zmsdb\ExchangeWaitingscope())->updateWaitingStatistics($process, \App::$now);
-
         $previousStatus = $process->status;
         $workstation->process->setStatus("parked");
         $workstation->process->setStatusBySettings();
