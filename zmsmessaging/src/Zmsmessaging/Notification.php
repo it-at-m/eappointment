@@ -1,15 +1,17 @@
 <?php
+
 /**
  *
 * @package Zmsmessaging
 *
 */
+
 namespace BO\Zmsmessaging;
 
-use \BO\Zmsentities\Ics;
-use \BO\Zmsentities\Mimepart;
-use \PHPMailer\PHPMailer\PHPMailer;
-use \PHPMailer\PHPMailer\Exception as PHPMailerException;
+use BO\Zmsentities\Ics;
+use BO\Zmsentities\Mimepart;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class Notification extends BaseController
 {
@@ -19,12 +21,12 @@ class Notification extends BaseController
     {
         parent::__construct($verbose, $maxRunTime);
         $this->log(
-            "Read Notification QueueList start with limit ". \App::$mails_per_minute ." - ". \App::$now->format('c')
+            "Read Notification QueueList start with limit " . \App::$mails_per_minute . " - " . \App::$now->format('c')
         );
         $queueList = \App::$http->readGetResult('/notification/')->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
-            $this->log("QueueList sorted by createTimestamp - ". \App::$now->format('c'));
+            $this->log("QueueList sorted by createTimestamp - " . \App::$now->format('c'));
         }
     }
 
@@ -34,7 +36,7 @@ class Notification extends BaseController
         if ($this->messagesQueue && count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
                 if ($this->maxRunTime < $this->getSpendTime()) {
-                    $this->log("Max Runtime exceeded - ". \App::$now->format('c'));
+                    $this->log("Max Runtime exceeded - " . \App::$now->format('c'));
                     break;
                 }
                 try {
@@ -43,10 +45,10 @@ class Notification extends BaseController
                     $log = new Mimepart(['mime' => 'text/plain']);
                     $log->content = $exception->getMessage();
                     if (isset($item['process']) && isset($item['process']['id'])) {
-                        $this->log("Init Queue Exception message: ". $log->content .' - '. \App::$now->format('c'));
-                        $this->log("Init Queue Exception log readPostResult start - ". \App::$now->format('c'));
-                        \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
-                        $this->log("Init Queue Exception log readPostResult finished - ". \App::$now->format('c'));
+                        $this->log("Init Queue Exception message: " . $log->content . ' - ' . \App::$now->format('c'));
+                        $this->log("Init Queue Exception log readPostResult start - " . \App::$now->format('c'));
+                        \App::$http->readPostResult('/log/process/' . $item['process']['id'] . '/', $log, ['error' => 1]);
+                        $this->log("Init Queue Exception log readPostResult finished - " . \App::$now->format('c'));
                     }
                     \App::$log->error($log->content);
                 }
@@ -97,20 +99,20 @@ class Notification extends BaseController
             $mailer = $this->readMailer($entity);
         // @codeCoverageIgnoreStart
         } catch (PHPMailerException $exception) {
-            $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
+            $message = "Message #$messageId PHPMailer Failure: " . $exception->getMessage();
             \App::$log->warning($message, []);
         } catch (\Exception $exception) {
-            $message = "Message #$messageId Failure: ". $exception->getMessage();
+            $message = "Message #$messageId Failure: " . $exception->getMessage();
             \App::$log->warning($message, []);
         }
         if ($message) {
             $this->removeEntityOlderThanOneHour($entity);
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
-            $this->log("Build Mailer Exception log message: ". $message);
-            $this->log("Build Mailer Exception log readPostResult start - ". \App::$now->format('c'));
-            \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);
-            $this->log("Build Mailer Exception log readPostResult finished - ". \App::$now->format('c'));
+            $this->log("Build Mailer Exception log message: " . $message);
+            $this->log("Build Mailer Exception log readPostResult start - " . \App::$now->format('c'));
+            \App::$http->readPostResult('/log/process/' . $entity->process['id'] . '/', $log, ['error' => 1]);
+            $this->log("Build Mailer Exception log readPostResult finished - " . \App::$now->format('c'));
             return false;
         }
         return $mailer;

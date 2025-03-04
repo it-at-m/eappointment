@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -10,14 +11,11 @@ use JsonSerializable;
 class AvailableAppointments extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/availableAppointments.json';
-
     /** @var array */
     public array $appointmentTimestamps = [];
-
     public function __construct(array $appointmentTimestamps = [])
     {
         $this->appointmentTimestamps = array_map('intval', $appointmentTimestamps);
-
         $this->ensureValid();
     }
 

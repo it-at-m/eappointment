@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -24,7 +25,7 @@ class OwnerAddOrganisation extends BaseController
         $parentId = Validator::value($args['id'])->isNumber()->getValue();
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity = \App::$http->readPostResult('/owner/'. $parentId .'/organisation/', $entity)
+            $entity = \App::$http->readPostResult('/owner/' . $parentId . '/organisation/', $entity)
                 ->getEntity();
             return \BO\Slim\Render::redirect(
                 'organisation',

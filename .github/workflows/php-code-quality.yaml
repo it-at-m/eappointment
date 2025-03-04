@@ -1,0 +1,59 @@
+name: code quality
+
+on:
+  workflow_call:
+
+jobs:
+  module-code-quality:
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/it-at-m/eappointment-php-base:${{ matrix.php_version }}-dev"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Composer Dependencies
+        run: |
+          cd "${{ matrix.module }}"
+          composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: PHPCS / PSR-12
+        run: |
+          cd "${{ matrix.module }}"
+          echo "Running phpcs (ignoring warnings)..."
+          vendor/bin/phpcs --standard=psr12 --warning-severity=0 src/
+
+      - name: PHPMD
+        run: |
+          cd "${{ matrix.module }}"
+          echo "Running phpmd..."
+          vendor/bin/phpmd src/ text ../phpmd.rules.xml
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: zmsadmin
+            php_version: "8.0"
+          - module: zmsapi
+            php_version: "8.0"
+          - module: zmscalldisplay
+            php_version: "8.0"
+          - module: zmscitizenapi
+            php_version: "8.0"
+          - module: zmsclient
+            php_version: "8.0"
+          - module: zmsdb
+            php_version: "8.0"
+          - module: zmsdldb
+            php_version: "8.0"
+          - module: zmsentities
+            php_version: "8.0"
+          - module: zmsmessaging
+            php_version: "8.0"
+          - module: zmsslim
+            php_version: "8.0"
+          - module: zmsstatistic
+            php_version: "8.0"
+          - module: zmsticketprinter
+            php_version: "8.0"

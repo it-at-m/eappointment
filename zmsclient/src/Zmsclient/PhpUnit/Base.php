@@ -5,13 +5,12 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsclient\PhpUnit;
 
-use \Prophecy\PhpUnit\ProphecyTrait;
-
-use \Prophecy\Argument;
-
-use \BO\Zmsclient\GraphQL\GraphQLInterpreter;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Argument;
+use BO\Zmsclient\GraphQL\GraphQLInterpreter;
 
 abstract class Base extends \BO\Slim\PhpUnit\Base
 {
@@ -25,9 +24,8 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
      * ],
      * ]
      */
-
     use ProphecyTrait;
-    
+
     protected $apiCalls = array();
 
     public function setUp(): void

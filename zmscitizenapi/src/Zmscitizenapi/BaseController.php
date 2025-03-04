@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi;
@@ -6,8 +7,8 @@ namespace BO\Zmscitizenapi;
 use BO\Zmscitizenapi\Services\Core\ExceptionService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 
 abstract class BaseController extends \BO\Slim\Controller
@@ -24,21 +25,17 @@ abstract class BaseController extends \BO\Slim\Controller
             $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
             return $this->readResponse($request, $noCacheResponse, $args);
         } catch (\RuntimeException $e) {
-            // Extract error details from the exception message
+        // Extract error details from the exception message
             [$errorCode, $errorMessage] = explode(': ', $e->getMessage(), 2);
-            return $this->createJsonResponse(
-                $response,
-                [
-                    'errors' => [
-                        [
-                            'errorCode' => $errorCode,
-                            'errorMessage' => $errorMessage,
-                            'statusCode' => $e->getCode()
-                        ]
+            return $this->createJsonResponse($response, [
+                'errors' => [
+                    [
+                        'errorCode' => $errorCode,
+                        'errorMessage' => $errorMessage,
+                        'statusCode' => $e->getCode()
                     ]
-                ],
-                $e->getCode() ?: 500
-            );
+                ]
+            ], $e->getCode() ?: 500);
         }
     }
 
@@ -67,11 +64,9 @@ abstract class BaseController extends \BO\Slim\Controller
         if ($statusCode < 100 || $statusCode > 599) {
             throw new \InvalidArgumentException('Invalid HTTP status code');
         }
-    
+
         $response = $response->withStatus($statusCode)
             ->withHeader('Content-Type', 'application/json; charset=utf-8');
-    
-        // Translate any errors using the stored language
         if (isset($content['errors'])) {
             foreach ($content['errors'] as &$error) {
                 if (isset($error['errorCode'])) {
@@ -79,16 +74,14 @@ abstract class BaseController extends \BO\Slim\Controller
                 }
             }
         }
-    
+
         try {
             $json = json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         } catch (\JsonException $e) {
             throw new \RuntimeException('Failed to encode JSON response: ' . $e->getMessage(), 0, $e);
         }
-    
+
         $response->getBody()->write($json);
-    
         return $response;
     }
-    
 }

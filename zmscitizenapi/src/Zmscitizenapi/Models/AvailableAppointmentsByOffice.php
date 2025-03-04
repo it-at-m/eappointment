@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -7,22 +8,18 @@ use BO\Zmsentities\Schema\Entity;
 use InvalidArgumentException;
 use JsonSerializable;
 
-class ProcessFreeSlots extends Entity implements JsonSerializable
+class AvailableAppointmentsByOffice extends Entity implements JsonSerializable
 {
-
-    public static $schema = 'citizenapi/processFreeSlots.json';
-
-    /** @var array|null */
-    public array|null $appointmentTimestamps = [];
-
-    /**
-     * @param array $appointmentTimestamps
+    public static $schema = 'citizenapi/availableAppointmentsByOffice.json';
+/** @var array|null */
+    public array|null $officeAppointments = [];
+/**
+     * @param array $officeAppointments
      */
-    public function __construct(array $appointmentTimestamps = [])
+    public function __construct(array $officeAppointments = [])
     {
 
-        $this->appointmentTimestamps = array_map('intval', $appointmentTimestamps);
-
+        $this->officeAppointments = $officeAppointments;
         $this->ensureValid();
     }
 
@@ -41,7 +38,13 @@ class ProcessFreeSlots extends Entity implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'appointmentTimestamps' => $this->appointmentTimestamps,
+            'offices' => array_map(function ($appointments, $officeId) {
+
+                return [
+                    'officeId' => $officeId,
+                    'appointments' => $appointments
+                ];
+            }, $this->officeAppointments, array_keys($this->officeAppointments))
         ];
     }
 

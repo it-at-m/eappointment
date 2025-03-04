@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models;
@@ -11,8 +12,7 @@ interface CaptchaInterface
      * @return array
      */
     public function getCaptchaDetails(): array;
-
-    /**
+/**
      * Überprüft die Captcha-Lösung.
      *
      * @param string $solution

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -9,7 +10,6 @@ namespace BO\Zmsstatistic;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-
 use BO\Zmsstatistic\Helper\ReportHelper;
 
 class ReportWaitingIndex extends BaseController
@@ -46,7 +46,7 @@ class ReportWaitingIndex extends BaseController
         $exchangeWaiting = null;
         if (isset($args['period'])) {
             $exchangeWaiting = \App::$http
-            ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/'. $args['period']. '/')
+            ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/' . $args['period'] . '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
             ->withMaxByHour($this->hashset)
@@ -87,5 +87,4 @@ class ReportWaitingIndex extends BaseController
             )
         );
     }
-    
 }

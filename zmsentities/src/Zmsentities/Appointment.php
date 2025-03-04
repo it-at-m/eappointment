@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 class Appointment extends Schema\Entity
 {
@@ -142,7 +142,7 @@ class Appointment extends Schema\Entity
             $this->date = $appointmentDateTime->format('U');
         } else {
             throw new Exception\DateStringWrongFormat(
-                "String ".htmlspecialchars($dateString)." not format ". htmlspecialchars($format)
+                "String " . htmlspecialchars($dateString) . " not format " . htmlspecialchars($format)
             );
         }
         return $this;
@@ -155,7 +155,8 @@ class Appointment extends Schema\Entity
     public function isMatching(self $appointment)
     {
         //error_log("Compare $this with $appointment");
-        if ($appointment['scope']['id'] == $this['scope']['id']
+        if (
+            $appointment['scope']['id'] == $this['scope']['id']
             && $appointment['date'] == $this['date']
         ) {
             return true;
@@ -167,8 +168,8 @@ class Appointment extends Schema\Entity
     {
         return "appointment#"
             . $this->toDateTime()->format('c')
-            . " ".$this['slotCount']."slots"
-            . " scope".$this['scope']['id']
+            . " " . $this['slotCount'] . "slots"
+            . " scope" . $this['scope']['id']
             ;
     }
 }

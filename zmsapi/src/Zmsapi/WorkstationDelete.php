@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,11 +7,11 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
 use BO\Zmsdb\Log;
-use \BO\Zmsdb\Workstation;
-use \BO\Zmsdb\Useraccount;
+use BO\Zmsdb\Workstation;
+use BO\Zmsdb\Useraccount;
 
 class WorkstationDelete extends BaseController
 {
@@ -26,7 +27,7 @@ class WorkstationDelete extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $workstation = (new Helper\User($request, 1))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        if (! (new Useraccount)->readIsUserExisting($args['loginname'])) {
+        if (! (new Useraccount())->readIsUserExisting($args['loginname'])) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
         if ($workstation->process && $workstation->process->hasId()) {
@@ -34,12 +35,13 @@ class WorkstationDelete extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Workstation)->writeEntityLogoutByName($args['loginname'], $resolveReferences);
+        $message->data = (new Workstation())->writeEntityLogoutByName($args['loginname'], $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
 
-        \BO\Zmsdb\Log::writeLogEntry("LOGOUT (WorkstattionDelete::readResponse) ".$args['loginname'],
+        \BO\Zmsdb\Log::writeLogEntry(
+            "LOGOUT (WorkstattionDelete::readResponse) " . $args['loginname'],
             0,
             Log::PROCESS,
             $workstation->getScope()->getId(),

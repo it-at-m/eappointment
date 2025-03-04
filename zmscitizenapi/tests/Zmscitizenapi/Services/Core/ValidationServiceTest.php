@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests\Services\Core;
 
 use BO\Zmscitizenapi\Localization\ErrorMessages;
+use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmsentities\Collection\ScopeList;
 use BO\Zmsentities\Process;
@@ -90,7 +91,7 @@ class ValidationServiceTest extends TestCase
         // Test valid input
         $result = ValidationService::validateGetAvailableAppointments(
             '2025-01-01',
-            1,
+            [1],
             [1],
             [1]
         );
@@ -99,7 +100,7 @@ class ValidationServiceTest extends TestCase
         // Test invalid date
         $result = ValidationService::validateGetAvailableAppointments(
             'invalid',
-            1,
+            [1],
             [1],
             [1]
         );
@@ -111,7 +112,7 @@ class ValidationServiceTest extends TestCase
         // Test invalid office ID
         $result = ValidationService::validateGetAvailableAppointments(
             '2025-01-01',
-            0,
+            [''],
             [1],
             [1]
         );
@@ -123,7 +124,7 @@ class ValidationServiceTest extends TestCase
         // Test invalid service IDs
         $result = ValidationService::validateGetAvailableAppointments(
             '2025-01-01',
-            1,
+            [1],
             ['invalid'],
             [1]
         );
@@ -135,7 +136,7 @@ class ValidationServiceTest extends TestCase
         // Test invalid service counts
         $result = ValidationService::validateGetAvailableAppointments(
             '2025-01-01',
-            1,
+            [1],
             [1],
             ['invalid']
         );
@@ -204,111 +205,89 @@ class ValidationServiceTest extends TestCase
             $result['errors']
         );
     }
-
-    public function testValidateUpdateAppointmentInputs(): void
+    
+    public function testValidateAppointmentUpdateFields(): void
     {
-        // Test valid input
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            'valid-key',
+        $scope = new ThinnedScope();
+        $scope->customTextfieldActivated = true;
+        $scope->customTextfieldRequired = true;
+        $scope->telephoneActivated = true;
+        $scope->telephoneRequired = true;
+        $scope->emailRequired = true;
+    
+        $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
             'john@example.com',
             '+1234567890',
-            'Custom text'
+            'Custom text',
+            $scope
         );
         $this->assertEmpty($result['errors']);
-
-        // Test invalid process ID
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            0,
-            'valid-key',
-            'John Doe',
-            'john@example.com',
-            '+1234567890',
-            'Custom text'
-        );
-        $this->assertContains(
-            ErrorMessages::get('invalidProcessId'),
-            $result['errors']
-        );
-
-        // Test invalid auth key
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            '',
-            'John Doe',
-            'john@example.com',
-            '+1234567890',
-            'Custom text'
-        );
-        $this->assertContains(
-            ErrorMessages::get('invalidAuthKey'),
-            $result['errors']
-        );
-
-        // Test invalid family name
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            'valid-key',
+    
+        $result = ValidationService::validateAppointmentUpdateFields(
             '',
             'john@example.com',
             '+1234567890',
-            'Custom text'
+            'Custom text',
+            $scope
         );
         $this->assertContains(
             ErrorMessages::get('invalidFamilyName'),
             $result['errors']
         );
-
-        // Test invalid email
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            'valid-key',
+    
+        $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
             'invalid-email',
             '+1234567890',
-            'Custom text'
+            'Custom text',
+            $scope
         );
         $this->assertContains(
             ErrorMessages::get('invalidEmail'),
             $result['errors']
         );
-
-        // Test invalid telephone
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            'valid-key',
+    
+        $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
             'john@example.com',
             'invalid',
-            'Custom text'
+            'Custom text',
+            $scope
         );
         $this->assertContains(
             ErrorMessages::get('invalidTelephone'),
             $result['errors']
         );
-
-        // Test invalid custom textfield
-        $result = ValidationService::validateUpdateAppointmentInputs(
-            1,
-            'valid-key',
+    
+        $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
             'john@example.com',
             '+1234567890',
-            ''
+            '',
+            $scope
         );
         $this->assertContains(
             ErrorMessages::get('invalidCustomTextfield'),
             $result['errors']
         );
+    
+        $optionalScope = new ThinnedScope();
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            null,
+            null,
+            null,
+            $optionalScope
+        );
+        $this->assertEmpty($result['errors']);
     }
 
     public function testValidateGetScopeById(): void
     {
-        // Test valid scope ID
+
         $this->assertEmpty(ValidationService::validateGetScopeById(1));
 
-        // Test invalid scope ID
         $result = ValidationService::validateGetScopeById(0);
         $this->assertEquals(
             ['errors' => [ErrorMessages::get('invalidScopeId')]],
@@ -318,10 +297,8 @@ class ValidationServiceTest extends TestCase
 
     public function testValidateGetServicesByOfficeId(): void
     {
-        // Test valid office ID
         $this->assertEmpty(ValidationService::validateGetServicesByOfficeId(1));
 
-        // Test invalid office ID
         $result = ValidationService::validateGetServicesByOfficeId(0);
         $this->assertEquals(
             ['errors' => [ErrorMessages::get('invalidOfficeId')]],
@@ -331,10 +308,8 @@ class ValidationServiceTest extends TestCase
 
     public function testValidateGetOfficeListByServiceId(): void
     {
-        // Test valid service ID
         $this->assertEmpty(ValidationService::validateGetOfficeListByServiceId(1));
 
-        // Test invalid service ID
         $result = ValidationService::validateGetOfficeListByServiceId(0);
         $this->assertEquals(
             ['errors' => [ErrorMessages::get('invalidServiceId')]],

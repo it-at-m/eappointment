@@ -41,6 +41,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "id" => 9999998,
                     "name" => "Unittest Source Dienstleister",
                     "address" => null,
+                    "showAlternativeLocations" => false,
                     "displayNameAlternatives" => [],
                     "organization" => null,
                     "organizationUnit" => null,
@@ -68,6 +69,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                             ]
                         ],
                         "shortName" => "Scope 1",
+                        "emailFrom" => "no-reply@muenchen.de",
+                        'emailRequired' => false,
                         "telephoneActivated" => true,
                         "telephoneRequired" => false,
                         "customTextfieldActivated" => true,
@@ -81,6 +84,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
                     "address" => null,
+                    "showAlternativeLocations" => true,
                     "displayNameAlternatives" => [],
                     "organization" => null,
                     "organizationUnit" => null,
@@ -108,6 +112,144 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                             ]
                         ],
                         "shortName" => "Scope 2",
+                        "emailFrom" => "no-reply@muenchen.de",
+                        'emailRequired' => true,
+                        "telephoneActivated" => false,
+                        "telephoneRequired" => true,
+                        "customTextfieldActivated" => false,
+                        "customTextfieldRequired" => true,
+                        "customTextfieldLabel" => "",
+                        "captchaActivatedRequired" => false,
+                        "displayInfo" => null
+                    ]
+                ]
+            ],
+            "services" => [
+                [
+                    "id" => 1,
+                    "name" => "Unittest Source Dienstleistung",
+                    "maxQuantity" => 1,
+                    "combinable" => []
+                ]
+            ],
+            "relations" => [
+                [
+                    "officeId" => 9999998,
+                    "serviceId" => 1,
+                    "slots" => 2
+                ],
+                [
+                    "officeId" => 9999999,
+                    "serviceId" => 1,
+                    "slots" => 1
+                ],
+                [
+                    "officeId" => 9999999,
+                    "serviceId" => 2,
+                    "slots" => 1
+                ]
+            ]
+        ];
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testDisplayNotPublicRequests()
+    {
+        $_SERVER['HTTP_X_FORWARDED_HOST'] = 'localhost';
+        \App::$ACCESS_UNPUBLISHED_ON_DOMAIN = 'localhost';
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ]
+        ]);
+    
+        $response = $this->render();
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            "offices" => [
+                [
+                    "id" => 9999998,
+                    "name" => "Unittest Source Dienstleister",
+                    "address" => null,
+                    "showAlternativeLocations" => false,
+                    "displayNameAlternatives" => [],
+                    "organization" => null,
+                    "organizationUnit" => null,
+                    "slotTimeInMinutes" => null,
+                    "geo" => [
+                        "lat" => "48.12750898398659",
+                        "lon" => "11.604317899956524"
+                    ],
+                    "scope" => [
+                        "id" => 1,
+                        "provider" => [
+                            "id" => 9999998,
+                            "name" => "Unittest Source Dienstleister",
+                            "lat" => 48.12750898398659,
+                            "lon" => 11.604317899956524,
+                            "source" => "unittest",
+                            "contact" => [
+                                "city" => "Berlin",
+                                "country" => "Germany",
+                                "name" => "Unittest Source Dienstleister",
+                                "postalCode" => "10178",
+                                "region" => "Berlin",
+                                "street" => "Alte Jakobstraße",
+                                "streetNumber" => "105"
+                            ]
+                        ],
+                        "shortName" => "Scope 1",
+                        "emailFrom" => "no-reply@muenchen.de",
+                        'emailRequired' => false,
+                        "telephoneActivated" => true,
+                        "telephoneRequired" => false,
+                        "customTextfieldActivated" => true,
+                        "customTextfieldRequired" => false,
+                        "customTextfieldLabel" => "Custom Label",
+                        "captchaActivatedRequired" => true,
+                        "displayInfo" => null
+                    ]
+                ],
+                [
+                    "id" => 9999999,
+                    "name" => "Unittest Source Dienstleister 2",
+                    "address" => null,
+                    "showAlternativeLocations" => true,
+                    "displayNameAlternatives" => [],
+                    "organization" => null,
+                    "organizationUnit" => null,
+                    "slotTimeInMinutes" => null,
+                    "geo" => [
+                        "lat" => "48.12750898398659",
+                        "lon" => "11.604317899956524"
+                    ],
+                    "scope" => [
+                        "id" => 2,
+                        "provider" => [
+                            "id" => 9999999,
+                            "name" => "Unittest Source Dienstleister 2",
+                            "lat" => 48.12750898398659,
+                            "lon" => 11.604317899956524,
+                            "source" => "unittest",
+                            "contact" => [
+                                "city" => "Berlin",
+                                "country" => "Germany",
+                                "name" => "Unittest Source Dienstleister 2",
+                                "postalCode" => "10178",
+                                "region" => "Berlin",
+                                "street" => "Alte Jakobstraße",
+                                "streetNumber" => "106"
+                            ]
+                        ],
+                        "shortName" => "Scope 2",
+                        "emailFrom" => "no-reply@muenchen.de",
+                        'emailRequired' => true,
                         "telephoneActivated" => false,
                         "telephoneRequired" => true,
                         "customTextfieldActivated" => false,
@@ -153,6 +295,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                 ]
             ]
         ];
+        
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }

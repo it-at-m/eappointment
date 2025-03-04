@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Helper;
 
-use \BO\Zmsentities\Schema\Entity;
+use BO\Zmsentities\Schema\Entity;
 
 class Delegate
 {

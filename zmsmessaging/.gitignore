@@ -8,3 +8,4 @@ vendor.old
 vendor.update
 .phpunit.result.cache
 .DS_*
+coverage

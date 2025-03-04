@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Department as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Department as Query;
 
 class DepartmentList extends BaseController
 {
@@ -24,7 +25,7 @@ class DepartmentList extends BaseController
         (new Helper\User($request))->checkRights('basic');
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $departmentList = (new Query)->readList($resolveReferences);
+        $departmentList = (new Query())->readList($resolveReferences);
 
         $message = Response\Message::create($request);
         $message->data = $departmentList;

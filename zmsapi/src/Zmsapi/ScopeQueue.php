@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
-use \BO\Zmsentities\Helper\DateTime;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope as Query;
+use BO\Zmsentities\Helper\DateTime;
 
 class ScopeQueue extends BaseController
 {
@@ -27,7 +28,7 @@ class ScopeQueue extends BaseController
         $dateTime = ($selectedDate) ? (new DateTime($selectedDate))->modify(\App::$now->format('H:i')) : \App::$now;
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($args['id'], \App::$now, $resolveReferences);
+        $scope = (new \BO\Zmsdb\Scope())->readWithWorkstationCount($args['id'], \App::$now, $resolveReferences);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }

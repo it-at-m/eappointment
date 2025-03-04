@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Slim\Render;
@@ -13,7 +15,6 @@ use Psr\Http\Message\ResponseInterface;
 
 class Notification extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
@@ -46,7 +47,7 @@ class Notification extends BaseController
         }
 
         $process = \App::$http
-            ->readGetResult('/scope/'. $scopeId .'/queue/'. $waitingNumber .'/')
+            ->readGetResult('/scope/' . $scopeId . '/queue/' . $waitingNumber . '/')
             ->getEntity();
 
         if ($process->getFirstClient()->hasTelephone()) {

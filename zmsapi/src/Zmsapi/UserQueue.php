@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,11 +7,11 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
 use BO\Zmsdb\Department;
 use BO\Zmsentities\Collection\QueueList;
-use \BO\Zmsentities\Helper\DateTime;
+use BO\Zmsentities\Helper\DateTime;
 
 class UserQueue extends BaseController
 {

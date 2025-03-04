@@ -18,11 +18,11 @@ class ExchangeNotificationowner extends Base
             IF(d.`Name` <> "", d.`Name`, "test") as departmentname,
             IF(s.`Bezeichnung` <> "", CONCAT(s.`Bezeichnung`, " ", s.`standortkuerzel`), "test") AS scopename,
             IFNULL(SUM(n.`gesendet`), 0) as notificationscount
-        FROM '. Owner::TABLE .' AS o
-            LEFT JOIN '. Organisation::TABLE .' org ON org.`KundenID` = o.`KundenID`
-            LEFT JOIN '. Department::TABLE .' d ON d.`OrganisationsID` = org.`OrganisationsID`
-            LEFT JOIN '. Scope::TABLE .' s ON d.`BehoerdenID` = s.`BehoerdenID`
-            LEFT JOIN '. self::TABLE .' n ON
+        FROM ' . Owner::TABLE . ' AS o
+            LEFT JOIN ' . Organisation::TABLE . ' org ON org.`KundenID` = o.`KundenID`
+            LEFT JOIN ' . Department::TABLE . ' d ON d.`OrganisationsID` = org.`OrganisationsID`
+            LEFT JOIN ' . Scope::TABLE . ' s ON d.`BehoerdenID` = s.`BehoerdenID`
+            LEFT JOIN ' . self::TABLE . ' n ON
                 s.`StandortID` = n.`StandortID` AND
                 n.`Datum` BETWEEN :datestart AND :dateend
         WHERE
@@ -37,10 +37,10 @@ class ExchangeNotificationowner extends Base
             MIN(n.`Datum`) AS periodstart,
             MAX(n.`Datum`) AS periodend,
             o.`Kundenname` AS description
-        FROM '. self::TABLE .' AS n
-            LEFT JOIN '. Scope::TABLE .' AS s ON n.`standortid` = s.`StandortID`
-            LEFT JOIN '. Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-            INNER JOIN '. Owner::TABLE .' AS o ON d.`KundenID` = o.`KundenID`
+        FROM ' . self::TABLE . ' AS n
+            LEFT JOIN ' . Scope::TABLE . ' AS s ON n.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Department::TABLE . ' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+            INNER JOIN ' . Owner::TABLE . ' AS o ON d.`KundenID` = o.`KundenID`
         GROUP BY o.`KundenID`
         ORDER BY o.`KundenID` ASC
     ';
@@ -48,10 +48,10 @@ class ExchangeNotificationowner extends Base
     const QUERY_PERIODLIST_MONTH = '
         SELECT
             DATE_FORMAT(n.datum,"%Y-%m") AS date
-        FROM '. self::TABLE .' AS n
-            LEFT JOIN '. Scope::TABLE .' AS s ON n.`standortid` = s.`StandortID`
-            LEFT JOIN '. Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-            INNER JOIN '. Owner::TABLE .' AS o ON d.`KundenID` = o.`KundenID`
+        FROM ' . self::TABLE . ' AS n
+            LEFT JOIN ' . Scope::TABLE . ' AS s ON n.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Department::TABLE . ' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+            INNER JOIN ' . Owner::TABLE . ' AS o ON d.`KundenID` = o.`KundenID`
         WHERE o.`KundenID` = :ownerid
         GROUP BY date
         ORDER BY date ASC

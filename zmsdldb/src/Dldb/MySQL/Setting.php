@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Dldb\MySql;
 
-use \BO\Dldb\File\Setting as Base;
+use BO\Dldb\File\Setting as Base;
 
 /**
   *
@@ -20,7 +21,7 @@ class Setting extends Base
 
             $stm = $this->access()->prepare($sql);
             $stm->execute([(string)$name]);
-            
+
             $settingValue = $stm->fetchColumn();
 
             return $settingValue ?? null;

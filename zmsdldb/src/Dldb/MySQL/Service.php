@@ -1,13 +1,15 @@
 <?php
+
 /**
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\MySQL;
 
-use \BO\Dldb\MySQL\Entity\Service as Entity;
-use \BO\Dldb\MySQL\Collection\Services as Collection;
-use \BO\Dldb\Elastic\Service as Base
+use BO\Dldb\MySQL\Entity\Service as Entity;
+use BO\Dldb\MySQL\Collection\Services as Collection;
+use BO\Dldb\Elastic\Service as Base
 ;
 use Error;
 
@@ -28,7 +30,7 @@ class Service extends Base
                 $sql = 'SELECT data_json FROM service WHERE locale = ? AND id = ?';
 
                 $stm = $this->access()->prepare($sql);
-                $stm->setFetchMode(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Service');
+                $stm->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, '\\BO\\Dldb\\MySQL\\Entity\\Service');
                 $stm->execute($sqlArgs);
                 if (!$stm || ($stm && $stm->rowCount() == 0)) {
                     return false;
@@ -90,7 +92,7 @@ class Service extends Base
             $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($serviceList) {
                 $service = new \BO\Dldb\MySQL\Entity\Service();
                 $service->offsetSet('data_json', $data_json);
-                
+
                 $serviceList[$service['id']] = $service;
             });
 
@@ -110,7 +112,7 @@ class Service extends Base
             $sqlArgs = [$this->locale];
             $where = [];
             $join = [];
-            
+
             if (false === $mixLanguages) {
                 $where[] = 's.locale = ?';
                 $sql = 'SELECT data_json FROM service AS s ';
@@ -122,10 +124,10 @@ class Service extends Base
                 LEFT JOIN service AS s2 ON s2.id = s.id AND s2.locale = ?
                 ";
             }
-            
+
             $ids = explode(',', $service_csv);
             $questionMarks = array_fill(0, count($ids), '?');
-            
+
             $where[] = 's.id IN (' . implode(', ', $questionMarks) . ')';
             array_push($sqlArgs, ...$ids);
 
@@ -139,7 +141,7 @@ class Service extends Base
             $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($serviceList) {
                 $service = new \BO\Dldb\MySQL\Entity\Service();
                 $service->offsetSet('data_json', $data_json);
-                
+
                 $serviceList[$service['id']] = $service;
             });
 
@@ -162,9 +164,9 @@ class Service extends Base
             $leika[1] = '_';
 
             $leika = implode($leika);
-            
-            $sqlArgs = [$this->locale, $service['leika'], $leika.'%'];
-            
+
+            $sqlArgs = [$this->locale, $service['leika'], $leika . '%'];
+
             $sql = 'SELECT data_json FROM service WHERE locale = ? AND leika != ? AND leika LIKE ?';
 
             $serviceList = new Collection();
@@ -174,10 +176,10 @@ class Service extends Base
             $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($serviceList) {
                 $service = new \BO\Dldb\MySQL\Entity\Service();
                 $service->offsetSet('data_json', $data_json);
-                
+
                 $serviceList[$service['id']] = $service;
             });
-           
+
             return $serviceList;
         } catch (\Exception $e) {
             throw $e;
@@ -213,7 +215,7 @@ class Service extends Base
             $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($serviceList) {
                 $service = new \BO\Dldb\MySQL\Entity\Service();
                 $service->offsetSet('data_json', $data_json);
-                
+
                 $serviceList[$service['id']] = $service;
             });
 
@@ -261,7 +263,7 @@ class Service extends Base
             $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($serviceList) {
                 $service = new \BO\Dldb\MySQL\Entity\Service();
                 $service->offsetSet('data_json', $data_json);
-                    
+
                 $serviceList[$service['id']] = $service;
             });
 

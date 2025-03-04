@@ -6,15 +6,15 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Collection\UseraccountList as Collection;
+use BO\Zmsentities\Collection\UseraccountList as Collection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Useraccount extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return ResponseInterface
@@ -27,7 +27,7 @@ class Useraccount extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
-        
+
         $useraccountList = new Collection();
         if ($workstation->hasSuperUseraccount()) {
             $useraccountList = \App::$http->readGetResult("/useraccount/", ["resolveReferences" => 0])->getCollection();

@@ -41,6 +41,7 @@ class OfficesListControllerTest extends ControllerTestCase
                     "id" => 9999998,
                     "name" => "Unittest Source Dienstleister",
                     "address" => null,
+                    "showAlternativeLocations" => false,
                     "displayNameAlternatives" => [],
                     "organization" => null,
                     "organizationUnit" => null,
@@ -68,6 +69,8 @@ class OfficesListControllerTest extends ControllerTestCase
                             ]
                         ],
                         "shortName" => "Scope 1",
+                        "emailFrom" => "no-reply@muenchen.de",
+                        'emailRequired' => false,
                         "telephoneActivated" => true,
                         "telephoneRequired" => false,
                         "customTextfieldActivated" => true,
@@ -81,6 +84,7 @@ class OfficesListControllerTest extends ControllerTestCase
                     "id" => 9999999,
                     "name" => "Unittest Source Dienstleister 2",
                     "address" => null,
+                    "showAlternativeLocations" => true,
                     "displayNameAlternatives" => [],
                     "organization" => null,
                     "organizationUnit" => null,
@@ -108,6 +112,8 @@ class OfficesListControllerTest extends ControllerTestCase
                             ]
                         ],
                         "shortName" => "Scope 2",
+                        "emailFrom" => "no-reply@muenchen.de",
+                        'emailRequired' => true,
                         "telephoneActivated" => false,
                         "telephoneRequired" => true,
                         "customTextfieldActivated" => false,

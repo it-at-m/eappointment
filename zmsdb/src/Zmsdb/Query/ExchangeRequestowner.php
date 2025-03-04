@@ -24,7 +24,7 @@ class ExchangeRequestowner extends Base
         ) as name,
         SUM(statistikJoin.requestscount) as requestscount,
         AVG(statistikJoin.processingtime) as processingtime
-    FROM '. Organisation::TABLE .' o
+    FROM ' . Organisation::TABLE . ' o
         INNER JOIN (
             SELECT
                 s.anliegenid,
@@ -32,15 +32,15 @@ class ExchangeRequestowner extends Base
                 COUNT(s.anliegenid) as requestscount,
                 AVG(s.bearbeitungszeit) as processingtime,
                 s.`datum`
-            FROM '. self::TABLE .' s
+            FROM ' . self::TABLE . ' s
             WHERE s.kundenid = :ownerid AND s.`datum` BETWEEN :datestart AND :dateend
             GROUP BY s.`datum`, s.anliegenid
         ) as statistikJoin ON statistikJoin.`kundenid` = o.KundenID
-        LEFT JOIN '. self::REQUESTTABLE .' r ON r.id = statistikJoin.anliegenid
+        LEFT JOIN ' . self::REQUESTTABLE . ' r ON r.id = statistikJoin.anliegenid
     WHERE o.`KundenID` = :ownerid AND statistikJoin.`datum` BETWEEN :datestart AND :dateend
     GROUP BY DATE_FORMAT(statistikJoin.`datum`, :groupby), name, statistikJoin.anliegenid
     ORDER BY r.name, statistikJoin.anliegenid
-    ';    
+    ';
 
     const QUERY_SUBJECTS = '
       SELECT
@@ -48,14 +48,14 @@ class ExchangeRequestowner extends Base
           periodstart,
           periodend,
           o.`Organisationsname` AS description
-      FROM '. Organisation::TABLE .' AS o
+      FROM ' . Organisation::TABLE . ' AS o
           INNER JOIN
             (
               SELECT
                 s.`kundenid` as ownerid,
                 MIN(s.`datum`) AS periodstart,
                 MAX(s.`datum`) AS periodend
-              FROM '. self::TABLE .' s
+              FROM ' . self::TABLE . ' s
               group by ownerid
             )
           maxAndminDate ON maxAndminDate.`ownerid` = o.`KundenID`
@@ -65,12 +65,12 @@ class ExchangeRequestowner extends Base
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT date
-        FROM '. Organisation::TABLE .' AS o
+        FROM ' . Organisation::TABLE . ' AS o
             INNER JOIN (
               SELECT
                 kundenid,
                 DATE_FORMAT(`datum`,"%Y-%m") AS date
-              FROM '. self::TABLE .'
+              FROM ' . self::TABLE . '
             ) s ON s.kundenid = o.KundenID
         WHERE s.`kundenid` = :ownerid
         GROUP BY date
