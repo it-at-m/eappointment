@@ -124,33 +124,6 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function withSumByHour(array $keysToCalculate = ['waitingcount'])
-    {
-        $entity = clone $this;
-        $sums = [];
-        foreach ($entity->data as $date => $dateItems) {
-            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-                continue;
-            }
-
-            if (!is_array($dateItems)) {
-                continue;
-            }
-            foreach ($dateItems as $hour => $hourItems) {
-                if (!is_numeric($hour)) {
-                    continue;
-                }
-                foreach ($hourItems as $key => $value) {
-                    if (is_numeric($value) && in_array($key, $keysToCalculate)) {
-                        $sums[$hour][$key] = ($sums[$hour][$key] ?? 0) + $value;
-                    }
-                }
-            }
-        }
-        $entity->data['sum'] = $sums;
-        return $entity;
-    }
-
     public function withRequestsSum($keysToCalculate = ['requestscount'])
     {
         $entity = clone $this;
@@ -227,7 +200,7 @@ class Exchange extends Schema\Entity
                 }
             }
             $entity->data[$date]['max'] = $maxima;
-            $entity->data[$date]['average'] = (! $total || ! $count) ? 0 : round($total / $count, 2);
+            $entity->data[$date]['average'] = (! $total || ! $count) ? 0 : floor($total / $count);
         }
         return $entity;
     }
