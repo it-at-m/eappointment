@@ -4,8 +4,8 @@ import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
-import { OfficeImpl } from "@/types/OfficeImpl";
 import { CaptchaDetails } from "@/types/CaptchaDetails";
+import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
@@ -242,8 +242,8 @@ export function cancelAppointment(
 export function fetchCaptchaDetails(
   baseUrl?: string
 ): Promise<CaptchaDetails | ErrorDTO> {
-  return fetch(getAPIBaseURL(baseUrl) +
-    VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT
+  return fetch(
+    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT
   ).then((response) => {
     return response.json();
   });
