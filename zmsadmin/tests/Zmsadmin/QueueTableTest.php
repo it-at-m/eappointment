@@ -50,7 +50,7 @@ class QueueTableTest extends Base
                     'url' => '/useraccount/queue/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'status' => 'called',
+                        'status' => 'called,processing',
                     ],
                     'response' => $this->readFixture("GET_queuelist_141.json")
                 ]
@@ -99,7 +99,7 @@ class QueueTableTest extends Base
                     'url' => '/useraccount/queue/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'status' => 'called',
+                        'status' => 'called,processing',
                     ],
                     'response' => $this->readFixture("GET_queuelist_141.json")
                 ]
@@ -149,7 +149,7 @@ class QueueTableTest extends Base
                     'url' => '/useraccount/queue/',
                     'parameters' => [
                         'resolveReferences' => 2,
-                        'status' => 'called',
+                        'status' => 'called,processing',
                     ],
                     'response' => $this->readFixture("GET_queuelist_141.json")
                 ]

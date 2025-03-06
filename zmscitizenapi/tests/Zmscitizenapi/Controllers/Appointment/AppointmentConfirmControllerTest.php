@@ -81,6 +81,8 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                     'source'=> null
                 ],
                 'shortName' => null,
+                'emailFrom' => '',
+                'emailRequired' => null,
                 'telephoneActivated' => null,
                 'telephoneRequired' => null,
                 'customTextfieldActivated' => null,
