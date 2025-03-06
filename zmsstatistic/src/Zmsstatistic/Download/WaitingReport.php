@@ -18,10 +18,8 @@ class WaitingReport extends Base
     protected $reportParts = [
         'waitingcount' => 'Wartende Spontankunden',
         'waitingtime' => 'gemessene Wartezeit Spontankunden',
-        'waitingcalculated' => 'maximal berechnete Wartezeit Spontankunden',
         'waitingcount_termin' => 'Wartende Terminkunden',
         'waitingtime_termin' => 'gemessene Wartezeit Terminkunden',
-        'waitingcalculated_termin' => 'maximal berechnete Wartezeit Terminkunden',
         'waytime' => 'gemessene Wegezeit Spontankunden',
         'waytime_termin' => 'gemessene Wegezeit Terminkunden',
     ];
@@ -129,7 +127,7 @@ class WaitingReport extends Base
                         $reportData[$hour][] = $range;
                         $reportData[$hour][] = $totals[$hour][$rangeName];
                     }
-                    $reportData[$hour][] = $item[$rangeName];
+                    $reportData[$hour][] = $item[$rangeName] ?? '-';
                 }
             }
         }
