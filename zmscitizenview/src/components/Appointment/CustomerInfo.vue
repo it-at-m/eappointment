@@ -11,7 +11,7 @@
       v-model="customerData.firstName"
       :error-msg="showErrorMessage ? errorMessageFirstName : undefined"
       :label="t('firstName')"
-      max=60
+      max="60"
       required
     />
     <muc-input
@@ -19,7 +19,7 @@
       v-model="customerData.lastName"
       :error-msg="showErrorMessage ? errorMessageLastName : undefined"
       :label="t('lastName')"
-      max=60
+      max="60"
       required
     />
     <muc-input
