@@ -15,73 +15,76 @@ use Slim\Routing\RouteCollectorProxy;
  * Availability
  * -------------------------------------------------------------------------
  */
- \App::$slim->post('/availability/', \BO\Zmsadmin\AvailabilityUpdateList::class)
-     ->setName("AvailabilityUpdateList");
+\App::$slim->post('/availability/', \BO\Zmsadmin\AvailabilityUpdateList::class)
+    ->setName("AvailabilityUpdateList");
 
- \App::$slim->post('/availability/slots/', \BO\Zmsadmin\Helper\AvailabilityCalcSlots::class)
-     ->setName("AvailabilityCalcSlots");
+\App::$slim->post('/availability/slots/', \BO\Zmsadmin\Helper\AvailabilityCalcSlots::class)
+    ->setName("AvailabilityCalcSlots");
 
- \App::$slim->get('/availability/delete/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityDelete::class)
-     ->setName("AvailabilityDelete");
+\App::$slim->get('/availability/delete/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityDelete::class)
+    ->setName("AvailabilityDelete");
 
- \App::$slim->post('/availability/save/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityUpdateSingle::class)
-     ->setName("AvailabilityUpdateSingle");
+\App::$slim->post('/availability/save/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityUpdateSingle::class)
+    ->setName("AvailabilityUpdateSingle");
 
- \App::$slim->post('/availability/conflicts/', \BO\Zmsadmin\AvailabilityConflicts::class)
-     ->setName("AvailabilityConflicts");
+\App::$slim->post('/availability/conflicts/', \BO\Zmsadmin\AvailabilityConflicts::class)
+    ->setName("AvailabilityConflicts");
 
- /*
-  * ---------------------------------------------------------------------------
-  * Calldisplay
-  * -------------------------------------------------------------------------
-  */
- \App::$slim->get('/calldisplay/', \BO\Zmsadmin\Calldisplay::class)
-     ->setName("calldisplay");
+\App::$slim->get('/scope/{id:\d+}/availability/', \BO\Zmsadmin\AvailabilityListByScope::class)
+    ->setName("AvailabilityListByScope");
 
- /*
-  * ---------------------------------------------------------------------------
-  * Calendar
-  * -------------------------------------------------------------------------
-  */
- \App::$slim->get('/calendar/{year:\d\d\d\d}/{weeknr:\d{1,2}}/', \BO\Zmsadmin\CalendarWeek::class)
-     ->setName("calendar_week");
+/*
+ * ---------------------------------------------------------------------------
+ * Calldisplay
+ * -------------------------------------------------------------------------
+ */
+\App::$slim->get('/calldisplay/', \BO\Zmsadmin\Calldisplay::class)
+    ->setName("calldisplay");
+
+/*
+ * ---------------------------------------------------------------------------
+ * Calendar
+ * -------------------------------------------------------------------------
+ */
+\App::$slim->get('/calendar/{year:\d\d\d\d}/{weeknr:\d{1,2}}/', \BO\Zmsadmin\CalendarWeek::class)
+    ->setName("calendar_week");
 
 
- /*
-  * ---------------------------------------------------------------------------
-  * Config
-  * -------------------------------------------------------------------------
-  */
- \App::$slim->map(['GET','POST'], '/config/', \BO\Zmsadmin\ConfigInfo::class)
-     ->setName("configinfo");
+/*
+ * ---------------------------------------------------------------------------
+ * Config
+ * -------------------------------------------------------------------------
+ */
+\App::$slim->map(['GET', 'POST'], '/config/', \BO\Zmsadmin\ConfigInfo::class)
+    ->setName("configinfo");
 
- \App::$slim->get('/mailtemplates/{scopeId:\d+}/', \BO\Zmsadmin\MailTemplates::class)
+\App::$slim->get('/mailtemplates/{scopeId:\d+}/', \BO\Zmsadmin\MailTemplates::class)
     ->setName("mailtemplatesScope");
 
 \App::$slim->get('/mailtemplates/', \BO\Zmsadmin\MailTemplates::class)
-     ->setName("mailtemplates");
+    ->setName("mailtemplates");
 
- \App::$slim->post('/mailtemplates/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateHandler::class)
-     ->setName("MailTemplateHandler");
-     
- \App::$slim->post('/mailtemplates/deleteCustomization/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateDeleteCustomization::class)
-     ->setName("MailTemplateDeleteCustomization");
+\App::$slim->post('/mailtemplates/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateHandler::class)
+    ->setName("MailTemplateHandler");
 
- \App::$slim->post('/mailtemplates/createCustomization/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateCreateCustomization::class)
-     ->setName("MailTemplateCreateCustomization");
+\App::$slim->post('/mailtemplates/deleteCustomization/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateDeleteCustomization::class)
+    ->setName("MailTemplateDeleteCustomization");
 
- \App::$slim->get('/mailtemplates/dummyPreview/{mailStatus}/', \BO\Zmsadmin\Helper\MailTemplateDummyPreview::class)
-     ->setName("MailTemplateDummyPreview");
+\App::$slim->post('/mailtemplates/createCustomization/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateCreateCustomization::class)
+    ->setName("MailTemplateCreateCustomization");
 
- \App::$slim->post('/mailtemplates/previewEmail/{mailStatus}/{scopeId:\d+}/', \BO\Zmsadmin\Helper\MailTemplatePreviewMail::class)
-     ->setName("MailTemplatePreviewMail");
-     
+\App::$slim->get('/mailtemplates/dummyPreview/{mailStatus}/', \BO\Zmsadmin\Helper\MailTemplateDummyPreview::class)
+    ->setName("MailTemplateDummyPreview");
 
- /*
-  * ---------------------------------------------------------------------------
-  * Counter
-  * -------------------------------------------------------------------------
-  */
+\App::$slim->post('/mailtemplates/previewEmail/{mailStatus}/{scopeId:\d+}/', \BO\Zmsadmin\Helper\MailTemplatePreviewMail::class)
+    ->setName("MailTemplatePreviewMail");
+
+
+/*
+ * ---------------------------------------------------------------------------
+ * Counter
+ * -------------------------------------------------------------------------
+ */
 \App::$slim->get('/counter/', \BO\Zmsadmin\Counter::class)
     ->setName("counter");
 
@@ -96,8 +99,8 @@ use Slim\Routing\RouteCollectorProxy;
  * Dayoff
  * -------------------------------------------------------------------------
  */
- \App::$slim->get('/dayoff/', \BO\Zmsadmin\Dayoff::class)
-     ->setName("dayoff");
+\App::$slim->get('/dayoff/', \BO\Zmsadmin\Dayoff::class)
+    ->setName("dayoff");
 
 \App::$slim->map(['GET', 'POST'], '/dayoff/{year:\d+}/', \BO\Zmsadmin\DayoffByYear::class)
     ->setName("dayoffByYear");
@@ -108,19 +111,19 @@ use Slim\Routing\RouteCollectorProxy;
  * Department
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/department/{id:\d+}/', \BO\Zmsadmin\Department::class)
+\App::$slim->map(['GET', 'POST'], '/department/{id:\d+}/', \BO\Zmsadmin\Department::class)
     ->setName("department");
 
-\App::$slim->map(['GET','POST'], '/department/{departmentId:\d+}/cluster/{clusterId:\d+}/', \BO\Zmsadmin\Cluster::class)
+\App::$slim->map(['GET', 'POST'], '/department/{departmentId:\d+}/cluster/{clusterId:\d+}/', \BO\Zmsadmin\Cluster::class)
     ->setName("cluster");
 
 \App::$slim->get('/department/{departmentId:\d+}/cluster/{clusterId:\d+}/delete/', \BO\Zmsadmin\ClusterDelete::class)
     ->setName("clusterDelete");
 
-\App::$slim->map(['GET','POST'], '/department/{departmentId:\d+}/cluster/', \BO\Zmsadmin\DepartmentAddCluster::class)
+\App::$slim->map(['GET', 'POST'], '/department/{departmentId:\d+}/cluster/', \BO\Zmsadmin\DepartmentAddCluster::class)
     ->setName("departmentAddCluster");
 
-\App::$slim->map(['GET','POST'], '/department/{id:\d+}/scope/', \BO\Zmsadmin\DepartmentAddScope::class)
+\App::$slim->map(['GET', 'POST'], '/department/{id:\d+}/scope/', \BO\Zmsadmin\DepartmentAddScope::class)
     ->setName("departmentAddScope");
 
 \App::$slim->get('/department/delete/{id:\d+}/', \BO\Zmsadmin\DepartmentDelete::class)
@@ -144,13 +147,13 @@ use Slim\Routing\RouteCollectorProxy;
  * Login
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/', \BO\Zmsadmin\Index::class)
+\App::$slim->map(['GET', 'POST'], '/', \BO\Zmsadmin\Index::class)
     ->setName("index");
 
 \App::$slim->get('/workstation/quicklogin/', \BO\Zmsadmin\QuickLogin::class)
     ->setName("quickLogin");
 
-\App::$slim->map(['GET','POST'], '/oidc/', \BO\Zmsadmin\Oidc::class)
+\App::$slim->map(['GET', 'POST'], '/oidc/', \BO\Zmsadmin\Oidc::class)
     ->setName("oidc")->add(new \BO\Slim\Middleware\OAuthMiddleware('login'));
 
 
@@ -185,10 +188,10 @@ use Slim\Routing\RouteCollectorProxy;
  * Organisation
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/organisation/{id:\d+}/department/', \BO\Zmsadmin\OrganisationAddDepartment::class)
+\App::$slim->map(['GET', 'POST'], '/organisation/{id:\d+}/department/', \BO\Zmsadmin\OrganisationAddDepartment::class)
     ->setName("organisationAddDepartment");
 
-\App::$slim->map(['GET','POST'], '/organisation/{id:\d+}/', \BO\Zmsadmin\Organisation::class)
+\App::$slim->map(['GET', 'POST'], '/organisation/{id:\d+}/', \BO\Zmsadmin\Organisation::class)
     ->setName("organisation");
 
 \App::$slim->get('/organisation/delete/{id:\d+}/', \BO\Zmsadmin\OrganisationDelete::class)
@@ -200,16 +203,16 @@ use Slim\Routing\RouteCollectorProxy;
  * Owner
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/owner/{id:\d+}/organisation/', \BO\Zmsadmin\OwnerAddOrganisation::class)
+\App::$slim->map(['GET', 'POST'], '/owner/{id:\d+}/organisation/', \BO\Zmsadmin\OwnerAddOrganisation::class)
     ->setName("ownerAddOrganisation");
 
 \App::$slim->get('/owner/', '\BO\Zmsadmin\OwnerOverview')
     ->setName("owner_overview");
 
-\App::$slim->map(['GET','POST'], '/owner/{id:\d+}/', \BO\Zmsadmin\Owner::class)
+\App::$slim->map(['GET', 'POST'], '/owner/{id:\d+}/', \BO\Zmsadmin\Owner::class)
     ->setName("owner");
 
-\App::$slim->map(['GET','POST'], '/owner/add/', \BO\Zmsadmin\OwnerAdd::class)
+\App::$slim->map(['GET', 'POST'], '/owner/add/', \BO\Zmsadmin\OwnerAdd::class)
     ->setName("owner_add");
 
 \App::$slim->get('/owner/delete/{id:\d+}/', \BO\Zmsadmin\OwnerDelete::class)
@@ -231,7 +234,7 @@ use Slim\Routing\RouteCollectorProxy;
     $group->get('/delete/{id:\d+}/', \BO\Zmsadmin\PickupDelete::class)
         ->setName("pickup_delete");
 
-    $group->map(['GET','POST'], '/handheld/', \BO\Zmsadmin\PickupHandheld::class)
+    $group->map(['GET', 'POST'], '/handheld/', \BO\Zmsadmin\PickupHandheld::class)
         ->setName("pickup_handheld");
 
     $group->get('/keyboard/', \BO\Zmsadmin\PickupKeyboard::class)
@@ -259,22 +262,22 @@ use Slim\Routing\RouteCollectorProxy;
  * -------------------------------------------------------------------------
  */
 
- \App::$slim->post('/process/reserve/', \BO\Zmsadmin\ProcessReserve::class)
-     ->setName("processReserve");
+\App::$slim->post('/process/reserve/', \BO\Zmsadmin\ProcessReserve::class)
+    ->setName("processReserve");
 
 \App::$slim->post('/process/change/', \BO\Zmsadmin\ProcessChange::class)
-     ->setName("processChange");
+    ->setName("processChange");
 
- \App::$slim->map(['GET','POST'], '/process/queue/', \BO\Zmsadmin\ProcessQueue::class)
-     ->setName("processQueue");
+\App::$slim->map(['GET', 'POST'], '/process/queue/', \BO\Zmsadmin\ProcessQueue::class)
+    ->setName("processQueue");
 
- \App::$slim->get('/process/queue/reset/', \BO\Zmsadmin\ProcessQueueReset::class)
-     ->setName("processQueueReset");
+\App::$slim->get('/process/queue/reset/', \BO\Zmsadmin\ProcessQueueReset::class)
+    ->setName("processQueueReset");
 
- \App::$slim->post('/process/{id:\d+}/save/', \BO\Zmsadmin\ProcessSave::class)
-     ->setName("processSave");
+\App::$slim->post('/process/{id:\d+}/save/', \BO\Zmsadmin\ProcessSave::class)
+    ->setName("processSave");
 
- \App::$slim->get('/process/{id:\d+}/delete/', \BO\Zmsadmin\ProcessDelete::class)
+\App::$slim->get('/process/{id:\d+}/delete/', \BO\Zmsadmin\ProcessDelete::class)
     ->setName("processDelete");
 
 
@@ -294,7 +297,7 @@ use Slim\Routing\RouteCollectorProxy;
  */
 
 \App::$slim->group('/scope', function (RouteCollectorProxy $group) {
-    $group->map(['GET','POST'], '/{id:\d+}/', \BO\Zmsadmin\Scope::class)
+    $group->map(['GET', 'POST'], '/{id:\d+}/', \BO\Zmsadmin\Scope::class)
         ->setName("scope");
 
     $group->get('/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/', \BO\Zmsadmin\ScopeAppointmentsByDay::class)
@@ -315,7 +318,7 @@ use Slim\Routing\RouteCollectorProxy;
     $group->get('/{id:\d+}/availability/month/[{date:\d\d\d\d-\d\d}/]', \BO\Zmsadmin\ScopeAvailabilityMonth::class)
         ->setName("scopeAvailabilityMonth");
 
-    $group->map(['GET','POST'], '/{id:\d+}/emergency/', \BO\Zmsadmin\ScopeEmergency::class)
+    $group->map(['GET', 'POST'], '/{id:\d+}/emergency/', \BO\Zmsadmin\ScopeEmergency::class)
         ->setName("scope_emergency");
 
     $group->post('/{id:\d+}/emergency/respond/', \BO\Zmsadmin\ScopeEmergencyResponse::class)
@@ -352,7 +355,7 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/source/', \BO\Zmsadmin\SourceIndex::class)
     ->setName("sourceindex");
 
-\App::$slim->map(['GET','POST'], '/source/{name}/', \BO\Zmsadmin\SourceEdit::class)
+\App::$slim->map(['GET', 'POST'], '/source/{name}/', \BO\Zmsadmin\SourceEdit::class)
     ->setName("sourceEdit");
 
 \App::$slim->map(['POST'], '/source/delete/{loginname}/', \BO\Zmsadmin\SourceDelete::class)
@@ -370,7 +373,7 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->map(['GET', 'POST'], '/useraccount/add/', \BO\Zmsadmin\UseraccountAdd::class)
     ->setName("useraccountAdd");
 
-\App::$slim->map(['GET','POST'], '/useraccount/{loginname}/', \BO\Zmsadmin\UseraccountEdit::class)
+\App::$slim->map(['GET', 'POST'], '/useraccount/{loginname}/', \BO\Zmsadmin\UseraccountEdit::class)
     ->setName("useraccountEdit");
 
 \App::$slim->get('/useraccount/delete/{loginname}/', \BO\Zmsadmin\UseraccountDelete::class)
@@ -382,7 +385,7 @@ use Slim\Routing\RouteCollectorProxy;
  * Workstation
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET','POST'], '/workstation/select/', \BO\Zmsadmin\WorkstationSelect::class)
+\App::$slim->map(['GET', 'POST'], '/workstation/select/', \BO\Zmsadmin\WorkstationSelect::class)
     ->setName("workstationSelect");
 
 \App::$slim->get('/workstation/status/', \BO\Zmsadmin\WorkstationStatus::class)
@@ -400,10 +403,10 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/workstation/process/processing/', \BO\Zmsadmin\WorkstationProcessProcessing::class)
     ->setName("workstationProcessProcessing");
 
-\App::$slim->map(['GET','POST'], '/workstation/process/finished/', \BO\Zmsadmin\WorkstationProcessFinished::class)
+\App::$slim->map(['GET', 'POST'], '/workstation/process/finished/', \BO\Zmsadmin\WorkstationProcessFinished::class)
     ->setName("workstationProcessFinished");
 
-\App::$slim->map(['GET','POST'], '/workstation/process/redirect/', \BO\Zmsadmin\WorkstationProcessRedirect::class)
+\App::$slim->map(['GET', 'POST'], '/workstation/process/redirect/', \BO\Zmsadmin\WorkstationProcessRedirect::class)
     ->setName("workstationProcessRedirect");
 
 \App::$slim->get('/workstation/call/{id:\d+}/', \BO\Zmsadmin\WorkstationProcessCall::class)
@@ -421,7 +424,7 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/workstation/process/callbutton/', \BO\Zmsadmin\WorkstationProcess::class)
     ->setName("workstationProcessCallButton");
 
-\App::$slim->map(['GET','POST'], '/workstation/', \BO\Zmsadmin\Workstation::class)
+\App::$slim->map(['GET', 'POST'], '/workstation/', \BO\Zmsadmin\Workstation::class)
     ->setName("workstation");
 
 /*
@@ -448,7 +451,7 @@ use Slim\Routing\RouteCollectorProxy;
     ->setName("dialogHandler");
 
 \App::$slim->get('/provider/{source}/', \BO\Zmsadmin\Helper\ProviderHandler::class)
-->setName("providerHandler");
+    ->setName("providerHandler");
 
 /*
  * ---------------------------------------------------------------------------
