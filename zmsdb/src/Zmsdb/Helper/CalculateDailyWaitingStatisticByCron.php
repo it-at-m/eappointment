@@ -3,7 +3,7 @@
 namespace BO\Zmsdb\Helper;
 
 use BO\Zmsdb\Base;
-use \DateTimeImmutable;
+use DateTimeImmutable;
 
 /**
  * Berechnung der Wartezeiten pro Standort und Stunde,
@@ -14,7 +14,6 @@ use \DateTimeImmutable;
  */
 class CalculateDailyWaitingStatisticByCron extends Base
 {
-
     public function run(DateTimeImmutable $day, bool $commit = false)
     {
         echo "CalculateDailyWaitingStatisticByCron->run for date={$day->format('Y-m-d')}\n";
