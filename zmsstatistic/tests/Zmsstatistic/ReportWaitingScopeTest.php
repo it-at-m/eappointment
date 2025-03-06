@@ -94,7 +94,7 @@ class ReportWaitingScopeTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016-03'], [], []);
-        $this->assertStringContainsString('<th class="statistik">Mär</th>', (string) $response->getBody());
+        $this->assertStringContainsString('<th class="statistik">Mär (Max.)</th>', (string) $response->getBody());
         $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum März 2016',
             (string) $response->getBody()
@@ -141,7 +141,7 @@ class ReportWaitingScopeTest extends Base
             ]
         );
         $response = $this->render(['period' => '2016-01'], [], []);
-        $this->assertStringContainsString('<th class="statistik">Jan</th>', (string) $response->getBody());
+        $this->assertStringContainsString('<th class="statistik">Jan (Max.)</th>', (string) $response->getBody());
         $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum Januar 2016',
             (string) $response->getBody()
