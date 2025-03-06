@@ -34,6 +34,13 @@ use BO\Zmsentities\Collection\ProcessList;
  */
 class ZmsApiFacadeService
 {
+    private const CACHE_KEY_OFFICES = 'processed_offices';
+    private const CACHE_KEY_SCOPES = 'processed_scopes';
+    private const CACHE_KEY_SERVICES = 'processed_services';
+    private const CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
+    private const CACHE_KEY_OFFICES_BY_SERVICE_PREFIX = 'processed_offices_by_service_';
+    private const CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
+
     private static ?string $currentLanguage = null;
     public static function setLanguageContext(?string $language): void
     {
@@ -45,8 +52,25 @@ class ZmsApiFacadeService
         return ErrorMessages::get($key, self::$currentLanguage);
     }
 
+    private static function setMappedCache(string $cacheKey, mixed $data): void
+    {
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $data, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Second-level cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL
+            ]);
+        }
+    }
+
     public static function getOffices(bool $showUnpublished = false): OfficeList
     {
+        $cacheKey = self::CACHE_KEY_OFFICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
         $offices = [];
@@ -90,11 +114,21 @@ class ZmsApiFacadeService
             );
         }
 
-        return new OfficeList($offices);
+        $result = new OfficeList($offices);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     public static function getScopes(): ThinnedScopeList|array
     {
+        $cacheKey = self::CACHE_KEY_SCOPES;
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
         $scopeMap = [];
@@ -128,11 +162,21 @@ class ZmsApiFacadeService
             }
         }
 
-        return new ThinnedScopeList($scopesProjectionList);
+        $result = new ThinnedScopeList($scopesProjectionList);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     public static function getServices(bool $showUnpublished = false): ServiceList|array
     {
+        $cacheKey = self::CACHE_KEY_SERVICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $services = [];
         foreach ($requestList as $request) {
@@ -148,11 +192,21 @@ class ZmsApiFacadeService
             $services[] = new Service(id: (int) $request->getId(), name: $request->getName(), maxQuantity: $additionalData['maxQuantity'] ?? 1);
         }
 
-        return new ServiceList($services);
+        $result = new ServiceList($services);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     public static function getServicesAndOffices(bool $showUnpublished = false): OfficeServiceAndRelationList|array
     {
+        $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $relationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
@@ -164,7 +218,12 @@ class ZmsApiFacadeService
             $showUnpublished
         ) ?? new ServiceList();
         $relations = MapperService::mapRelations($relationList) ?? new OfficeServiceRelationList();
-        return new OfficeServiceAndRelationList($offices, $services, $relations);
+
+        $result = new OfficeServiceAndRelationList($offices, $services, $relations);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     /* Todo add method
@@ -230,8 +289,18 @@ class ZmsApiFacadeService
      *
      */
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @TODO: Extract providerMap mapping logic into MapperService
+     */
     public static function getOfficeListByServiceId(int $serviceId, bool $showUnpublished = false): OfficeList|array
     {
+        $cacheKey = self::CACHE_KEY_OFFICES_BY_SERVICE_PREFIX . $serviceId . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $providerMap = [];
@@ -267,7 +336,11 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        return new OfficeList($offices);
+        $result = new OfficeList($offices);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     public static function getScopeById(?int $scopeId): ThinnedScope|array
@@ -320,6 +393,12 @@ class ZmsApiFacadeService
 
     public static function getServicesByOfficeId(int $officeId, bool $showUnpublished = false): ServiceList|array
     {
+        $cacheKey = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . ($showUnpublished ? '_unpublished' : '');
+
+        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+            return $cachedData;
+        }
+
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $requestMap = [];
@@ -352,7 +431,11 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        return new ServiceList($services);
+        $result = new ServiceList($services);
+
+        self::setMappedCache($cacheKey, $result);
+
+        return $result;
     }
 
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
