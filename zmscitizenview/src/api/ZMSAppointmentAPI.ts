@@ -5,12 +5,14 @@ import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { OfficeImpl } from "@/types/OfficeImpl";
+import { CaptchaDetails } from "@/types/CaptchaDetails";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
   VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
   VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT,
+  VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT,
   VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT,
@@ -232,6 +234,16 @@ export function cancelAppointment(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody),
     }
+  ).then((response) => {
+    return response.json();
+  });
+}
+
+export function fetchCaptchaDetails(
+  baseUrl?: string
+): Promise<CaptchaDetails | ErrorDTO> {
+  return fetch(getAPIBaseURL(baseUrl) +
+    VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT
   ).then((response) => {
     return response.json();
   });
