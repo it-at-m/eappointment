@@ -99,7 +99,7 @@ const { selectedProvider } = inject<SelectedTimeslotProvider>(
 const showErrorMessage = ref<boolean>(false);
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const telephonPattern = /^\+?\d[\d\s]*$/;
+const telephonPattern = /^\+?[0-9]\d{6,14}$/;
 
 const errorMessageFirstName = computed(() =>
   customerData.value.firstName ? undefined : props.t("errorMessageFirstName")

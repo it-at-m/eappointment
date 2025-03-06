@@ -26,7 +26,7 @@
   "errorMessageMailAddressRequired": "Bitte geben Sie Ihre E-Mail-Adresse an.",
   "errorMessageMailAddressValidation": "Ihre E-Mail-Adresse entspricht nicht dem vorgegebenen Format. Bitte prüfen Sie nochmal, ob Sie sie richtig geschrieben haben.",
   "errorMessageTelephoneNumberRequired": "Bitte geben Sie Ihre Telefonnummer an.",
-  "errorMessageTelephoneNumberValidation": "Ihre Telefonnummer entspricht nicht dem vorgegebenen Format. Bitte geben Sie nur ein +-Zeichen,  Zahlen und Leerzeichen ein.",
+  "errorMessageTelephoneNumberValidation": "Ihre Telefonnummer entspricht nicht dem vorgegebenen Format. Bitte geben Sie nur ein +-Zeichen und Zahlen ein.",
   "contact": "Kontakt",
   "contactDetails": "Kontaktdaten",
   "estimatedDuration": "Voraussichtliche Termindauer:",
