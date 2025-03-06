@@ -40,7 +40,7 @@
       :error-msg="showErrorMessage ? errorMessageTelephoneNumber : undefined"
       :label="t('telephoneNumber')"
       :required="selectedProvider.scope.telephoneRequired"
-      placeholder="+49 151 1234567"
+      placeholder="+491511234567"
     />
     <muc-text-area
       v-if="
