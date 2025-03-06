@@ -1,25 +1,18 @@
 <?php
 
-/**
- * @package Zmsadmin
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- **/
-
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Availability;
+use BO\Zmsadmin\Exception\BadRequest as BadRequestException;
 use BO\Zmsentities\Collection\AvailabilityList;
+use BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Scope;
+use DateTimeImmutable;
 
-/**
- * Check if new Availability is in conflict with existing availability
- *
- */
 class AvailabilityConflicts extends BaseController
 {
-    /**
-     * @SuppressWarnings(Param)
-     * @return String
-     */
+    const CONFLICT_TYPE_EQUAL = 'equal';
+    const CONFLICT_TYPE_OVERLAP = 'overlap';
+
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
@@ -28,44 +21,219 @@ class AvailabilityConflicts extends BaseController
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
         $data = static::getAvailabilityData($input);
-        return \BO\Slim\Render::withJson(
-            $response,
-            $data
-        );
+        return \BO\Slim\Render::withJson($response, $data);
     }
 
     protected static function getAvailabilityData($input)
     {
-        $conflictList = new \BO\Zmsentities\Collection\ProcessList();
+        self::validateInput($input);
+
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
+        $selectedDateTime = (new DateTimeImmutable($input['selectedDate']))
+            ->modify(\App::$now->format('H:i:s'));
+
+        [$hasExclusionSplit, $originId] = self::processAvailabilityKinds($availabilityList);
+
+        $conflictList = self::getConflictList(
+            $availabilityList,
+            $selectedDateTime,
+            $input,
+            $hasExclusionSplit,
+            $originId
+        );
+
+
+        return self::filterAndSortConflicts($conflictList, $selectedDateTime);
+    }
+
+    private static function validateInput($input)
+    {
+        if (!isset($input['availabilityList']) || !is_array($input['availabilityList'])) {
+            throw new BadRequestException('Missing or invalid availabilityList.');
+        }
+        if (empty($input['availabilityList']) || !isset($input['availabilityList'][0]['scope'])) {
+            throw new BadRequestException('Missing or invalid scope.');
+        }
+        if (!isset($input['selectedDate'])) {
+            throw new BadRequestException("'selectedDate' is required.");
+        }
+    }
+
+    private static function processAvailabilityKinds(AvailabilityList $availabilityList)
+    {
+        $hasExclusionSplit = false;
+        $originId = null;
+        foreach ($availabilityList as $availability) {
+            if (!isset($availability->kind)) {
+                continue;
+            }
+
+            if ($availability->kind === 'origin' && isset($availability->id)) {
+                $originId = $availability->id;
+                $hasExclusionSplit = true;
+            } elseif (in_array($availability->kind, ['origin', 'exclusion', 'future'])) {
+                $hasExclusionSplit = true;
+            }
+        }
+        return [$hasExclusionSplit, $originId];
+    }
+
+    private static function getConflictList(
+        AvailabilityList $availabilityList,
+        DateTimeImmutable $selectedDateTime,
+        array $input,
+        bool $hasExclusionSplit,
+        ?string $originId
+    ) {
+        $conflictList = new ProcessList();
+
+        $overlapConflicts = $availabilityList->checkForConflictsBetweenNewAvailabilities();
+        $conflictList->addList($overlapConflicts);
+
+        $scope = new Scope($input['availabilityList'][0]['scope']);
+        $existingAvailabilityList = self::getAvailabilityList($scope, $selectedDateTime);
+
+        $filteredAvailabilityList = self::getFilteredAvailabilityList(
+            $availabilityList,
+            $existingAvailabilityList,
+            $hasExclusionSplit,
+            $originId
+        );
+
+        [$earliestStartDateTime, $latestEndDateTime] = $filteredAvailabilityList
+            ->getDateTimeRangeFromList();
+        $filteredAvailabilityList = $filteredAvailabilityList->sortByCustomStringKey('endTime');
+
+        $existingConflicts = $filteredAvailabilityList->checkForConflictsWithExistingAvailabilities(
+            $earliestStartDateTime,
+            $latestEndDateTime
+        );
+        $conflictList->addList($existingConflicts);
+
+        return $conflictList;
+    }
+
+    private static function getFilteredAvailabilityList(
+        AvailabilityList $availabilityList,
+        AvailabilityList $existingAvailabilityList,
+        bool $hasExclusionSplit,
+        ?string $originId
+    ) {
+        $filteredAvailabilityList = new AvailabilityList();
+
+        foreach ($availabilityList as $availability) {
+            $filteredAvailabilityList->addEntity($availability);
+        }
+
+        foreach ($existingAvailabilityList as $existingAvailability) {
+            if (
+                $hasExclusionSplit &&
+                isset($existingAvailability->id) &&
+                $existingAvailability->id === $originId
+            ) {
+                continue;
+            }
+
+            $filteredAvailabilityList->addEntity($existingAvailability);
+        }
+
+        return $filteredAvailabilityList;
+    }
+
+    private static function filterAndSortConflicts(ProcessList $conflictList, $selectedDate)
+    {
+        $selectedDate = new DateTimeImmutable($selectedDate->format('Y-m-d'));
+
+        $filteredConflictList = new ProcessList();
         $conflictedList = [];
-
-        $selectedDateTime = (new \DateTimeImmutable($input['selectedDate']))->modify(\App::$now->format('H:i:s'));
-        $selectedAvailability = new Availability($input['selectedAvailability']);
-        $startDateTime = ($selectedAvailability->getStartDateTime() >= \App::$now) ?
-            $selectedAvailability->getStartDateTime() : $selectedDateTime;
-        $endDateTime = ($input['selectedAvailability']) ?
-            $selectedAvailability->getEndDateTime() : $selectedDateTime;
-
-        $availabilityList = $availabilityList->sortByCustomStringKey('endTime');
-        $conflictList = $availabilityList->getConflicts($startDateTime, $endDateTime);
+        $processedConflicts = [];
+        $manualDayGrouping = [];
 
         foreach ($conflictList as $conflict) {
-            $availabilityId = ($conflict->getFirstAppointment()->getAvailability()->getId()) ?
-                $conflict->getFirstAppointment()->getAvailability()->getId() :
-                $conflict->getFirstAppointment()->getAvailability()->tempId;
-            if (! in_array($availabilityId, $conflictedList)) {
-                $conflictedList[] = $availabilityId;
+            if (!$conflict->getFirstAppointment() || !$conflict->getFirstAppointment()->getAvailability()) {
+                continue;
+            }
+
+            $appointment = $conflict->getFirstAppointment();
+            $availability = $appointment->getAvailability();
+            $availId = $availability->getId() ?: $availability->tempId;
+
+            if (preg_match_all('/\[([^,]+), (\d{2}:\d{2} - \d{2}:\d{2})/', $conflict->amendment, $matches)) {
+                $dateRanges = $matches[1];
+                $timeRanges = $matches[2];
+
+                $times = [$timeRanges[0], $timeRanges[1]];
+                sort($times);
+                $conflictKey = $availId . '_' . md5($dateRanges[0] . implode('', $times));
+
+                if (isset($processedConflicts[$conflictKey])) {
+                    continue;
+                }
+
+                $conflictDate = clone $selectedDate;
+
+                $dateKey = $conflictDate->format('Y-m-d');
+
+                if (!isset($manualDayGrouping[$dateKey])) {
+                    $manualDayGrouping[$dateKey] = [];
+                }
+
+                $appointments = iterator_to_array($conflict->appointments);
+                $manualDayGrouping[$dateKey][] = [
+                    'message' => $conflict->amendment,
+                    'appointments' => array_map(function ($appt) {
+                        return [
+                            'startTime' => $appt->getStartTime()->format('H:i'),
+                            'endTime' => $appt->getEndTime()->format('H:i'),
+                            'availability' => $appt->getAvailability()->getId() ?: $appt->getAvailability()->tempId
+                        ];
+                    }, $appointments)
+                ];
+
+                $processedConflicts[$conflictKey] = true;
+                $filteredConflictList->addEntity($conflict);
+                self::addToConflictedList($conflictedList, $availability, null);
             }
         }
 
+        usort($conflictedList, [self::class, 'sortConflictedList']);
+
         return [
-            'conflictList' => $conflictList->toConflictListByDay(),
+            'conflictList' => $manualDayGrouping,
             'conflictIdList' => (count($conflictedList)) ? $conflictedList : []
         ];
     }
 
-    /*
+    private static function addToConflictedList(&$conflictedList, $availability1, $availability2)
+    {
+        $availabilityId = $availability1->getId() ?: $availability1->tempId;
+        if (!in_array($availabilityId, $conflictedList)) {
+            $conflictedList[] = $availabilityId;
+        }
+
+        if ($availability2) {
+            $availabilityId2 = $availability2->getId() ?: $availability2->tempId;
+            if (!in_array($availabilityId2, $conflictedList)) {
+                $conflictedList[] = $availabilityId2;
+            }
+        }
+    }
+
+    /** @SuppressWarnings(PHPMD.UnusedPrivateMethod) */
+    private static function sortConflictedList($a, $b)
+    {
+        $aIsTemp = strpos($a, '__temp__') === 0;
+        $bIsTemp = strpos($b, '__temp__') === 0;
+
+        if ($aIsTemp && !$bIsTemp) {
+            return 1;
+        }
+        if (!$aIsTemp && $bIsTemp) {
+            return -1;
+        }
+        return strcmp($a, $b);
+    }
+
     protected static function getAvailabilityList($scope, $dateTime)
     {
         try {
@@ -74,7 +242,7 @@ class AvailabilityConflicts extends BaseController
                     '/scope/' . $scope->getId() . '/availability/',
                     [
                         'resolveReferences' => 0,
-                        'startDate' => $dateTime->format('Y-m-d') //for skipping old availabilities
+                        'startDate' => $dateTime->format('Y-m-d')
                     ]
                 )
                 ->getCollection();
@@ -82,9 +250,8 @@ class AvailabilityConflicts extends BaseController
             if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
                 throw $exception;
             }
-            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+            $availabilityList = new AvailabilityList();
         }
         return $availabilityList->withScope($scope);
     }
-    */
 }

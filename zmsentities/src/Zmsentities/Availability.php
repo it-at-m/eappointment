@@ -113,7 +113,7 @@ class Availability extends Schema\Entity
      * ATTENTION: Time critical function, keep highly optimized
      *
      * @param \DateTimeInterface $dateTime
-     * @param String $type of "openinghours", "appointment" or false to ignore type
+     * @param string $type of "openinghours", "appointment" or false to ignore type
      *
      * @return Bool
      */
@@ -138,7 +138,7 @@ class Availability extends Schema\Entity
      * Compared to hasDate() the time of the day is checked, but not booking time
      *
      * @param \DateTimeInterface $dateTime
-     * @param String $type of "openinghours", "appointment" or false to ignore type
+     * @param string $type of "openinghours", "appointment" or false to ignore type
      *
      */
     public function isOpened(\DateTimeInterface $dateTime, $type = false)
@@ -249,8 +249,8 @@ class Availability extends Schema\Entity
             $this['repeat']['afterWeeks']
             && ($this['repeat']['afterWeeks'] == 1
                 || 0 ===
-                    $dateTime->modify($monday)->diff($start->modify($monday))->days
-                 % ($this['repeat']['afterWeeks'] * 7)
+                $dateTime->modify($monday)->diff($start->modify($monday))->days
+                % ($this['repeat']['afterWeeks'] * 7)
             )
         ) {
             return true;
@@ -281,7 +281,7 @@ class Availability extends Schema\Entity
         if (!$this->startTimeCache) {
             $this->startTimeCache = Helper\DateTime::create()
                 ->setTimestamp($this['startDate'])
-                ->modify('today ' .  $this['startTime']);
+                ->modify('today ' . $this['startTime']);
         }
         return $this->startTimeCache;
     }
@@ -296,7 +296,7 @@ class Availability extends Schema\Entity
         if (!$this->endTimeCache) {
             $this->endTimeCache = Helper\DateTime::create()
                 ->setTimestamp($this['endDate'])
-                ->modify('today ' .  $this['endTime']);
+                ->modify('today ' . $this['endTime']);
         }
         return $this->endTimeCache;
     }
@@ -310,7 +310,7 @@ class Availability extends Schema\Entity
     {
         $startTime = $this->getStartDateTime();
         $endTime = $this->getEndDateTime();
-        return (int)$endTime->diff($startTime)->format("%a");
+        return (int) $endTime->diff($startTime)->format("%a");
     }
 
     /**
@@ -439,7 +439,7 @@ class Availability extends Schema\Entity
      *
      * @return Array of arrays with the keys time, public, callcenter, intern
      */
-    public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now)
+    public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now): bool
     {
         if ($startTime->getTimestamp() < $now->getTimestamp()) {
             $startTime = $now;
@@ -454,6 +454,159 @@ class Availability extends Schema\Entity
             $startTime = $startTime->modify('+1 day');
         } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
         return false;
+    }
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+    {
+        $errorList = [];
+
+        $startTime = (clone $startDate)->setTime(0, 0);
+        $startHour = (int) $startDate->format('H');
+        $endHour = (int) $endDate->format('H');
+        $startMinute = (int) $startDate->format('i');
+        $endMinute = (int) $endDate->format('i');
+        $isFuture = ($kind && $kind === 'future');
+
+        if (
+            !$isFuture &&
+            $selectedDate->getTimestamp() > $today->getTimestamp() &&
+            $startTime->getTimestamp() > (clone $selectedDate)->setTime(0, 0)->getTimestamp()
+        ) {
+            $errorList[] = [
+                'type' => 'startTimeFuture',
+                'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
+            ];
+        }
+
+        if (
+            ($startHour === 22 && $startMinute > 0) ||
+            $startHour === 23 ||
+            $startHour === 0 ||
+            ($endHour === 22 && $endMinute > 0) ||
+            $endHour === 23 ||
+            $endHour === 0 ||
+            ($startHour === 1 && $startMinute > 0) ||
+            ($endHour === 1 && $endMinute > 0)
+        ) {
+            $errorList[] = [
+                'type' => 'startOfDay',
+                'message' => 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
+            ];
+        }
+
+        return $errorList;
+    }
+
+    public function validateEndTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        $errorList = [];
+
+        $startHour = (int) $startDate->format('H');
+        $endHour = (int) $endDate->format('H');
+        $startMinute = (int) $startDate->format('i');
+        $endMinute = (int) $endDate->format('i');
+        $dayMinutesStart = ($startHour * 60) + $startMinute;
+        $dayMinutesEnd = ($endHour * 60) + $endMinute;
+        $startTimestamp = $startDate->getTimestamp();
+        $endTimestamp = $endDate->getTimestamp();
+
+        if ($dayMinutesEnd <= $dayMinutesStart) {
+            $errorList[] = [
+                'type' => 'endTime',
+                'message' => 'Die Endzeit darf nicht vor der Startzeit liegen.'
+            ];
+        } elseif ($startTimestamp >= $endTimestamp) {
+            $errorList[] = [
+                'type' => 'endTime',
+                'message' => 'Das Enddatum darf nicht vor dem Startdatum liegen.'
+            ];
+        }
+
+        return $errorList;
+    }
+
+    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+    {
+        $errorList = [];
+        $endHour = (int) $endDate->format('H');
+        $endMinute = (int) $endDate->format('i');
+        $endDateTime = (clone $endDate)->setTime($endHour, $endMinute);
+        $endTimestamp = $endDateTime->getTimestamp();
+        $isOrigin = ($kind && $kind === 'origin');
+
+        if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < (clone $selectedDate)->setTime(0, 0)) {
+            $errorList[] = [
+                'type' => 'endTimeFuture',
+                'message' => "Das Enddatum der Öffnungszeit muss nach dem " . $yesterday->format('d.m.Y') . " liegen."
+            ];
+        }
+
+        if (!$isOrigin && $endTimestamp < $today->getTimestamp()) {
+            $errorList[] = [
+                'type' => 'endTimePast',
+                'message' => 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
+                    . '(Die aktuelle Zeit "' . $today->format('d.m.Y H:i') . ' Uhr" liegt nach dem Terminende am "'
+                    . $endDateTime->format('d.m.Y H:i') . ' Uhr").'
+            ];
+        }
+
+        return $errorList;
+    }
+
+    public function validateType(string $kind): array
+    {
+        $errorList = [];
+        if (empty($kind)) {
+            $errorList[] = [
+                'type' => 'type',
+                'message' => 'Typ erforderlich'
+            ];
+        }
+        return $errorList;
+    }
+
+    public function validateSlotTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        $errorList = [];
+        $slotTime = $this['slotTimeInMinutes'];
+
+        // Extract time components
+        $startHour = (int)$startDate->format('H');
+        $startMinute = (int)$startDate->format('i');
+        $endHour = (int)$endDate->format('H');
+        $endMinute = (int)$endDate->format('i');
+
+        // Calculate total minutes
+        $totalMinutes = (($endHour - $startHour) * 60) + ($endMinute - $startMinute);
+
+        if ($slotTime === 0) {
+            $errorList[] = [
+                'type' => 'slotTime',
+                'message' => 'Die Slot-Zeit darf nicht 0 sein.'
+            ];
+            return $errorList;
+        }
+
+        if ($totalMinutes % $slotTime > 0) {
+            $errorList[] = [
+                'type' => 'slotCount',
+                'message' => 'Zeitschlitze müssen sich gleichmäßig in der Öffnungszeit aufteilen lassen.'
+            ];
+        }
+
+        return $errorList;
+    }
+
+    public function validateBookableDayRange(int $startInDays, int $endInDays): array
+    {
+        $errorList = [];
+        if ($startInDays > $endInDays) {
+            $errorList[] = [
+                'type' => 'bookableDayRange',
+                'message' => 'Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.'
+            ];
+        }
+
+        return $errorList;
     }
 
     /**
@@ -493,27 +646,94 @@ class Availability extends Schema\Entity
             || $this->endDate != $availability->endDate
             || $this->repeat['afterWeeks'] != $availability->repeat['afterWeeks']
             || $this->repeat['weekOfMonth'] != $availability->repeat['weekOfMonth']
-            || (bool)$this->weekday['monday'] != (bool)$availability->weekday['monday']
-            || (bool)$this->weekday['tuesday'] != (bool)$availability->weekday['tuesday']
-            || (bool)$this->weekday['wednesday'] != (bool)$availability->weekday['wednesday']
-            || (bool)$this->weekday['thursday'] != (bool)$availability->weekday['thursday']
-            || (bool)$this->weekday['friday'] != (bool)$availability->weekday['friday']
-            || (bool)$this->weekday['saturday'] != (bool)$availability->weekday['saturday']
-            || (bool)$this->weekday['sunday'] != (bool)$availability->weekday['sunday']
+            || (bool) $this->weekday['monday'] != (bool) $availability->weekday['monday']
+            || (bool) $this->weekday['tuesday'] != (bool) $availability->weekday['tuesday']
+            || (bool) $this->weekday['wednesday'] != (bool) $availability->weekday['wednesday']
+            || (bool) $this->weekday['thursday'] != (bool) $availability->weekday['thursday']
+            || (bool) $this->weekday['friday'] != (bool) $availability->weekday['friday']
+            || (bool) $this->weekday['saturday'] != (bool) $availability->weekday['saturday']
+            || (bool) $this->weekday['sunday'] != (bool) $availability->weekday['sunday']
         ) ? false : true;
     }
 
     public function hasSharedWeekdayWith(Availability $availability)
     {
         return ($this->type == $availability->type
-            && (bool)$this->weekday['monday'] != (bool)$availability->weekday['monday']
-            && (bool)$this->weekday['tuesday'] != (bool)$availability->weekday['tuesday']
-            && (bool)$this->weekday['wednesday'] != (bool)$availability->weekday['wednesday']
-            && (bool)$this->weekday['thursday'] != (bool)$availability->weekday['thursday']
-            && (bool)$this->weekday['friday'] != (bool)$availability->weekday['friday']
-            && (bool)$this->weekday['saturday'] != (bool)$availability->weekday['saturday']
-            && (bool)$this->weekday['sunday'] != (bool)$availability->weekday['sunday']
+            && (bool) $this->weekday['monday'] != (bool) $availability->weekday['monday']
+            && (bool) $this->weekday['tuesday'] != (bool) $availability->weekday['tuesday']
+            && (bool) $this->weekday['wednesday'] != (bool) $availability->weekday['wednesday']
+            && (bool) $this->weekday['thursday'] != (bool) $availability->weekday['thursday']
+            && (bool) $this->weekday['friday'] != (bool) $availability->weekday['friday']
+            && (bool) $this->weekday['saturday'] != (bool) $availability->weekday['saturday']
+            && (bool) $this->weekday['sunday'] != (bool) $availability->weekday['sunday']
         ) ? false : true;
+    }
+
+    public function validateWeekdays(\DateTimeInterface $startDate, \DateTimeInterface $endDate, array $weekday): array
+    {
+        $errorList = [];
+
+        // Check if at least one weekday is selected
+        $hasSelectedDay = false;
+        foreach (self::$weekdayNameList as $day) {
+            if ((int)$weekday[$day] > 0) {
+                $hasSelectedDay = true;
+                break;
+            }
+        }
+
+        if (!$hasSelectedDay) {
+            $errorList[] = [
+                'type' => 'weekdayRequired',
+                'message' => 'Mindestens ein Wochentag muss ausgewählt sein.'
+            ];
+            return $errorList;
+        }
+
+        // Map weekday names to German
+        $germanWeekdays = [
+            'sunday' => 'Sonntag',
+            'monday' => 'Montag',
+            'tuesday' => 'Dienstag',
+            'wednesday' => 'Mittwoch',
+            'thursday' => 'Donnerstag',
+            'friday' => 'Freitag',
+            'saturday' => 'Samstag'
+        ];
+
+        // Track which selected weekdays appear in the range
+        $selectedWeekdays = array_filter(self::$weekdayNameList, function ($day) use ($weekday) {
+            return (int)$weekday[$day] > 0;
+        });
+        $foundWeekdays = [];
+
+        // Check if dates fall on selected weekdays
+        $currentDate = clone $startDate;
+        while ($currentDate <= $endDate) {
+            $weekDayName = self::$weekdayNameList[$currentDate->format('w')];
+            if (in_array($weekDayName, $selectedWeekdays)) {
+                $foundWeekdays[] = $weekDayName;
+            }
+            $currentDate = $currentDate->modify('+1 day');
+        }
+
+        // Check if any selected weekday doesn't appear in the range
+        $missingWeekdays = array_diff($selectedWeekdays, array_unique($foundWeekdays));
+        if (!empty($missingWeekdays)) {
+            $germanMissingWeekdays = array_map(function ($day) use ($germanWeekdays) {
+                return $germanWeekdays[$day];
+            }, $missingWeekdays);
+
+            $errorList[] = [
+                'type' => 'invalidWeekday',
+                'message' => sprintf(
+                    'Die ausgewählten Wochentage (%s) kommen im gewählten Zeitraum nicht vor.',
+                    implode(', ', $germanMissingWeekdays)
+                )
+            ];
+        }
+
+        return $errorList;
     }
 
     /**
@@ -629,52 +849,25 @@ class Availability extends Schema\Entity
     Case 16 | 09:00-09:00 09:00-09:00 |      No       |        Yes
     */
 
-    public function getTimeOverlaps(Availability $availability, \DateTimeInterface $currentDate)
+    public function getWeekdayNames(): string
     {
-        $processList = new Collection\ProcessList();
-        if (
-            $availability->id != $this->id
-            && $availability->type == $this->type
-            && $this->hasSharedWeekdayWith($availability)
-        ) {
-            $processTemplate = new Process();
-            $processTemplate->amendment = "Zwei Öffnungszeiten überschneiden sich.";
-            $processTemplate->status = 'conflict';
-            $appointment = $processTemplate->getFirstAppointment();
-            $appointment->availability = $this;
-            $appointment->date = $this->getStartDateTime()->getTimestamp();
-            $thisStart = $this->getStartDateTime()->getSecondsOfDay();
-            $thisEnd = $this->getEndDateTime()->getSecondsOfDay();
-            $availabilityStart = $availability->getStartDateTime()->getSecondsOfDay();
-            $availabilityEnd = $availability->getEndDateTime()->getSecondsOfDay();
+        $germanWeekdays = [
+            'sunday' => 'Sonntag',
+            'monday' => 'Montag',
+            'tuesday' => 'Dienstag',
+            'wednesday' => 'Mittwoch',
+            'thursday' => 'Donnerstag',
+            'friday' => 'Freitag',
+            'saturday' => 'Samstag'
+        ];
 
-            $isEqual = ($availabilityStart == $thisStart && $availabilityEnd == $thisEnd);
+        $selectedDays = array_filter(self::$weekdayNameList, function ($day) {
+            return isset($this->weekday[$day]) && (int)$this->weekday[$day] > 0;
+        });
 
-            if ($availabilityStart < $thisEnd && $thisStart < $availabilityEnd && ! $isEqual) {
-                $process = clone $processTemplate;
-                $process->getFirstAppointment()->date = $this
-                    ->getStartDateTime()
-                    ->modify($currentDate->format("Y-m-d"))
-                    ->getTimestamp();
-                $processList->addEntity($process);
-            } elseif ($thisEnd < $availabilityStart && $availabilityEnd < $thisStart && ! $isEqual) {
-                $process = clone $processTemplate;
-                $process->getFirstAppointment()->date = $availability
-                    ->getStartDateTime()
-                    ->modify($currentDate->format("Y-m-d"))
-                    ->getTimestamp();
-                $processList->addEntity($process);
-            } elseif ($isEqual) {
-                $process = clone $processTemplate;
-                $process->amendment = "Zwei Öffnungszeiten sind gleich.";
-                $process->getFirstAppointment()->date = $availability
-                    ->getStartDateTime()
-                    ->modify($currentDate->format("Y-m-d"))
-                    ->getTimestamp();
-                $processList->addEntity($process);
-            }
-        }
-        return $processList;
+        return implode(' ', array_map(function ($day) use ($germanWeekdays) {
+            return $germanWeekdays[$day];
+        }, $selectedDays));
     }
 
     /**
@@ -767,28 +960,28 @@ class Availability extends Schema\Entity
     public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;
-        if (! in_array('repeat', $keepArray)) {
+        if (!in_array('repeat', $keepArray)) {
             unset($entity['repeat']);
         }
-        if (! in_array('id', $keepArray)) {
+        if (!in_array('id', $keepArray)) {
             unset($entity['id']);
         }
-        if (! in_array('bookable', $keepArray)) {
+        if (!in_array('bookable', $keepArray)) {
             unset($entity['bookable']);
         }
-        if (! in_array('workstationCount', $keepArray)) {
+        if (!in_array('workstationCount', $keepArray)) {
             unset($entity['workstationCount']);
         }
-        if (! in_array('multipleSlotsAllowed', $keepArray)) {
+        if (!in_array('multipleSlotsAllowed', $keepArray)) {
             unset($entity['multipleSlotsAllowed']);
         }
-        if (! in_array('lastChange', $keepArray)) {
+        if (!in_array('lastChange', $keepArray)) {
             unset($entity['lastChange']);
         }
-        if (! in_array('slotTimeInMinutes', $keepArray)) {
+        if (!in_array('slotTimeInMinutes', $keepArray)) {
             unset($entity['slotTimeInMinutes']);
         }
-        if (! in_array('description', $keepArray)) {
+        if (!in_array('description', $keepArray)) {
             unset($entity['description']);
         }
 
