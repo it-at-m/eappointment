@@ -133,6 +133,12 @@
                 "$ref": "dayoff.json"
             }
         },
+        "closure": {
+            "type": "array",
+            "items": {
+                "$ref": "closure.json"
+            }
+        },
         "hint": {
             "type": "string",
             "description": "hint for the client like a description where to find the scope",
