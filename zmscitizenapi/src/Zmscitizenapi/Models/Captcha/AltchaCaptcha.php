@@ -16,11 +16,11 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
 /** @var string */
     public string $siteKey;
 /** @var string */
-    public string $apiUrl;
+    public string $siteSecret;
 /** @var string */
-    public string $secretKey;
+    public string $challengeUrl;
 /** @var string */
-    public string $puzzle;
+    public string $verifyUrl;
 /**
      * Constructor.
      */
@@ -28,9 +28,9 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
     {
         $this->service = 'AltchaCaptcha';
         $this->siteKey = \App::$ALTCHA_CAPTCHA_SITE_KEY;
-        $this->apiUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT;
-        $this->secretKey = \App::$ALTCHA_CAPTCHA_SECRET_KEY;
-        $this->puzzle = \App::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
+        $this->siteSecret = \App::$ALTCHA_CAPTCHA_SITE_SECRET;
+        $this->challengeUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
+        $this->verifyUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
         $this->ensureValid();
     }
 
@@ -50,28 +50,53 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
     {
         return [
             'siteKey' => $this->siteKey,
-            'captchaEndpoint' => $this->apiUrl,
-            'puzzle' => $this->puzzle,
+            'captchaChallenge' => $this->challengeUrl,
+            'captchaVerify' => $this->verifyUrl,
             'captchaEnabled' => \App::$CAPTCHA_ENABLED
         ];
     }
 
+    // /**
+    //  * Fordert ein neues Captcha an.
+    //  *
+    //  * @param string $clientIp
+    //  * @return array|null
+    //  */
+    // public function requestCaptcha(string $clientIp): ?array
+    // {
+    //     try {
+    //         $response = \App::$http->post($this->challengeUrl, [
+    //             'json' => ['clientIpAddress' => $clientIp]
+    //         ]);
+
+    //         $responseBody = json_decode((string)$response->getBody(), true);
+    //         if (json_last_error() !== JSON_ERROR_NONE || empty($responseBody)) {
+    //             return null;
+    //         }
+
+    //         return $responseBody;
+    //     } catch (RequestException $e) {
+    //         return null;
+    //     }
+    // }
+
     /**
      * Überprüft die Captcha-Lösung.
      *
-     * @param string $solution
+     * @param string $payload
      * @return bool
-     * @throws \Exception
      */
-    public function verifyCaptcha(string $solution): bool
+    public function verifyCaptcha(string $payload): bool
     {
         try {
-            $response = \App::$http->post($this->apiUrl, [
-                'form_params' => [
-                    'secret' => $this->secretKey,
-                    'solution' => $solution
+            $response = \App::$http->post($this->verifyUrl, [
+                'json' => [
+                    'siteKey' => $this->siteKey,
+                    'siteSecret' => $this->siteSecret,
+                    'payload' => $payload
                 ]
             ]);
+
             $responseBody = json_decode((string)$response->getBody(), true);
             if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['valid'])) {
                 return false;

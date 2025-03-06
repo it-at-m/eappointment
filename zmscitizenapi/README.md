@@ -67,10 +67,10 @@ sequenceDiagram
 | FRIENDLY_CAPTCHA_SITE_KEY | FriendlyCaptcha site key | "" |
 | FRIENDLY_CAPTCHA_ENDPOINT | FriendlyCaptcha verification endpoint | https://eu-api.friendlycaptcha.eu/api/v1/siteverify |
 | FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE | FriendlyCaptcha puzzle endpoint | https://eu-api.friendlycaptcha.eu/api/v1/puzzle |
-| ALTCHA_CAPTCHA_SECRET_KEY | Altcha secret key | "" |
 | ALTCHA_CAPTCHA_SITE_KEY | Altcha site key | "" |
-| ALTCHA_CAPTCHA_ENDPOINT | Altcha verification endpoint | https://eu.altcha.org/form/ |
-| ALTCHA_CAPTCHA_ENDPOINT_PUZZLE | Altcha puzzle endpoint | https://eu.altcha.org/ |
+| ALTCHA_CAPTCHA_SITE_SECRET | Altcha site secret | "" |
+| ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE | Altcha challenge endpoint | https://captcha-k.muenchen.de/api/v1/captcha/challenge |
+| ALTCHA_CAPTCHA_ENDPOINT_VERIFY | Altcha verification endpoint | https://captcha-k.muenchen.de/api/v1/captcha/verify |
 | **Rate Limiting** |
 | RATE_LIMIT_MAX_REQUESTS | Maximum requests per window | 60 |
 | RATE_LIMIT_CACHE_TTL | Rate limit cache TTL in seconds | 60 |

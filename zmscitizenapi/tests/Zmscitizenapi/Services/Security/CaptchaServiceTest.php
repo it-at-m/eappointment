@@ -28,7 +28,7 @@ class CaptchaServiceTest extends TestCase
         // Assert
         $this->assertIsArray($result);
         $this->assertArrayHasKey('siteKey', $result);
-        $this->assertArrayHasKey('captchaEndpoint', $result);
+        $this->assertArrayHasKey('captchaVerify', $result);
         $this->assertArrayHasKey('puzzle', $result);
         $this->assertArrayHasKey('captchaEnabled', $result);
     }
@@ -46,7 +46,7 @@ class CaptchaServiceTest extends TestCase
 
         // Assert
         $this->assertEquals($expectedSiteKey, $result['siteKey']);
-        $this->assertEquals($expectedEndpoint, $result['captchaEndpoint']);
+        $this->assertEquals($expectedEndpoint, $result['captchaVerify']);
         $this->assertEquals($expectedPuzzle, $result['puzzle']);
         $this->assertEquals($expectedEnabled, $result['captchaEnabled']);
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Security;
 
-use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
+use BO\Zmscitizenapi\Models\Captcha\AltchaCaptcha;
 
 class CaptchaService
 {
@@ -13,8 +13,8 @@ class CaptchaService
         return $this->getCaptchaDetails()->getCaptchaDetails();
     }
 
-    private function getCaptchaDetails(): FriendlyCaptcha
+    private function getCaptchaDetails(): AltchaCaptcha
     {
-        return new FriendlyCaptcha();
+        return new AltchaCaptcha();
     }
 }
