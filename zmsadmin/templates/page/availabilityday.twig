@@ -23,6 +23,56 @@
 {% endblock %}
 
 {% block content %}
+    <div>
+        <div class="closure"
+             data-scope="{{scope | json_encode}}"
+             data-dateString="{{dateString}}"></div>
+
+        {% set locked = false %}
+        {% for closure in scope.closure %}
+            {% if "%04d-%02d-%02d"|format(closure.year, closure.month, closure.day) == dateString %}
+                {% set locked = true %}
+            {% endif %}
+        {% endfor %}
+        <div id="closure-close" class="message message--warning {% if not locked %}hidden{% endif %}">
+            Die Terminbuchung für diesen Tag ist gesperrt. <input class="button btn" style="margin-top: -6px;" type="button" onclick="toggleClosure()" value="Entsperren">
+        </div>
+        <div id="closure-open" class="message message--info {% if locked %}hidden{% endif %}">
+            Die Terminbuchung für diesen Tag ist NICHT gesperrt. <input class="button btn" style="margin-top: -6px;" onclick="toggleClosure()" type="button" value="Sperren">
+        </div>
+
+        <script>
+            function toggleClosure() {
+                const ok = confirm('Möchten Sie wirklich Die Terminbuchung für diesen Tag {% if locked %}entsperren{% else %}sperren{% endif %}?')
+                if (!ok) {
+                    return
+                }
+
+                const currentDate = '{{ dateString }}'
+                const url = `{{ includeUrl() }}/scope/{{ scope.id }}/availability/day/${currentDate}/closure/toggle/`
+                $.ajax(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    data: JSON.stringify({})
+                }).done(data => {
+                    if (data.closure.existing) {
+                        document.getElementById('closure-close').classList.remove('hidden')
+                        document.getElementById('closure-open').classList.add('hidden')
+                    } else {
+                        document.getElementById('closure-close').classList.add('hidden')
+                        document.getElementById('closure-open').classList.remove('hidden')
+                    }
+                }).fail(err => {
+                    console.log('error', err)
+                })
+            }
+        </script>
+
+        {% set a = getNow()|date('Y-m-d') %}
+        {% if scope.closure.hasEntityByDate('2025-02-24') %}
+            X
+        {% endif %}
+    </div>
     <div class="availabilityDayRoot"
         data-today="{{ today }}"
         data-availabilityList="{{availabilityList | json_encode}}"
@@ -39,6 +89,12 @@
         data-slotbuckets={{ slotBuckets|json_encode }}
         data-maxslots="{{ maxSlotsForAvailabilities|json_encode }}"
         data-busyslots="{{ busySlotsForAvailabilities|json_encode }}" ></div>
+
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 {% endblock %}
 
 {% block javascript %}

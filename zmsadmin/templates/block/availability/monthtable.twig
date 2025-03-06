@@ -91,10 +91,14 @@
                                     {% endif %}
                                 </div>
                                 <div class="row icons palm-hide">
+                                    {% if closureList.hasEntityByDate(day.toDateTime()) %}
+                                        {{ openingCalendarIcon('X', 'red daystatus--conflict', 1, 'Gesperrt') }}
+                                    {% endif %}
                                     {% if day.freeAppointments.public > 0 %}<i class="fas fa-globe" role="img"  title="Buchbar per Internet"></i>{% endif %}
                                     {% if day.freeAppointments.callcenter > 0 %}<i class="fas fa-phone" role="img"  title="Buchbar per Callcenter"></i>{% endif %}
                                 </div>
-                                <div class="row holiday palm-hide">{% if dayoffList.hasEntityByDate(day.toDateTime()) %}
+                                <div class="row holiday palm-hide">
+                                    {% if dayoffList.hasEntityByDate(day.toDateTime()) %}
                                     {{ dayoffList.getByDate(day.toDateTime()).name }}
                                     {% endif %}
                                 </div>
