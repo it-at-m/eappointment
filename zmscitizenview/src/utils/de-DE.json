@@ -51,6 +51,7 @@
   "selectedDateNoLongerAvailableHeader": "Ihr gewählter Termin ist nicht mehr verfügbar.",
   "selectedDateNoLongerAvailableText": "Leider hat inzwischen eine andere Person Ihren gewünschten Termin gebucht. Bitte wählen Sie einen neuen Termin aus.",
   "service": "Leistung",
+  "serviceSelectionPlaceholder": "Suchbegriff eingeben",
   "shortNameResidenceRegistration": "Wohnsitz-Anmeldung",
   "shortNamePassport": "Reisepass",
   "shortNameIdentityCard": "Personalausweis",

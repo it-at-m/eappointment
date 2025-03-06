@@ -51,6 +51,7 @@
   "selectedDateNoLongerAvailableHeader": "Your selected date is no longer available.",
   "selectedDateNoLongerAvailableText": "Unfortunately, another person has now booked your desired appointment. Please select a new date.",
   "service": "Service",
+  "serviceSelectionPlaceholder": "Enter search term",
   "serviceSearch": "Search for citizen services",
   "skipCombinableServices": "Skip combinable services",
   "shortNameResidenceRegistration": "Residence registration",
