@@ -74,16 +74,16 @@ class AppointmentCancelControllerTest extends ControllerTestCase
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'officeName' => null,
-            'officeId' => 0,
+            'officeId' => 123,
             'scope' => [
                 'id' => 0,
                 'provider' => [
                     'contact'=> null,
-                    'id'=> null,
+                    'id'=> 123,
                     'lat'=> null,
                     'lon'=> null,
-                    'name'=> null,
-                    'source'=> null
+                    'name'=> '',
+                    'source'=> 'dldb'
                 ],
                 'shortName' => null,
                 'emailFrom' => '',

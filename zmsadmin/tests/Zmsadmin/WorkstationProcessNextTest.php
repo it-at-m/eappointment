@@ -155,6 +155,7 @@ class WorkstationProcessNextTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
+        var_dump((string)$response->getBody());
         $this->assertStringContainsString(
             'Aktuell gibt es keine wartenden Kunden',
             (string)$response->getBody()
