@@ -15,7 +15,7 @@
                 "source": "dldb"
             },
             "availability": {
-                "id": "75010",
+                "id": 75010,
                 "weekday": {
                     "sunday": 0,
                     "monday": 0,
@@ -172,37 +172,37 @@
             },
             "survey": {
                 "emailContent": "",
-                "enabled": "0",
+                "enabled": 0,
                 "label": ""
             },
             "ticketprinter": {
                 "buttonName": "Mobiles Bürgeramt MV",
-                "confirmationEnabled": "0",
+                "confirmationEnabled": 0,
                 "deactivatedText": "",
-                "notificationsAmendmentEnabled": "0",
-                "notificationsEnabled": "0",
-                "notificationsDelay": "0"
+                "notificationsAmendmentEnabled": 0,
+                "notificationsEnabled": 0,
+                "notificationsDelay": 0
             },
             "workstation": {
-                "emergencyEnabled": "0",
-                "emergencyRefreshInterval": "5"
+                "emergencyEnabled": 0,
+                "emergencyRefreshInterval": 5
             }
         },
         "shortName": "",
         "status": {
             "emergency": {
                 "acceptedByWorkstation": "-1",
-                "activated": "0",
+                "activated": 0,
                 "calledByWorkstation": "-1"
             },
             "queue": {
-                "ghostWorkstationCount": "-1",
-                "givenNumberCount": "3",
-                "lastGivenNumber": "4",
+                "ghostWorkstationCount": -1,
+                "givenNumberCount": 3,
+                "lastGivenNumber": 4,
                 "lastGivenNumberTimestamp": 1440540000
             },
             "ticketprinter": {
-                "deactivated": "1"
+                "deactivated": 1
             }
         }
     },

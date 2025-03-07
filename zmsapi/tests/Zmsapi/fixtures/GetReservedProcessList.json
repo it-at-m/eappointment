@@ -43,7 +43,16 @@
                     "endDate": 0,
                     "startTime": "0:00",
                     "endTime": "23:59",
-                    "type": "appointment"
+                    "type": "appointment",
+                    "scope": {
+                        "id": 380,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    }
                 },
                 "slotCount": 1
             }
