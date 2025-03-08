@@ -93,9 +93,6 @@ class Validator
         // Convert data to JSON object
         $data = json_decode(json_encode($data));
 
-        // Coerce types according to schema
-        $data = $this->coerceTypes($data, $schemaJson);
-
         // Debugging
         // var_dump("Schema:", json_encode($schemaJson, JSON_PRETTY_PRINT));
         // var_dump("*********************************************");
@@ -217,45 +214,6 @@ class Validator
                     $this->resolveRefs($value);
                 }
             }
-        }
-    }
-
-    private function coerceTypes($data, $schema)
-    {
-        if (!is_object($schema) || !isset($schema->type)) {
-            return $data;
-        }
-
-        if ($schema->type === "object" && isset($schema->properties) && is_object($data)) {
-            foreach ($schema->properties as $key => $propertySchema) {
-                if (isset($data->$key)) {
-                    $data->$key = $this->coerceTypes($data->$key, $propertySchema);
-                }
-            }
-        } elseif ($schema->type === "array" && isset($schema->items) && is_array($data)) {
-            foreach ($data as $index => $value) {
-                $data[$index] = $this->coerceTypes($value, $schema->items);
-            }
-        } else {
-            $data = $this->convertValue($data, $schema->type);
-        }
-
-        return $data;
-    }
-
-    private function convertValue($value, $type)
-    {
-        switch ($type) {
-            case 'integer':
-                return filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?? $value;
-            case 'number':
-                return filter_var($value, FILTER_VALIDATE_FLOAT, FILTER_NULL_ON_FAILURE) ?? $value;
-            case 'boolean':
-                return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $value;
-            case 'string':
-                return is_scalar($value) ? (string) $value : $value;
-            default:
-                return $value;
         }
     }
 }
