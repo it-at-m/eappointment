@@ -14,7 +14,7 @@ use BO\Zmsentities\Collection\ProcessList;
  */
 class AvailabilityList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Availability';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Availability';
 
     public function getMaxWorkstationCount()
     {

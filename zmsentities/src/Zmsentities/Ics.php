@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Ics extends Schema\Entity
 {
-    const PRIMARY = 'content';
+    public const PRIMARY = 'content';
 
     public static $schema = "ics.json";
 

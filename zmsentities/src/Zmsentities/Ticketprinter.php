@@ -7,7 +7,7 @@ use BO\Zmsentities\Helper\Property;
 
 class Ticketprinter extends Schema\Entity
 {
-    const PRIMARY = 'hash';
+    public const PRIMARY = 'hash';
 
     public static $schema = "ticketprinter.json";
 

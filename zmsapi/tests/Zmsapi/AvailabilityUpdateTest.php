@@ -17,13 +17,13 @@ class AvailabilityUpdateTest extends Base
         $startDate = $currentTimestamp + (2 * 24 * 60 * 60); // 2 days in the future
         $weekday = strtolower(date('l', $startDate));
         $weekdayBitmap = [
-            'sunday' => $weekday === 'sunday' ? '1' : '0',
-            'monday' => $weekday === 'monday' ? '2' : '0',
-            'tuesday' => $weekday === 'tuesday' ? '4' : '0',
-            'wednesday' => $weekday === 'wednesday' ? '8' : '0',
-            'thursday' => $weekday === 'thursday' ? '16' : '0',
-            'friday' => $weekday === 'friday' ? '32' : '0',
-            'saturday' => $weekday === 'saturday' ? '64' : '0'
+            'sunday' => $weekday === 'sunday' ? 1 : 0,
+            'monday' => $weekday === 'monday' ? 2 : 0,
+            'tuesday' => $weekday === 'tuesday' ? 4 : 0,
+            'wednesday' => $weekday === 'wednesday' ? 8 : 0,
+            'thursday' => $weekday === 'thursday' ? 16 : 0,
+            'friday' => $weekday === 'friday' ? 32 : 0,
+            'saturday' => $weekday === 'saturday' ? 64 : 0
         ];
         
         $input['startDate'] = $startDate;
@@ -33,6 +33,12 @@ class AvailabilityUpdateTest extends Base
         $input['weekday'] = $weekdayBitmap;
         $input['scope'] = [
             "id" => 312,
+            "provider" => [
+                "id" => 123456,
+                "name" => "",
+                "source" => "dldb"
+            ],
+            "shortName" => "Test",
             "dayoff" => [
                 [
                     "id" => 35,
@@ -69,6 +75,12 @@ class AvailabilityUpdateTest extends Base
                         "weekday" => $weekdayBitmap,
                         "scope" => [
                             "id" => 312,
+                            "provider" => [
+                                "id" => 123456,
+                                "name" => "",
+                                "source" => "dldb"
+                            ],
+                            "shortName" => "Test",
                             "dayoff" => [
                                 [
                                     "id" => 35,
@@ -105,6 +117,12 @@ class AvailabilityUpdateTest extends Base
         $input['endTime'] = "09:00:00";
         $input['scope'] = [
             "id" => 312,
+            "provider" => [
+                "id" => 123456,
+                "name" => "",
+                "source" => "dldb"
+            ],
+            "shortName" => "Test",
             "dayoff" => [
                 [
                     "id" => 35,
@@ -139,6 +157,12 @@ class AvailabilityUpdateTest extends Base
                         "kind" => "default",
                         "scope" => [
                             "id" => 312,
+                            "provider" => [
+                                "id" => 123456,
+                                "name" => "",
+                                "source" => "dldb"
+                            ],
+                            "shortName" => "Test",
                             "dayoff" => [
                                 [
                                     "id" => 35,

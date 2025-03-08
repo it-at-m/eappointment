@@ -8,10 +8,10 @@
   },
   "data": {
     "$schema": "https://schema.berlin.de/queuemanagement/ticketprinter.json",
-    "enabled": "1",
+    "enabled": 1,
     "hash": "71abcdefghijklmnopqrstuvwxyz",
-    "id": "1",
-    "lastUpdate": "1477661416",
+    "id": 1,
+    "lastUpdate": 1477661416,
     "name": "Test Ticketprinter",
     "buttonlist": "s141",
     "buttons": [
@@ -20,7 +20,7 @@
         "url": "/scope/141/",
         "scope": {
           "hint": "Bürgeramt | ",
-          "id": "141",
+          "id": 141,
           "contact": {
             "name": "Bürgeramt I in Köpenick",
             "street": "Alt-Köpenick 21, 12555 Berlin",
@@ -29,75 +29,77 @@
           },
           "preferences": {
             "appointment": {
-              "deallocationDuration": "20",
-              "endInDaysDefault": "60",
-              "multipleSlotsEnabled": "1",
-              "reservationDuration": "20",
-              "startInDaysDefault": "0"
+              "deallocationDuration": 20,
+              "endInDaysDefault": 60,
+              "multipleSlotsEnabled": 1,
+              "reservationDuration": 20,
+              "startInDaysDefault": 0
             },
             "client": {
               "alternateAppointmentUrl": "https://service.berlin.de",
-              "amendmentActivated": "1",
+              "amendmentActivated": 1,
               "amendmentLabel": "",
-              "emailRequired": "1",
-              "telephoneActivated": "1",
-              "telephoneRequired": "1"
+              "emailRequired": 1,
+              "telephoneActivated": 1,
+              "telephoneRequired": 1
             },
             "notifications": {
               "confirmationContent": "",
               "headsUpContent": "",
-              "headsUpTime": "0"
+              "headsUpTime": 0
             },
             "pickup": {
               "alternateName": "Ausgabe",
-              "isDefault": "0"
+              "isDefault": 0
             },
             "queue": {
-              "callCountMax": "0",
+              "callCountMax": 0,
               "callDisplayText": "Herzlich Willkommen \r\nim Bürgeramt Köpenick\r\n======================",
-              "firstNumber": "1",
-              "lastNumber": "399",
-              "processingTimeAverage": "12",
-              "publishWaitingTimeEnabled": "1",
-              "statisticsEnabled": "1"
+              "firstNumber": 1,
+              "lastNumber": 399,
+              "processingTimeAverage": 12,
+              "publishWaitingTimeEnabled": 1,
+              "statisticsEnabled": 1
             },
             "survey": {
               "emailContent": "",
-              "enabled": "0",
+              "enabled": 0,
               "label": ""
             },
             "ticketprinter": {
               "buttonName": "Bürgeramt I in Köpenick",
-              "confirmationEnabled": "0",
+              "confirmationEnabled": 0,
               "deactivatedText": "",
-              "notificationsAmendmentEnabled": "0",
-              "notificationsEnabled": "0",
-              "notificationsDelay": "0"
+              "notificationsAmendmentEnabled": 0,
+              "notificationsEnabled": 0,
+              "notificationsDelay": 0
             },
             "workstation": {
-              "emergencyEnabled": "1"
+              "emergencyEnabled": 1
             }
           },
           "shortName": "",
           "status": {
             "emergency": {
               "acceptedByWorkstation": "-1",
-              "activated": "0",
+              "activated": 0,
               "calledByWorkstation": "-1"
             },
             "queue": {
-              "workstationCount": "0",
-              "ghostWorkstationCount": "-1",
-              "givenNumberCount": "35",
-              "lastGivenNumber": "36",
+              "workstationCount": 0,
+              "ghostWorkstationCount": -1,
+              "givenNumberCount": 35,
+              "lastGivenNumber": 36,
               "lastGivenNumberTimestamp": 1458774000
             },
             "ticketprinter": {
-              "deactivated": "0"
+              "deactivated": 0
             }
           },
           "provider": {
-            "id": "122208",
+            "id": 122208,
+            "name": "Bürgeramt Mitte",
+            "source": "dldb",
             "$ref": "/provider/122208/"
           }
         },
