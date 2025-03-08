@@ -10,8 +10,7 @@ class AvailabilitySlotsUpdateTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render([], [
-            '__body' => '[
-                {
+            '__body' => '{
                     "id": 21202,
                     "description": "Test Öffnungszeit update",
                     "scope": {
@@ -23,8 +22,7 @@ class AvailabilitySlotsUpdateTest extends Base
                         },
                         "shortName": "Zentrale"
                     },
-                }
-            ]'
+                }'
         ], []);
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
