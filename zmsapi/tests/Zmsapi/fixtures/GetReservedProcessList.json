@@ -136,7 +136,16 @@
                     "endDate": 0,
                     "startTime": "0:00",
                     "endTime": "23:59",
-                    "type": "appointment"
+                    "type": "appointment",
+                    "scope": {
+                        "id": 380,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    }
                 },
                 "slotCount": 1
             }
@@ -220,7 +229,16 @@
                     "endDate": 0,
                     "startTime": "0:00",
                     "endTime": "23:59",
-                    "type": "appointment"
+                    "type": "appointment",
+                    "scope": {
+                        "id": 380,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    }
                 },
                 "slotCount": 1
             }
@@ -304,7 +322,16 @@
                     "endDate": 0,
                     "startTime": "0:00",
                     "endTime": "23:59",
-                    "type": "appointment"
+                    "type": "appointment",
+                    "scope": {
+                        "id": 142,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    }
                 },
                 "slotCount": 1
             }
@@ -334,7 +361,7 @@
         },
         "reminderTimestamp": 0,
         "scope": {
-            "id": 380,
+            "id": 142,
             "provider": {
                 "id": 123456,
                 "name": "Flughafen Schönefeld, Aufsicht",
@@ -388,7 +415,16 @@
                     "endDate": 0,
                     "startTime": "0:00",
                     "endTime": "23:59",
-                    "type": "appointment"
+                    "type": "appointment",
+                    "scope": {
+                        "id": 140,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    }
                 },
                 "slotCount": 1
             }
@@ -472,7 +508,16 @@
                     "endDate": 0,
                     "startTime": "0:00",
                     "endTime": "23:59",
-                    "type": "appointment"
+                    "type": "appointment",
+                    "scope": {
+                        "id": 147,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    }
                 },
                 "slotCount": 2
             }
@@ -556,7 +601,16 @@
                     "endDate": 0,
                     "startTime": "0:00",
                     "endTime": "23:59",
-                    "type": "appointment"
+                    "type": "appointment",
+                    "scope": {
+                        "id": 142,
+                        "provider": {
+                            "id": 123456,
+                            "name": "Flughafen Schönefeld, Aufsicht",
+                            "source": "dldb"
+                        },
+                        "shortName": "Zentrale"
+                    }
                 },
                 "slotCount": 1
             }
