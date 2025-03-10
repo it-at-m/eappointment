@@ -934,8 +934,8 @@ class Process extends Base implements MappingInterface
             $wartezeitInSeconds = $process->getWaitedSeconds();
             $wartezeitInSeconds = $wartezeitInSeconds > 0 ? $wartezeitInSeconds : 0;
 
-            // Umrechnung der Sekunden in HH:MM:SS
-            $hours   = intdiv($wartezeitInSeconds, 3600);
+            // Convert total seconds into HH:MM:SS format
+            $hours = intdiv($wartezeitInSeconds, 3600);
             $minutes = intdiv($wartezeitInSeconds % 3600, 60);
             $seconds = $wartezeitInSeconds % 60;
 

@@ -55,7 +55,7 @@ class CalculateDailyWaitingStatisticByCron extends Base
         $statsByScopeDate = [];
 
         foreach ($buergerRows as $br) {
-            // (2a) Wenn wartezeit NULL oder leer ist => storniert oder hatte keine echte Wartezeit => überspringen
+            // Wenn wartezeit NULL oder leer ist => storniert oder hatte keine echte Wartezeit => überspringen
             if (empty($br['wartezeit'])) {
                 continue;
             }

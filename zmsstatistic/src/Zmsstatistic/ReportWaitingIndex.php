@@ -50,7 +50,6 @@ class ReportWaitingIndex extends BaseController
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
             ->withMaxByHour($this->hashset)
-//            ->withSumByHour(['waitingcount', 'waitingcount_termin'])
             ->withMaxAndAverageFromWaitingTime();
 
             $exchangeWaiting = ReportHelper::withMaxAndAverage($exchangeWaiting, 'waitingtime');
