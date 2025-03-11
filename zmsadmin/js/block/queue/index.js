@@ -39,17 +39,11 @@ class View extends BaseView {
 
 
     load(withCalled = false) {
-        if (withCalled === false) {
-            const storedState = localStorage.getItem('calledPanelOpen');
-            withCalled = (storedState === 'true');
-        }
-
         const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}&withCalled=${withCalled ? 1 : 0}`;
 
         return this.loadContent(url, 'GET', null, null, this.showLoader)
             .then(() => {
-                const storedState = localStorage.getItem('calledPanelOpen');
-                if (storedState === 'true') {
+                if (withCalled) {
                     $('#called-appointments').addClass('active');
                     $('#called-appointments').next('.accordion-panel').css('display', 'block');
                     this.withCalled = true;
@@ -85,7 +79,6 @@ class View extends BaseView {
             this.onResetProcess(ev);
         }).on('click', '#called-appointments', (ev) => {
             this.withCalled = ! this.withCalled
-            localStorage.setItem('calledPanelOpen', this.withCalled ? 'true' : 'false');
             if (this.withCalled) {
                 this.load(true)
             }
