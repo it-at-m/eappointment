@@ -74,7 +74,7 @@ class AvailabilityTest extends Base
         $lastInsertedId = $entity->id;
 
         $entity = $query->readEntity($lastInsertedId, 1);
-        $this->assertEquals(12, $entity->slotTimeInMinutes);
+        $this->assertEquals(10, $entity->slotTimeInMinutes);
         $this->assertTrue((bool)$entity->weekday['thursday']);
         $this->assertTrue((bool)$entity->weekday['friday']);
 
