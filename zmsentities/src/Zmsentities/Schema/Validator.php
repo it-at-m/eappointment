@@ -22,8 +22,10 @@ class Validator
         $this->validator = new OpisValidator();
 
         // Register schema loader for resolving $refs
-        $schemaPath = '/__w/eappointment/eappointment/zmsentities/schema/';
-        // $schemaPath = '/var/www/html/zmsentities/schema/';
+        // $schemaPath = '/__w/eappointment/eappointment/zmsentities/schema/';
+        var_dump(realpath(dirname(__FILE__) . '/../../../schema') . '/');
+        $schemaPath = '/var/www/html/zmsentities/schema/';
+        // $schemaPath = dirname(__FILE__);
         // error_log("Resolved schemaPath: " . $schemaPath);
         // error_log("Current working directory: " . getcwd());
         // error_log("Checking if availability.json exists: " . (file_exists($schemaPath . 'availability.json') ? 'Yes' : 'No'));
