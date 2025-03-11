@@ -239,6 +239,7 @@
 					<dt>{{ selectedprocess.appointments.date|date("d.m.Y") }} um {{ selectedprocess.appointments.date|date("H:i") }}</dt>
 					<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
 				</dl>
+				 <button type="button" class="copy-btn" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren">📄📄</button>
 				<div class="form-actions">
 					<div class="right">
 						<button type="button" class="button btn button-submit button-ok">Ok</button>
@@ -299,6 +300,7 @@
 					<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
 				</dl>
 				<div class="form-actions">
+				<button type="button" class="copy-btn" id="copy-popup-content" title="Inhalt kopieren">📄📄</button>
 		            <div class="right">
 		                <button type="button" class="btn button button-submit button-ok" accesskey="q">Schließen</button>
 		                <button type="button" class="btn button button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id={{ selectedprocess.id }} accesskey="u">Wartenummer drucken</button>
