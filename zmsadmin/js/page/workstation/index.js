@@ -51,6 +51,7 @@ class View extends BaseView {
             'onChangeProcess',
             'onReserveProcess',
             'onCopyProcess',
+            'onCopyButton',
             'onQueueProcess',
             'onResetProcess',
             'onSendCustomMail',
@@ -417,6 +418,33 @@ class View extends BaseView {
         this.loadAppointmentForm();
     }
 
+    onCopyButton(event) {
+        stopEvent(event);
+        console.log("Hallo");
+        document.addEventListener('DOMContentLoaded', function () {
+            var copyButton = document.getElementById('copy-popup-content');
+            var popupContent = document.getElementById('popup-content');
+        
+            copyButton.addEventListener('click', function () {
+                var range = document.createRange();
+                range.selectNode(popupContent);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+        
+                try {
+                    var successful = document.execCommand('copy');
+                    var msg = successful ? 'erfolgreich' : 'nicht erfolgreich';
+                    alert('Inhalt wurde ' + msg + ' kopiert');
+                } catch (err) {
+                    alert('Kopieren war nicht erfolgreich');
+                }
+        
+                window.getSelection().removeAllRanges();
+            });
+        });
+        
+    }
+
     onPrintProcessMail(event) {
         stopEvent(event);
         this.selectedProcess = $(event.currentTarget).data('id');
@@ -586,6 +614,7 @@ class View extends BaseView {
             onChangeProcess: this.onChangeProcess,
             onReserveProcess: this.onReserveProcess,
             onCopyProcess: this.onCopyProcess,
+            onCopyButton: this.onCopyButton,
             onChangeScope: this.onChangeScope,
             onAbortProcess: this.onAbortProcess,
             onCancelAppointmentForm: this.onCancelAppointmentForm,
