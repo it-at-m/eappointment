@@ -10,6 +10,7 @@ use BO\Zmscitizenapi\Services\Core\ExceptionService;
 use BO\Zmsentities\Calendar;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Source;
+use BO\Zmsentities\Collection\DayList;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
@@ -55,7 +56,7 @@ class ZmsApiClientService
             }
             return $list;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -69,7 +70,7 @@ class ZmsApiClientService
             }
             return $list;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -83,7 +84,7 @@ class ZmsApiClientService
             }
             return $list;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -97,7 +98,7 @@ class ZmsApiClientService
             }
             return $list;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -111,12 +112,21 @@ class ZmsApiClientService
             $calendar->requests = $requests;
             $result = \App::$http->readPostResult('/calendar/', $calendar);
             $entity = $result?->getEntity();
+
             if (!$entity instanceof Calendar) {
                 return new Calendar();
             }
+            $bookableDays = new DayList();
+            foreach ($entity->days as $day) {
+                if (isset($day['status']) && $day['status'] === 'bookable') {
+                    $bookableDays->addEntity($day);
+                }
+            }
+            $entity->days = $bookableDays;
+
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -136,7 +146,7 @@ class ZmsApiClientService
 
             return $collection;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -174,7 +184,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -189,7 +199,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -204,7 +214,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -219,7 +229,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -227,15 +237,14 @@ class ZmsApiClientService
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/";
-            $result = \App::$http->readDeleteResult($url, [], null);
-// Changed to match test expectations
+            $result = \App::$http->readDeleteResult($url, []);
             $entity = $result?->getEntity();
             if (!$entity instanceof Process) {
                 return new Process();
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -250,7 +259,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -265,11 +274,11 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
-    public static function sendCancelationEmail(Process $process): Process
+    public static function sendCancellationEmail(Process $process): Process
     {
         try {
             $url = "/process/{$process->id}/{$process->authKey}/delete/mail/";
@@ -280,7 +289,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -297,7 +306,7 @@ class ZmsApiClientService
             }
             return $entity;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 
@@ -314,7 +323,7 @@ class ZmsApiClientService
             }
             return $result;
         } catch (\Exception $e) {
-            ExceptionService::handleException($e, __FUNCTION__);
+            ExceptionService::handleException($e);
         }
     }
 }

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="/favicon.ico" rel="icon">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Terminvereinbarung Bürgeransicht Webcomponent</title>
+
+    <!-- Muenchen.de-Styles -->
+    <link
+            rel="stylesheet"
+            href="https://assets.muenchen.de/mde/1.0.7/css/muenchende-fontfaces.css"
+    />
+    <link
+            rel="stylesheet"
+            href="https://assets.muenchen.de/mde/1.0.7/css/muenchende-style.css"
+    />
+
+    <!-- built files will be auto injected -->
+    <script src="src/main.ts" type="module"></script>
+
+</head>
+<body>
+
+<noscript>
+    <strong>Damit das Widget korrekt funktioniert, muss Javascript aktiviert werden.</strong>
+</noscript>
+
+<i18n-host>
+    <zms-appointment-wrapped></zms-appointment-wrapped>
+</i18n-host>
+
+<script type="text/javascript">
+    const element = document.getElementsByTagName('zms-appointment-wrapped')[0]
+    const urlElements = window.location.hash.split('/')
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+
+    if (urlElements.length >= 3 && urlElements[1] === 'services') {
+        element.setAttribute('service-id', urlElements[2])
+    }
+
+    if (urlElements.length >= 5 && urlElements[3] === 'locations') {
+        element.setAttribute('location-id', urlElements[4])
+    }
+
+    if (urlElements.length === 4 && urlElements[1] === 'appointment' && urlElements[2] === 'confirm') {
+        element.setAttribute('confirm-appointment-hash', urlElements[3])
+    }
+
+    if (urlElements.length === 3 && urlElements[1] === 'appointment') {
+        element.setAttribute('appointment-hash', urlElements[2])
+    }
+
+    if (params.get('exclusiveLocation')) {
+        element.setAttribute('exclusive-location', '1')
+    }
+</script>
+
+</body>
+
+</html>

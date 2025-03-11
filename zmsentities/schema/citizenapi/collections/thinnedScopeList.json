@@ -1,69 +1,14 @@
 {
-  "type": ["array", "object", "null"],
+  "type": [
+    "array",
+    "object",
+    "null"
+  ],
   "properties": {
     "scopes": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "provider": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "number"
-              },
-              "name": {},
-              "source": {
-                "type": "string"
-              },
-              "contact": {}
-            },
-            "required": [
-              "id",
-              "name",
-              "source",
-              "contact"
-            ]
-          },
-          "shortName": {
-            "type": "string"
-          },
-          "telephoneActivated": {
-            "type": "boolean"
-          },
-          "telephoneRequired": {
-            "type": "boolean"
-          },
-          "customTextfieldActivated": {
-            "type": "boolean"
-          },
-          "customTextfieldRequired": {
-            "type": "boolean"
-          },
-          "customTextfieldLabel": {
-            "type": "string"
-          },
-          "captchaActivatedRequired": {
-            "type": "boolean"
-          },
-          "displayInfo": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "provider",
-          "shortName",
-          "telephoneActivated",
-          "telephoneRequired",
-          "customTextfieldActivated",
-          "customTextfieldRequired",
-          "customTextfieldLabel",
-          "captchaActivatedRequired"
-        ]
+        "$ref": "../thinnedScope.json"
       }
     }
   },

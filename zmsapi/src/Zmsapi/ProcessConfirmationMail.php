@@ -22,7 +22,7 @@ class ProcessConfirmationMail extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
-     * @return String
+     * @return string
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,

@@ -18,7 +18,7 @@ class Application
      * if debug is enabled, an exception is shown with a backtrace
      */
     const DEBUG = false;
-    const DEBUGLEVEL = 'DEBUG';
+    const DEBUGLEVEL = 'INFO';
     const SESSION_DURATION = ZMS_SESSION_DURATION;
     const LOG_ERRORS = true;
     const LOG_DETAILS = true;

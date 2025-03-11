@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Mellon
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -13,7 +14,6 @@ namespace BO\Mellon;
   */
 class Valid extends \BO\Mellon\Parameter
 {
-
     /**
       * validation errors
       *

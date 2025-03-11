@@ -4,6 +4,7 @@ namespace BO\Zmsclient;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
+use Psr\Http\Client\ClientInterface;
 use Slim\Psr7\Headers;
 
 /**
@@ -15,7 +16,7 @@ use Slim\Psr7\Headers;
 class Http
 {
     /**
-     * @var Psr7\ClientInterface|null
+     * @var ClientInterface|null
      */
     protected $client = null;
 
@@ -64,9 +65,9 @@ class Http
 
     /**
      *
-     * @param Psr7\ClientInterface $client
+     * @param ClientInterface $client
      */
-    public function __construct($baseUrl, Psr7\ClientInterface $client = null)
+    public function __construct($baseUrl, ClientInterface $client = null)
     {
         $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH) ?? '';
         $this->uri = new Psr7\Uri();
@@ -106,7 +107,7 @@ class Http
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function readResponse(\Psr\Http\Message\RequestInterface $request)
+    public function readResponse(RequestInterface $request)
     {
         if (static::$authEnabled) {
             $request = $this->getAuthorizedRequest($request);
@@ -132,7 +133,7 @@ class Http
      *
      * @return \Psr\Http\Message\RequestInterface
      */
-    public function getAuthorizedRequest(\Psr\Http\Message\RequestInterface $request)
+    public function getAuthorizedRequest(RequestInterface $request)
     {
         $userInfo = $request->getUri()->getUserInfo();
         $xAuthKey = Auth::getKey();
@@ -166,7 +167,7 @@ class Http
     /**
      * Creates a GET-Http-Request and fetches the response
      *
-     * @param String $relativeUrl
+     * @param string $relativeUrl
      * @param array|null $getParameters (optional)
      *
      * @return Result
@@ -189,9 +190,9 @@ class Http
     /**
      * Creates a POST-Http-Request and fetches the response
      *
-     * @param String $relativeUrl
+     * @param string $relativeUrl
      * @param \BO\Zmsentities\Schema\Entity $entity
-     * @param Array $getParameters (optional)
+     * @param array $getParameters (optional)
      *
      * @return Result
      */
@@ -212,8 +213,8 @@ class Http
     /**
      * Creates a DELETE-Http-Request and fetches the response
      *
-     * @param String $relativeUrl
-     * @param Array $getParameters (optional)
+     * @param string $relativeUrl
+     * @param array $getParameters (optional)
      *
      * @return Result
      */
@@ -228,7 +229,7 @@ class Http
     }
 
     protected function readResult(
-        \Psr\Http\Message\RequestInterface $request = null,
+        RequestInterface $request = null,
         $try = 0
     ) {
         $response = $this->readResponse($request);

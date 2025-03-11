@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -11,7 +12,6 @@ namespace BO\Mellon;
   */
 class ValidNumber extends Valid
 {
-
     /**
      * Allow only integer numbers
      *
