@@ -18,7 +18,7 @@
     "scope": {
       "id": 141
     },
-    "slotTimeInMinutes": 12,
+    "slotTimeInMinutes": 10,
     "startDate": 1447919543,
     "startTime": "10:00",
     "weekday": {
@@ -118,6 +118,10 @@
     "startTime": {
       "type": "string",
       "description": "format '0:00' or '17:30'"
+    },
+    "kind": {
+      "type": "string",
+      "description": "Format or category of the availability"
     },
     "type": {
       "type": "string",
