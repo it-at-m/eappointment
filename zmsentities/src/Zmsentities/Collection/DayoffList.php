@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Collection;
 
 class DayoffList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Dayoff';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Dayoff';
 
     public function hasEntityByDate($date)
     {

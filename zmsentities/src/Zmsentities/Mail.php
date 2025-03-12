@@ -13,7 +13,7 @@ use BO\Zmsentities\Helper\Property;
  */
 class Mail extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "mail.json";
 
@@ -192,7 +192,14 @@ class Mail extends Schema\Entity
         ) {
             $entity->multipart[] = new Mimepart(array(
                 'mime' => 'text/calendar',
-                'content' => Messaging::getMailIcs($mainProcess, $config, $status, $initiator, false, $this->templateProvider)->getContent(),
+                'content' => Messaging::getMailIcs(
+                    $mainProcess,
+                    $config,
+                    $status,
+                    $initiator,
+                    false,
+                    $this->templateProvider
+                )->getContent(),
                 'base64' => false
             ));
         }

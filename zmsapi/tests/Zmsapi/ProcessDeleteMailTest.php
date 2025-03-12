@@ -35,8 +35,14 @@ class ProcessDeleteMailTest extends Base
                 "id": 123456,
                 "authKey": "'. self::AUTHKEY .'",
                 "scope": {
-                    "id": 141
-                },
+                    "id": 141,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
+                }
                 "clients": [
                     {
                         "familyName": "Max Mustermann",
@@ -48,7 +54,13 @@ class ProcessDeleteMailTest extends Base
                     {
                         "date": 1447869172,
                         "scope": {
-                            "id": 141
+                            "id": 141,
+                            "provider": {
+                                "id": 123456,
+                                "name": "Flughafen Schönefeld, Aufsicht",
+                                "source": "dldb"
+                            },
+                            "shortName": "Zentrale"
                         },
                         "slotCount": 2
                     }

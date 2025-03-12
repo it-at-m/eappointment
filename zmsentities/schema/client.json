@@ -9,7 +9,7 @@
         "surveyAccepted": false,
         "telephone": "030 115"
     },
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "email": {
             "type": "string",

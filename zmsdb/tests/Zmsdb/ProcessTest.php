@@ -823,10 +823,10 @@ class ProcessTest extends Base
                     "name"=>"Bürgeramt",
                     "preferences"=>[
                         "notifications"=>[
-                            "enabled"=>null,
-                            "identification"=>null,
-                            "sendConfirmationEnabled"=>null,
-                            "sendReminderEnabled"=>null
+                            "enabled"=>false,
+                            "identification"=>"",
+                            "sendConfirmationEnabled"=>false,
+                            "sendReminderEnabled"=>false
                         ]
                     ]
                 ],
