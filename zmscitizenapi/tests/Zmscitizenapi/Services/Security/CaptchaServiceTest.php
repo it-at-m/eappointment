@@ -28,17 +28,17 @@ class CaptchaServiceTest extends TestCase
         // Assert
         $this->assertIsArray($result);
         $this->assertArrayHasKey('siteKey', $result);
+        $this->assertArrayHasKey('captchaChallenge', $result);
         $this->assertArrayHasKey('captchaVerify', $result);
-        $this->assertArrayHasKey('puzzle', $result);
         $this->assertArrayHasKey('captchaEnabled', $result);
     }
 
     public function testGetCaptchaReturnsExpectedValues(): void
     {
         // Arrange
-        $expectedSiteKey = \App::$FRIENDLY_CAPTCHA_SITE_KEY;
-        $expectedEndpoint = \App::$FRIENDLY_CAPTCHA_ENDPOINT;
-        $expectedPuzzle = \App::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
+        $expectedSiteKey = \App::$ALTCHA_CAPTCHA_SITE_KEY;
+        $expectedChallengeUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
+        $expectedVerifyUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
         $expectedEnabled = \App::$CAPTCHA_ENABLED;
 
         // Act
@@ -46,8 +46,8 @@ class CaptchaServiceTest extends TestCase
 
         // Assert
         $this->assertEquals($expectedSiteKey, $result['siteKey']);
-        $this->assertEquals($expectedEndpoint, $result['captchaVerify']);
-        $this->assertEquals($expectedPuzzle, $result['puzzle']);
+        $this->assertEquals($expectedChallengeUrl, $result['captchaChallenge']);
+        $this->assertEquals($expectedVerifyUrl, $result['captchaVerify']);
         $this->assertEquals($expectedEnabled, $result['captchaEnabled']);
     }
 }

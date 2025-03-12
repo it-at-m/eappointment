@@ -98,11 +98,11 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
             ]);
 
             $responseBody = json_decode((string)$response->getBody(), true);
-            if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['valid'])) {
+            if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['success'])) {
                 return false;
             }
 
-            return $responseBody['valid'] === true;
+            return $responseBody['success'] === true;
         } catch (RequestException $e) {
             return false;
         }
