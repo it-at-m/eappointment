@@ -1,10 +1,10 @@
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
+import { CaptchaDetails } from "@/api/models/CaptchaDetails";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
-import { CaptchaDetails } from "@/types/CaptchaDetails";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   getAPIBaseURL,

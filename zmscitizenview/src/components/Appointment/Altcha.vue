@@ -47,8 +47,8 @@ onUnmounted(() => {
 <template>
   <!-- Configure your `challengeurl` and remove the `test` attribute, see docs: https://altcha.org/docs/website-integration/#using-altcha-widget -->
   <altcha-widget
+    challengeurl="https://captcha-k.muenchen.de/api/v1/captcha/challenge"
     ref="altchaWidget"
     debug
-    test
   ></altcha-widget>
 </template>
