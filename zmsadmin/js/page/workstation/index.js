@@ -410,7 +410,6 @@ class View extends BaseView {
     }
 
     onPrintWaitingNumber(event) {
-        console.log("priiintt")
         stopEvent(event);
         this.selectedProcess = $(event.currentTarget).data('id');
         $(event.currentTarget).closest('.message').fadeOut().remove();
