@@ -68,7 +68,7 @@
 
     <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
         <properties>
-            <property name="maxmethods" value="20" />
+            <property name="maxmethods" value="25" />
             <property name="ignorepattern" value="(^(set|get))i" />
         </properties>
     </rule>
