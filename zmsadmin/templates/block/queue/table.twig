@@ -185,7 +185,7 @@
 				<span class="color-green">
 					<i class="fas fa-play-circle" aria-hidden="true"></i>
 				</span>
-				Offene Aufrufe
+				Offene Aufrufe <i class="fas fa-tv" style="color: #0053b4;"></i> / In Bearbeitung <i class="fas fa-hourglass-half" style="color: #0053b4;"></i>
 				{% if showCalledList %}
 				({{ queueListCalled|length }})
 				{% endif %}
@@ -208,6 +208,7 @@
 							<th>Zimmernummer</th>
 							<th>Standort</th>
 							<th>DL</th>
+							<th>Status</th>
 						</tr>
 						</thead>
 						{% set lfdnr = 0 %}
@@ -231,6 +232,17 @@
 										{{ item.process.requests|map(request => request.name)|join('; ') }}
 									{% endif %}
 								</td>
+                                <td>
+                                    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                                        {% if item.status == 'called' %}
+                                            <i class="fas fa-tv" style="color: #0053b4;"></i>
+                                        {% elseif item.status == 'processing' %}
+                                            <i class="fas fa-hourglass-half" style="color: #0053b4;"></i>
+                                        {% else %}
+                                            {{ item.status }}
+                                        {% endif %}
+                                    </div>
+                                </td>
 							</tr>
 						{% endfor %}
 					</table>

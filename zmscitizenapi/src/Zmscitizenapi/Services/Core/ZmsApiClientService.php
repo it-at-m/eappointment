@@ -10,6 +10,7 @@ use BO\Zmscitizenapi\Services\Core\ExceptionService;
 use BO\Zmsentities\Calendar;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Source;
+use BO\Zmsentities\Collection\DayList;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ProviderList;
 use BO\Zmsentities\Collection\RequestList;
@@ -111,9 +112,18 @@ class ZmsApiClientService
             $calendar->requests = $requests;
             $result = \App::$http->readPostResult('/calendar/', $calendar);
             $entity = $result?->getEntity();
+
             if (!$entity instanceof Calendar) {
                 return new Calendar();
             }
+            $bookableDays = new DayList();
+            foreach ($entity->days as $day) {
+                if (isset($day['status']) && $day['status'] === 'bookable') {
+                    $bookableDays->addEntity($day);
+                }
+            }
+            $entity->days = $bookableDays;
+
             return $entity;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
