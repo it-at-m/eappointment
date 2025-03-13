@@ -7,6 +7,8 @@
 
 namespace BO\Zmsadmin;
 
+use DateTime;
+
 /**
   * Init Controller to display next Button Template only
   *
@@ -24,6 +26,7 @@ class WorkstationProcess extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $template = ($workstation->process->hasId() && 'processing' == $workstation->process->status) ? 'info' : 'next';
+        $selectedDate = (new DateTime())->format('Y-m-d');
         if ($workstation->process->hasId() && 'called' == $workstation->process->getStatus()) {
             return \BO\Slim\Render::redirect(
                 'workstationProcessCalled',
@@ -32,11 +35,15 @@ class WorkstationProcess extends BaseController
                 )
             );
         }
+        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation, $selectedDate);
+        
         return \BO\Slim\Render::withHtml(
             $response,
             'block/process/' . $template . '.twig',
             array(
-                'workstation' => $workstation
+                'workstation' => $workstation,
+                'workstationInfo' => $workstationInfo,
+                'selectedDate' => $selectedDate
             )
         );
     }
