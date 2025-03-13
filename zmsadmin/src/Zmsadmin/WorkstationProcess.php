@@ -35,8 +35,7 @@ class WorkstationProcess extends BaseController
                 )
             );
         }
-        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation, $selectedDate);
-        
+        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation, $selectedDate);     
         return \BO\Slim\Render::withHtml(
             $response,
             'block/process/' . $template . '.twig',
