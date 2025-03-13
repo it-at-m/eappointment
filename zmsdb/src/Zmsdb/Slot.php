@@ -29,7 +29,8 @@ class Slot extends Base
     public function readByAppointment(
         \BO\Zmsentities\Appointment $appointment,
         $overwriteSlotsCount = null,
-        $extendSlotList = false
+        $extendSlotList = false,
+        $lockSlots = false
     ) {
         $appointment = clone $appointment;
         $availability = (new Availability())->readByAppointment($appointment);
@@ -39,7 +40,7 @@ class Slot extends Base
         }
         $slotList = $availability->getSlotList()->withSlotsForAppointment($appointment, $extendSlotList);
         foreach ($slotList as $slot) {
-            $this->readByAvailability($slot, $availability, $appointment->toDateTime());
+            $this->readByAvailability($slot, $availability, $appointment->toDateTime(), $lockSlots);
         }
         return $slotList;
     }
