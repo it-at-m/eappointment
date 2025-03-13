@@ -170,8 +170,6 @@ class View extends RequestView {
             this.onQueueProcess(this, event);
         }).on('click', '.form-actions button.process-copy', (event) => {
             this.onCopyProcess(this, event);
-        }).on('click', '.form-actions .copy-btn', (event) => {
-            this.onCopyButton(this, event);
         }).on('click', '.form-actions button.process-delete', (event) => {
             this.onConfirm(event, "confirm_delete", () => { this.onDeleteProcess(event) });
         }).on('click', '.form-actions button.process-abort', (event) => {

@@ -233,15 +233,15 @@
 		{% block process_reserved %}
 			{% set successTitle = "Termin erfolgreich eingetragen" %}
 			{{ block('success_start') }}
-				<dl>
+				<dl id="copy-content">
 					<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 1 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
 					<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
 					<dt>{{ selectedprocess.appointments.date|date("d.m.Y") }} um {{ selectedprocess.appointments.date|date("H:i") }}</dt>
 					<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
 				</dl>
-				 <button type="button" class="copy-btn" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren">📄📄</button>
-				<div class="form-actions">
+				 <div class="form-actions">
 					<div class="right">
+						<button type="button" class="btn button-submit button-callback" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren"><i class="fas fa-copy" aria-hidden="true"></i></button>
 						<button type="button" class="button btn button-submit button-ok">Ok</button>
 						<button type="button" class="button btn button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id={{ selectedprocess.id }} autofocus accesskey="u">{% if selectedprocess.queue.number < 10000 %} Wartenummer{% else %} Vorgangsnummer{% endif %} drucken</button>
 						<button type="button" class="button btn button-submit button-callback" data-callback="onEditProcess" name="editProcess" data-id={{ selectedprocess.id }}>Termin erneut bearbeiten</button>
@@ -293,15 +293,18 @@
 		{% block process_queued %}
 			{% set successTitle = "Wartenummer wurde hinzugefügt" %}
 			{{ block('success_start') }}
-				<dl>
-					<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 1 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
-					<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
-					<dt>{{ selectedprocess.appointments.date|date("d.m.Y") }} um {{ selectedprocess.appointments.date|date("H:i") }}</dt>
-					<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
-				</dl>
+				<div style="background-color:#f2f2f2; padding:1em">
+					<dl id="copy-content">
+						<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 1 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
+						<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
+						<dt>{{ selectedprocess.appointments.date|date("d.m.Y") }} um {{ selectedprocess.appointments.date|date("H:i") }}</dt>
+						<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
+					</dl>
+					
+				</div>
 				<div class="form-actions">
-				<button type="button" class="copy-btn" id="copy-popup-content" title="Inhalt kopieren">📄📄</button>
-		            <div class="right">
+					<div class="right">
+						<button type="button" class="btn button-submit button-callback" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren"><i class="fas fa-copy" aria-hidden="true"></i></button>
 		                <button type="button" class="btn button button-submit button-ok" accesskey="q">Schließen</button>
 		                <button type="button" class="btn button button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id={{ selectedprocess.id }} accesskey="u">Wartenummer drucken</button>
 		            </div>
