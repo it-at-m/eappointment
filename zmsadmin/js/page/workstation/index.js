@@ -203,6 +203,8 @@ class View extends BaseView {
                     this.loadAppointmentForm();
                     if ('counter' == this.page)
                         this.loadQueueInfo();
+                    if ('workstation' == this.page)
+                        this.loadClientNext();
                     this.loadQueueTable();
                     this.loadCalendar();
                 }, null, event.currentTarget);
@@ -234,6 +236,8 @@ class View extends BaseView {
         }).then(() => {
             if ('counter' == this.page)
                 this.loadQueueInfo();
+            if ('workstation' == this.page)
+                this.loadClientNext();
             this.loadQueueTable();
             this.loadCalendar();
             hideSpinner(scope.$main);
@@ -258,6 +262,8 @@ class View extends BaseView {
                     this.loadAppointmentForm();
                     if ('counter' == this.page)
                         this.loadQueueInfo();
+                    if ('workstation' == this.page)
+                        this.loadClientNext();
                     this.loadQueueTable();
                     this.loadCalendar();
                 }, scope.$main, event.currentTarget);
@@ -284,6 +290,8 @@ class View extends BaseView {
                     this.loadAppointmentForm();
                     if ('counter' == this.page)
                         this.loadQueueInfo();
+                    if ('workstation' == this.page)
+                        this.loadClientNext();
                     this.loadQueueTable();
                     this.loadCalendar();
                 }, null, event.currentTarget);
@@ -342,6 +350,8 @@ class View extends BaseView {
                 this.loadAppointmentForm();
                 if ('counter' == this.page)
                     this.loadQueueInfo();
+                if ('workstation' == this.page)
+                    this.loadClientNext();
                 this.loadQueueTable();
                 this.loadCalendar();
                 hideSpinner();
@@ -526,6 +536,8 @@ class View extends BaseView {
         if (this.$main.find('.lightbox').length == 0) {
             if ('counter' == this.page)
                 this.loadQueueInfo(false);
+            if ('workstation' == this.page)
+                this.loadClientNext(false);
             this.loadQueueTable(false);
         }
     }
