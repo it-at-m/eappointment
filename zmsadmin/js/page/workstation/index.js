@@ -410,6 +410,7 @@ class View extends BaseView {
     }
 
     onPrintWaitingNumber(event) {
+        console.log("priiintt")
         stopEvent(event);
         this.selectedProcess = $(event.currentTarget).data('id');
         $(event.currentTarget).closest('.message').fadeOut().remove();
@@ -420,30 +421,11 @@ class View extends BaseView {
 
     onCopyButton(event) {
         stopEvent(event);
-        console.log("Hallo");
-        document.addEventListener('DOMContentLoaded', function () {
-            var copyButton = document.getElementById('copy-popup-content');
-            var popupContent = document.getElementById('popup-content');
-        
-            copyButton.addEventListener('click', function () {
-                var range = document.createRange();
-                range.selectNode(popupContent);
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
-        
-                try {
-                    var successful = document.execCommand('copy');
-                    var msg = successful ? 'erfolgreich' : 'nicht erfolgreich';
-                    alert('Inhalt wurde ' + msg + ' kopiert');
-                } catch (err) {
-                    alert('Kopieren war nicht erfolgreich');
-                }
-        
-                window.getSelection().removeAllRanges();
-            });
-        });
-        
+        var popupContent = document.getElementById('copy-content');
+        var textToCopy = popupContent.innerText || popupContent.textContent;
+        navigator.clipboard.writeText(textToCopy)
     }
+    
 
     onPrintProcessMail(event) {
         stopEvent(event);
@@ -637,6 +619,7 @@ class View extends BaseView {
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
             onEditProcess: this.onEditProcess,
+            onCopyButton: this.onCopyButton,
             onNextProcess: this.onNextProcess,
             onCallNextProcess: this.onCallNextProcess,
             onCancelNextProcess: this.onCancelNextProcess,
