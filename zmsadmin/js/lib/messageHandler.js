@@ -38,34 +38,36 @@ class MessageHandler {
     }
 
     bindEvents() {
-        this.$main.off().on('click', '.button-ok', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            this.removeFocusTrap(this.$main);
-            this.callback();
-        }).on('click', '.button-abort', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            this.removeFocusTrap(this.$main);
-            this.handleLightbox();
-        }).on('click', '.button-callback', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            var callback = $(ev.target).data('callback');
-            this.callback = this.parent[callback];
-            this.removeFocusTrap(this.$main);
-            this.callback(ev);
-            this.handleLightbox();
-        }).on('keydown', (ev) => {
-            switch(ev.key) {
-                case 'Escape': // ESC    
+        $(document).ready(() => {
+            this.$main.off().on('click', '.button-ok', (ev) => {
                 ev.preventDefault();
                 ev.stopPropagation();
                 this.removeFocusTrap(this.$main);
                 this.callback();
-                break;
-            }
-        });
+            }).on('click', '.button-abort', (ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                this.removeFocusTrap(this.$main);
+                this.handleLightbox();
+            }).on('click', '.button-callback', (ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                var callback = $(ev.target).data('callback');
+                this.callback = this.parent[callback];
+                this.removeFocusTrap(this.$main);
+                this.callback(ev);
+                this.handleLightbox();
+            }).on('keydown', (ev) => {
+                switch (ev.key) {
+                    case 'Escape': // ESC    
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        this.removeFocusTrap(this.$main);
+                        this.callback();
+                        break;
+                }
+            });
+        })
     }
 
     removeFocusTrap(elem) {
