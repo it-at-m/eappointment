@@ -18,7 +18,13 @@ class ProcessConfirmationNotificationTest extends Base
                 "id": 28816,
                 "authKey": "15dd",
                 "scope": {
-                    "id": 141
+                    "id": 141,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
                 },
                 "clients": [
                     {
@@ -31,8 +37,14 @@ class ProcessConfirmationNotificationTest extends Base
                     {
                         "date": 1447869172,
                         "scope": {
-                            "id": 141
-                        },
+                            "id": 141,
+                            "provider": {
+                                "id": 123456,
+                                "name": "Flughafen Schönefeld, Aufsicht",
+                                "source": "dldb"
+                            },
+                            "shortName": "Zentrale"
+                        }
                         "slotCount": 2
                     }
                 ],

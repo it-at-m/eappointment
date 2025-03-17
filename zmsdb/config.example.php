@@ -31,7 +31,7 @@ if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
 
-\BO\Zmsdb\Source\Dldb::$importPath = 'tests/Zmsdb/fixtures/';
+\BO\Zmsdb\Source\Dldb::$importPath = realpath(dirname(__FILE__) . '/tests/Zmsdb/fixtures/');
 
 if (getenv('ZMS_TIMEADJUST')) {
 

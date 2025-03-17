@@ -15,7 +15,7 @@ class MailTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $this->assertTrue(123456 == $entity->getProcessId(), 'Getting process id failed');
         $this->assertTrue('1234' == $entity->getProcessAuthKey(), 'Getting AuthKey failed');
-        $this->assertTrue('Max Mustermann' == $entity->getFirstClient()['familyName'], 'Getting first client failed');
+        $this->assertTrue('Max Mustermann' == $entity->getClient()['familyName'], 'Getting client failed');
         $this->assertTrue($entity->hasContent(), 'Missing content in mail');
     }
 

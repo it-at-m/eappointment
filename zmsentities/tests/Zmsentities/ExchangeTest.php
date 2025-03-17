@@ -197,12 +197,12 @@ class ExchangeTest extends EntityCommonTests
 
     public function testSchemaIntegerAsBool()
     {
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $now = new \DateTimeImmutable('2016-04-01 11:55:00');
         $entity = (new $this->entityclass());
         $entity->setPeriod($now, $now);
         $entity['dictionary'][0]['position'] = false;
         $entity->testValid();
-        $this->assertEquals(0, $entity['dictionary'][0]['position']);
     }
 
     public function testSchemaStringAsNull()
