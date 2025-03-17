@@ -89,7 +89,10 @@
       </div>
     </div>
     <div style="margin: 2rem 0 2rem 0">
-      <Altcha v-model:payload="altchaPayload" />
+      <Altcha
+        v-model:payload="altchaPayload"
+        @validationResult="handleValidation"
+      />
     </div>
   </div>
   <div class="m-button-group">
@@ -124,6 +127,11 @@ import {
 } from "@/utils/Constants";
 
 const altchaPayload = ref("");
+const isCaptchaValid = ref(false);
+
+const handleValidation = (result: boolean) => {
+  isCaptchaValid.value = result;
+};
 
 const props = defineProps<{
   baseUrl: string | undefined;
