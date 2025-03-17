@@ -76,7 +76,7 @@
             "callCount": 0,
             "callTime": 0,
             "number": "137232",
-            "status": "reserved",
+            "status": "confirmed",
             "lastCallTime": 0,
             "withAppointment": true
         },
@@ -169,7 +169,7 @@
             "callCount": 0,
             "callTime": 0,
             "number": "138090",
-            "status": "reserved",
+            "status": "confirmed",
             "lastCallTime": 0,
             "withAppointment": true
         },
@@ -262,7 +262,7 @@
             "callCount": 0,
             "callTime": 0,
             "number": "138096",
-            "status": "reserved",
+            "status": "confirmed",
             "lastCallTime": 0,
             "withAppointment": true
         },
@@ -355,7 +355,7 @@
             "callCount": 0,
             "callTime": 0,
             "number": "138423",
-            "status": "reserved",
+            "status": "confirmed",
             "lastCallTime": 0,
             "withAppointment": true
         },
@@ -448,7 +448,7 @@
             "callCount": 0,
             "callTime": 0,
             "number": "138677",
-            "status": "reserved",
+            "status": "confirmed",
             "lastCallTime": 0,
             "withAppointment": true
         },
@@ -541,7 +541,7 @@
             "callCount": 0,
             "callTime": 0,
             "number": "138690",
-            "status": "reserved",
+            "status": "confirmed",
             "lastCallTime": 0,
             "withAppointment": true
         },
@@ -634,7 +634,7 @@
             "callCount": 0,
             "callTime": 0,
             "number": "138771",
-            "status": "reserved",
+            "status": "confirmed",
             "lastCallTime": 0,
             "withAppointment": true
         },

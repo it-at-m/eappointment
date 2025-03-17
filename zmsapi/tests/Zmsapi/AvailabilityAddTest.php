@@ -75,7 +75,7 @@ class AvailabilityAddTest extends Base
         $weekday = (int)date('N', $startDate);
         $dayoffData = [
             [
-                "id" => "302",
+                "id" => 302,
                 "date" => 1458860400,
                 "lastChange" => 1566566540,
                 "name" => "Karfreitag"
@@ -95,7 +95,7 @@ class AvailabilityAddTest extends Base
                         "kind" => "default",
                         "weekday" => array_combine(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? 4 : 0; }, range(1, 7))
                         ),
                         "scope" => [
                             "id" => 312,
@@ -112,7 +112,7 @@ class AvailabilityAddTest extends Base
                         "kind" => "default",
                         "weekday" => array_combine(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? 4 : 0; }, range(1, 7))
                         ),
                         "scope" => [
                             "id" => 312,
@@ -134,7 +134,7 @@ class AvailabilityAddTest extends Base
         $weekday = (int)date('N', $startDate);
         $dayoffData = [
             [
-                "id" => "302",
+                "id" => 302,
                 "date" => 1458860400,
                 "lastChange" => 1566566540,
                 "name" => "Karfreitag"
@@ -154,7 +154,7 @@ class AvailabilityAddTest extends Base
                         "kind" => "default",
                         "weekday" => array_combine(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? 4 : 0; }, range(1, 7))
                         ),
                         "scope" => [
                             "id" => 312,
@@ -171,7 +171,7 @@ class AvailabilityAddTest extends Base
                         "kind" => "default",
                         "weekday" => array_combine(
                             ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                            array_map(function($i) use ($weekday) { return $i === $weekday ? '4' : '0'; }, range(1, 7))
+                            array_map(function($i) use ($weekday) { return $i === $weekday ? 4 : 0; }, range(1, 7))
                         ),
                         "scope" => [
                             "id" => 312,

@@ -11,7 +11,7 @@ class Provider extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'id' => 123,
+            'id' => 0,
             'name' => '',
             'source' => 'dldb'
         ];

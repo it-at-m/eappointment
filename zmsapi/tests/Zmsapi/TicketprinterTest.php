@@ -20,7 +20,13 @@ class TicketprinterTest extends Base
                         "type": "scope",
                         "url": "/scope/101/",
                         "scope": {
-                            "id": 141
+                            "id": 141,
+                            "provider": {
+                                "id": 0,
+                                "name": "",
+                                "source": "dldb"
+                            },
+                            "shortName": ""
                         },
                         "enabled": true,
                         "name": "Bürgeramt Heerstraße"
@@ -38,7 +44,13 @@ class TicketprinterTest extends Base
                         "type": "link",
                         "url": "http://www.berlin.de/",
                         "scope": {
-                            "id": 110
+                            "id": 110,
+                            "provider": {
+                                "id": 0,
+                                "name": "",
+                                "source": "dldb"
+                            },
+                            "shortName": ""
                         },
                         "enabled": true,
                         "name": "Portal berlin.de"

@@ -42,7 +42,7 @@ class ProcessDeleteMailTest extends Base
                         "source": "dldb"
                     },
                     "shortName": "Zentrale"
-                }
+                },
                 "clients": [
                     {
                         "familyName": "Max Mustermann",
@@ -82,7 +82,7 @@ class ProcessDeleteMailTest extends Base
                     "id": 141,
                     "preferences": {
                         "client": {
-            				"emailRequired": "1"
+            				"emailRequired": 1
             			}
                     }
                 },
