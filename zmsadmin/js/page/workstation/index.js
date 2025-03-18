@@ -51,6 +51,7 @@ class View extends BaseView {
             'onChangeProcess',
             'onReserveProcess',
             'onCopyProcess',
+            'onCopyButton',
             'onQueueProcess',
             'onResetProcess',
             'onSendCustomMail',
@@ -427,6 +428,14 @@ class View extends BaseView {
         this.loadAppointmentForm();
     }
 
+    onCopyButton(event) {
+        stopEvent(event);
+        var popupContent = document.getElementById('copy-content');
+        var textToCopy = popupContent.innerText || popupContent.textContent;
+        navigator.clipboard.writeText(textToCopy)
+    }
+    
+
     onPrintProcessMail(event) {
         stopEvent(event);
         this.selectedProcess = $(event.currentTarget).data('id');
@@ -598,6 +607,7 @@ class View extends BaseView {
             onChangeProcess: this.onChangeProcess,
             onReserveProcess: this.onReserveProcess,
             onCopyProcess: this.onCopyProcess,
+            onCopyButton: this.onCopyButton,
             onChangeScope: this.onChangeScope,
             onAbortProcess: this.onAbortProcess,
             onCancelAppointmentForm: this.onCancelAppointmentForm,
@@ -620,6 +630,7 @@ class View extends BaseView {
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
             onEditProcess: this.onEditProcess,
+            onCopyButton: this.onCopyButton,
             onNextProcess: this.onNextProcess,
             onCallNextProcess: this.onCallNextProcess,
             onCancelNextProcess: this.onCancelNextProcess,

@@ -40,6 +40,7 @@ class Scope extends Base
     ) {
         if (0 < $resolveReferences) {
             $scope['dayoff'] = (new DayOff())->readByScopeId($scope->id);
+            $scope['closure'] = (new Closure())->readByScopeId($scope->id);
         }
         return $scope;
     }

@@ -231,6 +231,30 @@
                 }
             }
         },
+        "closure": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "A closure is a free day where scopes are closed.",
+                "example": {
+                    "id": 1234,
+                    "Datum": 1447924981
+                },
+                "required": [
+                    "Datum"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "type": "number"
+                    },
+                    "Datum": {
+                        "type": "number",
+                        "description": "unix timestamp"
+                    }
+                }
+            }
+        },
         "hint": {
             "type": "string",
             "description": "hint for the client like a description where to find the scope",
