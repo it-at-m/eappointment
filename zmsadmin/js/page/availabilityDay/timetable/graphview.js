@@ -30,6 +30,7 @@ const GraphView = (props) => {
                 headerRight={constants.headerRight(props.links, props.onNewAvailability)}
                 headerMiddle={constants.headerMiddle()}
                 body={graphBody}
+                footer={constants.renderFooter()}
             />
 
         </>
