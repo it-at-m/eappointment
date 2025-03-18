@@ -1,6 +1,6 @@
 import moment from 'moment'
 
-export const getStateFromProps = (props, existingState = {}) => {
+export const getStateFromProps = props => {
     return {
         availabilitylistslices: writeSlotCalculationIntoAvailability(
             props.availabilitylist,
@@ -11,9 +11,7 @@ export const getStateFromProps = (props, existingState = {}) => {
         conflicts: props.conflicts,
         today: props.today,
         busyslots: props.busyslots,
-        saveType: existingState.saveType || 'save',
-        lastSave: existingState.lastSave,
-        saveSuccess: existingState.saveSuccess
+        slotbuckets: props.slotbuckets,
     }
 }
 
@@ -51,8 +49,7 @@ export const updateAvailabilityInState = (state, newAvailability) => {
             } else {
                 return availability
             }
-        }),
-        stateChanged: true
+        })
     })
 
     if (!updated) {
@@ -80,18 +77,9 @@ export const getInitialState = (props) => Object.assign({}, {
     lastSave: null,
     stateChanged: false,
     selectedTab: 'table',
-    saveType: 'save',
 }, getStateFromProps(props))
 
-const roundToSlotBoundary = (minutes, slotTimeInMinutes) => {
-    if (slotTimeInMinutes === 5) {
-        return Math.ceil(minutes / 5) * 5
-    } else {
-        return Math.ceil(minutes / 10) * 10
-    }
-}
-
-export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilities = []) => {
+export const getNewAvailability = (timestamp, tempId, scope) => {
     const now = moment(timestamp, 'X')
     const weekday = [
         'monday',
@@ -103,77 +91,20 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
         'sunday'
     ][now.isoWeekday() - 1]
 
-    const todayAvailabilities = existingAvailabilities.filter(a => 
-        moment(a.startDate, 'X').format('YYYY-MM-DD') === now.format('YYYY-MM-DD')
-    )
+    console.log(scope)
 
-    todayAvailabilities.sort((a, b) => {
-        const aTime = moment(a.startTime, 'HH:mm:ss')
-        const bTime = moment(b.startTime, 'HH:mm:ss') 
-        return aTime.diff(bTime)
-    })
-
-    const currentTime = moment()
-    const dayEndTime = moment('22:00:00', 'HH:mm:ss')
-    let startTime = moment('06:00:00', 'HH:mm:ss')
-    
-    const slotTimeInMinutes = scope.provider.data['slotTimeInMinutes'] || 20
-    
-    // Round up to next slot boundary if current time is after 06:00
-    if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && currentTime.isAfter(startTime)) {
-        const currentMinutes = currentTime.hours() * 60 + currentTime.minutes()
-        const nextSlotMinutes = roundToSlotBoundary(currentMinutes, slotTimeInMinutes)
-        startTime = moment(currentTime).startOf('day').add(nextSlotMinutes, 'minutes')
-    }
-
-    let endTime = moment(startTime).add(slotTimeInMinutes, 'minutes')
-
-    if (endTime.isAfter(dayEndTime)) {
-        startTime = moment(dayEndTime).subtract(slotTimeInMinutes, 'minutes')
-        endTime = moment(dayEndTime)
-    }
-
-    const hasOverlap = (start, end) => {
-        return todayAvailabilities.some(availability => {
-            const availStart = moment(availability.startTime, 'HH:mm:ss')
-            const availEnd = moment(availability.endTime, 'HH:mm:ss')
-            return !(end.isSameOrBefore(availStart) || start.isSameOrAfter(availEnd))
-        })
-    }
-
-    if (todayAvailabilities.length > 0) {
-        const firstAvail = todayAvailabilities[0]
-        const firstStart = moment(firstAvail.startTime, 'HH:mm:ss')
-        
-        if (hasOverlap(startTime, endTime) || endTime.isAfter(firstStart)) {
-            startTime = moment(todayAvailabilities[todayAvailabilities.length - 1].endTime, 'HH:mm:ss')
-            
-            if (now.format('YYYY-MM-DD') === currentTime.format('YYYY-MM-DD') && startTime.isBefore(currentTime)) {
-                const currentMinutes = currentTime.hours() * 60 + currentTime.minutes()
-                const nextSlotMinutes = roundToSlotBoundary(currentMinutes, slotTimeInMinutes)
-                startTime = moment(currentTime).startOf('day').add(nextSlotMinutes, 'minutes')
-            }
-            
-            endTime = moment(startTime).add(slotTimeInMinutes, 'minutes')
-            if (endTime.isAfter(dayEndTime)) {
-                startTime = moment(dayEndTime).subtract(slotTimeInMinutes, 'minutes')
-                endTime = moment(dayEndTime)
-            }
-        }
-    }
-
-    return {
+    const newAvailability = {
         id: null,
         tempId,
         scope: Object.assign({}, scope),
         description: 'Neue Öffnungszeit',
         startDate: timestamp,
         endDate: timestamp,
-        startTime: startTime.format('HH:mm:ss'),
-        endTime: endTime.format('HH:mm:ss'),
+        startTime: '07:00:00',
+        endTime: '20:00:00',
         bookable: {
-            startInDays: scope.preferences.appointment.startInDaysDefault ?? 0,
-            endInDays: scope.preferences.appointment.endInDaysDefault ?? 0
+            startInDays: "0",
+            endInDays: "0"
         },
         multipleSlotsAllowed: 1,
         slotTimeInMinutes: scope.provider.data['slotTimeInMinutes'],
@@ -192,6 +123,8 @@ export const getNewAvailability = (timestamp, tempId, scope, existingAvailabilit
         type: null,
         kind: "new"
     }
+
+    return newAvailability
 }
 
 export const availabilityTypes = [
@@ -254,15 +187,18 @@ export const cleanupAvailabilityForSave = availability => {
         delete newAvailability.tempId;
     }
 
+    if (newAvailability.kind) {
+        delete newAvailability.kind;
+    }
+
     return newAvailability;
 }
 
 export const getDataValuesFromForm = (form, scope) => {
-
     return Object.assign({}, getFirstLevelValues(form), {
         bookable: {
-            startInDays: (!form.open_from || form.open_from === "") ? scope.preferences.appointment.startInDaysDefault : form.open_from,
-            endInDays: (!form.open_to || form.open_to === "" || form.open_to === "0" || form.open_to === 0) ? scope.preferences.appointment.endInDaysDefault : form.open_to
+            startInDays: form.open_from === "" ? scope.preferences.appointment.startInDaysDefault : form.open_from,
+            endInDays: form.open_to === "" ? scope.preferences.appointment.endInDaysDefault : form.open_to
         },
         workstationCount: {
             intern: form.workstationCount_intern,
@@ -288,8 +224,8 @@ export const cleanupFormData = data => {
     return Object.assign({}, data, {
         workstationCount_callcenter: callcenterCount,
         workstationCount_public: publicCount,
-        open_from: (!data.open_from || data.open_from === data.openFromDefault) ? "" : data.open_from,
-        open_to: (!data.open_to || data.open_to === data.openToDefault) ? "" : data.open_to
+        open_from: (data.open_from === data.openFromDefault) ? "" : data.open_from,
+        open_to: (data.open_to === data.openToDefault) ? "" : data.open_to
     })
 }
 
