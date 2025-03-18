@@ -33,6 +33,12 @@ class ProcessQueued extends BaseController
         $this->testProcessData($entity);
         $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
         $previousStatus = $process->status;
+        if (isset($entity->queue['waitingTime'])) {
+            $process->queue['waitingTime'] = $entity->queue['waitingTime'];
+        }
+        if (isset($entity->queue['arrivalTime'])) {
+            $process->queue['arrivalTime'] = $entity->queue['arrivalTime'];
+        }
         $process->status = 'queued';
         $process->queue['callCount'] = 0;
         $process->queue['lastCallTime'] = 0;
