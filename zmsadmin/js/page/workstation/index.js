@@ -558,18 +558,20 @@ class View extends BaseView {
     }
 
     loadCalendar(showLoader = true) {
-        return new CalendarView($.find('[data-calendar]'), {
-            selectedDate: this.selectedDate,
-            selectedScope: this.selectedScope,
-            selectedProcess: this.selectedProcess,
-            slotsRequired: this.slotsRequired,
-            slotType: this.slotType,
-            onDatePick: this.onDatePick,
-            onDateToday: this.onDateToday,
-            includeUrl: this.includeUrl,
-            onAbortMessage: this.onAbortMessage,
-            showLoader: showLoader
-        })
+        if ('counter' == this.page) {
+            return new CalendarView($.find('[data-calendar]'), {
+                selectedDate: this.selectedDate,
+                selectedScope: this.selectedScope,
+                selectedProcess: this.selectedProcess,
+                slotsRequired: this.slotsRequired,
+                slotType: this.slotType,
+                onDatePick: this.onDatePick,
+                onDateToday: this.onDateToday,
+                includeUrl: this.includeUrl,
+                onAbortMessage: this.onAbortMessage,
+                showLoader: showLoader
+            })
+        }
     }
 
     loadClientNext(showLoader = true, loadProcess = true) {
