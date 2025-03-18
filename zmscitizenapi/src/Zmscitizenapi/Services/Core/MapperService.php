@@ -86,6 +86,7 @@ class MapperService
                     provider: isset($providerScope->provider) ? $providerScope->provider : null,
                     shortName: isset($providerScope->shortName) ? $providerScope->shortName : null,
                     emailFrom: isset($providerScope->emailFrom) ? $providerScope->emailFrom : null,
+                    emailRequired: isset($providerScope->emailRequired) ? (bool) $providerScope->emailRequired : null,
                     telephoneActivated: isset($providerScope->telephoneActivated) ? (bool) $providerScope->telephoneActivated : null,
                     telephoneRequired: isset($providerScope->telephoneRequired) ? (bool) $providerScope->telephoneRequired : null,
                     customTextfieldActivated: isset($providerScope->customTextfieldActivated) ? (bool) $providerScope->customTextfieldActivated : null,
@@ -190,6 +191,7 @@ class MapperService
             provider: $thinnedProvider,
             shortName: $scope->shortName ?? null,
             emailFrom: (string) $scope->getEmailFrom() ?? null,
+            emailRequired: isset($scope->data['emailRequired']) ? (bool) $scope->data['emailRequired'] : null,
             telephoneActivated: isset($scope->data['telephoneActivated']) ? (bool) $scope->data['telephoneActivated'] : null,
             telephoneRequired: isset($scope->data['telephoneRequired']) ? (bool) $scope->data['telephoneRequired'] : null,
             customTextfieldActivated: isset($scope->data['customTextfieldActivated']) ? (bool) $scope->data['customTextfieldActivated'] : null,
@@ -282,6 +284,7 @@ class MapperService
             $scope->preferences = [
                 'client' => [
                     'emailFrom' => $thinnedProcess->scope->getEmailFrom() ?? null,
+                    'emailRequired' => $thinnedProcess->scope->getEmailRequired() ?? false,
                     'telephoneActivated' => $thinnedProcess->scope->getTelephoneActivated() ?? false,
                     'telephoneRequired' => $thinnedProcess->scope->getTelephoneRequired() ?? false,
                     'customTextfieldActivated' => $thinnedProcess->scope->getCustomTextfieldActivated() ?? false,

@@ -61,6 +61,7 @@
         "preferences": {
           "client": {
             "emailFrom": "no-reply@muenchen.de",
+            "emailRequired": "0",
             "telephoneActivated": "0",
             "telephoneRequired": "1",
             "customTextfieldActivated": "0",

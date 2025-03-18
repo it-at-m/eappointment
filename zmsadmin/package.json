@@ -39,7 +39,7 @@
     "focus-trap-react": "10.3.1",
     "https-browserify": "^1.0.0",
     "jquery": "^3.6.1",
-    "js-cookie": "^2.2.1",
+    "js-cookie": "^3.0.0",
     "json-schema-defaults": "^0.4.0",
     "json-schema-ref-parser": "^9.0.9",
     "moment": "^2.29.1",

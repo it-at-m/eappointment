@@ -125,7 +125,7 @@
                   "amendmentActivated":"0",
                   "amendmentLabel":"",
                   "emailFrom":"no-reply@muenchen.de",
-                  "emailRequired":"0",
+                  "emailRequired":"1",
                   "telephoneActivated":"1",
                   "telephoneRequired":"1",
                   "appointmentsPerMail":"1",
