@@ -7,7 +7,6 @@ import Conflicts from './conflicts'
 import TabsBar from './tabsbar'
 import GraphView from './timetable/graphview.js'
 import TableView from './timetable/tableview.js'
-import ScopeView from './timetable/scopeview.js'
 import SaveBar from './saveBar'
 import AccordionLayout from './layouts/accordion'
 import PageLayout from './layouts/page'
@@ -39,10 +38,7 @@ const tempId = (() => {
 class AvailabilityPage extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-            ...getInitialState(props),
-            fullAvailabilityList: null
-        }
+        this.state = getInitialState(props)
         this.waitintervall = 1000;
         this.errorElement = null;
         this.successElement = null;
@@ -53,37 +49,6 @@ class AvailabilityPage extends Component {
         this.setSuccessRef = element => {
             this.successElement = element
         };
-    }
-
-    getAllScopeAvailabilities() {
-        const startDate = moment().startOf('year').format('YYYY-MM-DD')
-        const endDate = moment().add(1, 'year').format('YYYY-MM-DD')
-        
-        const url = `${this.props.links.includeurl}/scope/${this.props.scope.id}/availability/?startDate=${startDate}&endDate=${endDate}`
-        
-        $.ajax(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        }).done(response => {
-            const availabilityList = response.data ? Object.values(response.data) : [];
-            
-            this.setState({
-                fullAvailabilityList: availabilityList
-            }, () => {
-                if (availabilityList.length > 0) {
-                    this.getValidationList();
-                }
-            });
-        }).fail(err => {
-            console.error('getAllScopeAvailabilities error', err);
-        })
-    }
-
-    handleScrollToBottom() {
-        window.scrollTo(0, document.body.scrollHeight);
     }
 
     componentDidMount() {
@@ -113,80 +78,58 @@ class AvailabilityPage extends Component {
         });
     }
 
-    updateDataState(newProps) {
-        this.setState({
-            conflicts: newProps.conflicts,
-            availabilitylist: newProps.availabilityList,
-            busyslots: newProps.busySlotsForAvailabilities,
-            maxslots: newProps.maxSlotsForAvailabilities,
-            slotbuckets: newProps.slotBuckets,
-            availabilitylistslices: writeSlotCalculationIntoAvailability(
-                newProps.availabilityList,
-                newProps.maxSlotsForAvailabilities,
-                newProps.busySlotsForAvailabilities
-            ),
-            stateChanged: false
-        });
-    }
-
     refreshData() {
         const currentDate = formatTimestampDate(this.props.timestamp)
         const url = `${this.props.links.includeurl}/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
         $.ajax(url, {
             method: 'GET'
         }).done(data => {
-            this.updateDataState(data);
+            const newProps = {
+                conflicts: data.conflicts,
+                availabilitylist: data.availabilityList,
+                busyslots: data.busySlotsForAvailabilities,
+                maxslots: data.maxSlotsForAvailabilities,
+                slotbuckets: data.slotBuckets,
+            }
+            this.setState(Object.assign({}, getStateFromProps(Object.assign({}, this.props, newProps)), {
+                stateChanged: false
+            }))
+
         }).fail(err => {
             console.log('refreshData error', err)
         })
     }
 
     onSaveUpdates() {
-        const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?');
+        const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?')
         if (ok) {
             showSpinner();
-            const selectedDate = formatTimestampDate(this.props.timestamp);
-            const sendData = this.state.availabilitylist
-                .filter((availability) => {
-                    return (
-                        (availability.__modified ||
-                            (availability.tempId && availability.tempId.includes('__temp__'))) &&
-                        !this.hasErrors(availability)
-                    );
-                })
-                .map(availability => {
-                    const sendAvailability = Object.assign({}, availability);
-                    if (availability.tempId) {
-                        delete sendAvailability.tempId;
-                    }
-                    if (sendAvailability.kind === 'new' && sendAvailability.description.includes("Neue Öffnungszeit")) {
-                        sendAvailability.description = sendAvailability.description.replace("Neue Öffnungszeit", "");
-                    }                                        
-                    return {
-                        ...sendAvailability,
-                        kind: availability.kind || 'default',
-                    };
-                })
-                .map(cleanupAvailabilityForSave);
-
-            const payload = {
-                availabilityList: sendData,
-                selectedDate: selectedDate
-            };
+            const sendData = this.state.availabilitylist.filter((availability) => {
+                return (
+                    (availability.__modified || 
+                    availability.tempId && availability.tempId.includes('__temp__'))) &&
+                    ! this.hasErrors(availability)
+            }).map(availability => {
+                const sendAvailability = Object.assign({}, availability)
+                if (availability.tempId) {
+                    delete sendAvailability.tempId
+                }
+                return sendAvailability;
+            }).map(cleanupAvailabilityForSave)
+                
+            console.log('Saving updates', sendData)
 
             $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
-                data: JSON.stringify(payload),
-                contentType: 'application/json'
+                data: JSON.stringify(sendData)
             }).done((success) => {
+                console.log('save success:', success)
                 this.refreshData();
-                this.getValidationList();
-                this.getAllScopeAvailabilities();
-                this.updateSaveBarState('save', true);
-
-                if (this.successElement) {
+                this.setState({
+                    lastSave: new Date().getTime(),
+                }, () => {
                     this.successElement.scrollIntoView();
-                }
+                })
                 hideSpinner();
             }).fail((err) => {
                 let isException = err.responseText.toLowerCase().includes('exception');
@@ -195,98 +138,72 @@ class AvailabilityPage extends Component {
                         code: err.status,
                         message: err.responseText
                     });
+                } else if (err.status === 404) {
+                    console.log('404 error, ignored')
                 } else {
-                    console.log('save all error', err);
+                    console.log('save all error', err)
                 }
-                this.updateSaveBarState('save', false);
                 this.getValidationList();
                 hideSpinner();
-            });
+            })
         } else {
             hideSpinner();
         }
     }
 
+
     onRevertUpdates() {
-        this.isCreatingExclusion = false;
-        this.setState({
-            errorList: {},
-            conflictList: {
-                itemList: {},
-                conflictIdList: []
-            }
-        }, () => {
-            this.refreshData(() => {
-                this.getValidationList();
-                if (this.state.availabilitylist.length > 0) {
-                    this.getConflictList();
-                }
-            });
-        });
+        this.isCreatingExclusion = false
+        this.setState(Object.assign({}, getInitialState(this.props), {
+            selectedTab: this.state.selectedTab
+        }), () => {
+            this.refreshData()
+            this.getValidationList()
+        })
     }
 
     onUpdateSingleAvailability(availability) {
         showSpinner();
-        const ok = confirm('Soll diese Öffnungszeit wirklich aktualisiert werden?');
-        const id = availability.id;
-
+        const ok = confirm('Soll diese Öffnungszeit wirklich aktualisiert werden?')
+        const id = availability.id
         if (ok) {
-            const selectedDate = formatTimestampDate(this.props.timestamp);
-            const sendAvailability = Object.assign({}, availability);
-
-            if (sendAvailability.tempId) {
-                delete sendAvailability.tempId;
-            }
-
-            const payload = {
-                availabilityList: [
-                    {
-                        ...cleanupAvailabilityForSave(sendAvailability),
-                        kind: availability.kind || 'default'
-                    }
-                ],
-                selectedDate: selectedDate
-            };
+            let list = [availability];
+            const sendData = list.map(availability => {
+                const sendAvailability = Object.assign({}, availability)
+                if (availability.tempId) {
+                    delete sendAvailability.tempId
+                }
+                return sendAvailability;
+            }).map(cleanupAvailabilityForSave)
 
             $.ajax(`${this.props.links.includeurl}/availability/save/${id}/`, {
                 method: 'POST',
-                data: JSON.stringify(payload),
-                contentType: 'application/json'
+                data: JSON.stringify(sendData[0])
             }).done((data) => {
-                this.refreshData();
-                this.getValidationList();
-                this.getAllScopeAvailabilities();
-                this.updateSaveBarState('save', true);
-
-                if (this.successElement) {
+                console.log('single update success data: ', data)
+                this.refreshData()
+                this.setState({
+                    lastSave: new Date().getTime(),
+                }, () => {
                     this.successElement.scrollIntoView();
-                }
+                })
                 hideSpinner();
             }).fail(err => {
-                const isException = err.responseText.toLowerCase().includes('exception');
+                let isException = err.responseText.toLowerCase().includes('exception');
                 if (isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
                         message: err.responseText
                     });
                 } else {
-                    console.log('Update error:', err);
+                    console.log('update error', err);
                 }
-                this.updateSaveBarState('save', false);
-                this.getValidationList();
+                this.getValidationList()
                 hideSpinner();
-            });
+            })
         } else {
             hideSpinner();
         }
-    }
-
-    updateSaveBarState(type, success) {
-        this.setState({
-            lastSave: new Date().getTime(),
-            saveSuccess: success,
-            saveType: type
-        });
     }
 
     onDeleteAvailability(availability) {
@@ -297,28 +214,13 @@ class AvailabilityPage extends Component {
             $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
                 method: 'GET'
             }).done(() => {
-                
-                const newState = deleteAvailabilityInState(this.state, availability);
-
-                if (this.state.fullAvailabilityList) {
-                    newState.fullAvailabilityList = this.state.fullAvailabilityList.filter(
-                        item => item.id !== availability.id
-                    );
-                }
-
-                this.refreshData();
-                if (newState.availabilitylist.length > 0) {
-                    this.getConflictList();
-                }
-                this.getValidationList();
-
-                this.getAllScopeAvailabilities();
-
-                this.updateSaveBarState('delete', true);
-
-                if (this.successElement) {
-                    this.successElement.scrollIntoView();
-                }
+                this.setState(Object.assign({}, deleteAvailabilityInState(this.state, availability), {
+                    selectedAvailability: null
+                }), () => {
+                    this.refreshData()
+                    this.getConflictList(),
+                    this.getValidationList()
+                });
                 hideSpinner();
             }).fail(err => {
                 console.log('delete error', err);
@@ -331,12 +233,11 @@ class AvailabilityPage extends Component {
                 } else {
                     console.log('delete error', err);
                 }
-                this.updateSaveBarState('delete', false);
                 hideSpinner();
             })
         } else {
             hideSpinner();
-        }
+        }        
     }
 
     onCopyAvailability(availability) {
@@ -359,7 +260,7 @@ class AvailabilityPage extends Component {
     }
 
     onSelectAvailability(availability) {
-        if (availability || !this.state.selectedAvailability) {
+        if (availability || ! this.state.selectedAvailability) {
             this.setState({
                 selectedAvailability: availability
             }, () => {
@@ -370,18 +271,17 @@ class AvailabilityPage extends Component {
                 selectedAvailability: null
             })
         }
-
+        
     }
 
     editExclusionAvailability(availability, startDate, endDate, description, kind) {
         (startDate) ? availability.startDate = startDate : null;
         (endDate) ? availability.endDate = endDate : null;
         availability.__modified = true;
-        availability.description = (description) ? description : availability.description;
-        
-        if (!availability.kind && kind != 'origin') {
+        if (! availability.kind && kind != 'origin') {
             availability.tempId = tempId()
             availability.id = null
+            availability.description = (description) ? description : availability.description
             availability.kind = kind
         } else {
             availability.kind = 'origin'
@@ -393,41 +293,40 @@ class AvailabilityPage extends Component {
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
         const tomorrow = selectedDay.clone().add(1, 'days')
-    
+
         this.isCreatingExclusion = true;
-    
-        let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ?
-            parseInt(selectedDay.unix(), 10) :
+
+        let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ? 
+            parseInt(selectedDay.unix(), 10) : 
             parseInt(yesterday.unix(), 10);
-    
+
         let name = availability.description;
         name = name.replaceAll('Ausnahme zu Terminserie ', '');
         name = name.replaceAll('Fortführung der Terminserie ', '');
-        name = name.replaceAll('Ursprüngliche Serie ', '');
-    
+
         const originAvailability = this.editExclusionAvailability(
             Object.assign({}, availability),
-            null,
+            null, 
             endDateTimestamp,
-            `Ursprüngliche Serie ` + name,
+            null,
             'origin'
         )
-    
+
         if (availability.startDate === selectedDay.unix()) {
             originAvailability.description = `Ausnahme zu Terminserie ` + name;
         }
-    
+
         let exclusionAvailability = originAvailability;
         if (originAvailability.startDate < selectedDay.unix()) {
             exclusionAvailability = this.editExclusionAvailability(
                 Object.assign({}, availability),
-                parseInt(selectedDay.unix(), 10),
+                parseInt(selectedDay.unix(), 10), 
                 parseInt(selectedDay.unix(), 10),
                 `Ausnahme zu Terminserie ` + name,
                 'exclusion'
             )
         }
-    
+
         let futureAvailability = originAvailability;
         if (parseInt(tomorrow.unix(), 10) <= availability.endDate) {
             futureAvailability = this.editExclusionAvailability(
@@ -438,34 +337,34 @@ class AvailabilityPage extends Component {
                 'future'
             )
         }
-    
+
         this.setState(Object.assign({},
             mergeAvailabilityListIntoState(this.state, [
                 originAvailability,
                 exclusionAvailability,
                 futureAvailability
             ]),
-            {
-                selectedAvailability: exclusionAvailability,
-                stateChanged: true
+            { 
+                selectedAvailability: exclusionAvailability, 
+                stateChanged: true 
             }
         ), () => {
             console.log('in after merging', this.state.availabilitylist);
             this.getConflictList(),
-                this.getValidationList()
+            this.getValidationList()
         })
     }
 
     onEditAvailabilityInFuture(availability) {
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
-        let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ?
-            parseInt(selectedDay.unix(), 10) :
+        let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ? 
+            parseInt(selectedDay.unix(), 10) : 
             parseInt(yesterday.unix(), 10);
 
         const originAvailability = this.editExclusionAvailability(
             Object.assign({}, availability),
-            null,
+            null, 
             endDateTimestamp,
             null,
             'origin'
@@ -487,43 +386,27 @@ class AvailabilityPage extends Component {
                 originAvailability,
                 futureAvailability
             ]),
-            {
-                selectedAvailability: futureAvailability,
-                stateChanged: true
+            { 
+                selectedAvailability: futureAvailability, 
+                stateChanged: true 
             }
         ), () => {
             this.getConflictList(),
-                this.getValidationList()
+            this.getValidationList()
         })
     }
 
     onNewAvailability() {
         let state = {};
-        const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope, this.state.availabilitylist);
-        newAvailability.type = "appointment";
-
+        const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
+        newAvailability.type = "appointment"
         state = Object.assign(
-            state,
-            updateAvailabilityInState(this.state, newAvailability)
+            state, 
+            updateAvailabilityInState(this.state, newAvailability), 
+            { selectedAvailability: null, stateChanged: true }
         );
-
-        state.fullAvailabilityList = [
-            ...(this.state.fullAvailabilityList || []),
-            newAvailability
-        ];
-
-        state.selectedAvailability = newAvailability;
-        state.stateChanged = true;
-
-        this.setState(state, () => {
-            Promise.all([
-                this.getValidationList(),
-                this.getConflictList()
-            ])
-                .then(() => {
-                    $('body').scrollTop(0);
-                })
-        });
+        this.setState(state);
+        $('body').scrollTop(0);
     }
 
     onTabSelect(tab) {
@@ -558,150 +441,86 @@ class AvailabilityPage extends Component {
         return hasError || hasConflict;
     }
 
-    validateAvailabilityList(availabilitylist) {
-        const timeRegex = /^\d{2}:\d{2}(:\d{2})?$/;
+    getValidationList(list = []) {
+        const validateData = data => {
+            let validationResult = validate(data, this.props)
+            if (!validationResult.valid) {
+                return validationResult.errorList              
+                
+            } 
+            return [];
+        }
 
-        const isValidTimestamp = (timestamp) => !Number.isNaN(Number(timestamp)) && moment.unix(timestamp).isValid();
+        this.state.availabilitylist.map(availability => {
+            list.push(validateData(availability))
+        })
+        list = list.filter(el => el.id)
 
-        const invalidAvailabilities = availabilitylist.filter((availability) => {
-            const hasInvalidDates =
-                !isValidTimestamp(availability.startDate) || !isValidTimestamp(availability.endDate);
-            const hasInvalidTimes =
-                !timeRegex.test(availability.startTime) || !timeRegex.test(availability.endTime);
-
-            if (hasInvalidDates || hasInvalidTimes) {
-                console.warn("Invalid availability detected:", availability);
+        this.setState({
+            errorList: list.length ? Object.assign({}, list) : {}
+        }, () => {
+            if (list.length) {
+                this.errorElement.scrollIntoView()
             }
-
-            return hasInvalidDates || hasInvalidTimes;
-        });
-
-        return invalidAvailabilities;
-    }
-
-    getValidationList() {
-        return new Promise((resolve, reject) => {
-            const validateData = (data) => {
-                const validationResult = validate(data, this.props);
-                if (!validationResult.valid) {
-                    return validationResult.errorList;
-                }
-                return [];
-            };
-
-            try {
-                const list = this.state.availabilitylist
-                    .map(validateData)
-                    .flat();
-
-                console.log("Validations fetched successfully:", list);
-
-                this.setState(
-                    {
-                        errorList: list.length ? list : [],
-                    },
-                    () => {
-                        if (list.length > 0) {
-                            const nonPastTimeErrors = list.filter(error =>
-                                !error.itemList?.flat(2).some(item => item?.type === 'endTimePast')
-                            );
-
-                            if (nonPastTimeErrors.length > 0) {
-                                console.warn("Validation failed with errors:", nonPastTimeErrors);
-                                this.errorElement?.scrollIntoView();
-                            } else {
-                                console.log("Validation passed with only past time errors.");
-                            }
-                        } else {
-                            console.log("Validation passed successfully.");
-                            resolve();
-                        }
-                    }
-                );
-            } catch (error) {
-                console.error("Validation error:", error);
-                reject(error);
-            }
-        });
+        })
     }
 
     getConflictList() {
-        return new Promise((resolve, reject) => {
-            const { availabilitylist } = this.state;
-            const { timestamp } = this.props;
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    availabilityList: availabilitylist,
-                    selectedDate: formatTimestampDate(timestamp)
-                }),
-            };
-
-            const url = `${this.props.links.includeurl}/availability/conflicts/`;
-
-            fetch(url, requestOptions)
-                .then((res) => res.json())
-                .then(
-                    (data) => {
-                        console.log("Conflicts fetched successfully:", data);
-                        this.setState({
-                            conflictList: {
-                                itemList: { ...data.conflictList },
-                                conflictIdList: data.conflictIdList,
-                            },
-                        });
-                        if (data.conflictIdList.length > 0) {
-                            this.errorElement?.scrollIntoView();
-                        }
-                        resolve();
-                    },
-                    (err) => {
-                        console.error("Conflict fetch error:", err);
-                        hideSpinner();
-                        reject(err);
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.assign({}, {
+                availabilityList: this.state.availabilitylist, 
+                selectedDate: formatTimestampDate(this.props.timestamp),
+                selectedAvailability: this.state.selectedAvailability
+            }))
+        };
+        const url = `${this.props.links.includeurl}/availability/conflicts/`;
+        fetch(url, requestOptions)
+            .then(res => res.json())
+            .then(
+                (data) => {
+                    this.setState({
+                        conflictList: Object.assign({}, 
+                            {
+                                itemList: Object.assign({}, data.conflictList), 
+                                conflictIdList: data.conflictIdList
+                            }
+                        )
+                    })
+                    if (data.conflictIdList.length > 0) {
+                        this.errorElement.scrollIntoView()
                     }
-                )
-                .catch((error) => {
-                    console.warn("Conflict fetch failed:", error);
-                    reject(error);
-                });
-        });
+                },
+                (err) => {
+                    let isException = err.responseText.toLowerCase().includes('exception');
+                    if (err.status >= 500 && isException) {
+                        new ExceptionHandler($('.opened'), {
+                            code: err.status,
+                            message: err.responseText
+                        });
+                    } else {
+                        console.log('conflict error', err);
+                    }
+                    hideSpinner();
+                }
+            )
     }
 
     renderTimeTable() {
         const onSelect = data => {
             this.onSelectAvailability(data)
         }
-    
+
         const onDelete = data => {
             this.onDeleteAvailability(data)
         }
-    
-        let ViewComponent
-        let availabilityList
-        switch(this.state.selectedTab) {
-            case 'graph':
-                ViewComponent = GraphView
-                availabilityList = this.state.availabilitylistslices || this.state.availabilitylist
-                break
-            case 'scope':
-                ViewComponent = ScopeView
-                availabilityList = this.state.fullAvailabilityList || []
-                if (!this.state.fullAvailabilityList) {
-                    this.getAllScopeAvailabilities()
-                }
-                break
-            default:
-                ViewComponent = TableView
-                availabilityList = this.state.availabilitylistslices || this.state.availabilitylist
-        }
-    
+
+        const ViewComponent = this.state.selectedTab == 'graph' ? GraphView : TableView;
         return <ViewComponent
             timestamp={this.props.timestamp}
-            scope={this.props.scope}
             conflicts={this.state.conflicts}
-            availabilityList={availabilityList}
+            availabilityList={this.state.availabilitylistslices || this.state.availabilitylist}
             data={this.state.selectedAvailability}
             maxWorkstationCount={this.state.maxWorkstationCount || this.props.maxworkstationcount}
             links={this.props.links}
@@ -713,84 +532,56 @@ class AvailabilityPage extends Component {
     }
 
     readCalculatedAvailabilityList() {
-        this.getValidationList()
-            .then(() => {
-                const { availabilitylist, busyslots } = this.state;
-
-                console.log("Validation passed. Proceeding with /availability/slots/.");
-
-                $.ajax(`${this.props.links.includeurl}/availability/slots/`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    data: JSON.stringify({
-                        availabilityList: availabilitylist,
-                        busySlots: busyslots,
-                    }),
-                })
-                    .done((responseData) => {
-                        console.log("Slots fetched successfully:", responseData);
-                        const availabilityList = writeSlotCalculationIntoAvailability(
-                            this.state.availabilitylist,
-                            responseData['maxSlots'],
-                            responseData['busySlots']
-                        );
-                        this.setState({
-                            availabilitylistslices: availabilityList,
-                            maxWorkstationCount: parseInt(responseData['maxWorkstationCount']),
-                        });
-                    })
-                    .fail((err) => {
-                        console.error("Error during /availability/slots/ fetch:", err);
-                        if (err.status === 404) {
-                            console.log("404 error ignored.");
-                            hideSpinner();
-                        } else {
-                            const isException = err.responseText.toLowerCase().includes("exception");
-                            if (err.status >= 500 && isException) {
-                                new ExceptionHandler($(".opened"), {
-                                    code: err.status,
-                                    message: err.responseText,
-                                });
-                            } else {
-                                console.error("Unexpected error:", err.responseText);
-                            }
-                            hideSpinner();
-                        }
-                    });
+        $.ajax(`${this.props.links.includeurl}/availability/slots/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            data: JSON.stringify({
+                'availabilityList': this.state.availabilitylist,
+                'busySlots': this.state.busyslots
             })
-            .catch((error) => {
-                console.warn("Validation failed. Slot calculation fetch aborted.", error);
-                this.setState({ errorList: error });
-                this.errorElement?.scrollIntoView();
-            });
+        }).done((responseData) => {
+            let availabilityList =  writeSlotCalculationIntoAvailability(
+                this.state.availabilitylist, 
+                responseData['maxSlots'], 
+                responseData['busySlots']
+            );
+            this.setState({ 
+                availabilitylistslices: availabilityList,
+                maxWorkstationCount: parseInt(responseData['maxWorkstationCount']),
+            })
+        }).fail((err) => {
+            if (err.status === 404) {
+                console.log('404 error, ignored')
+            } else {
+                let isException = err.responseText.toLowerCase().includes('exception');
+                    if (err.status >= 500 && isException) {
+                        new ExceptionHandler($('.opened'), {
+                            code: err.status,
+                            message: err.responseText
+                        });
+                    } else {
+                        console.log('reading calculated availability list error', err);
+                    }
+                    hideSpinner();
+            }
+        })
     }
 
     handleChange(data) {
         if (data.__modified) {
             clearTimeout(this.timer)
-            const state = Object.assign({}, updateAvailabilityInState(this.state, data));
-            
-            if (this.state.fullAvailabilityList) {
-                state.fullAvailabilityList = this.state.fullAvailabilityList.map(item => 
-                    (item.id === data.id || item.tempId === data.tempId) ? data : item
-                );
-                
-                if (!state.fullAvailabilityList.some(item => 
-                    item.id === data.id || item.tempId === data.tempId
-                )) {
-                    state.fullAvailabilityList = [...state.fullAvailabilityList, data];
+            this.setState(
+                Object.assign({}, updateAvailabilityInState(this.state, data)),
+                () => {
+                    this.readCalculatedAvailabilityList();
+                    if (data.tempId || data.id) {
+                        this.timer = setTimeout(() => {
+                            this.getConflictList()
+                            this.getValidationList()
+                        }, this.waitintervall)
+                    }
                 }
-            }
-            
-            this.setState(state, () => {
-                this.readCalculatedAvailabilityList();
-                if (data.tempId || data.id) {
-                    this.timer = setTimeout(() => {
-                        this.getConflictList()
-                        this.getValidationList()
-                    }, this.waitintervall)
-                }
-            });
+            );
         }
         if (data.kind && inArray(data.kind, ["origin", "future", "exclusion"])) {
             this.handleChangesAvailabilityExclusion(data)
@@ -802,7 +593,7 @@ class AvailabilityPage extends Component {
             this.handleOriginChanges(data)
         }
         if ('exclusion' == data.kind && data.__modified) {
-            this.handleExclusionChanges(data)
+            this.handleExclusionChanges(data)        
         }
         if ('future' == data.kind && data.__modified) {
             this.handleFutureChanges(data)
@@ -812,14 +603,14 @@ class AvailabilityPage extends Component {
     handleOriginChanges(data) {
         const exclusionAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'exclusion');
         const futureAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'future');
-
+        
         const exclusionAvailability = (exclusionAvailabilityFromState) ? Object.assign({}, exclusionAvailabilityFromState, {
             startDate: moment(data.endDate, 'X').startOf('day').add(1, 'days').unix(),
             endDate: (exclusionAvailabilityFromState.endDate > moment(data.endDate, 'X').startOf('day').add(1, 'days').unix()) ?
                 exclusionAvailabilityFromState.endDate :
                 moment(data.endDate, 'X').startOf('day').add(1, 'days').unix()
         }) : data;
-
+    
         const futureAvailability = Object.assign({}, futureAvailabilityFromState, {
             startDate: moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').unix(),
             endDate: (
@@ -830,7 +621,7 @@ class AvailabilityPage extends Component {
         this.setState(Object.assign(
             {},
             mergeAvailabilityListIntoState(this.state, [exclusionAvailability, futureAvailability, data])
-        ));
+        ));          
     }
 
     handleExclusionChanges(data) {
@@ -844,7 +635,7 @@ class AvailabilityPage extends Component {
         const originAvailability = Object.assign({}, originAvailabilityFromState, {
             endDate: moment(exclusionAvailability.startDate, 'X').startOf('day').subtract(1, 'days').unix()
         });
-
+    
         const futureAvailability = Object.assign({}, futureAvailabilityFromState, {
             startDate: moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').unix(),
             endDate: (
@@ -856,32 +647,32 @@ class AvailabilityPage extends Component {
         this.setState(Object.assign(
             {},
             mergeAvailabilityListIntoState(this.state, [
-                originAvailability,
-                futureAvailability,
+                originAvailability, 
+                futureAvailability, 
                 exclusionAvailability
             ])
-        ));
+        ));  
     }
 
     handleFutureChanges(data) {
         const startDate = moment(data.startDate, 'X').startOf('day').add(1, 'days').unix();
         const originAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'origin');
         const exclusionAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'exclusion');
-
+        
         const exclusionAvailability = (exclusionAvailabilityFromState) ? Object.assign({}, exclusionAvailabilityFromState, {
-            startDate: (startDate < exclusionAvailabilityFromState.endDate) ?
-                parseInt(startDate, 10) :
+            startDate: (startDate < exclusionAvailabilityFromState.endDate) ? 
+                parseInt(startDate, 10) : 
                 exclusionAvailabilityFromState.endDate
         }) : data;
 
         const originAvailability = Object.assign({}, originAvailabilityFromState, {
             endDate: moment(exclusionAvailability.startDate, 'X').startOf('day').subtract(1, 'days').unix()
         });
-
+    
         this.setState(Object.assign(
             {},
             mergeAvailabilityListIntoState(this.state, [originAvailability, exclusionAvailability, data])
-        ));
+        ));          
     }
 
     renderAvailabilityAccordion() {
@@ -891,37 +682,33 @@ class AvailabilityPage extends Component {
         const onCopy = data => {
             this.onCopyAvailability(data)
         }
-    
+
         const onExclusion = data => {
             this.onCreateExclusionForAvailability(data)
         }
-    
+
         const onEditInFuture = data => {
             this.onEditAvailabilityInFuture(data)
         }
-    
+
         const onDelete = data => {
             this.onDeleteAvailability(data)
         }
-    
+
         const onUpdateSingle = data => {
             this.onUpdateSingleAvailability(data)
         }
-    
+
         const onNew = data => {
             this.onNewAvailability(data)
         }
-    
+
         const handleChange = (data) => {
             this.handleChange(data)
         }
-    
-        const availabilityList = this.state.selectedTab === 'scope' 
-            ? (this.state.fullAvailabilityList || [])
-            : this.state.availabilitylist
-    
-        return <AccordionLayout
-            availabilityList={availabilityList}
+
+        return <AccordionLayout 
+            availabilityList={this.state.availabilitylist}
             data={this.state.selectedAvailability}
             today={this.state.today}
             timestamp={this.props.timestamp}
@@ -939,12 +726,12 @@ class AvailabilityPage extends Component {
             stateChanged={this.state.stateChanged}
             includeUrl={this.props.links.includeurl}
             setErrorRef={this.setErrorRef}
-            errorList={this.state.errorList ?
+            errorList={this.state.errorList ? 
                 this.state.errorList : {}
             }
-            conflictList={this.state.conflictList ?
-                this.state.conflictList :
-                { itemList: {}, conflictIdList: {} }
+            conflictList={this.state.conflictList ? 
+                this.state.conflictList : 
+                {itemList: {}, conflictIdList: {}}
             }
             isCreatingExclusion={this.isCreatingExclusion}
         />
@@ -952,14 +739,7 @@ class AvailabilityPage extends Component {
 
     renderSaveBar() {
         if (this.state.lastSave) {
-            return (
-                <SaveBar
-                    lastSave={this.state.lastSave}
-                    success={this.state.saveSuccess}
-                    setSuccessRef={this.setSuccessRef}
-                    type={this.state.saveType}
-                />
-            )
+            return <SaveBar lastSave={this.state.lastSave} setSuccessRef={this.setSuccessRef} />
         }
     }
 

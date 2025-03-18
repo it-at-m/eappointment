@@ -11,12 +11,8 @@
 
 {% set tabs = [
     {name: "%s"|format("Graph-Ansicht")|trans, component: "graph"},
-    {name: "%s"|format("Tabellen-Ansicht")|trans, component: "table"},
-] %}
-
-{# Temporarily disabled:
-    {name: "%s"|format("Alle Öffnungszeiten")|trans, component: "scope"}
-#}
+    {name: "%s"|format("Tabellen-Ansicht")|trans, component: "table"}
+ ] %}
 
 {% block headline %}
     {{ headline1('Öffnungszeiten für den Standort ' ~ scope.name ~ ' ' ~ scope.shortName ) }}
