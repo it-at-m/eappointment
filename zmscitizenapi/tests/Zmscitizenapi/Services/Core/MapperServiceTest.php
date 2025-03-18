@@ -141,7 +141,7 @@ class MapperServiceTest extends TestCase
         $provider = new Provider();
         $result = MapperService::providerToThinnedProvider($provider);
         $this->assertInstanceOf(ThinnedProvider::class, $result);
-        $this->assertEquals(123, $result->id);
+        $this->assertEquals(0, $result->id);
         $this->assertEmpty($result->name);
         $this->assertEquals('dldb', $result->source);
         $this->assertNull($result->lat);
@@ -190,7 +190,7 @@ class MapperServiceTest extends TestCase
     public function testMinimalProcessToThinnedProcess()
     {
         $expectedResponse = [
-            'processId' => 1234,
+            'processId' => 0,
             'timestamp' => null,
             'authKey' => '',
             'familyName' => null,
@@ -198,7 +198,7 @@ class MapperServiceTest extends TestCase
             'email' => null,
             'telephone' => null,
             'officeName' => null,
-            'officeId' => 123,
+            'officeId' => 0,
             'scope' => [
                 'id' => 0,
                 'provider' => new ThinnedProvider(),
@@ -298,7 +298,7 @@ class MapperServiceTest extends TestCase
             'authKey' => '',
             'createIP' => '',
             'createTimestamp' => 1736678411,
-            'id' => 1234,
+            'id' => 0,
             'archiveId' => 0,
             'queue' => [
                 '$schema' => 'https://schema.berlin.de/queuemanagement/queue.json',

@@ -69,12 +69,12 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'officeName' => null,
-            'officeId' => 123,
+            'officeId' => 0,
             'scope' => [
                 'id' => 0,
                 'provider' => [
                     'contact'=> null,
-                    'id'=> 123,
+                    'id'=> 0,
                     'lat'=> null,
                     'lon'=> null,
                     'name'=> '',
