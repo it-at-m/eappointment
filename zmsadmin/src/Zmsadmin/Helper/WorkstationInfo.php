@@ -21,7 +21,7 @@ class WorkstationInfo
             'waitingClientsFullList' => 0,
             'waitingClientsBeforeNext' => 0,
             'waitingClientsEffective' => 0
-        );        
+        );
         $scope = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/workstationcount/')->getEntity();
 
         $clusterHelper = (new ClusterHelper($workstation));
