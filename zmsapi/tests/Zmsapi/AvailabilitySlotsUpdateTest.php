@@ -65,7 +65,7 @@ class AvailabilitySlotsUpdateTest extends Base
                             "source": "dldb"
                         },
                         "shortName": "Zentrale"
-                    },
+                    }
                 }
             ]',
             'migrationfix' => 0

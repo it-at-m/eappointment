@@ -129,7 +129,7 @@ class ProcessConfirmationMailTest extends Base
                         "name": "Flughafen Schönefeld, Aufsicht",
                         "source": "dldb"
                     },
-                    "shortName": "Zentrale"
+                    "shortName": "Zentrale",
                     "preferences": {
                         "client": {
             				"emailRequired": 1
@@ -168,7 +168,7 @@ class ProcessConfirmationMailTest extends Base
         $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '{
-                "status": "confirmed"
+                "status": "unvalid"
             }'
         ], []);
     }

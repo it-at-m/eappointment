@@ -44,7 +44,7 @@ class ProcessConfirmationNotificationTest extends Base
                                 "source": "dldb"
                             },
                             "shortName": "Zentrale"
-                        }
+                        },
                         "slotCount": 2
                     }
                 ],
@@ -142,7 +142,7 @@ class ProcessConfirmationNotificationTest extends Base
         $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '{
-                "status": "confirmed"
+                "status": "unvalid"
             }'
         ], []);
     }

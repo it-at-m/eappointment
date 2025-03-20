@@ -11,7 +11,7 @@ class Request extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'id' => '123',
+            'id' => '',
             'name' => '',
             'source' => 'dldb'
         ];
