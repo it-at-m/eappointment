@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
+import {
+  getAPIBaseURL,
+  VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT,
+} from "@/utils/Constants";
+
 import "altcha";
 
 const altchaWidget = ref<HTMLElement | null>(null);
@@ -28,11 +33,12 @@ watch(internalValue, (v) => {
 const fetchCaptchaDetails = async () => {
   try {
     const response = await fetch(
-      "https://zms.ddev.site/terminvereinbarung/api/citizen/captcha-details/"
+      `${getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL)}${VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT}` // corresponds to https://zms.ddev.site/terminvereinbarung/api/citizen/captcha-details/
     );
     if (!response.ok) throw new Error("Fehler beim Laden der Captcha-Daten");
 
     const data = await response.json();
+    console.log("DATA:", data);
     captchaChallengeUrl.value = data.captchaChallenge;
     captchaVerifyUrl.value = data.captchaVerify;
     captchaEnabled.value = data.captchaEnabled;
@@ -42,8 +48,9 @@ const fetchCaptchaDetails = async () => {
 };
 
 const verifyCaptcha = async (payload: string) => {
+  console.log("VERIFIYING");
   if (!captchaVerifyUrl.value) return;
-
+  console.log("VERIFY");
   try {
     const response = await fetch(captchaVerifyUrl.value, {
       method: "POST",
@@ -70,9 +77,11 @@ const verifyCaptcha = async (payload: string) => {
 const onStateChange = (ev: CustomEvent | Event) => {
   if ("detail" in ev) {
     const { payload, state } = ev.detail;
+    console.log("STATE:", state);
     if (state === "verified" && payload) {
       internalValue.value = payload;
       verifyCaptcha(payload);
+      console.log("FINISHED");
     } else {
       internalValue.value = "";
       emit("validationResult", false);

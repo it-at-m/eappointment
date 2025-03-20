@@ -56,30 +56,6 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         ];
     }
 
-    // /**
-    //  * Fordert ein neues Captcha an.
-    //  *
-    //  * @param string $clientIp
-    //  * @return array|null
-    //  */
-    // public function requestCaptcha(string $clientIp): ?array
-    // {
-    //     try {
-    //         $response = \App::$http->post($this->challengeUrl, [
-    //             'json' => ['clientIpAddress' => $clientIp]
-    //         ]);
-
-    //         $responseBody = json_decode((string)$response->getBody(), true);
-    //         if (json_last_error() !== JSON_ERROR_NONE || empty($responseBody)) {
-    //             return null;
-    //         }
-
-    //         return $responseBody;
-    //     } catch (RequestException $e) {
-    //         return null;
-    //     }
-    // }
-
     /**
      * Überprüft die Captcha-Lösung.
      *
