@@ -2,16 +2,22 @@
 
 namespace BO\Zmsadmin\Tests;
 
+use DateTime;
+
 class WorkstationProcessTest extends Base
 {
     protected $arguments = [];
 
-    protected $parameters = [];
+    protected $parameters = [
+        'ghostworkstationcount' => 2
+    ];
 
     protected $classname = "WorkstationProcess";
 
     public function testRendering()
     {
+        $date = (new DateTime())->format('Y-m-d');
+
         $this->setApiCalls(
             [
                 [
@@ -19,6 +25,40 @@ class WorkstationProcessTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/workstationcount/',
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_Workstation_cluster_scopelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141_workstationlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/' . $date . '/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
+                    'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/' . $date . '/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => ''
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
         );
@@ -45,6 +85,8 @@ class WorkstationProcessTest extends Base
 
     public function testRenderingWithProcessingProcess()
     {
+        $date = (new DateTime())->format('Y-m-d');
+
         $this->setApiCalls(
             [
                 [
@@ -52,6 +94,40 @@ class WorkstationProcessTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/workstationcount/',
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_Workstation_cluster_scopelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141_workstationlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/' . $date . '/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
+                    'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/process/' . $date . '/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => ''
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
         );
@@ -64,6 +140,8 @@ class WorkstationProcessTest extends Base
 
     public function testRenderingWithClusterEnabled()
     {
+        $date = (new DateTime())->format('Y-m-d');
+
         $this->setApiCalls(
             [
                 [
@@ -71,6 +149,40 @@ class WorkstationProcessTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/workstationcount/',
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/process/' . $date . '/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
+                    ],
+                    'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/process/' . $date . '/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => ''
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_cluster_109_workstationlist.json")
                 ]
             ]
         );
