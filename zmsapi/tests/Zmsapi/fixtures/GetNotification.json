@@ -108,10 +108,8 @@
         },
         "status": "confirmed"
     },
-    "client": [
-        {
-            "familyName": "Max Mustermann",
-            "telephone": "030 115"
-        }
-    ]
+    "client": {
+        "familyName": "Max Mustermann",
+        "telephone": "030 115"
+    }
 }

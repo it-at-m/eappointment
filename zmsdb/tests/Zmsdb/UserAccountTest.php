@@ -156,7 +156,7 @@ class UserAccountTest extends Base
         $userAccount = $query->writeEntity($entity);
         $query->deleteEntity($userAccount->id);
         $entity = $query->readEntity($userAccount->id, 1);
-        $this->assertFalse(isset($entity->id), "Failed to delete User from Database.");
+        $this->assertTrue(empty($entity->id), "Failed to delete User from Database.");
     }
 
     public function testDuplicate()

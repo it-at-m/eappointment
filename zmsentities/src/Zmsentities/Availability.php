@@ -65,16 +65,17 @@ class Availability extends Schema\Entity
             'slotTimeInMinutes' => 10,
             'startDate' => 0,
             'endDate' => 0,
-            'startTime' => "0:00",
-            'endTime' => "23:59",
+            'startTime' => '0:00',
+            'endTime' => '23:59',
             'type' => 'appointment',
             'scope' => [
-                "provider" => [
-                    "id" => 0,
-                    "name" => "",
-                    "source" => ""
+                'id' => 123,
+                'provider' => [
+                    'id' => 0,
+                    'name' => '',
+                    'source' => ''
                 ],
-                "shortName" => ""
+                'shortName' => ''
             ]
         ];
     }

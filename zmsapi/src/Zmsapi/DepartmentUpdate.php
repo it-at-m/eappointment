@@ -28,7 +28,6 @@ class DepartmentUpdate extends BaseController
         // Debugging
         $departmentTest =  $workstation::checkDepartment($args['id']);
         $departmentWithData = $departmentTest->addData($input);
-        var_dump($departmentWithData);
 
         $department->addData($input)->testValid('de_DE', 1);
         $workstation->checkRights(
