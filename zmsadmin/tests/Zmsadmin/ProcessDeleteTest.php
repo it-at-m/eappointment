@@ -43,6 +43,7 @@ class ProcessDeleteTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/82252/12a2/delete/mail/',
+                    'parameters' => ['initiator' => 'admin'],
                     'response' => $this->readFixture("POST_mail.json")
                 ],
                 [

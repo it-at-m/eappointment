@@ -53,6 +53,7 @@ class Application
      * Define path for Twig template cache
      */
     const TWIG_CACHE = false;
+    // const TWIG_CACHE = '/cache/';
 /**
      * Set this option, if ESI should be used
      */

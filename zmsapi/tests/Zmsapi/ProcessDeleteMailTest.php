@@ -13,7 +13,10 @@ class ProcessDeleteMailTest extends Base
     public function testRendering()
     {
         $response = $this->render([], [
-            '__body' => $this->readFixture('GetProcess_10029.json')
+            '__body' => json_encode([
+                'process' => [
+                $this->readFixture('GetProcess_10029.json')]
+                ])
         ], []);
         $this->assertStringContainsString('mail.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -31,66 +34,66 @@ class ProcessDeleteMailTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
         $this->expectExceptionCode(404);
         $this->render([], [
-            '__body' => '{
-                "id": 123456,
-                "authKey": "'. self::AUTHKEY .'",
-                "scope": {
-                    "id": 141
-                },
-                "clients": [
-                    {
-                        "familyName": "Max Mustermann",
-                        "email": "max@service.berlin.de",
-                        "telephone": "030 115"
-                    }
+            '__body' => json_encode([
+            'process' => [
+                'id' => 123456,
+                'authKey' => self::AUTHKEY,
+                'scope' => ['id' => 141],
+                'clients' => [
+                    [
+                        'familyName' => 'Max Mustermann',
+                        'email' => 'max@service.berlin.de',
+                        'telephone' => '030 115'
+                    ]
                 ],
-                "appointments" : [
-                    {
-                        "date": 1447869172,
-                        "scope": {
-                            "id": 141
-                        },
-                        "slotCount": 2
-                    }
+                'appointments' => [
+                    [
+                        'date' => 1447869172,
+                        'scope' => ['id' => 141],
+                        'slotCount' => 2
+                    ]
                 ],
-                "status": "confirmed"
-            }'
-        ], []);
-    }
+                'status' => 'confirmed'
+            ]
+        ])
+    ], []);
+}
 
     public function testMissingMail()
     {
         $this->expectException('\BO\Zmsapi\Exception\Process\EmailRequired');
         $this->expectExceptionCode(400);
         $this->render([], [
-            '__body' => '{
-                "id": '. self::PROCESS_ID .',
-                "authKey": "'. self::AUTHKEY .'",
-                "scope": {
-                    "id": 141,
-                    "preferences": {
-                        "client": {
-            				"emailRequired": "1"
-            			}
-                    }
-                },
-                "clients": [
-                    {
-                        "familyName": "Max Mustermann",
-                        "telephone": "030 115"
-                    }
+            '__body' => json_encode([
+            'process' => [
+                "id" => '. self::PROCESS_ID .',
+                "authKey" => "'. self::AUTHKEY .'",
+                "scope" => [
+                    "id" => 141,
+                    "preferences" => [
+                        "client" => [
+            				"emailRequired" => "1"
+                ]
+                ]
+                    ],
+                "clients" => [
+                    [
+                        "familyName" => "Max Mustermann",
+                        "telephone" => "030 115"
+                    ]
                 ],
-                "appointments" : [
-                    {
-                        "date": 1447869172,
-                        "scope": {
-                            "id": 141
-                        },
-                        "slotCount": 2
-                    }
+                "appointments" => [
+                    [
+                        "date" => 1447869172,
+                        "scope" => [
+                            "id" => 141
+                        ],
+                        "slotCount" => 2
+                    ]   
                 ],
-                "status": "confirmed"
-            }'
+                "status" => "confirmed"
+            ]
+            ])
         ], []);
     }
 
@@ -99,9 +102,11 @@ class ProcessDeleteMailTest extends Base
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render([], [
-            '__body' => '{
-                "status": "confirmed"
-            }'
-        ], []);
+            '__body' => json_encode([
+            'process' => '[
+                "status" => "confirmed"
+            ]'
+            ])
+            ], []);
     }
 }
