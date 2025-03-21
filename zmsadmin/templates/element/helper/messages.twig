@@ -300,7 +300,6 @@
 						<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 0 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
 						<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
 						<dt>{{ selectedprocess.appointments[0].date|date("d.m.Y") }} um {{ selectedprocess.appointments[0].date|date("H:i") }} Uhr</dt>
-						<dt> {{selectedprocess.appointments|json_encode}}</dt>
 						<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
 					</dl>
 				</div>
