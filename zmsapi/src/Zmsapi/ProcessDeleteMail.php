@@ -29,7 +29,7 @@ class ProcessDeleteMail extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $input = Validator::input()->isJson()->assertValid()->getValue();        
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
         $initiator = Validator::param('initiator')->isString()->getValue();
 
