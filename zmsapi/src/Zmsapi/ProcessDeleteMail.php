@@ -31,8 +31,8 @@ class ProcessDeleteMail extends BaseController
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         
-        $process = new Process($input['process' ?? $input]);
-        $initiator = $input['initiator'] ?? null;
+        $process = new Process($input);
+        $initiator = Validator::param('initiator')->isString()->getValue();
 
         $process->testValid();
         $this->testProcessData($process);
