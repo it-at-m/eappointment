@@ -11,12 +11,8 @@
 
 {% set tabs = [
     {name: "%s"|format("Graph-Ansicht")|trans, component: "graph"},
-    {name: "%s"|format("Tabellen-Ansicht")|trans, component: "table"},
-] %}
-
-{# Temporarily disabled:
-    {name: "%s"|format("Alle Öffnungszeiten")|trans, component: "scope"}
-#}
+    {name: "%s"|format("Tabellen-Ansicht")|trans, component: "table"}
+ ] %}
 
 {% block headline %}
     {{ headline1('Öffnungszeiten für den Standort ' ~ scope.name ~ ' ' ~ scope.shortName ) }}
@@ -42,8 +38,14 @@
         </div>
 
         <script>
+            var locked = {% if locked %}true{% else %}false{% endif %};
             function toggleClosure() {
-                const ok = confirm('Möchten Sie wirklich Die Terminbuchung für diesen Tag {% if locked %}entsperren{% else %}sperren{% endif %}?')
+                var text = 'Möchten Sie wirklich die Terminbuchung für diesen Tag entsperren?';
+
+                if (!locked) {
+                    text = 'Möchten Sie wirklich die Terminbuchung für diesen Tag sperren?'
+                }
+                const ok = confirm(text)
                 if (!ok) {
                     return
                 }
@@ -62,6 +64,7 @@
                         document.getElementById('closure-close').classList.add('hidden')
                         document.getElementById('closure-open').classList.remove('hidden')
                     }
+                    locked = !locked;
                 }).fail(err => {
                     console.log('error', err)
                 })

@@ -1,20 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-const renderErrors = (errors) => 
-    Object.keys(errors).map(key => (
+const renderErrors = errors => Object.keys(errors).map(key => {
+    return (
         <div key={errors[key].id}>
             {errors[key].itemList.map((item, index) => {
-                if (Array.isArray(item)) {
-                    return item.map((nestedItem, nestedIndex) => (
-                        <div key={`${index}-${nestedIndex}`}>{nestedItem.message}</div>
-                    ));
-                } else {
-                    return <div key={index}>{item.message}</div>;
-                }
-            })}
+                return <div key={index}>{item[0].message}</div>
+            })}   
         </div>
-    ));
+    )
+})
 
 const Errors = (props) => {
     return (
@@ -23,15 +18,15 @@ const Errors = (props) => {
             <h3>Folgende Fehler sind bei der Prüfung Ihrer Eingaben aufgetreten:</h3>
             {renderErrors(props.errorList)}
         </div> : null
-    );
-};
+    )
+}
 
 Errors.defaultProps = {
     errorList: []
-};
+}
 
 Errors.propTypes = {
     errorList: PropTypes.object
-};
+}
 
-export default Errors;
+export default Errors

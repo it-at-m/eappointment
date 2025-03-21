@@ -40,7 +40,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionProcessId($processId);
-
         return $this->fetchOne($query, new Entity());
     }
 
@@ -62,19 +61,13 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * Update a process without changing appointment or scope
      */
-    public function updateEntity(
-        \BO\Zmsentities\Process $process,
-        \DateTimeInterface $now,
-        $resolveReferences = 0,
-        $previousStatus = null,
-        ?\BO\Zmsentities\Useraccount $useraccount = null
-    ) {
+    public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $resolveReferences = 0, $previousStatus = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    {
         $processEntity = $process;
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
         $query->addValuesUpdateProcess($process, $now, 0, $previousStatus);
-
         if ($this->perform($query->getLockProcessId(), ['processId' => $process->getId()])) {
             $this->writeItem($query);
             $this->writeRequestsToDb($process);
@@ -87,14 +80,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             'reserved' => ($process->status == 'reserved') ? 1 : 0,
             'processID' => $process->getId(),
         ]);
-
-        Log::writeProcessLog(
-            "UPDATE (Process::updateEntity) $process ",
-            Log::ACTION_EDITED,
-            $processEntity,
-            $useraccount
-        );
-
+        Log::writeProcessLog("UPDATE (Process::updateEntity) $process ", Log::ACTION_EDITED, $processEntity, $useraccount);
         return $process;
     }
 
@@ -107,22 +93,10 @@ class Process extends Base implements Interfaces\ResolveReferences
      *        a priviliged operation. Just using the input would be a security flaw to get a wider selection of times
      *        If slotsRequired = 0, readFreeProcesses() uses the slotsRequired based on request-provider relation
      */
-    public function updateEntityWithSlots(
-        \BO\Zmsentities\Process $process,
-        \DateTimeInterface $now,
-        $slotType = "intern",
-        $slotsRequired = 0,
-        $resolveReferences = 0,
-        $userAccount = null
-    ) {
+    public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $slotType = "intern", $slotsRequired = 0, $resolveReferences = 0, $userAccount = null)
+    {
         if ('intern' != $slotType) {
-            return $this->updateEntity(
-                $process,
-                $now,
-                $resolveReferences,
-                null,
-                $userAccount
-            );
+            return $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
         }
         $process = clone $process;
         $appointment = $process->getAppointments()->getFirst();
@@ -143,28 +117,12 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $appointment->addSlotCount($slotList->count());
-        Log::writeProcessLog(
-            "CREATE (Process::updateEntityWithSlots) $process ",
-            Log::ACTION_EDITED,
-            $process,
-            $userAccount
-        );
-
-        return $this->updateEntity(
-            $process,
-            $now,
-            $resolveReferences,
-            null,
-            $userAccount
-        );
+        Log::writeProcessLog("CREATE (Process::updateEntityWithSlots) $process ", Log::ACTION_EDITED, $process, $userAccount);
+        return $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
     }
 
-    public function writeNewPickup(
-        \BO\Zmsentities\Scope $scope,
-        \DateTimeInterface $dateTime,
-        $newQueueNumber = 0,
-        \BO\Zmsentities\Useraccount $useraccount = null
-    ) {
+    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0, \BO\Zmsentities\Useraccount $useraccount = null)
+    {
         $process = Entity::createFromScope($scope, $dateTime);
         $process->setStatus('pending');
         if (!$newQueueNumber) {
@@ -180,35 +138,21 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->writeNewProcess($process, $dateTime);
     }
 
-    public function redirectToScope(
-        $process,
-        \BO\Zmsentities\Scope $scope,
-        int $waitingNumber,
-        ?\BO\Zmsentities\Useraccount $useraccount = null
-    ) {
+    public function redirectToScope($process, \BO\Zmsentities\Scope $scope, int $waitingNumber, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    {
         $datetime = \App::$now;
         $process->setStatus('confirmed');
-
         $appointment = $process->getFirstAppointment();
         $date = (new \DateTimeImmutable())->setTimestamp($appointment->date);
         $date = $date->setTime(0, 0, 0);
         $appointment->date = $date->getTimestamp();
         $process->appointments = new AppointmentList([$appointment]);
-
         $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $datetime);
         $process->addQueue($newQueueNumber, $datetime);
         $process->queue['number'] = $waitingNumber;
-
-        Log::writeProcessLog(
-            "CREATE (Process::redirectToScope) $process ",
-            Log::ACTION_REDIRECTED,
-            $process,
-            $useraccount
-        );
-
+        Log::writeProcessLog("CREATE (Process::redirectToScope) $process ", Log::ACTION_REDIRECTED, $process, $useraccount);
         $process = $this->writeNewProcess($process, $datetime);
         $this->writeRequestsToDb($process);
-
         return $process;
     }
 
@@ -233,15 +177,8 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * write a new process with appointment and keep id and authkey from original process
      */
-    public function writeEntityWithNewAppointment(
-        \BO\Zmsentities\Process $process,
-        \BO\Zmsentities\Appointment $appointment,
-        \DateTimeInterface $now,
-        $slotType = 'public',
-        $slotsRequired = 0,
-        $resolveReferences = 0,
-        $keepReserved = false
-    ) {
+    public function writeEntityWithNewAppointment(\BO\Zmsentities\Process $process, \BO\Zmsentities\Appointment $appointment, \DateTimeInterface $now, $slotType = 'public', $slotsRequired = 0, $resolveReferences = 0, $keepReserved = false)
+    {
         // clone to new process with id = 0 and new appointment to reserve
         $processNew = clone $process;
         $processNew->id = 0;
@@ -249,30 +186,22 @@ class Process extends Base implements Interfaces\ResolveReferences
         $processNew->queue['arrivalTime'] = 0;
         $processNew->queue['number'] = 0;
         $processNew->appointments = (new \BO\Zmsentities\Collection\AppointmentList())->addEntity($appointment);
-        //delete old process with following processes
+//delete old process with following processes
         $this->writeDeletedEntity($process->getId());
-        //reserve new appointment
+//reserve new appointment
         $processNew = ProcessStatusFree::init()
             ->writeEntityReserved($processNew, $now, $slotType, $slotsRequired);
         $processTempNewId = $processNew->getId();
-
-        // reassign credentials of new process with credentials of old process
+// reassign credentials of new process with credentials of old process
         $processNew->withReassignedCredentials($process);
-
-        // update new process with old credentials, also assigned requests and following slots
+// update new process with old credentials, also assigned requests and following slots
         $this->updateFollowingProcesses($processTempNewId, $processNew);
         $this->updateReassignedRequests($processTempNewId, $processNew->getId());
-
-        //delete slot mapping for temp process id
+//delete slot mapping for temp process id
         (new Slot())->deleteSlotProcessMappingFor($processTempNewId);
-        //write new slot mapping for changed process with old credentials because new appointment data
+//write new slot mapping for changed process with old credentials because new appointment data
         (new Slot())->writeSlotProcessMappingFor($processNew->getId());
-        Log::writeProcessLog(
-            "UPDATE (Process::writeEntityWithNewAppointment) $process ",
-            Log::ACTION_EDITED,
-            $process
-        );
-
+        Log::writeProcessLog("UPDATE (Process::writeEntityWithNewAppointment) $process ", Log::ACTION_EDITED, $process);
         $status = ($keepReserved) ? Entity::STATUS_RESERVED : ENTITY::STATUS_CONFIRMED;
         return $this->updateProcessStatus($processNew, $status, $now, $resolveReferences);
     }
@@ -280,16 +209,13 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * update following process with new credentials (also change process id if necessary)
      */
-    public function updateFollowingProcesses(
-        $processId,
-        \BO\Zmsentities\Process $processData
-    ) {
+    public function updateFollowingProcesses($processId, \BO\Zmsentities\Process $processData)
+    {
         $this->perform(Query\Process::QUERY_REASSIGN_PROCESS_CREDENTIALS, [
             'newProcessId' => $processData->getId(),
             'newAuthKey' => $processData->getAuthKey(),
             'processId' => $processId
         ]);
-
         $processEntityList = $this->readEntityList($processId);
         if ($processEntityList->count()) {
             foreach ($processEntityList as $entity) {
@@ -306,10 +232,8 @@ class Process extends Base implements Interfaces\ResolveReferences
     /**
      * update process requests with new credentials
      */
-    public function updateReassignedRequests(
-        $processId,
-        $newProcessId
-    ) {
+    public function updateReassignedRequests($processId, $newProcessId)
+    {
         $this->perform(Query\Process::QUERY_REASSIGN_PROCESS_REQUESTS, [
             'newProcessId' => $newProcessId,
             'processId' => $processId
@@ -320,14 +244,8 @@ class Process extends Base implements Interfaces\ResolveReferences
      * write a new process to DB
      *
      */
-    protected function writeNewProcess(
-        \BO\Zmsentities\Process $process,
-        \DateTimeInterface $dateTime,
-        $parentProcess = 0,
-        $childProcessCount = 0,
-        $retry = true,
-        $userAccount = null
-    ) {
+    protected function writeNewProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, $parentProcess = 0, $childProcessCount = 0, $retry = true, $userAccount = null)
+    {
         $query = new Query\Process(Query\Base::INSERT);
         $process->id = $this->readNewProcessId();
         $process->setRandomAuthKey();
@@ -340,33 +258,16 @@ class Process extends Base implements Interfaces\ResolveReferences
             $this->writeItem($query);
         } catch (Exception\Pdo\PDOFailed $exception) {
             if ($retry) {
-                // First try might fail if two processes are created with the same number at the same time
-                sleep(1); // Let the other process complete his transaction
-                return $this->writeNewProcess(
-                    $process,
-                    $dateTime,
-                    $parentProcess,
-                    $childProcessCount,
-                    false,
-                    $userAccount
-                );
+        // First try might fail if two processes are created with the same number at the same time
+                sleep(1);
+        // Let the other process complete his transaction
+                return $this->writeNewProcess($process, $dateTime, $parentProcess, $childProcessCount, false, $userAccount);
             }
             throw new Exception\Process\ProcessCreateFailed($exception->getMessage());
         }
         (new Slot())->writeSlotProcessMappingFor($process->id);
-
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
-        Log::writeProcessLog(
-            "CREATE (Process::writeNewProcess) $process $checksum ",
-            Log::ACTION_NEW,
-            $process,
-            $userAccount
-        );
-
-        if (!$process->toQueue($dateTime)->withAppointment) {
-            (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime, false);
-        }
-
+        Log::writeProcessLog("CREATE (Process::writeNewProcess) $process $checksum ", Log::ACTION_NEW, $process, $userAccount);
         return $process;
     }
 
@@ -449,11 +350,8 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByScopeAndTime(
-        $scopeId,
-        \DateTimeInterface $dateTime,
-        $resolveReferences = 0
-    ) {
+    public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
@@ -476,23 +374,17 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readConflictListByScopeAndTime(
-        \BO\Zmsentities\Scope $scope,
-        \DateTimeInterface $startDate = null,
-        \DateTimeInterface $endDate = null,
-        \DateTimeInterface $now = null,
-        $resolveReferences = 1
-    ) {
+    public function readConflictListByScopeAndTime(\BO\Zmsentities\Scope $scope, \DateTimeInterface $startDate = null, \DateTimeInterface $endDate = null, \DateTimeInterface $now = null, $resolveReferences = 1)
+    {
         $availabilityList = (new Availability())
             ->readAvailabilityListByScope($scope, 0, $startDate, $endDate)
             ->withScope($scope);
-
         if (! $endDate) {
             $availabilityList = $availabilityList->withDateTime($startDate);
             $endDate = $startDate;
         }
         $currentDate = ($startDate) ? $startDate : $now;
-        $conflictList = $availabilityList->checkForConflictsWithExistingAvailabilities($startDate, $endDate);
+        $conflictList = $availabilityList->getConflicts($startDate, $endDate);
         while ($currentDate <= $endDate) {
             $query = new Query\Process(Query\Base::SELECT);
             $query
@@ -518,13 +410,8 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByScopeAndStatus(
-        $scopeId,
-        $status,
-        $resolveReferences = 0,
-        $limit = 1000,
-        $offset = null
-    ) {
+    public function readProcessListByScopeAndStatus($scopeId, $status, $resolveReferences = 0, $limit = 1000, $offset = null)
+    {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
@@ -545,7 +432,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionAssigned()
             ->addConditionIgnoreSlots()
             ->addLimit($limit);
-
         if (isset($parameter['query'])) {
             if (preg_match('#^\d+$#', $parameter['query'])) {
                 $query->addConditionProcessId($parameter['query']);
@@ -634,12 +520,8 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByMailAddress(
-        string $mailAddress,
-        int $scopeId = null,
-        $resolveReferences = 0,
-        $limit = 2000
-    ): Collection {
+    public function readProcessListByMailAddress(string $mailAddress, int $scopeId = null, $resolveReferences = 0, $limit = 2000): Collection
+    {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
@@ -647,7 +529,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addConditionMail($mailAddress, true)
             ->addConditionIgnoreSlots()
             ->addLimit($limit);
-
         if ($scopeId) {
             $query->addConditionScopeId($scopeId);
         }
@@ -661,12 +542,8 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readListByMailAndStatusList(
-        string $mailAddress,
-        array $statusList,
-        $resolveReferences = 1,
-        $limit = 300
-    ): Collection {
+    public function readListByMailAndStatusList(string $mailAddress, array $statusList, $resolveReferences = 1, $limit = 300): Collection
+    {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
@@ -688,13 +565,8 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Resource Status
      */
-    public function updateProcessStatus(
-        Entity $process,
-        $status,
-        \DateTimeInterface $dateTime,
-        $resolveReferences = 0,
-        $userAccount = null
-    ) {
+    public function updateProcessStatus(Entity $process, $status, \DateTimeInterface $dateTime, $resolveReferences = 0, $userAccount = null)
+    {
         $process = (new ProcessStatus())
             ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
         return $process;
@@ -720,13 +592,9 @@ class Process extends Base implements Interfaces\ResolveReferences
                     $entityId
                 ));
                 if ($status) {
-                    $this->deleteRequestsForProcessId($entityId);
-                    (new Slot())->deleteSlotProcessMappingFor($entityId);
-                    Log::writeProcessLog(
-                        "DELETE (Process::writeDeletedEntity) $entityId ",
-                        Log::ACTION_DELETED,
-                        $entity
-                    );
+                            $this->deleteRequestsForProcessId($entityId);
+                            (new Slot())->deleteSlotProcessMappingFor($entityId);
+                            Log::writeProcessLog("DELETE (Process::writeDeletedEntity) $entityId ", Log::ACTION_DELETED, $entity);
                 }
             }
         }
@@ -756,12 +624,8 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Resource Status
      */
-    public function writeCanceledEntity(
-        $processId,
-        $authKey,
-        $now = null,
-        ?\BO\Zmsentities\Useraccount $useraccount = null
-    ) {
+    public function writeCanceledEntity($processId, $authKey, $now = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    {
         $canceledTimestamp = ($now) ? $now->getTimestamp() : (new \DateTimeImmutable())->getTimestamp();
         $query = Query\Process::QUERY_CANCELED;
         $this->perform($query, [
@@ -770,13 +634,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             'canceledTimestamp' => $canceledTimestamp
         ]);
         $process = $this->readEntity($processId, new Helper\NoAuth(), 0);
-        Log::writeProcessLog(
-            "DELETE (Process::writeCanceledEntity) $processId ",
-            Log::ACTION_CANCELED,
-            $process,
-            $useraccount
-        );
-
+        Log::writeProcessLog("DELETE (Process::writeCanceledEntity) $processId ", Log::ACTION_CANCELED, $process, $useraccount);
         return $process;
     }
 
@@ -788,14 +646,10 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Resource Status
      */
-    public function writeBlockedEntity(
-        \BO\Zmsentities\Process $process,
-        bool $releaseSlots = false,
-        ?\BO\Zmsentities\Useraccount $useraccount = null
-    ) {
+    public function writeBlockedEntity(\BO\Zmsentities\Process $process, bool $releaseSlots = false, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    {
         $amendment = $process->toDerefencedAmendment();
         $customTextfield = $process->toDerefencedcustomTextfield();
-
         if (!isset($process->queue['status'])) {
             $process->queue['status'] = $process->status;
         }
@@ -816,12 +670,7 @@ class Process extends Base implements Interfaces\ResolveReferences
                     if ($releaseSlots) {
                         (new Slot())->deleteSlotProcessMappingFor($entityId);
                     }
-                    Log::writeProcessLog(
-                        "DELETE (Process::writeBlockedEntity) $entityId ",
-                        Log::ACTION_DELETED,
-                        $process,
-                        $useraccount
-                    );
+                    Log::writeProcessLog("DELETE (Process::writeBlockedEntity) $entityId ", Log::ACTION_DELETED, $process, $useraccount);
                 }
             }
         }
@@ -838,14 +687,13 @@ class Process extends Base implements Interfaces\ResolveReferences
         if ($hasRequests) {
             $query = new Query\XRequest(Query\Base::INSERT);
             foreach ($process->requests as $request) {
-                if ($request->id >= 0) { // allow deleting requests with a -1 request
-                    $query->addValues(
-                        [
+                if ($request->id >= 0) {
+        // allow deleting requests with a -1 request
+                    $query->addValues([
                             'AnliegenID' => $request['id'],
                             'source' => $request['source'],
                             'BuergerID' => $process->id
-                        ]
-                    );
+                        ]);
                     $this->writeItem($query);
                 }
             }
@@ -863,12 +711,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $status;
     }
 
-    public function readExpiredProcessList(
-        \DateTimeInterface $expirationDate,
-        $limit = 500,
-        $resolveReferences = 0,
-        $offset = null
-    ) {
+    public function readExpiredProcessList(\DateTimeInterface $expirationDate, $limit = 500, $resolveReferences = 0, $offset = null)
+    {
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
@@ -879,13 +723,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
-    public function readUnconfirmedProcessList(
-        \DateTimeInterface $expirationDate,
-        $scopeId = 0,
-        $limit = 500,
-        $offset = null,
-        $resolveReferences = 0
-    ) {
+    public function readUnconfirmedProcessList(\DateTimeInterface $expirationDate, $scopeId = 0, $limit = 500, $offset = null, $resolveReferences = 0)
+    {
 
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
@@ -900,13 +739,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readExpiredProcessListByStatus(
-        \DateTimeInterface $expirationDate,
-        $status,
-        $limit = 500,
-        $offset = null,
-        $resolveReferences = 0
-    ) {
+    public function readExpiredProcessListByStatus(\DateTimeInterface $expirationDate, $status, $limit = 500, $offset = null, $resolveReferences = 0)
+    {
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
@@ -919,13 +753,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readExpiredReservationsList(
-        \DateTimeInterface $expirationDate,
-        $scopeId,
-        $limit = 500,
-        $offset = null,
-        $resolveReferences = 0
-    ) {
+    public function readExpiredReservationsList(\DateTimeInterface $expirationDate, $scopeId, $limit = 500, $offset = null, $resolveReferences = 0)
+    {
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
@@ -939,12 +768,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readNotificationReminderProcessList(
-        \DateTimeInterface $dateTime,
-        $limit = 500,
-        $offset = null,
-        $resolveReferences = 0
-    ) {
+    public function readNotificationReminderProcessList(\DateTimeInterface $dateTime, $limit = 500, $offset = null, $resolveReferences = 0)
+    {
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
@@ -959,14 +784,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences)->withDepartmentNotificationEnabled();
     }
 
-    public function readEmailReminderProcessListByInterval(
-        \DateTimeInterface $now,
-        \DateTimeInterface $lastRun,
-        $defaultReminderInMinutes,
-        $limit = 500,
-        $offset = null,
-        $resolveReferences = 0
-    ) {
+    public function readEmailReminderProcessListByInterval(\DateTimeInterface $now, \DateTimeInterface $lastRun, $defaultReminderInMinutes, $limit = 500, $offset = null, $resolveReferences = 0)
+    {
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
@@ -980,12 +799,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences)->withDepartmentHasMailFrom();
     }
 
-    public function readDeallocateProcessList(
-        \DateTimeInterface $now,
-        $limit = 500,
-        $offset = null,
-        $resolveReferences = 0
-    ) {
+    public function readDeallocateProcessList(\DateTimeInterface $now, $limit = 500, $offset = null, $resolveReferences = 0)
+    {
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
@@ -1004,9 +819,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
-
         $emailToCheck = $entity->getClients()->getFirst()->email;
-
         if ($maxAppointmentsPerMail < 1 || empty($emailToCheck)) {
             return true;
         }
@@ -1015,12 +828,8 @@ class Process extends Base implements Interfaces\ResolveReferences
             return true;
         }
 
-        $processes = $this->readProcessListByMailAddress(
-            $entity->getClients()->getFirst()->email,
-            $entity->scope->id
-        );
+        $processes = $this->readProcessListByMailAddress($entity->getClients()->getFirst()->email, $entity->scope->id);
         $activeAppointments = 0;
-
         foreach ($processes as $process) {
             if ($entity->id == $process->id) {
                 return true;
@@ -1028,7 +837,6 @@ class Process extends Base implements Interfaces\ResolveReferences
 
             if (in_array($process->getStatus(), ['preconfirmed', 'confirmed'])) {
                 $activeAppointments++;
-
                 if ($activeAppointments >= $maxAppointmentsPerMail) {
                     return false;
                 }
@@ -1041,14 +849,12 @@ class Process extends Base implements Interfaces\ResolveReferences
     protected function isMailWhitelisted(string $email, ScopeEntity $scope): bool
     {
         $emailsWithNoLimit = explode(',', $scope->getWhitelistedMails());
-
         if (empty($emailsWithNoLimit)) {
             return false;
         }
 
         foreach ($emailsWithNoLimit as $whitelistedMail) {
             $whitelistedMail = trim($whitelistedMail);
-
             if ($email === $whitelistedMail) {
                 return true;
             }
