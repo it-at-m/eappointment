@@ -233,7 +233,7 @@
 		{% block process_reserved %}
 			{% set successTitle = "Termin erfolgreich eingetragen" %}
 			{{ block('success_start') }}
-				<div style="background-color:#f5f5f5; border: 1px solid #ddd; padding:1em">
+				<div class="board__body">
 					<dl id="copy-content">
 						<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 0 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
 						<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
@@ -295,7 +295,7 @@
 		{% block process_queued %}
 			{% set successTitle = "Wartenummer wurde hinzugefügt" %}
 			{{ block('success_start') }}
-				<div style="background-color:#f5f5f5; border: 1px solid #ddd; padding:1em">
+				<div class="board__body">
 					<dl id="copy-content">
 						<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 0 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
 						<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
