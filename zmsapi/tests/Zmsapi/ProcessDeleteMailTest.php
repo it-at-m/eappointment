@@ -56,14 +56,14 @@ class ProcessDeleteMailTest extends Base
                 "status": "confirmed"
             }'
         ], []);
-}
+    }
 
     public function testMissingMail()
     {
         $this->expectException('\BO\Zmsapi\Exception\Process\EmailRequired');
         $this->expectExceptionCode(400);
         $this->render([], [
-            '            '__body' => '{
+            '__body' => '{
                 "id": '. self::PROCESS_ID .',
                 "authKey": "'. self::AUTHKEY .'",
                 "scope": {
@@ -87,7 +87,7 @@ class ProcessDeleteMailTest extends Base
                             "id": 141
                         },
                         "slotCount": 2
-                    }   
+                    }
                 ],
                 "status": "confirmed"
             }'
@@ -99,10 +99,9 @@ class ProcessDeleteMailTest extends Base
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render([], [
-                        '__body' => '{
+            '__body' => '{
                 "status": "confirmed"
             }'
         ], []);
     }
 }
-    

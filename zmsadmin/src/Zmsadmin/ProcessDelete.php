@@ -57,7 +57,7 @@ class ProcessDelete extends BaseController
             \App::$http
                 ->readPostResult(
                     '/process/' . $process->getId() . '/' . $process->getAuthKey() . '/delete/mail/',
-                    $process,                    
+                    $process,
                     ['initiator' => 'admin']
                 )->getEntity();
         }
