@@ -233,12 +233,14 @@
 		{% block process_reserved %}
 			{% set successTitle = "Termin erfolgreich eingetragen" %}
 			{{ block('success_start') }}
-				<dl id="copy-content">
-					<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 1 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
-					<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
-					<dt>{{ selectedprocess.appointments.date|date("d.m.Y") }} um {{ selectedprocess.appointments.date|date("H:i") }}</dt>
-					<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
-				</dl>
+				<div style="background-color:#f5f5f5; border: 1px solid #ddd; padding:1em">
+					<dl id="copy-content">
+						<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 0 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
+						<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
+						<dt>{{ selectedprocess.appointments[0].date|date("d.m.Y") }} um {{ selectedprocess.appointments[0].date|date("H:i") }} Uhr</dt>
+						<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
+					</dl>
+				</div>
 				 <div class="form-actions">
 					<div class="right">
 						<button type="button" class="button btn button-submit button-callback" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren"><i class="fas fa-copy" aria-hidden="true"></i></button>
@@ -293,14 +295,14 @@
 		{% block process_queued %}
 			{% set successTitle = "Wartenummer wurde hinzugefügt" %}
 			{{ block('success_start') }}
-				<div style="background-color:#f2f2f2; padding:1em">
+				<div style="background-color:#f5f5f5; border: 1px solid #ddd; padding:1em">
 					<dl id="copy-content">
-						<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 1 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
+						<dt>{{ selectedprocess.requests|reduce((carry, req) => carry|merge({ (req.name): (carry[req.name] is defined ? carry[req.name] + 1 : 1) }), {})|map((count, name) => (count > 0 ? count ~ 'x ' : '') ~ name)|join(', ') }}</dt>
 						<dt>{{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}</dt>
-						<dt>{{ selectedprocess.appointments.date|date("d.m.Y") }} um {{ selectedprocess.appointments.date|date("H:i") }}</dt>
+						<dt>{{ selectedprocess.appointments[0].date|date("d.m.Y") }} um {{ selectedprocess.appointments[0].date|date("H:i") }} Uhr</dt>
+						<dt> {{selectedprocess.appointments|json_encode}}</dt>
 						<dt>Termin-Nr. {{ selectedprocess.queue.number }}</dt>
 					</dl>
-					
 				</div>
 				<div class="form-actions">
 					<div class="right">
