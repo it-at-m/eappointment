@@ -133,8 +133,27 @@ class Accordion extends Component
                 return (
                     <section key={index} className="accordion-section" style={hasConflict(eventId) || hasError(eventId) ? { border: "1px solid #9B0000"} : null}>
                         <h3 className="accordion__heading" role="heading" title={title}>
-                            <button eventkey={eventId} onClick={onToggle} className="accordion__trigger" aria-expanded={accordionExpanded}>
-                                <span className="accordion__title">{title}</span>
+                        <button
+                                eventkey={eventId}
+                                onClick={onToggle}
+                                className="accordion__trigger"
+                                aria-expanded={accordionExpanded}
+                                style={(() => {
+                                    switch (availability?.kind) {
+                                        case 'origin':
+                                            return { backgroundColor: '#CCE5FF' };
+                                        case 'future':
+                                            return { backgroundColor: '#94c5a2' };
+                                        case 'exclusion':
+                                            return { backgroundColor: '#FFE082' };
+                                        case 'new':
+                                            return { backgroundColor: '#F5F5DC' };
+                                        default:
+                                            return null; // Keep default for 'default' and null/undefined
+                                    }
+                                })()}
+                            >
+                                <span className="accrordion__title"></span>
                             </button>
                         </h3>
                         <div className={accordionExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={accordionExpanded ? "" : "hidden"}>
