@@ -49,8 +49,7 @@ class Process extends Schema\Entity
             'requests' => new Collection\RequestList(),
             'scope' => new Scope(),
             'status' => 'free',
-            'lastChange' => time(),
-            'wasMissed' => false,
+            'lastChange' => time()
         ];
     }
 
@@ -573,29 +572,17 @@ class Process extends Schema\Entity
 
     public function getArrivalTime($default = 'now', $timezone = null)
     {
-        $queueArrivalTime = $this->toProperty()->queue->arrivalTime->get();
-
-        if ($queueArrivalTime) {
-            // Falls der Queue-Wert vorhanden ist – auch wenn ein Termin existiert – verwende diesen (dabei ist handelt es sich, um verpasste Termine)
-            $arrivalTime = $queueArrivalTime;
-        } elseif ($this->isWithAppointment()) {
+        $arrivalTime = 0;
+        if ($this->isWithAppointment()) {
             $arrivalTime = $this->getFirstAppointment()->date;
         } else {
-            $arrivalTime = 0;
+            $arrivalTime = $this->toProperty()->queue->arrivalTime->get();
         }
-
-        $arrivalTime = (int)$arrivalTime;
         $arrivalDateTime = Helper\DateTime::create($default, $timezone);
         if ($arrivalTime) {
             $arrivalDateTime = $arrivalDateTime->setTimestamp($arrivalTime);
         }
         return $arrivalDateTime;
-    }
-
-    public function setArrivalTime(\DateTimeInterface $dateTime = null)
-    {
-        $this->queue['arrivalTime'] = ($dateTime) ? $dateTime->getTimestamp() : 0;
-        return $this;
     }
 
     /**
@@ -619,17 +606,6 @@ class Process extends Schema\Entity
     public function getWayMinutes($defaultTime = 'now')
     {
         return $this->getWaySeconds($defaultTime) / 60;
-    }
-
-    public function setWasMissed(bool $bool)
-    {
-        $this->wasMissed = $bool;
-        return $this;
-    }
-
-    public function getWasMissed(): bool
-    {
-        return (bool) $this->wasMissed;
     }
 
     public function toDerefencedAmendment()
