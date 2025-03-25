@@ -31,13 +31,14 @@ class ProcessDeleteMail extends BaseController
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new Process($input);
+        $initiator = Validator::param('initiator')->isString()->getValue();
 
         $process->testValid();
         $this->testProcessData($process);
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
 
-        $mail = $this->writeMail($process);
+        $mail = $this->writeMail($process, $initiator);
 
         $message = Response\Message::create($request);
         $message->data = $mail;
@@ -47,7 +48,7 @@ class ProcessDeleteMail extends BaseController
         return $response;
     }
 
-    protected static function writeMail(Process $process)
+    protected static function writeMail(Process $process, $initiator = null)
     {
         $config = (new Config())->readEntity();
         $department = (new DepartmentRepository())->readByScopeId($process->scope['id']);
@@ -55,7 +56,7 @@ class ProcessDeleteMail extends BaseController
 
         $mail = (new \BO\Zmsentities\Mail())
             ->setTemplateProvider(new \BO\Zmsdb\Helper\MailTemplateProvider($process))
-            ->toResolvedEntity($collection, $config, 'deleted')
+            ->toResolvedEntity($collection, $config, 'deleted', $initiator)
             ->withDepartment($department);
         $mail->testValid();
         if ($process->getFirstClient()->hasEmail() && $process->scope->hasEmailFrom()) {
