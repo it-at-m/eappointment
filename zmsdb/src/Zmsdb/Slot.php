@@ -194,9 +194,7 @@ class Slot extends Base
         (new Availability())->readLock($availability->id);
         $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY_BEFORE_BOOKABLE, [
             'availabilityID' => $availability->id,
-            'year' => $startDate->format('Y'),
-            'month' => $startDate->format('m'),
-            'day' => $startDate->format('d')
+            'providedDate' => $startDate->format('Y-m-d')
         ]);
         if ($generateNew) {
             $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
