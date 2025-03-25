@@ -242,7 +242,6 @@ class Process extends Base implements MappingInterface
             ),
             'reminderTimestamp' => 'process.Erinnerungszeitpunkt',
             '__clientsCount' => 'process.AnzahlPersonen',
-            'wasMissed' => 'process.wasMissed'
         ];
     }
 
@@ -684,7 +683,6 @@ class Process extends Base implements MappingInterface
         if ($process->isWithAppointment()) {
             $this->addValuesFollowingProcessData($process, $parentProcess);
         }
-        $this->addValuesWasMissed($process);
     }
 
     public function addValuesIPAdress($process)
@@ -912,26 +910,11 @@ class Process extends Base implements MappingInterface
     protected function addValuesWaitingTimeData($process, $previousStatus = null)
     {
         $data = array();
-
-        if (
-            (
-                // Szenario 1: Vorheriger Status ist queued, missed oder confirmed und aktueller Status ist called
-                in_array($previousStatus, ['queued', 'missed', 'confirmed'])
-                && $process['status'] == 'called'
-                && ($process->queue['callCount'] <= 0 || !empty($process['wasMissed']))
-            )
-            ||
-            (
-                // Szenario 2: Vorheriger Status ist missed, aktueller Status ist queued,
-                // es gibt den Hinweis wasMissed und die Queue sowie waitingTime sind gesetzt
-                $previousStatus == 'missed'
-                && $process['status'] == 'queued'
-                && !empty($process['wasMissed'])
-                && isset($process->queue)
-                && isset($process->queue->waitingTime)
-            )
-        ) {
+        if (($previousStatus == 'queued' || $previousStatus == 'missed' || $previousStatus == 'confirmed') && $process['status'] == 'called') {
+            // Retrieve waiting time in seconds
             $wartezeitInSeconds = $process->getWaitedSeconds();
+
+            // Check if there is any waiting time; if not, default to 0 seconds
             $wartezeitInSeconds = $wartezeitInSeconds > 0 ? $wartezeitInSeconds : 0;
 
             // Convert total seconds into HH:MM:SS format
@@ -939,12 +922,11 @@ class Process extends Base implements MappingInterface
             $minutes = intdiv($wartezeitInSeconds % 3600, 60);
             $seconds = $wartezeitInSeconds % 60;
 
+            // Format and store the time in HH:MM:SS
             $data['wartezeit'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
-
         $this->addValues($data);
     }
-
 
     protected function addValuesWayTimeData($process)
     {
@@ -954,16 +936,6 @@ class Process extends Base implements MappingInterface
             $data['wegezeit'] = $wegezeit > 0 ? $wegezeit : 0;
         }
         $this->addValues($data);
-    }
-
-    protected function addValuesWasMissed($process)
-    {
-        $data = [
-            'wasMissed' => $process->wasMissed ? 1 : 0,
-        ];
-
-        $this->addValues($data);
-        return $this;
     }
 
     public function postProcess($data)
