@@ -33,11 +33,6 @@ class ProcessQueueReset extends BaseController
         if ($processId) {
             $selectedProcess = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
         }
-
-        if (isset($selectedProcess->queue)) {
-            $selectedProcess->queue->arrivalTime = time();
-        }
-
         \App::$http->readPostResult('/process/status/queued/', $selectedProcess);
 
         return \BO\Slim\Render::redirect(
