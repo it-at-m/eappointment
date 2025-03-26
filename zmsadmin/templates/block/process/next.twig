@@ -22,12 +22,124 @@
                 <span class="user"><i class="fas fa-user" aria-hidden="true"></i></span>
                 <span class="arrow"><i class="fas fa-arrow-alt-circle-right" aria-hidden="true"></i></span>
                 <span class="text">Aufruf nächster Kunde</span>
-            </a>
-        </div>
+            </button>
+        </div>        
     {% endblock %}
 
     {% block board_footer %}
     {% include "block/process/footer.twig" %}
+
+    <div class="footer-seperator"></div>
+    
+    <ul class="list list--table bordered">
+    
+        {% set waiting_customers = workstationInfo.waitingClientsEffective %}
+        
+        <li class="traffic-light {% if waiting_customers >= 0 and waiting_customers <= 10 %}green
+                {% elseif waiting_customers >= 11 and waiting_customers <= 20 %}yellow
+                {% elseif waiting_customers >= 21 and waiting_customers <= 40 %}orange
+                {% elseif waiting_customers >= 41 %}red
+                {% endif %}">                        
+            <div class="cell middle">
+            <h4 class="wartende">{% trans %}Wartende{% endtrans %}:</h4>
+            </div>
+            <div class="cell right">
+                <span class="waiting-count">{{ workstationInfo.waitingClientsEffective }}</span>
+            </div>
+        </li>
+        <li>
+            <div class="cell middle">
+                <h4>{% trans %}Durchschnittliche Wartezeit von Terminkunden{% endtrans %}:</h4>
+            </div>
+            <div class="cell right">
+                {{ workstationInfo.averageWaitingTimeWithAppointment|round }} Minuten
+            </div>
+        </li>
+        <li>
+            <div class="cell middle">
+                <h4>{% trans %}Durchschnittliche Wartezeit von Spontankunden{% endtrans %}:</h4>
+            </div>
+            <div class="cell right">
+                {{ workstationInfo.averageWaitingTimeWithoutAppointment|round }} Minuten
+            </div>
+        </li>
+        <li>
+            <div class="cell middle">
+            <h4>{% trans %}Wartezeit für neue Spontankunden{% endtrans %}:</h4>
+            </div>
+            <div class="cell right">
+                {% if workstationInfo.workstationGhostCount == 0 %}
+                    <span class="color-red">{% trans %}unbekannt{% endtrans %}</span>
+                {% else %}
+                    <strong>                        
+                    {% if workstationInfo.waitingTimeEstimate < 120 %}
+                        {{ workstationInfo.waitingTimeOptimistic }} - {{ workstationInfo.waitingTimeEstimate }}<br />{{ "%s"|format("Minuten")|trans }}
+                    {% else %}
+                        {% set minutes = (workstationInfo.waitingTimeEstimate % 60) %}
+                        {% set hours = (workstationInfo.waitingTimeEstimate / 60)|round(0, 'floor') %}
+                        {{ "%02d"|format(hours) ~ ':' ~ "%02d"|format(minutes) }}
+                    {% endif %}
+                    </strong>
+                {% endif %}
+            </div>
+        </li> 
+    
+        <style>
+            .footer-seperator {
+                margin-top: 10px;
+                border-top: 1px solid #ddd;
+                padding-top: 10px;
+            }
+            
+            .traffic-light {                        
+                display: flex;
+                width: 100%;
+                height: 100%;
+            }
+
+            .wartende {
+                display: flex;
+                padding-left: 5%;
+                padding-top: 14px;
+            }
+
+            h4 {
+                font-weight: normal;
+                text-align: left;
+            }
+
+            .cell.right {
+                display: flex;
+                align-items: center;  /* Vertically align the items in the center */
+            }
+
+            .waiting-count {
+                font-size: 16px;  /* Style for the number */
+                font-weight: bold;                
+                display: flex;
+                padding-left: 58%;
+                padding-top: 14px;
+            }
+            
+            .green {
+                background-color: rgba(0, 255, 0, 0.5);  /* Green */
+            }
+
+            .yellow {
+                background-color: rgba(255, 255, 0, 0.5);  /* Yellow */
+            }
+
+            .orange {
+                background-color: rgba(255, 127, 0, 0.5);  /* Orange */
+            }
+
+            .red {
+                background-color: rgba(255, 0, 0, 0.5);  /* Red */
+            }
+
+        </style>
+    </ul>
+
     {% endblock %}
 
 {% endembed %}

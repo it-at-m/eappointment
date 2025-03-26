@@ -29,7 +29,8 @@ class Slot extends Base
     public function readByAppointment(
         \BO\Zmsentities\Appointment $appointment,
         $overwriteSlotsCount = null,
-        $extendSlotList = false
+        $extendSlotList = false,
+        $lockSlots = false
     ) {
         $appointment = clone $appointment;
         $availability = (new Availability())->readByAppointment($appointment);
@@ -39,7 +40,7 @@ class Slot extends Base
         }
         $slotList = $availability->getSlotList()->withSlotsForAppointment($appointment, $extendSlotList);
         foreach ($slotList as $slot) {
-            $this->readByAvailability($slot, $availability, $appointment->toDateTime());
+            $this->readByAvailability($slot, $availability, $appointment->toDateTime(), $lockSlots);
         }
         return $slotList;
     }
@@ -187,10 +188,14 @@ class Slot extends Base
         if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange)) {
             return false;
         }
-
+        $startDate = $availability->getBookableStart($now)->modify('00:00:00');
+        $stopDate = $availability->getBookableEnd($now);
         $generateNew = $availability->isNewerThan($slotLastChange);
-
         (new Availability())->readLock($availability->id);
+        $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY_BEFORE_BOOKABLE, [
+            'availabilityID' => $availability->id,
+            'providedDate' => $startDate->format('Y-m-d')
+        ]);
         if ($generateNew) {
             $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
                 'availabilityID' => $availability->id,
@@ -202,8 +207,6 @@ class Slot extends Base
             $availability['processingNote'][] = "cancelled $cancelledSlots slots";
         }
 
-        $startDate = $availability->getBookableStart($now)->modify('00:00:00');
-        $stopDate = $availability->getBookableEnd($now);
         $slotlist = $availability->getSlotList();
         $slotlistIntern = $slotlist->withValueFor('callcenter', 0)->withValueFor('public', 0);
         $time = $now->modify('00:00:00');

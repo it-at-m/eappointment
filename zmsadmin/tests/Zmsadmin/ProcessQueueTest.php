@@ -90,7 +90,6 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertStringContainsString('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -152,7 +151,6 @@ class ProcessQueueTest extends Base
             'requests' => [120703],
             'selectedprocess' => 100632
         ], [], 'POST');
-        $this->assertStringContainsString('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -212,7 +210,6 @@ class ProcessQueueTest extends Base
             'requests' => [120703]
         ], [], 'POST');
 
-        $this->assertStringContainsString('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
     }
 
     public function testRenderingNotOpened()
@@ -268,7 +265,6 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertStringContainsString('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

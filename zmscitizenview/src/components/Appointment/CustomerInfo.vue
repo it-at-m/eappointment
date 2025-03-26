@@ -11,6 +11,7 @@
       v-model="customerData.firstName"
       :error-msg="showErrorMessage ? errorMessageFirstName : undefined"
       :label="t('firstName')"
+      max="60"
       required
     />
     <muc-input
@@ -18,6 +19,7 @@
       v-model="customerData.lastName"
       :error-msg="showErrorMessage ? errorMessageLastName : undefined"
       :label="t('lastName')"
+      max="60"
       required
     />
     <muc-input
@@ -38,7 +40,7 @@
       :error-msg="showErrorMessage ? errorMessageTelephoneNumber : undefined"
       :label="t('telephoneNumber')"
       :required="selectedProvider.scope.telephoneRequired"
-      placeholder="+49 151 1234567"
+      placeholder="+491511234567"
     />
     <muc-text-area
       v-if="
@@ -97,7 +99,7 @@ const { selectedProvider } = inject<SelectedTimeslotProvider>(
 const showErrorMessage = ref<boolean>(false);
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const telephonPattern = /^\+?\d[\d\s]*$/;
+const telephonPattern = /^\+?[0-9]\d{6,14}$/;
 
 const errorMessageFirstName = computed(() =>
   customerData.value.firstName ? undefined : props.t("errorMessageFirstName")
