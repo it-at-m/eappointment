@@ -2,6 +2,8 @@
 
 namespace BO\Zmsentities;
 
+use BO\Zmsentities\Collection\ClosureList;
+
 /**
  * @SuppressWarnings(Complexity)
  */
@@ -106,6 +108,20 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
             }
         }
         return $this->dayoff;
+    }
+
+    public function getClosureList()
+    {
+        if (!isset($this->closure) || !$this->closure instanceof Collection\ClosureList) {
+            $this->closure = (!isset($this->closure) || !is_array($this->closure)) ? [] : $this->closure;
+            $this->closure = new Collection\ClosureList($this->closure);
+            foreach ($this->closure as $key => $closure) {
+                if (!$closure instanceof Closure) {
+                    $this->closure[$key] = new Closure($closure);
+                }
+            }
+        }
+        return $this->closure;
     }
 
     public function getRequestList()

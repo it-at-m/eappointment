@@ -490,3 +490,7 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->getContainer()->offsetSet('phpErrorHandler', function ($container) {
     return new \BO\Zmsadmin\Helper\TwigExceptionHandler($container);
 });
+
+
+\App::$slim->post('/scope/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/closure/toggle/', \BO\Zmsadmin\ScopeAvailabilityDayClosure::class)
+    ->setName("scopeAvailabilityDayClosure");

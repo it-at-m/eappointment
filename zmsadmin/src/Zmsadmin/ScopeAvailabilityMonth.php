@@ -10,6 +10,7 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
 use BO\Zmsentities\Calendar;
+use BO\Zmsentities\Closure;
 use BO\Zmsentities\Collection\AvailabilityList;
 use BO\Zmsentities\Collection\ProcessList;
 
@@ -67,6 +68,7 @@ class ScopeAvailabilityMonth extends BaseController
                 'conflicts' => $processConflictList,
                 'calendar' => $calendar,
                 'dayoffList' => $scope->getDayoffList(),
+                'closureList' => $scope->getClosureList(),
                 'dateTime' => $dateTime,
                 'timestamp' => $dateTime->getTimeStamp(),
                 'month' => $month,
