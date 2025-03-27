@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+/**
+ * calculate average waiting times for each scope, date, and hour,
+ * separated by 'spontan' vs. 'termin', and store results into wartenrstatistik.
+ */
+echo "calculateDailyWaitingStatistic: calculate average waiting times\n";
+require_once(__DIR__."/script_bootstrap.php");
+
+$verbose = in_array('--verbose', $argv);
+$commit  = in_array('--commit',  $argv);
+
+$targetDate = (new \DateTimeImmutable())->modify('-1 day');
+
+$job = new BO\Zmsdb\Helper\CalculateDailyWaitingStatisticByCron();
+
+$job->run($targetDate, $commit);
+
+if (!$commit) {
+    echo "\n[DRY RUN] Nothing was written to the database. Use --commit to persist data.\n";
+}
