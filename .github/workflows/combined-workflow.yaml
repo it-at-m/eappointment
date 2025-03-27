@@ -3,6 +3,7 @@ name: Combined Workflow
 on:
   push:
     branches-ignore: [next]
+    tags: ['*']
   workflow_call:
 
 permissions:

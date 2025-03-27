@@ -47,7 +47,7 @@ class ProcessFinished extends BaseController
             );
             (new Workstation())->writeRemovedProcess($workstation);
         } else {
-            $query->writeEntityFinished($process, \App::$now, false, $workstation->getUseraccount());
+            $query->writeEntityFinished($process, \App::$now, true, $workstation->getUseraccount());
         }
 
         if ($survey) {
