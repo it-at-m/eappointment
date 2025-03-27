@@ -140,14 +140,9 @@ class Accordion extends Component
                                 aria-expanded={accordionExpanded}
                                 style={(() => {
                                     switch (availability?.kind) {
-                                        case 'origin':
-                                            return { backgroundColor: '#CCE5FF' };
-                                        case 'future':
-                                            return { backgroundColor: '#94c5a2' };
                                         case 'exclusion':
-                                            return { backgroundColor: '#FFE082' };
-                                        case 'new':
-                                            return { backgroundColor: '#F5F5DC' };
+                                            return { backgroundColor: '#FFE05B' };
+                                       
                                         default:
                                             return null; // Keep default for 'default' and null/undefined
                                     }
