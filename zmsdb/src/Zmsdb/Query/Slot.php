@@ -184,10 +184,8 @@ class Slot extends Base implements MappingInterface
 ';
 
     const QUERY_CANCEL_AVAILABILITY_BEFORE_BOOKABLE = '
-            UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID
-            AND year = :year
-            AND month = :month
-            AND day = :day
+            UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID 
+            AND CONCAT(year, "-", LPAD(month, 2, "0"), "-", LPAD(day, 2, "0")) < :providedDate
 ';
 
     const QUERY_CANCEL_SLOT_OLD_BY_SCOPE = '
