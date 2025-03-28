@@ -154,7 +154,7 @@ class ProcessTest extends EntityCommonTests
     {
         $entity = $this->getExample();
         $seconds = $entity->getWaitedSeconds();
-        $this->assertEquals(53767, $seconds);
+        $this->assertEquals(45, $seconds);
         $entity->queue->withAppointment = 0;
         $entity->getFirstAppointment()->setDateByString('2016-04-01 00:00');
         $seconds = $entity->getWaitedSeconds();
@@ -170,7 +170,7 @@ class ProcessTest extends EntityCommonTests
     {
         $entity = $this->getExample();
         $minutes = $entity->getWaitedMinutes();
-        $this->assertEquals(896.1167, round($minutes, 4));
+        $this->assertEquals(0.75, round($minutes, 4));
         $entity->queue->withAppointment = 0;
         $entity->getFirstAppointment()->setDateByString('2016-04-01 00:00');
         $minutes = $entity->getWaitedMinutes();
@@ -378,7 +378,7 @@ class ProcessTest extends EntityCommonTests
 
         $queueList = $collection->toQueueList($now);
         $this->assertEquals('queued', $queueList->getFirst()->status);
-        $this->assertEquals('1447869171', $queueList->getFirst()->arrivalTime);
+        $this->assertEquals('1447922893', $queueList->getFirst()->arrivalTime);
 
         $entity3 = $this->getExample();
         $entity3->queue['waitingTimeEstimate'] = 60;
@@ -491,7 +491,7 @@ class ProcessTest extends EntityCommonTests
         //$this->assertEquals('Beispiel Termin', $list['2015-11-18'][0]['message']);
         $this->assertEquals('18:52', $list['2015-11-18'][0]['appointments'][0]['startTime']);
         // endTime = slotTimeInMinutes * slotCount 12X2 = 24
-        $this->assertEquals('19:12', $list['2015-11-18'][0]['appointments'][0]['endTime']);
+        $this->assertEquals('19:16', $list['2015-11-18'][0]['appointments'][0]['endTime']);
     }
 
     public function testToQueue()

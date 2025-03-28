@@ -1,14 +1,15 @@
-import React, { Component } from 'react'
+import React, { Component} from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment/min/moment-with-locales';
 import AvailabilityForm from '../form'
 import FooterButtons from '../form/footerButtons'
-import { accordionTitle } from '../helpers'
+import {accordionTitle} from '../helpers'
 import Board from './board'
 import { hasSlotCountError } from '../form/validate';
 moment.locale('de')
 
-class Accordion extends Component {
+class Accordion extends Component
+{
     constructor(props) {
         super(props);
         this.isExpanded = null
@@ -25,11 +26,6 @@ class Accordion extends Component {
     }
 
     render() {
-        const hasNewAvailability = this.props.availabilityList.some(availability =>
-        (availability?.tempId?.includes('__temp__') ||
-            availability?.kind === 'exclusion')
-        );
-
         const onPublish = (ev) => {
             ev.preventDefault()
             this.props.onPublish()
@@ -60,8 +56,16 @@ class Accordion extends Component {
         }
 
         const renderAccordionBody = () => {
-            return this.props.availabilityList.map((availability, index) => {
-                if (!availability.id && !availability.tempId) {
+
+            const sortedAvailabilityList = [...this.props.availabilityList].sort((a, b) => {
+                if (a.type === 'appointment' && b.type !== 'appointment') return -1;
+                if (a.type !== 'appointment' && b.type === 'appointment') return 1;
+
+                return a.startTime.localeCompare(b.startTime);
+            });
+
+            return sortedAvailabilityList.map((availability, index) => {
+                if (! availability.id && ! availability.tempId) {
                     availability.tempId = `spontaneous_ID_${index}`
                 }
                 let eventId = availability.id ? availability.id : availability.tempId;
@@ -112,7 +116,7 @@ class Accordion extends Component {
                 Object.keys(this.props.conflictList.itemList).map(date => {
                     (this.props.conflictList.itemList[date].map(conflict => {
                         if (conflict.appointments[0].availability == eventId) {
-                            if (!conflictList[date]) {
+                            if (! conflictList[date]) {
                                 conflictList[date] = [];
                             }
                             conflictList[date].push(conflict);
@@ -127,14 +131,9 @@ class Accordion extends Component {
                 })
 
                 return (
-                    <section key={index} className="accordion-section" style={hasConflict(eventId) || hasError(eventId) ? { border: "1px solid #9B0000" } : null}>
+                    <section key={index} className="accordion-section" style={hasConflict(eventId) || hasError(eventId) ? { border: "1px solid #9B0000"} : null}>
                         <h3 className="accordion__heading" role="heading" title={title}>
-                            <button
-                                eventkey={eventId}
-                                onClick={onToggle}
-                                className="accordion__trigger"
-                                aria-expanded={accordionExpanded}
-                            >
+                            <button eventkey={eventId} onClick={onToggle} className="accordion__trigger" aria-expanded={accordionExpanded}>
                                 <span className="accordion__title">{title}</span>
                             </button>
                         </h3>
@@ -142,7 +141,7 @@ class Accordion extends Component {
                             <AvailabilityForm
                                 data={availability}
                                 selectedAvailability={this.props.data}
-                                availabilityList={this.props.availabilityList}
+                                availabilityList={sortedAvailabilityList}
                                 today={this.props.today}
                                 selectedDate={moment(this.props.timestamp, 'X').startOf('day').unix()}
                                 handleChange={this.props.handleChange}
@@ -153,37 +152,26 @@ class Accordion extends Component {
                                 onUpdateSingle={onUpdateSingle}
                                 onDelete={onDelete}
                                 errorList={hasError(eventId) ? errorList : {}}
-                                conflictList={hasConflict(eventId) ? Object.assign({}, conflictList) : {}}
-                                isCreatingExclusion={this.props.isCreatingExclusion || hasNewAvailability}  // Pass combined flag
+                                conflictList={hasConflict(eventId) ? Object.assign({}, conflictList): {}}
+                                isCreatingExclusion={this.props.isCreatingExclusion}
                             />
                         </div>
                     </section>
                 )
             })
         }
-
         return (
-            <>
-                {/* Accordion */}
-                <Board className="accordion js-accordion"
-                    title=""
-                    body={renderAccordionBody()}
-                    footer={<FooterButtons
-                        hasConflicts={Object.keys(this.props.conflictList.itemList).length ? true : false}
-                        hasErrors={Object.values(this.props.errorList).some(error => {
-                            const hasPastTimeError = error.itemList?.flat(2)
-                                .some(item => item?.type === 'endTimePast');
-                            return !hasPastTimeError;
-                        })}
-                        hasSlotCountError={hasSlotCountError(this.props)}
-                        stateChanged={this.props.stateChanged}
-                        data={this.props.data}
-                        availabilitylist={this.props.availabilityList}
-                        selectedDate={this.props.timestamp}
-                        {...{ onNew, onPublish, onAbort }}
-                    />}
-                />
-            </>
+            <Board className="accordion js-accordion"
+                   title=""
+                   body={renderAccordionBody()}
+                   footer={<FooterButtons
+                       hasConflicts={Object.keys(this.props.conflictList.itemList).length || Object.keys(this.props.errorList).length ? true : false}
+                       hasSlotCountError={hasSlotCountError(this.props)}
+                       stateChanged={this.props.stateChanged}
+                       data={this.props.data}
+                       {...{onNew, onPublish, onAbort }}
+                   />}
+            />
         )
     }
 }

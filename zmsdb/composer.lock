@@ -180,11 +180,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "version": "dev-feature-zmskvr-145-wartezeit-statistik",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+                "reference": "fabb19849825b0ed5f23da88520a80b3c8fe3b23"
             },
             "require": {
                 "ext-json": ">=0",
@@ -228,11 +228,11 @@
         },
         {
             "name": "eappointment/zmsapi",
-            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "version": "dev-feature-zmskvr-145-wartezeit-statistik",
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+                "reference": "fabb19849825b0ed5f23da88520a80b3c8fe3b23"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -267,8 +267,10 @@
                 "command": [
                     "bin/configure"
                 ],
+                "prepare-dirs": [
+                    "mkdir -p public/_test/assets && mkdir -p public/doc/assets"
+                ],
                 "wget-files": [
-                    "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
                     "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
                     "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
                     "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui.css -O public/_test/assets/swagger-ui.css",
@@ -276,9 +278,11 @@
                     "sha256sum --status -c checksums.txt"
                 ],
                 "post-install-cmd": [
+                    "@prepare-dirs",
                     "@wget-files"
                 ],
                 "post-update-cmd": [
+                    "@prepare-dirs",
                     "@wget-files"
                 ]
             },
@@ -299,11 +303,11 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "version": "dev-feature-zmskvr-145-wartezeit-statistik",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "f37d3a5ad27043e12c9d5ebd3dc40c7b660456d6"
+                "reference": "30c20d5115a79d3b8b009a634ad5921b0b77b5b4"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -357,11 +361,11 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "version": "dev-feature-zmskvr-145-wartezeit-statistik",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+                "reference": "fabb19849825b0ed5f23da88520a80b3c8fe3b23"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -424,11 +428,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "version": "dev-feature-zmskvr-145-wartezeit-statistik",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+                "reference": "fabb19849825b0ed5f23da88520a80b3c8fe3b23"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -449,7 +453,8 @@
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.6",
-                "squizlabs/php_codesniffer": "*"
+                "squizlabs/php_codesniffer": "^3.5.8",
+                "yuloh/json-guard-cli": "^0.3.0"
             },
             "type": "library",
             "autoload": {
@@ -480,11 +485,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "version": "dev-feature-zmskvr-145-wartezeit-statistik",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+                "reference": "fabb19849825b0ed5f23da88520a80b3c8fe3b23"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -6241,16 +6246,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.11.2",
+            "version": "3.11.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079"
+                "reference": "ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/1368f4a58c3c52114b86b1abe8f4098869cb0079",
-                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10",
+                "reference": "ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10",
                 "shasum": ""
             },
             "require": {
@@ -6315,9 +6320,13 @@
                 {
                     "url": "https://opencollective.com/php_codesniffer",
                     "type": "open_collective"
+                },
+                {
+                    "url": "https://thanks.dev/phpcsstandards",
+                    "type": "thanks_dev"
                 }
             ],
-            "time": "2024-12-11T16:04:26+00:00"
+            "time": "2025-01-23T17:04:15+00:00"
         },
         {
             "name": "symfony/config",
