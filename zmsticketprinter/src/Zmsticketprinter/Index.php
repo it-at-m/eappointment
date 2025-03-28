@@ -96,7 +96,13 @@ class Index extends BaseController
 
     private function getLanguageConfig($validator)
     {
-        return json_decode(base64_decode(str_replace(' ', '+', $validator->getParameter("config")->isString()->getValue())), true);
+        $config = $validator->getParameter("config")
+            ->isString()
+            ->getValue();
+
+        $decoded = base64_decode(str_replace(' ', '+', $config));
+
+        return json_decode($decoded, true);
     }
 
     private function getCurrentLanguage($validator)

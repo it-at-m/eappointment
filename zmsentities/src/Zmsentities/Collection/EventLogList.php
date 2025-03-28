@@ -10,5 +10,5 @@ namespace BO\Zmsentities\Collection;
 
 class EventLogList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\EventLog';
+    public const ENTITY_CLASS = '\BO\Zmsentities\EventLog';
 }

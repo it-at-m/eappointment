@@ -588,7 +588,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::submitClientData($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEmpty($result->id);
+        $this->assertEquals(0, $result->id);
     }
 
     public function testSubmitClientDataException(): void
@@ -633,7 +633,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::preconfirmProcess($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEmpty($result->id);
+        $this->assertEquals(0, $result->id);
     }
 
     public function testPreconfirmProcessException(): void
@@ -676,7 +676,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::confirmProcess($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEmpty($result->id);
+        $this->assertEquals(0, $result->id);
     }
 
     public function testConfirmProcessException(): void
@@ -723,7 +723,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::cancelAppointment($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEmpty($result->id);
+        $this->assertEquals(0, $result->id);
     }
 
     public function testCancelAppointmentException(): void
@@ -772,7 +772,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::sendConfirmationEmail($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEmpty($result->id);
+        $this->assertEquals(0, $result->id);
     }
 
     public function testSendConfirmationEmailException(): void
@@ -821,7 +821,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::sendPreconfirmationEmail($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEmpty($result->id);
+        $this->assertEquals(0, $result->id);
     }
 
     public function testSendPreconfirmationEmailException(): void
@@ -870,7 +870,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::sendCancellationEmail($process);
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEmpty($result->id);
+        $this->assertEquals(0, $result->id);
     }
 
     public function testSendCancelationEmailException(): void
@@ -915,7 +915,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $result = ZmsApiClientService::getProcessById(1, 'test');
         $this->assertInstanceOf(Process::class, $result);
-        $this->assertEmpty($result->id);
+        $this->assertEquals(0, $result->id);
     }
 
     public function testGetProcessByIdException(): void

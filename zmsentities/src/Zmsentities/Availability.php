@@ -10,7 +10,7 @@ namespace BO\Zmsentities;
  */
 class Availability extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "availability.json";
 
@@ -65,9 +65,18 @@ class Availability extends Schema\Entity
             'slotTimeInMinutes' => 10,
             'startDate' => 0,
             'endDate' => 0,
-            'startTime' => "0:00",
-            'endTime' => "23:59",
-            'type' => 'appointment'
+            'startTime' => '0:00',
+            'endTime' => '23:59',
+            'type' => 'appointment',
+            'scope' => [
+                'id' => 123,
+                'provider' => [
+                    'id' => 0,
+                    'name' => '',
+                    'source' => ''
+                ],
+                'shortName' => ''
+            ]
         ];
     }
 

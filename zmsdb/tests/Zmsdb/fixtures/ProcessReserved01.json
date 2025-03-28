@@ -68,7 +68,7 @@
         "callTime": 0,
         "number": "100009",
         "waitingTime": null,
-        "status": "reserved",
+        "status": "preconfirmed",
         "lastCallTime": 0,
         "destination": null,
         "destinationHint": null,

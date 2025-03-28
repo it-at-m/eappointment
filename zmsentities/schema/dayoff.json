@@ -10,10 +10,18 @@
         "date",
         "name"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "id": {
-            "type": "number"
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
         },
         "date": {
             "type": "number",

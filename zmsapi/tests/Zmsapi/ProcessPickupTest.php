@@ -91,7 +91,7 @@ class ProcessPickupTest extends Base
         $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '{
-                "status": "pickup"
+                "status": "unvalid"
             }'
         ], []);
     }

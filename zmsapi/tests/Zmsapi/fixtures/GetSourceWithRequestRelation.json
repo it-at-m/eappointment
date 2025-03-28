@@ -14,7 +14,7 @@
                 "postalCode": "12345",
                 "region": "Berlin",
                 "street": "Musterstraße",
-                "streetNumber": 123
+                "streetNumber": "123"
             }
         }
     ],
@@ -30,7 +30,9 @@
     "requestrelation": [
         {
             "provider": {
-                "id": 21334
+                "id": 21334,
+                "name": "Bürgeramt Mitte",
+                "source": "dldb"
             },
             "source": "unittest",
             "request": {

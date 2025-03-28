@@ -59,12 +59,28 @@
                         ]
                     },
                     "requests": {
-                        "type": "number",
+                        "oneOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string",
+                                "pattern": "^[0-9]+$"
+                            }
+                        ],
                         "description": "Number of requests left",
                         "example": 99
                     },
                     "ts": {
-                        "type": "number",
+                        "oneOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string",
+                                "pattern": "^[0-9]+$"
+                            }
+                        ],
                         "description": "unix timestamp representing the creating time of quota",
                         "example": 1459512840
                     }
@@ -76,7 +92,15 @@
             "description": "IP Address of the creator"
         },
         "ts": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "unix timestamp representing the creating time of quota",
             "example": 1459512840
         }

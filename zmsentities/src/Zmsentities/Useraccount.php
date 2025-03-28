@@ -11,17 +11,17 @@ use BO\Zmsentities\Helper\Property;
  */
 class Useraccount extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "useraccount.json";
 
     public function getDefaults()
     {
         return [
+            'id' => '',
             'rights' => [
                 "availability" => false,
                 "basic" => true,
-                "audit" => false,
                 "cluster" => false,
                 "department" => false,
                 "organisation" => false,

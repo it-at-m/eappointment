@@ -141,9 +141,9 @@ class MapperServiceTest extends TestCase
         $provider = new Provider();
         $result = MapperService::providerToThinnedProvider($provider);
         $this->assertInstanceOf(ThinnedProvider::class, $result);
-        $this->assertNull($result->id);
-        $this->assertNull($result->name);
-        $this->assertNull($result->source);
+        $this->assertEquals(0, $result->id);
+        $this->assertEmpty($result->name);
+        $this->assertEquals('dldb', $result->source);
         $this->assertNull($result->lat);
         $this->assertNull($result->lon);
         $this->assertNull($result->contact);
