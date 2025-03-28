@@ -148,7 +148,7 @@ class Accordion extends Component
                                     }
                                 })()}
                             >
-                                <span className="accrordion__title"></span>
+                                <span className="accrordion__title">{title}</span>
                             </button>
                         </h3>
                         <div className={accordionExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={accordionExpanded ? "" : "hidden"}>
@@ -175,17 +175,50 @@ class Accordion extends Component
             })
         }
         return (
+            <>
+            {/* Legend */}
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '20px',
+                margin: '20px 0'
+            }}>
+                {[
+                    { color: '#F0F0F0', label: 'Regelserie' },
+                    { color: '#FFE05B', label: 'Ausnahme' },
+                ].map(({ color, label }) => (
+                    <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{
+                            width: '16px',
+                            height: '16px',
+                            backgroundColor: color,
+                            border: '1px solid #ccc'
+                        }} />
+                        <span>{label}</span>
+                    </div>
+                ))}
+            </div>
+
+            {/* Accordion */}
             <Board className="accordion js-accordion"
-                   title=""
-                   body={renderAccordionBody()}
-                   footer={<FooterButtons
-                       hasConflicts={Object.keys(this.props.conflictList.itemList).length || Object.keys(this.props.errorList).length ? true : false}
-                       hasSlotCountError={hasSlotCountError(this.props)}
-                       stateChanged={this.props.stateChanged}
-                       data={this.props.data}
-                       {...{onNew, onPublish, onAbort }}
-                   />}
+                title=""
+                body={renderAccordionBody()}
+                footer={<FooterButtons
+                    hasConflicts={Object.keys(this.props.conflictList.itemList).length ? true : false}
+                    hasErrors={Object.values(this.props.errorList).some(error => {
+                        const hasPastTimeError = error.itemList?.flat(2)
+                            .some(item => item?.type === 'endTimePast');
+                        return !hasPastTimeError;
+                    })}
+                    hasSlotCountError={hasSlotCountError(this.props)}
+                    stateChanged={this.props.stateChanged}
+                    data={this.props.data}
+                    availabilitylist={this.props.availabilityList}
+                    {...{ onNew, onPublish, onAbort }}
+                />}
             />
+        </>
         )
     }
 }
