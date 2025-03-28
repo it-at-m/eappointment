@@ -319,15 +319,13 @@
   "additionalProperties": true,
   "properties": {
     "amendment": {
-      "type": [
-        "string"
-      ],
+      "type": ["string", "null"],
       "description": "additional information for this process from the client",
       "default": ""
     },
     "customTextfield": {
       "type": [
-        "string"
+        "string", "null"
       ],
       "description": "additional textfield for this process from the client",
       "default": ""
@@ -360,7 +358,15 @@
       "description": "IP Address of the creator"
     },
     "createTimestamp": {
-      "type": "number",
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      ],
       "description": "unix timestamp representing creation of the process"
     },
     "id": {
@@ -372,6 +378,10 @@
         {
           "type": "number",
           "minimum": 1000
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]{4,}$"
         }
       ],
       "description": "Number is used to identify appointments like on call displays"
@@ -381,26 +391,34 @@
       "description": "unix timestamp of the last change on this process"
     },
     "showUpTime": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "unix timestamp of showing up after call"
     },
     "processingTime": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "unix timestamp that cumulates time each time a processes is called"
     },
     "timeoutTime": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "unix timestamp of after a call is entered or re-entered into the queue"
     },    
     "finishTime": {
-        "type": "string",
+        "type": ["string", "null"],
         "description": "unix timestamp og time when process has been finished"
     },
     "queue": {
       "$ref": "queue.json"
     },
     "reminderTimestamp": {
-      "type": "number",
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      ],
       "description": "timestamp of last reminder message"
     },
     "requests": {

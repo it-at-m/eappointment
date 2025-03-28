@@ -67,14 +67,30 @@
     "additionalProperties": true,
     "properties": {
         "id": {
-            "type": "number"
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
         },
         "createIP": {
             "type": "string",
             "description": "IP Address of the creator"
         },
         "createTimestamp": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "unix timestamp representing creation of the notification"
         },
         "department": {

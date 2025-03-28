@@ -16,7 +16,7 @@
   "properties": {
     "city": {
       "default": "",
-      "type": "string"
+      "type": ["null", "string"]
     },
     "country": {
       "default": "",
@@ -35,28 +35,35 @@
     },
     "name": {
       "default": "",
-      "type": "string"
+      "type": ["null", "string"]
     },
     "postalCode": {
       "default": "",
-      "type": "string"
+      "type": ["null", "string"]
     },
     "region": {
       "default": "",
-      "type": "string"
+      "type": ["null", "string"]
     },
     "street": {
       "default": "",
-      "type": "string"
+      "type": ["null", "string"]
     },
     "streetNumber": {
       "default": "",
-      "type": "string"
+      "type": ["null", "string"]
     },
     "email": {
-      "type": "string",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$"
+        }
+      ],
       "default": "",
-      "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
       "x-locale": {
         "de_DE": {
           "pointer": "Kontakt E-Mail",

@@ -18,90 +18,37 @@ class Validator
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
-
         $this->validator = new OpisValidator();
 
-        // Register schema loader for resolving $refs
-        $schemaPath = realpath(dirname(__FILE__) . '/../../../schema') . '/';
-        // error_log("Resolved schemaPath: " . $schemaPath);
-        // error_log("Current working directory: " . getcwd());
-        // error_log("Checking if availability.json exists: " . (file_exists($schemaPath . 'availability.json') ? 'Yes' : 'No'));
+        $this->loadSchemas();
 
-        // Register all schema files
-        $commonSchemas = [
-            'apiclient.json',
-            'apikey.json',
-            'appointment.json',
-            'availability.json',
-            'calendar.json',
-            'calldisplay.json',
-            'client.json',
-            'cluster.json',
-            'config.json',
-            'contact.json',
-            'day.json',
-            'dayoff.json',
-            'department.json',
-            'eventlog.json',
-            'exchange.json',
-            'ics.json',
-            'link.json',
-            'log.json',
-            'mail.json',
-            'mailtemplate.json',
-            'metaresult.json',
-            'mimepart.json',
-            'month.json',
-            'notification.json',
-            'organisation.json',
-            'owner.json',
-            'process.json',
-            'processarchived.json',
-            'provider.json',
-            'queue.json',
-            'request.json',
-            'requestrelation.json',
-            'scope.json',
-            'session.json',
-            'slot.json',
-            'source.json',
-            'status.json',
-            'ticketprinter.json',
-            'useraccount.json',
-            'workstation.json',
-        ];
-
-        // Register schema loader
-        $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
-
-        // Register each schema file
-        foreach ($commonSchemas as $schema) {
-            if (file_exists($schemaPath . $schema)) {
-                $schemaContent = file_get_contents($schemaPath . $schema);
-                $this->validator->resolver()->registerRaw(
-                    $schemaContent,
-                    'schema://' . $schema
-                );
-            }
-        }
-
-        // Convert schema to JSON and create schema object
-        $schemaJson = json_encode($schemaObject->toJsonObject());
-        $schemaJson = json_decode($schemaJson);
-
-        // Convert data to JSON object
+        $schemaJson = json_decode(json_encode($schemaObject->toJsonObject()));
         $data = json_decode(json_encode($data));
 
         // Debugging
         // var_dump("Schema:", json_encode($schemaJson, JSON_PRETTY_PRINT));
-        // var_dump("*********************************************");
+        // var_dump("******************************************************************************************");
         // var_dump("Data:", json_encode($data, JSON_PRETTY_PRINT));
+        // var_dump("Data:", substr(json_encode($data, JSON_PRETTY_PRINT), 0, 100));
+
 
         // Set max errors and validate
         $this->validator->setMaxErrors(1000);
         $this->validator->setStopAtFirstError(false);
         $this->validationResult = $this->validator->validate($data, $schemaJson);
-        //$this->validationResult = $this->validator->dataValidation($data, $schemaData);
+    }
+
+    private function loadSchemas()
+    {
+        $schemaPath = realpath(dirname(__FILE__) . '/../../../schema') . '/';
+        $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
+        $schemaFiles = glob($schemaPath . '*.json');
+
+        foreach ($schemaFiles as $schemaFile) {
+            $schemaContent = file_get_contents($schemaFile);
+            $schemaName = 'schema://' . basename($schemaFile);
+            $this->validator->resolver()->registerRaw($schemaContent, $schemaName);
+        }
     }
 
     public function isValid()
@@ -194,25 +141,5 @@ class Validator
         }
 
         return self::getOriginPointer($error);
-    }
-
-    private function resolveRefs(&$schema)
-    {
-        if (is_object($schema)) {
-            foreach ($schema as $key => &$value) {
-                if ($key === '$ref' && is_string($value)) {
-                    // Convert relative path to schema:// protocol
-                    $value = 'schema://' . $value;
-                } elseif (is_object($value) || is_array($value)) {
-                    $this->resolveRefs($value);
-                }
-            }
-        } elseif (is_array($schema)) {
-            foreach ($schema as &$value) {
-                if (is_object($value) || is_array($value)) {
-                    $this->resolveRefs($value);
-                }
-            }
-        }
     }
 }

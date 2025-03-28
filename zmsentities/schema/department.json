@@ -69,7 +69,15 @@
     "additionalProperties": true,
     "properties": {
         "id": {
-            "type": "number"
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
         },
         "contact": {
             "$ref": "contact.json"
@@ -87,9 +95,16 @@
             }
         },
         "email": {
-            "type": "string",
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$"
+                }
+            ],
             "description": "sender address for reminder mails to the clients",
-            "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
             "x-locale": {
                 "de_DE": {
                     "pointer": "E-Mail",
@@ -100,13 +115,35 @@
             }
         },
         "sendEmailReminderEnabled": {
-            "type": "boolean",
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[01]$"
+                }
+            ],
             "description": "activation of sending e-mail reminder"
         },
         "sendEmailReminderMinutesBefore": {
-            "type": [
-                "number",
-                "null"
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
             ],
             "default": null,
             "description": "number of minutes before appointment when reminder e-mail is sent"
@@ -129,29 +166,60 @@
                     "additionalProperties": false,
                     "properties": {
                         "enabled": {
-                            "type": [
-                                "boolean",
-                                "number"
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[01]$"
+                                }
                             ],
                             "description": "true if sms are allowed"
                         },
                         "identification": {
-                            "type": [
-                                "string"
-                            ],
+                            "type": ["null", "string"],
                             "description": "usually an email address"
                         },
                         "sendConfirmationEnabled": {
-                            "type": [
-                                "boolean",
-                                "number"
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[01]$"
+                                }
                             ],
                             "description": "true if confirmation sms are enabled"
                         },
                         "sendReminderEnabled": {
-                            "type": [
-                                "boolean",
-                                "number"
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[01]$"
+                                }
                             ],
                             "description": "true if reminder sms are enabled"
                         }

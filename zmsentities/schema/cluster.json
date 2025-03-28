@@ -63,7 +63,15 @@
             "description": "information for the client like the address to a cluster location"
         },
         "id": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "auto increment"
         },
         "name": {
@@ -77,7 +85,18 @@
             }
         },
         "shortNameEnabled": {
-            "type": ["number", "boolean"],
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[01]$"
+                }
+            ],
             "description": "true if the scope short name should be display next to the workstation name"
         }
     }

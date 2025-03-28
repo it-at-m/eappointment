@@ -72,7 +72,15 @@
       "description": "used for displaying in the calldisplay"
     },
     "id": {
-      "type": "number",
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      ],
       "description": "id of the workstation"
     },
     "emergency": {
@@ -99,16 +107,32 @@
       "additionalProperties": false,
       "properties": {
         "appointmentsOnly": {
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ],
           "description": "true if only appointments should be shown in queue"
         },
         "clusterEnabled": {
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ],
           "description": "true if the complete cluster should be shown in queue"
         }

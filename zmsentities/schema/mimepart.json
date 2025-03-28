@@ -26,7 +26,18 @@
             "description": "content to transfer"
         },
         "base64" : {
-        	"type": "boolean",
+        	"oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[01]$"
+                }
+            ],
             "default": false,
         	"description": "True if the content is encoded as base64."
         }

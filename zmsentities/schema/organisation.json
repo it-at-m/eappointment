@@ -48,7 +48,15 @@
             }
         },
         "id": {
-            "type": "number"
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
         },
         "name": {
             "type": "string"
@@ -58,7 +66,18 @@
             "additionalProperties": false,
             "properties": {
                 "ticketPrinterProtectionEnabled": {
-                    "type": ["boolean", "number"],
+                    "oneOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^[01]$"
+                        }
+                    ],
                     "description": "true if protection for ticket printer is enabled"
                 }
             }

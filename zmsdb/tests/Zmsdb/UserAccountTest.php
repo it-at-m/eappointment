@@ -103,6 +103,7 @@ class UserAccountTest extends Base
     {
         $this->writeTestLogin();
         $workstationList = (new Workstation())->readLoggedInListByScope(141, $this->dateTime);
+        $workstationList[0]->useraccount->id = "testuser";
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
     }
 
@@ -110,6 +111,7 @@ class UserAccountTest extends Base
     {
         $this->writeTestLogin();
         $workstationList = (new Workstation())->readLoggedInListByCluster(109, $this->dateTime);
+        $workstationList[0]->useraccount->id = "testuser";
         $this->assertEquals(1, $workstationList->count());
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
     }
@@ -118,6 +120,7 @@ class UserAccountTest extends Base
     {
         $this->writeTestLogin();
         $workstationList = (new Workstation())->readCollectionByDepartmentId(72);
+        $workstationList[0]->useraccount->id = "testuser";
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
         $this->assertEquals(3, $workstationList->getFirst()->name);
     }
@@ -126,6 +129,7 @@ class UserAccountTest extends Base
     {
         $this->writeTestLogin();
         $workstation = (new Workstation())->readWorkstationByScopeAndName(141, 3);
+        $workstation->useraccount->id = "testuser";
         $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
     }
 

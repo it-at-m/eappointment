@@ -171,7 +171,15 @@
             "default": ""
         },
         "timeSlotCount": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "number of time slots assumend for the request",
             "default": 1
         }
