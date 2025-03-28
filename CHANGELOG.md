@@ -1,3 +1,66 @@
+## Release Muc-21 (07.03.2025)
+                                
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-120'>ZMSKVR-120</a>] -         MySQL-Fehler 2006 - &quot;MySQL Server has gone away&quot; aufgrund zu großer Transaktion bei Tabellenoptimierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-147'>ZMSKVR-147</a>] -         ZMS-Statistic: Auswertung in der DL-Statistik: Bezeichnung&quot;sum&quot; 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-154'>ZMSKVR-154</a>] -         [Pentest-ID1] Es fehlen alle wichtigen Security Header
+</li>
+</ul>
+                                                                                                                                                                                                        
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-75'>ZMSKVR-75</a>] -         Optimierung der Slotberechnung für Öffnungszeiten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-78'>ZMSKVR-78</a>] -         Aufrufe in Bearbeitung  (Überblick der Schalter)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-121'>ZMSKVR-121</a>] -         Versenden eines Links zur Terminbuchung von innen nach außen 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-125'>ZMSKVR-125</a>] -         POST /cancel-appointment/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-126'>ZMSKVR-126</a>] -         POST /confirm-appointment/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-127'>ZMSKVR-127</a>] -         POST /preconfirm-appointment/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-128'>ZMSKVR-128</a>] -         GET /services-by-office/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-129'>ZMSKVR-129</a>] -         POST /update-appointment/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-130'>ZMSKVR-130</a>] -         GET /scope-by-id/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-131'>ZMSKVR-131</a>] -         Neue Daten in /api/backend/offices-and-services
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-132'>ZMSKVR-132</a>] -         GET /captcha-details/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-133'>ZMSKVR-133</a>] -         GET /offices-by-service/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-134'>ZMSKVR-134</a>] -         GET /available-days/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-135'>ZMSKVR-135</a>] -         POST /reserve-appointment/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-136'>ZMSKVR-136</a>] -         Bürgeransicht API Endpunkt für gruppierte Orte
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-137'>ZMSKVR-137</a>] -         Voraussichtliche Dauer in Bürgeransicht API
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-138'>ZMSKVR-138</a>] -         zmscitizenapi Response Caching
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-139'>ZMSKVR-139</a>] -         GET /scopes/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-140'>ZMSKVR-140</a>] -         GET /available-appointments/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-141'>ZMSKVR-141</a>] -         GET /appointment/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-142'>ZMSKVR-142</a>] -         GET /offices-and-services/ - Migration zmscitizenapi Endpoint
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-144'>ZMSKVR-144</a>] -         Bei Superuser-Login Yubikey abfragen
+</li>
+</ul>
+
+							
 ## Release Muc-20 (14.02.2025)
 
 <h2>        Bug
