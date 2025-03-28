@@ -54,15 +54,8 @@
       "type": ["null", "string"]
     },
     "email": {
-      "oneOf": [
-        {
-          "type": "null"
-        },
-        {
-          "type": "string",
-          "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$"
-        }
-      ],
+      "type": ["null", "string"],
+      "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
       "default": "",
       "x-locale": {
         "de_DE": {

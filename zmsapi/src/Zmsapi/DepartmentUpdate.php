@@ -25,10 +25,6 @@ class DepartmentUpdate extends BaseController
         $workstation = (new Helper\User($request, 2));
         $department =  $workstation::checkDepartment($args['id']);
 
-        // Debugging
-        $departmentTest =  $workstation::checkDepartment($args['id']);
-        $departmentWithData = $departmentTest->addData($input);
-
         $department->addData($input)->testValid('de_DE', 1);
         $workstation->checkRights(
             'department',
