@@ -453,8 +453,7 @@
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.6",
-                "squizlabs/php_codesniffer": "^3.5.8",
-                "yuloh/json-guard-cli": "^0.3.0"
+                "squizlabs/php_codesniffer": "^3.5.8"
             },
             "type": "library",
             "autoload": {
