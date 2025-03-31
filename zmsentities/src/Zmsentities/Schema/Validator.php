@@ -34,7 +34,7 @@ class Validator
         // Debugging
         // var_dump("Schema:", json_encode($schemaJson, JSON_PRETTY_PRINT));
         // var_dump("******************************************************************************************");
-        var_dump("Data:", json_encode($data, JSON_PRETTY_PRINT));
+        // var_dump("Data:", json_encode($data, JSON_PRETTY_PRINT));
         // var_dump("Data:", substr(json_encode($data, JSON_PRETTY_PRINT), 0, 100));
 
 
