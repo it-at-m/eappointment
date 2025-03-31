@@ -205,7 +205,7 @@ class View extends BaseView {
                     if ('counter' == this.page)
                         this.loadQueueInfo();
                     if ('workstation' == this.page)
-                        this.loadClientNext();
+                        this.loadClientNext(true, false);
                     this.loadQueueTable();
                     this.loadCalendar();
                 }, null, event.currentTarget);
@@ -238,7 +238,7 @@ class View extends BaseView {
             if ('counter' == this.page)
                 this.loadQueueInfo();
             if ('workstation' == this.page)
-                this.loadClientNext();
+                this.loadClientNext(true, false);
             this.loadQueueTable();
             this.loadCalendar();
             hideSpinner(scope.$main);
@@ -264,7 +264,7 @@ class View extends BaseView {
                     if ('counter' == this.page)
                         this.loadQueueInfo();
                     if ('workstation' == this.page)
-                        this.loadClientNext();
+                        this.loadClientNext(true, false);
                     this.loadQueueTable();
                     this.loadCalendar();
                 }, scope.$main, event.currentTarget);
@@ -292,7 +292,7 @@ class View extends BaseView {
                     if ('counter' == this.page)
                         this.loadQueueInfo();
                     if ('workstation' == this.page)
-                        this.loadClientNext();
+                        this.loadClientNext(true, false);
                     this.loadQueueTable();
                     this.loadCalendar();
                 }, null, event.currentTarget);
@@ -352,7 +352,7 @@ class View extends BaseView {
                 if ('counter' == this.page)
                     this.loadQueueInfo();
                 if ('workstation' == this.page)
-                    this.loadClientNext();
+                    this.loadClientNext(true, false);
                 this.loadQueueTable();
                 this.loadCalendar();
                 hideSpinner();
@@ -546,7 +546,7 @@ class View extends BaseView {
             if ('counter' == this.page)
                 this.loadQueueInfo(false);
             if ('workstation' == this.page)
-                this.loadClientNext(false);
+                this.loadClientNext(false, false);
             this.loadQueueTable(false);
         }
     }
