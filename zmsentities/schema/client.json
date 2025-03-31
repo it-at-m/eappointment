@@ -54,6 +54,9 @@
         "surveyAccepted": {
             "oneOf": [
                 {
+                    "type": "null"
+                },
+                {
                     "type": "number"
                 },
                 {

@@ -69,7 +69,15 @@
             "$ref": "availability.json"
         },
         "date": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "unix timestamp representing the date and time of the appointment"
         },
         "scope": {

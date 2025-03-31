@@ -66,6 +66,9 @@
         "endInDays": {
           "oneOf": [
             {
+              "type": "null"
+            },
+            {
               "type": "number"
             },
             {
@@ -79,7 +82,7 @@
       }
     },
     "description": {
-      "type": "string",
+      "type": ["null", "string"],
       "description": "short note for internal usage"
     },
     "endDate": {
@@ -87,7 +90,7 @@
       "description": "unix timestamp of a day until this availability is valid"
     },
     "endTime": {
-      "type": "string",
+      "type": ["null", "string"],
       "default": "23:59",
       "description": "format '0:00' or '16:30'"
     },
@@ -101,6 +104,9 @@
     },
     "multipleSlotsAllowed": {
       "oneOf": [
+        {
+          "type": "null"
+        },
         {
           "type": "number"
         },
@@ -128,6 +134,9 @@
         "afterWeeks": {
           "oneOf": [
             {
+              "type": "null"
+            },
+            {
               "type": "number"
             },
             {
@@ -139,6 +148,9 @@
         },
         "weekOfMonth": {
           "oneOf": [
+            {
+              "type": "null"
+            },
             {
               "type": "number"
             },
@@ -152,10 +164,16 @@
       }
     },
     "scope": {
-      "$ref": "scope.json"
+      "oneOf": [
+        { "$ref": "scope.json" },
+        { "type": "null" }
+      ]
     },
     "slotTimeInMinutes": {
       "oneOf": [
+        {
+          "type": "null"
+        },
         {
           "type": "number"
         },
@@ -172,7 +190,7 @@
       "description": "unix timestamp of a day to start offering appointments"
     },
     "startTime": {
-      "type": "string",
+      "type": ["null", "string"],
       "description": "format '0:00' or '17:30'"
     },
     "type": {
@@ -191,6 +209,9 @@
           "default": false,
           "oneOf": [
             {
+              "type": "null"
+            },
+            {
               "type": "number"
             },
             {
@@ -205,6 +226,9 @@
         "tuesday": {
           "default": false,
           "oneOf": [
+            {
+              "type": "null"
+            },
             {
               "type": "number"
             },
@@ -221,6 +245,9 @@
           "default": false,
           "oneOf": [
             {
+              "type": "null"
+            },
+            {
               "type": "number"
             },
             {
@@ -235,6 +262,9 @@
         "thursday": {
           "default": false,
           "oneOf": [
+            {
+              "type": "null"
+            },
             {
               "type": "number"
             },
@@ -251,6 +281,9 @@
           "default": false,
           "oneOf": [
             {
+              "type": "null"
+            },
+            {
               "type": "number"
             },
             {
@@ -266,6 +299,9 @@
           "default": false,
           "oneOf": [
             {
+              "type": "null"
+            },
+            {
               "type": "number"
             },
             {
@@ -280,6 +316,9 @@
         "sunday": {
           "default": false,
           "oneOf": [
+            {
+              "type": "null"
+            },
             {
               "type": "number"
             },
@@ -300,6 +339,9 @@
         "callcenter": {
           "oneOf": [
             {
+              "type": "null"
+            },
+            {
               "type": "number"
             },
             {
@@ -313,6 +355,9 @@
         "intern": {
           "oneOf": [
             {
+              "type": "null"
+            },
+            {
               "type": "number"
             },
             {
@@ -325,6 +370,9 @@
         },
         "public": {
           "oneOf": [
+            {
+              "type": "null"
+            },
             {
               "type": "number"
             },

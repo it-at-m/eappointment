@@ -100,7 +100,10 @@
       "description": "usually number of place or room where the workstation is located"
     },
     "process": {
-      "$ref": "process.json"
+      "oneOf": [
+        { "$ref": "process.json" },
+        { "type": "null" }
+      ]
     },
     "queue": {
       "type": "object",

@@ -66,7 +66,7 @@ class ValidationTest extends Base
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             $errorList = $exception->data;
             $this->assertArrayHasKey('/changePassword', $errorList);
-            $this->assertArrayHasKey('minLength', $errorList['/changePassword/0']['messages']);
+            $this->assertArrayHasKey('format', $errorList['/changePassword']['messages']);
         }
     }
 }

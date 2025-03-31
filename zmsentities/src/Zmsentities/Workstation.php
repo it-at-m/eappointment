@@ -21,6 +21,7 @@ class Workstation extends Schema\Entity
             'useraccount' => new Useraccount(),
             'process' => new Process(),
             'name' => '',
+            'scope' => new Scope()
         ];
     }
 

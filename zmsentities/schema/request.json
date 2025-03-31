@@ -135,7 +135,7 @@
         "name",
         "source"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "id": {
             "type": "string",

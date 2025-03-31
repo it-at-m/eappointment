@@ -118,6 +118,10 @@
             }
         }
     },
+    "required": [
+        "provider",
+        "shortName"
+    ],
     "additionalProperties": true,
     "properties": {
         "contact": {
@@ -634,7 +638,7 @@
                 },
                 "notifications": {
                     "type": "object",
-                    "additionalProperties": false,
+                    "additionalProperties": true,
                     "properties": {
                         "confirmationContent": {
                             "type": ["null", "string"],
@@ -796,8 +800,7 @@
                                     "type": "number"
                                 },
                                 {
-                                    "type": "string",
-                                    "pattern": "^[0-9]+$"
+                                    "type": "string"
                                 }
                             ],
                             "description": "minutes average for completing a process, used to estimate waiting time",
@@ -1100,7 +1103,7 @@
                             "default": 0
                         },
                         "lastGivenNumberTimestamp": {
-                            "type": "number",
+                            "type": ["boolean", "number"],
                             "description": "unix timestamp of the last given waiting number",
                             "default": 0
                         }

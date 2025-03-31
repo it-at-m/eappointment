@@ -44,7 +44,9 @@ class CounterGhostWorkstationTest extends Base
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render([], [
-            '__body' => '{}'
+            '__body' => '{
+                "id": ""
+            }'
         ], []);
     }
 

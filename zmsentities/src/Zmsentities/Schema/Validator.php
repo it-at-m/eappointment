@@ -3,6 +3,7 @@
 namespace BO\Zmsentities\Schema;
 
 use Opis\JsonSchema\{Validator as OpisValidator, ValidationResult, Schema as OpisSchema};
+use Opis\JsonSchema\Resolvers\FormatResolver;
 use Opis\JsonSchema\Errors\ValidationError as OpisValidationError;
 
 class Validator
@@ -20,6 +21,11 @@ class Validator
         $this->locale = $locale;
         $this->validator = new OpisValidator();
 
+        $formats = $this->validator->parser()->getFormatResolver();
+        $formats->registerCallable("array", "sameValues", function (array $data): bool {
+            return count($data) === 2 && $data[0] === $data[1];
+        });
+
         $this->loadSchemas();
 
         $schemaJson = json_decode(json_encode($schemaObject->toJsonObject()));
@@ -28,7 +34,7 @@ class Validator
         // Debugging
         // var_dump("Schema:", json_encode($schemaJson, JSON_PRETTY_PRINT));
         // var_dump("******************************************************************************************");
-        // var_dump("Data:", json_encode($data, JSON_PRETTY_PRINT));
+        var_dump("Data:", json_encode($data, JSON_PRETTY_PRINT));
         // var_dump("Data:", substr(json_encode($data, JSON_PRETTY_PRINT), 0, 100));
 
 
