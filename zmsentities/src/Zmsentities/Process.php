@@ -443,6 +443,10 @@ class Process extends Schema\Entity
     public function setStatusBySettings()
     {
         $scope = new Scope($this->scope);
+        if ('missed' == $this->status) {
+            // Keep missed status and don't change it
+            return $this;
+        }
         if ('called' == $this->status && $this->queue['callCount'] > $scope->getPreference('queue', 'callCountMax')) {
             $this->status = 'missed';
         } elseif ('parked' == $this->status) {

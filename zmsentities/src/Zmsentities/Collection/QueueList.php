@@ -212,13 +212,14 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return null;
     }
 
-    public function getNextProcess(\DateTimeInterface $dateTime, $exclude = null)
+    public function getNextProcess(\DateTimeInterface $dateTime, $exclude = '')
     {
         $excludeNumbers = explode(',', $exclude);
         $queueList = clone $this;
         // sort by waiting time to get realistic next process
         $queueList = $queueList
             ->withStatus(['confirmed', 'queued'])
+            ->withoutStatus(['missed']) // Explicitly exclude missed appointments
             ->withEstimatedWaitingTime(10, 1, $dateTime, false)
             ->getArrayCopy()
             ;
