@@ -1,3 +1,50 @@
+## Release Muc-22 (28.03.2025)
+                       
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-79'>ZMSKVR-79</a>] -         Überbuchung Notfallschalter ABH (SZE)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-231'>ZMSKVR-231</a>] -         Mehrfachbuchungen im alten E-Kiosk vermeiden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-331'>ZMSKVR-331</a>] -         Vorlauf Terminbuchung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-337'>ZMSKVR-337</a>] -         Build Fehler Citzenview (Neue Bürgeransicht)
+</li>
+</ul>
+                                            
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-244'>ZMSKVR-244</a>] -         Wie zeigen wir die Daten im Wochenkalender? FrontEnd
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-245'>ZMSKVR-245</a>] -         Wie stellen wir die Daten bereit für Wochenkalender? BackEnd
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-247'>ZMSKVR-247</a>] -         Analyse Doppelte Requests ZMS Admin Sachbearbeiteransicht / Tresen
+</li>
+</ul>
+                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-42'>ZMSKVR-42</a>] -         Sperrung aller Öffnungszeiten eines Tages
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-76'>ZMSKVR-76</a>] -          Beibehaltung der chronologischen Reihenfolge bei Ausnahmen in Öffnungszeiten für KVR Terminadministratoren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-84'>ZMSKVR-84</a>] -         Suche
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-160'>ZMSKVR-160</a>] -         Anpassung des Popup-Fensters nach der Termineinbuchung zur Verbesserung der Informationsübertragung in Fachverfahren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-225'>ZMSKVR-225</a>] -         Integration der Ampelanzeige für Wartezeiten in der Sachbearbeiteransicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-227'>ZMSKVR-227</a>] -         Verwendung des mail_admin_delete.twig bei Löschen eines Termins durch Admin
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-292'>ZMSKVR-292</a>] -         Durchführung Lasttests citizenAPI
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-299'>ZMSKVR-299</a>] -         Kalender von Sachbearbeitansicht entfernen 
+</li>
+</ul>
+
 ## Release Muc-21 (07.03.2025)
                                 
 <h2>        Bug
