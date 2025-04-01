@@ -204,8 +204,6 @@ class View extends BaseView {
                     this.loadAppointmentForm();
                     if ('counter' == this.page)
                         this.loadQueueInfo();
-                    if ('workstation' == this.page)
-                        this.loadClientNext(true, false);
                     this.loadQueueTable();
                     this.loadCalendar();
                 }, null, event.currentTarget);
@@ -237,8 +235,6 @@ class View extends BaseView {
         }).then(() => {
             if ('counter' == this.page)
                 this.loadQueueInfo();
-            if ('workstation' == this.page)
-                this.loadClientNext(true, false);
             this.loadQueueTable();
             this.loadCalendar();
             hideSpinner(scope.$main);
@@ -263,8 +259,6 @@ class View extends BaseView {
                     this.loadAppointmentForm();
                     if ('counter' == this.page)
                         this.loadQueueInfo();
-                    if ('workstation' == this.page)
-                        this.loadClientNext(true, false);
                     this.loadQueueTable();
                     this.loadCalendar();
                 }, scope.$main, event.currentTarget);
@@ -291,8 +285,6 @@ class View extends BaseView {
                     this.loadAppointmentForm();
                     if ('counter' == this.page)
                         this.loadQueueInfo();
-                    if ('workstation' == this.page)
-                        this.loadClientNext(true, false);
                     this.loadQueueTable();
                     this.loadCalendar();
                 }, null, event.currentTarget);
@@ -351,8 +343,6 @@ class View extends BaseView {
                 this.loadAppointmentForm();
                 if ('counter' == this.page)
                     this.loadQueueInfo();
-                if ('workstation' == this.page)
-                    this.loadClientNext(true, false);
                 this.loadQueueTable();
                 this.loadCalendar();
                 hideSpinner();
