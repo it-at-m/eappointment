@@ -106,7 +106,6 @@ class View extends BaseView {
     onDatePick(date) {
         this.selectedDate = date;
         this.loadCalendar();
-        this.loadClientNext(true, false);
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
@@ -535,8 +534,6 @@ class View extends BaseView {
         if (this.$main.find('.lightbox').length == 0) {
             if ('counter' == this.page)
                 this.loadQueueInfo(false);
-            if ('workstation' == this.page)
-                this.loadClientNext(false, false);
             this.loadQueueTable(false);
         }
     }
