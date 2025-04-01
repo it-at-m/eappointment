@@ -137,12 +137,12 @@ class ErrorMessages
         ],
         'appointmentNotAvailable' => [
             'errorCode' => 'appointmentNotAvailable',
-            'statusCode' => self::HTTP_NOT_FOUND,
+            'statusCode' => self::HTTP_OK,
             'errorMessage' => 'The selected appointment is unfortunately no longer available.'
         ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',
-            'statusCode' => self::HTTP_NOT_FOUND,
+            'statusCode' => self::HTTP_OK,
             'errorMessage' => 'No available days found for the given criteria.'
         ],
         'captchaVerificationError' => [
@@ -418,19 +418,19 @@ class ErrorMessages
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'customTextfield muss eine Zeichenkette sein.'
         ],
-        'appointmentNotAvailable' => [
-            'errorCode' => 'appointmentNotAvailable',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.'
-        ],
         'appointmentCanNotBeCanceled' => [
             'errorCode' => 'appointmentCanNotBeCanceled',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE,
             'errorMessage' => 'Der von Ihnen gewählte Termin kann leider nicht mehr gelöscht werden.'
         ],
+        'appointmentNotAvailable' => [
+            'errorCode' => 'appointmentNotAvailable',
+            'statusCode' => self::HTTP_OK,
+            'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.'
+        ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',
-            'statusCode' => self::HTTP_NOT_FOUND,
+            'statusCode' => self::HTTP_OK,
             'errorMessage' => 'Keine verfügbaren Termine für dieses Datum.'
         ],
         'captchaVerificationError' => [
@@ -712,12 +712,12 @@ class ErrorMessages
         ],
         'appointmentNotAvailable' => [
             'errorCode' => 'appointmentNotAvailable',
-            'statusCode' => self::HTTP_NOT_FOUND,
+            'statusCode' => self::HTTP_OK,
             'errorMessage' => 'На жаль, обраний запис більше недоступний.'
         ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',
-            'statusCode' => self::HTTP_NOT_FOUND,
+            'statusCode' => self::HTTP_OK,
             'errorMessage' => 'Немає доступних днів за вказаними критеріями.'
         ],
         'captchaVerificationError' => [
