@@ -49,14 +49,14 @@ class Calendar extends Schema\Entity
         $firstDay = $dateTime->setTime(0, 0, 0);
         $lastDay = $dateTime->modify('last day of next month')->setTime(23, 59, 59);
         $this->firstDay = array(
-            'year' => (int) $firstDay->format('Y'),
-            'month' => (int) $firstDay->format('m'),
-            'day' => (int) $firstDay->format('d')
+            'year' => $firstDay->format('Y'),
+            'month' => $firstDay->format('m'),
+            'day' => $firstDay->format('d')
         );
         $this->lastDay = array(
-            'year' => (int) $lastDay->format('Y'),
-            'month' => (int) $lastDay->format('m'),
-            'day' => (int) $lastDay->format('d')
+            'year' => $lastDay->format('Y'),
+            'month' => $lastDay->format('m'),
+            'day' => $lastDay->format('d')
         );
         return $this;
     }
@@ -72,7 +72,7 @@ class Calendar extends Schema\Entity
             if ($id) {
                 $provider = new Provider();
                 $provider->source = $source;
-                $provider->id = (int) $id;
+                $provider->id = $id;
                 $this->providers[] = $provider;
             }
         }
@@ -88,7 +88,7 @@ class Calendar extends Schema\Entity
     {
         foreach (explode(',', $idList) as $id) {
             $cluster = new Cluster();
-            $cluster->id = (int) $id;
+            $cluster->id = $id;
             $this->clusters[] = $cluster;
         }
         return $this;
@@ -122,7 +122,7 @@ class Calendar extends Schema\Entity
         foreach (explode(',', $scopeList) as $id) {
             if ($id) {
                 $scope = new Scope();
-                $scope->id = (int) $id;
+                $scope->id = $id;
                 $this->scopes[] = $scope;
             }
         }

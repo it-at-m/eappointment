@@ -39,9 +39,9 @@ class Day extends Schema\Entity
 
     public function setDateTime(\DateTimeInterface $dateTime)
     {
-        $this['year'] = (int) $dateTime->format('Y');
-        $this['month'] = (int) $dateTime->format('m');
-        $this['day'] = (int) $dateTime->format('d');
+        $this['year'] = $dateTime->format('Y');
+        $this['month'] = $dateTime->format('m');
+        $this['day'] = $dateTime->format('d');
         return $this;
     }
 

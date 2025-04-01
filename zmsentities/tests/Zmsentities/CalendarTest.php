@@ -12,6 +12,8 @@ class CalendarTest extends EntityCommonTests
 
     const SCOPE = 141;
 
+    const CLUSTER = 109;
+
     const REQUESTS = 120703;
 
     public $entityclass = '\BO\Zmsentities\Calendar';
@@ -29,7 +31,7 @@ class CalendarTest extends EntityCommonTests
         $this->assertEquals(2, count($entity->getProviderList()));
         $entity->addRequest('dldb', self::REQUESTS);
         $this->assertEquals(2, count($entity->getRequestList()));
-        $entity->addCluster(123);
+        $entity->addCluster(self::CLUSTER);
         $this->assertEquals(2, count($entity->clusters));
         $entity->addScope(self::SCOPE);
         $this->assertEquals(2, count($entity->getScopeList()));

@@ -61,7 +61,7 @@
     "id",
     "useraccount"
   ],
-  "additionalProperties": true,
+  "additionalProperties": false,
   "properties": {
     "authkey": {
       "type": "string",

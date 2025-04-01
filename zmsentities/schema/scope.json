@@ -169,7 +169,7 @@
         },
         "preferences": {
             "type": "object",
-            "additionalProperties": true,
+            "additionalProperties": false,
             "properties": {
                 "appointment": {
                     "type": "object",
@@ -829,7 +829,7 @@
                 },
                 "survey": {
                     "type": "object",
-                    "additionalProperties": true,
+                    "additionalProperties": false,
                     "properties": {
                         "emailContent": {
                             "type": ["string", "null"],

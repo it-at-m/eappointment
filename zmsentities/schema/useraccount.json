@@ -20,7 +20,7 @@
     "id",
     "rights"
   ],
-  "additionalProperties": true,
+  "additionalProperties": false,
   "properties": {
     "lastLogin": {
       "type": "number",

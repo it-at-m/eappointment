@@ -21,9 +21,9 @@
         "process": {
             "clients": [
                 {
-                  "familyName": "Max Mustermann",
-                  "email": "max@service.berlin.de",
-                  "telephone": "030 115"
+                    "familyName": "Max Mustermann",
+                    "email": "max@service.berlin.de",
+                    "telephone": "030 115"
                 }
             ],
             "id": 123456,
@@ -64,7 +64,7 @@
         "process",
         "client"
     ],
-    "additionalProperties": true,
+    "additionalProperties": false,
     "properties": {
         "id": {
             "oneOf": [

@@ -37,14 +37,21 @@
             }
         ],
         "process": {
+            "clients": [
+                {
+                    "familyName": "Max Mustermann",
+                    "email": "max@service.berlin.de",
+                    "telephone": "030 115"
+                }
+            ],
             "id": 123456,
             "apiclient": {
                 "clientKey": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs"  
             },
             "authKey":"1234",
             "reminderTimestamp": 1447931730000,
-            "status": "confirmed",
             "scope": {
+                "id": 151,
                 "provider": {
                     "contact": {
                         "city": "Schönefeld",
@@ -62,8 +69,68 @@
                     "source": "dldb",
                     "displayName":"001"
                 },
-                "shortName": "Zentrale"
-            }
+                "shortName": "Zentrale",
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "5",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "1",
+                        "reservationDuration": "5",
+                        "startInDaysDefault": "0"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "appointmentsPerMail": "",
+                        "slotsPerAppointment": "",
+                        "whitelistedMails": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "",
+                        "customTextfieldActivated": "0",
+                        "customTextfieldLabel": "",
+                        "emailRequired": "1",
+                        "emailConfirmationActivated": "1",
+                        "adminMailOnAppointment": "0",
+                        "adminMailOnDeleted": "0",
+                        "adminMailOnUpdated": "0",
+                        "telephoneActivated": "1",
+                        "telephoneRequired": "1"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "enabled": "1",
+                        "headsUpContent": "",
+                        "headsUpTime": "0"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
+                        "firstNumber": "1000",
+                        "lastNumber": "1999",
+                        "processingTimeAverage": "00:15:00",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "confirmationEnabled": "0",
+                        "deactivatedText": "",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "0"
+                    }
+                }
+            },
+            "status": "confirmed"
         },
         "subject": "Example Mail",
         "client": {
@@ -78,7 +145,7 @@
         "subject",
         "client"
     ],
-    "additionalProperties": true,
+    "additionalProperties": false,
     "properties": {
         "id": {
             "oneOf": [

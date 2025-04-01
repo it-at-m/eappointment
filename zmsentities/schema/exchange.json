@@ -45,7 +45,7 @@
   "required": [
     "dictionary"
   ],
-  "additionalProperties": true,
+  "additionalProperties": false,
   "properties": {
     "firstDay": {
       "$ref": "day.json"
