@@ -12,7 +12,7 @@
     "street": "Zaunstraße",
     "streetNumber": "1"
   },
-  "additionalProperties": true,
+  "additionalProperties": false,
   "properties": {
     "city": {
       "default": "",

@@ -68,7 +68,7 @@
         ],
         "providers": [
             {
-                "id": 21334,
+                "id": 122217,
                 "source": "dldb",
                 "name": "Bürgeramt Mitte"
             }
@@ -111,7 +111,7 @@
         "firstDay",
         "lastDay"
     ],
-    "additionalProperties": true,
+    "additionalProperties": false,
     "properties": {
         "bookableEnd": {
           "type": "number",

@@ -38,7 +38,7 @@
         "serverTime",
         "organisation"
     ],
-    "additionalProperties": true,
+    "additionalProperties": false,
     "properties": {
         "image": {
             "type": "object",

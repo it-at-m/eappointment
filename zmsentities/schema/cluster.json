@@ -52,7 +52,7 @@
         ],
         "shortNameEnabled": true
     },
-    "additionalProperties": true,
+    "additionalProperties": false,
     "properties": {
         "callDisplayText": {
             "type": "string",

@@ -42,7 +42,7 @@
     "type",
     "weekday"
   ],
-  "additionalProperties": true,
+  "additionalProperties": false,
   "properties": {
     "bookable": {
       "type": "object",

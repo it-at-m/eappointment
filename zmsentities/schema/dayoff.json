@@ -10,7 +10,7 @@
         "date",
         "name"
     ],
-    "additionalProperties": true,
+    "additionalProperties": false,
     "properties": {
         "id": {
             "oneOf": [
