@@ -316,9 +316,9 @@ class ValidationService
             : [];
     }
 
-    public static function validateNoAppointmentsAtLocation(): array
+    public static function validatenoAppointmentForThisScope(): array
     {
-        return ['errors' => [self::getError('noAppointmentsAtLocation')]];
+        return ['errors' => [self::getError('noAppointmentForThisScope')]];
     }
 
     public static function validateServiceArrays(array $serviceIds, array $serviceCounts): array
