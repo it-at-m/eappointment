@@ -278,7 +278,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     protected function readNewProcessId()
     {
         $query = new Query\Process(Query\Base::SELECT);
-        $newProcessId = (int)$this->fetchValue($query->getQueryNewProcessId());
+        $newProcessId = $this->fetchValue($query->getQueryNewProcessId());
         return $newProcessId;
     }
 

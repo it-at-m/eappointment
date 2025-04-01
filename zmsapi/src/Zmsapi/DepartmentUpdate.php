@@ -24,7 +24,6 @@ class DepartmentUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $workstation = (new Helper\User($request, 2));
         $department =  $workstation::checkDepartment($args['id']);
-
         $department->addData($input)->testValid('de_DE', 1);
         $workstation->checkRights(
             'department',

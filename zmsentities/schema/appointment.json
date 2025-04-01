@@ -63,7 +63,7 @@
         "slotCount",
         "scope"
     ],
-    "additionalProperties": true,
+    "additionalProperties": false,
     "properties": {
         "availability": {
             "$ref": "availability.json"

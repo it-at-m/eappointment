@@ -370,7 +370,7 @@
       "description": "unix timestamp representing creation of the process"
     },
     "id": {
-      "anyOf": [
+      "oneOf": [
         {
           "type": "number",
           "enum": [0]
