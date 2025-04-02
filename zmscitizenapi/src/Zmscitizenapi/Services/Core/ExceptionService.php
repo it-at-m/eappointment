@@ -93,7 +93,9 @@ class ExceptionService
                 break;
             case 'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed':
                 $error = self::getError('noAppointmentForThisScope');
-
+                break;
+            case 'BO\\Zmsdb\\Exception\\CalendarWithoutScopes':
+                $error = self::getError('noAppointmentForThisScope');
                 break;
             // Other entity exceptions
             case 'BO\\Zmsapi\\Exception\\Department\\DepartmentNotFound':
