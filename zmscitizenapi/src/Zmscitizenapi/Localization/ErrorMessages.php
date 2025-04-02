@@ -137,12 +137,12 @@ class ErrorMessages
         ],
         'appointmentNotAvailable' => [
             'errorCode' => 'appointmentNotAvailable',
-            'statusCode' => self::HTTP_NOT_FOUND,
+            'statusCode' => self::HTTP_OK,
             'errorMessage' => 'The selected appointment is unfortunately no longer available.'
         ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',
-            'statusCode' => self::HTTP_NOT_FOUND,
+            'statusCode' => self::HTTP_OK,
             'errorMessage' => 'No available days found for the given criteria.'
         ],
         'captchaVerificationError' => [
@@ -252,10 +252,10 @@ class ErrorMessages
             'errorMessage' => 'Invalid authentication key.',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE
         ],
-        'noAppointmentsAtLocation' => [
-            'errorCode' => 'noAppointmentsAtLocation',
-            'errorMessage' => 'No appointments available at the specified location.',
-            'statusCode' => self::HTTP_NOT_FOUND
+        'noAppointmentForThisScope' => [
+            'errorCode' => 'noAppointmentForThisScope',
+            'errorMessage' => 'Unfortunately, there are currently no available appointments at this location.',
+            'statusCode' => self::HTTP_OK
         ],
         'tooManyAppointmentsWithSameMail' => [
             'errorCode' => 'tooManyAppointmentsWithSameMail',
@@ -418,19 +418,19 @@ class ErrorMessages
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'customTextfield muss eine Zeichenkette sein.'
         ],
-        'appointmentNotAvailable' => [
-            'errorCode' => 'appointmentNotAvailable',
-            'statusCode' => self::HTTP_NOT_FOUND,
-            'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.'
-        ],
         'appointmentCanNotBeCanceled' => [
             'errorCode' => 'appointmentCanNotBeCanceled',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE,
             'errorMessage' => 'Der von Ihnen gewählte Termin kann leider nicht mehr gelöscht werden.'
         ],
+        'appointmentNotAvailable' => [
+            'errorCode' => 'appointmentNotAvailable',
+            'statusCode' => self::HTTP_OK,
+            'errorMessage' => 'Der von Ihnen gewählte Termin ist leider nicht mehr verfügbar.'
+        ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',
-            'statusCode' => self::HTTP_NOT_FOUND,
+            'statusCode' => self::HTTP_OK,
             'errorMessage' => 'Keine verfügbaren Termine für dieses Datum.'
         ],
         'captchaVerificationError' => [
@@ -540,10 +540,10 @@ class ErrorMessages
             'errorMessage' => 'Ungültiger Authentifizierungsschlüssel.',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE
         ],
-        'noAppointmentsAtLocation' => [
-            'errorCode' => 'noAppointmentsAtLocation',
-            'errorMessage' => 'Keine Termine am angegebenen Standort verfügbar.',
-            'statusCode' => self::HTTP_NOT_FOUND
+        'noAppointmentForThisScope' => [
+            'errorCode' => 'noAppointmentForThisScope',
+            'errorMessage' => 'An diesem Standort gibt es aktuell leider keine freien Termine.',
+            'statusCode' => self::HTTP_OK
         ],
         'tooManyAppointmentsWithSameMail' => [
             'errorCode' => 'tooManyAppointmentsWithSameMail',
@@ -712,12 +712,12 @@ class ErrorMessages
         ],
         'appointmentNotAvailable' => [
             'errorCode' => 'appointmentNotAvailable',
-            'statusCode' => self::HTTP_NOT_FOUND,
+            'statusCode' => self::HTTP_OK,
             'errorMessage' => 'На жаль, обраний запис більше недоступний.'
         ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',
-            'statusCode' => self::HTTP_NOT_FOUND,
+            'statusCode' => self::HTTP_OK,
             'errorMessage' => 'Немає доступних днів за вказаними критеріями.'
         ],
         'captchaVerificationError' => [
@@ -825,10 +825,10 @@ class ErrorMessages
             'errorMessage' => 'Недійсний ключ автентифікації.',
             'statusCode' => self::HTTP_NOT_ACCEPTABLE
         ],
-        'noAppointmentsAtLocation' => [
-            'errorCode' => 'noAppointmentsAtLocation',
-            'errorMessage' => 'Немає доступних записів у вказаному місці.',
-            'statusCode' => self::HTTP_NOT_FOUND
+        'noAppointmentForThisScope' => [
+            'errorCode' => 'noAppointmentForThisScope',
+            'errorMessage' => 'На жаль, наразі на цій локації немає вільних записів.',
+            'statusCode' => self::HTTP_OK
         ],
         'tooManyAppointmentsWithSameMail' => [
             'errorCode' => 'tooManyAppointmentsWithSameMail',

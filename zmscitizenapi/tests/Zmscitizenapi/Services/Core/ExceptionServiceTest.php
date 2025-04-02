@@ -127,7 +127,7 @@ class ExceptionServiceTest extends TestCase
             ],
             'AppointmentsMissed' => [
                 'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed',
-                'noAppointmentsAtLocation'
+                'noAppointmentForThisScope'
             ]
         ];
     }
