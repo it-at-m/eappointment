@@ -40,7 +40,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /var/www/.composer/cache/files
-          key: ${{ runner.os }}-php-${{ matrix.php_version }}-composer-${{ matrix.module }}-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-php-${{ matrix.php_version }}-composer-${{ matrix.module }}-${{ hashFiles(format('{0}/composer.lock', matrix.module)) || github.sha }}
           restore-keys: |
             ${{ runner.os }}-php-${{ matrix.php_version }}-composer-${{ matrix.module }}-
             ${{ runner.os }}-php-${{ matrix.php_version }}-composer-
@@ -157,7 +157,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /var/www/.composer/cache/files
-          key: ${{ runner.os }}-php-8.0-composer-zmsapi-${{ hashFiles('zmsapi/composer.lock', 'zmsdb/composer.lock') }}
+          key: ${{ runner.os }}-php-8.0-composer-zmsapi-${{ hashFiles('zmsapi/composer.lock') || hashFiles('zmsdb/composer.lock') || github.sha }}
           restore-keys: |
             ${{ runner.os }}-php-8.0-composer-zmsapi-
             ${{ runner.os }}-php-8.0-composer-
@@ -235,7 +235,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /var/www/.composer/cache/files
-          key: ${{ runner.os }}-php-8.0-composer-zmsdb-${{ hashFiles('zmsdb/composer.lock') }}
+          key: ${{ runner.os }}-php-8.0-composer-zmsdb-${{ hashFiles('zmsdb/composer.lock') || github.sha }}
           restore-keys: |
             ${{ runner.os }}-php-8.0-composer-zmsdb-
             ${{ runner.os }}-php-8.0-composer-
@@ -303,7 +303,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.composer/cache/files
-          key: ${{ runner.os }}-php-8.0-composer-zmsclient-${{ hashFiles('zmsclient/composer.lock') }}
+          key: ${{ runner.os }}-php-8.0-composer-zmsclient-${{ hashFiles('zmsclient/composer.lock') || github.sha }}
           restore-keys: |
             ${{ runner.os }}-php-8.0-composer-zmsclient-
             ${{ runner.os }}-php-8.0-composer-
