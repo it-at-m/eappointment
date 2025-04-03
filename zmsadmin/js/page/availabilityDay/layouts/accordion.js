@@ -139,13 +139,18 @@ class Accordion extends Component
                                 className="accordion__trigger"
                                 aria-expanded={accordionExpanded}
                                 style={(() => {
-                                    switch (availability?.kind) {
-                                        case 'exclusion':
-                                            return { backgroundColor: '#FFE05B' };
-                                       
-                                        default:
-                                            return null; // Keep default for 'default' and null/undefined
+                                    // Helper function to check description text
+                                    const hasDescriptionText = (text) =>
+                                        availability?.description?.includes(text);
+
+                                    // Check both kind and description text
+                                    if (availability?.kind === 'origin' || hasDescriptionText('Regelserie')) {
+                                        return { backgroundColor: '#CCE5FF' };
                                     }
+                                    if (availability?.kind === 'exclusion' || hasDescriptionText('Ausnahme')) {
+                                        return { backgroundColor: '#FFE082' };
+                                    }
+                                    return null;
                                 })()}
                             >
                                 <span className="accrordion__title">{title}</span>
