@@ -76,16 +76,13 @@ jobs:
               ;;
             *)
               echo "Running tests WITH coverage for ${{ matrix.module }}"
-              # Run tests with coverage enabled
-              php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
-              TEST_RESULT=$?
-              # Generate detailed coverage reports
-              echo "Generating coverage reports..."
+              # Run tests with coverage enabled AND generate reports in one run
               php -dmemory_limit=-1 \
                 ./vendor/bin/phpunit -c phpunit.xml \
                 --coverage-html coverage/html \
                 --coverage-clover coverage/clover.xml \
-                --log-junit coverage/junit.xml || true
+                --log-junit coverage/junit.xml
+              TEST_RESULT=$?
               ;;
           esac
           
