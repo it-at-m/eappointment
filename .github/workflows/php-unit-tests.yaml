@@ -35,19 +35,17 @@ jobs:
           echo "zend_extension=xdebug.so" > /tmp/php/conf.d/xdebug.ini
           echo "xdebug.mode=coverage" >> /tmp/php/conf.d/xdebug.ini
           echo "xdebug.start_with_request=yes" >> /tmp/php/conf.d/xdebug.ini
-          
-      - name: Cache Composer dependencies
+
+      - name: Cache Composer packages
         uses: actions/cache@v3
         with:
-          path: /tmp/composer-cache
-          key: ${{ runner.os }}-php${{ matrix.php_version }}-composer-${{ matrix.module }}-${{ hashFiles(format('{0}/composer.lock', matrix.module)) }}
+          path: /var/www/.composer/cache/files
+          key: ${{ runner.os }}-php-${{ matrix.php_version }}-composer-${{ matrix.module }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-php${{ matrix.php_version }}-composer-${{ matrix.module }}-
-            ${{ runner.os }}-php${{ matrix.php_version }}-composer-
+            ${{ runner.os }}-php-${{ matrix.php_version }}-composer-${{ matrix.module }}-
+            ${{ runner.os }}-php-${{ matrix.php_version }}-composer-
 
       - name: Install Composer Dependencies
-        env:
-          COMPOSER_CACHE_DIR: /tmp/composer-cache
         run: |
           set -e
           cd "${{ matrix.module }}"
@@ -154,25 +152,23 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+        
+      - name: Cache Composer packages
+        uses: actions/cache@v3
+        with:
+          path: /var/www/.composer/cache/files
+          key: ${{ runner.os }}-php-8.0-composer-zmsapi-${{ hashFiles('zmsapi/composer.lock', 'zmsdb/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-8.0-composer-zmsapi-
+            ${{ runner.os }}-php-8.0-composer-
+            
       - name: Install python3
         run: |
           apt update
           apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
-        
-      - name: Cache Composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: /tmp/composer-cache
-          key: ${{ runner.os }}-php8.0-composer-zmsapi-zmsdb-${{ hashFiles('zmsapi/composer.lock', 'zmsdb/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php8.0-composer-zmsapi-zmsdb-
-            ${{ runner.os }}-php8.0-composer-
-            
       - name: Install Composer Dependencies
-        env:
-          COMPOSER_CACHE_DIR: /tmp/composer-cache
         run: |
           modules=('zmsapi' 'zmsdb')
           for module in "${modules[@]}"; do
@@ -180,7 +176,6 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
-        
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
@@ -235,25 +230,23 @@ jobs:
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@main
+        
+      - name: Cache Composer packages
+        uses: actions/cache@v3
+        with:
+          path: /var/www/.composer/cache/files
+          key: ${{ runner.os }}-php-8.0-composer-zmsdb-${{ hashFiles('zmsdb/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-8.0-composer-zmsdb-
+            ${{ runner.os }}-php-8.0-composer-
+            
       - name: Install python3
         run: |
           apt update
           apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
-        
-      - name: Cache Composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: /tmp/composer-cache
-          key: ${{ runner.os }}-php8.0-composer-zmsdb-${{ hashFiles('zmsdb/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php8.0-composer-zmsdb-
-            ${{ runner.os }}-php8.0-composer-
-            
       - name: Install Composer Dependencies
-        env:
-          COMPOSER_CACHE_DIR: /tmp/composer-cache
         run: |
           modules=('zmsdb')
           for module in "${modules[@]}"; do
@@ -261,7 +254,6 @@ jobs:
             (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
           done
         shell: bash
-        
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
@@ -307,14 +299,14 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
           
-      - name: Cache Composer dependencies
+      - name: Cache Composer packages
         uses: actions/cache@v3
         with:
           path: ~/.composer/cache/files
-          key: ${{ runner.os }}-php8.0-composer-zmsclient-${{ hashFiles('zmsclient/composer.lock') }}
+          key: ${{ runner.os }}-php-8.0-composer-zmsclient-${{ hashFiles('zmsclient/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-php8.0-composer-zmsclient-
-            ${{ runner.os }}-php8.0-composer-
+            ${{ runner.os }}-php-8.0-composer-zmsclient-
+            ${{ runner.os }}-php-8.0-composer-
 
       - name: Install Composer Dependencies
         run: |
