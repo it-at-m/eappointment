@@ -202,6 +202,11 @@ class ErrorMessages
             'errorMessage' => 'Scope not found.',
             'statusCode' => self::HTTP_NOT_FOUND
         ],
+        'templateRenderingError' => [
+            'errorCode' => 'templateError',
+            'errorMessage' => 'An error occurred while rendering the email template. Please contact support.',
+            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR
+        ],
         'processInvalid' => [
             'errorCode' => 'processInvalid',
             'errorMessage' => 'The process data is invalid.',
@@ -490,6 +495,11 @@ class ErrorMessages
             'errorMessage' => 'Bereich nicht gefunden.',
             'statusCode' => self::HTTP_NOT_FOUND
         ],
+        'templateRenderingError' => [
+            'errorCode' => 'templateError',
+            'errorMessage' => 'Bei der Darstellung der E-Mail-Vorlage ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Support.',
+            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR
+        ],
         'processInvalid' => [
             'errorCode' => 'processInvalid',
             'errorMessage' => 'Die Prozessdaten sind ungültig.',
@@ -774,6 +784,11 @@ class ErrorMessages
             'errorCode' => 'scopeNotFound',
             'errorMessage' => 'Область не знайдено.',
             'statusCode' => self::HTTP_NOT_FOUND
+        ],
+        'templateRenderingError' => [
+            'errorCode' => 'templateError',
+            'errorMessage' => 'Під час рендерингу шаблону електронної пошти сталася помилка. Будь ласка, зверніться до служби підтримки.',
+            'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR
         ],
         'processInvalid' => [
             'errorCode' => 'processInvalid',

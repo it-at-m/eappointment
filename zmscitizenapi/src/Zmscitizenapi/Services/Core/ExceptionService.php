@@ -93,11 +93,9 @@ class ExceptionService
                 break;
             case 'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed':
                 $error = self::getError('noAppointmentForThisScope');
-
                 break;
             case 'BO\\Zmsdb\\Exception\\CalendarWithoutScopes':
                 $error = self::getError('noAppointmentForThisScope');
-
                 break;
             // Other entity exceptions
             case 'BO\\Zmsapi\\Exception\\Department\\DepartmentNotFound':
@@ -127,6 +125,10 @@ class ExceptionService
             case 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound':
                 $error = self::getError('sourceNotFound');
 
+                break;
+
+            case $e instanceof \Twig\Error\RuntimeError:
+                $error = self::getError('templateRenderingError');
                 break;
             // Use original message for unmapped exceptions
             default:
