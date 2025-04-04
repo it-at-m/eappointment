@@ -33,8 +33,5 @@ composer.lock
 /cache/
 *.cache
 
-# Config
-/config.php
-
 # Logs
 *.log
