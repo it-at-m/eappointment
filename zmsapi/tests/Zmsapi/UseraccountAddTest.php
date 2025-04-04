@@ -157,34 +157,6 @@ class UseraccountAddTest extends Base
         ], []);
     }
 
-    // public function testNoDepartments()
-    // {
-    //     $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
-    //     $this->expectExceptionMessage('W\u00e4hlen Sie mindestens eine Beh\u00f6rde aus.');
-    //     $this->expectExceptionCode(400);
-    //     $this->setWorkstation()->getUseraccount()->setRights('useraccount');
-    //     $this->render([], [
-    //         '__body' => '{
-    //             "rights": {
-    //             "availability": 0,
-    //             "basic": 0,
-    //             "cluster": 0,
-    //             "department": 0,
-    //             "organisation": 0,
-    //             "scope": 0,
-    //             "sms": 0,
-    //             "superuser": 0,
-    //             "ticketprinter": 0,
-    //             "useraccount": 1
-    //           },
-    //           "id": "unittest",
-    //           "email": "unittest@berlinonline.de",
-    //           "lastLogin": 1459461600,
-    //           "password": "unittest"
-    //         }'
-    //     ], []);
-    // }
-
     public function testMissingLogin()
     {
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingLogin');
