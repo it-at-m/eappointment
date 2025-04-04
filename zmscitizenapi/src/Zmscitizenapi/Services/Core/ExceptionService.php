@@ -30,7 +30,7 @@ class ExceptionService
      */
     public static function handleException(\Exception $e): never
     {
-        $exceptionName = get_class($e);
+        $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
         $error = null;
 
         switch ($exceptionName) {
