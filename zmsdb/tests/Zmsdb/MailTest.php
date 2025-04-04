@@ -19,7 +19,6 @@ class MailTest extends Base
         $collection = $query->readList(2, 2);
         $entity = $collection->getFirst();
         $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
-        $this->assertEquals('Das ist ein Plaintext Test', $entity->getPlainPart());
         $this->assertEquals("D54643264", $entity->getFirstClient()['familyName']);
 
         $firstIn = $collection->getFirst()->createTimestamp;

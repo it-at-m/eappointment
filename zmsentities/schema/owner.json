@@ -28,7 +28,15 @@
             "$ref": "contact.json"
         },
         "id": {
-            "type": "number"
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
         },
         "name": {
             "type": "string"

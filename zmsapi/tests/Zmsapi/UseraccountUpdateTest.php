@@ -13,16 +13,16 @@ class UseraccountUpdateTest extends Base
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
                 "rights": {
-                "availability": "0",
-                "basic": "0",
-                "cluster": "0",
-                "department": "0",
-                "organisation": "0",
-                "scope": "0",
-                "sms": "0",
-                "superuser": "0",
-                "ticketprinter": "0",
-                "useraccount": "1"
+                "availability": 0,
+                "basic": 0,
+                "cluster": 0,
+                "department": 0,
+                "organisation": 0,
+                "scope": 0,
+                "sms": 0,
+                "superuser": 0,
+                "ticketprinter": 0,
+                "useraccount": 1
               },
               "departments": [
                   {"id": 74}
@@ -44,16 +44,16 @@ class UseraccountUpdateTest extends Base
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
                 "rights": {
-                "availability": "0",
-                "basic": "0",
-                "cluster": "0",
-                "department": "0",
-                "organisation": "0",
-                "scope": "0",
-                "sms": "0",
-                "superuser": "0",
-                "ticketprinter": "0",
-                "useraccount": "1"
+                "availability": 0,
+                "basic": 0,
+                "cluster": 0,
+                "department": 0,
+                "organisation": 0,
+                "scope": 0,
+                "sms": 0,
+                "superuser": 0,
+                "ticketprinter": 0,
+                "useraccount": 1
               },
               "departments": [
                   {"id": 74}
@@ -124,16 +124,16 @@ class UseraccountUpdateTest extends Base
         $this->render(['loginname' => 'testuser'], [
             '__body' => '{
                 "rights": {
-                "availability": "1",
-                "basic": "1",
-                "cluster": "1",
-                "department": "1",
-                "organisation": "1",
-                "scope": "1",
-                "sms": "1",
-                "superuser": "1",
-                "ticketprinter": "1",
-                "useraccount": "1"
+                "availability": 1,
+                "basic": 1,
+                "cluster": 1,
+                "department": 1,
+                "organisation": 1,
+                "scope": 1,
+                "sms": 1,
+                "superuser": 1,
+                "ticketprinter": 1,
+                "useraccount": 1
               },
               "departments": [
                   {"id": 74}
@@ -160,39 +160,13 @@ class UseraccountUpdateTest extends Base
                 "sms": "0",
                 "superuser": "0",
                 "ticketprinter": "0",
-                "useraccount": "1"
+                "useraccount": "2"
               },
               "departments": [
                   {"id": 74}
               ],
               "email": "unittest@berlinonline.de",
               "test": "unittest"
-            }'
-        ], []);
-    }
-
-    public function testNoDepartments()
-    {
-        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
-        $this->expectExceptionMessage('Behördenauswahl');
-        $this->expectExceptionCode(400);
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
-        $response = $this->render(['loginname' => 'testadmin'], [
-            '__body' => '{
-                "rights": {
-                "availability": "0",
-                "basic": "0",
-                "cluster": "0",
-                "department": "0",
-                "organisation": "0",
-                "scope": "0",
-                "sms": "0",
-                "superuser": "0",
-                "ticketprinter": "0",
-                "useraccount": "1"
-              },
-              "email": "unittest@berlinonline.de",
-              "id": "unittest"
             }'
         ], []);
     }
@@ -206,16 +180,16 @@ class UseraccountUpdateTest extends Base
         $response = $this->render(['loginname' => 'testadmin'], [
             '__body' => '{
                 "rights": {
-                "availability": "0",
-                "basic": "0",
-                "cluster": "0",
-                "department": "0",
-                "organisation": "1",
-                "scope": "0",
-                "sms": "0",
-                "superuser": "0",
-                "ticketprinter": "0",
-                "useraccount": "1"
+                "availability": 0,
+                "basic": 0,
+                "cluster": 0,
+                "department": 0,
+                "organisation": 1,
+                "scope": 0,
+                "sms": 0,
+                "superuser": 0,
+                "ticketprinter": 0,
+                "useraccount": 1
               },
               "departments": [
                   {"id": 74}

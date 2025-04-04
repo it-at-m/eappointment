@@ -73,14 +73,14 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 "id" => 0,
                 'provider' => [
                     'contact'=> null,
-                    'id'=> null,
+                    'id'=> 0,
                     'lat'=> null,
                     'lon'=> null,
-                    'name'=> null,
-                    'source'=> null
+                    'name'=> '',
+                    'source'=> 'dldb'
                 ],
-                "shortName" => null,
-                "emailFrom" => null,
+                "shortName" => '',
+                "emailFrom" => '',
                 'emailRequired' => null,
                 "telephoneActivated" => null,
                 "telephoneRequired" => null,

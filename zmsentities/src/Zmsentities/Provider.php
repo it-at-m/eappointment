@@ -4,9 +4,18 @@ namespace BO\Zmsentities;
 
 class Provider extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "provider.json";
+
+    public function getDefaults()
+    {
+        return [
+            'id' => 0,
+            'name' => '',
+            'source' => 'dldb'
+        ];
+    }
 
     public function addData($input)
     {

@@ -24,7 +24,15 @@
             "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
             "properties": {
                 "refreshInterval": {
-                    "type": "number",
+                    "oneOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                        }
+                    ],
                     "description": "default time in seconds for next check if an emergency occurred",
                     "default": 5
                 }
@@ -34,11 +42,30 @@
             "type" : "object",
             "properties" : {
                 "absage" : {
-                    "type" : ["boolean","number"],
+                    "oneOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^[01]$"
+                        }
+                    ],
                     "description" : ""
                 },
                 "benachrichtigungsfrist" : {
-                    "type" : "number",
+                    "oneOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                        }
+                    ],
                     "description" : ""
                 },
                 "confirmationContent" : {
@@ -50,11 +77,30 @@
                     "description" : "calculated cost of one notification"
                 },
                 "eMailkonfigurierbar" : {
-                    "type" : ["boolean","number"],
+                    "oneOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^[01]$"
+                        }
+                    ],
                     "description" : ""
                 },
                 "erinnerungsvorlauf" : {
-                    "type" : "number",
+                    "oneOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                        }
+                    ],
                     "description" : ""
                 },
                 "gateway" : {

@@ -77,7 +77,7 @@ class ProcessFinishedTest extends Base
         $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '{
-                "status": "confirmed"
+                "status": "unvalid"
             }'
         ], []);
     }

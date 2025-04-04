@@ -14,7 +14,7 @@
                 "postalCode": "12345",
                 "region": "Berlin",
                 "street": "Musterstraße",
-                "streetNumber": 123
+                "streetNumber": "123"
             }
         }
     ],
