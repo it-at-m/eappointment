@@ -6,6 +6,9 @@ require(__DIR__ . '/vendor/autoload.php');
 date_default_timezone_set('Europe/Berlin');
 
 define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
+define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
+define('ZMS_MODULE_NAME', 'zmsdb');
+
 // Use Docker environment settings, if exists
 if (getenv('MYSQL_PORT')) {
     $host = parse_url(getenv('MYSQL_PORT'), PHP_URL_HOST);
@@ -34,8 +37,12 @@ if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
 \BO\Zmsdb\Source\Dldb::$importPath = 'tests/Zmsdb/fixtures/';
 
 if (getenv('ZMS_TIMEADJUST')) {
-
     class App {
+        /**
+         * Name of the module
+         */
+        const IDENTIFIER = ZMS_IDENTIFIER;
+        const ZMS_MODULE_NAME = ZMS_MODULE_NAME;
         public static $now;
     }
     App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
