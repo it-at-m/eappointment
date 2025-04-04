@@ -20,27 +20,15 @@ class Validator
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
         $this->validator = new OpisValidator();
-
+        
         $formats = $this->validator->parser()->getFormatResolver();
         $formats->registerCallable("array", "sameValues", function (array $data): bool {
             return count($data) === 2 && $data[0] === $data[1];
         });
 
         $this->loadSchemas();
-
         $schemaJson = json_decode(json_encode($schemaObject->toJsonObject()));
         $data = json_decode(json_encode($data));
-
-        // Debugging
-        // var_dump("Schema:", json_encode($schemaJson, JSON_PRETTY_PRINT));
-        // var_dump("******************************************************************************************");
-        // var_dump("Data:", json_encode($data, JSON_PRETTY_PRINT));
-        // var_dump("Data:", substr(json_encode($data, JSON_PRETTY_PRINT), 0, 100));
-
-
-        // Set max errors and validate
-        $this->validator->setMaxErrors(1000);
-        $this->validator->setStopAtFirstError(false);
         $this->validationResult = $this->validator->validate($data, $schemaJson);
     }
 
