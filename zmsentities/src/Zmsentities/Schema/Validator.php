@@ -20,7 +20,7 @@ class Validator
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
         $this->validator = new OpisValidator();
-        
+
         $formats = $this->validator->parser()->getFormatResolver();
         $formats->registerCallable("array", "sameValues", function (array $data): bool {
             return count($data) === 2 && $data[0] === $data[1];
