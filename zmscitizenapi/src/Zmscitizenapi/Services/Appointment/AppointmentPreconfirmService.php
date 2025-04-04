@@ -24,6 +24,7 @@ class AppointmentPreconfirmService
             return $reservedProcess;
         }
 
+        // Todo: check if the email template preconfirmed exists for the scope before submitting and sending
         $result = $this->preconfirmProcess($reservedProcess);
         if (is_array($result) && !empty($result['errors'])) {
             return $result;

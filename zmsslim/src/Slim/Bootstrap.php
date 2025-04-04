@@ -88,7 +88,7 @@ class Bootstrap
                 'client_ip' => $_SERVER['REMOTE_ADDR'] ?? '',
                 'remote_addr' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '',
                 'remote_user' => '',
-                'application' => 'zmsslim',
+                'application' => defined('\App::IDENTIFIER') ? \App::IDENTIFIER : 'zmsslim',
                 'message' => $record['message'],
                 'level' => $record['level_name'],
                 'context' => $record['context'],
