@@ -16,7 +16,8 @@ class Application
     /**
      * Name of the application
      */
-    const IDENTIFIER = 'Zmsmessaging';
+    const IDENTIFIER = 'zms';
+    const MODULE_NAME = 'zmsmessaging';
 
     const DEBUG = false;
 

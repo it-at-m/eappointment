@@ -20,7 +20,9 @@ class Application extends \BO\Slim\Application
      * Name of the application
      *
      */
-    const IDENTIFIER = 'Zmsstatistic';
+    const IDENTIFIER = 'zms';
+
+    const MODULE_NAME = 'zmsstatistic';
 
     const DEBUG = false;
 
