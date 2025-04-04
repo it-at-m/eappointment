@@ -25,6 +25,11 @@ class ErrorMessages
     private const FALLBACK_LANGUAGE = 'EN';
 // English messages
     public const EN = [
+        'zmsClientCommunicationError' => [
+            'errorCode' => 'zmsClientCommunicationError',
+            'errorMessage' => 'The service is temporarily unavailable. Please try again later.',
+            'statusCode' => 503
+        ],
         'notImplemented' => [
             'errorCode' => 'notImplemented',
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
@@ -313,6 +318,11 @@ class ErrorMessages
     ];
 // German messages
     public const DE = [
+        'zmsClientCommunicationError' => [
+            'errorCode' => 'zmsClientCommunicationError',
+            'errorMessage' => 'Der Dienst ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.',
+            'statusCode' => 503
+        ],
         'notImplemented' => [
             'errorCode' => 'notImplemented',
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
@@ -600,6 +610,11 @@ class ErrorMessages
 
     ];
     public const UA = [
+        'zmsClientCommunicationError' => [
+            'errorCode' => 'zmsClientCommunicationError',
+            'errorMessage' => 'Сервіс тимчасово недоступний. Будь ласка, спробуйте пізніше.',
+            'statusCode' => 503
+        ],
         'notImplemented' => [
             'errorCode' => 'notImplemented',
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
