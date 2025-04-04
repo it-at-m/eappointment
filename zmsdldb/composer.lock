@@ -232,7 +232,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "cfa4aa15fe279d803ef6b7744fc844a7d8371068"
+                "reference": "5d436d0c27c57fcf3686bd2c0cf9ed58530ae599"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -267,10 +267,8 @@
                 "command": [
                     "bin/configure"
                 ],
-                "prepare-dirs": [
-                    "mkdir -p public/_test/assets && mkdir -p public/doc/assets"
-                ],
                 "wget-files": [
+                    "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
                     "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
                     "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
                     "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui.css -O public/_test/assets/swagger-ui.css",
@@ -278,11 +276,9 @@
                     "sha256sum --status -c checksums.txt"
                 ],
                 "post-install-cmd": [
-                    "@prepare-dirs",
                     "@wget-files"
                 ],
                 "post-update-cmd": [
-                    "@prepare-dirs",
                     "@wget-files"
                 ]
             },
@@ -307,7 +303,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "f37d3a5ad27043e12c9d5ebd3dc40c7b660456d6"
+                "reference": "249f1aa96e13e3c2379353bf33539f0174fced53"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -330,7 +326,7 @@
                 "phpmd/phpmd": "@stable",
                 "phpspec/prophecy-phpunit": "^2.0.0",
                 "phpunit/phpunit": "^9.5.4",
-                "squizlabs/php_codesniffer": "*"
+                "squizlabs/php_codesniffer": "^3.5.8"
             },
             "type": "library",
             "autoload": {
@@ -365,16 +361,13 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "0872c93acc82513b7716e7815659be8537e81a4f"
+                "reference": "880ca9f83e4c65ca106a8d80c2de1375b2cdd86a"
             },
             "require": {
                 "aura/sql": "^4",
                 "eappointment/mellon": "@dev",
-                "eappointment/zmsapi": "@dev",
-                "eappointment/zmsclient": "@dev",
                 "eappointment/zmsdldb": "@dev",
                 "eappointment/zmsentities": "@dev",
-                "eappointment/zmsslim": "@dev",
                 "ext-intl": "*",
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
@@ -385,14 +378,13 @@
             },
             "require-dev": {
                 "mockery/mockery": "^0.9.4",
-                "phpmd/phpmd": "@stable",
+                "phpmd/phpmd": "^2.3",
                 "phpunit/phpunit": "^9.5.4",
-                "squizlabs/php_codesniffer": "^3.5"
+                "squizlabs/php_codesniffer": "^2.4"
             },
             "bin": [
                 "bin/archiveStatisticData",
                 "bin/anonymizeStatisticData",
-                "bin/calculateDailyWaitingStatistic",
                 "bin/calculateSlots",
                 "bin/calculateDayOffList",
                 "bin/deallocateAppointmentData",
@@ -6848,16 +6840,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.11.2",
+            "version": "3.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079"
+                "reference": "ea16a1f3719783345febd3aab41beb55c8c84bfd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/1368f4a58c3c52114b86b1abe8f4098869cb0079",
-                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/ea16a1f3719783345febd3aab41beb55c8c84bfd",
+                "reference": "ea16a1f3719783345febd3aab41beb55c8c84bfd",
                 "shasum": ""
             },
             "require": {
@@ -6922,9 +6914,13 @@
                 {
                     "url": "https://opencollective.com/php_codesniffer",
                     "type": "open_collective"
+                },
+                {
+                    "url": "https://thanks.dev/u/gh/phpcsstandards",
+                    "type": "thanks_dev"
                 }
             ],
-            "time": "2024-12-11T16:04:26+00:00"
+            "time": "2025-04-04T12:57:55+00:00"
         },
         {
             "name": "symfony/config",
