@@ -30,9 +30,28 @@ class ExceptionService
      */
     public static function handleException(\Exception $e): never
     {
-        $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
+        $exceptionName = get_class($e);
         $error = null;
+
         switch ($exceptionName) {
+            // ZmsClient exception
+            case 'BO\\Zmsclient\\Exception':
+                $error = self::getError('zmsClientCommunicationError');
+
+                break;
+            // Missing mail template exceptions
+            case 'Twig\\Error\\RuntimeError':
+                $error = self::getError('mailNotFound');
+
+                break;
+            case 'Twig\\Error\\LoaderError':
+                $error = self::getError('mailNotFound');
+
+                break;
+            case 'BO\\Zmsapi\\Exception\\Mail\\MailNotFound':
+                $error = self::getError('mailNotFound');
+
+                break;
             // Process exceptions
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound':
                 $error = self::getError('appointmentNotFound');
@@ -102,10 +121,6 @@ class ExceptionService
                 $error = self::getError('departmentNotFound');
 
                 break;
-            case 'BO\\Zmsapi\\Exception\\Mail\\MailNotFound':
-                $error = self::getError('mailNotFound');
-
-                break;
             case 'BO\\Zmsapi\\Exception\\Organisation\\OrganisationNotFound':
                 $error = self::getError('organisationNotFound');
 
@@ -127,9 +142,6 @@ class ExceptionService
 
                 break;
 
-            case $e instanceof \Twig\Error\RuntimeError:
-                $error = self::getError('templateRenderingError');
-                break;
             // Use original message for unmapped exceptions
             default:
                 $error = [
