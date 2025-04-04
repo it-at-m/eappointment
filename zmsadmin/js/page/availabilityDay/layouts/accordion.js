@@ -139,16 +139,14 @@ class Accordion extends Component
                                 className="accordion__trigger"
                                 aria-expanded={accordionExpanded}
                                 style={(() => {
-                                    // Helper function to check description text
                                     const hasDescriptionText = (text) =>
                                         availability?.description?.includes(text);
 
-                                    // Check both kind and description text
                                     if (availability?.kind === 'origin' || hasDescriptionText('Regelserie')) {
                                         return { backgroundColor: '#CCE5FF' };
                                     }
                                     if (availability?.kind === 'exclusion' || hasDescriptionText('Ausnahme')) {
-                                        return { backgroundColor: '#FFE082' };
+                                        return { backgroundColor: '#FFE05B' };
                                     }
                                     return null;
                                 })()}
@@ -156,7 +154,15 @@ class Accordion extends Component
                                 <span className="accrordion__title">{title}</span>
                             </button>
                         </h3>
-                        <div className={accordionExpanded ? "accordion__panel opened" : "accordion__panel"} hidden={accordionExpanded ? "" : "hidden"}>
+                        <div 
+                            className={accordionExpanded ? "accordion__panel opened" : "accordion__panel"}
+                            hidden={accordionExpanded ? "" : "hidden"} 
+                            style={
+                                availability?.kind === 'exclusion' || availability?.description?.includes('Ausnahme')
+                                    ? { backgroundColor: '#FFF7D4' }
+                                    : null
+                            } 
+                        >
                             <AvailabilityForm
                                 data={availability}
                                 selectedAvailability={this.props.data}
