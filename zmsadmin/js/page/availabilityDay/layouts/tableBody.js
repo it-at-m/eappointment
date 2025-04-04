@@ -89,61 +89,85 @@ const renderTable = (onDelete, onSelect, onAbort, availabilityList, data) => {
             );
 
             return (
-                <tr key={key} style={isSelected ? {backgroundColor: '#f9f9f9'} : null}>
-                    <td className="center" style={{"whiteSpace": "nowrap"}}>
-                        <span style={{ marginRight: "5px" }}>
-                            <a href="#" className="icon" aria-label="Bearbeiten" title={titleEdit} onClick={onClickEdit}>
-                                <i className="fas fa-pencil-alt" aria-hidden="true"></i>
-                            </a>
-                        </span>
-                        <span>
-                            { disabled ?
-                            <i className="far fa-trash-alt" title={titleDisabled}></i> : 
-                            <a href="#" className="icon" title={titleDelete} aria-label={titleDelete} onClick={onClickDelete}>
-                                <i className="far fa-trash-alt" aria-hidden="true"></i>
-                            </a>
-                            }
-                        </span>
-                        { disabled ?
-                        <span style={{ marginLeft: "5px" }}>
-                            <a href="#" className="icon" title={titleAbort} aria-label="abbrechen" onClick={onClickAbort}>
-                                <i className="fas fa-ban" aria-hidden="true"></i>
-                            </a>
-                        </span>
-                         : null
-                        }
-                    </td>
-                    <td>
-                        {availabilityWeekDay}
-                    </td>
-                    <td>
-                        {availabilityRepeat}
-                    </td>
-                    <td>
-                        {startDate}
-                    </td>
-                    <td>
-                        {endDate}
-                    </td>
-                    <td>
-                        {startTime} - {endTime}
-                    </td>
-                    <td>
-                        {availabilityType && availabilityType.name ? availabilityType.name : ""}
-                    </td>
-                    <td>
-                        {availability.slotTimeInMinutes}min
-                    </td>
-                    <td>
-                        {availability.workstationCount.intern}/{availability.workstationCount.callcenter}/{availability.workstationCount.public}
-                    </td>
-                    <td>
-                        {availability.bookable.startInDays}-{availability.bookable.endInDays}
-                    </td>
-                    <td>
-                        {availability.description ? availability.description : '-'}
-                    </td>
-                </tr>
+    <tr 
+        key={key} 
+        style={(() => {
+            const hasDescriptionText = (text) => 
+                availability?.description?.includes(text);
+
+            // Check if the row is selected
+            if (isSelected) {
+                return { backgroundColor: '#f9f9f9' };
+            }
+
+            // Check for origin or 'Regelserie' description
+            if (availability?.kind === 'origin' || hasDescriptionText('Regelserie')) {
+                return { backgroundColor: '#CCE5FF' };
+            }
+
+            // Check for exclusion or 'Ausnahme' description
+            if (availability?.kind === 'exclusion' || hasDescriptionText('Ausnahme')) {
+                return { backgroundColor: '#FFE05B' };
+            }
+
+            return null;
+        })()}
+        >
+            <td className="center" style={{ whiteSpace: "nowrap" }}>
+                <span style={{ marginRight: "5px" }}>
+                    <a href="#" className="icon" aria-label="Bearbeiten" title={titleEdit} onClick={onClickEdit}>
+                        <i className="fas fa-pencil-alt" aria-hidden="true"></i>
+                    </a>
+                </span>
+                <span>
+                    {disabled ?
+                        <i className="far fa-trash-alt" title={titleDisabled}></i> : 
+                        <a href="#" className="icon" title={titleDelete} aria-label={titleDelete} onClick={onClickDelete}>
+                            <i className="far fa-trash-alt" aria-hidden="true"></i>
+                        </a>
+                    }
+                </span>
+                {disabled ?
+                    <span style={{ marginLeft: "5px" }}>
+                        <a href="#" className="icon" title={titleAbort} aria-label="abbrechen" onClick={onClickAbort}>
+                            <i className="fas fa-ban" aria-hidden="true"></i>
+                        </a>
+                    </span>
+                    : null
+                }
+            </td>
+            <td>
+                {availabilityWeekDay}
+            </td>
+            <td>
+                {availabilityRepeat}
+            </td>
+            <td>
+                {startDate}
+            </td>
+            <td>
+                {endDate}
+            </td>
+            <td>
+                {startTime} - {endTime}
+            </td>
+            <td>
+                {availabilityType && availabilityType.name ? availabilityType.name : ""}
+            </td>
+            <td>
+                {availability.slotTimeInMinutes}min
+            </td>
+            <td>
+                {availability.workstationCount.intern}/{availability.workstationCount.callcenter}/{availability.workstationCount.public}
+            </td>
+            <td>
+                {availability.bookable.startInDays}-{availability.bookable.endInDays}
+            </td>
+            <td>
+                {availability.description ? availability.description : '-'}
+            </td>
+        </tr>
+
             )
         })
     }
