@@ -431,11 +431,11 @@ class ValidationServiceTest extends TestCase
         );
     }
 
-    public function testValidateNoAppointmentsAtLocation(): void
+    public function testValidatenoAppointmentForThisScope(): void
     {
-        $result = ValidationService::validateNoAppointmentsAtLocation();
+        $result = ValidationService::validatenoAppointmentForThisScope();
         $this->assertEquals(
-            ['errors' => [ErrorMessages::get('noAppointmentsAtLocation')]],
+            ['errors' => [ErrorMessages::get('noAppointmentForThisScope')]],
             $result
         );
     }

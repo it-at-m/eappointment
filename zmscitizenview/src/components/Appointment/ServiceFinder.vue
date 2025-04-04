@@ -17,6 +17,7 @@
           item-title="name"
           :label="t('serviceSearch')"
           :no-item-found-message="t('noServiceFound')"
+          :placeholder="t('serviceSelectionPlaceholder')"
         />
       </form>
       <div class="m-linklist-inline">

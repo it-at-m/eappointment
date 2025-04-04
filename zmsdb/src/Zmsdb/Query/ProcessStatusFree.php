@@ -30,7 +30,8 @@ class ProcessStatusFree extends Base
                   )
                 ) available,
                 IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) slotsRequired,
-                s.*
+                s.*,
+                cc.id
             FROM
                 calendarscope c
                 INNER JOIN slot s
@@ -42,7 +43,9 @@ class ProcessStatusFree extends Base
                     AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
                 INNER JOIN slot s2 on h.slotID = s2.slotID and s2.status = "free"
                 LEFT JOIN slot_process p ON h.slotID = p.slotID
+                LEFT JOIN closures cc ON (s.scopeID = cc.StandortID AND s.year = cc.year AND s.month = cc.month and s.day = cc.day)
             GROUP BY s.slotID, h.slotID
+            HAVING cc.id IS NULL
             ) AS tmp_ancestor
             GROUP BY slotID
             HAVING ancestorCount >= slotsRequired

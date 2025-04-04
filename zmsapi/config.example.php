@@ -45,10 +45,13 @@ if (getenv('MYSQL_PORT_RO')) {
     }
 }
 
+define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
+define('ZMS_MODULE_NAME', 'zmsapi');
+
 class App extends \BO\Zmsapi\Application
 {
     const APP_PATH = APP_PATH;
-    const IDENTIFIER = 'Zmsapi-ENV';
+    const IDENTIFIER = ZMS_IDENTIFIER;
     const DEBUG = false;
     const DB_ENABLE_WSREPSYNCWAIT = true;
     /**
@@ -76,6 +79,11 @@ class App extends \BO\Zmsapi\Application
      *
      */
     const TWIG_CACHE = '/cache/';
+
+    /**
+     * Name of the module
+     */
+    const MODULE_NAME = ZMS_MODULE_NAME;
 
     // Uncomment the following line for testing with fixtures
     // public static $data = "/vendor/bo/zmsdb/tests/Zmsdb/fixtures";

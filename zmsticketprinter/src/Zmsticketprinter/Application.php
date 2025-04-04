@@ -14,7 +14,9 @@ class Application extends \BO\Slim\Application
     /**
      * Name of the application
      */
-    const IDENTIFIER = 'Zmsticketprinter';
+    const IDENTIFIER = 'zms';
+
+    const MODULE_NAME = 'zmsticketprinter';
 
     const DEBUG = false;
 
