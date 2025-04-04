@@ -6,20 +6,20 @@
         "type": ["string", "null"],
         "description": "Site key for AltchaCaptcha integration"
       },
-      "captchaEndpoint": {
+      "captchaVerify": {
         "type": ["string", "null"],
         "description": "Endpoint for captcha verification"
       },
-      "puzzle": {
+      "captchaChallenge": {
         "type": ["string", "null"],
-        "description": "Puzzle endpoint URL for AltchaCaptcha"
+        "description": "Challenge endpoint URL for AltchaCaptcha"
       },
       "captchaEnabled": {
         "type": ["boolean", "null"],
         "description": "Indicates if captcha is enabled"
       }
     },
-    "required": ["siteKey", "captchaEndpoint", "puzzle", "captchaEnabled"],
+    "required": ["siteKey", "captchaVerify", "captchaChallenge", "captchaEnabled"],
     "description": "Schema definition for AltchaCaptcha configuration"
   }
   

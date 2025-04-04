@@ -89,6 +89,12 @@
         </div>
       </div>
     </div>
+    <div style="margin: 2rem 0 2rem 0">
+      <Altcha
+        v-model:payload="altchaPayload"
+        @validationResult="handleValidation"
+      />
+    </div>
   </div>
   <div class="m-button-group">
     <muc-button
@@ -109,6 +115,7 @@ import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
+import Altcha from "@/components/Appointment/Altcha.vue";
 import ClockSvg from "@/components/Appointment/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -119,6 +126,13 @@ import {
   MAX_SLOTS,
   OFTEN_SEARCHED_SERVICES,
 } from "@/utils/Constants";
+
+const altchaPayload = ref("");
+const isCaptchaValid = ref(false);
+
+const handleValidation = (result: boolean) => {
+  isCaptchaValid.value = result;
+};
 
 const props = defineProps<{
   baseUrl: string | undefined;

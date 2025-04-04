@@ -4,9 +4,9 @@ namespace BO\Zmscitizenapi\Tests\Controllers\Security;
 
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
-use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
+use BO\Zmscitizenapi\Models\Captcha\AltchaCaptcha;
 
-class FriendlyCaptchaControllerTest extends ControllerTestCase
+class AltchaCaptchaControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Security\CaptchaController";
 
@@ -20,9 +20,9 @@ class FriendlyCaptchaControllerTest extends ControllerTestCase
             \App::$cache->clear();
         }
 
-        putenv('FRIENDLY_CAPTCHA_SITE_KEY=FAKE_SITE_KEY');
-        putenv('FRIENDLY_CAPTCHA_ENDPOINT=https://api.friendlycaptcha.com/api/v1/siteverify');
-        putenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE=https://api.friendlycaptcha.com/api/v1/puzzle');
+        putenv('ALTCHA_CAPTCHA_SITE_KEY=FAKE_SITE_KEY');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=https://captcha-k.muenchen.de/api/v1/captcha/challenge');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY=https://captcha-k.muenchen.de/api/v1/captcha/verify');
         putenv('CAPTCHA_ENABLED=1');
 
         \App::initialize();
@@ -30,9 +30,9 @@ class FriendlyCaptchaControllerTest extends ControllerTestCase
 
     public function tearDown(): void
     {
-        putenv('FRIENDLY_CAPTCHA_SITEKEY=');
-        putenv('FRIENDLY_CAPTCHA_ENDPOINT=');
-        putenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE=');
+        putenv('ALTCHA_CAPTCHA_SITE_KEY=');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY=');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=');
         putenv('CAPTCHA_ENABLED=');
 
         parent::tearDown();
@@ -47,8 +47,8 @@ class FriendlyCaptchaControllerTest extends ControllerTestCase
 
         $expectedResponse = [
             'siteKey' => 'FAKE_SITE_KEY',
-            'captchaEndpoint' => 'https://api.friendlycaptcha.com/api/v1/siteverify',
-            'puzzle' => 'https://api.friendlycaptcha.com/api/v1/puzzle',
+            'captchaChallenge' => 'https://captcha-k.muenchen.de/api/v1/captcha/challenge',
+            'captchaVerify' => 'https://captcha-k.muenchen.de/api/v1/captcha/verify',
             'captchaEnabled' => true
         ];
 
@@ -62,8 +62,9 @@ class FriendlyCaptchaControllerTest extends ControllerTestCase
         $mockResponse = new \GuzzleHttp\Psr7\Response(200, [], json_encode(['success' => true]));
         \App::$http = new \GuzzleHttp\Client(['handler' => \GuzzleHttp\HandlerStack::create(new \GuzzleHttp\Handler\MockHandler([$mockResponse]))]);
     
-        $captcha = new FriendlyCaptcha();
+        $captcha = new AltchaCaptcha();
         $result = $captcha->verifyCaptcha('valid_solution');
+        var_dump($result);
         $this->assertTrue($result);
     }
     
@@ -73,7 +74,7 @@ class FriendlyCaptchaControllerTest extends ControllerTestCase
         $mockResponse = new \GuzzleHttp\Psr7\Response(200, [], json_encode(['success' => false]));
         \App::$http = new \GuzzleHttp\Client(['handler' => \GuzzleHttp\HandlerStack::create(new \GuzzleHttp\Handler\MockHandler([$mockResponse]))]);
     
-        $captcha = new FriendlyCaptcha();
+        $captcha = new AltchaCaptcha();
         $result = $captcha->verifyCaptcha('invalid_solution');
         $this->assertFalse($result);
     }
@@ -86,7 +87,7 @@ class FriendlyCaptchaControllerTest extends ControllerTestCase
         ]);
         \App::$http = new \GuzzleHttp\Client(['handler' => \GuzzleHttp\HandlerStack::create($mockHandler)]);
     
-        $captcha = new FriendlyCaptcha();
+        $captcha = new AltchaCaptcha();
         $result = $captcha->verifyCaptcha('exception_solution');
         $this->assertFalse($result);
     }
