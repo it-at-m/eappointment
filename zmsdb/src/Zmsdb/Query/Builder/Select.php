@@ -500,8 +500,8 @@ class Select extends Query
 
         // And now JOINs:
         if ($this->joins) {
-            foreach ($this->joins as $_ => $joins) {
-                foreach ($joins as $join) {
+            foreach (array_keys($this->joins) as $type) {
+                foreach ($this->joins[$type] as $join) {
                     $tables[] = $join['right'];
                 }
             }

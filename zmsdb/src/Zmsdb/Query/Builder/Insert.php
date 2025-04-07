@@ -52,7 +52,7 @@ class Insert extends Query
         if (!empty($this->values)) {
             $keyParts = [];
             $valueParts = [];
-            foreach ($this->values as $field => $_) {
+            foreach (array_keys($this->values) as $field) {
                 $keyParts[]     = $this->dialect->quoteField($field);
                 $valueParts[]   = '?';
             }
