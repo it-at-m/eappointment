@@ -70,7 +70,7 @@ class Request extends Base
             '=',
             'xrequest.request__id'
         );
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($providerId, $source) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($providerId, $source) {
             $query->andWith('xrequest.provider__id', '=', $providerId);
             $query->andWith('xrequest.source', '=', $source);
             $query->andWith('xrequest.bookable', '=', 1);
@@ -94,7 +94,7 @@ class Request extends Base
 
     public function addConditionIds($ids)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($ids) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($ids) {
             foreach ($ids as $id) {
                 $query->orWith('request.id', '=', $id);
             }

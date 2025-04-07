@@ -68,7 +68,7 @@ class Provider extends Base
             '=',
             'xprovider.provider__id'
         );
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($requestIdList, $sourceName) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($requestIdList, $sourceName) {
             $query->andWith('xprovider.request__id', 'IN', $requestIdList);
             $query->andWith('xprovider.bookable', '=', 1);
             $query->andWith('xprovider.source', '=', $sourceName);

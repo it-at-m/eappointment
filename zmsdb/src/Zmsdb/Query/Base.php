@@ -2,12 +2,12 @@
 
 namespace BO\Zmsdb\Query;
 
-use Solution10\SQL\Select;
-use Solution10\SQL\Insert;
-use Solution10\SQL\Update;
-use Solution10\SQL\Delete;
-use Solution10\SQL\Dialect\MySQL;
-use Solution10\SQL\Expression;
+use BO\Zmsdb\Query\Builder\Select;
+use BO\Zmsdb\Query\Builder\Insert;
+use BO\Zmsdb\Query\Builder\Update;
+use BO\Zmsdb\Query\Builder\Delete;
+use BO\Zmsdb\Query\Builder\Dialect\MySQL;
+use BO\Zmsdb\Query\Builder\Expression;
 
 /**
  * Base class to construct entity specific queries
@@ -41,7 +41,7 @@ abstract class Base
     const ALIAS = null;
 
     /**
-     * @var \Solution10\SQL\Query $query
+     * @var \BO\Zmsdb\Query\Builder\Query $query
      */
     protected $query = null;
 
@@ -81,7 +81,7 @@ abstract class Base
     /**
      * Create query builder if necessary
      *
-     * @param Mixed $queryType one of the constants for a query type or of instance \Solution10\SQL\Query
+     * @param Mixed $queryType one of the constants for a query type or of instance \BO\Zmsdb\Query\Builder\Query
      * @param String $prefix If used in a subquery, prefix results with this string
      * @param String $name A named query has a cached SQL as soon as called first
      */
@@ -112,7 +112,7 @@ abstract class Base
             $this->query = $queryType->query;
             $this->joinedAliasList =& $queryType->joinedAliasList;
             $this->resolveLevel = $queryType->resolveLevel - 1;
-        } elseif ($queryType instanceof \Solution10\SQL\Query) {
+        } elseif ($queryType instanceof \BO\Zmsdb\Query\Builder\Query) {
             $this->query = $queryType;
         }
         if ($this->query instanceof Select) {
@@ -325,7 +325,7 @@ abstract class Base
     /**
      * Shortcut to create an SQL-Expression without quoting
      *
-     * @return \Solution10\SQL\Expression
+     * @return \BO\Zmsdb\Query\Builder\Expression
      */
     protected static function expression($string)
     {
