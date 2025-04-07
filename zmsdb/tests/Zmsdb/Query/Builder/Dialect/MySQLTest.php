@@ -1,6 +1,6 @@
 <?php
 
-namespace Zmsdb\Tests\Query\Builder\Dialect;
+namespace BO\Zmsdb\Tests\Query\Builder\Dialect;
 
 use PHPUnit\Framework\TestCase;
 use BO\Zmsdb\Query\Builder\Dialect\MySQL;
