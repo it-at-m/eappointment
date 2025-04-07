@@ -90,15 +90,13 @@
       </div>
     </div>
     <div style="margin: 2rem 0 2rem 0">
-      <Altcha
-        v-model:payload="altchaPayload"
-        @validationResult="handleValidation"
-      />
+      <Altcha @validationResult="(valid) => (isCaptchaValid = valid)" />
     </div>
   </div>
   <div class="m-button-group">
     <muc-button
       v-if="service"
+      :disabled="!isCaptchaValid"
       icon="arrow-right"
       @click="nextStep"
     >
@@ -127,12 +125,7 @@ import {
   OFTEN_SEARCHED_SERVICES,
 } from "@/utils/Constants";
 
-const altchaPayload = ref("");
-const isCaptchaValid = ref(false);
-
-const handleValidation = (result: boolean) => {
-  isCaptchaValid.value = result;
-};
+const isCaptchaValid = ref<boolean>(false);
 
 const props = defineProps<{
   baseUrl: string | undefined;
