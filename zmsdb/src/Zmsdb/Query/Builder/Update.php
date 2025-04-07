@@ -56,7 +56,7 @@ class Update extends Query
         if (!empty($this->values)) {
             $sql .= 'SET ';
             $parts = [];
-            foreach ($this->values as $field => $value) {
+            foreach ($this->values as $field => $_) {
                 $parts[] = $this->dialect->quoteField($field) . ' = ?';
             }
             $sql .= implode(', ', $parts);

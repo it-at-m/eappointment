@@ -270,15 +270,9 @@ class Select extends Query
         }
 
         $joins = [];
-        foreach ($this->joins as $type => $typeJoins) {
-            foreach ($typeJoins as $j) {
-                $join = ($type != 'INNER') ? $type . ' ' : '';
-                $join .= 'JOIN ';
-                $join .= $this->dialect->quoteTable($j['right']) . ' ON ';
-                $join .= $this->dialect->quoteField($j['leftField']);
-                $join .= ' ' . $j['operator'] . ' ';
-                $join .= $this->dialect->quoteField($j['rightField']);
-                $joins[] = $join;
+        foreach ($this->joins as $_ => $joins) {
+            foreach ($joins as $join) {
+                $tables[] = $join['right'];
             }
         }
 
@@ -500,7 +494,7 @@ class Select extends Query
 
         // And now JOINs:
         if ($this->joins) {
-            foreach ($this->joins as $type => $joins) {
+            foreach ($this->joins as $_ => $joins) {
                 foreach ($joins as $join) {
                     $tables[] = $join['right'];
                 }
