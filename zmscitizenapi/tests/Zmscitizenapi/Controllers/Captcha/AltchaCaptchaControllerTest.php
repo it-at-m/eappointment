@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmscitizenapi\Tests\Controllers\Security;
+namespace BO\Zmscitizenapi\Tests\Controllers\Captcha;
 
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
 
@@ -8,7 +8,7 @@ use BO\Zmscitizenapi\Models\Captcha\AltchaCaptcha;
 
 class AltchaCaptchaControllerTest extends ControllerTestCase
 {
-    protected $classname = "\BO\Zmscitizenapi\Controllers\Security\CaptchaController";
+    protected $classname = "\BO\Zmscitizenapi\Controllers\Captcha\CaptchaController";
 
     public function setUp(): void
     {

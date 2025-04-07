@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Tests\Services\Security;
 
-use BO\Zmscitizenapi\Services\Security\CaptchaService;
+use BO\Zmscitizenapi\Services\Captcha\CaptchaService;
 use PHPUnit\Framework\TestCase;
 
 /**
