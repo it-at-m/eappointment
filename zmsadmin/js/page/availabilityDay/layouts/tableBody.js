@@ -95,17 +95,14 @@ const renderTable = (onDelete, onSelect, onAbort, availabilityList, data) => {
             const hasDescriptionText = (text) => 
                 availability?.description?.includes(text);
 
-            // Check if the row is selected
             if (isSelected) {
                 return { backgroundColor: '#f9f9f9' };
             }
 
-            // Check for origin or 'Regelserie' description
             if (availability?.kind === 'origin' || hasDescriptionText('Regelserie')) {
                 return { backgroundColor: '#CCE5FF' };
             }
 
-            // Check for exclusion or 'Ausnahme' description
             if (availability?.kind === 'exclusion' || hasDescriptionText('Ausnahme')) {
                 return { backgroundColor: '#FFE05B' };
             }
