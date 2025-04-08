@@ -97,13 +97,9 @@ const renderTable = (onDelete, onSelect, onAbort, availabilityList, data) => {
 
             if (isSelected) {
                 return { backgroundColor: '#f9f9f9' };
-            }
-
-            if (availability?.kind === 'origin' || hasDescriptionText('Regelserie')) {
+            } else if (availability?.kind === 'origin' || hasDescriptionText('Regelserie')) {
                 return { backgroundColor: '#CCE5FF' };
-            }
-
-            if (availability?.kind === 'exclusion' || hasDescriptionText('Ausnahme')) {
+            } else if (availability?.kind === 'exclusion' || hasDescriptionText('Ausnahme')) {
                 return { backgroundColor: '#FFE05B' };
             }
 
