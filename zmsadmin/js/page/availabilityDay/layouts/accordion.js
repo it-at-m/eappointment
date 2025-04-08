@@ -144,8 +144,7 @@ class Accordion extends Component
 
                                     if (availability?.kind === 'origin' || hasDescriptionText('Regelserie')) {
                                         return { backgroundColor: '#CCE5FF' };
-                                    }
-                                    if (availability?.kind === 'exclusion' || hasDescriptionText('Ausnahme')) {
+                                    } else if (availability?.kind === 'exclusion' || hasDescriptionText('Ausnahme')) {
                                         return { backgroundColor: '#FFE05B' };
                                     }
                                     return null;
