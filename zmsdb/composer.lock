@@ -305,7 +305,6 @@
                 "type": "path",
                 "url": "../zmsclient",
                 "reference": "f37d3a5ad27043e12c9d5ebd3dc40c7b660456d6"
-                "reference": "f37d3a5ad27043e12c9d5ebd3dc40c7b660456d6"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -452,7 +451,6 @@
                 "league/json-reference": "^1.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.6",
-                "squizlabs/php_codesniffer": "*",
                 "squizlabs/php_codesniffer": "*",
                 "yuloh/json-guard-cli": "^0.3.0"
             },
