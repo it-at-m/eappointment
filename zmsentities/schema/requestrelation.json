@@ -36,6 +36,10 @@
             "description": "Weather request is public available for specific provider",
             "default": true
         },
+        "maxQuantity": {
+            "type": "number",
+            "description": "Max quantity of chosen service for specific provider"
+        },
         "source": {
             "type": "string",
             "description": "source of the requestrelation",
