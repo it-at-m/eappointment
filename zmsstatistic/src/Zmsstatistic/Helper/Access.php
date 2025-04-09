@@ -49,7 +49,7 @@ class Access extends \BO\Slim\Controller
 
     protected function readDepartment()
     {
-        if ($this->workstation->getUseraccount()->hasRights(['departmentStats'])) {
+        if ($this->workstation->getUseraccount()->hasRights(['department'])) {
             return \App::$http
                 ->readGetResult('/scope/' . $this->workstation->scope['id'] . '/department/')
                 ->getEntity();
