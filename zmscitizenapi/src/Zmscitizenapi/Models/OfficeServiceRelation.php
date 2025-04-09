@@ -16,7 +16,7 @@ class OfficeServiceRelation extends Entity implements JsonSerializable
     public int $serviceId;
     public int $slots;
     public bool $public;
-    public int $maxQuantity;
+    public ?int $maxQuantity;
 
     /**
      * Constructor.
@@ -25,9 +25,9 @@ class OfficeServiceRelation extends Entity implements JsonSerializable
      * @param int $serviceId
      * @param int $slots
      * @param bool $public
-     * @param int $maxQuantity
+     * @param ?int $maxQuantity
      */
-    public function __construct(int $officeId, int $serviceId, int $slots, bool $public, int $maxQuantity)
+    public function __construct(int $officeId, int $serviceId, int $slots, bool $public, ?int $maxQuantity)
     {
         $this->officeId = $officeId;
         $this->serviceId = $serviceId;
