@@ -11,24 +11,29 @@ use JsonSerializable;
 class OfficeServiceRelation extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/officeServiceRelation.json';
-/** @var int */
+
     public int $officeId;
-/** @var int */
     public int $serviceId;
-/** @var int */
     public int $slots;
-/**
+    public bool $public;
+    public int $maxQuantity;
+
+    /**
      * Constructor.
      *
      * @param int $officeId
      * @param int $serviceId
      * @param int $slots
+     * @param bool $public
+     * @param int $maxQuantity
      */
-    public function __construct(int $officeId, int $serviceId, int $slots)
+    public function __construct(int $officeId, int $serviceId, int $slots, bool $public, int $maxQuantity)
     {
         $this->officeId = $officeId;
         $this->serviceId = $serviceId;
         $this->slots = $slots;
+        $this->public = $public;
+        $this->maxQuantity = $maxQuantity;
         $this->ensureValid();
     }
 
@@ -50,6 +55,8 @@ class OfficeServiceRelation extends Entity implements JsonSerializable
             'officeId' => $this->officeId,
             'serviceId' => $this->serviceId,
             'slots' => $this->slots,
+            'public' => $this->public,
+            'maxQuantity' => $this->maxQuantity,
         ];
     }
 

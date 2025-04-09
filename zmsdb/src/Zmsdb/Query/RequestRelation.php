@@ -14,7 +14,9 @@ class RequestRelation extends Base implements MappingInterface
             'request__id' => self::TABLE . '.request__id',
             'provider__id' => self::TABLE . '.provider__id',
             'source' => self::TABLE . '.source',
-            'slots' => self::TABLE . '.slots'
+            'slots' => self::TABLE . '.slots',
+            'public' => self::TABLE . '.public_visibility',
+            'maxQuantity' => self::TABLE . '.max_quantity'
         ];
     }
 
