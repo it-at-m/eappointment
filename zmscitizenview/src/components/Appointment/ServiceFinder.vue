@@ -89,14 +89,14 @@
         </div>
       </div>
     </div>
-    <div style="margin: 2rem 0 2rem 0">
+    <div v-if="showCaptcha" style="margin: 2rem 0 2rem 0">
       <Altcha @validationResult="(valid) => (isCaptchaValid = valid)" />
     </div>
   </div>
   <div class="m-button-group">
     <muc-button
       v-if="service"
-      :disabled="!isCaptchaValid"
+      :disabled="showCaptcha && !isCaptchaValid"
       icon="arrow-right"
       @click="nextStep"
     >
@@ -318,6 +318,25 @@ const nextStep = () => emit("next");
 const skipSubservices = () => {
   if (durationInfo.value) durationInfo.value.focus();
 };
+
+/**
+ * Determines whether the captcha component should be shown.
+ * It checks if the currently selected service is associated with
+ * at least one office that has `captchaActivatedRequired` set to true.
+ */
+const showCaptcha = computed(() => {
+  if (!service.value || !relations.value || !offices.value) return false;
+
+  const relatedOfficeIds = relations.value
+    .filter((relation) => relation.serviceId === service.value.id)
+    .map((relation) => relation.officeId);
+
+  return offices.value.some(
+    (office) =>
+      relatedOfficeIds.includes(office.id) &&
+      office.scope?.captchaActivatedRequired === true
+  );
+});
 
 onMounted(() => {
   //If a selected service already exists, the variables required for the calculation are calculated and initialized with the existing values.
