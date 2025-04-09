@@ -1,1 +1,0 @@
-INSERT INTO `config` SET `name` = "cron__calculateDailyWaitingStatistic", `value` = "stage,dev,test,load,prod";
