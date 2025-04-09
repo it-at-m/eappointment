@@ -180,11 +180,19 @@
         },
         {
             "name": "eappointment/mellon",
+<<<<<<< HEAD
             "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
                 "reference": "3b53777853798ec388f9fa2f2d42b1310ff3062c"
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "dist": {
+                "type": "path",
+                "url": "../mellon",
+                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+>>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
             },
             "require": {
                 "ext-json": ">=0",
@@ -228,11 +236,19 @@
         },
         {
             "name": "eappointment/zmsapi",
+<<<<<<< HEAD
             "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
                 "reference": "cfa4aa15fe279d803ef6b7744fc844a7d8371068"
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "dist": {
+                "type": "path",
+                "url": "../zmsapi",
+                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+>>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -267,10 +283,8 @@
                 "command": [
                     "bin/configure"
                 ],
-                "prepare-dirs": [
-                    "mkdir -p public/_test/assets && mkdir -p public/doc/assets"
-                ],
                 "wget-files": [
+                    "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
                     "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
                     "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
                     "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui.css -O public/_test/assets/swagger-ui.css",
@@ -278,11 +292,9 @@
                     "sha256sum --status -c checksums.txt"
                 ],
                 "post-install-cmd": [
-                    "@prepare-dirs",
                     "@wget-files"
                 ],
                 "post-update-cmd": [
-                    "@prepare-dirs",
                     "@wget-files"
                 ]
             },
@@ -303,7 +315,11 @@
         },
         {
             "name": "eappointment/zmsclient",
+<<<<<<< HEAD
             "version": "dev-next",
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+>>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -361,11 +377,19 @@
         },
         {
             "name": "eappointment/zmsdldb",
+<<<<<<< HEAD
             "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
                 "reference": "1c02fdbeeefac41d1a9c54bfe8b0f456d8c1f7d1"
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "dist": {
+                "type": "path",
+                "url": "../zmsdldb",
+                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+>>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -428,11 +452,19 @@
         },
         {
             "name": "eappointment/zmsentities",
+<<<<<<< HEAD
             "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
                 "reference": "6d50c616376c01caa495318e4a4c3825703dd24b"
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "dist": {
+                "type": "path",
+                "url": "../zmsentities",
+                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+>>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -454,7 +486,7 @@
                 "league/json-reference": "^1.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.6",
-                "squizlabs/php_codesniffer": "^3.5.8",
+                "squizlabs/php_codesniffer": "*",
                 "yuloh/json-guard-cli": "^0.3.0"
             },
             "type": "library",
@@ -486,11 +518,19 @@
         },
         {
             "name": "eappointment/zmsslim",
+<<<<<<< HEAD
             "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
                 "reference": "13a59e7a34592936e535a28e485c504f8719b5f0"
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "dist": {
+                "type": "path",
+                "url": "../zmsslim",
+                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+>>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -6130,16 +6170,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.11.3",
+            "version": "3.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10"
+                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10",
-                "reference": "ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/1368f4a58c3c52114b86b1abe8f4098869cb0079",
+                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079",
                 "shasum": ""
             },
             "require": {
@@ -6204,13 +6244,9 @@
                 {
                     "url": "https://opencollective.com/php_codesniffer",
                     "type": "open_collective"
-                },
-                {
-                    "url": "https://thanks.dev/phpcsstandards",
-                    "type": "thanks_dev"
                 }
             ],
-            "time": "2025-01-23T17:04:15+00:00"
+            "time": "2024-12-11T16:04:26+00:00"
         },
         {
             "name": "symfony/config",
