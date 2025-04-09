@@ -16,7 +16,6 @@ class RightsLevelManager
         'cluster' => 40,
         'useraccount' => 40,
         'scope' => 30,
-        'departmentStats' => 25,
         'availability' => 20,
         'ticketprinter' => 15,
         'sms' => 10,
