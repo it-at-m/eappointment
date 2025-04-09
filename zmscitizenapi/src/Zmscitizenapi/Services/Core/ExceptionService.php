@@ -32,7 +32,26 @@ class ExceptionService
     {
         $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
         $error = null;
+
         switch ($exceptionName) {
+            // ZmsClient exception
+            case 'BO\\Zmsclient\\Exception':
+                $error = self::getError('zmsClientCommunicationError');
+
+                break;
+            // Missing mail template exceptions
+            case 'Twig\\Error\\RuntimeError':
+                $error = self::getError('mailNotFound');
+
+                break;
+            case 'Twig\\Error\\LoaderError':
+                $error = self::getError('mailNotFound');
+
+                break;
+            case 'BO\\Zmsapi\\Exception\\Mail\\MailNotFound':
+                $error = self::getError('mailNotFound');
+
+                break;
             // Process exceptions
             case 'BO\\Zmsapi\\Exception\\Process\\ProcessNotFound':
                 $error = self::getError('appointmentNotFound');
@@ -92,16 +111,14 @@ class ExceptionService
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Calendar\\AppointmentsMissed':
-                $error = self::getError('noAppointmentsAtLocation');
-
+                $error = self::getError('noAppointmentForThisScope');
+                break;
+            case 'BO\\Zmsdb\\Exception\\CalendarWithoutScopes':
+                $error = self::getError('noAppointmentForThisScope');
                 break;
             // Other entity exceptions
             case 'BO\\Zmsapi\\Exception\\Department\\DepartmentNotFound':
                 $error = self::getError('departmentNotFound');
-
-                break;
-            case 'BO\\Zmsapi\\Exception\\Mail\\MailNotFound':
-                $error = self::getError('mailNotFound');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Organisation\\OrganisationNotFound':
@@ -124,6 +141,7 @@ class ExceptionService
                 $error = self::getError('sourceNotFound');
 
                 break;
+
             // Use original message for unmapped exceptions
             default:
                 $error = [

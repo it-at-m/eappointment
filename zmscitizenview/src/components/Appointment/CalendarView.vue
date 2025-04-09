@@ -156,21 +156,10 @@
             <b>{{ t("location") }}</b>
             <p class="m-teaser-contained-contact__summary">
               {{ selectedProvider.name }}
+              <br />
+              {{ selectedProvider.address.street }}
+              {{ selectedProvider.address.house_number }}
             </p>
-            <div>
-              <p class="m-teaser-contained-contact__detail">
-                <svg
-                  aria-hidden="true"
-                  class="icon icon--before"
-                >
-                  <use xlink:href="#icon-map-pin"></use>
-                </svg>
-                <span>
-                  {{ selectedProvider.address.street }}
-                  {{ selectedProvider.address.house_number }}
-                </span>
-              </p>
-            </div>
           </div>
           <div v-if="selectedDay">
             <b>{{ t("time") }}</b>
@@ -407,7 +396,7 @@ const allowedDates = (date: Date) => {
 
 watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
-  if (newDate) {
+  if (newDate && newDate != selectedDay.value) {
     getAppointmentsOfDay(convertDateToString(newDate));
   }
 });

@@ -24,7 +24,9 @@ class Application extends \BO\Slim\Application
      * Name of the application
      *
      */
-    const IDENTIFIER = 'Zmsadmin';
+    const IDENTIFIER = 'zms';
+
+    const MODULE_NAME = 'zmsadmin';
 
     const DEBUG = false;
 

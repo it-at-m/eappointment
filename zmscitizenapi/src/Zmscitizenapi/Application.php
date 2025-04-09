@@ -15,7 +15,8 @@ use Symfony\Component\Cache\Psr16Cache;
  */
 class Application extends \BO\Slim\Application
 {
-    public const IDENTIFIER = 'Zmscitizenapi';
+    public const IDENTIFIER = 'zms';
+    public const MODULE_NAME = 'zmscitizenapi';
     public static string $source_name = 'dldb';
     public static $http = null;
     public static array $http_curl_config = [];
