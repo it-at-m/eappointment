@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Models\Captcha;
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
 use BO\Zmsentities\Schema\Entity;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
 class AltchaCaptcha extends Entity implements CaptchaInterface
@@ -22,6 +23,8 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
     public string $challengeUrl;
 /** @var string */
     public string $verifyUrl;
+/** @var Client */
+    protected Client $httpClient;
 /**
      * Constructor.
      */
@@ -32,6 +35,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         $this->siteSecret = \App::$ALTCHA_CAPTCHA_SITE_SECRET;
         $this->challengeUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
         $this->verifyUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
+        $this->httpClient = $httpClient ?? new Client(['verify' => false]);
         $this->ensureValid();
     }
 
@@ -64,48 +68,34 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
      */
     public function createChallenge(): array
     {
-        $url = $this->challengeUrl;
-        $data = [
-            'siteKey' => $this->siteKey,
-            'siteSecret' => $this->siteSecret,
-            'clientAddress' => ClientIpHelper::getClientIp(),
-        ];
-
-        $options = [
-            'http' => [
-                'method'  => 'POST',
-                'header'  => "Content-Type: application/json\r\n",
-                'content' => json_encode($data),
-            ],
-            'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-            ],
-        ];
-
-        $context = stream_context_create($options);
-
         try {
-            $result = file_get_contents($url, false, $context);
+            $response = $this->httpClient->post($this->challengeUrl, [
+                'json' => [
+                    'siteKey' => $this->siteKey,
+                    'siteSecret' => $this->siteSecret,
+                    'clientAddress' => ClientIpHelper::getClientIp(),
+                ]
+            ]);
 
-            if ($result === false) {
-                throw new Exception('Anfrage fehlgeschlagen');
-            }
-
-            $responseData = json_decode($result, true);
+            $responseData = json_decode((string) $response->getBody(), true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new Exception('Fehler beim Dekodieren der JSON-Antwort');
+                throw new \Exception('Fehler beim Dekodieren der JSON-Antwort');
             }
 
             $challenge = $responseData['challenge'] ?? null;
 
             if ($challenge === null) {
-                throw new Exception('Challenge-Daten fehlen in der Antwort');
+                throw new \Exception('Challenge-Daten fehlen in der Antwort');
             }
 
             return $challenge;
-        } catch (Exception $e) {
+        } catch (RequestException $e) {
+            return [
+                'meta' => ['success' => false, 'error' => 'Request-Fehler: ' . $e->getMessage()],
+                'data' => null,
+            ];
+        } catch (\Throwable $e) {
             return [
                 'meta' => ['success' => false, 'error' => $e->getMessage()],
                 'data' => null,
@@ -129,8 +119,6 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         }
 
         $decodedJson = base64_decode(strtr($payload, '-_', '+/'));
-        error_log('DECODED JSON: ' . print_r($decodedJson, true));
-
         if (!$decodedJson) {
             return [
                 'meta' => ['success' => false, 'error' => 'Payload konnte nicht dekodiert werden'],
@@ -139,8 +127,6 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         }
 
         $decodedPayload = json_decode($decodedJson, true);
-        error_log('DECODED PAYLOAD: ' . print_r($decodedPayload, true));
-
         if (json_last_error() !== JSON_ERROR_NONE) {
             return [
                 'meta' => ['success' => false, 'error' => 'Ungültiges JSON in Payload'],
@@ -148,49 +134,31 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
             ];
         }
 
-        $requestBody = [
-            'siteKey' => $this->siteKey,
-            'siteSecret' => $this->siteSecret,
-            'payload' => $decodedPayload,
-        ];
-        error_log('REQUEST BODY: ' . print_r($requestBody, true));
-
-        $options = [
-            'http' => [
-                'method'  => 'POST',
-                'header'  => "Content-Type: application/json\r\n",
-                'content' => json_encode($requestBody),
-            ],
-            'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-            ],
-        ];
-
-        $context = stream_context_create($options);
-
         try {
-            $url = $this->verifyUrl;
-            $result = file_get_contents($url, false, $context);
+            $response = $this->httpClient->post($this->verifyUrl, [
+                'json' => [
+                    'siteKey' => $this->siteKey,
+                    'siteSecret' => $this->siteSecret,
+                    'payload' => $decodedPayload,
+                ]
+            ]);
 
-            if ($result === false) {
-                throw new Exception('Anfrage an den Captcha-Service fehlgeschlagen');
-            }
-
-            error_log('RESULT: ' . print_r($result, true));
-
-            $responseData = json_decode($result, true);
-            error_log('RESPONSE DATA: ' . print_r($responseData, true));
+            $responseData = json_decode((string) $response->getBody(), true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new Exception('Antwort vom Captcha-Service ist kein gültiges JSON');
+                throw new \Exception('Antwort vom Captcha-Service ist kein gültiges JSON');
             }
 
             return [
                 'meta' => ['success' => true],
                 'data' => $responseData,
             ];
-        } catch (Exception $e) {
+        } catch (RequestException $e) {
+            return [
+                'meta' => ['success' => false, 'error' => 'Request-Fehler: ' . $e->getMessage()],
+                'data' => null,
+            ];
+        } catch (\Throwable $e) {
             return [
                 'meta' => ['success' => false, 'error' => $e->getMessage()],
                 'data' => null,
