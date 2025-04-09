@@ -181,6 +181,7 @@
         {
             "name": "eappointment/mellon",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "dev-next",
             "dist": {
                 "type": "path",
@@ -193,6 +194,13 @@
                 "url": "../mellon",
                 "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
 >>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "dist": {
+                "type": "path",
+                "url": "../mellon",
+                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+>>>>>>> parent of 6043b03ce (Revert "Revert "Feature zmskvr 145 wartezeit statistik"")
             },
             "require": {
                 "ext-json": ">=0",
@@ -237,6 +245,7 @@
         {
             "name": "eappointment/zmsapi",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "dev-next",
             "dist": {
                 "type": "path",
@@ -249,6 +258,13 @@
                 "url": "../zmsapi",
                 "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
 >>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "dist": {
+                "type": "path",
+                "url": "../zmsapi",
+                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+>>>>>>> parent of 6043b03ce (Revert "Revert "Feature zmskvr 145 wartezeit statistik"")
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -316,10 +332,14 @@
         {
             "name": "eappointment/zmsclient",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "dev-next",
 =======
             "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
 >>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+>>>>>>> parent of 6043b03ce (Revert "Revert "Feature zmskvr 145 wartezeit statistik"")
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -378,6 +398,7 @@
         {
             "name": "eappointment/zmsdldb",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "dev-next",
             "dist": {
                 "type": "path",
@@ -390,6 +411,13 @@
                 "url": "../zmsdldb",
                 "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
 >>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "dist": {
+                "type": "path",
+                "url": "../zmsdldb",
+                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+>>>>>>> parent of 6043b03ce (Revert "Revert "Feature zmskvr 145 wartezeit statistik"")
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -453,6 +481,7 @@
         {
             "name": "eappointment/zmsentities",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "dev-next",
             "dist": {
                 "type": "path",
@@ -465,6 +494,13 @@
                 "url": "../zmsentities",
                 "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
 >>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "dist": {
+                "type": "path",
+                "url": "../zmsentities",
+                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+>>>>>>> parent of 6043b03ce (Revert "Revert "Feature zmskvr 145 wartezeit statistik"")
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -519,6 +555,7 @@
         {
             "name": "eappointment/zmsslim",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "dev-next",
             "dist": {
                 "type": "path",
@@ -531,6 +568,13 @@
                 "url": "../zmsslim",
                 "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
 >>>>>>> parent of 004779ed9 (Merge pull request #959 from it-at-m/revert-950-revert-923-feature-zmskvr-145-wartezeit-statistik)
+=======
+            "version": "dev-feat-zms-3414-enable-php-code-quality-checks-github-actions",
+            "dist": {
+                "type": "path",
+                "url": "../zmsslim",
+                "reference": "6e9ba83636118c9140a962e109145b83da27cb02"
+>>>>>>> parent of 6043b03ce (Revert "Revert "Feature zmskvr 145 wartezeit statistik"")
             },
             "require": {
                 "eappointment/mellon": "@dev",
