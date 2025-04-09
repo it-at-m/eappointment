@@ -20,3 +20,18 @@ public/_css/statistic.css.map
 .idea
 .parcel-cache
 coverage
+
+# Composer
+/vendor/
+composer.lock
+
+# IDE
+.idea/
+.vscode/
+
+# Cache
+/cache/
+*.cache
+
+# Logs
+*.log

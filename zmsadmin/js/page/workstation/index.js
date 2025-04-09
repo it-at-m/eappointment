@@ -51,6 +51,7 @@ class View extends BaseView {
             'onChangeProcess',
             'onReserveProcess',
             'onCopyProcess',
+            'onCopyButton',
             'onQueueProcess',
             'onResetProcess',
             'onSendCustomMail',
@@ -105,7 +106,6 @@ class View extends BaseView {
     onDatePick(date) {
         this.selectedDate = date;
         this.loadCalendar();
-        this.loadClientNext(true, false);
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
@@ -417,6 +417,14 @@ class View extends BaseView {
         this.loadAppointmentForm();
     }
 
+    onCopyButton(event) {
+        stopEvent(event);
+        var popupContent = document.getElementById('copy-content');
+        var textToCopy = popupContent.innerText || popupContent.textContent;
+        navigator.clipboard.writeText(textToCopy)
+    }
+    
+
     onPrintProcessMail(event) {
         stopEvent(event);
         this.selectedProcess = $(event.currentTarget).data('id');
@@ -537,18 +545,20 @@ class View extends BaseView {
     }
 
     loadCalendar(showLoader = true) {
-        return new CalendarView($.find('[data-calendar]'), {
-            selectedDate: this.selectedDate,
-            selectedScope: this.selectedScope,
-            selectedProcess: this.selectedProcess,
-            slotsRequired: this.slotsRequired,
-            slotType: this.slotType,
-            onDatePick: this.onDatePick,
-            onDateToday: this.onDateToday,
-            includeUrl: this.includeUrl,
-            onAbortMessage: this.onAbortMessage,
-            showLoader: showLoader
-        })
+        if ('counter' == this.page) {
+            return new CalendarView($.find('[data-calendar]'), {
+                selectedDate: this.selectedDate,
+                selectedScope: this.selectedScope,
+                selectedProcess: this.selectedProcess,
+                slotsRequired: this.slotsRequired,
+                slotType: this.slotType,
+                onDatePick: this.onDatePick,
+                onDateToday: this.onDateToday,
+                includeUrl: this.includeUrl,
+                onAbortMessage: this.onAbortMessage,
+                showLoader: showLoader
+            })
+        }
     }
 
     loadClientNext(showLoader = true, loadProcess = true) {
@@ -586,6 +596,7 @@ class View extends BaseView {
             onChangeProcess: this.onChangeProcess,
             onReserveProcess: this.onReserveProcess,
             onCopyProcess: this.onCopyProcess,
+            onCopyButton: this.onCopyButton,
             onChangeScope: this.onChangeScope,
             onAbortProcess: this.onAbortProcess,
             onCancelAppointmentForm: this.onCancelAppointmentForm,
@@ -608,6 +619,7 @@ class View extends BaseView {
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
             onEditProcess: this.onEditProcess,
+            onCopyButton: this.onCopyButton,
             onNextProcess: this.onNextProcess,
             onCallNextProcess: this.onCallNextProcess,
             onCancelNextProcess: this.onCancelNextProcess,
