@@ -267,10 +267,8 @@
                 "command": [
                     "bin/configure"
                 ],
-                "prepare-dirs": [
-                    "mkdir -p public/_test/assets && mkdir -p public/doc/assets"
-                ],
                 "wget-files": [
+                    "wget https://eappointment.gitlab.io/zmsapi/doc/swagger.json -O public/doc/swagger.json",
                     "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
                     "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
                     "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui.css -O public/_test/assets/swagger-ui.css",
@@ -278,11 +276,9 @@
                     "sha256sum --status -c checksums.txt"
                 ],
                 "post-install-cmd": [
-                    "@prepare-dirs",
                     "@wget-files"
                 ],
                 "post-update-cmd": [
-                    "@prepare-dirs",
                     "@wget-files"
                 ]
             },
@@ -307,6 +303,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
+                "reference": "f37d3a5ad27043e12c9d5ebd3dc40c7b660456d6"
                 "reference": "f37d3a5ad27043e12c9d5ebd3dc40c7b660456d6"
             },
             "require": {
@@ -454,7 +451,7 @@
                 "league/json-reference": "^1.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.6",
-                "squizlabs/php_codesniffer": "^3.5.8",
+                "squizlabs/php_codesniffer": "*",
                 "yuloh/json-guard-cli": "^0.3.0"
             },
             "type": "library",
