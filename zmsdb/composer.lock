@@ -180,11 +180,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-304-update-libphonenumber",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "b06efc1e8c875051c998523417c2023cad042fda"
+                "reference": "f5e70ab73c2b6b9536fd35405378b37f6dc9bb11"
             },
             "require": {
                 "ext-json": ">=0",
@@ -228,11 +228,11 @@
         },
         {
             "name": "eappointment/zmsapi",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-304-update-libphonenumber",
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "b06efc1e8c875051c998523417c2023cad042fda"
+                "reference": "f5e70ab73c2b6b9536fd35405378b37f6dc9bb11"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -303,7 +303,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-304-update-libphonenumber",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -361,11 +361,11 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-304-update-libphonenumber",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "b06efc1e8c875051c998523417c2023cad042fda"
+                "reference": "f5e70ab73c2b6b9536fd35405378b37f6dc9bb11"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -428,11 +428,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-304-update-libphonenumber",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "b06efc1e8c875051c998523417c2023cad042fda"
+                "reference": "f5e70ab73c2b6b9536fd35405378b37f6dc9bb11"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -440,7 +440,7 @@
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
                 "ext-pcre": ">=0",
-                "giggsey/libphonenumber-for-php": "^8.8.4",
+                "giggsey/libphonenumber-for-php": "^8.13.55",
                 "league/html-to-markdown": "^5.0",
                 "league/json-guard": "^1.0",
                 "php": ">=7.3.0",
@@ -486,11 +486,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-304-update-libphonenumber",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "b06efc1e8c875051c998523417c2023cad042fda"
+                "reference": "f5e70ab73c2b6b9536fd35405378b37f6dc9bb11"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -602,16 +602,16 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v6.11.0",
+            "version": "v6.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "8f718f4dfc9c5d5f0c994cdfd103921b43592712"
+                "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/8f718f4dfc9c5d5f0c994cdfd103921b43592712",
-                "reference": "8f718f4dfc9c5d5f0c994cdfd103921b43592712",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
+                "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
                 "shasum": ""
             },
             "require": {
@@ -659,9 +659,9 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v6.11.0"
+                "source": "https://github.com/firebase/php-jwt/tree/v6.11.1"
             },
-            "time": "2025-01-23T05:11:06+00:00"
+            "time": "2025-04-09T20:32:01+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
