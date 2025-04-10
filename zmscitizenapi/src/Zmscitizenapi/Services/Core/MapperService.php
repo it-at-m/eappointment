@@ -121,10 +121,7 @@ class MapperService
         /** @var array<string, array<int>> $servicesProviderIds */
         $servicesProviderIds = [];
         foreach ($relationList as $relation) {
-            if (
-                !$showUnpublished
-                && !$relation->isPublic()
-            ) {
+            if (!$showUnpublished && !$relation->isPublic()) {
                 continue;
             }
 
@@ -166,11 +163,13 @@ class MapperService
     }
 
 
-    public static function mapRelations(RequestRelationList $relationList, bool $showUnpublished): OfficeServiceRelationList
-    {
+    public static function mapRelations(
+        RequestRelationList $relationList,
+        bool $showUnpublished = false
+    ): OfficeServiceRelationList {
         $relations = [];
         foreach ($relationList as $relation) {
-            if (!$showUnpublished && !$relation->public) {
+            if (!$showUnpublished && !$relation->isPublic()) {
                 continue;
             }
 
