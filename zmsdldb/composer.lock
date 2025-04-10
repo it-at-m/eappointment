@@ -380,8 +380,7 @@
                 "ext-mbstring": ">=0",
                 "ext-pcre": ">=0",
                 "ext-pdo": "*",
-                "php": ">=7.3.0",
-                "solution10/sql": "^1.3"
+                "php": ">=7.3.0"
             },
             "require-dev": {
                 "mockery/mockery": "^0.9.4",
@@ -2768,55 +2767,6 @@
                 "source": "https://github.com/slimphp/Twig-View/tree/3.3.0"
             },
             "time": "2022-01-02T05:14:45+00:00"
-        },
-        {
-            "name": "solution10/sql",
-            "version": "v1.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Solution10/sql.git",
-                "reference": "06c7b9da79dddb52da9442e2adbbfcff6b252e12"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Solution10/sql/zipball/06c7b9da79dddb52da9442e2adbbfcff6b252e12",
-                "reference": "06c7b9da79dddb52da9442e2adbbfcff6b252e12",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">= 5.4"
-            },
-            "require-dev": {
-                "solution10/devkit": "~1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Solution10\\SQL\\": "src",
-                    "Solution10\\SQL\\Tests\\": "tests"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Alex Gisby",
-                    "email": "alex@solution10.com"
-                }
-            ],
-            "description": "Completely standalone, expressive SQL query creator. No database or ORM needed.",
-            "keywords": [
-                "component",
-                "database",
-                "sql"
-            ],
-            "support": {
-                "issues": "https://github.com/Solution10/sql/issues",
-                "source": "https://github.com/Solution10/sql/tree/master"
-            },
-            "time": "2015-07-26T09:26:21+00:00"
         },
         {
             "name": "stevenmaguire/oauth2-keycloak",

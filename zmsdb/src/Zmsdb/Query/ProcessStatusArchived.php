@@ -78,7 +78,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
 
     public function addConditionScopeIds($scopeIds)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($scopeIds) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($scopeIds) {
             foreach ($scopeIds as $scopeId) {
                 $condition
                     ->orWith('process.StandortID', '=', $scopeId);
@@ -96,7 +96,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
 
     public function addConditionTimes(array $dateTimes)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($dateTimes) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($dateTimes) {
             foreach ($dateTimes as $dateTime) {
                 $condition
                     ->orWith('process.Datum', '=', $dateTime->format('Y-m-d'));
@@ -128,7 +128,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
                 AND `statistic`.`lastbuergerarchivid` = `process`.`BuergerarchivID`
             ')
         );
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime, $scope) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($dateTime, $scope) {
             $query->andWith(
                 self::expression('statistic.lastbuergerarchivid IS NULL AND process.Datum'),
                 '>',

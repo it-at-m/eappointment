@@ -112,7 +112,7 @@ class Useraccount extends Base implements MappingInterface
         $this->query->where('useraccount_department.behoerdenid', '=', $departmentId);
 
         if ($queryString) {
-            $condition = function (\Solution10\SQL\ConditionBuilder $query) use ($queryString) {
+            $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString) {
                 $queryString = trim($queryString);
                 $query->orWith('useraccount.NutzerID', 'LIKE', "%$queryString%");
                 $query->orWith('useraccount.Name', 'LIKE', "%$queryString%");
@@ -149,7 +149,7 @@ class Useraccount extends Base implements MappingInterface
 
     public function addConditionSearch($queryString, $orWhere = false)
     {
-        $condition = function (\Solution10\SQL\ConditionBuilder $query) use ($queryString) {
+        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString) {
             $queryString = trim($queryString);
             $query->orWith('useraccount.NutzerID', 'LIKE', "%$queryString%");
             $query->orWith('useraccount.Name', 'LIKE', "%$queryString%");

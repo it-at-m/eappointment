@@ -2,9 +2,9 @@
 
 namespace BO\Zmsdb\Query;
 
-class Alias implements \Solution10\SQL\ExpressionInterface
+class Alias implements \BO\Zmsdb\Query\Builder\ExpressionInterface
 {
-    use \Solution10\SQL\Dialect\Quote;
+    use \BO\Zmsdb\Query\Builder\Dialect\Quote;
 
     protected $name;
     protected $alias;
