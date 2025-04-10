@@ -73,7 +73,18 @@
             "description": "minutes since arrival of client"
         },
         "wayTime": {
-            "type": ["number", "null"],
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "minutes since arrival of client"
         },        
         "waitingTimeEstimate": {
