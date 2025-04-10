@@ -103,27 +103,27 @@ class DayoffTest extends EntityCommonTests
     {
         $list = [
             [
-                "date" => "1458856800",
+                "date" => 1458856800,
                 "name" => "Karfreitag"
             ],
             [
-                "date" => "1459116000",
+                "date" => 1459116000,
                 "name" => "Ostermontag"
             ],
             [
-                "date" => "1462053600",
+                "date" => 1462053600,
                 "name" => "Maifeiertag"
             ],
             [
-                "date" => "1462399200",
+                "date" => 1462399200,
                 "name" => "Christi Himmelfahrt"
             ],
             [
-                "date" => "1463349600",
+                "date" => 1463349600,
                 "name" => "Pfingstmontag"
             ],
             [
-                "date" => "1475445600",
+                "date" => 1475445600,
                 "name" => "Tag der Deutschen Einheit"
             ]
         ];

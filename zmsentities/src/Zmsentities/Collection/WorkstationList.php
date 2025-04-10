@@ -4,5 +4,5 @@ namespace BO\Zmsentities\Collection;
 
 class WorkstationList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Workstation';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Workstation';
 }

@@ -9,14 +9,22 @@
         "surveyAccepted": false,
         "telephone": "030 115"
     },
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "email": {
             "type": "string",
             "description": "mail address"
         },
         "emailSendCount": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "number of reminder mails send"
         },
         "familyName": {
@@ -25,11 +33,40 @@
             "description": "name of the client"
         },
         "notificationsSendCount": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[01]$"
+                },
+                {
+                    "type": "string",
+                    "enum": ["true", "false"]
+                }
+            ],
             "description": "number of reminder sms send"
         },
         "surveyAccepted": {
-            "type": "boolean",
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[01]$"
+                }
+            ],
             "description": "true if clients allows survey requests"
         },
         "telephone": {
