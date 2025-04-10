@@ -35,7 +35,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         $this->siteSecret = \App::$ALTCHA_CAPTCHA_SITE_SECRET;
         $this->challengeUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
         $this->verifyUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
-        $this->httpClient = $httpClient ?? new Client(['verify' => false]);
+        $this->httpClient = new Client(['verify' => false]);
         $this->ensureValid();
     }
 
