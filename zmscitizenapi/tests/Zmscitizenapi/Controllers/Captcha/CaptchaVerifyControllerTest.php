@@ -41,6 +41,16 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         parent::tearDown();
     }
 
+    public function testRendering()
+    {
+        $parameters = [
+            'payload' => base64_encode(json_encode(['challenge' => 'abcdefg0123456789']))
+        ];
+        $response = $this->render([], $parameters, [], 'POST');
+        $this->assertEquals(200, $response->getStatusCode());
+        return $response;
+    }
+
     public function testVerifySolutionSuccess()
     {
         $expectedResponse = [
@@ -168,4 +178,5 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         $this->assertStringContainsString('Connection refused', $result['meta']['error']);
         $this->assertNull($result['data']);
     }
+
 }

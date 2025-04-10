@@ -23,7 +23,7 @@ class CaptchaServiceTest extends TestCase
     public function testGetCaptchaReturnsCaptchaDetails(): void
     {
         // Act
-        $result = $this->captchaService->getCaptcha();
+        $result = $this->captchaService->getCaptchaDetails();
 
         // Assert
         $this->assertIsArray($result);
@@ -42,7 +42,7 @@ class CaptchaServiceTest extends TestCase
         $expectedEnabled = \App::$CAPTCHA_ENABLED;
 
         // Act
-        $result = $this->captchaService->getCaptcha();
+        $result = $this->captchaService->getCaptchaDetails();
 
         // Assert
         $this->assertEquals($expectedSiteKey, $result['siteKey']);
