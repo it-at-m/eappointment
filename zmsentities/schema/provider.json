@@ -31,35 +31,58 @@
         },
         "id": {
             "default": "",
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "reference to an id"
         },
         "link": {
             "default": "",
-            "type": "string",
+            "type": ["null", "string"],
             "description": "URI with detailed information for the provider"
         },
         "data": {
-            "type": [
-                "object",
-                "array"
-              ],
+            "oneOf": [
+                {
+                    "type": "object",
+                    "description": "Object with additional properties",
+                    "additionalProperties": true
+                },
+                {
+                    "type": "array",
+                    "description": "Array of values"
+                },
+                {
+                    "type": "string",
+                    "description": "JSON-encoded object or array",
+                    "pattern": "^(\\s*\\{.*\\}\\s*|\\s*\\[.*\\]\\s*)$"
+                }
+            ],
             "description": "source dependant additional properties",
             "additionalProperties": true
         },
         "name": {
             "default": "",
-            "type": "string",
+            "type": ["null", "string"],
             "description": "name of the referenced service (explicit redundant)"
         },
         "source": {
             "default": "",
-            "type": "string",
+            "type": ["null", "string"],
             "description": "source of provider to resolve reference id"
         },
         "displayName": {
             "default": "",
-            "type": "string",
+            "type": ["null", "string"],
             "description": "provider display name"
         }
     }
