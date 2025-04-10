@@ -89,7 +89,10 @@
         </div>
       </div>
     </div>
-    <div v-if="showCaptcha" style="margin: 2rem 0 2rem 0">
+    <div
+      v-if="showCaptcha"
+      style="margin: 2rem 0 2rem 0"
+    >
       <Altcha @validationResult="(valid) => (isCaptchaValid = valid)" />
     </div>
   </div>
