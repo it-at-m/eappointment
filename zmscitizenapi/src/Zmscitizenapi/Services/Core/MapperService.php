@@ -177,7 +177,7 @@ class MapperService
                 officeId: (int) $relation->provider->id,
                 serviceId: (int) $relation->request->id,
                 slots: intval($relation->slots),
-                public: $relation->public,
+                public: $relation->isPublic(),
                 maxQuantity: $relation->maxQuantity
             );
         }
