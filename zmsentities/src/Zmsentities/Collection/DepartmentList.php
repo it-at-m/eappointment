@@ -6,7 +6,7 @@ use BO\Zmsentities\Helper\Property;
 
 class DepartmentList extends Base implements JsonUnindexed
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Department';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Department';
 
     public function withOutClusterDuplicates()
     {

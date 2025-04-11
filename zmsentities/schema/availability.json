@@ -16,7 +16,12 @@
       "afterWeeks": 0
     },
     "scope": {
-      "id": 141
+      "provider": {
+        "id": 123456,
+        "name": "Flughafen Schönefeld, Aufsicht",
+        "source": "dldb"
+      },
+      "shortName": "Zentrale"
     },
     "slotTimeInMinutes": 12,
     "startDate": 1447919543,
@@ -43,19 +48,41 @@
       "type": "object",
       "properties": {
         "startInDays": {
-          "type": ["string", "number", "null"],
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
+          ],
           "default": 1,
           "description": "number of days relative to today to start offering appointments"
         },
         "endInDays": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
+          ],
           "default": 60,
           "description": "maximum number of days in the future to offer appointments"
         }
       }
     },
     "description": {
-      "type": "string",
+      "type": ["null", "string"],
       "description": "short note for internal usage"
     },
     "endDate": {
@@ -63,7 +90,7 @@
       "description": "unix timestamp of a day until this availability is valid"
     },
     "endTime": {
-      "type": "string",
+      "type": ["null", "string"],
       "default": "23:59",
       "description": "format '0:00' or '16:30'"
     },
@@ -76,9 +103,20 @@
       "description": "unix timestamp of the last change on this availability"
     },
     "multipleSlotsAllowed": {
-      "type": [
-        "boolean",
-        "number"
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "pattern": "^[01]$"
+        }
       ],
       "default": true,
       "description": "an appointment is allowed to take more than one time slot"
@@ -94,20 +132,56 @@
       "type": "object",
       "properties": {
         "afterWeeks": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
+          ],
           "description": "number of weeks for repeating the times, usually 1, 2 or 3"
         },
         "weekOfMonth": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
+          ],
           "description": "number of week in month, on a value of 5 the last week of the month, even it is the 4th"
         }
       }
     },
     "scope": {
-      "$ref": "scope.json"
+      "oneOf": [
+        { "$ref": "scope.json" },
+        { "type": "null" }
+      ]
     },
     "slotTimeInMinutes": {
-      "type": "number",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      ],
       "default": 10,
       "description": "Multiplicated with a slotCount from an appointment this gives the duration in minutes for a appointment/process."
     },
@@ -116,7 +190,7 @@
       "description": "unix timestamp of a day to start offering appointments"
     },
     "startTime": {
-      "type": "string",
+      "type": ["null", "string"],
       "description": "format '0:00' or '17:30'"
     },
     "type": {
@@ -133,51 +207,128 @@
       "properties": {
         "monday": {
           "default": false,
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
           ]
         },
         "tuesday": {
           "default": false,
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
           ]
         },
         "wednesday": {
           "default": false,
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
           ]
         },
         "thursday": {
           "default": false,
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
           ]
         },
         "friday": {
           "default": false,
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
           ]
         },
         "saturday": {
           "default": false,
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
           ]
         },
         "sunday": {
           "default": false,
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
           ]
         }
       }
@@ -186,17 +337,50 @@
       "type": "object",
       "properties": {
         "callcenter": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
+          ],
           "default": 0,
           "description": "number of workstations to handle appointments if handed out to the client by a callcenter"
         },
         "intern": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
+          ],
           "default": 0,
           "description": "maximum of workstations expected to handle appointments"
         },
         "public": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
+          ],
           "default": 0,
           "description": "number of workstations to offer appointments for booking using a public website"
         }

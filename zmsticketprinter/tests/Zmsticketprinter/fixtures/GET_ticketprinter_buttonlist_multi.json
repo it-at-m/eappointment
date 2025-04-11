@@ -8,17 +8,23 @@
   },
   "data": {
 	"$schema": "https://schema.berlin.de/queuemanagement/ticketprinter.json",
-	"enabled": "1",
+	"enabled": 1,
 	"hash": "71abcdefghijklmnopqrstuvwxyz",
-	"id": "1",
-	"lastUpdate": "1477661416",
+	"id": 1,
+	"lastUpdate": 1477661416,
 	"name": "Test Ticketprinter",
 	"buttonlist": "s141",
 	"buttons": [{
 		"type": "scope",
 		"url": "/scope/141/",
 		"scope": {
-			"id": 141
+			"id": 141,
+			"provider": {
+				"id": 123456,
+				"name": "Flughafen Schönefeld, Aufsicht",
+				"source": "dldb"
+			},
+			"shortName": "Zentrale"
 		},
 		"enabled": true,
 		"name": "Bürgeramt Heerstraße"
@@ -36,7 +42,13 @@
 		"type": "link",
 		"url": "http://www.berlin.de/",
 		"scope": {
-			"id": 110
+			"id": 110,
+			"provider": {
+				"id": 123456,
+				"name": "Flughafen Schönefeld, Aufsicht",
+				"source": "dldb"
+			},
+			"shortName": "Zentrale"
 		},
 		"enabled": true,
 		"name": "Portal berlin.de"

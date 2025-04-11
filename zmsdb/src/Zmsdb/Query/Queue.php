@@ -91,7 +91,7 @@ class Queue extends Process implements MappingInterface
 
     public function addConditionAssigned()
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) {
             $query->andWith(self::expression('process.istFolgeterminvon IS NULL OR process.istFolgeterminvon'), '=', 0);
         });
         return $this;
