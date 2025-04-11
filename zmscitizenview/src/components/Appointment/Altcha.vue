@@ -46,6 +46,8 @@ const fetchCaptchaDetails = async () => {
     console.log("DATA:", data);
     captchaChallengeUrl.value = `${getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL)}${VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT}`; // http://zms.ddev.site/terminvereinbarung/api/citizen/captcha-challenge/
     captchaVerifyUrl.value = `${getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL)}${VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT}`; // http://zms.ddev.site/terminvereinbarung/api/citizen/captcha-verify/
+    console.log("CHALLENGE-URL:", captchaChallengeUrl.value);
+    console.log("VERIFY-URL:", captchaVerifyUrl.value);
     captchaEnabled.value = data.captchaEnabled;
   } catch (error) {
     console.error("Fehler beim Abrufen der Captcha-Details:", error);
