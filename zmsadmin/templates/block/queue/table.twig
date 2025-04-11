@@ -185,7 +185,7 @@
 				<span class="color-green">
 					<i class="fas fa-play-circle" aria-hidden="true"></i>
 				</span>
-				Offene Aufrufe <i class="fas fa-tv" style="color: #0053b4;"></i> / In Bearbeitung <i class="fas fa-hourglass-half" style="color: #0053b4;"></i>
+				Offene Aufrufe <i class="fas fa-tv" style="color: #0053b4;" title="Offene Aufrufe"></i> / In Bearbeitung <i class="fas fa-hourglass-half" style="color: #0053b4;" title="In Bearbeitung"></i>
 				{% if showCalledList %}
 				({{ queueListCalled|length }})
 				{% endif %}
@@ -235,9 +235,9 @@
                                 <td>
                                     <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
                                         {% if item.status == 'called' %}
-                                            <i class="fas fa-tv" style="color: #0053b4;"></i>
+                                            <i class="fas fa-tv" style="color: #0053b4;" title="Offener Aufruf"></i>
                                         {% elseif item.status == 'processing' %}
-                                            <i class="fas fa-hourglass-half" style="color: #0053b4;"></i>
+                                            <i class="fas fa-hourglass-half" style="color: #0053b4;" title="In Bearbeitung"></i>
                                         {% else %}
                                             {{ item.status }}
                                         {% endif %}
