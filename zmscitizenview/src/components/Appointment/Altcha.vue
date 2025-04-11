@@ -6,7 +6,7 @@
       <p>captchaVerifyUrl: {{ captchaVerifyUrl }}</p>
       <p>widgetLoaded: {{ widgetLoaded }}</p>
       <p>widgetConfigured: {{ widgetConfigured }}</p>
-    </div>  
+    </div>
     <altcha-widget
       :challengeurl="captchaChallengeUrl"
       :verifyurl="captchaVerifyUrl"
@@ -37,9 +37,9 @@ import {
   VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT,
 } from "@/utils/Constants";
 
-console.log("Altcha component script executing");
-
 import "altcha";
+
+console.log("Altcha component script executing");
 
 const altchaWidget = ref<Partial<AltchaWidget> | null>(null);
 const getWidget = () => altchaWidget.value as AltchaWidget;
@@ -59,24 +59,27 @@ const emit = defineEmits<{
 const fetchCaptchaDetails = async () => {
   try {
     console.log("Starting fetchCaptchaDetails...");
-    console.log("API Base URL:", getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL));
+    console.log(
+      "API Base URL:",
+      getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL)
+    );
     console.log("Environment:", import.meta.env);
-    
+
     const response = await fetch(
       `${getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL)}${VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT}`
     );
     if (!response.ok) throw new Error("Fehler beim Laden der Captcha-Daten");
     const data = await response.json();
     console.log("Captcha Details Response:", data);
-    
+
     captchaChallengeUrl.value = `${getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL)}${VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT}`;
     captchaVerifyUrl.value = `${getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL)}${VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT}`;
     captchaEnabled.value = data.captchaEnabled;
-    
+
     console.log("Updated values:", {
       captchaEnabled: captchaEnabled.value,
       captchaChallengeUrl: captchaChallengeUrl.value,
-      captchaVerifyUrl: captchaVerifyUrl.value
+      captchaVerifyUrl: captchaVerifyUrl.value,
     });
   } catch (error) {
     console.error("Fehler beim Abrufen der Captcha-Details:", error);
@@ -104,7 +107,8 @@ const configureWidget = () => {
     try {
       widget.configure({
         strings: {
-          error: "Verifizierung fehlgeschlagen. Versuche es später noch einmal.",
+          error:
+            "Verifizierung fehlgeschlagen. Versuche es später noch einmal.",
           expired: "Verifizierung abgelaufen. Versuche es erneut.",
           footer:
             'Geschützt durch <a href=\"https://altcha.org/\" target=\"_blank\" aria-label=\"Besuche Altcha.org\">ALTCHA</a>',
@@ -126,9 +130,12 @@ const configureWidget = () => {
 
 onMounted(async () => {
   console.log("Component mounted");
-  console.log("Checking if altcha is available:", typeof window.altcha !== 'undefined');
-  widgetLoaded.value = typeof window.altcha !== 'undefined';
-  
+  console.log(
+    "Checking if altcha is available:",
+    typeof window.altcha !== "undefined"
+  );
+  widgetLoaded.value = typeof window.altcha !== "undefined";
+
   await fetchCaptchaDetails();
   getWidget()?.addEventListener("statechange", handleStateChange);
   nextTick(() => {
