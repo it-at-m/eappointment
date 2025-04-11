@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.berlin.de/queuemanagement/scope.json",
-    "id": "141",
+    "id": 141,
     "source": "dldb",
     "contact": {
         "name": "B\u00fcrgeramt Heerstra\u00dfe",
@@ -9,7 +9,7 @@
         "country": "Germany"
     },
     "provider": {
-        "id": "122217",
+        "id": 122217,
         "source": "dldb",
         "contact": {
             "city": "Berlin",
@@ -22,7 +22,7 @@
         },
         "link": "https://service.berlin.de/standort/122217/",
         "name": "B\u00fcrgeramt Heerstra\u00dfe",
-        "displayName":"001"
+        "displayName": "001"
     },
     "hint": "Nr. wird zum Termin aufgerufen",
     "lastChange": 1618265883,

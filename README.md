@@ -130,11 +130,9 @@ To run Checks locally in your local docker container:
 0. Run all at once:
 - `ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'"`
 - `ddev exec "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src/'"`
-
-1. **Enter the container** (if using DDEV or Docker):
+1. Enter the container (if using DDEV or Docker):
 - `ddev ssh`
-
-2. **Go to the desired module directory:
+2. Go to the desired module directory:
 - `cd zmsadmin`
 3. Run PHPCS (PSR-12 standard):
 - `vendor/bin/phpcs --standard=psr12 src/`
@@ -148,14 +146,43 @@ To run Checks locally in your local docker container:
 - `vendor/bin/phpmd src/ text ../phpmd.rules.xml`
 
 ## Unit Testing
-To run unit tests locally refer to the Github Workflows: https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml and in your local docker container run:
+To run unit tests locally refer to the [Github Workflows](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml) and in your local docker container run:
 
 - `ddev ssh`
 - `cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}`
 - `./vendor/bin/phpunit`
 
-For zmsapi and zmsdb you must first import the test data which unfortunately overwrites your local database. For zmsclient you need the php base image.
+For zmsapi and zmsdb you must first import the test data (see below). For zmsclient you need the php base image.
 
+### Special Cases (zmsapi & zmsdb)
+For the modules zmsapi and zmsdb, test data must be imported. Please note that this will overwrite your local database.
+
+zmsapi:
+```bash
+cd zmsapi
+rm -rf data
+ln -s vendor/eappointment/zmsdb/tests/Zmsdb/fixtures data
+ddev ssh
+cd zmsapi
+vendor/bin/importTestData --commit
+./vendor/bin/phpunit
+```
+
+zmsdb:
+```bash
+ddev ssh
+cd zmsdb
+bin/importTestData --commit
+./vendor/bin/phpunit
+```
+
+### Common Errors
+
+- If you encounter `Too many levels of symbolic links`, remove the `<exclude>` rule for the vendor directory in the module’s phpunit.xml.
+- If you get `No data path given in /var/www/html/zmsdb/src/Zmsdb/Source/Dldb.php:29`, make sure your zmsdb/config.php contains the following line:
+  ```php
+  \BO\Zmsdb\Source\Dldb::$importPath = realpath(dirname(__FILE__) . '/tests/Zmsdb/fixtures/');
+  ```
 
 ## Branch Naming Convention
 To keep our branch names organized and easily understandable, we follow a specific naming convention for all branches created in this repository. Please adhere to this convention when creating new branches:

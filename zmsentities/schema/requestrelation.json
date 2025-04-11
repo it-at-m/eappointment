@@ -27,7 +27,15 @@
             "$ref": "provider.json"
         },
         "slots": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ], 
             "description": "Number of slots required to fullfill request on provider",
             "default": 1
         },

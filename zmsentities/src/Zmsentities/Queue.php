@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Queue extends Schema\Entity implements Helper\NoSanitize
 {
-    const PRIMARY = 'arrivalTime';
+    public const PRIMARY = 'arrivalTime';
 
     public static $schema = "queue.json";
 

@@ -12,10 +12,10 @@ class CounterGhostWorkstationTest extends Base
         $workstation->scope['id'] = 146; //ghostworkstation count 3
         $response = $this->render([], [
             '__body' => '{
-                "id": "146",
+                "id": 146,
                 "shortName": "",
                 "provider": {
-                    "id": "122217",
+                    "id": 122217,
                     "displayName": "B\u00fcrgeramt Heerstra\u00dfe",
                     "$ref": "/provider/122217/"
                 },
@@ -44,7 +44,9 @@ class CounterGhostWorkstationTest extends Base
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render([], [
-            '__body' => '{}'
+            '__body' => '{
+                "id": ""
+            }'
         ], []);
     }
 
@@ -65,10 +67,10 @@ class CounterGhostWorkstationTest extends Base
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
-                "id": "999",
+                "id": 999,
                 "shortName": "",
                 "provider": {
-                    "id": "122217",
+                    "id": 122217,
                     "displayName": "B\u00fcrgeramt Heerstra\u00dfe",
                     "$ref": "/provider/122217/"
                 }

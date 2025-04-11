@@ -13,7 +13,7 @@ use BO\Zmsentities\Availability;
  */
 class AvailabilityList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Availability';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Availability';
 
     public function getMaxWorkstationCount()
     {

@@ -106,7 +106,8 @@
         "items": {
           "type": [
             "string",
-            "number"
+            "number",
+            "null"
           ],
           "description": "For a description on the values, see the 'dictionary'. Non existing "
         }
