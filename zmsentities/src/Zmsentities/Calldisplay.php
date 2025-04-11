@@ -6,7 +6,7 @@ use BO\Zmsentities\Helper\Property;
 
 class Calldisplay extends Schema\Entity
 {
-    const PRIMARY = 'serverTime';
+    public const PRIMARY = 'serverTime';
 
     public static $schema = "calldisplay.json";
 
