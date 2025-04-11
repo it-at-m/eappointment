@@ -136,17 +136,23 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                 [
                     "officeId" => 9999998,
                     "serviceId" => 1,
-                    "slots" => 2
+                    "slots" => 2,
+                    "public" => true,
+                    "maxQuantity" => null
                 ],
                 [
                     "officeId" => 9999999,
                     "serviceId" => 1,
-                    "slots" => 1
+                    "slots" => 1,
+                    "public" => true,
+                    "maxQuantity" => null
                 ],
                 [
                     "officeId" => 9999999,
                     "serviceId" => 2,
-                    "slots" => 1
+                    "slots" => 1,
+                    "public" => true,
+                    "maxQuantity" => null
                 ]
             ]
         ];
@@ -281,17 +287,23 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                 [
                     "officeId" => 9999998,
                     "serviceId" => 1,
-                    "slots" => 2
+                    "slots" => 2,
+                    "public" => true,
+                    "maxQuantity" => null
                 ],
                 [
                     "officeId" => 9999999,
                     "serviceId" => 1,
-                    "slots" => 1
+                    "slots" => 1,
+                    "public" => true,
+                    "maxQuantity" => null
                 ],
                 [
                     "officeId" => 9999999,
                     "serviceId" => 2,
-                    "slots" => 1
+                    "slots" => 1,
+                    "public" => true,
+                    "maxQuantity" => null
                 ]
             ]
         ];
