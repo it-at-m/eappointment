@@ -109,8 +109,8 @@ class Application extends \BO\Slim\Application
             ?: 'https://eu-api.friendlycaptcha.eu/api/v1/siteverify';
         self::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE = getenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE')
             ?: 'https://eu-api.friendlycaptcha.eu/api/v1/puzzle';
-        self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: '';
-        self::$ALTCHA_CAPTCHA_SITE_SECRET = getenv('ALTCHA_CAPTCHA_SITE_SECRET') ?: '';
+        self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: 'zms-dev';
+        self::$ALTCHA_CAPTCHA_SITE_SECRET = getenv('ALTCHA_CAPTCHA_SITE_SECRET') ?: 'zms-dev';
         self::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE = getenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE')
             ?: 'https://captcha-k.muenchen.de/api/v1/captcha/challenge';
         self::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY = getenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY')
