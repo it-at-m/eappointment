@@ -86,6 +86,7 @@ const configureWidget = () => {
 };
 
 onMounted(async () => {
+  console.log("Fetching Captcha Details");
   await fetchCaptchaDetails();
   getWidget()?.addEventListener("statechange", handleStateChange);
   nextTick(() => {
