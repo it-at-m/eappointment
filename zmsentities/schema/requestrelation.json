@@ -41,7 +41,7 @@
         },
         "public": {
             "type": "bool",
-            "description": "Weather request is public available for specific provider",
+            "description": "Whether request is public available for specific provider",
             "default": true
         },
         "maxQuantity": {
