@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Controllers\Security;
+namespace BO\Zmscitizenapi\Controllers\Captcha;
 
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
-use BO\Zmscitizenapi\Services\Security\CaptchaService;
+use BO\Zmscitizenapi\Services\Captcha\CaptchaService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class CaptchaController extends BaseController
+class CaptchaChallengeController extends BaseController
 {
     private CaptchaService $service;
     public function __construct()
@@ -23,10 +23,14 @@ class CaptchaController extends BaseController
     {
         $requestErrors = ValidationService::validateServerGetRequest($request);
         if (!empty($requestErrors['errors'])) {
-            return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
+            return $this->createJsonResponse(
+                $response,
+                $requestErrors,
+                ErrorMessages::get('invalidRequest', $this->language)['statusCode']
+            );
         }
 
-        $result = $this->service->getCaptcha();
+        $result = $this->service->createChallenge();
         return is_array($result) && isset($result['errors'])
             ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
             : $this->createJsonResponse($response, $result, 200);

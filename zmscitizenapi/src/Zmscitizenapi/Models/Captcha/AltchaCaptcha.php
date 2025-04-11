@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Models\Captcha;
 
+use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
 use BO\Zmsentities\Schema\Entity;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
 class AltchaCaptcha extends Entity implements CaptchaInterface
@@ -16,11 +18,13 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
 /** @var string */
     public string $siteKey;
 /** @var string */
-    public string $apiUrl;
+    public string $siteSecret;
 /** @var string */
-    public string $secretKey;
+    public string $challengeUrl;
 /** @var string */
-    public string $puzzle;
+    public string $verifyUrl;
+/** @var Client */
+    protected Client $httpClient;
 /**
      * Constructor.
      */
@@ -28,9 +32,10 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
     {
         $this->service = 'AltchaCaptcha';
         $this->siteKey = \App::$ALTCHA_CAPTCHA_SITE_KEY;
-        $this->apiUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT;
-        $this->secretKey = \App::$ALTCHA_CAPTCHA_SECRET_KEY;
-        $this->puzzle = \App::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
+        $this->siteSecret = \App::$ALTCHA_CAPTCHA_SITE_SECRET;
+        $this->challengeUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
+        $this->verifyUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
+        $this->httpClient = new Client(['verify' => false]);
         $this->ensureValid();
     }
 
@@ -50,36 +55,114 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
     {
         return [
             'siteKey' => $this->siteKey,
-            'captchaEndpoint' => $this->apiUrl,
-            'puzzle' => $this->puzzle,
+            'captchaChallenge' => $this->challengeUrl,
+            'captchaVerify' => $this->verifyUrl,
             'captchaEnabled' => \App::$CAPTCHA_ENABLED
         ];
     }
 
     /**
-     * Überprüft die Captcha-Lösung.
+     * Ruft den externen Altcha-Challenge-Endpunkt auf.
      *
-     * @param string $solution
-     * @return bool
-     * @throws \Exception
+     * @return array
      */
-    public function verifyCaptcha(string $solution): bool
+    public function createChallenge(): array
     {
         try {
-            $response = \App::$http->post($this->apiUrl, [
-                'form_params' => [
-                    'secret' => $this->secretKey,
-                    'solution' => $solution
+            $response = $this->httpClient->post($this->challengeUrl, [
+                'json' => [
+                    'siteKey' => $this->siteKey,
+                    'siteSecret' => $this->siteSecret,
+                    'clientAddress' => ClientIpHelper::getClientIp(),
                 ]
             ]);
-            $responseBody = json_decode((string)$response->getBody(), true);
-            if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['valid'])) {
-                return false;
+
+            $responseData = json_decode((string) $response->getBody(), true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('Fehler beim Dekodieren der JSON-Antwort');
             }
 
-            return $responseBody['valid'] === true;
+            $challenge = $responseData['challenge'] ?? null;
+
+            if ($challenge === null) {
+                throw new \Exception('Challenge-Daten fehlen in der Antwort');
+            }
+
+            return $challenge;
         } catch (RequestException $e) {
-            return false;
+            return [
+                'meta' => ['success' => false, 'error' => 'Request-Fehler: ' . $e->getMessage()],
+                'data' => null,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'meta' => ['success' => false, 'error' => $e->getMessage()],
+                'data' => null,
+            ];
+        }
+    }
+
+    /**
+     * Führt die Verifikation der Challenge-Lösung durch.
+     *
+     * @param string $payload
+     * @return array
+     */
+    public function verifySolution(?string $payload): array
+    {
+        if (!$payload) {
+            return [
+                'meta' => ['success' => false, 'error' => 'Keine Payload übergeben'],
+                'data' => null,
+            ];
+        }
+
+        $decodedJson = base64_decode(strtr($payload, '-_', '+/'));
+        if (!$decodedJson) {
+            return [
+                'meta' => ['success' => false, 'error' => 'Payload konnte nicht dekodiert werden'],
+                'data' => null,
+            ];
+        }
+
+        $decodedPayload = json_decode($decodedJson, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return [
+                'meta' => ['success' => false, 'error' => 'Ungültiges JSON in Payload'],
+                'data' => null,
+            ];
+        }
+
+        try {
+            $response = $this->httpClient->post($this->verifyUrl, [
+                'json' => [
+                    'siteKey' => $this->siteKey,
+                    'siteSecret' => $this->siteSecret,
+                    'payload' => $decodedPayload,
+                ]
+            ]);
+
+            $responseData = json_decode((string) $response->getBody(), true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('Antwort vom Captcha-Service ist kein gültiges JSON');
+            }
+
+            return [
+                'meta' => ['success' => true],
+                'data' => $responseData,
+            ];
+        } catch (RequestException $e) {
+            return [
+                'meta' => ['success' => false, 'error' => 'Request-Fehler: ' . $e->getMessage()],
+                'data' => null,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'meta' => ['success' => false, 'error' => $e->getMessage()],
+                'data' => null,
+            ];
         }
     }
 }

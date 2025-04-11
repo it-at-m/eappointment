@@ -89,10 +89,17 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="showCaptcha"
+      style="margin: 2rem 0 2rem 0"
+    >
+      <Altcha @validationResult="(valid) => (isCaptchaValid = valid)" />
+    </div>
   </div>
   <div class="m-button-group">
     <muc-button
       v-if="service"
+      :disabled="showCaptcha && !isCaptchaValid"
       icon="arrow-right"
       @click="nextStep"
     >
@@ -109,6 +116,7 @@ import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
+import Altcha from "@/components/Appointment/Altcha.vue";
 import ClockSvg from "@/components/Appointment/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -119,6 +127,8 @@ import {
   MAX_SLOTS,
   OFTEN_SEARCHED_SERVICES,
 } from "@/utils/Constants";
+
+const isCaptchaValid = ref<boolean>(false);
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -311,6 +321,25 @@ const nextStep = () => emit("next");
 const skipSubservices = () => {
   if (durationInfo.value) durationInfo.value.focus();
 };
+
+/**
+ * Determines whether the captcha component should be shown.
+ * It checks if the currently selected service is associated with
+ * at least one office that has `captchaActivatedRequired` set to true.
+ */
+const showCaptcha = computed(() => {
+  if (!service.value || !relations.value || !offices.value) return false;
+
+  const relatedOfficeIds = relations.value
+    .filter((relation) => relation.serviceId === service.value.id)
+    .map((relation) => relation.officeId);
+
+  return offices.value.some(
+    (office) =>
+      relatedOfficeIds.includes(office.id) &&
+      office.scope?.captchaActivatedRequired === true
+  );
+});
 
 onMounted(() => {
   //If a selected service already exists, the variables required for the calculation are calculated and initialized with the existing values.

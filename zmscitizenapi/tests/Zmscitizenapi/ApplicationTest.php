@@ -98,10 +98,10 @@ class ApplicationTest extends TestCase
         putenv('FRIENDLY_CAPTCHA_SITE_KEY=test_site');
         putenv('FRIENDLY_CAPTCHA_ENDPOINT=https://test.example.com/verify');
         putenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE=https://test.example.com/puzzle');
-        putenv('ALTCHA_CAPTCHA_SECRET_KEY=alt_secret');
         putenv('ALTCHA_CAPTCHA_SITE_KEY=alt_site');
-        putenv('ALTCHA_CAPTCHA_ENDPOINT=https://test.altcha.org/form');
-        putenv('ALTCHA_CAPTCHA_ENDPOINT_PUZZLE=https://test.altcha.org');
+        putenv('ALTCHA_CAPTCHA_SITE_SECRET=alt_secret');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=https://captcha-k.muenchen.de/api/v1/captcha/challenge');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY=https://captcha-k.muenchen.de/api/v1/captcha/verify');
 
         Application::initialize();
 
@@ -110,10 +110,10 @@ class ApplicationTest extends TestCase
         $this->assertEquals('test_site', Application::$FRIENDLY_CAPTCHA_SITE_KEY);
         $this->assertEquals('https://test.example.com/verify', Application::$FRIENDLY_CAPTCHA_ENDPOINT);
         $this->assertEquals('https://test.example.com/puzzle', Application::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE);
-        $this->assertEquals('alt_secret', Application::$ALTCHA_CAPTCHA_SECRET_KEY);
         $this->assertEquals('alt_site', Application::$ALTCHA_CAPTCHA_SITE_KEY);
-        $this->assertEquals('https://test.altcha.org/form', Application::$ALTCHA_CAPTCHA_ENDPOINT);
-        $this->assertEquals('https://test.altcha.org', Application::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE);
+        $this->assertEquals('alt_secret', Application::$ALTCHA_CAPTCHA_SITE_SECRET);
+        $this->assertEquals('https://captcha-k.muenchen.de/api/v1/captcha/challenge', Application::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE);
+        $this->assertEquals('https://captcha-k.muenchen.de/api/v1/captcha/verify', Application::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY);
     }
 
     public function testInitializeCache(): void
@@ -228,10 +228,10 @@ class ApplicationTest extends TestCase
         putenv('FRIENDLY_CAPTCHA_SITE_KEY');
         putenv('FRIENDLY_CAPTCHA_ENDPOINT');
         putenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE');
-        putenv('ALTCHA_CAPTCHA_SECRET_KEY');
         putenv('ALTCHA_CAPTCHA_SITE_KEY');
-        putenv('ALTCHA_CAPTCHA_ENDPOINT');
-        putenv('ALTCHA_CAPTCHA_ENDPOINT_PUZZLE');
+        putenv('ALTCHA_CAPTCHA_SITE_SECRET');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE');
+        putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY');
         putenv('CACHE_DIR');
         putenv('SOURCE_CACHE_TTL');
         putenv('RATE_LIMIT_MAX_REQUESTS');

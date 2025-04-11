@@ -13,7 +13,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "4.0.0",
+    "@muenchen/muc-patternlab-vue": "4.0.0-beta.1",
+    "altcha": "^1.2.0",
     "jsdom": "^26.0.0",
     "vue": "^3.5.12",
     "vue-i18n": "10.0.7",
