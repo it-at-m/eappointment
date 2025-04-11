@@ -14,21 +14,22 @@ jobs:
         include: # hier müssen die Pfade angegeben werden
           - app-path: zmscitizenview
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@533797a90b5644c4b4e42c8945bbcc5c7c75415d # v1.0.7
-      - if: ${{ hashFiles(format('./{0}/package.json', matrix.app-path)) != null }}
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - if:  ${{hashFiles(format('./{0}/package.json', matrix.app-path))!=null}}
         id: node
-        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@533797a90b5644c4b4e42c8945bbcc5c7c75415d # v1.0.7
+        uses: it-at-m/.github/.github/actions/action-npm-build@main
         with:
-          app-path: ${{ matrix.app-path }}
-      - if: ${{ hashFiles(format('./{0}/pom.xml', matrix.app-path)) != null }}
+          app-path:  "${{ matrix.app-path }}"
+      - if:  ${{hashFiles(format('./{0}/pom.xml', matrix.app-path))!=null}}
         id: maven
-        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@533797a90b5644c4b4e42c8945bbcc5c7c75415d # v1.0.7
+        uses: it-at-m/.github/.github/actions/action-maven-build@main
         with:
-          app-path: ${{ matrix.app-path }}
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@533797a90b5644c4b4e42c8945bbcc5c7c75415d # v1.0.7
+          app-path: "${{ matrix.app-path }}"
+      - uses: it-at-m/.github/.github/actions/action-build-image@main
         with:
-          path: ${{ matrix.app-path }}
-          image-name: ${{ matrix.app-path }}
-          artifact-name: ${{ join(steps.*.outputs.artifact-name) }}
+          path: "${{  matrix.app-path }}"
+          image-name: "${{  matrix.app-path }}"
+          artifact-name: ${{join(steps.*.outputs.artifact-name)}}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           registry-username: ${{ github.actor }}
+          image-tags: "branch-${{ github.ref_name }}"
