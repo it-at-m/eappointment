@@ -37,6 +37,8 @@ import {
   VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT,
 } from "@/utils/Constants";
 
+console.log("Altcha component script executing");
+
 import "altcha";
 
 const altchaWidget = ref<Partial<AltchaWidget> | null>(null);
@@ -47,6 +49,8 @@ const captchaVerifyUrl = ref<string | null>(null);
 const captchaEnabled = ref<boolean>(true);
 const widgetLoaded = ref<boolean>(false);
 const widgetConfigured = ref<boolean>(false);
+
+console.log("Altcha component refs initialized");
 
 const emit = defineEmits<{
   (e: "validationResult", value: boolean): void;
