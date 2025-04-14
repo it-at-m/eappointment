@@ -14,20 +14,33 @@ class Validator
     protected $validator;
     protected $validationResult;
 
+    private static $schemasLoaded = false;
+    private static $validatorInstance = null;
+
     public function __construct($data, Schema $schemaObject, $locale)
     {
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
-        $this->validator = new OpisValidator();
+        
+        // Use static validator instance if available
+        if (self::$validatorInstance === null) {
+            self::$validatorInstance = new OpisValidator();
+            $formats = self::$validatorInstance->parser()->getFormatResolver();
+            $formats->registerCallable("array", "sameValues", function (array $data): bool {
+                return count($data) === 2 && $data[0] === $data[1];
+            });
+        }
+        $this->validator = self::$validatorInstance;
 
-        $formats = $this->validator->parser()->getFormatResolver();
-        $formats->registerCallable("array", "sameValues", function (array $data): bool {
-            return count($data) === 2 && $data[0] === $data[1];
-        });
+        // Load schemas only once for each process
+        if (!self::$schemasLoaded) {
+            $this->loadSchemas();
+            self::$schemasLoaded = true;
+        }
 
-        $this->loadSchemas();
-        $schemaJson = $schemaObject->toJsonObject();
+        $schemaJson = json_decode(json_encode($schemaObject->toJsonObject()));
+        $data = json_decode(json_encode($data));
         $this->validationResult = $this->validator->validate($data, $schemaJson);
     }
 
@@ -36,6 +49,8 @@ class Validator
         $schemaPath = realpath(dirname(__FILE__) . '/../../../schema') . '/';
         $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
         $schemaFiles = glob($schemaPath . '*.json');
+
+        // TODO: Implement persistent caching for schema file reads to reduce redundant disk I/O and improve application performance. Not just for each process.
 
         foreach ($schemaFiles as $schemaFile) {
             $schemaContent = file_get_contents($schemaFile);
