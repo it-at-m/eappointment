@@ -458,6 +458,11 @@ class ErrorMessages
             'statusCode' => self::HTTP_UNAVAILABLE,
             'errorMessage' => 'Der Dienst ist nicht verfügbar: Die Anwendung wird gerade gewartet.'
         ],
+        'invalidSchema' => [
+            'errorCode' => 'invalidSchema',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Daten entsprechen nicht dem erforderlichen Schema.'
+        ],
 
         //Zmsapi exceptions
         'internalError' => [
@@ -749,6 +754,11 @@ class ErrorMessages
             'errorCode' => 'serviceUnavailable',
             'statusCode' => self::HTTP_UNAVAILABLE,
             'errorMessage' => 'Сервіс недоступний: Додаток перебуває на технічному обслуговуванні.'
+        ],
+        'invalidSchema' => [
+            'errorCode' => 'invalidSchema',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Дані не відповідають необхідній схемі.'
         ],
         'internalError' => [
             'errorCode' => 'internalError',
