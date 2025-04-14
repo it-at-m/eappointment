@@ -33,7 +33,6 @@ class Access extends \BO\Slim\Controller
     protected function initAccessRights($request)
     {
         $this->workstation = $this->readWorkstation();
-        // Skip department lookup for workstation selection page
         if ($this->workstation && isset($this->workstation->scope['id']) && $this->workstation->scope['id'] > 0) {
             $this->department = $this->readDepartment();
             $this->organisation = $this->readOrganisation();
