@@ -113,7 +113,7 @@ class RequestRelation extends Base
                         'provider__id' => $provider['id'],
                         'request__id' => $reference['service'],
                         'slots' => $reference['appointment']['slots'],
-                        'public_visibility' => $reference['public'] ?? true,
+                        'public_visibility' => isset($reference['public']) && !$reference['public'] ? 0 : 1,
                         'max_quantity' => $reference['maxQuantity'] ?? null,
                         'bookable' => ($reference['appointment']['allowed'] ? 1 : 0)
                     ]);
