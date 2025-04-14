@@ -27,8 +27,7 @@ class Validator
         });
 
         $this->loadSchemas();
-        $schemaJson = json_decode(json_encode($schemaObject->toJsonObject()));
-        $data = json_decode(json_encode($data));
+        $schemaJson = $schemaObject->toJsonObject();
         $this->validationResult = $this->validator->validate($data, $schemaJson);
     }
 
