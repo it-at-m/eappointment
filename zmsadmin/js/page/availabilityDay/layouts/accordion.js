@@ -143,7 +143,7 @@ class Accordion extends Component
                                         availability?.description?.includes(text);
 
                                     if (availability?.kind === 'origin' || hasDescriptionText('Regelserie')) {
-                                        return { backgroundColor: '#F0F0F0' };
+                                        return { backgroundColor: '#ffffff' };
                                     } else if (availability?.kind === 'exclusion' || hasDescriptionText('Ausnahme')) {
                                         return { backgroundColor: '#FFE05B' };
                                     }
@@ -195,7 +195,7 @@ class Accordion extends Component
                 margin: '20px 0'
             }}>
                 {[
-                    { color: '#F0F0F0', label: 'Regelserie' },
+                    { color: '#ffffff', label: 'Regelserie' },
                     { color: '#FFE05B', label: 'Ausnahme' },
                 ].map(({ color, label }) => (
                     <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
