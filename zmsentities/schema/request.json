@@ -138,7 +138,15 @@
     "additionalProperties": true,
     "properties": {
         "id": {
-            "type": "string",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "reference to a service",
             "default": ""
         },

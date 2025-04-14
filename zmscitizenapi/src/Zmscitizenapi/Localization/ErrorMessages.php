@@ -160,6 +160,11 @@ class ErrorMessages
             'statusCode' => self::HTTP_UNAVAILABLE,
             'errorMessage' => 'Service Unavailable: The application is under maintenance.'
         ],
+        'invalidSchema' => [
+            'errorCode' => 'invalidSchema',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Data does not match the required schema.'
+        ],
 
         //Zmsapi exceptions
         'internalError' => [
