@@ -22,7 +22,7 @@ class Validator
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
-        
+
         // Use static validator instance if available
         if (self::$validatorInstance === null) {
             self::$validatorInstance = new OpisValidator();
