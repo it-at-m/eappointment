@@ -295,7 +295,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "0872c93acc82513b7716e7815659be8537e81a4f"
+                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
             },
             "require": {
                 "aura/sql": "^4",
@@ -310,8 +310,7 @@
                 "ext-mbstring": ">=0",
                 "ext-pcre": ">=0",
                 "ext-pdo": "*",
-                "php": ">=7.3.0",
-                "solution10/sql": "^1.3"
+                "php": ">=7.3.0"
             },
             "require-dev": {
                 "mockery/mockery": "^0.9.4",
@@ -379,7 +378,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "1c02fdbeeefac41d1a9c54bfe8b0f456d8c1f7d1"
+                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -446,7 +445,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "6d50c616376c01caa495318e4a4c3825703dd24b"
+                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -454,7 +453,7 @@
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
                 "ext-pcre": ">=0",
-                "giggsey/libphonenumber-for-php": "^8.8.4",
+                "giggsey/libphonenumber-for-php": "^8.13.55",
                 "league/html-to-markdown": "^5.0",
                 "opis/json-schema": "^2.4",
                 "php": ">=7.3.0",
@@ -502,7 +501,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "13a59e7a34592936e535a28e485c504f8719b5f0"
+                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -677,31 +676,36 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.13.23",
+            "version": "8.13.55",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "b2dff83693cb46eb4478b193e9d94e2ff6258480"
+                "reference": "6e28b3d53cf96d7f41c83d9b80b6021ecbd00537"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/b2dff83693cb46eb4478b193e9d94e2ff6258480",
-                "reference": "b2dff83693cb46eb4478b193e9d94e2ff6258480",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/6e28b3d53cf96d7f41c83d9b80b6021ecbd00537",
+                "reference": "6e28b3d53cf96d7f41c83d9b80b6021ecbd00537",
                 "shasum": ""
             },
             "require": {
-                "giggsey/locale": "^1.7|^2.0",
-                "php": ">=5.3.2",
+                "giggsey/locale": "^2.0",
+                "php": "^7.4|^8.0",
                 "symfony/polyfill-mbstring": "^1.17"
             },
+            "replace": {
+                "giggsey/libphonenumber-for-php-lite": "self.version"
+            },
             "require-dev": {
-                "pear/pear-core-minimal": "^1.9",
+                "friendsofphp/php-cs-fixer": "^3.64",
+                "pear/pear-core-minimal": "^1.10",
                 "pear/pear_exception": "^1.0",
-                "pear/versioncontrol_git": "^0.5",
-                "phing/phing": "^2.7",
-                "php-coveralls/php-coveralls": "^1.0|^2.0",
-                "symfony/console": "^2.8|^3.0|^v4.4|^v5.2",
-                "symfony/phpunit-bridge": "^4.2 || ^5"
+                "pear/versioncontrol_git": "^0.7",
+                "phing/phing": "^3.0",
+                "php-coveralls/php-coveralls": "^2.0",
+                "phpunit/phpunit": "^9.6",
+                "symfony/console": "^v5.2",
+                "symfony/var-exporter": "^5.2"
             },
             "type": "library",
             "extra": {
@@ -745,7 +749,7 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2023-10-11T07:12:56+00:00"
+            "time": "2025-02-14T08:14:08+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -2886,55 +2890,6 @@
                 "source": "https://github.com/slimphp/Twig-View/tree/3.2.0"
             },
             "time": "2020-12-08T17:04:14+00:00"
-        },
-        {
-            "name": "solution10/sql",
-            "version": "v1.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Solution10/sql.git",
-                "reference": "06c7b9da79dddb52da9442e2adbbfcff6b252e12"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Solution10/sql/zipball/06c7b9da79dddb52da9442e2adbbfcff6b252e12",
-                "reference": "06c7b9da79dddb52da9442e2adbbfcff6b252e12",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">= 5.4"
-            },
-            "require-dev": {
-                "solution10/devkit": "~1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Solution10\\SQL\\": "src",
-                    "Solution10\\SQL\\Tests\\": "tests"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Alex Gisby",
-                    "email": "alex@solution10.com"
-                }
-            ],
-            "description": "Completely standalone, expressive SQL query creator. No database or ORM needed.",
-            "keywords": [
-                "component",
-                "database",
-                "sql"
-            ],
-            "support": {
-                "issues": "https://github.com/Solution10/sql/issues",
-                "source": "https://github.com/Solution10/sql/tree/master"
-            },
-            "time": "2015-07-26T09:26:21+00:00"
         },
         {
             "name": "stevenmaguire/oauth2-keycloak",

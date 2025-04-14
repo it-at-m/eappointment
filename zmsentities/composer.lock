@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "08230cdff5b00898492a8298612e7d7b",
+    "content-hash": "dcbab57b73f82cd6128c1287f46df059",
     "packages": [
         {
             "name": "eappointment/mellon",

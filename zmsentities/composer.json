@@ -17,7 +17,7 @@
         "eappointment/mellon": "@dev",
         "twig/twig": "3.*",
         "league/html-to-markdown": "^5.0",
-        "giggsey/libphonenumber-for-php": "^8.8.4",
+        "giggsey/libphonenumber-for-php": "^8.13.55",
         "twig/intl-extra": "^3.4",
         "symfony/translation": "^5.4",
         "symfony/twig-bridge": "^5.4",
