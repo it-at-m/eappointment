@@ -14,22 +14,22 @@ jobs:
         include: # hier müssen die Pfade angegeben werden
           - app-path: zmscitizenview
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@533797a90b5644c4b4e42c8945bbcc5c7c75415d # v1.0.7
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@6b19f8dd2bee160bee82bde4fa04ac9f6c1d5e1e # v1.0.5
       - if: ${{hashFiles(format('./{0}/package.json', matrix.app-path))!=null}}
         id: node
-        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@533797a90b5644c4b4e42c8945bbcc5c7c75415d # v1.0.7
+        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@6b19f8dd2bee160bee82bde4fa04ac9f6c1d5e1e # v1.0.5
         with:
           app-path: "${{ matrix.app-path }}"
       - if: ${{hashFiles(format('./{0}/pom.xml', matrix.app-path))!=null}}
         id: maven
-        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@533797a90b5644c4b4e42c8945bbcc5c7c75415d # v1.0.7
+        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@6b19f8dd2bee160bee82bde4fa04ac9f6c1d5e1e # v1.0.5
         with:
           app-path: "${{ matrix.app-path }}"
-      - if: github.ref == 'refs/heads/main'
-        uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@533797a90b5644c4b4e42c8945bbcc5c7c75415d # v1.0.7
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@6b19f8dd2bee160bee82bde4fa04ac9f6c1d5e1e # v1.0.5
         with:
           path: "${{  matrix.app-path }}"
           image-name: "${{  matrix.app-path }}"
           artifact-name: ${{join(steps.*.outputs.artifact-name)}}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           registry-username: ${{ github.actor }}
+          image-tags: "branch-${{ github.ref_name }}"

@@ -141,6 +141,10 @@ class ExceptionService
                 $error = self::getError('sourceNotFound');
 
                 break;
+            case 'BO\\Zmsentities\\Exception\\SchemaValidation':
+                $error = self::getError('invalidSchema');
+
+                break;
 
             // Use original message for unmapped exceptions
             default:
