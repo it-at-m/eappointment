@@ -1,0 +1,51 @@
+{
+    "title": "AltchaCaptchaSolutionRequest",
+    "type": "object",
+    "properties": {
+        "siteKey": {
+            "type": "string",
+            "description": "Site key for AltchaCaptcha integration"
+        },
+        "siteSecret": {
+            "type": "string",
+            "description": "Site secret for AltchaCaptcha integration"
+        },
+        "payload": {
+            "type": "object",
+            "properties": {
+                "algorithm": {
+                    "type": "string",
+                    "description": "The algorithm used for HMAC signature"
+                },
+                "challenge": {
+                    "type": "string",
+                    "description": "The challenge itself"
+                },
+                "number": {
+                    "type": "number",
+                    "description": "The solution to the challenge"
+                },
+                "salt": {
+                    "type": "string",
+                    "minLength": 10,
+                    "description": "Random string as part of the challenge"
+                },
+                "signature": {
+                    "type": "string",
+                    "description": "HMAC signature of the verification data"
+                },
+                "took": {
+                    "type": "number",
+                    "description": "Time of challenge completion in milliseconds"
+                }
+            }
+        }
+    },
+    "required": [
+        "siteKey",
+        "siteSecret",
+        "payload"
+    ],
+    "description": "Schema definition for an AltchaCaptcha solution request"
+}
+    

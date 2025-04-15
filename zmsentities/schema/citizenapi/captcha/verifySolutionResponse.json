@@ -1,0 +1,15 @@
+{
+    "title": "AltchaCaptchaSolutionResponse",
+    "type": "object",
+    "properties": {
+        "valid": {
+            "type": "boolean",
+            "description": "Indicates whether the solution is valid"
+        }
+    },
+    "required": [
+        "valid"
+    ],
+    "description": "Schema definition for an AltchaCaptcha solution response"
+}
+    

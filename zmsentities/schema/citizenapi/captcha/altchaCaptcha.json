@@ -1,25 +1,30 @@
 {
-    "title": "AltchaCaptcha",
-    "type": ["array", "object", "null"],
+    "title": "AltchaCaptchaConfig",
+    "type": ["array", "object"],
     "properties": {
-      "siteKey": {
-        "type": ["string", "null"],
-        "description": "Site key for AltchaCaptcha integration"
-      },
-      "captchaEndpoint": {
-        "type": ["string", "null"],
-        "description": "Endpoint for captcha verification"
-      },
-      "puzzle": {
-        "type": ["string", "null"],
-        "description": "Puzzle endpoint URL for AltchaCaptcha"
-      },
-      "captchaEnabled": {
-        "type": ["boolean", "null"],
-        "description": "Indicates if captcha is enabled"
-      }
+        "siteKey": {
+            "type": "string",
+            "description": "Site key for AltchaCaptcha integration"
+        },
+        "captchaChallenge": {
+            "type": "string",
+            "description": "Challenge endpoint URL for AltchaCaptcha"
+        },
+        "captchaVerify": {
+            "type": "string",
+            "description": "Endpoint for captcha verification"
+        },
+        "captchaEnabled": {
+            "type": "boolean",
+            "description": "Indicates if captcha is enabled"
+        }
     },
-    "required": ["siteKey", "captchaEndpoint", "puzzle", "captchaEnabled"],
+    "required": [
+        "siteKey",
+        "captchaChallenge",
+        "captchaVerify",
+        "captchaEnabled"
+    ],
     "description": "Schema definition for AltchaCaptcha configuration"
-  }
+}
   

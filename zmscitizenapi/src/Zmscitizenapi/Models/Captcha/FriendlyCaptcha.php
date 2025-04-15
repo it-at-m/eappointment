@@ -57,29 +57,68 @@ class FriendlyCaptcha extends Entity implements CaptchaInterface
     }
 
     /**
+     * Fordert eine neue Captcha-Challenge an.
+     * For FriendlyCaptcha, this is a no-op as the challenge is generated client-side.
+     *
+     * @return array
+     */
+    public function createChallenge(): array
+    {
+        return [
+            'meta' => ['success' => true],
+            'data' => [
+                'siteKey' => $this->siteKey,
+                'apiUrl' => $this->apiUrl,
+                'puzzle' => $this->puzzle
+            ]
+        ];
+    }
+
+    /**
      * Überprüft die Captcha-Lösung.
      *
-     * @param string $solution
-     * @return bool
-     * @throws \Exception
+     * @param string $payload
+     * @return array
      */
-    public function verifyCaptcha(string $solution): bool
+    public function verifySolution(string $payload): array
     {
         try {
             $response = \App::$http->post($this->apiUrl, [
                 'form_params' => [
                     'secret' => $this->secretKey,
-                    'solution' => $solution
+                    'solution' => $payload
                 ]
             ]);
             $responseBody = json_decode((string)$response->getBody(), true);
-            if (json_last_error() !== JSON_ERROR_NONE || !isset($responseBody['success'])) {
-                return false;
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return [
+                    'meta' => ['success' => false, 'error' => 'Invalid JSON response'],
+                    'data' => null
+                ];
             }
 
-            return $responseBody['success'] === true;
+            if (!isset($responseBody['success'])) {
+                return [
+                    'meta' => ['success' => false, 'error' => 'Missing success field in response'],
+                    'data' => null
+                ];
+            }
+
+            return [
+                'meta' => ['success' => true],
+                'data' => ['valid' => $responseBody['success'] === true]
+            ];
         } catch (RequestException $e) {
-            return false;
+            return [
+                'meta' => ['success' => false, 'error' => 'Request error: ' . $e->getMessage()],
+                'data' => null
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'meta' => ['success' => false, 'error' => $e->getMessage()],
+                'data' => null
+            ];
         }
     }
 }
