@@ -50,6 +50,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "lat" => "48.12750898398659",
                         "lon" => "11.604317899956524"
                     ],
+                    "disabledByServices" => [],
                     "scope" => [
                         "id" => 1,
                         "provider" => [
@@ -93,6 +94,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "lat" => "48.12750898398659",
                         "lon" => "11.604317899956524"
                     ],
+                    "disabledByServices" => [],
                     "scope" => [
                         "id" => 2,
                         "provider" => [
@@ -186,6 +188,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "lat" => "48.12750898398659",
                         "lon" => "11.604317899956524"
                     ],
+                    "disabledByServices" => [],
                     "scope" => [
                         "id" => 1,
                         "provider" => [
@@ -229,6 +232,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "lat" => "48.12750898398659",
                         "lon" => "11.604317899956524"
                     ],
+                    "disabledByServices" => [],
                     "scope" => [
                         "id" => 2,
                         "provider" => [
