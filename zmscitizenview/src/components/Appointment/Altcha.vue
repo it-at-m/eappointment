@@ -34,6 +34,7 @@ const captchaEnabled = ref<boolean>(true);
 
 const emit = defineEmits<{
   (e: "validationResult", value: boolean): void;
+  (e: "tokenChanged", token: string | null): void;
 }>();
 
 const fetchCaptchaDetails = async () => {
@@ -68,6 +69,14 @@ const handleStateChange = (ev: CustomEvent | Event) => {
   }
 };
 
+const handleServerVerification = (ev: CustomEvent | Event) => {
+  console.log("SERVER VERIFICATION EVENT:", ev);
+  if ("detail" in ev) {
+    console.log("TOKEN:", ev.detail.token);
+    emit("tokenChanged", ev.detail.token);
+  }
+};
+
 const configureWidget = () => {
   const widget = getWidget();
   if (widget) {
@@ -96,6 +105,7 @@ const configureWidget = () => {
 onMounted(async () => {
   await fetchCaptchaDetails();
   getWidget()?.addEventListener("statechange", handleStateChange);
+  getWidget()?.addEventListener("serververification", handleServerVerification);
   nextTick(() => {
     configureWidget();
   });
@@ -103,5 +113,9 @@ onMounted(async () => {
 
 onUnmounted(() => {
   getWidget()?.removeEventListener("statechange", handleStateChange);
+  getWidget()?.removeEventListener(
+    "serververification",
+    handleServerVerification
+  );
 });
 </script>

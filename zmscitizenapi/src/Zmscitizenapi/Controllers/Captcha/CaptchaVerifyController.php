@@ -32,8 +32,9 @@ class CaptchaVerifyController extends BaseController
 
         $data = $request->getParsedBody();
         $payload = $data['payload'] ?? null;
-        error_log('POST BODY: ' . print_r($payload, true));
+        error_log('PAYLOAD: ' . print_r($payload, true));
         $result = $this->service->verifySolution($payload);
+        error_log('RESULT: ' . print_r($result, true));
         return is_array($result) && isset($result['errors'])
             ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
             : $this->createJsonResponse($response, $result, 200);

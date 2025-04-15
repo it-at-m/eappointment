@@ -247,6 +247,7 @@ const props = defineProps<{
   exclusiveLocation: string | undefined;
   preselectedOfficeId: string | undefined;
   selectedServiceMap: Map<string, number>;
+  captchaToken: string | null;
   t: (key: string) => string;
 }>();
 
@@ -339,8 +340,10 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
     selectedProvider.value,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
-    props.baseUrl ?? undefined
+    props.baseUrl ?? undefined,
+    props.captchaToken ?? undefined
   ).then((data) => {
+    console.log("Token aus CalendarView:", props.captchaToken);
     if ((data as AvailableDaysDTO).availableDays !== undefined) {
       availableDays.value = (data as AvailableDaysDTO).availableDays;
       selectedDay.value = new Date(availableDays.value[0]);

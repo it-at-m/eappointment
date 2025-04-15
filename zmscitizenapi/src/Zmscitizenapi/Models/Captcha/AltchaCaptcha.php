@@ -20,6 +20,8 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
 /** @var string */
     public string $siteSecret;
 /** @var string */
+    private string $tokenSecret;
+/** @var string */
     public string $challengeUrl;
 /** @var string */
     public string $verifyUrl;
@@ -33,6 +35,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         $this->service = 'AltchaCaptcha';
         $this->siteKey = \App::$ALTCHA_CAPTCHA_SITE_KEY;
         $this->siteSecret = \App::$ALTCHA_CAPTCHA_SITE_SECRET;
+        $this->tokenSecret = 'geheimes_passwort';
         $this->challengeUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
         $this->verifyUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
         $this->httpClient = new Client(['verify' => false]);
@@ -59,6 +62,25 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
             'captchaVerify' => $this->verifyUrl,
             'captchaEnabled' => \App::$CAPTCHA_ENABLED
         ];
+    }
+
+    private function generateToken(): string
+    {
+        $payload = [
+            'ip' => ClientIpHelper::getClientIp(),
+            'iat' => time(),
+            'exp' => time() + 300, // 5 Minuten gültig
+        ];
+
+        $json = json_encode($payload);
+        $base64Payload = base64_encode($json);
+        $signature = hash_hmac('sha256', $base64Payload, $this->tokenSecret, true);
+        $base64Signature = base64_encode($signature);
+
+        $token = $base64Payload . '.' . $base64Signature;
+        error_log('TOKEN: ' . print_r($token, true));
+
+        return $token;
     }
 
     /**
@@ -152,6 +174,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
             return [
                 'meta' => ['success' => true],
                 'data' => $responseData,
+                'token' => $this->generateToken(),
             ];
         } catch (RequestException $e) {
             return [

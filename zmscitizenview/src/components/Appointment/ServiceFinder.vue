@@ -93,7 +93,12 @@
       v-if="showCaptcha"
       style="margin: 2rem 0 2rem 0"
     >
-      <Altcha @validationResult="(valid) => (isCaptchaValid = valid)" />
+      <Altcha
+        @validationResult="(valid) => (isCaptchaValid = valid)"
+        @tokenChanged="
+          (token: string | null) => emit('captchaTokenChanged', token)
+        "
+      />
     </div>
   </div>
   <div class="m-button-group">
@@ -129,6 +134,7 @@ import {
 } from "@/utils/Constants";
 
 const isCaptchaValid = ref<boolean>(false);
+const captchaToken = ref<string | null>(null);
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -138,7 +144,10 @@ const props = defineProps<{
   t: (key: string) => string;
 }>();
 
-const emit = defineEmits<(e: "next") => void>();
+const emit = defineEmits<{
+  (e: "next"): void;
+  (e: "captchaTokenChanged", token: string | null): void;
+}>();
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);

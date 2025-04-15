@@ -48,7 +48,8 @@ export function fetchAvailableDays(
   provider: OfficeImpl,
   serviceIds: string[],
   serviceCounts: number[],
-  baseUrl?: string
+  baseUrl?: string,
+  captchaToken?: string
 ): Promise<AvailableDaysDTO | ErrorDTO> {
   const params: Record<string, any> = {
     startDate: convertDateToString(TODAY),
@@ -56,6 +57,7 @@ export function fetchAvailableDays(
     officeId: provider.id,
     serviceId: serviceIds,
     serviceCount: serviceCounts,
+    ...(captchaToken && { captchaToken }),
   };
 
   return fetch(

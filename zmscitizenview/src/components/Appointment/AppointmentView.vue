@@ -22,6 +22,7 @@
                 :exclusive-location="exclusiveLocation"
                 :t="t"
                 @next="setServices"
+                @captchaTokenChanged="captchaToken = $event"
               />
             </div>
             <div v-if="currentView === 1">
@@ -31,6 +32,7 @@
                 :exclusive-location="exclusiveLocation"
                 :preselected-office-id="preselectedLocationId"
                 :selected-service-map="selectedServiceMap"
+                :captcha-token="captchaToken"
                 :t="t"
                 @back="decreaseCurrentView"
                 @next="nextReserveAppointment"
@@ -264,6 +266,7 @@ const offices = ref<Office[]>([]);
 
 const rebookOrCanelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
+const captchaToken = ref<string | null>(null);
 
 const appointmentNotAvailableError = ref<boolean>(false);
 const updateAppointmentError = ref<boolean>(false);
@@ -472,6 +475,10 @@ const nextCancelReschedule = () => {
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
+});
+
+watch(captchaToken, (newVal) => {
+  console.log("Aktueller Captcha-Token in AppointmentView:", newVal);
 });
 
 /**
