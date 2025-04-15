@@ -43,7 +43,9 @@ $logger = new LoggerService();
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\LanguageMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\SecurityHeadersMiddleware($logger));
-App::$slim->add(new \BO\Zmscitizenapi\Middleware\CorsMiddleware($logger));
+// Todo: Enable CORS when the old frontend is replaced with Zmscitizenview
+//App::$slim->add(new \BO\Zmscitizenapi\Middleware\CorsMiddleware($logger));
+// Todo: Implement CSRF with Zmscitizenview
 //App::$slim->add(new \BO\Zmscitizenapi\Middleware\CsrfMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RateLimitingMiddleware($cache, $logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestSanitizerMiddleware($logger));
