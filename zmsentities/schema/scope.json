@@ -134,7 +134,7 @@
             }
         },
         "closure": {
-            "type": "array",
+            "type": "object",
             "items": {
                 "$ref": "closure.json"
             }
