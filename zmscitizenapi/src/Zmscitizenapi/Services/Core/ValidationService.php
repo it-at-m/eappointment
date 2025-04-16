@@ -213,7 +213,7 @@ class ValidationService
 
     private static function validateEmailField(?string $email, ?ThinnedScope $scope, array &$errors): void
     {
-        if ($scope && $scope->emailRequired && !self::isValidEmail($email)) {
+        if ($scope && $scope->emailRequired && ($email === "" || !self::isValidEmail($email))) {
             $errors[] = self::getError('invalidEmail');
         }
     }
@@ -225,8 +225,8 @@ class ValidationService
         }
 
         if (
-            ($scope->telephoneRequired && !self::isValidTelephone($telephone)) ||
-            ($telephone !== null && !self::isValidTelephone($telephone))
+            ($scope->telephoneRequired && ($telephone === "" || !self::isValidTelephone($telephone))) ||
+            ($telephone !== null && $telephone !== "" && !self::isValidTelephone($telephone))
         ) {
             $errors[] = self::getError('invalidTelephone');
         }
@@ -239,8 +239,8 @@ class ValidationService
         }
 
         if (
-            ($scope->customTextfieldRequired && !self::isValidCustomTextfield($customTextfield)) ||
-            ($customTextfield !== null && !self::isValidCustomTextfield($customTextfield))
+            ($scope->customTextfieldRequired && ($customTextfield === "" || !self::isValidCustomTextfield($customTextfield))) ||
+            ($customTextfield !== null && $customTextfield !== "" && !self::isValidCustomTextfield($customTextfield))
         ) {
             $errors[] = self::getError('invalidCustomTextfield');
         }
@@ -316,9 +316,9 @@ class ValidationService
             : [];
     }
 
-    public static function validatenoAppointmentForThisScope(): array
+    public static function validateNoAppointmentsAtLocation(): array
     {
-        return ['errors' => [self::getError('noAppointmentForThisScope')]];
+        return ['errors' => [self::getError('noAppointmentsAtLocation')]];
     }
 
     public static function validateServiceArrays(array $serviceIds, array $serviceCounts): array
