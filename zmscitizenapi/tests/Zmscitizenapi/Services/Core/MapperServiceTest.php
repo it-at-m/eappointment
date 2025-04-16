@@ -518,7 +518,7 @@ class MapperServiceTest extends TestCase
         
         $relationList = new RequestRelationList([$relation1, $relation2]);
         
-        $result = MapperService::mapRelations($relationList);
+        $result = MapperService::mapRelations($relationList, true);
         $this->assertInstanceOf(OfficeServiceRelationList::class, $result);
         
         $relations = $result->toArray()['relations'];
@@ -535,7 +535,7 @@ class MapperServiceTest extends TestCase
     
     public function testMapRelationsWithEmptyList()
     {
-        $result = MapperService::mapRelations(new RequestRelationList());
+        $result = MapperService::mapRelations(new RequestRelationList(), true);
         $this->assertInstanceOf(OfficeServiceRelationList::class, $result);
         $this->assertEmpty($result->toArray()['relations']);
     }
