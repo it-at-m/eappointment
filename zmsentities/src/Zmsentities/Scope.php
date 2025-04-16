@@ -21,7 +21,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
             'contact' => new Contact(),
             'provider' => new Provider(),
             'shortName' => '',
-            'dayoff' => new Dayoff()
+            'dayoff' => new \BO\Zmsentities\Collection\DayoffList()
         ];
     }
 

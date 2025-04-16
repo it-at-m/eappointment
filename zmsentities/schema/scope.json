@@ -128,7 +128,7 @@
             "$ref": "contact.json"
         },
         "dayoff": {
-            "type": "object",
+            "type": "array",
             "items": {
                 "$ref": "dayoff.json"
             }

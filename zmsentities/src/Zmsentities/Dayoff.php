@@ -11,7 +11,6 @@ class Dayoff extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'id' => 123,
             'date' => 1447924981,
             'name' => ''
         ];
