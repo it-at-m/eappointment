@@ -13,6 +13,8 @@ class Application
      * Name of the application
      */
     const IDENTIFIER = 'unnamed slim project';
+
+    public const MODULE_NAME = 'unnamed slim module';
 /**
      * Flag to enable debugging mode for application,
      * if debug is enabled, an exception is shown with a backtrace

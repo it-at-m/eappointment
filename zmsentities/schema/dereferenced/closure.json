@@ -11,7 +11,15 @@
     "additionalProperties": false,
     "properties": {
         "id": {
-            "type": "number"
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
         },
         "Datum": {
             "type": "number",
@@ -20,6 +28,39 @@
         "lastChange": {
             "type": "number",
             "description": "unix timestamp of the last change on this closure"
+        },
+        "year": {
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
+        },
+        "month": {
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
+        },
+        "day": {
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
         }
     }
 }

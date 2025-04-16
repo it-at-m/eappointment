@@ -1,0 +1,1 @@
+ALTER TABLE `request_provider` ADD COLUMN `public_visibility` BOOL DEFAULT 1;

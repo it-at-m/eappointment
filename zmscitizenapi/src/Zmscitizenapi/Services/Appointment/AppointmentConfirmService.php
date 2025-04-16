@@ -24,6 +24,7 @@ class AppointmentConfirmService
             return $reservedProcess;
         }
 
+        // Todo: check if the email template confirmed exists for the scope before submitting and sending
         $result = $this->confirmProcess($reservedProcess);
         if (is_array($result) && !empty($result['errors'])) {
             return $result;

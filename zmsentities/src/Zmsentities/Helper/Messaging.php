@@ -170,7 +170,8 @@ class Messaging
 
     public static function generateMailParameters($processList, $config, $initiator, $status)
     {
-        $collection = (new ProcessList())->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
+        $collection = (new ProcessList())
+            ->testProcessListLength($processList, self::isEmptyProcessListAllowed($status));
         $mainProcess = $collection->getFirst();
         $date = (new \DateTimeImmutable())->setTimestamp(0);
         $client = (new Client());

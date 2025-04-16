@@ -35,13 +35,49 @@
     "additionalProperties": false,
     "properties": {
         "year": {
-            "type": "number"
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                },
+                {
+                    "type": "string",
+                    "enum": [""]
+                }
+            ]
         },
         "month": {
-            "type": "number"
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                },
+                {
+                    "type": "string",
+                    "enum": [""]
+                }
+            ]
         },
         "day": {
-            "type": "number"
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                },
+                {
+                    "type": "string",
+                    "enum": [""]
+                }
+            ]
         },
         "freeAppointments": {
             "$ref": "slot.json"

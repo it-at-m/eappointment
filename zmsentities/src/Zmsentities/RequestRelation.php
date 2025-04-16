@@ -13,6 +13,8 @@ class RequestRelation extends Schema\Entity
             'request' => new Request(),
             'source' => null,
             'slots' => '1',
+            'public' => true,
+            'maxQuantity' => null,
         ];
     }
 
@@ -29,6 +31,16 @@ class RequestRelation extends Schema\Entity
     public function getSlotCount()
     {
         return $this->toProperty()->slots->get();
+    }
+
+    public function getMaxQuantity()
+    {
+        return $this->toProperty()->maxQuantity->get();
+    }
+
+    public function isPublic()
+    {
+        return (bool) $this->toProperty()->public->get();
     }
 
     public function getSource()

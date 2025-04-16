@@ -33,6 +33,7 @@ class AppointmentCancelService
             ]];
         }
 
+        // Todo: check if the email template cancelled exists for the scope before submitting and sending
         $this->sendCancellationEmail($process);
         return $this->cancelProcess($process);
     }

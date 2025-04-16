@@ -74,7 +74,7 @@ class WorkstationProcessTest extends Base
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
-                "id": "'. self::PROCESS_ID .'",
+                "id": '. self::PROCESS_ID .',
                 "authKey": "'. self::AUTHKEY .'",
                 "status": "called"
             }',
@@ -89,7 +89,7 @@ class WorkstationProcessTest extends Base
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
-                "id": "'. self::PROCESS_ID .'",
+                "id": '. self::PROCESS_ID .',
                 "authKey": "'. self::AUTHKEY .'",
                 "status": "reserved"
             }',

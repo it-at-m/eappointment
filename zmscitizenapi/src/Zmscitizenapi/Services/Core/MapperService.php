@@ -121,6 +121,10 @@ class MapperService
         /** @var array<string, array<int>> $servicesProviderIds */
         $servicesProviderIds = [];
         foreach ($relationList as $relation) {
+            if (!$showUnpublished && !$relation->isPublic()) {
+                continue;
+            }
+
             $serviceId = $relation->request->id;
             $servicesProviderIds[$serviceId] ??= [];
             $servicesProviderIds[$serviceId][] = $relation->provider->id;
@@ -159,11 +163,23 @@ class MapperService
     }
 
 
-    public static function mapRelations(RequestRelationList $relationList): OfficeServiceRelationList
-    {
+    public static function mapRelations(
+        RequestRelationList $relationList,
+        bool $showUnpublished = false
+    ): OfficeServiceRelationList {
         $relations = [];
         foreach ($relationList as $relation) {
-            $relations[] = new OfficeServiceRelation(officeId: (int) $relation->provider->id, serviceId: (int) $relation->request->id, slots: intval($relation->slots));
+            if (!$showUnpublished && !$relation->isPublic()) {
+                continue;
+            }
+
+            $relations[] = new OfficeServiceRelation(
+                officeId: (int) $relation->provider->id,
+                serviceId: (int) $relation->request->id,
+                slots: intval($relation->slots),
+                public: (bool) $relation->isPublic(),
+                maxQuantity: (int) $relation->maxQuantity
+            );
         }
 
         return new OfficeServiceRelationList($relations);
