@@ -20,7 +20,8 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
             'source' => 'dldb',
             'contact' => new Contact(),
             'provider' => new Provider(),
-            'shortName' => ''
+            'shortName' => '',
+            'dayoff' => new Dayoff()
         ];
     }
 
