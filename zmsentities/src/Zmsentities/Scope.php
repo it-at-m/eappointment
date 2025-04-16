@@ -3,6 +3,7 @@
 namespace BO\Zmsentities;
 
 use BO\Zmsentities\Collection\ClosureList;
+use BO\Zmsentities\Collection\DayoffList;
 
 /**
  * @SuppressWarnings(Complexity)
@@ -20,7 +21,8 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
             'source' => 'dldb',
             'contact' => new Contact(),
             'provider' => new Provider(),
-            'shortName' => ''
+            'shortName' => '',
+            'dayoff' => new DayoffList()
         ];
     }
 
