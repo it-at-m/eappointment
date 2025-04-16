@@ -33,7 +33,7 @@ class Access extends \BO\Slim\Controller
     protected function initAccessRights($request)
     {
         $this->workstation = $this->readWorkstation();
-        if ($this->workstation && isset($this->workstation->scope['id'])) {
+        if ($this->workstation && isset($this->workstation->scope['id']) && $this->workstation->scope['id'] > 0) {
             $this->department = $this->readDepartment();
             $this->organisation = $this->readOrganisation();
             $this->owner = $this->readOwner();
@@ -49,7 +49,7 @@ class Access extends \BO\Slim\Controller
 
     protected function readDepartment()
     {
-        if ($this->workstation->getUseraccount()->hasRights(['department'])) {
+        if ($this->workstation->getUseraccount()->hasRights(['departmentStats'])) {
             return \App::$http
                 ->readGetResult('/scope/' . $this->workstation->scope['id'] . '/department/')
                 ->getEntity();

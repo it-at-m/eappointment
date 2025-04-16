@@ -38,12 +38,12 @@
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsapi": "@dev",
         "ext-pdo": "*",
-        "aura/sql": "^4",
-        "solution10/sql": "^1.3"
+        "aura/sql": "^4"
     },
     "bin": [
         "bin/archiveStatisticData",
         "bin/anonymizeStatisticData",
+        "bin/calculateDailyWaitingStatistic",
         "bin/calculateSlots",
         "bin/calculateDayOffList",
         "bin/deallocateAppointmentData",

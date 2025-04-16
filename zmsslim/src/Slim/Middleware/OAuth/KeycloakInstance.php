@@ -16,8 +16,6 @@ class KeycloakInstance
     public function __construct()
     {
         $this->provider = new Keycloak\Provider();
-        $this->logger = \App::$log;
-        return $this;
     }
 
     public function getProvider()
@@ -56,7 +54,7 @@ class KeycloakInstance
                 'timestamp' => date('c')
             ]);
         } catch (\BO\Zmsclient\Exception $exception) {
-            $this->logger->error('OIDC login failed', [
+            \App::$log->error('OIDC login failed', [
                 'event' => 'oauth_login_error',
                 'timestamp' => date('c'),
                 'error' => $exception->getMessage()
@@ -105,7 +103,7 @@ class KeycloakInstance
         list($header, $payload, $signature) = explode('.', $token->getToken());
 
         if (empty($header)) {
-            $this->logger->error('Token validation failed', [
+            \App::$log->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
                 'timestamp' => date('c'),
                 'reason' => 'missing_header'
@@ -113,7 +111,7 @@ class KeycloakInstance
             throw new \BO\Slim\Exception\OAuthFailed();
         }
         if (empty($payload)) {
-            $this->logger->error('Token validation failed', [
+            \App::$log->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
                 'timestamp' => date('c'),
                 'reason' => 'missing_payload'
@@ -121,7 +119,7 @@ class KeycloakInstance
             throw new \BO\Slim\Exception\OAuthFailed();
         }
         if (empty($signature)) {
-            $this->logger->error('Token validation failed', [
+            \App::$log->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
                 'timestamp' => date('c'),
                 'reason' => 'missing_signature'
@@ -139,7 +137,7 @@ class KeycloakInstance
         $clientRoles = array();
 
         if ($accessTokenPayload === null) {
-            $this->logger->error('Token validation failed', [
+            \App::$log->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
                 'timestamp' => date('c'),
                 'reason' => 'invalid_payload_json',
@@ -149,7 +147,7 @@ class KeycloakInstance
         }
 
         if (!isset($accessTokenPayload['resource_access']) || !is_array($accessTokenPayload['resource_access'])) {
-            $this->logger->error('Token validation failed', [
+            \App::$log->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
                 'timestamp' => date('c'),
                 'reason' => 'invalid_resource_access',
@@ -160,7 +158,7 @@ class KeycloakInstance
         }
 
         if (!isset($accessTokenPayload['resource_access'][\App::IDENTIFIER])) {
-            $this->logger->error('Token validation failed', [
+            \App::$log->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
                 'timestamp' => date('c'),
                 'reason' => 'missing_app_identifier',
@@ -174,7 +172,7 @@ class KeycloakInstance
         $appIdentifierRoles = $resourceAccess[\App::IDENTIFIER]['roles'] ?? null;
 
         if (!$appIdentifierRoles || !is_array($appIdentifierRoles)) {
-            $this->logger->error('Token validation failed', [
+            \App::$log->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
                 'timestamp' => date('c'),
                 'reason' => 'invalid_roles',
@@ -189,7 +187,7 @@ class KeycloakInstance
         }
 
         if (!in_array($realmData['accessRole'], $clientRoles)) {
-            $this->logger->error('Token validation failed', [
+            \App::$log->error('Token validation failed', [
                 'event' => 'oauth_token_validation_failed',
                 'timestamp' => date('c'),
                 'reason' => 'missing_required_role',
@@ -228,7 +226,7 @@ class KeycloakInstance
             ]);
             return $accessToken;
         } catch (\Exception $exception) {
-            $this->logger->error('Failed to get access token', [
+            \App::$log->error('Failed to get access token', [
                 'event' => 'oauth_get_token_error',
                 'timestamp' => date('c'),
                 'error' => $exception->getMessage(),

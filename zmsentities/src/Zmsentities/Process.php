@@ -12,7 +12,7 @@ use BO\Zmsentities\Helper\Property;
  */
 class Process extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
     public const STATUS_FREE = 'free';
     public const STATUS_RESERVED = 'reserved';
     public const STATUS_CONFIRMED = 'confirmed';
@@ -49,7 +49,8 @@ class Process extends Schema\Entity
             'requests' => new Collection\RequestList(),
             'scope' => new Scope(),
             'status' => 'free',
-            'lastChange' => time()
+            'lastChange' => time(),
+            'wasMissed' => false,
         ];
     }
 
@@ -486,11 +487,11 @@ class Process extends Schema\Entity
             foreach ($entity['appointments'] as $appointment) {
                 if ($appointment->toProperty()->scope->isAvailable()) {
                     $scopeId = $appointment['scope']['id'];
-                    unset($appointment['scope']);
-                    $appointment['scope'] = ['id' => $entity->toProperty()->scope->id->get()];
-                    if ($scopeId != $entity->toProperty()->scope->id->get()) {
-                        $appointment['scope'] = ['id' => $scopeId];
-                    }
+                    $appointment['scope'] = [
+                        'id' => $scopeId,
+                        'provider' => $appointment['scope']['provider'] ?? [],
+                        'shortName' => $appointment['scope']['shortName'] ?? ''
+                    ];
                 }
                 if ($appointment->toProperty()->availability->isAvailable()) {
                     unset($appointment['availability']);
@@ -572,17 +573,29 @@ class Process extends Schema\Entity
 
     public function getArrivalTime($default = 'now', $timezone = null)
     {
-        $arrivalTime = 0;
-        if ($this->isWithAppointment()) {
+        $queueArrivalTime = $this->toProperty()->queue->arrivalTime->get();
+
+        if ($queueArrivalTime) {
+            // Falls der Queue-Wert vorhanden ist – auch wenn ein Termin existiert – verwende diesen (dabei ist handelt es sich, um verpasste Termine)
+            $arrivalTime = $queueArrivalTime;
+        } elseif ($this->isWithAppointment()) {
             $arrivalTime = $this->getFirstAppointment()->date;
         } else {
-            $arrivalTime = $this->toProperty()->queue->arrivalTime->get();
+            $arrivalTime = 0;
         }
+
+        $arrivalTime = (int)$arrivalTime;
         $arrivalDateTime = Helper\DateTime::create($default, $timezone);
         if ($arrivalTime) {
             $arrivalDateTime = $arrivalDateTime->setTimestamp($arrivalTime);
         }
         return $arrivalDateTime;
+    }
+
+    public function setArrivalTime(\DateTimeInterface $dateTime = null)
+    {
+        $this->queue['arrivalTime'] = ($dateTime) ? $dateTime->getTimestamp() : 0;
+        return $this;
     }
 
     /**
@@ -606,6 +619,17 @@ class Process extends Schema\Entity
     public function getWayMinutes($defaultTime = 'now')
     {
         return $this->getWaySeconds($defaultTime) / 60;
+    }
+
+    public function setWasMissed(bool $bool)
+    {
+        $this->wasMissed = $bool;
+        return $this;
+    }
+
+    public function getWasMissed(): bool
+    {
+        return (bool) $this->wasMissed;
     }
 
     public function toDerefencedAmendment()

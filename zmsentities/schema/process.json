@@ -2,16 +2,70 @@
   "type": "object",
   "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
   "example": {
-
     "appointments": [
       {
+        "availability": {
+          "bookable": {
+            "startInDays": 2,
+            "endInDays": 60
+          },
+          "description": "Sonderöffnungszeit",
+          "endDate": 1447919116,
+          "endTime": "15:30",
+          "id": 1234,
+          "multipleSlotsAllowed": true,
+          "type": "appointment",
+          "repeat": {
+            "afterWeeks": 0
+          },
+          "scope": {
+            "provider": {
+              "id": 123456,
+              "name": "Flughafen Schönefeld, Aufsicht",
+              "source": "dldb"
+            },
+            "shortName": "Zentrale"
+          },
+          "slotTimeInMinutes": 12,
+          "startDate": 1447919543,
+          "startTime": "10:00",
+          "weekday": {
+            "thursday": true
+          },
+          "workstationCount": {
+            "callcenter": 8,
+            "intern": 10,
+            "public": 3
+          }
+        },
         "date": 1447869171,
         "scope": {
-          "id": 123
+          "id": 123,
+          "provider": {
+            "contact": {
+              "city": "Schönefeld",
+              "country": "Germany",
+              "lat": 52.345,
+              "lon": 13.456,
+              "name": "Flughafen Schönefeld, Landebahn",
+              "postalCode": "15831",
+              "region": "Brandenburg",
+              "street": "Zaunstraße",
+              "streetNumber": "1"
+            },
+            "id": 123456,
+            "name": "Flughafen Schönefeld, Aufsicht",
+            "source": "dldb",
+            "displayName":"001"
+          },
+          "shortName": "Zentrale"
         },
         "slotCount": 2
       }
     ],
+    "apiclient": {
+      "clientKey": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs"
+    },
     "authKey": "abcd",
     "clients": [
       {
@@ -254,25 +308,24 @@
             "emergencyEnabled": false,
             "emergencyRefreshInterval": 10
         }
-      }
+      },
+      "shortName": "Zentrale"
     },
     "status": "confirmed"
   },
   "required": [
     "id"
   ],
-  "additionalProperties": false,
+  "additionalProperties": true,
   "properties": {
     "amendment": {
-      "type": [
-        "string"
-      ],
+      "type": ["string", "null"],
       "description": "additional information for this process from the client",
       "default": ""
     },
     "customTextfield": {
       "type": [
-        "string"
+        "string", "null"
       ],
       "description": "additional textfield for this process from the client",
       "default": ""
@@ -291,7 +344,7 @@
       "description": "Number is used to identify a process in an archive (for statistical purposes)\n"
     },
     "authKey": {
-      "type": "string",
+      "type": ["null", "string"],
       "description": "key for client to delete or change process"
     },
     "clients": {
@@ -305,39 +358,72 @@
       "description": "IP Address of the creator"
     },
     "createTimestamp": {
-      "type": "number",
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      ],
       "description": "unix timestamp representing creation of the process"
     },
     "id": {
-      "type": "number",
-      "description": "Number is used to identify appointments like on call displays\n",
-      "minimum": 1000
+      "oneOf": [
+        {
+          "type": "number",
+          "enum": [0]
+        },
+        {
+          "type": "number",
+          "minimum": 1000
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]{4,}$"
+        }
+      ],
+      "description": "Number is used to identify appointments like on call displays"
     },
     "lastChange": {
       "type": "number",
       "description": "unix timestamp of the last change on this process"
     },
+    "wasMissed": {
+      "type": ["string", "boolean"],
+      "default": false,
+      "description": "Indicates whether the process was marked as missed at any prior point."
+    },
     "showUpTime": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "unix timestamp of showing up after call"
     },
     "processingTime": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "unix timestamp that cumulates time each time a processes is called"
     },
     "timeoutTime": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "unix timestamp of after a call is entered or re-entered into the queue"
     },    
     "finishTime": {
-        "type": "string",
+        "type": ["string", "null"],
         "description": "unix timestamp og time when process has been finished"
     },
     "queue": {
       "$ref": "queue.json"
     },
     "reminderTimestamp": {
-      "type": "number",
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      ],
       "description": "timestamp of last reminder message"
     },
     "requests": {

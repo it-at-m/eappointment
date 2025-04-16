@@ -11,31 +11,31 @@ class Slot extends Schema\Entity
      *  appointments
      *
      */
-    const FREE = 'free';
+    public const FREE = 'free';
 
     /**
      *  the values represent free appointments for a given day. Confirmed and
      *  reserved appointments on processes are substracted.
      */
-    const TIMESLICE = 'timeslice';
+    public const TIMESLICE = 'timeslice';
 
     /**
      * like timeslice, but for more than one scope
      */
-    const SUM = 'sum';
+    public const SUM = 'sum';
 
     /**
      * like timeslice, but numbers were reduced due to required slots on a
      * given request
      *
      */
-    const REDUCED = 'reduced';
+    public const REDUCED = 'reduced';
 
     /**
      * the values represent a unix timestamp to when there are free processes
      *
      */
-    const TIMESTAMP = 'timestamp';
+    public const TIMESTAMP = 'timestamp';
 
     public function getDefaults()
     {

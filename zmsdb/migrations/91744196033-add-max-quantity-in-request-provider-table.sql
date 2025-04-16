@@ -1,0 +1,1 @@
+ALTER TABLE `request_provider` ADD COLUMN `max_quantity` TINYINT DEFAULT NULL;

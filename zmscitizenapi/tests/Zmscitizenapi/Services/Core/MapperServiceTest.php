@@ -141,9 +141,9 @@ class MapperServiceTest extends TestCase
         $provider = new Provider();
         $result = MapperService::providerToThinnedProvider($provider);
         $this->assertInstanceOf(ThinnedProvider::class, $result);
-        $this->assertNull($result->id);
-        $this->assertNull($result->name);
-        $this->assertNull($result->source);
+        $this->assertEquals(0, $result->id);
+        $this->assertEmpty($result->name);
+        $this->assertEquals('dldb', $result->source);
         $this->assertNull($result->lat);
         $this->assertNull($result->lon);
         $this->assertNull($result->contact);
@@ -518,7 +518,7 @@ class MapperServiceTest extends TestCase
         
         $relationList = new RequestRelationList([$relation1, $relation2]);
         
-        $result = MapperService::mapRelations($relationList);
+        $result = MapperService::mapRelations($relationList, true);
         $this->assertInstanceOf(OfficeServiceRelationList::class, $result);
         
         $relations = $result->toArray()['relations'];
@@ -535,7 +535,7 @@ class MapperServiceTest extends TestCase
     
     public function testMapRelationsWithEmptyList()
     {
-        $result = MapperService::mapRelations(new RequestRelationList());
+        $result = MapperService::mapRelations(new RequestRelationList(), true);
         $this->assertInstanceOf(OfficeServiceRelationList::class, $result);
         $this->assertEmpty($result->toArray()['relations']);
     }

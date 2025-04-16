@@ -25,7 +25,7 @@ class ProcessQueuedTest extends Base
         $this->expectException('BO\Zmsapi\Exception\Matching\RequestNotFound');
         $this->setWorkstation();
         $process = json_decode($this->readFixture("GetProcess_10030.json"));
-        $process->requests[0]->id = 9999999;
+        $process->requests[0]->id = "9999999";
         $response = $this->render([], [
             '__body' => json_encode($process),
             'slotsRequired' => 2,
@@ -54,7 +54,7 @@ class ProcessQueuedTest extends Base
         $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '{
-                "status": "confirmed"
+                "status": "unvalid"
             }'
         ], []);
     }
@@ -66,7 +66,7 @@ class ProcessQueuedTest extends Base
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
-                "id": 123456,
+                "id": 0,
                 "authKey": "abcd",
                 "amendment": "Beispiel Termin"
             }'

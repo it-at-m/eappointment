@@ -2,7 +2,7 @@
     "type": "object",
     "description": "A closure is a free day where a department and its scopes are closed.",
     "example": {
-        "id" : 1234,
+        "id": 1234,
         "Datum": 1447924981
     },
     "required": [
@@ -11,7 +11,15 @@
     "additionalProperties": false,
     "properties": {
         "id": {
-            "type": "number"
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
         },
         "Datum": {
             "type": "number",
@@ -20,6 +28,39 @@
         "lastChange": {
             "type": "number",
             "description": "unix timestamp of the last change on this closure"
+        },
+        "year": {
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
+        },
+        "month": {
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
+        },
+        "day": {
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ]
         }
     }
 }

@@ -8,6 +8,15 @@ class Closure extends Schema\Entity
 
     public static $schema = "closure.json";
 
+    public function getDefaults()
+    {
+        return [
+            'id' => 0,
+            'Datum' => 1447924981,
+            'lastChange' => 1447924981
+        ];
+    }
+
     public function setTimestampFromDateformat($fromFormat = 'd.m.Y')
     {
         $dateTime = \DateTimeImmutable::createFromFormat($fromFormat, $this->date, new \DateTimeZone('UTC'));
