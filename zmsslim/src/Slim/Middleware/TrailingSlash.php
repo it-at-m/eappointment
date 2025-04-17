@@ -16,11 +16,11 @@ class TrailingSlash
     {
         $uri = $request->getUri();
         $path = $uri->getPath();
-        
+
         if (strpos($path, '/api/') !== false) {
             return $next->handle($request);
         }
-        
+
         if (substr($path, -1) !== '/' && !pathinfo($path, PATHINFO_EXTENSION)) {
             // permanently redirect paths without a trailing slash
             // to their trailing counterpart
