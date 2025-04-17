@@ -84,7 +84,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $this->cacheMock->method('set')
             ->willReturnCallback(function ($key, $value, $ttl) use (&$sourceCacheSet) {
-                if ($key === 'source_unittest' && $value === $this->source && $ttl === Application::$SOURCE_CACHE_TTL) {
+                if ($key === 'source_unittest' && $value === $this->source && $ttl === Application::$PSR6_CACHE_TTL) {
                     $sourceCacheSet = true;
                 }
                 return true;
@@ -151,7 +151,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $this->cacheMock->method('set')
             ->willReturnCallback(function ($key, $value, $ttl) use (&$sourceCacheSet) {
-                if ($key === 'source_unittest' && $value === $this->source && $ttl === Application::$SOURCE_CACHE_TTL) {
+                if ($key === 'source_unittest' && $value === $this->source && $ttl === Application::$PSR6_CACHE_TTL) {
                     $sourceCacheSet = true;
                 }
                 return true;
@@ -223,7 +223,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $this->cacheMock->method('set')
             ->willReturnCallback(function ($key, $value, $ttl) use (&$sourceCacheSet) {
-                if ($key === 'source_unittest' && $value === $this->source && $ttl === Application::$SOURCE_CACHE_TTL) {
+                if ($key === 'source_unittest' && $value === $this->source && $ttl === Application::$PSR6_CACHE_TTL) {
                     $sourceCacheSet = true;
                 }
                 return true;
@@ -291,7 +291,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $this->cacheMock->method('set')
             ->willReturnCallback(function ($key, $value, $ttl) use (&$sourceCacheSet) {
-                if ($key === 'source_unittest' && $value === $this->source && $ttl === Application::$SOURCE_CACHE_TTL) {
+                if ($key === 'source_unittest' && $value === $this->source && $ttl === Application::$PSR6_CACHE_TTL) {
                     $sourceCacheSet = true;
                 }
                 return true;

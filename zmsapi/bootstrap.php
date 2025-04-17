@@ -14,11 +14,24 @@ if (file_exists(APP_PATH . '/vendor/autoload.php')) {
 }
 require_once(VENDOR_PATH . '/autoload.php');
 
-
 // initialize the static \App singleton
 require_once(APP_PATH . '/config.php');
 
 \BO\Slim\Bootstrap::init();
+
+// Initialize application
+\App::initialize();
+
+// Initialize cache
+$cache = new \Symfony\Component\Cache\Psr16Cache(
+    new \Symfony\Component\Cache\Adapter\FilesystemAdapter(
+        namespace: \App::MODULE_NAME,
+        defaultLifetime: \App::$PSR6_CACHE_TTL_ZMSAPI,
+        directory: \App::$PSR6_CACHE_DIR_ZMSAPI
+    )
+);
+\App::$cache = $cache;
+
 
 // Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;

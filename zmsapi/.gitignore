@@ -16,3 +16,4 @@ vendor.update
 VERSION
 .phpunit.result.cache
 coverage
+cache_psr6

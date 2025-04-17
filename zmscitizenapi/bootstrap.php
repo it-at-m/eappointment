@@ -32,11 +32,15 @@ require(APP_PATH . '/config.php');
 $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
 $errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Helper\ErrorHandler());
 
-// Initialize cache for rate limiting
+// Initialize cache
 $cache = new \Symfony\Component\Cache\Psr16Cache(
-    new \Symfony\Component\Cache\Adapter\FilesystemAdapter()
+    new \Symfony\Component\Cache\Adapter\FilesystemAdapter(
+        namespace: \App::MODULE_NAME,
+        defaultLifetime: \App::$PSR6_CACHE_TTL_ZMSCITIZENAPI,
+        directory: \App::$PSR6_CACHE_DIR_ZMSCITIZENAPI
+    )
 );
-
+\App::$cache = $cache;
 
 $logger = new LoggerService();
 // Security middleware (order is important)

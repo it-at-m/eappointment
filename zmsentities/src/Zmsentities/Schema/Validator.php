@@ -16,6 +16,7 @@ class Validator
 
     private static $schemasLoaded = false;
     private static $validatorInstance = null;
+    private const CACHE_KEY_PREFIX = 'cached_schema_';
 
     public function __construct($data, Schema $schemaObject, $locale)
     {
@@ -50,12 +51,30 @@ class Validator
         $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
         $schemaFiles = glob($schemaPath . '*.json');
 
-        // TODO: Implement persistent caching for schema file reads to reduce redundant disk I/O and improve application performance. Not just for each process.
-
         foreach ($schemaFiles as $schemaFile) {
-            $schemaContent = file_get_contents($schemaFile);
             $schemaName = 'schema://' . basename($schemaFile);
+            $cacheKey = self::CACHE_KEY_PREFIX . md5($schemaName);
+            
+            // Try to get schema from cache
+            if (isset(\App::$cache) && ($cachedSchema = \App::$cache->get($cacheKey))) {
+                $this->validator->resolver()->registerRaw($cachedSchema, $schemaName);
+                continue;
+            }
+
+            // If not in cache, load from disk
+            $schemaContent = file_get_contents($schemaFile);
             $this->validator->resolver()->registerRaw($schemaContent, $schemaName);
+
+            // Cache the schema content
+            if (isset(\App::$cache)) {
+                \App::$cache->set($cacheKey, $schemaContent);
+                if (isset(\App::$log)) {
+                    \App::$log->info('Schema cached', [
+                        'schema_name' => $schemaName,
+                        'cache_key' => $cacheKey
+                    ]);
+                }
+            }
         }
     }
 

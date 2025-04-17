@@ -19,7 +19,7 @@
     ],
     "config": {
         "platform": {
-            "php": "8.0"
+            "php": "8.0.2"
         },
         "allow-plugins": {
             "php-http/discovery": true
@@ -42,7 +42,10 @@
         "eappointment/zmsentities": "@dev",
         "monolog/monolog": "1.*",
         "ulrichsg/getopt-php": "^2.3",
-        "league/climate": "^3.2"
+        "league/climate": "^3.2",
+        "symfony/cache": "^6.0",
+        "psr/simple-cache": "^3.0",
+        "psr/log": "^1.1"
     },
     "scripts": {
         "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
