@@ -33,7 +33,18 @@ class ExceptionService
         $exceptionName = json_decode(json_encode($e), true)['template'] ?? null;
         $error = null;
 
+        error_log("******");
+        error_log(json_encode($exceptionName));
+        error_log("******");
+        exit();
+
         switch ($exceptionName) {
+            // Zmsslim exception
+            case 'Slim\\Exception\\HttpNotFoundException':
+                $error = self::getError('notFound');
+
+                break;
+
             // ZmsClient exception
             case 'BO\\Zmsclient\\Exception':
                 $error = self::getError('zmsClientCommunicationError');

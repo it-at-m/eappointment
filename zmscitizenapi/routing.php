@@ -817,3 +817,15 @@ createLanguageRoutes(
     "AppointmentCancelController",
     "post"
 );
+
+// Catch-all route for 404 errors
+\App::$slim->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], '/{routes:.+}', function ($request, $response) {
+    $error = \BO\Zmscitizenapi\Localization\ErrorMessages::get('notFound');
+    $response = $response->withStatus($error['statusCode']);
+    $response->getBody()->write(json_encode([
+        'errors' => [
+            $error
+        ]
+    ]));
+    return $response->withHeader('Content-Type', 'application/json');
+})->setName('notFound');
