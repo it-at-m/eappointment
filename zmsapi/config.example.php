@@ -52,7 +52,7 @@ class App extends \BO\Zmsapi\Application
 {
     const APP_PATH = APP_PATH;
     const IDENTIFIER = ZMS_IDENTIFIER;
-    const DEBUG = true;
+    const DEBUG = false;
     const DB_ENABLE_WSREPSYNCWAIT = true;
     /**
      * @var String DB_DSN_READONLY

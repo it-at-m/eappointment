@@ -21,6 +21,10 @@ class AvailableAppointmentsListServiceTest extends TestCase
     {
         parent::setUp();
         $this->service = new AvailableAppointmentsListService();
+        // Suppress schema caching output during tests
+        if (class_exists('\App') && isset(\App::$log)) {
+            \App::$log = null;
+        }
     }
 
     public function testGetAvailableAppointmentsListReturnsAvailableAppointments(): void
