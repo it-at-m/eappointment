@@ -131,7 +131,7 @@ class ExceptionService
                 break;
             case 'BO\\Zmsapi\\Exception\\Request\\RequestNotFound':
                 $error = self::getError('requestNotFound');
-
+                // Fall-through intentional - same error handling for both RequestNotFound exceptions
             case 'BO\\Zmsdb\\Exception\\Request\\RequestNotFound':
                 $error = self::getError('requestNotFound');
 
