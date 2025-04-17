@@ -13,16 +13,18 @@ class Validator
     protected $locale;
     protected $validator;
     protected $validationResult;
+    protected $cache;
 
     private static $schemasLoaded = false;
     private static $validatorInstance = null;
     private const CACHE_KEY_PREFIX = 'cached_schema_';
 
-    public function __construct($data, Schema $schemaObject, $locale)
+    public function __construct($data, Schema $schemaObject, $locale, $cache = null)
     {
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
+        $this->cache = $cache ?? (class_exists('\App') && isset(\App::$cache) ? \App::$cache : null);
 
         // Use static validator instance if available
         if (self::$validatorInstance === null) {
@@ -54,9 +56,9 @@ class Validator
         foreach ($schemaFiles as $schemaFile) {
             $schemaName = 'schema://' . basename($schemaFile);
             $cacheKey = self::CACHE_KEY_PREFIX . md5($schemaName);
-            
+
             // Try to get schema from cache
-            if (isset(\App::$cache) && ($cachedSchema = \App::$cache->get($cacheKey))) {
+            if (class_exists('\App') && isset(\App::$cache) && ($cachedSchema = \App::$cache->get($cacheKey))) {
                 $this->validator->resolver()->registerRaw($cachedSchema, $schemaName);
                 continue;
             }
@@ -66,7 +68,7 @@ class Validator
             $this->validator->resolver()->registerRaw($schemaContent, $schemaName);
 
             // Cache the schema content
-            if (isset(\App::$cache)) {
+            if (class_exists('\App') && isset(\App::$cache)) {
                 \App::$cache->set($cacheKey, $schemaContent);
                 if (isset(\App::$log)) {
                     \App::$log->info('Schema cached', [
