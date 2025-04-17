@@ -36,6 +36,8 @@ class Process extends Schema\Entity
         return [
             'amendment' => '',
             'customTextfield' => '',
+            'customTextfield1' => '',
+            'customTextfield2' => '',
             'appointments' => new Collection\AppointmentList(),
             'apiclient' => new Apiclient(),
             'authKey' => '',
@@ -172,6 +174,8 @@ class Process extends Schema\Entity
         $this->addReminderTimestamp($requestData, $dateTime);
         $this->addAmendment($requestData, $notice);
         $this->addCustomTextfield($requestData, $notice);
+        $this->addCustomTextfield1($requestData, $notice);
+        $this->addCustomTextfield2($requestData, $notice);
         return $this;
     }
 
@@ -385,6 +389,36 @@ class Process extends Schema\Entity
             isset($input['customTextfield']) && $input['customTextfield']
         ) ? $input['customTextfield'] : '';
         trim($this->customTextfield);
+        return $this;
+    }
+
+    public function getCustomTextfield1()
+    {
+        return $this->toProperty()->customTextfield1->get();
+    }
+
+    public function addCustomTextfield1($input, $notice = '')
+    {
+        $this->customTextfield1 = $notice;
+        $this->customTextfield1 .= (
+            isset($input['customTextfield1']) && $input['customTextfield1']
+        ) ? $input['customTextfield1'] : '';
+        trim($this->customTextfield1);
+        return $this;
+    }
+
+    public function getCustomTextfield2()
+    {
+        return $this->toProperty()->customTextfield2->get();
+    }
+
+    public function addCustomTextfield2($input, $notice = '')
+    {
+        $this->customTextfield2 = $notice;
+        $this->customTextfield2 .= (
+            isset($input['customTextfield']) && $input['customTextfield2']
+        ) ? $input['customTextfield2'] : '';
+        trim($this->customTextfield2);
         return $this;
     }
 
@@ -651,6 +685,30 @@ class Process extends Schema\Entity
                 'BuergerID' => $this->id,
                 'StandortID' => $this->scope['id'],
                 'CustomTextfield' => null,
+                'IPTimeStamp' => $this->createTimestamp,
+                'LastChange' => $lastChange,
+            ), 1);
+    }
+
+    public function toDerefencedCustomTextfield1()
+    {
+        $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
+        return var_export(array(
+                'BuergerID' => $this->id,
+                'StandortID' => $this->scope['id'],
+                'CustomTextfield1' => null,
+                'IPTimeStamp' => $this->createTimestamp,
+                'LastChange' => $lastChange,
+            ), 1);
+    }
+
+    public function toDerefencedCustomTextfield2()
+    {
+        $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
+        return var_export(array(
+                'BuergerID' => $this->id,
+                'StandortID' => $this->scope['id'],
+                'CustomTextfield2' => null,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
             ), 1);

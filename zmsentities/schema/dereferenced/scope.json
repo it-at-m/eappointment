@@ -33,6 +33,8 @@
                 "whitelistedMails": "",
                 "amendmentLabel": "Zusatzinformationen zum Anliegen",
                 "customTextfieldLabel": "Zusatzfeld zum Anliegen",
+                "customTextfield1Label": "Zusatzfeld 1 zum Anliegen",
+                "customTextfield2Label": "Zusatzfeld 2 zum Anliegen",
                 "emailRequired": false,
                 "emailConfirmationActivated": true,
                 "adminMailOnAppointment": false,
@@ -364,16 +366,87 @@
                             "default": false
                         },
                         "customTextfieldLabel": {
-                            "type": "string",
+                            "type": ["string", "null"],
                             "description": "label for the form field to enter additional informations to a process",
                             "default": ""
                         },
                         "customTextfieldActivated": {
-                            "type": [
-                                "boolean",
-                                "number"
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[01]$"
+                                },
+                                {
+                                    "type": "string",
+                                    "enum": ["true", "false"]
+                                }
                             ],
-                            "description": "true if an custom textfield is activated",
+                            "description": "true if an  custom text field is activated",
+                            "default": false
+                        },
+                        "customTextfield1Label": {
+                            "type": ["string", "null"],
+                            "description": "label for the form field to enter additional informations to a process",
+                            "default": ""
+                        },
+                        "customTextfield1Activated": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[01]$"
+                                },
+                                {
+                                    "type": "string",
+                                    "enum": ["true", "false"]
+                                }
+                            ],
+                            "description": "true if an  custom text field is activated",
+                            "default": false
+                        },
+                        "customTextfield2Label": {
+                            "type": ["string", "null"],
+                            "description": "label for the form field to enter additional informations to a process",
+                            "default": ""
+                        },
+                        "customTextfield2Activated": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[01]$"
+                                },
+                                {
+                                    "type": "string",
+                                    "enum": ["true", "false"]
+                                }
+                            ],
+                            "description": "true if an  custom text field is activated",
                             "default": false
                         },
                         "emailFrom": {

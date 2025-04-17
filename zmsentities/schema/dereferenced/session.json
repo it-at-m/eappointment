@@ -15,7 +15,9 @@
                 "clientEmail": "max@zms-bo.de",
                 "clientTelehone": "03023232323",
                 "clientAmendment": "Notiz zum Termin",
-                "clientCustomTextfield": "Notiz zum Termin",                
+                "clientCustomTextfield": "Notiz zum Termin",
+                "clientCustomTextfield1": "Notiz zum Termin",
+                "clientCustomTextfield2": "Notiz zum Termin",            
                 "authKey": "1234",
                 "notificationConfirmation": false
             },
@@ -111,6 +113,12 @@
                             "type": "string"
                         },
                         "clientCustomTextfield": {
+                            "type": "string"
+                        },
+                        "clientCustomTextfield1": {
+                            "type": "string"
+                        },
+                        "clientCustomTextfield2": {
                             "type": "string"
                         },
                         "authKey": {

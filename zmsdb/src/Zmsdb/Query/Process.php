@@ -200,6 +200,8 @@ class Process extends Base implements MappingInterface
                 )'
             ),
             'customTextfield' => 'process.custom_text_field',
+            'customTextfield1' => 'process.custom_text_field1',
+            'customTextfield2' => 'process.custom_text_field2',
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
@@ -613,6 +615,34 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionCustomTextfield1($customText1, $exactMatching = false)
+    {
+        if ($exactMatching) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText1) {
+                $query->andWith('process.custom_text_field1', '=', $customText1);
+            });
+        } else {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText1) {
+                $query->andWith('process.custom_text_field1', 'LIKE', "%$customText1%");
+            });
+        }
+        return $this;
+    }
+
+    public function addConditionCustomTextfield2($customText2, $exactMatching = false)
+    {
+        if ($exactMatching) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText2) {
+                $query->andWith('process.custom_text_field2', '=', $customText2);
+            });
+        } else {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText2) {
+                $query->andWith('process.custom_text_field2', 'LIKE', "%$customText2%");
+            });
+        }
+        return $this;
+    }
+
     public function addConditionAmendment($amendment)
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($amendment) {
@@ -801,6 +831,12 @@ class Process extends Base implements MappingInterface
         }
         if ($process->getCustomTextfield()) {
             $data['custom_text_field'] = $process->getCustomTextfield();
+        }
+        if ($process->getCustomTextfield1()) {
+            $data['custom_text_field1'] = $process->getCustomTextfield1();
+        }
+        if ($process->getCustomTextfield2()) {
+            $data['custom_text_field2'] = $process->getCustomTextfield2();
         }
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();

@@ -166,6 +166,12 @@ class Scope extends Base implements MappingInterface
             'preferences__client__customTextfieldActivated' => 'scope.custom_text_field_active',
             'preferences__client__customTextfieldRequired' => 'scope.custom_text_field_required',
             'preferences__client__customTextfieldLabel' => 'scope.custom_text_field_label',
+            'preferences__client__customTextfield1Activated' => 'scope.custom_text_field1_active',
+            'preferences__client__customTextfield1Required' => 'scope.custom_text_field1_required',
+            'preferences__client__customTextfield1Label' => 'scope.custom_text_field1_label',
+            'preferences__client__customTextfield2Activated' => 'scope.custom_text_field2_active',
+            'preferences__client__customTextfield2Required' => 'scope.custom_text_field2_required',
+            'preferences__client__customTextfield2Label' => 'scope.custom_text_field2_label',
             'preferences__client__captchaActivatedRequired' => 'scope.captcha_activated_required',
             'preferences__client__adminMailOnAppointment' => 'scope.admin_mail_on_appointment',
             'preferences__client__adminMailOnDeleted' => 'scope.admin_mail_on_deleted',
@@ -307,6 +313,12 @@ class Scope extends Base implements MappingInterface
         $data['custom_text_field_active'] = $entity->getPreference('client', 'customTextfieldActivated', true);
         $data['custom_text_field_required'] = $entity->getPreference('client', 'customTextfieldRequired', true);
         $data['custom_text_field_label'] = $entity->getPreference('client', 'customTextfieldLabel');
+        $data['custom_text_field1_active'] = $entity->getPreference('client', 'customTextfield1Activated', true);
+        $data['custom_text_field1_required'] = $entity->getPreference('client', 'customTextfield1Required', true);
+        $data['custom_text_field1_label'] = $entity->getPreference('client', 'customTextfield1Label');
+        $data['custom_text_field2_active'] = $entity->getPreference('client', 'customTextfield2Activated', true);
+        $data['custom_text_field2_required'] = $entity->getPreference('client', 'customTextfield2Required', true);
+        $data['custom_text_field2_label'] = $entity->getPreference('client', 'customTextfield2Label');
         $data['captcha_activated_required'] = $entity->getPreference('client', 'captchaActivatedRequired');
         $data['appointments_per_mail'] = (int) $entity->getPreference('client', 'appointmentsPerMail');
         $data['slots_per_appointment'] = (int) $entity->getPreference('client', 'slotsPerAppointment');
@@ -394,6 +406,12 @@ class Scope extends Base implements MappingInterface
         }
         if (!$data[$this->getPrefixed('preferences__client__customTextfieldActivated')]) {
             $data[$this->getPrefixed("preferences__client__customTextfieldRequired")] = 0;
+        }
+        if (!$data[$this->getPrefixed('preferences__client__customTextfield1Activated')]) {
+            $data[$this->getPrefixed("preferences__client__customTextfield1Required")] = 0;
+        }
+        if (!$data[$this->getPrefixed('preferences__client__customTextfield2Activated')]) {
+            $data[$this->getPrefixed("preferences__client__customTextfield2Required")] = 0;
         }
         if (!$data[$this->getPrefixed('preferences__client__appointmentsPerMail')]) {
             $data[$this->getPrefixed("preferences__client__appointmentsPerMail")] = null;

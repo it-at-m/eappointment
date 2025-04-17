@@ -265,6 +265,8 @@
             "whitelistedMails": "",
             "amendmentLabel": "Zusatzinformationen zum Anliegen",
             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
+            "customTextfield1Label": "Zusatzfeld zum Anliegen",
+            "customTextfield2Label": "Zusatzfeld zum Anliegen",
             "emailRequired": false,
             "emailConfirmationActivated": true,
             "adminMailOnAppointment": false,
@@ -324,6 +326,20 @@
       "default": ""
     },
     "customTextfield": {
+      "type": [
+        "string", "null"
+      ],
+      "description": "additional textfield for this process from the client",
+      "default": ""
+    },
+    "customTextfield1": {
+      "type": [
+        "string", "null"
+      ],
+      "description": "additional textfield for this process from the client",
+      "default": ""
+    },
+    "customTextfield2": {
       "type": [
         "string", "null"
       ],

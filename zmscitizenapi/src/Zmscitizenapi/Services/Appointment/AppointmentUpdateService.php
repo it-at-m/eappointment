@@ -43,6 +43,8 @@ class AppointmentUpdateService
             $data->email,
             $data->telephone,
             $data->customTextfield,
+            $data->customTextfield1,
+            $data->customTextfield2,
             $reservedProcess->scope ?? null
         );
         if (is_array($fieldErrors) && !empty($fieldErrors['errors'])) {
@@ -65,6 +67,8 @@ class AppointmentUpdateService
             'email' => isset($body['email']) && is_string($body['email']) ? (string) $body['email'] : null,
             'telephone' => isset($body['telephone']) && is_string($body['telephone']) ? (string) $body['telephone'] : null,
             'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield']) ? (string) $body['customTextfield'] : null,
+            'customTextfield1' => isset($body['customTextfield1']) && is_string($body['customTextfield1']) ? (string) $body['customTextfield1'] : null,
+            'customTextfield2' => isset($body['customTextfield2']) && is_string($body['customTextfield2']) ? (string) $body['customTextfield2'] : null,
         ];
     }
 
@@ -79,6 +83,8 @@ class AppointmentUpdateService
         $process->email = $data->email ?? $process->email ?? null;
         $process->telephone = $data->telephone ?? $process->telephone ?? null;
         $process->customTextfield = $data->customTextfield ?? $process->customTextfield ?? null;
+        $process->customTextfield1 = $data->customTextfield1 ?? $process->customTextfield1 ?? null;
+        $process->customTextfield2 = $data->customTextfield2 ?? $process->customTextfield2 ?? null;
         return $process;
     }
 

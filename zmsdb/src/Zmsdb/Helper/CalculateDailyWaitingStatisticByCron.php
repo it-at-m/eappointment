@@ -234,6 +234,34 @@ class CalculateDailyWaitingStatisticByCron extends Base
         return null;
     }
 
+    private function extractScopeFromAnmerkung1(?string $anmerkung, ?string $customText1): ?int
+    {
+        if (!$anmerkung && !$customText1) {
+            return null;
+        }
+        $pattern = "/'StandortID' => '(\d+)'/";
+        foreach ([$anmerkung, $customText1] as $txt) {
+            if (preg_match($pattern, (string)$txt, $matches)) {
+                return (int)$matches[1];
+            }
+        }
+        return null;
+    }
+
+    private function extractScopeFromAnmerkung2(?string $anmerkung, ?string $customText2): ?int
+    {
+        if (!$anmerkung && !$customText2) {
+            return null;
+        }
+        $pattern = "/'StandortID' => '(\d+)'/";
+        foreach ([$anmerkung, $customText2] as $txt) {
+            if (preg_match($pattern, (string)$txt, $matches)) {
+                return (int)$matches[1];
+            }
+        }
+        return null;
+    }
+
     private function timeToMinutes(?string $timeStr): float
     {
         if (!$timeStr || $timeStr === '00:00:00') {

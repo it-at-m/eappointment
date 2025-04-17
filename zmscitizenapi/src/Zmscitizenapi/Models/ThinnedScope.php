@@ -33,6 +33,18 @@ class ThinnedScope extends Entity implements JsonSerializable
     /** @var string|null */
     public ?string $customTextfieldLabel;
     /** @var bool|null */
+    public ?bool $customTextfield1Activated;
+    /** @var bool|null */
+    public ?bool $customTextfield1Required;
+    /** @var string|null */
+    public ?string $customTextfield1Label;
+    /** @var bool|null */
+    public ?bool $customTextfield2Activated;
+    /** @var bool|null */
+    public ?bool $customTextfield2Required;
+    /** @var string|null */
+    public ?string $customTextfield2Label;
+    /** @var bool|null */
     public ?bool $captchaActivatedRequired;
     /** @var string|null */
     public ?string $displayInfo;
@@ -103,6 +115,36 @@ class ThinnedScope extends Entity implements JsonSerializable
     public function getCustomTextfieldLabel(): ?string
     {
         return $this->customTextfieldLabel;
+    }
+
+    public function getCustomTextfield1Activated(): ?bool
+    {
+        return $this->customTextfield1Activated;
+    }
+
+    public function getCustomTextfield1Required(): ?bool
+    {
+        return $this->customTextfield1Required;
+    }
+
+    public function getCustomTextfield1Label(): ?string
+    {
+        return $this->customTextfield1Label;
+    }
+
+    public function getCustomTextfield2Activated(): ?bool
+    {
+        return $this->customTextfield2Activated;
+    }
+
+    public function getCustomTextfield2Required(): ?bool
+    {
+        return $this->customTextfield2Required;
+    }
+
+    public function getCustomTextfield2Label(): ?string
+    {
+        return $this->customTextfield2Label;
     }
 
     public function getCaptchaActivatedRequired(): ?bool

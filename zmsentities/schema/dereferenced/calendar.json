@@ -822,6 +822,8 @@
                             "whitelistedMails": "",
                             "amendmentLabel": "Zusatzinformationen zum Anliegen",
                             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
+                            "customTextfield1Label": "Zusatzfeld zum Anliegen",
+                            "customTextfield2Label": "Zusatzfeld zum Anliegen",
                             "emailRequired": false,
                             "emailConfirmationActivated": true,
                             "adminMailOnAppointment": false,
@@ -1032,6 +1034,32 @@
                                         "default": ""
                                     },
                                     "customTextfieldActivated": {
+                                        "type": [
+                                            "boolean",
+                                            "number"
+                                        ],
+                                        "description": "true if an custom textfield is activated",
+                                        "default": false
+                                    },
+                                    "customTextfield1Label": {
+                                        "type": "string",
+                                        "description": "label for the form field to enter additional informations to a process",
+                                        "default": ""
+                                    },
+                                    "customTextfield1Activated": {
+                                        "type": [
+                                            "boolean",
+                                            "number"
+                                        ],
+                                        "description": "true if an custom textfield is activated",
+                                        "default": false
+                                    },
+                                    "customTextfield2Label": {
+                                        "type": "string",
+                                        "description": "label for the form field to enter additional informations to a process",
+                                        "default": ""
+                                    },
+                                    "customTextfield2Activated": {
                                         "type": [
                                             "boolean",
                                             "number"

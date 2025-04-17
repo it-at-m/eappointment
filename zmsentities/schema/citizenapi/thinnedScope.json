@@ -65,6 +65,36 @@
             ],
             "description": "Label for the custom textfield"
         },
+        "customTextfield1Activated": {
+            "type": "boolean",
+            "description": "Whether a custom textfield is activated"
+        },
+        "customTextfield1Required": {
+            "type": "boolean",
+            "description": "Whether a custom textfield is required"
+        },
+        "customTextfield1Label": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Label for the custom textfield"
+        },
+        "customTextfield2Activated": {
+            "type": "boolean",
+            "description": "Whether a custom textfield is activated"
+        },
+        "customTextfield2Required": {
+            "type": "boolean",
+            "description": "Whether a custom textfield is required"
+        },
+        "customTextfield2Label": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Label for the custom textfield"
+        },
         "captchaActivatedRequired": {
             "type": "boolean",
             "description": "Whether captcha is activated and required"

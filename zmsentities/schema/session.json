@@ -112,6 +112,12 @@
                         "clientCustomTextfield": {
                             "type": "string"
                         },
+                        "clientCustomTextfield1": {
+                            "type": "string"
+                        },
+                        "clientCustomTextfield2": {
+                            "type": "string"
+                        },
                         "authKey": {
                             "type": "string"
                         },

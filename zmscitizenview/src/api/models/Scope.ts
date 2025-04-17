@@ -59,6 +59,42 @@ export interface Scope {
    * @type {boolean}
    * @memberof Scope
    */
+  customTextfield1Activated?: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof Scope
+   */
+  customTextfield1Required?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof Scope
+   */
+  customTextfield1Label?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof Scope
+   */
+  customTextfield2Activated?: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof Scope
+   */
+  customTextfield2Required?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof Scope
+   */
+  customTextfield2Label?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof Scope
+   */
   captchaActivatedRequired?: boolean;
   /**
    *

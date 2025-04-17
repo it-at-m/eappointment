@@ -192,6 +192,8 @@ class ValidationService
         ?string $email,
         ?string $telephone,
         ?string $customTextfield,
+        ?string $customTextfield1,
+        ?string $customTextfield2,
         ?ThinnedScope $scope
     ): array {
         $errors = [];
@@ -200,6 +202,8 @@ class ValidationService
         self::validateEmailField($email, $scope, $errors);
         self::validateTelephoneField($telephone, $scope, $errors);
         self::validateCustomTextField($customTextfield, $scope, $errors);
+        self::validateCustomTextField1($customTextfield1, $scope, $errors);
+        self::validateCustomTextField2($customTextfield2, $scope, $errors);
 
         return ['errors' => $errors];
     }
@@ -243,6 +247,34 @@ class ValidationService
             ($customTextfield !== null && !self::isValidCustomTextfield($customTextfield))
         ) {
             $errors[] = self::getError('invalidCustomTextfield');
+        }
+    }
+
+    private static function validateCustomTextField1(?string $customTextfield, ?ThinnedScope $scope, array &$errors): void
+    {
+        if (!$scope || !$scope->customTextfield1Activated) {
+            return;
+        }
+
+        if (
+            ($scope->customTextfield1Required && !self::isValidCustomTextfield1($customTextfield1)) ||
+            ($customTextfield1 !== null && !self::isValidCustomTextfield1($customTextfield1))
+        ) {
+            $errors[] = self::getError('invalidCustomTextfield1');
+        }
+    }
+
+    private static function validateCustomTextField2(?string $customTextfield2, ?ThinnedScope $scope, array &$errors): void
+    {
+        if (!$scope || !$scope->customTextfield2Activated) {
+            return;
+        }
+
+        if (
+            ($scope->customTextfield2Required && !self::isValidCustomTextfield2($customTextfield2)) ||
+            ($customTextfield2 !== null && !self::isValidCustomTextfield2($customTextfield2))
+        ) {
+            $errors[] = self::getError('invalidCustomTextfield2');
         }
     }
 
@@ -432,6 +464,16 @@ class ValidationService
     private static function isValidCustomTextfield(?string $customTextfield): bool
     {
         return $customTextfield === null || (is_string($customTextfield) && strlen(trim($customTextfield)) > 0);
+    }
+
+    private static function isValidCustomTextfield1(?string $customTextfield1): bool
+    {
+        return $customTextfield1 === null || (is_string($customTextfield1) && strlen(trim($customTextfield1)) > 0);
+    }
+
+    private static function isValidCustomTextfield2(?string $customTextfield2): bool
+    {
+        return $customTextfield2 === null || (is_string($customTextfield2) && strlen(trim($customTextfield2)) > 0);
     }
 
     private static function isValidOfficeId(?int $officeId): bool

@@ -108,6 +108,12 @@ class ZmsApiFacadeService
                     customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
                     customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
                     customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
+                    customTextfield1Activated: (bool) $matchingScope->getCustomTextfield1Activated(),
+                    customTextfield1Required: (bool) $matchingScope->getCustomTextfield1Required(),
+                    customTextfield1Label: $matchingScope->getCustomTextfield1Label(),
+                    customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated(),
+                    customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
+                    customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
                     displayInfo: $matchingScope->getDisplayInfo()
                 ) : null
@@ -156,6 +162,12 @@ class ZmsApiFacadeService
                     customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
                     customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
                     customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
+                    customTextfield1Activated: (bool) $matchingScope->getCustomTextfield1Activated(),
+                    customTextfield1Required: (bool) $matchingScope->getCustomTextfield1Required(),
+                    customTextfield1Label: $matchingScope->getCustomTextfield1Label(),
+                    customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated(),
+                    customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
+                    customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
                     displayInfo: $matchingScope->getDisplayInfo()
                 );
@@ -263,6 +275,12 @@ class ZmsApiFacadeService
             'customTextfieldActivated' => (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
             'customTextfieldRequired' => (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
             'customTextfieldLabel' => $matchingScope->getCustomTextfieldLabel() ?? null,
+            'customTextfield1Activated' => (bool) $matchingScope->getCustomTextfield1Activated() ?? null,
+            'customTextfield1Required' => (bool) $matchingScope->getCustomTextfield1Required() ?? null,
+            'customTextfield1Label' => $matchingScope->getCustomTextfield1Label() ?? null,
+            'customTextfield2Activated' => (bool) $matchingScope->getCustomTextfield2Activated() ?? null,
+            'customTextfield2Required' => (bool) $matchingScope->getCustomTextfield2Required() ?? null,
+            'customTextfield2Label' => $matchingScope->getCustomTextfield2Label() ?? null,
             'captchaActivatedRequired' => (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
             'displayInfo' => $matchingScope->getDisplayInfo() ?? null,
         ];
@@ -277,6 +295,12 @@ class ZmsApiFacadeService
             customTextfieldActivated: $result['customTextfieldActivated'],
             customTextfieldRequired: $result['customTextfieldRequired'],
             customTextfieldLabel: $result['customTextfieldLabel'],
+            customTextfield1Activated: $result['customTextfield1Activated'],
+            customTextfield1Required: $result['customTextfield1Required'],
+            customTextfield1Label: $result['customTextfield1Label'],
+            customTextfield2Activated: $result['customTextfield2Activated'],
+            customTextfield2Required: $result['customTextfield2Required'],
+            customTextfield2Label: $result['customTextfield2Label'],
             captchaActivatedRequired: $result['captchaActivatedRequired'],
             displayInfo: $result['displayInfo']
         );
@@ -386,6 +410,12 @@ class ZmsApiFacadeService
             customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
             customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
             customTextfieldLabel: $matchingScope->getCustomTextfieldLabel() ?? null,
+            customTextfield1Activated: (bool) $matchingScope->getCustomTextfield1Activated() ?? null,
+            customTextfield1Required: (bool) $matchingScope->getCustomTextfield1Required() ?? null,
+            customTextfield1Label: $matchingScope->getCustomTextfield1Label() ?? null,
+            customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated() ?? null,
+            customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required() ?? null,
+            customTextfield2Label: $matchingScope->getCustomTextfield2Label() ?? null,
             captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
             displayInfo: $matchingScope->getDisplayInfo() ?? null
         );
@@ -641,6 +671,12 @@ class ZmsApiFacadeService
                 customTextfieldActivated: (bool) $process->scope->getCustomTextfieldActivated() ?? false,
                 customTextfieldRequired: (bool) $process->scope->getCustomTextfieldRequired() ?? false,
                 customTextfieldLabel: $process->scope->getCustomTextfieldLabel() ?? null,
+                customTextfield1Activated: (bool) $process->scope->getCustomTextfield1Activated() ?? false,
+                customTextfield1Required: (bool) $process->scope->getCustomTextfield1Required() ?? false,
+                customTextfield1Label: $process->scope->getCustomTextfield1Label() ?? null,
+                customTextfield2Activated: (bool) $process->scope->getCustomTextfield2Activated() ?? false,
+                customTextfield2Required: (bool) $process->scope->getCustomTextfield2Required() ?? false,
+                customTextfield2Label: $process->scope->getCustomTextfield2Label() ?? null,
                 captchaActivatedRequired: (bool) $process->scope->getCaptchaActivatedRequired() ?? false,
                 displayInfo: $process->scope->getDisplayInfo() ?? null
             );
