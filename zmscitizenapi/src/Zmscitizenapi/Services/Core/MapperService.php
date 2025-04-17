@@ -243,7 +243,7 @@ class MapperService
                     } else {
                         if (!isset($subRequestCounts[$request->id])) {
                             $subRequestCounts[$request->id] = [
-                                'id' => $request->id,
+                                'id' => (int) $request->id,
                                 'count' => 0,
                             ];
                         }
