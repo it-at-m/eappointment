@@ -27,7 +27,7 @@ class AppointmentCancelController extends BaseController
         }
 
         $result = $this->service->processCancel($request->getParsedBody());
-// Handle array errors from validation
+
         if (is_array($result) && isset($result['errors'])) {
             foreach ($result['errors'] as &$error) {
                 if (isset($error['errorCode'])) {
@@ -37,7 +37,6 @@ class AppointmentCancelController extends BaseController
             return $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']));
         }
 
-        // Handle successful response
         return $this->createJsonResponse($response, $result->toArray(), 200);
     }
 }
