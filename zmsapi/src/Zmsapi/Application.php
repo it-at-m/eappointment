@@ -23,7 +23,7 @@ class Application extends \BO\Slim\Application
     /**
      * @var Bool DEBUG
      */
-    const DEBUG = true;
+    const DEBUG = false;
 
     /**
      * @var Bool DB_ENABLE_WSREPSYNCWAIT
