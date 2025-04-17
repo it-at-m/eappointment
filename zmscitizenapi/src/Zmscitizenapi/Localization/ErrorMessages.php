@@ -35,6 +35,11 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
             'errorMessage' => 'Feature not implemented yet.',
         ],
+        'notFound' => [
+            'errorCode' => 'notFound',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'Endpoint not found.',
+        ],
         'invalidRequest' => [
             'errorCode' => 'invalidRequest',
             'statusCode' => self::HTTP_BAD_REQUEST,
@@ -333,6 +338,11 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
             'errorMessage' => 'Funktion ist noch nicht implementiert.',
         ],
+        'notFound' => [
+            'errorCode' => 'notFound',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'Endpunkt nicht gefunden.',
+        ],
         'invalidRequest' => [
             'errorCode' => 'invalidRequest',
             'statusCode' => self::HTTP_BAD_REQUEST,
@@ -629,6 +639,11 @@ class ErrorMessages
             'errorCode' => 'notImplemented',
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
             'errorMessage' => 'Функцію ще не реалізовано.',
+        ],
+        'notFound' => [
+            'errorCode' => 'notFound',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'Кінцеву точку не знайдено.',
         ],
         'invalidRequest' => [
             'errorCode' => 'invalidRequest',
