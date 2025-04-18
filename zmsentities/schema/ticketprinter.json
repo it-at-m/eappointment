@@ -22,6 +22,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": true,
         "properties": {
           "name": {
             "type": "string",
@@ -46,10 +47,12 @@
             "description": "url to scope, cluster or external target"
           },
           "scope": {
-            "$ref": "scope.json"
+            "type": "object",
+            "additionalProperties": true
           },
           "cluster": {
-            "$ref": "cluster.json"
+            "type": "object",
+            "additionalProperties": true
           }
         }
       },
