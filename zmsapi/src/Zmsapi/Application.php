@@ -118,8 +118,8 @@ class Application extends \BO\Slim\Application
 
     private static function initializeCache(): void
     {
-        self::$PSR16_CACHE_DIR_ZMSAPI = getenv('$PSR16_CACHE_DIR_ZMSAPI') ?: __DIR__ . '/cache_psr16';
-        self::$PSR16_CACHE_TTL_ZMSAPI = (int) (getenv('$PSR16_CACHE_TTL_ZMSAPI') ?: 3600);
+        self::$PSR16_CACHE_DIR_ZMSAPI = getenv('PSR16_CACHE_DIR_ZMSAPI') ?: dirname(dirname(dirname(__DIR__))) . '/cache_psr16';
+        self::$PSR16_CACHE_TTL_ZMSAPI = (int) (getenv('PSR16_CACHE_TTL_ZMSAPI') ?: 3600);
         self::validateCacheDirectory();
         self::setupCache();
     }

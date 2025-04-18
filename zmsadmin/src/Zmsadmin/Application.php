@@ -115,8 +115,8 @@ class Application extends \BO\Slim\Application
 
     private static function initializeCache(): void
     {
-        self::$PSR16_CACHE_DIR_ZMSADMIN = getenv('$PSR16_CACHE_DIR_ZMSADMIN') ?: __DIR__ . '/cache_psr16';
-        self::$PSR16_CACHE_TTL_ZMSADMIN = (int) (getenv('$PSR16_CACHE_TTL_ZMSADMIN') ?: 3600);
+        self::$PSR16_CACHE_DIR_ZMSADMIN = getenv('PSR16_CACHE_DIR_ZMSADMIN') ?: dirname(dirname(dirname(__DIR__))) . '/cache_psr16';
+        self::$PSR16_CACHE_TTL_ZMSADMIN = (int) (getenv('PSR16_CACHE_TTL_ZMSADMIN') ?: 3600);
         self::validateCacheDirectory();
         self::setupCache();
     }
