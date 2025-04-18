@@ -51,14 +51,33 @@ class Validator
     {
         $schemaPath = realpath(dirname(__FILE__) . '/../../../schema') . '/';
         $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
-        $schemaFiles = glob($schemaPath . '*.json');
+        
+        // Function to recursively find all JSON files
+        $findSchemaFiles = function($dir) use (&$findSchemaFiles) {
+            $files = [];
+            $items = glob($dir . '*.json');
+            $subdirs = glob($dir . '*', GLOB_ONLYDIR);
+            
+            foreach ($items as $item) {
+                $files[] = $item;
+            }
+            
+            foreach ($subdirs as $subdir) {
+                $files = array_merge($files, $findSchemaFiles($subdir . '/'));
+            }
+            
+            return $files;
+        };
+        
+        $schemaFiles = $findSchemaFiles($schemaPath);
 
         foreach ($schemaFiles as $schemaFile) {
-            $schemaName = 'schema://' . basename($schemaFile);
+            $relativePath = str_replace($schemaPath, '', $schemaFile);
+            $schemaName = 'schema://' . $relativePath;
             $cacheKey = self::CACHE_KEY_PREFIX . md5($schemaName);
-
+            
             // Try to get schema from cache
-            if (class_exists('\App') && isset(\App::$cache) && ($cachedSchema = \App::$cache->get($cacheKey))) {
+            if ($this->cache && ($cachedSchema = $this->cache->get($cacheKey))) {
                 $this->validator->resolver()->registerRaw($cachedSchema, $schemaName);
                 continue;
             }
@@ -68,9 +87,9 @@ class Validator
             $this->validator->resolver()->registerRaw($schemaContent, $schemaName);
 
             // Cache the schema content
-            if (class_exists('\App') && isset(\App::$cache)) {
-                \App::$cache->set($cacheKey, $schemaContent);
-                if (isset(\App::$log)) {
+            if ($this->cache) {
+                $this->cache->set($cacheKey, $schemaContent);
+                if (class_exists('\App') && isset(\App::$log)) {
                     \App::$log->info('Schema cached', [
                         'schema_name' => $schemaName,
                         'cache_key' => $cacheKey
