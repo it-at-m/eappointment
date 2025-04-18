@@ -175,7 +175,7 @@ class Application extends \BO\Slim\Application
 
     private static function setupCache(): void
     {
-        $psr16= new FilesystemAdapter(namespace: '', defaultLifetime: self::$PSR16_CACHE_TTL_ZMSCITIZENAPI, directory: self::$PSR16_CACHE_DIR_ZMSCITIZENAPI);
+        $psr16 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$PSR16_CACHE_TTL_ZMSCITIZENAPI, directory: self::$PSR16_CACHE_DIR_ZMSCITIZENAPI);
         self::$cache = new Psr16Cache($psr16);
     }
 
