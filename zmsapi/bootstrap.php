@@ -26,8 +26,8 @@ require_once(APP_PATH . '/config.php');
 $cache = new \Symfony\Component\Cache\Psr16Cache(
     new \Symfony\Component\Cache\Adapter\FilesystemAdapter(
         namespace: \App::MODULE_NAME,
-        defaultLifetime: \App::$PSR6_CACHE_TTL_ZMSAPI,
-        directory: \App::$PSR6_CACHE_DIR_ZMSAPI
+        defaultLifetime: \App::$PSR16_CACHE_TTL_ZMSAPI,
+        directory: \App::$PSR16_CACHE_DIR_ZMSAPI
     )
 );
 \App::$cache = $cache;

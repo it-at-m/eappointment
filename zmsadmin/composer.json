@@ -22,7 +22,7 @@
     ],
     "config": {
         "platform": {
-            "php": "8.0"
+            "php": "8.0.3"
         },
         "allow-plugins": {
             "php-http/discovery": true
@@ -46,7 +46,9 @@
         "container-interop/container-interop": "^1.2",
         "twig/intl-extra": "^3.4",
         "twig/twig": "3.*",
-        "symfony/polyfill-intl-icu": "^1.21"
+        "symfony/polyfill-intl-icu": "^1.21",
+        "symfony/cache": "^6.0",
+        "psr/simple-cache": "^3.0"
     },
     "bin": [],
     "autoload": {

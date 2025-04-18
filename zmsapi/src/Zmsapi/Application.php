@@ -100,8 +100,8 @@ class Application extends \BO\Slim\Application
      * Cache configuration
      */
     public static ?CacheInterface $cache = null;
-    public static string $PSR6_CACHE_DIR_ZMSAPI;
-    public static int $PSR6_CACHE_TTL_ZMSAPI;
+    public static string $PSR16_CACHE_DIR_ZMSAPI;
+    public static int $PSR16_CACHE_TTL_ZMSAPI;
 
     public static function getNow()
     {
@@ -118,26 +118,26 @@ class Application extends \BO\Slim\Application
 
     private static function initializeCache(): void
     {
-        self::$PSR6_CACHE_DIR_ZMSAPI = getenv('PSR6_CACHE_DIR_ZMSAPI') ?: __DIR__ . '/cache_psr6';
-        self::$PSR6_CACHE_TTL_ZMSAPI = (int) (getenv('PSR6_CACHE_TTL_ZMSAPI') ?: 3600);
+        self::$PSR16_CACHE_DIR_ZMSAPI = getenv('$PSR16_CACHE_DIR_ZMSAPI') ?: __DIR__ . '/cache_psr16';
+        self::$PSR16_CACHE_TTL_ZMSAPI = (int) (getenv('$PSR16_CACHE_TTL_ZMSAPI') ?: 3600);
         self::validateCacheDirectory();
         self::setupCache();
     }
 
     private static function validateCacheDirectory(): void
     {
-        if (!is_dir(self::$PSR6_CACHE_DIR_ZMSAPI) && !mkdir(self::$PSR6_CACHE_DIR_ZMSAPI, 0750, true)) {
-            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$PSR6_CACHE_DIR_ZMSAPI));
+        if (!is_dir(self::$PSR16_CACHE_DIR_ZMSAPI) && !mkdir(self::$PSR16_CACHE_DIR_ZMSAPI, 0750, true)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$PSR16_CACHE_DIR_ZMSAPI));
         }
 
-        if (!is_writable(self::$PSR6_CACHE_DIR_ZMSAPI)) {
-            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$PSR6_CACHE_DIR_ZMSAPI));
+        if (!is_writable(self::$PSR16_CACHE_DIR_ZMSAPI)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$PSR16_CACHE_DIR_ZMSAPI));
         }
     }
 
     private static function setupCache(): void
     {
-        $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$PSR6_CACHE_TTL_ZMSAPI, directory: self::$PSR6_CACHE_DIR_ZMSAPI);
-        self::$cache = new Psr16Cache($psr6);
+        $psr16 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$PSR16_CACHE_TTL_ZMSAPI, directory: self::$PSR16_CACHE_DIR_ZMSAPI);
+        self::$cache = new Psr16Cache($psr16);
     }
 }

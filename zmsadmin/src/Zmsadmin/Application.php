@@ -7,6 +7,9 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsclient\Http;
+use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 
 define(
     'ZMS_ADMIN_TEMPLATE_FOLDER',
@@ -97,4 +100,41 @@ class Application extends \BO\Slim\Application
      * HTTP url for api
      */
     const HTTP_BASE_URL = 'http://user:pass@host.tdl';
+
+    /**
+     * Cache configuration
+     */
+    public static ?CacheInterface $cache = null;
+    public static string $PSR16_CACHE_DIR_ZMSADMIN;
+    public static int $PSR16_CACHE_TTL_ZMSADMIN;
+
+    public static function initialize(): void
+    {
+        self::initializeCache();
+    }
+
+    private static function initializeCache(): void
+    {
+        self::$PSR16_CACHE_DIR_ZMSADMIN = getenv('$PSR16_CACHE_DIR_ZMSADMIN') ?: __DIR__ . '/cache_psr16';
+        self::$PSR16_CACHE_TTL_ZMSADMIN = (int) (getenv('$PSR16_CACHE_TTL_ZMSADMIN') ?: 3600);
+        self::validateCacheDirectory();
+        self::setupCache();
+    }
+
+    private static function validateCacheDirectory(): void
+    {
+        if (!is_dir(self::$PSR16_CACHE_DIR_ZMSADMIN) && !mkdir(self::$PSR16_CACHE_DIR_ZMSADMIN, 0750, true)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$PSR16_CACHE_DIR_ZMSADMIN));
+        }
+
+        if (!is_writable(self::$PSR16_CACHE_DIR_ZMSADMIN)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$PSR16_CACHE_DIR_ZMSADMIN));
+        }
+    }
+
+    private static function setupCache(): void
+    {
+        $psr16 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$PSR16_CACHE_TTL_ZMSADMIN, directory: self::$PSR16_CACHE_DIR_ZMSADMIN);
+        self::$cache = new Psr16Cache($psr16);
+    }
 }

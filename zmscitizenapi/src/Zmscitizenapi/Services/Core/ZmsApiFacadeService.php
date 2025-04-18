@@ -55,10 +55,10 @@ class ZmsApiFacadeService
     private static function setMappedCache(string $cacheKey, mixed $data): void
     {
         if (\App::$cache) {
-            \App::$cache->set($cacheKey, $data, \App::$PSR6_CACHE_TTL_ZMSCITIZENAPI);
+            \App::$cache->set($cacheKey, $data, \App::$PSR16_CACHE_TTL_ZMSCITIZENAPI);
             LoggerService::logInfo('Second-level cache set', [
                 'key' => $cacheKey,
-                'ttl' => \App::$PSR6_CACHE_TTL_ZMSCITIZENAPI
+                'ttl' => \App::$PSR16_CACHE_TTL_ZMSCITIZENAPI
             ]);
         }
     }

@@ -36,8 +36,8 @@ $errorMiddleware->setDefaultErrorHandler(new \BO\Zmscitizenapi\Helper\ErrorHandl
 $cache = new \Symfony\Component\Cache\Psr16Cache(
     new \Symfony\Component\Cache\Adapter\FilesystemAdapter(
         namespace: \App::MODULE_NAME,
-        defaultLifetime: \App::$PSR6_CACHE_TTL_ZMSCITIZENAPI,
-        directory: \App::$PSR6_CACHE_DIR_ZMSCITIZENAPI
+        defaultLifetime: \App::$PSR16_CACHE_TTL_ZMSCITIZENAPI,
+        directory: \App::$PSR16_CACHE_DIR_ZMSCITIZENAPI
     )
 );
 \App::$cache = $cache;
