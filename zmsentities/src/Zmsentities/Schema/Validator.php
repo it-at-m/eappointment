@@ -51,31 +51,31 @@ class Validator
     {
         $schemaPath = realpath(dirname(__FILE__) . '/../../../schema') . '/';
         $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
-        
+
         // Function to recursively find all JSON files
-        $findSchemaFiles = function($dir) use (&$findSchemaFiles) {
+        $findSchemaFiles = function ($dir) use (&$findSchemaFiles) {
             $files = [];
             $items = glob($dir . '*.json');
             $subdirs = glob($dir . '*', GLOB_ONLYDIR);
-            
+
             foreach ($items as $item) {
                 $files[] = $item;
             }
-            
+
             foreach ($subdirs as $subdir) {
                 $files = array_merge($files, $findSchemaFiles($subdir . '/'));
             }
-            
+
             return $files;
         };
-        
+
         $schemaFiles = $findSchemaFiles($schemaPath);
 
         foreach ($schemaFiles as $schemaFile) {
             $relativePath = str_replace($schemaPath, '', $schemaFile);
             $schemaName = 'schema://' . $relativePath;
             $cacheKey = self::CACHE_KEY_PREFIX . md5($schemaName);
-            
+
             // Try to get schema from cache
             if ($this->cache && ($cachedSchema = $this->cache->get($cacheKey))) {
                 $this->validator->resolver()->registerRaw($cachedSchema, $schemaName);
