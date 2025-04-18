@@ -119,8 +119,8 @@ class ApplicationTest extends TestCase
     public function testInitializeCache(): void
     {
         $cacheDir = $this->tempDir . '/cache_psr16';
-        putenv("$PSR16_CACHE_DIR_ZMSCITIZENAPI=$cacheDir");
-        putenv('$PSR16_CACHE_TTL_ZMSCITIZENAPI=7200');
+        putenv("PSR16_CACHE_DIR_ZMSCITIZENAPI=$cacheDir");
+        putenv('PSR16_CACHE_TTL_ZMSCITIZENAPI=7200');
 
         Application::initialize();
 
@@ -232,8 +232,8 @@ class ApplicationTest extends TestCase
         putenv('ALTCHA_CAPTCHA_SITE_KEY');
         putenv('ALTCHA_CAPTCHA_ENDPOINT');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_PUZZLE');
-        putenv('$PSR16_CACHE_DIR_ZMSCITIZENAPI');
-        putenv('$PSR16_CACHE_TTL_ZMSCITIZENAPI');
+        putenv('PSR16_CACHE_DIR_ZMSCITIZENAPI');
+        putenv('PSR16_CACHE_TTL_ZMSCITIZENAPI');
         putenv('RATE_LIMIT_MAX_REQUESTS');
         putenv('RATE_LIMIT_CACHE_TTL');
         putenv('RATE_LIMIT_MAX_RETRIES');
