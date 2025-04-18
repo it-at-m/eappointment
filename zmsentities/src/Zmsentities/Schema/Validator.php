@@ -13,15 +13,18 @@ class Validator
     protected $locale;
     protected $validator;
     protected $validationResult;
+    protected $cache;
 
     private static $schemasLoaded = false;
     private static $validatorInstance = null;
+    private const CACHE_KEY_PREFIX = 'cached_schema_';
 
-    public function __construct($data, Schema $schemaObject, $locale)
+    public function __construct($data, Schema $schemaObject, $locale, $cache = null)
     {
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
+        $this->cache = $cache ?? (class_exists('\App') && isset(\App::$cache) ? \App::$cache : null);
 
         // Use static validator instance if available
         if (self::$validatorInstance === null) {
@@ -48,14 +51,51 @@ class Validator
     {
         $schemaPath = realpath(dirname(__FILE__) . '/../../../schema') . '/';
         $this->validator->resolver()->registerPrefix('schema://', $schemaPath);
-        $schemaFiles = glob($schemaPath . '*.json');
 
-        // TODO: Implement persistent caching for schema file reads to reduce redundant disk I/O and improve application performance. Not just for each process.
+        // Function to recursively find all JSON files
+        $findSchemaFiles = function ($dir) use (&$findSchemaFiles) {
+            $files = [];
+            $items = glob($dir . '*.json');
+            $subdirs = glob($dir . '*', GLOB_ONLYDIR);
+
+            foreach ($items as $item) {
+                $files[] = $item;
+            }
+
+            foreach ($subdirs as $subdir) {
+                $files = array_merge($files, $findSchemaFiles($subdir . '/'));
+            }
+
+            return $files;
+        };
+
+        $schemaFiles = $findSchemaFiles($schemaPath);
 
         foreach ($schemaFiles as $schemaFile) {
+            $relativePath = str_replace($schemaPath, '', $schemaFile);
+            $schemaName = 'schema://' . $relativePath;
+            $cacheKey = self::CACHE_KEY_PREFIX . md5($schemaName);
+
+            // Try to get schema from cache
+            if ($this->cache && ($cachedSchema = $this->cache->get($cacheKey))) {
+                $this->validator->resolver()->registerRaw($cachedSchema, $schemaName);
+                continue;
+            }
+
+            // If not in cache, load from disk
             $schemaContent = file_get_contents($schemaFile);
-            $schemaName = 'schema://' . basename($schemaFile);
             $this->validator->resolver()->registerRaw($schemaContent, $schemaName);
+
+            // Cache the schema content
+            if ($this->cache) {
+                $this->cache->set($cacheKey, $schemaContent);
+                if (class_exists('\App') && isset(\App::$log)) {
+                    \App::$log->info('Schema cached', [
+                        'schema_name' => $schemaName,
+                        'cache_key' => $cacheKey
+                    ]);
+                }
+            }
         }
     }
 

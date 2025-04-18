@@ -20,6 +20,19 @@ require(APP_PATH . '/config.php');
 \BO\Slim\Bootstrap::init();
 \BO\Slim\Bootstrap::addTwigExtension(new \Twig\Extra\Intl\IntlExtension());
 
+// Initialize the application and cache
+\App::initialize();
+
+// Initialize cache
+$cache = new \Symfony\Component\Cache\Psr16Cache(
+    new \Symfony\Component\Cache\Adapter\FilesystemAdapter(
+        namespace: \App::MODULE_NAME,
+        defaultLifetime: \App::$PSR16_CACHE_TTL_ZMSCALLDISPLAY,
+        directory: \App::$PSR16_CACHE_DIR_ZMSCALLDISPLAY
+    )
+);
+\App::$cache = $cache;
+
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
