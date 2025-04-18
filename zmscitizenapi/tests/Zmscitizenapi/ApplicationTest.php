@@ -118,7 +118,7 @@ class ApplicationTest extends TestCase
 
     public function testInitializeCache(): void
     {
-        $cacheDir = $this->tempDir . '/cache';
+        $cacheDir = $this->tempDir . '/cache_psr16';
         putenv("$PSR16_CACHE_DIR_ZMSCITIZENAPI=$cacheDir");
         putenv('$PSR16_CACHE_TTL_ZMSCITIZENAPI=7200');
 

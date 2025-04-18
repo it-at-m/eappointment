@@ -8,6 +8,9 @@
 namespace BO\Zmsstatistic;
 
 use BO\Zmsclient\Http;
+use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 
 define(
     'ZMS_STATISTIC_SESSION_DURATION',
@@ -74,4 +77,41 @@ class Application extends \BO\Slim\Application
      * HTTP url for api
      */
     const HTTP_BASE_URL = 'http://user:pass@host.tdl';
+
+    /**
+     * Cache configuration
+     */
+    public static ?CacheInterface $cache = null;
+    public static string $PSR16_CACHE_DIR_ZMSSTATISTIC;
+    public static int $PSR16_CACHE_TTL_ZMSSTATISTIC;
+
+    public static function initialize(): void
+    {
+        self::initializeCache();
+    }
+
+    private static function initializeCache(): void
+    {
+        self::$PSR16_CACHE_DIR_ZMSSTATISTIC = getenv('PSR16_CACHE_DIR_ZMSSTATISTIC') ?: dirname(dirname(dirname(__DIR__))) . '/cache_psr16';
+        self::$PSR16_CACHE_TTL_ZMSSTATISTIC = (int) (getenv('PSR16_CACHE_TTL_ZMSSTATISTIC') ?: 3600);
+        self::validateCacheDirectory();
+        self::setupCache();
+    }
+
+    private static function validateCacheDirectory(): void
+    {
+        if (!is_dir(self::$PSR16_CACHE_DIR_ZMSSTATISTIC) && !mkdir(self::$PSR16_CACHE_DIR_ZMSSTATISTIC, 0750, true)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$PSR16_CACHE_DIR_ZMSSTATISTIC));
+        }
+
+        if (!is_writable(self::$PSR16_CACHE_DIR_ZMSSTATISTIC)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$PSR16_CACHE_DIR_ZMSSTATISTIC));
+        }
+    }
+
+    private static function setupCache(): void
+    {
+        $psr16 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$PSR16_CACHE_TTL_ZMSSTATISTIC, directory: self::$PSR16_CACHE_DIR_ZMSSTATISTIC);
+        self::$cache = new Psr16Cache($psr16);
+    }
 }
