@@ -12,28 +12,31 @@ use JsonSerializable;
 class Office extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/office.json';
-/** @var int */
     public int $id;
-/** @var string */
     public string $name;
-/** @var array|null */
     public ?array $address = null;
-/** @var array|null */
     public ?array $displayNameAlternatives = null;
-/** @var bool|null */
     public ?bool $showAlternativeLocations = null;
-/** @var string|null */
     public ?string $organization = null;
-/** @var string|null */
     public ?string $organizationUnit = null;
-/** @var int|null */
     public ?int $slotTimeInMinutes = null;
-/** @var array|null */
     public ?array $geo = null;
-/** @var ThinnedScope|null */
+    public ?array $disabledByServices = null;
     public ?ThinnedScope $scope = null;
-    public function __construct(int $id, string $name, ?array $address = null, ?bool $showAlternativeLocations = null, ?array $displayNameAlternatives = null, ?string $organization = null, ?string $organizationUnit = null, ?int $slotTimeInMinutes = null, ?array $geo = null, ?ThinnedScope $scope = null)
-    {
+
+    public function __construct(
+        int $id,
+        string $name,
+        ?array $address = null,
+        ?bool $showAlternativeLocations = null,
+        ?array $displayNameAlternatives = null,
+        ?string $organization = null,
+        ?string $organizationUnit = null,
+        ?int $slotTimeInMinutes = null,
+        ?array $geo = null,
+        ?array $disabledByServices = [],
+        ?ThinnedScope $scope = null
+    ) {
         $this->id = $id;
         $this->name = $name;
         $this->address = $address;
@@ -44,6 +47,7 @@ class Office extends Entity implements JsonSerializable
         $this->slotTimeInMinutes = $slotTimeInMinutes;
         $this->geo = $geo;
         $this->scope = $scope;
+        $this->disabledByServices = $disabledByServices;
         $this->ensureValid();
     }
 
@@ -71,6 +75,7 @@ class Office extends Entity implements JsonSerializable
             'organizationUnit' => $this->organizationUnit,
             'slotTimeInMinutes' => $this->slotTimeInMinutes,
             'geo' => $this->geo,
+            'disabledByServices' => $this->disabledByServices,
             'scope' => $this->scope?->toArray(),
         ];
     }
