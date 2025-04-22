@@ -34,7 +34,7 @@ class SQLiteAccess extends PDOAccess
                     stripos($e->getMessage(), 'Connection timed out') !== false ||
                     stripos($e->getMessage(), 'Access denied') !== false
                 ) {
-                    $message = 'Database connection failed in ' . __FILE__ .  ' on line ' . __LINE__ . '.';
+                    $message = 'Database connection failed in ' . __FILE__ .  ' on line ' . $exception->getLine() . '.';
                     throw new \Exception($message, (int)$e->getCode(), $e);
                 }
             }
