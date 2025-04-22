@@ -29,7 +29,6 @@ class SQLiteAccess extends PDOAccess
             $this->pdo = new \PDO($dsn);
         } catch (\Exception $e) {
             if (stripos($e->getMessage(), 'SQLSTATE') !== false) {
-                // Only sanitize actual connection errors
                 if (
                     stripos($e->getMessage(), 'Connection refused') !== false ||
                     stripos($e->getMessage(), 'Connection timed out') !== false ||

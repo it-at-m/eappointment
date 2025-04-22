@@ -42,7 +42,6 @@ class ErrorHandler implements ErrorHandlerInterface
         $message = \BO\Zmsapi\Response\Message::create($request);
         $message->meta->error = true;
 
-        // Only sanitize actual database connection errors
         if (
             $exception instanceof \PDOException &&
             stripos($exception->getMessage(), 'SQLSTATE') !== false &&
@@ -50,7 +49,7 @@ class ErrorHandler implements ErrorHandlerInterface
              stripos($exception->getMessage(), 'Connection timed out') !== false ||
              stripos($exception->getMessage(), 'Access denied') !== false)
         ) {
-            $message->meta->message = '[API] Fatal Exception: Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 51.';
+            $message->meta->message = '[API] Fatal Exception: Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 52.';
         } else {
             $message->meta->message = $exception->getMessage();
         }
@@ -75,7 +74,6 @@ class ErrorHandler implements ErrorHandlerInterface
             $status = $exception->getcode();
         }
         if ($exception->getCode() >= 500 || !$exception->getCode()) {
-            // Only sanitize actual database connection errors in logs
             if (
                 $exception instanceof \PDOException &&
                 stripos($exception->getMessage(), 'SQLSTATE') !== false &&
@@ -84,7 +82,7 @@ class ErrorHandler implements ErrorHandlerInterface
                  stripos($exception->getMessage(), 'Access denied') !== false)
             ) {
                 \App::$log->critical(
-                    "[API] Fatal Exception: Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 83."
+                    "[API] Fatal Exception: Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 85."
                 );
             } else {
                 \App::$log->critical(

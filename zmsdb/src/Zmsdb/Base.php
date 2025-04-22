@@ -103,7 +103,6 @@ abstract class Base
     {
         //@codeCoverageIgnoreStart
         if (stripos($pdoException->getMessage(), 'SQLSTATE') !== false) {
-            // Only sanitize actual connection errors
             if (
                 stripos($pdoException->getMessage(), 'Connection refused') !== false ||
                 stripos($pdoException->getMessage(), 'Connection timed out') !== false ||
