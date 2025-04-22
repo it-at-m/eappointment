@@ -114,7 +114,7 @@ class Select
             try {
                 $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             } catch (\PDOException $e) {
-                $sanitizedMessage = '**Database connection failed in zmsdb/Connection/Select.php on line 117.**';
+                $sanitizedMessage = 'Database connection failed in zmsdb/Connection/Select.php on line 117.';
                 throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
                     $sanitizedMessage,
                     (int)$e->getCode(),
@@ -127,7 +127,7 @@ class Select
             $pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $exception) {
-            $sanitizedMessage = '**Database connection failed in zmsdb/Connection/Select.php on line 130.**';
+            $sanitizedMessage = 'Database connection failed in zmsdb/Connection/Select.php on line 130.';
             throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
                 $sanitizedMessage,
                 (int)$exception->getCode(),

@@ -113,7 +113,7 @@ abstract class Base
             }
             //@codeCoverageIgnoreEnd
             if (stripos($pdoException->getMessage(), 'SQLSTATE') !== false) {
-                $message = '**Database connection failed in zmsdb/Base.php on line 116.**';
+                $message = 'Database connection failed in zmsdb/Base.php on line 116.';
             } else {
                 $message = "SQL: "
                     . " Err: "
