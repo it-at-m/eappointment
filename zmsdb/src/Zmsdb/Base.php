@@ -123,7 +123,7 @@ abstract class Base
                 } elseif (stripos($pdoException->getMessage(), 'Access denied') !== false) {
                     $errorType = 'Access denied';
                 }
-                $message = 'Database connection failed (' . $errorType . ') in ' . __FILE__ .  ' on line ' . $pdoException->getLine() . '.';
+                $message = 'Database connection failed (' . $errorType . ') in ' . $pdoException->getFile() . ' on line ' . $pdoException->getLine() . '.';
                 throw new Exception\Pdo\PDOFailed($message, 0, $pdoException);
             }
             //@codeCoverageIgnoreEnd

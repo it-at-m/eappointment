@@ -55,7 +55,7 @@ class ErrorHandler implements ErrorHandlerInterface
             } elseif (stripos($exception->getMessage(), 'Access denied') !== false) {
                 $errorType = 'Access denied';
             }
-            $message->meta->message = '[API] Fatal Exception: Database connection failed (' . $errorType . ') in ' . __FILE__ . ' on line ' . __LINE__ . '.';
+            $message->meta->message = '[API] Fatal Exception: Database connection failed (' . $errorType . ') in ' . $exception->getFile() . ' on line ' . $exception->getLine() . '.';
         } else {
             $message->meta->message = $exception->getMessage();
         }
@@ -94,7 +94,7 @@ class ErrorHandler implements ErrorHandlerInterface
                     $errorType = 'Access denied';
                 }
                 \App::$log->critical(
-                    "[API] Fatal Exception: Database connection failed (" . $errorType . ") in " . __FILE__ .  " on line " . __LINE__ . "."
+                    "[API] Fatal Exception: Database connection failed (" . $errorType . ") in " . $exception->getFile() .  " on line " . $exception->getLine() . "."
                 );
             } else {
                 \App::$log->critical(
