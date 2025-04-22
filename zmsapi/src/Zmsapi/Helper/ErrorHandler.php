@@ -49,7 +49,7 @@ class ErrorHandler implements ErrorHandlerInterface
              stripos($exception->getMessage(), 'Connection timed out') !== false ||
              stripos($exception->getMessage(), 'Access denied') !== false)
         ) {
-            $message->meta->message = '[API] Fatal Exception: Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 52.';
+            $message->meta->message = '[API] Fatal Exception: Database connection failed in ' . __FILE__ . ' on line ' . __LINE__ . '.';
         } else {
             $message->meta->message = $exception->getMessage();
         }
@@ -82,7 +82,7 @@ class ErrorHandler implements ErrorHandlerInterface
                  stripos($exception->getMessage(), 'Access denied') !== false)
             ) {
                 \App::$log->critical(
-                    "[API] Fatal Exception: Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 85."
+                    "[API] Fatal Exception: Database connection failed in " . __FILE__ .  " on line " . __LINE__ . "."
                 );
             } else {
                 \App::$log->critical(

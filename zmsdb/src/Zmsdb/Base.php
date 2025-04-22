@@ -108,7 +108,7 @@ abstract class Base
                 stripos($pdoException->getMessage(), 'Connection timed out') !== false ||
                 stripos($pdoException->getMessage(), 'Access denied') !== false
             ) {
-                $message = 'Database connection failed in zmsdb/Base.php on line 111.';
+                $message = 'Database connection failed in ' . __FILE__ .  ' on line ' . __LINE__ . '.';
             } else {
                 $message = "SQL: "
                 . " Err: "
