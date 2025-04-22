@@ -112,11 +112,9 @@ class Select
             $pdoOptions = array_merge([
                 ], self::$pdoOptions);
             try {
-                // Create the Aura SQL ExtendedPdo with the DSN string
                 $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             } catch (\PDOException $e) {
-                // Create a sanitized error message that doesn't expose credentials
-                $sanitizedMessage = 'Database connection failed in zmsdb/Connection/Select.php on line 119.';
+                $sanitizedMessage = 'Database connection failed in zmsdb/Connection/Select.php on line 117.';
                 throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
                     $sanitizedMessage,
                     (int)$e->getCode(),
@@ -130,7 +128,7 @@ class Select
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $exception) {
             // Create a sanitized error message that doesn't expose credentials
-            $sanitizedMessage = 'Database connection failed in zmsdb/Connection/Select.php on line 133.';
+            $sanitizedMessage = 'Database connection failed in zmsdb/Connection/Select.php on line 131.';
             throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
                 $sanitizedMessage,
                 (int)$exception->getCode(),
