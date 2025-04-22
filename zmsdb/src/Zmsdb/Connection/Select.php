@@ -134,15 +134,12 @@ class Select
         } catch (\Exception $exception) {
             // Extend exception message with connection information
             $connectInfo = self::sanitizeStackTrace($dataSourceName);
-            $exception = new \BO\Zmsdb\Exception\Pdo\PDOFailed(
-                $connectInfo . $exception->getMessage(),
+            $message = self::sanitizeStackTrace($connectInfo . $exception->getMessage());
+            throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
+                $message,
                 (int)$exception->getCode(),
                 $exception
             );
-            $reflection = new \ReflectionProperty('Exception', 'trace');
-            $reflection->setAccessible(true);
-            $reflection->setValue($exception, []);
-            throw $exception;
         }
         return $pdo;
     }
