@@ -44,7 +44,7 @@ class ErrorHandler implements ErrorHandlerInterface
 
         // Sanitize database connection errors
         if ($exception instanceof \PDOException && stripos($exception->getMessage(), 'SQLSTATE') !== false) {
-            $message->meta->message = 'Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 47.';
+            $message->meta->message = '[API] Fatal Error: Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 47.';
         } else {
             $message->meta->message = $exception->getMessage();
         }
@@ -72,7 +72,7 @@ class ErrorHandler implements ErrorHandlerInterface
             // Sanitize database connection errors in logs
             if ($exception instanceof \PDOException && stripos($exception->getMessage(), 'SQLSTATE') !== false) {
                 \App::$log->critical(
-                    "[API] Fatal Exception: Database connection failed"
+                    "[API] Fatal Exception: Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 75."
                 );
             } else {
                 \App::$log->critical(
