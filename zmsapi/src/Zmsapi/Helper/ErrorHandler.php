@@ -14,6 +14,20 @@ use Slim\Interfaces\ErrorHandlerInterface;
 class ErrorHandler implements ErrorHandlerInterface
 {
     /**
+     * Sanitize stack trace by replacing sensitive information
+     *
+     * @param string $trace
+     * @return string
+     */
+    protected static function sanitizeStackTrace($trace)
+    {
+        if (defined('\App::DB_PASSWORD')) {
+            $trace = str_replace(\App::DB_PASSWORD, '***', $trace);
+        }
+        return $trace;
+    }
+
+    /**
      * @SuppressWarnings("PMD.UnusedFormalParameter")
      * @SuppressWarnings(Complexity)
      * @param ServerRequestInterface $request
@@ -53,6 +67,8 @@ class ErrorHandler implements ErrorHandlerInterface
             $message->meta->trace .= isset($call['line']) ? $call['line'] : '';
             $message->meta->trace .= "\n";
         }
+        $message->meta->trace = self::sanitizeStackTrace($message->meta->trace);
+
         if (isset($exception->data)) {
             $message->data = $exception->data;
         }
@@ -66,7 +82,7 @@ class ErrorHandler implements ErrorHandlerInterface
                 "[API] Fatal Exception: "
                 . " in " . $exception->getFile() . " +" . $exception->getLine()
                 . " -> " . $exception->getMessage()
-                . " | Trace: " . preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace))
+                . " | Trace: " . self::sanitizeStackTrace(preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace)))
             );
         }
         return Render::withJson($response, $message, $status);
