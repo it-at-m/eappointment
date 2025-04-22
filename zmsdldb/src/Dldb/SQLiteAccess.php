@@ -28,15 +28,14 @@ class SQLiteAccess extends PDOAccess
 
             $this->pdo = new \PDO($dsn);
         } catch (\Exception $e) {
-            if (stripos($e->getMessage(), 'SQLSTATE') !== false) {
-                if (
-                    stripos($e->getMessage(), 'Connection refused') !== false ||
-                    stripos($e->getMessage(), 'Connection timed out') !== false ||
-                    stripos($e->getMessage(), 'Access denied') !== false
-                ) {
-                    $message = 'Database connection failed in ' . __FILE__ .  ' on line ' . $exception->getLine() . '.';
-                    throw new \Exception($message, (int)$e->getCode(), $e);
-                }
+            if (
+                stripos($e->getMessage(), 'SQLSTATE') !== false &&
+                (stripos($e->getMessage(), 'Connection refused') !== false ||
+                 stripos($e->getMessage(), 'Connection timed out') !== false ||
+                 stripos($e->getMessage(), 'Access denied') !== false)
+            ) {
+                $message = 'Database connection failed in ' . __FILE__ .  ' on line ' . $e->getLine() . '.';
+                throw new \Exception($message, (int)$e->getCode(), $e);
             }
             throw $e;
         }

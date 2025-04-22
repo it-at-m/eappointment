@@ -102,24 +102,23 @@ abstract class Base
     protected function pdoExceptionHandler(\PDOException $pdoException, $statement = null, $parameters = null)
     {
         //@codeCoverageIgnoreStart
-        if (stripos($pdoException->getMessage(), 'SQLSTATE') !== false) {
-            if (
-                stripos($pdoException->getMessage(), 'Connection refused') !== false ||
-                stripos($pdoException->getMessage(), 'Connection timed out') !== false ||
-                stripos($pdoException->getMessage(), 'Access denied') !== false
-            ) {
-                $message = 'Database connection failed in ' . __FILE__ .  ' on line ' . $exception->getLine() . '.';
-            } else {
-                $message = "SQL: "
-                . " Err: "
-                . $pdoException->getMessage()
-                //. " || Statement: "
-                //.$statement->queryString
-                //." || Parameters=". var_export($parameters, true)
-                ;
-            }
-            throw new Exception\Pdo\PDOFailed($message, 0, $pdoException);
+        if (
+            stripos($pdoException->getMessage(), 'SQLSTATE') !== false &&
+            (stripos($pdoException->getMessage(), 'Connection refused') !== false ||
+             stripos($pdoException->getMessage(), 'Connection timed out') !== false ||
+             stripos($pdoException->getMessage(), 'Access denied') !== false)
+        ) {
+            $message = 'Database connection failed in ' . __FILE__ .  ' on line ' . $pdoException->getLine() . '.';
+        } else {
+            $message = "SQL: "
+            . " Err: "
+            . $pdoException->getMessage()
+            //. " || Statement: "
+            //.$statement->queryString
+            //." || Parameters=". var_export($parameters, true)
+            ;
         }
+        throw new Exception\Pdo\PDOFailed($message, 0, $pdoException);
         //@codeCoverageIgnoreEnd
     }
 
