@@ -29,7 +29,7 @@ class SQLiteAccess extends PDOAccess
             $this->pdo = new \PDO($dsn);
         } catch (\Exception $e) {
             if (stripos($e->getMessage(), 'SQLSTATE') !== false) {
-                $message = 'Database connection failed in zmsdldb/SQLiteAccess.php on line 25.';
+                $message = 'Database connection failed in zmsdldb/SQLiteAccess.php on line 32.';
                 throw new \Exception($message, (int)$e->getCode(), $e);
             }
             throw $e;
