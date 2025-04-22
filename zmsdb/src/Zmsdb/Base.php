@@ -112,13 +112,13 @@ abstract class Base
                 throw new Exception\Pdo\DeadLockFound();
             }
             //@codeCoverageIgnoreEnd
-            $message = "SQL: "
-                . " Err: "
-                . $pdoException->getMessage()
-                //. " || Statement: "
-                //.$statement->queryString
-                //." || Parameters=". var_export($parameters, true)
-                ;
+            if (stripos($pdoException->getMessage(), 'SQLSTATE') !== false) {
+                $message = '**Database connection failed in zmsdb/Base.php on line 116.**';
+            } else {
+                $message = "SQL: "
+                    . " Err: "
+                    . $pdoException->getMessage();
+            }
             throw new Exception\Pdo\PDOFailed($message, 0, $pdoException);
         }
         return $statement;
