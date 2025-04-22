@@ -112,7 +112,7 @@ class Select
             $pdoOptions = array_merge([
                 ], self::$pdoOptions);
             try {
-                $pdo = new Pdo($dataSourceName, "p", self::$password, $pdoOptions);
+                $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             } catch (\PDOException $e) {
                 if (
                     stripos($e->getMessage(), 'SQLSTATE') !== false &&
