@@ -101,6 +101,20 @@ class Select
     protected static $useQueryCache = true;
 
     /**
+     * Sanitize stack trace by replacing sensitive information
+     *
+     * @param string $trace
+     * @return string
+     */
+    protected static function sanitizeStackTrace($trace)
+    {
+        if (defined('\App::DB_PASSWORD')) {
+            $trace = str_replace(\App::DB_PASSWORD, '***', $trace);
+        }
+        return $trace;
+    }
+
+    /**
      * Create a PDO compatible object
      *
      * @param  String $dataSourceName compatible with PDO
@@ -119,12 +133,16 @@ class Select
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $exception) {
             // Extend exception message with connection information
-            $connectInfo = $dataSourceName;
-            throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
+            $connectInfo = self::sanitizeStackTrace($dataSourceName);
+            $exception = new \BO\Zmsdb\Exception\Pdo\PDOFailed(
                 $connectInfo . $exception->getMessage(),
                 (int)$exception->getCode(),
                 $exception
             );
+            $reflection = new \ReflectionProperty('Exception', 'trace');
+            $reflection->setAccessible(true);
+            $reflection->setValue($exception, []);
+            throw $exception;
         }
         return $pdo;
     }
