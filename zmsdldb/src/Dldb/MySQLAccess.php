@@ -37,8 +37,15 @@ class MySQLAccess extends PDOAccess
             $this->pdo = new \PDO($dsn, $user, $pass);
         } catch (\Exception $e) {
             if (stripos($e->getMessage(), 'SQLSTATE') !== false) {
-                $message = 'Database connection failed in zmsdldb/MySQLAccess.php on line 40.';
-                throw new \Exception($message, (int)$e->getCode(), $e);
+                // Only sanitize actual connection errors
+                if (
+                    stripos($e->getMessage(), 'Connection refused') !== false ||
+                    stripos($e->getMessage(), 'Connection timed out') !== false ||
+                    stripos($e->getMessage(), 'Access denied') !== false
+                ) {
+                    $message = 'Database connection failed in zmsdldb/Dldb/MySQLAccess.php on line 45.';
+                    throw new \Exception($message, (int)$e->getCode(), $e);
+                }
             }
             throw $e;
         }

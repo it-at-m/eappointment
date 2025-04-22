@@ -99,21 +99,17 @@ abstract class Base
         return $statement;
     }
 
-    protected static function pdoExceptionHandler(\Closure $pdoFunction, $parameters = [])
+    protected function pdoExceptionHandler(\PDOException $pdoException, $statement = null, $parameters = null)
     {
-        try {
-            $statement = $pdoFunction($parameters);
-        } catch (\PDOException $pdoException) {
-            if (stripos($pdoException->getMessage(), 'Lock wait timeout') !== false) {
-                throw new Exception\Pdo\LockTimeout();
-            }
-            //@codeCoverageIgnoreStart
-            if (stripos($pdoException->getMessage(), 'Deadlock found') !== false) {
-                throw new Exception\Pdo\DeadLockFound();
-            }
-            //@codeCoverageIgnoreEnd
-            if (stripos($pdoException->getMessage(), 'SQLSTATE') !== false) {
-                $message = 'Database connection failed in zmsdb/Base.php on line 116.';
+        //@codeCoverageIgnoreStart
+        if (stripos($pdoException->getMessage(), 'SQLSTATE') !== false) {
+            // Only sanitize actual connection errors
+            if (
+                stripos($pdoException->getMessage(), 'Connection refused') !== false ||
+                stripos($pdoException->getMessage(), 'Connection timed out') !== false ||
+                stripos($pdoException->getMessage(), 'Access denied') !== false
+            ) {
+                $message = 'Database connection failed in zmsdb/Base.php on line 111.';
             } else {
                 $message = "SQL: "
                 . " Err: "
@@ -125,7 +121,7 @@ abstract class Base
             }
             throw new Exception\Pdo\PDOFailed($message, 0, $pdoException);
         }
-        return $statement;
+        //@codeCoverageIgnoreEnd
     }
 
     public function fetchStatement(Query\Base $query)
