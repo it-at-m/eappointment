@@ -124,7 +124,11 @@ abstract class Base
                     $errorType = 'Access denied';
                 }
                 $message = 'Database connection failed (' . $errorType . ') in ' . $pdoException->getFile() . ' on line ' . $pdoException->getLine() . '.';
-                throw new Exception\Pdo\PDOFailed($message, 0, $pdoException);
+                $exception = new Exception\Pdo\PDOFailed($message, 0, $pdoException);
+                $reflection = new \ReflectionProperty('Exception', 'trace');
+                $reflection->setAccessible(true);
+                $reflection->setValue($exception, []);
+                throw $exception;
             }
             //@codeCoverageIgnoreEnd
             $message = "SQL: "

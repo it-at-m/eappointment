@@ -49,7 +49,11 @@ class MySQLAccess extends PDOAccess
                     $errorType = 'Access denied';
                 }
                 $message = 'Database connection failed (' . $errorType . ') in ' . $e->getFile() .  ' on line ' . $e->getLine() . '.';
-                throw new \Exception($message, (int)$e->getCode(), $e);
+                $exception = new \Exception($message, (int)$e->getCode(), $e);
+                $reflection = new \ReflectionProperty('Exception', 'trace');
+                $reflection->setAccessible(true);
+                $reflection->setValue($exception, []);
+                throw $exception;
             }
             throw $e;
         }

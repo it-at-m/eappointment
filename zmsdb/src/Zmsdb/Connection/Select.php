@@ -112,7 +112,7 @@ class Select
             $pdoOptions = array_merge([
                 ], self::$pdoOptions);
             try {
-                $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
+                $pdo = new Pdo($dataSourceName, "p", self::$password, $pdoOptions);
             } catch (\PDOException $e) {
                 if (
                     stripos($e->getMessage(), 'SQLSTATE') !== false &&
@@ -127,11 +127,15 @@ class Select
                         $errorType = 'Access denied';
                     }
                     $sanitizedMessage = 'Database connection failed (' . $errorType . ') in ' . $e->getFile() . ' on line ' . $e->getLine() . '.';
-                    throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
+                    $exception = new \BO\Zmsdb\Exception\Pdo\PDOFailed(
                         $sanitizedMessage,
                         (int)$e->getCode(),
                         $e
                     );
+                    $reflection = new \ReflectionProperty('Exception', 'trace');
+                    $reflection->setAccessible(true);
+                    $reflection->setValue($exception, []);
+                    throw $exception;
                 }
                 throw $e;
             }
@@ -154,11 +158,15 @@ class Select
                     $errorType = 'Access denied';
                 }
                 $sanitizedMessage = 'Database connection failed (' . $errorType . ') in ' . $exception->getFile() . ' on line ' . $exception->getLine() . '.';
-                throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
+                $exception = new \BO\Zmsdb\Exception\Pdo\PDOFailed(
                     $sanitizedMessage,
                     (int)$exception->getCode(),
                     $exception
                 );
+                $reflection = new \ReflectionProperty('Exception', 'trace');
+                $reflection->setAccessible(true);
+                $reflection->setValue($exception, []);
+                throw $exception;
             }
             throw $exception;
         }

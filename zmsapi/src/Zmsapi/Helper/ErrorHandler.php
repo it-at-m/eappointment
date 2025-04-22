@@ -56,20 +56,19 @@ class ErrorHandler implements ErrorHandlerInterface
                 $errorType = 'Access denied';
             }
             $message->meta->message = '[API] Fatal Exception: Database connection failed (' . $errorType . ') in ' . $exception->getFile() . ' on line ' . $exception->getLine() . '.';
+            $message->meta->trace = ''; // Clear stack trace for connection errors
         } else {
             $message->meta->message = $exception->getMessage();
-        }
-
-        $message->meta->exception = get_class($exception);
-        $message->meta->trace = '';
-        foreach (array_slice($exception->getTrace(), 0, 10) as $call) {
-            $message->meta->trace .= "\\";
-            $message->meta->trace .= isset($call['class']) ? $call['class'] : '';
-            $message->meta->trace .= "::";
-            $message->meta->trace .= isset($call['function']) ? $call['function'] : '';
-            $message->meta->trace .= " +";
-            $message->meta->trace .= isset($call['line']) ? $call['line'] : '';
-            $message->meta->trace .= "\n";
+            $message->meta->trace = '';
+            foreach (array_slice($exception->getTrace(), 0, 10) as $call) {
+                $message->meta->trace .= "\\";
+                $message->meta->trace .= isset($call['class']) ? $call['class'] : '';
+                $message->meta->trace .= "::";
+                $message->meta->trace .= isset($call['function']) ? $call['function'] : '';
+                $message->meta->trace .= " +";
+                $message->meta->trace .= isset($call['line']) ? $call['line'] : '';
+                $message->meta->trace .= "\n";
+            }
         }
         if (isset($exception->data)) {
             $message->data = $exception->data;
