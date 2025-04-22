@@ -41,7 +41,14 @@ class ErrorHandler implements ErrorHandlerInterface
 
         $message = \BO\Zmsapi\Response\Message::create($request);
         $message->meta->error = true;
-        $message->meta->message = $exception->getMessage();
+        
+        // Sanitize database connection errors
+        if ($exception instanceof \PDOException && stripos($exception->getMessage(), 'SQLSTATE') !== false) {
+            $message->meta->message = 'Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 47.';
+        } else {
+            $message->meta->message = $exception->getMessage();
+        }
+        
         $message->meta->exception = get_class($exception);
         $message->meta->trace = '';
         foreach (array_slice($exception->getTrace(), 0, 10) as $call) {
@@ -62,12 +69,19 @@ class ErrorHandler implements ErrorHandlerInterface
             $status = $exception->getcode();
         }
         if ($exception->getCode() >= 500 || !$exception->getCode()) {
-            \App::$log->critical(
-                "[API] Fatal Exception: "
-                . " in " . $exception->getFile() . " +" . $exception->getLine()
-                . " -> " . $exception->getMessage()
-                . " | Trace: " . preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace))
-            );
+            // Sanitize database connection errors in logs
+            if ($exception instanceof \PDOException && stripos($exception->getMessage(), 'SQLSTATE') !== false) {
+                \App::$log->critical(
+                    "[API] Fatal Exception: Database connection failed"
+                );
+            } else {
+                \App::$log->critical(
+                    "[API] Fatal Exception: "
+                    . " in " . $exception->getFile() . " +" . $exception->getLine()
+                    . " -> " . $exception->getMessage()
+                    . " | Trace: " . preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace))
+                );
+            }
         }
         return Render::withJson($response, $message, $status);
     }
