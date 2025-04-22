@@ -127,13 +127,26 @@ class Select
             $pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $exception) {
-            // Create a sanitized error message that doesn't expose credentials
-            $sanitizedMessage = 'Database connection failed in zmsdb/Connection/Select.php on line 131.';
-            throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
-                $sanitizedMessage,
-                (int)$exception->getCode(),
-                $exception
-            );
+            if (
+                stripos($exception->getMessage(), 'SQLSTATE') !== false &&
+                (stripos($exception->getMessage(), 'Connection refused') !== false ||
+                 stripos($exception->getMessage(), 'Connection timed out') !== false ||
+                 stripos($exception->getMessage(), 'Access denied') !== false)
+            ) {
+                $errorType = 'Connection refused';
+                if (stripos($exception->getMessage(), 'Connection timed out') !== false) {
+                    $errorType = 'Connection timed out';
+                } elseif (stripos($exception->getMessage(), 'Access denied') !== false) {
+                    $errorType = 'Access denied';
+                }
+                $sanitizedMessage = 'Database connection failed (' . $errorType . ') in ' . __FILE__ . ' on line ' . __LINE__ . '.';
+                throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
+                    $sanitizedMessage,
+                    (int)$exception->getCode(),
+                    $exception
+                );
+            }
+            throw $exception;
         }
         return $pdo;
     }
