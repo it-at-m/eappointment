@@ -9,6 +9,10 @@
 
 namespace BO\Zmscalldisplay;
 
+use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
+
 class Application extends \BO\Slim\Application
 {
     /**
@@ -60,4 +64,79 @@ class Application extends \BO\Slim\Application
      * signature key for url signature to save query paramter with hash
      */
     public static $urlSignatureSecret = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';
+
+    /**
+     * Cache instance
+     *
+     * @var \Psr\SimpleCache\CacheInterface|null $cache
+     */
+    public static ?CacheInterface $cache = null;
+
+    /**
+     * Cache directory for PSR-16 cache
+     *
+     * @var string $PSR16_CACHE_DIR_ZMSCALLDISPLAY
+     */
+    public static string $PSR16_CACHE_DIR_ZMSCALLDISPLAY;
+
+    /**
+     * Cache TTL for PSR-16 cache
+     *
+     * @var int $PSR16_CACHE_TTL_ZMSCALLDISPLAY
+     */
+    public static int $PSR16_CACHE_TTL_ZMSCALLDISPLAY;
+
+    /**
+     * Initialize the application
+     *
+     * @return void
+     */
+    public static function initialize(): void
+    {
+        self::initializeCache();
+    }
+
+    /**
+     * Initialize the cache
+     *
+     * @return void
+     */
+    public static function initializeCache(): void
+    {
+        self::$PSR16_CACHE_DIR_ZMSCALLDISPLAY = getenv('PSR16_CACHE_DIR_ZMSCALLDISPLAY') ?: dirname(dirname(dirname(__DIR__))) . '/cache_psr16';
+        self::$PSR16_CACHE_TTL_ZMSCALLDISPLAY = (int) (getenv('PSR16_CACHE_TTL_ZMSCALLDISPLAY') ?: 3600);
+
+        self::validateCacheDirectory();
+        self::setupCache();
+    }
+
+    /**
+     * Validate the cache directory
+     *
+     * @return void
+     * @throws \Exception
+     */
+    private static function validateCacheDirectory(): void
+    {
+        if (!is_dir(self::$PSR16_CACHE_DIR_ZMSCALLDISPLAY)) {
+            if (!mkdir(self::$PSR16_CACHE_DIR_ZMSCALLDISPLAY, 0750, true)) {
+                throw new \Exception('Could not create cache directory: ' . self::$PSR16_CACHE_DIR_ZMSCALLDISPLAY);
+            }
+        }
+
+        if (!is_writable(self::$PSR16_CACHE_DIR_ZMSCALLDISPLAY)) {
+            throw new \Exception('Cache directory is not writable: ' . self::$PSR16_CACHE_DIR_ZMSCALLDISPLAY);
+        }
+    }
+
+    /**
+     * Setup the cache
+     *
+     * @return void
+     */
+    private static function setupCache(): void
+    {
+        $psr16 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$PSR16_CACHE_TTL_ZMSCALLDISPLAY, directory: self::$PSR16_CACHE_DIR_ZMSCALLDISPLAY);
+        self::$cache = new Psr16Cache($psr16);
+    }
 }

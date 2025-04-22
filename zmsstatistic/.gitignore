@@ -35,3 +35,4 @@ composer.lock
 
 # Logs
 *.log
+cache_psr16
