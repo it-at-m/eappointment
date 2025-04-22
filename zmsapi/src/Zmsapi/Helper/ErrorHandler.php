@@ -13,12 +13,6 @@ use Slim\Interfaces\ErrorHandlerInterface;
  */
 class ErrorHandler implements ErrorHandlerInterface
 {
-    /**
-     * Sanitize stack trace by replacing sensitive information
-     *
-     * @param string $trace
-     * @return string
-     */
     protected static function sanitizeStackTrace($trace)
     {
         if (defined('\App::DB_PASSWORD')) {

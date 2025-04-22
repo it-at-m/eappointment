@@ -111,7 +111,7 @@ class Select
         try {
             $pdoOptions = array_merge([
                 ], self::$pdoOptions);
-            $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
+            $pdo = new Pdo($dataSourceName, "h", self::$password, $pdoOptions);
             $pdo->exec('SET NAMES "UTF8";');
             //$timezone = date_default_timezone_get();
             //$pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
