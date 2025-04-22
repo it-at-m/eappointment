@@ -111,17 +111,27 @@ class Select
         try {
             $pdoOptions = array_merge([
                 ], self::$pdoOptions);
-            $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
+            try {
+                $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
+            } catch (\PDOException $e) {
+                // Create a sanitized error message that doesn't expose credentials
+                $sanitizedMessage = '**Database connection failed in zmsdb/Connection/Select.php on line 118.**';
+                throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
+                    $sanitizedMessage,
+                    (int)$e->getCode(),
+                    $e
+                );
+            }
             $pdo->exec('SET NAMES "UTF8";');
             //$timezone = date_default_timezone_get();
             //$pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
             $pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $exception) {
-            // Extend exception message with connection information
-            $connectInfo = $dataSourceName;
+            // Create a sanitized error message that doesn't expose credentials
+            $sanitizedMessage = '**Database connection failed in zmsdb/Connection/Select.php on line 132.**';
             throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
-                $connectInfo . $exception->getMessage(),
+                $sanitizedMessage,
                 (int)$exception->getCode(),
                 $exception
             );
