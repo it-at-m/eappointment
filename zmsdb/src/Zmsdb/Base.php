@@ -101,37 +101,42 @@ abstract class Base
 
     protected static function pdoExceptionHandler(\Closure $pdoFunction, $parameters = [])
     {
-        //@codeCoverageIgnoreStart
         try {
-            return $pdoFunction();
-        } catch (\PDOException $e) {
-            if (stripos($e->getMessage(), 'SQLSTATE') !== false) {
-                if (
-                    stripos($e->getMessage(), 'Connection refused') !== false ||
-                    stripos($e->getMessage(), 'Connection timed out') !== false ||
-                    stripos($e->getMessage(), 'Access denied') !== false
-                ) {
-                    $errorType = 'Connection refused';
-                    if (stripos($e->getMessage(), 'Connection timed out') !== false) {
-                        $errorType = 'Connection timed out';
-                    } elseif (stripos($e->getMessage(), 'Access denied') !== false) {
-                        $errorType = 'Access denied';
-                    }
-                    $message = 'Database connection failed (' . $errorType . ') in ' . __FILE__ .  ' on line ' . $e->getLine() . '.';
-                } else {
-                    $message = "SQL: "
-                    . " Err: "
-                    . $e->getMessage()
-                    //. " || Statement: "
-                    //.$statement->queryString
-                    //." || Parameters=". var_export($parameters, true)
-                    ;
-                }
-                throw new Exception\Pdo\PDOFailed($message, 0, $e);
+            $statement = $pdoFunction($parameters);
+        } catch (\PDOException $pdoException) {
+            if (stripos($pdoException->getMessage(), 'Lock wait timeout') !== false) {
+                throw new Exception\Pdo\LockTimeout();
             }
-            throw $e;
+            //@codeCoverageIgnoreStart
+            if (stripos($pdoException->getMessage(), 'Deadlock found') !== false) {
+                throw new Exception\Pdo\DeadLockFound();
+            }
+            if (
+                stripos($pdoException->getMessage(), 'SQLSTATE') !== false &&
+                (stripos($pdoException->getMessage(), 'Connection refused') !== false ||
+                 stripos($pdoException->getMessage(), 'Connection timed out') !== false ||
+                 stripos($pdoException->getMessage(), 'Access denied') !== false)
+            ) {
+                $errorType = 'Connection refused';
+                if (stripos($pdoException->getMessage(), 'Connection timed out') !== false) {
+                    $errorType = 'Connection timed out';
+                } elseif (stripos($pdoException->getMessage(), 'Access denied') !== false) {
+                    $errorType = 'Access denied';
+                }
+                $message = 'Database connection failed (' . $errorType . ') in ' . __FILE__ .  ' on line ' . $pdoException->getLine() . '.';
+                throw new Exception\Pdo\PDOFailed($message, 0, $pdoException);
+            }
+            //@codeCoverageIgnoreEnd
+            $message = "SQL: "
+                . " Err: "
+                . $pdoException->getMessage()
+                //. " || Statement: "
+                //.$statement->queryString
+                //." || Parameters=". var_export($parameters, true)
+                ;
+            throw new Exception\Pdo\PDOFailed($message, 0, $pdoException);
         }
-        //@codeCoverageIgnoreEnd
+        return $statement;
     }
 
     public function fetchStatement(Query\Base $query)
