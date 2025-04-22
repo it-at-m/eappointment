@@ -41,14 +41,14 @@ class ErrorHandler implements ErrorHandlerInterface
 
         $message = \BO\Zmsapi\Response\Message::create($request);
         $message->meta->error = true;
-        
+
         // Sanitize database connection errors
         if ($exception instanceof \PDOException && stripos($exception->getMessage(), 'SQLSTATE') !== false) {
             $message->meta->message = 'Database connection failed in zmsapi/src/Zmsapi/Helper/ErrorHandler.php on line 47.';
         } else {
             $message->meta->message = $exception->getMessage();
         }
-        
+
         $message->meta->exception = get_class($exception);
         $message->meta->trace = '';
         foreach (array_slice($exception->getTrace(), 0, 10) as $call) {
