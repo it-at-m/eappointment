@@ -130,7 +130,7 @@ class Select
             $connectInfo = self::sanitizeStackTrace($dataSourceName);
             $message = self::sanitizeStackTrace($connectInfo . $exception->getMessage());
             throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
-                $message,
+                $connectInfo . $exception->getMessage(),
                 (int)$exception->getCode(),
                 $exception
             );
