@@ -114,12 +114,26 @@ class Select
             try {
                 $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             } catch (\PDOException $e) {
-                $sanitizedMessage = 'Database connection failed in zmsdb/Connection/Select.php on line 117.';
-                throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
-                    $sanitizedMessage,
-                    (int)$e->getCode(),
-                    $e
-                );
+                if (
+                    stripos($e->getMessage(), 'SQLSTATE') !== false &&
+                    (stripos($e->getMessage(), 'Connection refused') !== false ||
+                     stripos($e->getMessage(), 'Connection timed out') !== false ||
+                     stripos($e->getMessage(), 'Access denied') !== false)
+                ) {
+                    $errorType = 'Connection refused';
+                    if (stripos($e->getMessage(), 'Connection timed out') !== false) {
+                        $errorType = 'Connection timed out';
+                    } elseif (stripos($e->getMessage(), 'Access denied') !== false) {
+                        $errorType = 'Access denied';
+                    }
+                    $sanitizedMessage = 'Database connection failed (' . $errorType . ') in ' . $e->getFile() . ' on line ' . $e->getLine() . '.';
+                    throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
+                        $sanitizedMessage,
+                        (int)$e->getCode(),
+                        $e
+                    );
+                }
+                throw $e;
             }
             $pdo->exec('SET NAMES "UTF8";');
             //$timezone = date_default_timezone_get();
@@ -139,7 +153,7 @@ class Select
                 } elseif (stripos($exception->getMessage(), 'Access denied') !== false) {
                     $errorType = 'Access denied';
                 }
-                $sanitizedMessage = 'Database connection failed (' . $errorType . ') in ' . __FILE__ . ' on line ' . __LINE__ . '.';
+                $sanitizedMessage = 'Database connection failed (' . $errorType . ') in ' . $exception->getFile() . ' on line ' . $exception->getLine() . '.';
                 throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
                     $sanitizedMessage,
                     (int)$exception->getCode(),
