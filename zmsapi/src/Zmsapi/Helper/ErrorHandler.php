@@ -49,7 +49,13 @@ class ErrorHandler implements ErrorHandlerInterface
              stripos($exception->getMessage(), 'Connection timed out') !== false ||
              stripos($exception->getMessage(), 'Access denied') !== false)
         ) {
-            $message->meta->message = '[API] Fatal Exception: Database connection failed in ' . __FILE__ . ' on line ' . $exception->getLine() . '.';
+            $errorType = 'Connection refused';
+            if (stripos($exception->getMessage(), 'Connection timed out') !== false) {
+                $errorType = 'Connection timed out';
+            } elseif (stripos($exception->getMessage(), 'Access denied') !== false) {
+                $errorType = 'Access denied';
+            }
+            $message->meta->message = '[API] Fatal Exception: Database connection failed (' . $errorType . ') in ' . __FILE__ . ' on line ' . __LINE__ . '.';
         } else {
             $message->meta->message = $exception->getMessage();
         }
@@ -81,8 +87,14 @@ class ErrorHandler implements ErrorHandlerInterface
                  stripos($exception->getMessage(), 'Connection timed out') !== false ||
                  stripos($exception->getMessage(), 'Access denied') !== false)
             ) {
+                $errorType = 'Connection refused';
+                if (stripos($exception->getMessage(), 'Connection timed out') !== false) {
+                    $errorType = 'Connection timed out';
+                } elseif (stripos($exception->getMessage(), 'Access denied') !== false) {
+                    $errorType = 'Access denied';
+                }
                 \App::$log->critical(
-                    "[API] Fatal Exception: Database connection failed in " . __FILE__ .  " on line " . $exception->getLine() . "."
+                    "[API] Fatal Exception: Database connection failed (" . $errorType . ") in " . __FILE__ .  " on line " . __LINE__ . "."
                 );
             } else {
                 \App::$log->critical(

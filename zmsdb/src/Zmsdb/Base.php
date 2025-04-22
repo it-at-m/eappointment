@@ -108,7 +108,13 @@ abstract class Base
              stripos($pdoException->getMessage(), 'Connection timed out') !== false ||
              stripos($pdoException->getMessage(), 'Access denied') !== false)
         ) {
-            $message = 'Database connection failed in ' . __FILE__ .  ' on line ' . $pdoException->getLine() . '.';
+            $errorType = 'Connection refused';
+            if (stripos($pdoException->getMessage(), 'Connection timed out') !== false) {
+                $errorType = 'Connection timed out';
+            } elseif (stripos($pdoException->getMessage(), 'Access denied') !== false) {
+                $errorType = 'Access denied';
+            }
+            $message = 'Database connection failed (' . $errorType . ') in ' . __FILE__ .  ' on line ' . $pdoException->getLine() . '.';
         } else {
             $message = "SQL: "
             . " Err: "
