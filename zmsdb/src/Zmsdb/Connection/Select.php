@@ -100,12 +100,6 @@ class Select
      */
     protected static $useQueryCache = true;
 
-    /**
-     * Sanitize stack trace by replacing sensitive information
-     *
-     * @param string $trace
-     * @return string
-     */
     protected static function sanitizeStackTrace($trace)
     {
         if (defined('\App::DB_PASSWORD')) {
