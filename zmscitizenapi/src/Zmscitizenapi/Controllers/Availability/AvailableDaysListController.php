@@ -32,7 +32,7 @@ class AvailableDaysListController extends BaseController
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
         }
-        
+
         $queryParams = $request->getQueryParams();
         $officeId = (int)($queryParams['officeId'] ?? 0);
 
