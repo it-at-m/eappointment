@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -44,21 +45,21 @@ class WorkstationProcessNext extends BaseController
             Helper\GraphDefaults::getProcess()
         );
 
-        $filteredProcessList = new ProcessList;
+        $filteredProcessList = new ProcessList();
 
         foreach ($processList as $process) {
             if ($process->status === "queued" || $process->status === "confirmed") {
                 $timeoutTimeUnix = isset($process->timeoutTime) ? $this->timeToUnix($process->timeoutTime) : null;
                 $currentTimeUnix = time();
 
-                if(!isset($process->timeoutTime)){
+                if (!isset($process->timeoutTime)) {
                     $filteredProcessList->addEntity(clone $process);
-                } else if (isset($timeoutTimeUnix) && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
+                } elseif (isset($timeoutTimeUnix) && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
                     $filteredProcessList->addEntity(clone $process);
-                } else {                    
+                } else {
                     if (!empty($excludedIds)) {
                         $excludedIds .= ",";
-                    }                
+                    }
                     $excludedIds .= $process->queue->number;
                 }
             }

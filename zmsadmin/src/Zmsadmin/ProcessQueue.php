@@ -6,10 +6,14 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Condition;
 use BO\Slim\Render;
+use BO\Zmsadmin\Helper\MailTemplateArrayProvider;
+use BO\Zmsentities\Client;
+use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Config;
 use BO\Zmsentities\Helper\Messaging;
 use BO\Zmsentities\Validator\ProcessValidator;
@@ -23,10 +27,8 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ProcessQueue extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
-     * @return String
      */
     public function readResponse(
         RequestInterface $request,
@@ -37,7 +39,7 @@ class ProcessQueue extends BaseController
 
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-        
+
         if ($selectedProcessId) {
             $process = $this->readSelectedProcessWithWaitingnumber($selectedProcessId);
 
@@ -45,7 +47,8 @@ class ProcessQueue extends BaseController
                 return $this->printProcessResponse(
                     $response,
                     $process,
-                    $validator->getParameter('printType')->isString()->getValue()
+                    $validator->getParameter('printType')->isString()->getValue(),
+                    $workstation->scope['provider']['id']
                 );
             }
         }
@@ -108,7 +111,7 @@ class ProcessQueue extends BaseController
                     $validator->getParameter('sendReminder')->isNumber()->isNotEqualTo(1)
                 )
             )
-            
+
         ;
         $processValidator->getCollection()->addValid(
             $validator->getParameter('sendConfirmation')->isNumber(),
@@ -124,7 +127,7 @@ class ProcessQueue extends BaseController
     {
         $result = null;
         if ($selectedProcessId) {
-            $result = \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
+            $result = \App::$http->readGetResult('/process/' . $selectedProcessId . '/')->getEntity();
         }
         return $result;
     }
@@ -146,7 +149,7 @@ class ProcessQueue extends BaseController
     protected function isOpened($scope)
     {
         if ($scope->getResolveLevel() < 1) {
-            $scope =  \App::$http->readGetResult('/scope/'. $scope->getId() .'/', [
+            $scope =  \App::$http->readGetResult('/scope/' . $scope->getId() . '/', [
                 'resolveReferences' => 1,
                 'gql' => Helper\GraphDefaults::getScope()
             ])
@@ -154,7 +157,7 @@ class ProcessQueue extends BaseController
         }
         try {
             $isOpened = \App::$http
-                ->readGetResult('/scope/'. $scope->getId() .'/availability/', ['resolveReferences' => 0])
+                ->readGetResult('/scope/' . $scope->getId() . '/availability/', ['resolveReferences' => 0])
                 ->getCollection()
                 ->withScope($scope)
                 ->isOpened(\App::$now);
@@ -169,17 +172,33 @@ class ProcessQueue extends BaseController
     private function printProcessResponse(
         ResponseInterface $response,
         Entity $process,
-        ?string $printType = null
-    ): ResponseInterface
-    {
+        ?string $printType = null,
+        ?int $providerId = null
+    ): ResponseInterface {
         if ($printType === 'mail') {
-            $content = Messaging::getMailContent($process, new Config(), null, 'appointment', null);
+            $mergedMailTemplates = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/')
+                ->getCollection();
+
+            $templates = [];
+
+            foreach ($mergedMailTemplates as $template) {
+                $templates[$template->name] = $template->value;
+            };
+
+            $templateProvider = new MailTemplateArrayProvider();
+            $templateProvider->setTemplates($templates);
+
+            $config = new \BO\Zmsentities\Config();
+
+            $mail = (new \BO\Zmsentities\Mail())
+                ->setTemplateProvider($templateProvider)
+                ->toResolvedEntity($process, $config, 'appointment');
 
             return \BO\Slim\Render::withHtml(
                 $response,
                 'page/printAppointmentMail.twig',
                 [
-                    'render' => $content
+                    'render' => $mail->getHtmlPart()
                 ]
             );
         }

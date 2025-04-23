@@ -1,12 +1,33 @@
 #main-header {
-	font-size: 			$alert-font-size;
-	line-height: 		$alert-line-height;
-	color:				$white;
+	font-size:           $alert-font-size;
+	line-height:      $alert-line-height;
+	color:          $white;
+	background-color: #004376;
+	height: 65px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 16px 36px;
+	position: relative;                   /* Für absolute Positionierung innerhalb des Headers (falls benötigt) */
 }
 
 #main-header .adressangabe {
 	color: 				$white;
     font-size: 			22px;    
     line-height: 		23px;
-    margin: 16px 0px 0px 36px;
+    //margin: 16px 0px 0px 36px;
+}
+
+.languages {
+	float: right;
+}
+
+.lang {
+	float: left;
+	margin-left: 10px;
+}
+
+.lang img {
+	width: 40px;
+	height: 30px;
 }

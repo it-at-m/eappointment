@@ -3,9 +3,7 @@
 namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Helper\ReservedDataDeleteByCron;
-use \BO\Zmsdb\Process as ProcessRepository;
 use \BO\Zmsdb\ProcessStatusFree;
-use \BO\Zmsdb\ProcessStatusArchived;
 use \BO\Zmsentities\Process as Entity;
 
 class ReservedDataDeleteByCronTest extends Base
@@ -150,10 +148,10 @@ class ReservedDataDeleteByCronTest extends Base
                     "name"=>"Bürgeramt",
                     "preferences"=>[
                         "notifications"=>[
-                            "enabled"=>null,
-                            "identification"=>null,
-                            "sendConfirmationEnabled"=>null,
-                            "sendReminderEnabled"=>null
+                            "enabled"=>false,
+                            "identification"=>"",
+                            "sendConfirmationEnabled"=>false,
+                            "sendReminderEnabled"=>false
                         ]
                     ]
                 ],

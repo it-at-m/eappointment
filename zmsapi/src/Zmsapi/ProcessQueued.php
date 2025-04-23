@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process as Query;
-use \BO\Zmsdb\ProcessStatusQueued;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Process as Query;
+use BO\Zmsdb\ProcessStatusQueued;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -32,12 +33,24 @@ class ProcessQueued extends BaseController
         $this->testProcessData($entity);
         $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
         $previousStatus = $process->status;
+        if (isset($entity->queue['waitingTime'])) {
+            $process->queue['waitingTime'] = $entity->queue['waitingTime'];
+        }
+        if (isset($entity->queue['arrivalTime'])) {
+            $process->queue['arrivalTime'] = $entity->queue['arrivalTime'];
+        }
         $process->status = 'queued';
         $process->queue['callCount'] = 0;
         $process->queue['lastCallTime'] = 0;
-        $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
+        $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], 1);
         $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
-        $process = (new Query())->updateEntity($process, \App::$now, 0, $previousStatus);
+        $process = (new Query())->updateEntity(
+            $process,
+            \App::$now,
+            0,
+            $previousStatus,
+            $workstation->getUseraccount()
+        );
         $message = Response\Message::create($request);
         $message->data = $process;
 

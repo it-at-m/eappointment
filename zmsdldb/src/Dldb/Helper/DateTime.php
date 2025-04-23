@@ -4,7 +4,6 @@ namespace BO\Dldb\Helper;
 
 class DateTime extends \DateTimeImmutable
 {
-
     public static function getFormatedDates(
         $timestamp,
         $pattern = 'MMMM',

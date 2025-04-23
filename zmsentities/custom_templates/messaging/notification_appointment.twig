@@ -1,3 +1,0 @@
-{% block german %}
-Ihr Termin: Vorgangsnr. {{ process.id }} am {{ process.appointments.0.date|date('d.m.y') }} um {{ process.appointments.0.date|date('H:i') }} Uhr, {{ process.scope.provider.contact.name }}, {{ process.scope.provider.contact.street }} {{ process.scope.provider.contact.streetNumber }}, {{ process.scope.provider.contact.postalCode }}  {{ process.scope.provider.contact.city }} {% if process.scope.hint %}({{ process.scope.hint }}){% endif %}
-{% endblock %}

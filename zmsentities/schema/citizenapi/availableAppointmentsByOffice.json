@@ -1,0 +1,25 @@
+{
+  "title": "AvailableAppointmentsByOffice",
+  "type": ["array", "object", "null"],
+  "properties": {
+    "offices": {
+      "type": ["array", "object", "null"],
+      "description": "Offices which have free time slots",
+      "items": {
+        "type": ["array", "object", "null"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Office ID"
+          },
+          "appointmentTimestamps": {
+            "$ref": "./appointmentTimestamps.json"
+          }
+        },
+        "required": ["offices"]
+      }
+    }
+  },
+  "required": ["appointmentTimestamps"],
+  "description": "Schema defining the available appointments for a specific date, office, and service"
+}

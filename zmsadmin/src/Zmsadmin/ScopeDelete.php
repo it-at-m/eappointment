@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
@@ -16,7 +17,6 @@ use BO\Slim\Render;
  */
 class ScopeDelete extends BaseController
 {
-
     /**
      *
      * @return String
@@ -28,13 +28,18 @@ class ScopeDelete extends BaseController
     ) {
         $entityId = Validator::value($args['id'])->isNumber()
             ->getValue();
+
+            $entity = \App::$http->readGetResult('/scope/' . $entityId . '/')->getEntity();
+            $scopeName = $entity->offsetGet('contact')->offsetGet('name');
+
         \App::$http->readDeleteResult('/scope/' . $entityId . '/')
             ->getEntity();
         return \BO\Slim\Render::redirect(
             'owner_overview',
             array(),
             array(
-                'success' => 'scope_deleted'
+                'success' => 'scope_deleted',
+                'scopeName' => $scopeName
             )
         );
     }

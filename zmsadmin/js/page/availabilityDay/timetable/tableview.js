@@ -11,9 +11,17 @@ import * as constants from './index.js'
 
 const TableView = (props) => {
     const { onDelete, onSelect, onAbort, timestamp, availabilityList, data } = props;
+
+    const sortedAvailabilityList = [...availabilityList].sort((a, b) => {
+        if (a.type === 'appointment' && b.type !== 'appointment') return -1;
+        if (a.type !== 'appointment' && b.type === 'appointment') return 1;
+
+        return a.startTime.localeCompare(b.startTime);
+    });
+
     const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
     const TableBody = <TableBodyLayout
-        availabilityList={availabilityList}
+        availabilityList={sortedAvailabilityList}
         data={data}
         onDelete={onDelete}
         onSelect={onSelect}
@@ -21,12 +29,12 @@ const TableView = (props) => {
     />
     return (
         <Board className="board--light availability-timetable"
-            title={titleTime}
-            titleAside={calendarNavigation(props.links)}
-            headerRight={constants.headerRight(props.links, props.onNewAvailability)}
-            headerMiddle={constants.headerMiddle()}
-            body={TableBody}
-            footer=""
+               title={titleTime}
+               titleAside={calendarNavigation(props.links)}
+               headerRight={constants.headerRight(props.links, props.onNewAvailability)}
+               headerMiddle={constants.headerMiddle()}
+               body={TableBody}
+               footer=""
         />
     )
 }

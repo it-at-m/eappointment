@@ -41,7 +41,7 @@ class UserAccountTest extends Base
         $userAccount = $query->writeUpdatedEntity($userAccount->id, $userAccount, 2);
 
         $workstation = (new Workstation())
-            ->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, 2);
+            ->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, (new \DateTime())->setTimestamp(time() + 28800), 2);
         $this->assertEquals(true, $workstation->hasAuthKey());
 
         $userAccount = $query->readEntityByAuthKey($workstation->authkey, 1);
@@ -103,6 +103,7 @@ class UserAccountTest extends Base
     {
         $this->writeTestLogin();
         $workstationList = (new Workstation())->readLoggedInListByScope(141, $this->dateTime);
+        $workstationList[0]->useraccount->id = "testuser";
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
     }
 
@@ -110,6 +111,7 @@ class UserAccountTest extends Base
     {
         $this->writeTestLogin();
         $workstationList = (new Workstation())->readLoggedInListByCluster(109, $this->dateTime);
+        $workstationList[0]->useraccount->id = "testuser";
         $this->assertEquals(1, $workstationList->count());
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
     }
@@ -118,6 +120,7 @@ class UserAccountTest extends Base
     {
         $this->writeTestLogin();
         $workstationList = (new Workstation())->readCollectionByDepartmentId(72);
+        $workstationList[0]->useraccount->id = "testuser";
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
         $this->assertEquals(3, $workstationList->getFirst()->name);
     }
@@ -126,6 +129,7 @@ class UserAccountTest extends Base
     {
         $this->writeTestLogin();
         $workstation = (new Workstation())->readWorkstationByScopeAndName(141, 3);
+        $workstation->useraccount->id = "testuser";
         $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
     }
 
@@ -156,7 +160,7 @@ class UserAccountTest extends Base
         $userAccount = $query->writeEntity($entity);
         $query->deleteEntity($userAccount->id);
         $entity = $query->readEntity($userAccount->id, 1);
-        $this->assertFalse(isset($entity->id), "Failed to delete User from Database.");
+        $this->assertTrue(empty($entity->id), "Failed to delete User from Database.");
     }
 
     public function testDuplicate()
@@ -172,7 +176,7 @@ class UserAccountTest extends Base
     {
         $now = static::$now;
         $this->expectException('\BO\Zmsdb\Exception\Useraccount\InvalidCredentials');
-        (new Workstation())->writeEntityLoginByName('johndoe', 'secret', $now);
+        (new Workstation())->writeEntityLoginByName('johndoe', 'secret',$now, (new \DateTime())->setTimestamp($now->getTimestamp() + 28800));
     }
 
     public function testWriteHintByName()
@@ -195,7 +199,7 @@ class UserAccountTest extends Base
         //first write userAccount example in Database
         $userAccount = $query->writeEntity($input);
         //login workstation by useraccount
-        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime);
+        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $this->dateTime, (new \DateTime())->setTimestamp(time() + 28800));
         //get example workstation account with scope etc and give id from logged in workstation for update
         $workstationInput = (new WorkstationEntity())->getExample();
         $workstationInput->id = $workstation->id;

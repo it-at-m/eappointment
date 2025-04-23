@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Slim\Render;
@@ -35,18 +37,28 @@ class TicketprinterByScope extends BaseController
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $scope = $ticketprinter->getScopeList()->getFirst();
-        $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
+        $department = \App::$http->readGetResult('/scope/' . $scope->id . '/department/')->getEntity();
         $organisation = $ticketprinterHelper->getOrganisation();
-        
+
         $queueListHelper = new QueueListHelper($scope);
-        
+
         $template = (new TemplateFinder($defaultTemplate))->setCustomizedTemplate($ticketprinter, $organisation);
+
+        $hasDisabledButton = false;
+        foreach ($ticketprinter->buttons as $button) {
+            if (!isset($button['enabled']) || $button['enabled'] != 1) {
+                $hasDisabledButton = true;
+                break;
+            }
+        }
 
         return Render::withHtml(
             $response,
             $template->getTemplate(),
             array(
                 'debug' => \App::DEBUG,
+                'enabled' => $ticketprinter->isEnabled()
+                    || !$organisation->getPreference('ticketPrinterProtectionEnabled'),
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
@@ -57,7 +69,8 @@ class TicketprinterByScope extends BaseController
                 'waitingTimeOptimistic' => $queueListHelper->getOptimisticWaitingTime(),
                 'waitingClients' => $queueListHelper->getClientsBefore(),
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
-                'config' => $config
+                'config' => $config,
+                'hasDisabledButton' => $hasDisabledButton
             )
         );
     }

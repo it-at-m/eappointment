@@ -25,7 +25,7 @@ class RequestTest extends Base
 
     public function testSolution10Query()
     {
-        $class = new \BO\Zmsdb\Query\Request((new \Solution10\SQL\Select));
+        $class = new \BO\Zmsdb\Query\Request((new \BO\Zmsdb\Query\Builder\Select));
         $this->assertEquals('request', $class->getAlias());
     }
 

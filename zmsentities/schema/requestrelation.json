@@ -27,9 +27,50 @@
             "$ref": "provider.json"
         },
         "slots": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ], 
             "description": "Number of slots required to fullfill request on provider",
             "default": 1
+        },
+        "public": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[01]$"
+                }
+            ],
+            "description": "Whether request is public available for specific provider",
+            "default": true
+        },
+        "maxQuantity": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string"
+                }
+            ],
+            "description": "Max quantity of chosen service for specific provider"
         },
         "source": {
             "type": "string",

@@ -15,14 +15,7 @@
         #}
         Datum:<strong> {{ (date|default(getNow))|format_date(locale="de", pattern="EEEE, dd. MMMM y") }} </strong><br>
         Uhrzeit: <strong>{{ (date|default(getNow))|date("H:i") }} {% trans %}Uhr{% endtrans %}</strong><br />
-        <br>
-        Terminnummer: <strong>{{ process.id }}</strong><br />
-        {% if process.scope.hint %}
-        <strong>Wartezone: {{ process.scope.hint }} </strong><br />
-        {% endif %}<br />
-        Bitte gehen Sie rechtzeitig zur <strong>"{{ process.scope.provider.contact.street ~ " "  ~ process.scope.provider.contact.streetNumber }}"</strong><br />
-        <br>
-
+        <br><br>
         {#Ihre Vorgangsnummer ist die <strong>"{{ process.id }}"</strong><br />
         <br />#}
         
@@ -59,7 +52,9 @@
         {% endif %}
         <br><br>
         Bitte informieren Sie sich vorab über oben genannte/n Link/s, welche Unterlagen Sie benötigen. 
-
+        <br> <br>
+        Hinweis:<br>
+        Ein Einlass ins Gebäude ist <strong>frühestens 10 Minuten </strong> vor Ihrem Termin möglich. Bitte erscheinen Sie rechtzeitig zu Ihrem Termin. 
         <br><br>
         Falls Sie diesen Termin nicht benötigen oder wahrnehmen können, stornieren Sie bitte <b>umgehend</b> Ihren Termin und reservieren einen neuen Termin.
         <a href="{{ config.appointments.urlAppointments }}#/appointment/{{ appointmentLink }}">Termin ändern/stornieren</a><br />

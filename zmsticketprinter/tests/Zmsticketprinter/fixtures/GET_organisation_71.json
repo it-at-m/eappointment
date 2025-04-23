@@ -117,6 +117,12 @@
             "scopes": [
               {
                 "id": 0,
+                "provider": {
+                  "id": 123456,
+                  "name": "Flughafen Schönefeld, Aufsicht",
+                  "source": "dldb"
+                },
+                "shortName": "Zentrale",
                 "$ref": "/scope/615/"
               }
             ]
@@ -124,7 +130,7 @@
         ],
         "scopes": [
           {
-            "id": "615",
+            "id": 615,
             "$ref": "/scope/615/"
           }
         ]
@@ -132,10 +138,10 @@
     ],
     "ticketprinters": [
       {
-        "enabled": "1",
+        "enabled": 1,
         "hash": "71abcdefghijklmnopqrstuvwxyz",
-        "id": "2",
-        "lastUpdate": "1481533240",
+        "id": 2,
+        "lastUpdate": 1481533240,
         "name": ""
       }
     ]

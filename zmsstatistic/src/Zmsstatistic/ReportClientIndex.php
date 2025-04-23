@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -41,7 +42,7 @@ class ReportClientIndex extends BaseController
         if (isset($args['period'])) {
             try {
                 $exchangeClient = \App::$http
-                    ->readGetResult('/warehouse/clientscope/' . $scopeId . '/'. $args['period']. '/')
+                    ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $args['period'] . '/')
                     ->getEntity()
                     ->withCalculatedTotals($this->totals, 'date')
                     ->toHashed();

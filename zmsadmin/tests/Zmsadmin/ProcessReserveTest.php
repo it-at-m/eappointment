@@ -63,7 +63,6 @@ class ProcessReserveTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
         $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
-        $this->assertStringContainsString('Die Vorgangsnummer für "Test BO" lautet: 100005', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -169,7 +168,6 @@ class ProcessReserveTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
         $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
-        $this->assertStringContainsString('Die Vorgangsnummer für "H52452625" lautet: 82252', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -233,7 +231,6 @@ class ProcessReserveTest extends Base
         );
         $response = $this->render($this->arguments, $parameters, [], 'POST');
         $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
-        $this->assertStringContainsString('Die Vorgangsnummer für "S4524" lautet: 194104', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -284,7 +281,6 @@ class ProcessReserveTest extends Base
         $parameters = array_merge($this->parameters, ['slotCount' => 3]);
         $response = $this->render($this->arguments, $parameters, [], 'POST');
         $this->assertStringContainsString('Termin erfolgreich eingetragen', (string)$response->getBody());
-        $this->assertStringContainsString('Die Vorgangsnummer für "Test BO" lautet: 100005', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

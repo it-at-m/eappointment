@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Log as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Log as Query;
 
 class ProcessLog extends BaseController
 {
@@ -21,8 +22,9 @@ class ProcessLog extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
-        $logList = (new Query())->readByProcessId($args['id']);
+        (new Helper\User($request))->checkRights('audit');
+        $searchQuery = urldecode($args['search']);
+        $logList = (new Query())->readByProcessData($searchQuery);
 
         $message = Response\Message::create($request);
         $message->data = $logList;

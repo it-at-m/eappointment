@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Workstation;
-use \BO\Zmsdb\Process as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Workstation;
+use BO\Zmsdb\Process as Query;
 
 class WorkstationProcessParked extends BaseController
 {
@@ -28,14 +29,17 @@ class WorkstationProcessParked extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
-
-        (new \BO\Zmsdb\ExchangeWaitingscope())->updateWaitingStatistics($process, \App::$now);
-
         $previousStatus = $process->status;
         $workstation->process->setStatus("parked");
         $workstation->process->setStatusBySettings();
-        $process = (new Query())->updateEntity($process, \App::$now, 0, $process->status, $previousStatus);
-        (new Workstation)->writeRemovedProcess($workstation);
+        $process = (new Query())->updateEntity(
+            $process,
+            \App::$now,
+            0,
+            $previousStatus,
+            $workstation->getUseraccount()
+        );
+        (new Workstation())->writeRemovedProcess($workstation);
         unset($workstation->process);
 
         $message = Response\Message::create($request);

@@ -35,7 +35,7 @@ class Availability extends Base implements MappingInterface
             'scope__id' => 'availability.StandortID',
             'bookable__startInDays' => self::expression(
                 'CAST(
-                    IF(`availability`.`Offen_ab`, `availability`.`Offen_ab`, `availabilityscope`.`Termine_ab`)
+                    IF(`availability`.`Offen_ab` = "0" OR `availability`.`Offen_ab`, `availability`.`Offen_ab`, `availabilityscope`.`Termine_ab`)
                     AS SIGNED)'
             ),
             'bookable__endInDays' => self::expression(
@@ -158,7 +158,7 @@ class Availability extends Base implements MappingInterface
      */
     public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($startDate, $endDate) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($startDate, $endDate) {
             $condition
                 ->andWith('availability.Startdatum', '<=', $endDate->format('Y-m-d'))
                 ->andWith('availability.Endedatum', '>=', $startDate->format('Y-m-d'));

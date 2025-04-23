@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmscalldisplay;
 
 use BO\Slim\Render;
@@ -14,7 +16,6 @@ use BO\Zmsentities\Collection\QueueList as Collection;
 
 class Info extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
@@ -28,31 +29,22 @@ class Info extends BaseController
             ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
             ->getCollection();
 
-        $waitingClientsBefore = $queueListFull
+        $filteredQueue = $queueListFull
             ->withoutStatus(Collection::STATUS_FAKE)
-            ->getCountWithWaitingTime()
-            ->count();
+            ->getCountWithWaitingTime();
 
-        $waitingTimeFull = $queueListFull
-            ->withoutStatus(Collection::STATUS_FAKE)
-            ->getCountWithWaitingTime()
-            ->getLast()
-            ->waitingTimeEstimate;
-
-        $waitingTimeOptim = $queueListFull
-            ->withoutStatus(Collection::STATUS_FAKE)
-            ->getCountWithWaitingTime()
-            ->getLast()
-            ->waitingTimeOptimistic;
+        $lastClient = $filteredQueue->getLast();
+        $waitingTimeFull = $lastClient ? $lastClient->waitingTimeEstimate : 0;
+        $waitingTimeOptimistic = $lastClient ? $lastClient->waitingTimeOptimistic : 0;
 
         return Render::withHtml(
             $response,
             'element/tempWaitingValues.twig',
             array(
                 'calldisplay' => $calldisplay,
-                'waitingClients' => $waitingClientsBefore,
+                'waitingClients' => $filteredQueue->count(),
                 'waitingTime' => $waitingTimeFull,
-                'waitingTimeOptimistic' => $waitingTimeOptim,
+                'waitingTimeOptimistic' => $waitingTimeOptimistic
             )
         );
     }

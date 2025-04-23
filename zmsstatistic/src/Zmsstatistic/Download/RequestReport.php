@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -11,6 +12,7 @@ use BO\Zmsstatistic\Helper\Download;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class RequestReport extends Base
 {
@@ -32,7 +34,7 @@ class RequestReport extends Base
         ResponseInterface $response,
         array $args
     ) {
-        $title = 'requeststatistic_'. $args['period'];
+        $title = 'requeststatistic_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
 
         $this->writeInfoHeader($args, $download->getSpreadSheet());
@@ -55,8 +57,8 @@ class RequestReport extends Base
     ) {
         $sheet = $spreadsheet->getActiveSheet();
 
-        $firstDay = $report->firstDay->year .'-'. $report->firstDay->month .'-'. $report->firstDay->day;
-        $lastDay = $report->lastDay->year .'-'. $report->lastDay->month .'-'. $report->lastDay->day;
+        $firstDay = $report->firstDay->year . '-' . $report->firstDay->month . '-' . $report->firstDay->day;
+        $lastDay = $report->lastDay->year . '-' . $report->lastDay->month . '-' . $report->lastDay->day;
         $this->firstDayDate = $this->setDateTime($firstDay);
         $this->lastDayDate = $this->setDateTime($lastDay);
 
@@ -75,9 +77,9 @@ class RequestReport extends Base
         $dateTime = clone $this->firstDayDate;
         do {
             $reportHeader[] = $this->getFormatedDates($dateTime, $datePatternCol2);
-            $dateTime->modify('+1 '. $report->period);
+            $dateTime->modify('+1 ' . $report->period);
         } while ($dateTime <= $this->lastDayDate);
-        $sheet->fromArray($reportHeader, null, 'A'. ($sheet->getHighestRow() + 2));
+        $sheet->fromArray($reportHeader, null, 'A' . ($sheet->getHighestRow() + 2));
     }
 
     /**
@@ -86,19 +88,45 @@ class RequestReport extends Base
     public function writeReportData(ReportEntity $report, $sheet, $datePatternCol1, $datePatternCol2)
     {
         $reportData = [];
+        $rowIndex = $sheet->getHighestRow() + 1;
+        $firstDataRow = $rowIndex;
+
         foreach ($report->data as $name => $entry) {
-            if ('sum' != $name && 'average_processingtime' != $name ) {
-                $reportData[$name][] = $name;
-                $reportData[$name][] = isset($report->data['average_processingtime'][$name]) || is_numeric($report->data['average_processingtime'][$name]) ? (string)$report->data['average_processingtime'][$name]  : "0";
-                $reportData[$name][] = $report->data['sum'][$name];  
+            if ($name !== 'sum' && $name !== 'average_processingtime') {
+                $rowData = [];
+                $rowData[] = $name;
+                $rowData[] = isset($report->data['average_processingtime'][$name])
+                    && is_numeric($report->data['average_processingtime'][$name])
+                    ? (string)$report->data['average_processingtime'][$name]
+                    : "0";
+                $rowData[] = $report->data['sum'][$name];
+
                 $dateTime = clone $this->firstDayDate;
                 do {
                     $dateString = $dateTime->format($this->dateFormatter[$report->period]);
-                    $reportData[$name][] = (isset($entry[$dateString])) ? $entry[$dateString]['requestscount'] : '0';
-                    $dateTime->modify('+1 '. $report->period);
+                    $rowData[] = isset($entry[$dateString]) ? (int)$entry[$dateString]['requestscount'] : '0';
+
+
+                    $dateTime->modify('+1 ' . $report->period);
                 } while ($dateTime <= $this->lastDayDate);
+
+                $reportData[$name] = $rowData;
             }
         }
-        $sheet->fromArray($reportData, null, 'A'. ($sheet->getHighestRow() + 1));
+
+        $sheet->fromArray($reportData, null, 'A' . $rowIndex);
+        $lastColumn = $sheet->getHighestColumn();
+        $lastRow = $sheet->getHighestRow();
+        $sumRowIndex = $lastRow + 2;
+        $sumRow = ["Summe", "", ""];
+        $sumRow[2] = "=SUM(C{$firstDataRow}:C{$lastRow})";
+        $lastColumnIndex = Coordinate::columnIndexFromString($lastColumn);
+
+        for ($colIndex = 4; $colIndex <= $lastColumnIndex; $colIndex++) {
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+            $sumRow[] = "=SUM({$colLetter}{$firstDataRow}:{$colLetter}{$lastRow})";
+        }
+
+        $sheet->fromArray($sumRow, null, 'A' . $sumRowIndex);
     }
 }

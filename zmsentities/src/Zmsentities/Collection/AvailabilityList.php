@@ -1,18 +1,19 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
 namespace BO\Zmsentities\Collection;
 
-use \BO\Zmsentities\Availability;
+use BO\Zmsentities\Availability;
 
 /**
  * @SuppressWarnings(Complexity)
  */
 class AvailabilityList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Availability';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Availability';
 
     public function getMaxWorkstationCount()
     {

@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Slim\Render;
@@ -16,7 +18,6 @@ use BO\Zmsticketprinter\Helper\QueueListHelper;
 
 class Process extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface
@@ -32,17 +33,18 @@ class Process extends BaseController
         $validator = $request->getAttribute('validator');
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
         $requestId = $validator->getParameter('requestId')->isNumber()->getValue();
+        $printText = $validator->getParameter('printText')->isString()->getValue();
         if (null === $scopeId) {
             throw new Exception\ScopeNotFound();
         }
 
         $process = \App::$http->readGetResult(
-            '/scope/'. $scopeId .'/waitingnumber/'. $ticketprinterHelper->getEntity()->hash .'/',
+            '/scope/' . $scopeId . '/waitingnumber/' . $ticketprinterHelper->getEntity()->hash . '/',
             $requestId ? ['requestId' => $requestId] : null
         )->getEntity();
 
         $scope = new Scope($process->scope);
-        $department = \App::$http->readGetResult('/scope/'. $scope->getId() . '/department/')->getEntity();
+        $department = \App::$http->readGetResult('/scope/' . $scope->getId() . '/department/')->getEntity();
 
         $queueListHelper = (new QueueListHelper($scope, $process));
 
@@ -55,6 +57,7 @@ class Process extends BaseController
                 'ticketprinter' => $ticketprinterHelper->getEntity(),
                 'organisation' => $ticketprinterHelper->getOrganisation(),
                 'process' => $process,
+                'printText' => $printText,
                 'waitingTime' => $queueListHelper->getEstimatedWaitingTime(),
                 'waitingClients' => ($queueListHelper->getClientsBefore()),
                 'config' => $config,

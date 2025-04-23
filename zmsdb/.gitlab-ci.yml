@@ -1,19 +1,19 @@
 include:
     remote: https://gitlab.com/eappointment/php-base/-/raw/main/template-php-ci.yml
 
-test-php-73:
+test-php-80:
     extends: .test-php
     cache: []
     allow_failure: false
     services:
-        - name: mariadb:10.3
+        - name: mariadb:10.11
           alias: mysql
           command: ["mysqld", "--general-log=1", "--general-log-file=/var/log/mysql/general.log"]
     before_script:
         - $CLI_COMPOSER
         - bin/importTestData --commit
     variables:
-      PHP_VERSION: "7.3"
+      PHP_VERSION: "8.0"
       MYSQL_DATABASE: zmsbo
       MYSQL_ROOT_PASSWORD: mysql
     only:

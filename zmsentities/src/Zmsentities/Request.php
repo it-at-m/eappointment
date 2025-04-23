@@ -4,9 +4,18 @@ namespace BO\Zmsentities;
 
 class Request extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "request.json";
+
+    public function getDefaults()
+    {
+        return [
+            'id' => '',
+            'name' => '',
+            'source' => 'dldb'
+        ];
+    }
 
     public function withReference($additionalData = [])
     {
@@ -19,7 +28,8 @@ class Request extends Schema\Entity
     {
         if (isset($this['data']) && isset($this['data']['locations'])) {
             foreach ($this['data']['locations'] as $provider) {
-                if ((!isset($provider['appointment']['external']) || !$provider['appointment']['external'])
+                if (
+                    (!isset($provider['appointment']['external']) || !$provider['appointment']['external'])
                     && isset($provider['appointment']['allowed']) && $provider['appointment']['allowed']
                 ) {
                     return true;
@@ -52,5 +62,10 @@ class Request extends Schema\Entity
     public function getAdditionalData()
     {
         return $this->toProperty()->data->get();
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

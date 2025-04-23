@@ -20,6 +20,13 @@ class Slot extends Base implements MappingInterface
     const QUERY_LAST_CHANGED_AVAILABILITY = '
         SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE availabilityID = :availabilityID AND status="free";';
 
+    const QUERY_LAST_IN_AVAILABILITY = '
+        SELECT CONCAT(year, "-", LPAD(month, 2, "0"), "-", LPAD(day, 2, "0")) AS dateString
+        FROM slot
+        WHERE availabilityID = :availabilityID AND status="free"
+        ORDER BY year DESC, month DESC, day DESC
+        LIMIT 1;';
+
     const QUERY_LAST_CHANGED_SCOPE = '
         SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE scopeID = :scopeID;';
 
@@ -174,6 +181,11 @@ class Slot extends Base implements MappingInterface
 
     const QUERY_CANCEL_AVAILABILITY = '
         UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID
+';
+
+    const QUERY_CANCEL_AVAILABILITY_BEFORE_BOOKABLE = '
+            UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID 
+            AND CONCAT(year, "-", LPAD(month, 2, "0"), "-", LPAD(day, 2, "0")) < :providedDate
 ';
 
     const QUERY_CANCEL_SLOT_OLD_BY_SCOPE = '

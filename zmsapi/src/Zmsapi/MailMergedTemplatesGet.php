@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\MailTemplates as MailTemplatesQuery;
-use \BO\Zmsapi\Helper\User;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\MailTemplates as MailTemplatesQuery;
+use BO\Zmsapi\Helper\User;
 
 class MailMergedTemplatesGet extends BaseController
 {
@@ -32,11 +33,11 @@ class MailMergedTemplatesGet extends BaseController
         }
 
         $providerId = $args['providerId'];
-        
-        $config = (new MailTemplatesQuery())->readCustomizedListForProvider($providerId);
-        
+
+        $mailtemplates = (new MailTemplatesQuery())->readCustomizedListForProvider($providerId);
+
         $message = Response\Message::create($request);
-        $message->data = $config;
+        $message->data = $mailtemplates;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());

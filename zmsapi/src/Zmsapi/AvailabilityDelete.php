@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -7,13 +8,10 @@
 namespace BO\Zmsapi;
 
 use BO\Slim\Render;
-
 use BO\Zmsdb\Availability as AvailabilityRepository;
 use BO\Zmsdb\Helper\CalculateSlots as CalculateSlotsHelper;
-
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-
 use BO\Zmsentities\Availability as Entity;
 
 class AvailabilityDelete extends BaseController
@@ -31,7 +29,7 @@ class AvailabilityDelete extends BaseController
         $repository = new AvailabilityRepository();
         $entity = $repository->readEntity($args['id'], 2);
 
-        if ($entity->hasId() && $repository->deleteEntity($entity->getId())) {
+        if ($entity->scope && $entity->hasId() && $repository->deleteEntity($entity->getId())) {
             (new CalculateSlotsHelper(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
         } else {
             $entity = new Entity(['id' => $args['id']]);

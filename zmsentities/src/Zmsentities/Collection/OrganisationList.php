@@ -1,9 +1,10 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
 class OrganisationList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Organisation';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Organisation';
 
     public function getByDepartmentId($departmentId)
     {

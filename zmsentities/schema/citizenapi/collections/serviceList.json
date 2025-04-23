@@ -1,0 +1,14 @@
+{
+  "type": ["array", "object", "null"],
+  "properties": {
+    "services": {
+      "type": "array",
+      "items": {
+        "$ref": "../service.json"
+      }
+    }
+  },
+  "required": [
+    "services"
+  ]
+}

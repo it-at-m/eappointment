@@ -35,7 +35,7 @@
         "de_DE": {
           "pointer": "Benutzername",
           "messages": {
-            "minLength": "Es muss ein aussagekräftiger Nutzername eingegeben werden; mindestens 4 Buchstaben.",
+            "minLength": "Bitte tragen Sie hier die LDAP-Kennung ein (erster Teil der E-Mail-Adresse)",
             "maxLength": "Der Nutzername sollte 40 Zeichen nicht überschreiten"
           }
         }
@@ -105,72 +105,152 @@
       "properties": {
         "availability": {
           "description": "Allow editing availability with opening hours",
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ]
         },
         "basic": {
           "description": "Allow login and basic usage",
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ]
         },
         "cluster": {
           "description": "Allow editing clusters",
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ]
         },
         "department": {
           "description": "Allow editing departments",
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ]
         },
         "organisation": {
           "description": "Allow editing organisations",
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ]
         },
         "scope": {
           "description": "Allow editing scopes",
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ]
         },
         "sms": {
           "description": "Allow sending SMS",
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ]
         },
         "superuser": {
           "description": "Special rights for administrators, especially for maintenance",
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ]
         },
         "ticketprinter": {
           "description": "Manage ticketprinter",
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ]
         },
         "useraccount": {
           "description": "Allow create, edit and delete user accounts",
-          "type": [
-            "boolean",
-            "number"
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01]$"
+            }
           ]
         }
       }
@@ -178,17 +258,8 @@
     "departments": {
       "type": "array",
       "description": "list of assigned departments",
-      "minItems": 1,
       "items": {
         "$ref": "department.json"
-      },
-      "x-locale": {
-        "de_DE": {
-          "pointer": "Behördenauswahl",
-          "messages": {
-            "minItems": "Wählen Sie mindestens eine Behörde aus."
-          }
-        }
       }
     }
   }

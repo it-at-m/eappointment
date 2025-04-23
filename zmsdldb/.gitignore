@@ -3,3 +3,5 @@ config.php
 tags
 /vendor/
 Makefile
+.DS_*
+coverage

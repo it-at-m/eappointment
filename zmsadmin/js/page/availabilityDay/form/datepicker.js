@@ -77,8 +77,6 @@ class AvailabilityDatePicker extends Component
             availability: this.props.attributes.availability,
             availabilityList: this.props.attributes.availabilitylist,
             selectedDate: selectedDate
-        }, () => {
-            this.setExcludeTimesForDay()
         })
     }
 
@@ -120,42 +118,11 @@ class AvailabilityDatePicker extends Component
         return isSelected;
     }
 
-    setExcludeTimesForDay() {
-        if (this.state.kind === 'exclusion') {
+    handleChange(name, date) {
+        if (!date) {
+            this.closeDatePicker();
             return;
         }
-        var times = []
-        this.state.availabilityList.map(availability => {
-            if (availability.id !== this.state.availability.id &&
-                availability.type == this.state.availability.type &&
-                this.isWeekDaySelected(this.state.selectedDate, availability)
-            ) {
-                const startTime = moment(availability.startTime, 'hh:mm')
-                    .add(this.state.availability.slotTimeInMinutes, "m");
-                const startOnDay = moment(this.state.selectedDate)
-                    .set({"h": startTime.hours(), "m": startTime.minutes()})
-                    .toDate()
-                
-                const endTime = moment(availability.endTime, 'hh:mm')
-                    .subtract(this.state.availability.slotTimeInMinutes, "m");
-                const endOnDay = moment(this.state.selectedDate)
-                    .set({"h": endTime.hours(), "m": endTime.minutes()})
-                    .toDate()
-               
-                var currentTime = new Date(startOnDay)
-                while (currentTime < endOnDay) {
-                    times = [...times, new Date(currentTime)]
-                    currentTime = moment(currentTime)
-                        .add(this.state.availability.slotTimeInMinutes, "m")
-                        .toDate()
-                }
-                times = [...times, endOnDay]
-            }
-        });
-        this.setState({excludeTimeList: times});
-    }
-
-    handleChange(name, date) {
         if ('startDate' == name) {
             if (this.state.availability.startDate != moment(date).startOf('day').unix()) {
                 this.props.onChange("startDate", moment(date).unix());
@@ -258,7 +225,7 @@ class AvailabilityDatePicker extends Component
             const selectedDate = new Date(time);
             return currentDate.getTime() < selectedDate.getTime();
           };
-        
+
         const isWeekday = date => {
             const day = date.getDay();
             return day !== 0 && day !== 6;
@@ -287,7 +254,7 @@ class AvailabilityDatePicker extends Component
                                 minDate={this.state.minDate}
                                 //maxDate={repeat(this.state.availability.repeat) == 0 ? this.state.selectedDate : null}
                                 //filterDate={isWeekday}
-                                //excludeDates={this.state.excludeDateList}                   
+                                //excludeDates={this.state.excludeDateList}
                                 dayClassName={dayClassName}
                                 disabled={this.props.attributes.disabled}
                                 onInputClick={this.openDatePicker}

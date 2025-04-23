@@ -11,19 +11,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>{{ title }} - Zeitmanagementsystem</title>
+    <title>{{ title }} - ZMS</title>
     <link rel="stylesheet" media="all" type="text/css" href="{{ includeUrl() }}/_css/admin.css?version={{ currentVersion() }}&ts={{ getNow()|date("U") }}">
     {#<link rel="stylesheet" media="print" type="text/css" href="{{ includeUrl() }}/_css/print.css">#}
 </head>
 <body>
     <span id="js-is_palm"></span>
     <div id="page-wrapper">
-        <header id="page-header">
+        <header id="page-header" role="banner" style="{% if getSystemStatus('ZMS_ENV') == 'dev' %}background-color: #2ECC40;
+            {% elseif getSystemStatus('ZMS_ENV') == 'stage' %}background-color: #7FDBFF;{% endif %}">
             {% block pageheader %}
                 {{ parent() }}
             {%- endblock %}
         </header>
-
+        
         <div id="content-wrapper">
             {% block breadcrumb %}
                 {{ parent() }}
@@ -74,6 +75,7 @@
             <div class="page-footer__right">
             <div class="page-version">
                 <a href="{{ urlGet('changelog', {}, {}) }}" class="version" title="Änderungshistorie anzeigen">Version {{ currentVersion() }}</a> | <a href="{{ urlGet('status', {}, {}) }}" class="version" title="Betriebsstatus des Systems">Status</a>
+                {% if getSystemStatus('ZMS_ENV') %} | {{ getSystemStatus('ZMS_ENV') }}{% endif %}
             </div>
             </div>
         </footer>

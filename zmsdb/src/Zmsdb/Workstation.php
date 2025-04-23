@@ -2,12 +2,11 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Workstation as Entity;
-use \BO\Zmsentities\Useraccount as UseraccountEntity;
-use \BO\Zmsentities\Scope as ScopeEntity;
-use \BO\Zmsentities\Process as ProcessEntity;
-
-use \BO\Zmsentities\Collection\WorkstationList as Collection;
+use BO\Zmsentities\Workstation as Entity;
+use BO\Zmsentities\Useraccount as UseraccountEntity;
+use BO\Zmsentities\Scope as ScopeEntity;
+use BO\Zmsentities\Process as ProcessEntity;
+use BO\Zmsentities\Collection\WorkstationList as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -39,15 +38,16 @@ class Workstation extends Base
                     $resolveReferences - 1
                 );
             if ($workstation->scope['id']) {
-                $workstation->scope = (new Scope)->readResolvedReferences(
+                $workstation->scope = (new Scope())->readResolvedReferences(
                     new ScopeEntity($workstation->scope),
                     $resolveReferences - 1
                 );
+                $workstation->scope->cluster = (new Cluster())->readByScopeId($workstation->scope->id);
                 $department = (new Department())->readByScopeId($workstation->scope['id']);
                 $workstation->linkList = (new Link())->readByDepartmentId($department->getId());
             }
-            $workstation->process = (new Process)->readByWorkstation($workstation, $resolveReferences - 1);
-            $config = (new Config)->readEntity();
+            $workstation->process = (new Process())->readByWorkstation($workstation, $resolveReferences - 1);
+            $config = (new Config())->readEntity();
             $workstation->support = $config->support;
         }
         return $workstation;
@@ -85,7 +85,7 @@ class Workstation extends Base
     public function readLoggedInListByCluster($clusterId, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
-        $cluster = (new Cluster)->readEntity($clusterId, $resolveReferences);
+        $cluster = (new Cluster())->readEntity($clusterId, $resolveReferences);
         if ($cluster->toProperty()->scopes->get()) {
             foreach ($cluster->scopes as $scope) {
                 $workstationList->addList($this->readLoggedInListByScope($scope['id'], $dateTime, $resolveReferences));
@@ -129,7 +129,7 @@ class Workstation extends Base
         return $collection;
     }
 
-    public function writeEntityLoginByOidc($loginName, $authKey, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    public function writeEntityLoginByOidc($loginName, $authKey, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, $resolveReferences = 0)
     {
         $workstation = new Entity();
         $query = Query\Workstation::QUERY_LOGIN_OIDC;
@@ -137,6 +137,7 @@ class Workstation extends Base
             $query,
             array(
                 $authKey,
+                $sessionExpiry->format('Y-m-d H:i:s'),
                 $dateTime->format('Y-m-d'),
                 $loginName
             )
@@ -150,7 +151,7 @@ class Workstation extends Base
         return $workstation;
     }
 
-    public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, $resolveReferences = 0)
     {
         $useraccount = new Useraccount();
         $workstation = new Entity();
@@ -161,6 +162,7 @@ class Workstation extends Base
                 $query,
                 array(
                     $authKey,
+                    $sessionExpiry->format('Y-m-d H:i:s'),
                     $dateTime->format('Y-m-d'),
                     $dateTime->format('Y-m-d H:i:s'),
                     $loginName,
@@ -201,13 +203,25 @@ class Workstation extends Base
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $dateTime
     ) {
-        $process = (new Process)->updateEntity($process, $dateTime);
+        $processEntity = $process;
+        $process = (new Process())->updateEntity(
+            $process,
+            $dateTime,
+            0,
+            null,
+            $workstation->getUseraccount()
+        );
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process->id);
         $query->addValues(['NutzerID' => $workstation->id]);
         $this->writeItem($query);
         $checksum = sha1($process->id . '-' . $workstation->getUseraccount()->id);
-        Log::writeLogEntry("UPDATE (Workstation::writeAssignedProcess) $checksum ", $process->id);
+        Log::writeProcessLog(
+            "UPDATE (Workstation::writeAssignedProcess) $checksum ",
+            Log::ACTION_CALLED,
+            $processEntity
+        );
+
         return $process;
     }
 
@@ -234,7 +248,12 @@ class Workstation extends Base
                 'parked' => ('parked' == $process->status) ? 1 : 0
             ]
         );
-        Log::writeLogEntry("UPDATE (Workstation::writeRemovedProcess)", $process->id);
+        Log::writeProcessLog(
+            "UPDATE (Workstation::writeRemovedProcess)",
+            Log::ACTION_REMOVED,
+            $process,
+            $workstation->getUseraccount()
+        );
         return $this->writeItem($query);
     }
 
@@ -268,13 +287,14 @@ class Workstation extends Base
      *
      * @return Entity
      */
-    public function updateEntityAuthkey($loginName, $password, $authKey, $resolveReferences)
+    public function updateEntityAuthkey($loginName, $password, $authKey, \DateTimeInterface $sessionExpiry, $resolveReferences)
     {
         $query = Query\Workstation::QUERY_UPDATE_AUTHKEY;
         $result = $this->perform(
             $query,
             array(
                 $authKey,
+                $sessionExpiry->format('Y-m-d H:i:s'),
                 $loginName,
                 $password
             )

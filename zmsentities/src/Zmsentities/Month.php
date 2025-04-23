@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Month extends Schema\Entity
 {
-    const PRIMARY = 'month';
+    public const PRIMARY = 'month';
 
     public $calendarDayList;
 
@@ -19,7 +19,7 @@ class Month extends Schema\Entity
 
     public function getFirstDay()
     {
-        $dateTime = Helper\DateTime::create($this['year'] .'-'. $this['month'] .'-1');
+        $dateTime = Helper\DateTime::create($this['year'] . '-' . $this['month'] . '-1');
         return $dateTime->modify('00:00:00');
     }
 

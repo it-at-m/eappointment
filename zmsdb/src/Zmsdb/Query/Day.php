@@ -8,7 +8,6 @@ namespace BO\Zmsdb\Query;
  */
 class Day extends Base
 {
-
     const QUERY_CREATE_TEMPORARY_SCOPELIST = '
         CREATE TEMPORARY TABLE calendarscope (
             scopeID INT,
@@ -75,7 +74,8 @@ class Day extends Base
                 s.time,
                 s.public,
                 s.callcenter,
-                s.intern
+                s.intern,
+                cc.id
             FROM
                 calendarscope c
                 INNER JOIN slot s
@@ -84,8 +84,9 @@ class Day extends Base
                 LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID
                     AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
                 LEFT JOIN slot_process p ON h.slotID = p.slotID
+                LEFT JOIN closures cc ON (s.scopeID = cc.StandortID AND s.year = cc.year AND s.month = cc.month and s.day = cc.day)
             GROUP BY s.slotID, h.slotID
-
+            HAVING cc.id IS NULL
         ) AS slotaggregate 
         GROUP BY slotID
         HAVING ancestorCount >= slotsRequired

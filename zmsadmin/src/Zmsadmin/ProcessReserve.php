@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Condition;
@@ -18,7 +19,6 @@ use BO\Zmsentities\Process as Entity;
  */
 class ProcessReserve extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -39,7 +39,7 @@ class ProcessReserve extends BaseController
                 $validatedForm
             );
         }
-        
+
         $process = static::writeReservedProcess($input, $process);
         $process = static::writeConfirmedProcess($input, $process);
         $appointment = $process->getFirstAppointment();
@@ -65,8 +65,8 @@ class ProcessReserve extends BaseController
     {
         $process = new \BO\Zmsentities\Process();
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
-        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] .' '. $selectedTime);
-        
+        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] . ' ' . $selectedTime);
+
         return $process->withUpdatedData($input, $dateTime, $scope);
     }
 
@@ -113,10 +113,6 @@ class ProcessReserve extends BaseController
                 $validator->getParameter('amendment'),
                 $delegatedProcess->setter('amendment')
             )
-            ->validateText(
-                $validator->getParameter('customTextfield'),
-                $delegatedProcess->setter('customTextfield')
-            )
             ->validateReminderTimestamp(
                 $validator->getParameter('headsUpTime'),
                 $delegatedProcess->setter('reminderTimestamp'),
@@ -126,6 +122,15 @@ class ProcessReserve extends BaseController
             )
         ;
 
+        if (
+            isset($process->scope->preferences['client']['customTextfieldRequired'])
+            && $process->scope->preferences['client']['customTextfieldRequired']
+        ) {
+            $processValidator->validateCustomField(
+                $validator->getParameter('customTextfield'),
+                $delegatedProcess->setter('customTextfield')
+            );
+        }
 
         $processValidator->getCollection()->addValid(
             $validator->getParameter('sendConfirmation')->isNumber(),

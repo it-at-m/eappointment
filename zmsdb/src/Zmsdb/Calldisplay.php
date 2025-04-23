@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Calldisplay as Entity;
+use BO\Zmsentities\Calldisplay as Entity;
 
 /**
  *
@@ -10,7 +10,6 @@ use \BO\Zmsentities\Calldisplay as Entity;
  */
 class Calldisplay extends Base
 {
-
     /**
      * read Ticketprinter by comma separated buttonlist
      *
@@ -85,7 +84,7 @@ class Calldisplay extends Base
             ->fetchOne((new Query\Calldisplay(Query\Base::SELECT))
                 ->getQueryImage(), ['name' => "logo.png"]);
         }
-        
+
         $mime = pathinfo($image['name'], PATHINFO_EXTENSION);
         $image['mime'] = ($mime == 'jpg') ? 'jpeg' : $mime;
         return $image;

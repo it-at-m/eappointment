@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,12 +7,12 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Notification as Query;
-use \BO\Zmsdb\Config;
-use \BO\Zmsdb\Process;
-use \BO\Zmsdb\Department;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Notification as Query;
+use BO\Zmsdb\Config;
+use BO\Zmsdb\Process;
+use BO\Zmsdb\Department;
 
 /**
   * @SuppressWarnings(Coupling)
@@ -33,9 +34,9 @@ class ProcessDeleteNotification extends BaseController
         $this->testProcessData($process);
         $process = (new Process())->readEntity($process->id, $process->authKey);
         $process->addData($input);
-        
+
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        
+
         $config = (new Config())->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
         $notification = (new \BO\Zmsentities\Notification())

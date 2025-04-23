@@ -16,14 +16,22 @@
         "arrivalTime",
         "number"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "arrivalTime": {
             "type": "number",
             "description": "unix timestamp when client was added to the queue or appointment time"
         },
         "callCount": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "number of calls for the client to appear at the workstation"
         },
         "callTime": {
@@ -31,11 +39,11 @@
             "description": "unix timestamp of last call"
         },
         "destination": {
-            "type": "string",
+            "type": ["string", "null"],
             "description": "Text to display on calling the queued item, usually a room number."
         },
         "destinationHint": {
-            "type": "string",
+            "type": ["string", "null"],
             "description": "Small hint to display on calling the queued item."
         },
         "lastCallTime": {
@@ -50,11 +58,33 @@
             "description": "number to display on a call display"
         },
         "waitingTime": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "format": "time"
+                }
+            ],
             "description": "minutes since arrival of client"
         },
         "wayTime": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                }
+            ],
             "description": "minutes since arrival of client"
         },        
         "waitingTimeEstimate": {
@@ -66,7 +96,18 @@
             "description": "estimated time in minutes to wait for a call (optimistic value for views with timespan)"
         },
         "withAppointment": {
-            "type": "boolean",
+            "oneOf": [
+                {
+                    "type": "integer"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^[01]$"
+                }
+            ],
             "description": "true if corresponding process has an appointment",
             "default": false
         },
@@ -74,8 +115,10 @@
             "type": "string",
             "enum": [
                 "confirmed",
+                "reserved",
                 "preconfirmed",
                 "queued",
+                "blocked",
                 "called",
                 "deleted",
                 "processing",
@@ -86,7 +129,7 @@
                 "missed",
                 "parked"
             ],
-            "description": "Status of the process. The following values are possible:\n  * confirmed: confirmed appointment but not in queue\n * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * deleted: client is deleted\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * pickup: show pending on call display\n  * reserved: appointment is reserved\n  * finished: successfully processed\n  * fake: dummy entry for getting infos about queue\n  * missed: no client appeared\n"
+            "description": "Status of the process. The following values are possible:\n  * confirmed: confirmed appointment but not in queue\n * queued: confirmed and in waiting queue\n * blocked: to avoid the reuse of IDs on the same day\n * called: show on call displays\n  * deleted: client is deleted\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * pickup: show pending on call display\n  * reserved: appointment is reserved\n  * finished: successfully processed\n  * fake: dummy entry for getting infos about queue\n  * missed: no client appeared\n"
         }
     }
 }

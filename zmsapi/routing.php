@@ -664,6 +664,48 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/useraccount/queue/":
+ *      get:
+ *          summary: Get a waiting queue for user account
+ *          tags:
+ *              - useraccount
+ *              - queue
+ *          parameters:
+ *              -   name: status
+ *                  description: comma separated statuses
+ *                  in: path
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, return empty queueList if no entry was found"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/queue.json"
+ */
+\App::$slim->get(
+    '/useraccount/queue/',
+    '\BO\Zmsapi\UserQueue'
+)
+    ->setName("UserQueue");
+
+/**
+ *  @swagger
  *  "/cluster/{id}/request/":
  *      get:
  *          summary: Get a list of requests by cluster ID
@@ -1147,6 +1189,11 @@ use \Psr\Http\Message\ResponseInterface;
         ->setName("MailTemplatesDelete");
         
 
+\App::$slim->get(
+        '/preview-mailtemplates/{mailStatus}/{providerId}/',
+        '\BO\Zmsapi\MailTemplatesPreview'
+    )
+        ->setName("MailTemplatesPreview");
 
 
 
@@ -1577,9 +1624,197 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get(
     '/department/{id:\d{1,11}}/useraccount/',
-    '\BO\Zmsapi\DepartmentUseraccountList'
+    '\BO\Zmsapi\UseraccountByDepartmentList'
 )
-    ->setName("DepartmentUseraccountList");
+    ->setName("UseraccountByDepartmentList");
+
+/**
+ *  @swagger
+ *  "/role/{level}/useraccount/":
+ *      get:
+ *          summary: Get a list of useraccounts for a role
+ *          x-since: 2.10
+ *          tags:
+ *              - role
+ *              - useraccount
+ *          parameters:
+ *              -   name: level
+ *                  description: role number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "role is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "role does not exist"
+ */
+\App::$slim->get(
+    '/role/{level:\d{1,11}}/useraccount/',
+    '\BO\Zmsapi\UseraccountByRoleList'
+)
+    ->setName("UseraccountByRoleList");
+
+
+/**
+ *  @swagger
+ *  "/role/{level}/department/{id}/useraccount/":
+ *      get:
+ *          summary: Get a list of useraccounts for a role and department
+ *          x-since: 2.10
+ *          tags:
+ *              - role
+ *              - department
+ *              - useraccount
+ *          parameters:
+ *              -   name: level
+ *                  description: role number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  x-since: 2.12
+ *                  description: "role is not assigned to logged in useraccount"
+ *              404:
+ *                  x-since: 2.12
+ *                  description: "role does not exist"
+ */
+\App::$slim->get(
+    '/role/{level:\d{1,11}}/department/{id:\d{1,11}}/useraccount/',
+    '\BO\Zmsapi\UseraccountByRoleAndDepartmentList'
+)
+    ->setName("UseraccountByRoleAndDepartmentList");
+
+/**
+ *  @swagger
+ *  "/useraccount/search/":
+ *      get:
+ *          summary: Get a list of search results for user accounts
+ *          x-since: 2.11
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id" <- ###########################################
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of user accounts
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ */
+\App::$slim->get(
+    '/useraccount/search/',
+    '\BO\Zmsapi\UseraccountSearch'
+)
+    ->setName("UseraccountSearch");
+
+
+/**
+ *  @swagger
+ *  "/department/{id}/useraccount/search/":
+ *      get:
+ *          summary: Get a list of search results for user accounts by department
+ *          x-since: 2.11
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id" <- ###########################################
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of user accounts
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ */
+\App::$slim->get(
+    '/department/{id:\d{1,11}}/useraccount/search/',
+    '\BO\Zmsapi\UseraccountSearchByDepartment'
+)
+    ->setName("UseraccountSearchByDepartment");
 
 /**
  *  @swagger
@@ -1632,7 +1867,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/log/process/{id}/":
+ *  "/log/process/{search}/":
  *      get:
  *          summary: Get a list of log entries for a process
  *          x-since: 2.11
@@ -1645,11 +1880,11 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
- *              -   name: id
- *                  description: id of a process
+ *              -   name: search
+ *                  description: search string that is part of log data
  *                  in: path
  *                  required: true
- *                  type: number
+ *                  type: string
  *          responses:
  *              200:
  *                  description: Get a list of log entries for a process or empty list
@@ -1664,7 +1899,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                                  $ref: "schema/log.json"
  */
 \App::$slim->get(
-    '/log/process/{id:\d{1,11}}/',
+    '/log/process/{search}/',
     '\BO\Zmsapi\ProcessLog'
 )
     ->setName("ProcessLog");
@@ -1721,7 +1956,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/mails/":
  *      get:
- *          summary: get a list of mails in the send queue
+ *          summary: get a list of mails with optional filters
  *          x-since: 2.11
  *          tags:
  *              - mail
@@ -1731,10 +1966,23 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: ids
+ *                  description: comma-separated list of mail IDs to retrieve
+ *                  in: query
+ *                  required: false
+ *                  type: string
  *              -   name: resolveReferences
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
+ *              -   name: limit
+ *                  description: "Maximum number of results to return"
+ *                  in: query
+ *                  type: integer
+ *              -   name: onlyIds
+ *                  description: "If true, only IDs are returned"
+ *                  in: query
+ *                  type: boolean
  *          responses:
  *              200:
  *                  description: returns a list, might be empty
@@ -1797,14 +2045,84 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/mails/{id}/":
+ *  "/mails/":
  *      delete:
- *          summary: delete a mail in the send queue
+ *          summary: delete mail(s) by ID(s)
+ *          tags:
+ *              - mail
+ *          parameters:
+ *              -   name: ids
+ *                  description: comma-separated list of mail IDs (used for multiple deletions)
+ *                  in: query
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: successfully deleted
+ *              400:
+ *                  description: "invalid request format or missing IDs"
+ *              404:
+ *                  description: "could not find mail(s) or mail(s) already sent"
+ */
+\App::$slim->delete(
+    '/mails/',
+    '\BO\Zmsapi\MailDelete'
+)
+    ->setName("MailDeleteMultiple");
+
+
+/**
+ *  @swagger
+ *  "/mails/{id:\d{1,11}}/":
+ *      delete:
+ *          summary: delete mail(s) by ID(s)
  *          tags:
  *              - mail
  *          parameters:
  *              -   name: id
- *                  description: mail number
+ *                  description: mail ID (used for single deletion)
+ *                  in: path
+ *                  required: false
+ *                  type: integer
+ *              -   name: ids
+ *                  description: comma-separated list of mail IDs (used for multiple deletions)
+ *                  in: query
+ *                  required: false
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: successfully deleted
+ *              400:
+ *                  description: "invalid request format or missing IDs"
+ *              404:
+ *                  description: "could not find mail(s) or mail(s) already sent"
+ */
+\App::$slim->delete(
+    '/mails/{id:\d{1,11}}/',
+    '\BO\Zmsapi\MailDelete'
+)
+    ->setName("MailDelete");
+
+/**
+ *  @swagger
+ *  "/mails/{id:\d{1,11}}/":
+ *      get:
+ *          summary: get a single mail by ID
+ *          tags:
+ *              - mail
+ *          parameters:
+ *              -   name: id
+ *                  description: mail ID
  *                  in: path
  *                  required: true
  *                  type: integer
@@ -1815,16 +2133,15 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: string
  *          responses:
  *              200:
- *                  description: succesfully deleted
+ *                  description: successfully retrieved
  *              404:
- *                  description: "could not find mail or mail already sent"
+ *                  description: "could not find mail"
  */
-\App::$slim->delete(
+\App::$slim->get(
     '/mails/{id:\d{1,11}}/',
-    '\BO\Zmsapi\MailDelete'
+    '\BO\Zmsapi\MailGet'
 )
-    ->setName("MailDelete");
-
+    ->setName("MailGet");
 
 /**
  *  @swagger
@@ -3821,6 +4138,51 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\RequestListByScope'
 )
     ->setName("RequestListByScope");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/availability/{date}/closure/toggle/":
+ *      get:
+ *          summary: Toogle availability closure for specific day
+ *          x-since: 2.11
+ *          tags:
+ *              - scope
+ *              - closure
+ *          parameters:
+ *              -   name: id
+ *                  description: scope ID
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: date
+ *                  description: day in format YYYY-MM-DD
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, closure is deleted if existed before or created when didn't exist before"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->post(
+    '/scope/{id:\d{1,11}}/availability/{date:\d\d\d\d-\d\d-\d\d}/closure/toggle/',
+    '\BO\Zmsapi\AvailabilityClosureToggle'
+)
+    ->setName("AvailabilityClosureToggle");
+
 
 /**
  *  @swagger

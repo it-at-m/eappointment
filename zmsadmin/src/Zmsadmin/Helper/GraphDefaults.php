@@ -14,7 +14,7 @@ class GraphDefaults
      */
     public static function getWorkstation()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 { 
     id,
     name,
@@ -22,6 +22,7 @@ class GraphDefaults
         id, 
         shortName
         source,
+        cluster,
         contact {
             name
         }
@@ -47,7 +48,7 @@ EOS;
 
     public static function getWorkstationWithProvider()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 { 
     id,
     name,
@@ -92,7 +93,7 @@ EOS;
      */
     public static function getAvailability()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 { 
     id,
     weekday,
@@ -128,7 +129,7 @@ EOS;
      */
     public static function getAvailabilityTimes()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 { 
     weekday,
     repeat
@@ -152,7 +153,7 @@ EOS;
      */
     public static function getScope()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 { 
     id 
     source
@@ -184,7 +185,7 @@ EOS;
      */
     public static function getDepartment()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 { 
     id 
     name
@@ -200,7 +201,7 @@ EOS;
      */
     public static function getRequest()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 { 
     id 
     name 
@@ -217,13 +218,13 @@ EOS;
 EOS;
         return static::defaultFormat($default);
     }
-    
+
     /**
      * free process list reduced response data
      */
     public static function getFreeProcessList()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 { 
     scope { 
         id
@@ -253,7 +254,7 @@ EOS;
      */
     public static function getCalendar()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 { 
     firstDay 
     lastDay 
@@ -288,7 +289,7 @@ EOS;
      */
     public static function getProcess()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 {
     amendment
     customTextfield
@@ -362,7 +363,7 @@ EOS;
      */
     public static function getPickup()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 {
     amendment
     customTextfield
@@ -393,7 +394,7 @@ EOS;
  */
     public static function getFreeProcess()
     {
-        $default =<<< EOS
+        $default = <<< EOS
 {
     appointments{
         date

@@ -1,12 +1,16 @@
 <?php
+
 namespace BO\Zmsentities;
+
+use BO\Zmsentities\Collection\ClosureList;
+use BO\Zmsentities\Collection\DayoffList;
 
 /**
  * @SuppressWarnings(Complexity)
  */
 class Scope extends Schema\Entity implements Useraccount\AccessInterface
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "scope.json";
 
@@ -17,6 +21,8 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
             'source' => 'dldb',
             'contact' => new Contact(),
             'provider' => new Provider(),
+            'shortName' => '',
+            'dayoff' => new DayoffList()
         ];
     }
 
@@ -25,8 +31,61 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->toProperty()->source->get();
     }
 
+    public function getShortName()
+    {
+        return $this->toProperty()->shortName->get();
+    }
+
+    public function getEmailFrom()
+    {
+        return $this->getPreference('client', 'emailFrom', null);
+    }
+
+    public function getEmailRequired()
+    {
+        return $this->getPreference('client', 'emailRequired', null);
+    }
+
+    public function getTelephoneActivated()
+    {
+        return $this->getPreference('client', 'telephoneActivated', null);
+    }
+
+    public function getTelephoneRequired()
+    {
+        return $this->getPreference('client', 'telephoneRequired', null);
+    }
+
+    public function getCustomTextfieldActivated()
+    {
+        return $this->getPreference('client', 'customTextfieldActivated', null);
+    }
+
+    public function getCustomTextfieldRequired()
+    {
+        return $this->getPreference('client', 'customTextfieldRequired', null);
+    }
+
+    public function getCustomTextfieldLabel()
+    {
+        return $this->getPreference('client', 'customTextfieldLabel', '');
+    }
+
+    public function getCaptchaActivatedRequired()
+    {
+        return $this->getPreference('client', 'captchaActivatedRequired', null);
+    }
+
+    public function getDisplayInfo()
+    {
+        return $this->getPreference('appointment', 'infoForAppointment', null);
+    }
+
     public function getProvider()
     {
+        if (!isset($this->provider)) {
+            throw new Exception\ScopeMissingProvider("Provider is missing", 500);
+        }
         if (!$this->provider instanceof Provider) {
             $this->provider = new Provider($this->toProperty()->provider->get());
         }
@@ -55,6 +114,20 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
             }
         }
         return $this->dayoff;
+    }
+
+    public function getClosureList()
+    {
+        if (!isset($this->closure) || !$this->closure instanceof Collection\ClosureList) {
+            $this->closure = (!isset($this->closure) || !is_array($this->closure)) ? [] : $this->closure;
+            $this->closure = new Collection\ClosureList($this->closure);
+            foreach ($this->closure as $key => $closure) {
+                if (!$closure instanceof Closure) {
+                    $this->closure[$key] = new Closure($closure);
+                }
+            }
+        }
+        return $this->closure;
     }
 
     public function getRequestList()

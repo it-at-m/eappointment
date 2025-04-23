@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
 /**
@@ -8,17 +9,17 @@ namespace BO\Zmsentities\Collection;
  */
 class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Queue';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Queue';
 
-    const FAKE_WAITINGNUMBER = -1;
+    public const FAKE_WAITINGNUMBER = -1;
 
-    const STATUS_IGNORE = ['called', 'processing', 'missed', 'parked', 'deleted', 'pickup'];
+    public const STATUS_IGNORE = ['called', 'processing', 'missed', 'parked', 'deleted', 'pickup'];
 
-    const STATUS_APPEND = ['missed', 'parked', 'deleted'];
+    public const STATUS_APPEND = ['missed', 'parked', 'deleted'];
 
-    const STATUS_CALLED = ['called', 'processing', 'pickup'];
+    public const STATUS_CALLED = ['called', 'processing', 'pickup'];
 
-    const STATUS_FAKE = ['fake'];
+    public const STATUS_FAKE = ['fake'];
 
     protected $processTimeAverage;
 
@@ -224,7 +225,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $next = array_shift($queueList);
         $currentTime = $dateTime->getTimestamp();
         while ($next) {
-            if (! in_array($next->number, $excludeNumbers) &&
+            if (
+                ! in_array($next->number, $excludeNumbers) &&
                 (0 == $next->lastCallTime || ($next->lastCallTime + (5 * 60)) <= $currentTime)
             ) {
                 return $next->getProcess();
@@ -364,5 +366,22 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
             }
         }
         return $list;
+    }
+
+    public function sortByCallTime(string $order)
+    {
+        $queueListArray = [];
+        foreach ($this as $entity) {
+            $queueListArray[] = $entity;
+        }
+        usort($queueListArray, function ($a, $b) use ($order) {
+            if ($order === 'ascending') {
+                return $a->callTime <=> $b->callTime;
+            } elseif ($order === 'descending') {
+                return $b->callTime <=> $a->callTime;
+            }
+            throw new InvalidArgumentException("Invalid sort order: $order. Use 'ascending' or 'descending'.");
+        });
+        return new self($queueListArray);
     }
 }

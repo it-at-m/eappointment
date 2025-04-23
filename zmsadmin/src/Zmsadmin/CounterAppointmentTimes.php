@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -21,10 +22,10 @@ class CounterAppointmentTimes extends BaseController
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($selectedDate);
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
-        
+
         try {
             $availabilityList = \App::$http
-            ->readGetResult('/scope/'. $workstation->scope['id'] . '/availability/', [
+            ->readGetResult('/scope/' . $workstation->scope['id'] . '/availability/', [
                 'startDate' => $selectedDate,
                 'endDate' => $selectedDate
             ], \App::CONFIG_SECURE_TOKEN)

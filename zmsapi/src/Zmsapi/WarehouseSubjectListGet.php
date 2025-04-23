@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Warehouse as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Warehouse as Query;
 
 class WarehouseSubjectListGet extends BaseController
 {
@@ -24,7 +25,7 @@ class WarehouseSubjectListGet extends BaseController
         $workstation = (new Helper\User($request, 2))->checkRights('scope');
 
         $message = Response\Message::create($request);
-        $subjectsList = (new Query)->readSubjectsList();
+        $subjectsList = (new Query())->readSubjectsList();
         $message->data = (new Helper\ExchangeAccessFilter($subjectsList, $workstation))
           ->getFilteredEntity()
           ->withLessData();

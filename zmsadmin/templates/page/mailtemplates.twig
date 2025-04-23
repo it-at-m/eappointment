@@ -1,0 +1,209 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block headline %}
+    {{ headline1(pageTitle) }}
+    <button class="button button-submit" onclick="previewEmail('appointment')">Confirmation</button>
+    <button class="button button-submit" onclick="previewEmail('deleted')">Delete</button>
+    <button class="button button-submit" onclick="previewEmail('preconfirmed')">Preconfirmed</button>
+    <button class="button button-submit" onclick="previewEmail('reminder')">Reminder</button>
+    <div id="preview-container">
+
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless config-view', 'data': {'includeurl':includeUrl() }} %}
+
+        {% block board_title %}
+        {% endblock %}
+
+        {% block board_body %}
+
+        {% for settings in mailtemplates %}
+            <b>{{ settings.name }}</b>
+
+            {% if settings.isCustom %}
+                (customized)
+            {% endif %}
+
+            <div id="save-indicator-{{ settings.id }}" class="save-indicator" style="display: none; color: red; margin-left: 10px; inline;"></div>
+            <div style="width: 100%; margin-bottom: 24px; padding: 24px; padding-bottom: 0px; box-sizing: border-box; border: 1px solid #ccc;">
+                <div id="{{ settings.id }}" style="width: 100%; height: 352px;"></div>
+                <div style="display: flex; justify-content: flex-end; margin-top: 12px; gap:12px">
+                    {% if settings.isCustom %}
+                        <button class="button button--destructive" onclick="deleteCustomization('{{ settings.id }}', '{{ settings.id }}')">Delete Customization</button>
+                    {% else %}
+                        <button class="button button--positive" onclick="createCustomization('{{ settings.name }}', '{{ settings.id }}')">Create Customization</button>
+                    {% endif %}
+                    <button class="button button-submit" onclick="saveMailTemplate('{{ settings.id }}', '{{ settings.id }}')">Save</button>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% endblock %}
+
+    {% endembed %}
+
+
+
+    <!-- Load Require.js from CDN -->
+    <script src="{{ includeUrl() }}/_libs/requirejs/require.js"></script>
+    <script>
+        let editors = {};
+        let templateObjects = [];
+
+        require.config({
+            paths: {
+                'vs': '{{ includeUrl() }}/_libs/monaco-editor/min/vs',
+            }
+        });
+
+        function initializeEditor(elementId, defaultCode, templateName) {
+            require(['vs/editor/editor.main'], function() {
+                // Create the editor instance and store it in the global 'editors' object
+                editors[elementId] = monaco.editor.create(document.getElementById(elementId), {
+                    value: defaultCode,
+                    language: 'twig',
+                    theme: 'vs-dark'
+                });
+
+                // Add a change listener to the editor
+                editors[elementId].onDidChangeModelContent(function() {
+                    var saveIndicator = document.getElementById('save-indicator-' + elementId);
+                    if (saveIndicator) {
+                        saveIndicator.style.display = 'inline'; // Show the save indicator when content is changed
+                        saveIndicator.textContent = 'Unsaved changes';
+                    }
+                });
+
+                templateObjects.push({
+                    elementId: elementId,
+                    templateName: templateName,
+                    templateContent: 'empty'
+                });
+            });
+        }
+
+        function getContentOfEditor(editorId) {
+            // Access the editor instance by its ID from the global 'editors' object and return its current content
+            var editor = editors[editorId];
+            if (editor) {
+                return editor.getValue();
+            } else {
+                console.error('Editor not found:', editorId);
+                return ''; // Return an empty string if the editor is not found
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            {% for settings in mailtemplates %}
+                initializeEditor('{{ settings.id }}', '{{ settings.value | escape('js') }}', '{{ settings.name }}');
+            {% endfor %}
+        });        
+
+
+        function saveMailTemplate(templateId, editorId) {
+            const url = '{{ includeUrl() }}/mailtemplates/{{ scopeId }}/';
+            const data = {
+                templateId: templateId,
+                templateContent: getContentOfEditor(editorId)
+            };
+
+            fetch(url, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), 
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                var saveIndicator = document.getElementById('save-indicator-' + editorId);
+                if (saveIndicator) {
+                    saveIndicator.style.display = 'none'; // Hide the save indicator once changes are saved
+                }
+            })
+            .catch((error) => console.error('Error:', error));
+        }
+
+        function deleteCustomization(templateId, editorId) {
+            const url = '{{ includeUrl() }}/mailtemplates/deleteCustomization/{{ scopeId }}/';
+            const data = {
+                templateId: templateId
+            };
+
+            fetch(url, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), 
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Customization deleted:', data);
+                location.reload(); // Reload the page to refresh the templates
+            })
+            .catch((error) => console.error('Error:', error));
+        }
+
+        function createCustomization(templateName, editorId) {
+            const url = '{{ includeUrl() }}/mailtemplates/createCustomization/{{ scopeId }}/';
+            const data = {
+                templateName: templateName,
+                templateContent: getContentOfEditor(editorId)
+            };
+
+            fetch(url, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), 
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Customization created:', data);
+                location.reload(); // Reload the page to refresh the templates
+            })
+            .catch((error) => console.error('Error:', error));
+        }
+
+        function previewEmail(mailStatus) {
+
+            templateObjects.forEach((templateObject) => {
+                templateObject.templateContent = getContentOfEditor(templateObject.elementId)
+            });
+
+            const url = '{{ includeUrl() }}/mailtemplates/previewEmail/'+mailStatus+'/{{ scopeId }}/';
+            const data = {
+                templates: templateObjects
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('preview-container').innerHTML='<div style="margin:10px;font-size:20px;color:red;">Beim Rendern des Mail-Templates ist ein Fehler aufgetreten!</div>';
+                    console.error(data.error);
+                } else {
+                    document.getElementById('preview-container').innerHTML=data.previewHtml;
+                }
+            })
+            .catch((error) => {
+                document.getElementById('preview-container').innerHTML='<div style="margin:10px;font-size:20px;color:red;">Beim Aufruf der Preview ist ein Fehler aufgetreten!</div>';
+                console.error('Error:', error)
+            });
+        }
+
+    </script>
+    
+
+{% endblock %}

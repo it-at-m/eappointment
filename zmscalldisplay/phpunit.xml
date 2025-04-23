@@ -10,7 +10,7 @@
   convertNoticesToExceptions="true" 
   convertWarningsToExceptions="true" 
   forceCoversAnnotation="false" 
-  stopOnFailure="true" 
+  stopOnFailure="false" 
   verbose="true"
   processIsolation="false"
 >
@@ -21,8 +21,15 @@
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
-        <directory suffix=".php">./src</directory>
+            <directory suffix=".php">./src</directory>
         </include>
+        <exclude>
+            <directory>./vendor</directory>
+            <directory>./tests</directory>
+        </exclude>
+        <report>
+            <html outputDirectory="./coverage/html" />
+            <clover outputFile="./coverage/clover.xml" />
+        </report>
     </coverage>
 </phpunit>
-

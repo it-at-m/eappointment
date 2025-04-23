@@ -7,11 +7,10 @@ namespace BO\Zmsdb\Query;
  */
 class ProcessStatusFree extends Base
 {
-
     /**
      * see also Day::QUERY_DAYLIST_JOIN
      */
-    const QUERY_SELECT_PROCESSLIST_DAY = '
+    const QUERY_SELECT_PROCESSLIST_DAYS = '
         SELECT
             -- tmp_avail.*,
             "free" AS status,
@@ -31,23 +30,22 @@ class ProcessStatusFree extends Base
                   )
                 ) available,
                 IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots) slotsRequired,
-                s.*
+                s.*,
+                cc.id
             FROM
                 calendarscope c
                 INNER JOIN slot s
                     ON c.scopeID = s.scopeID
-                        AND c.year = :year
-                        AND c.month = :month
-                        AND c.year = s.year
-                        AND c.month = s.month
-                        AND s.day = :day
+                        %s
                         AND s.status = "free"
                 LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
                 LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID
                     AND h.ancestorLevel <= IF(a.erlaubemehrfachslots, c.slotsRequired, :forceRequiredSlots)
                 INNER JOIN slot s2 on h.slotID = s2.slotID and s2.status = "free"
                 LEFT JOIN slot_process p ON h.slotID = p.slotID
+                LEFT JOIN closures cc ON (s.scopeID = cc.StandortID AND s.year = cc.year AND s.month = cc.month and s.day = cc.day)
             GROUP BY s.slotID, h.slotID
+            HAVING cc.id IS NULL
             ) AS tmp_ancestor
             GROUP BY slotID
             HAVING ancestorCount >= slotsRequired
@@ -55,4 +53,20 @@ class ProcessStatusFree extends Base
             INNER JOIN slot_sequence sq ON sq.slotsequence <= tmp_avail.free
     ';
     const GROUPBY_SELECT_PROCESSLIST_DAY = 'GROUP BY scope__id, appointments__0__date';
+
+    public static function buildDaysCondition($days)
+    {
+        $sql = 'AND (';
+        $sqlPats = [];
+
+        foreach ($days as $day) {
+            $sqlPats[] = '(c.year = ' . $day->format('Y') . '
+                        AND c.month = ' . $day->format('m') . '
+                        AND s.day = ' . $day->format('d') . '
+                        AND c.year = s.year
+                        AND c.month = s.month)';
+        }
+
+        return $sql . implode(' OR ', $sqlPats) . ')';
+    }
 }

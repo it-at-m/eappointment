@@ -55,20 +55,26 @@ use Slim\Routing\RouteCollectorProxy;
  \App::$slim->map(['GET','POST'], '/config/', \BO\Zmsadmin\ConfigInfo::class)
      ->setName("configinfo");
 
-     
- \App::$slim->get('/mailtemplates/', \BO\Zmsadmin\MailTemplates::class)
+ \App::$slim->get('/mailtemplates/{scopeId:\d+}/', \BO\Zmsadmin\MailTemplates::class)
+    ->setName("mailtemplatesScope");
+
+\App::$slim->get('/mailtemplates/', \BO\Zmsadmin\MailTemplates::class)
      ->setName("mailtemplates");
 
-    
- \App::$slim->post('/mailtemplates/', \BO\Zmsadmin\Helper\MailTemplateHandler::class)
+ \App::$slim->post('/mailtemplates/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateHandler::class)
      ->setName("MailTemplateHandler");
      
- \App::$slim->post('/mailtemplates/deleteCustomization/', \BO\Zmsadmin\Helper\MailTemplateDeleteCustomization::class)
+ \App::$slim->post('/mailtemplates/deleteCustomization/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateDeleteCustomization::class)
      ->setName("MailTemplateDeleteCustomization");
 
- \App::$slim->post('/mailtemplates/createCustomization/', \BO\Zmsadmin\Helper\MailTemplateCreateCustomization::class)
+ \App::$slim->post('/mailtemplates/createCustomization/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateCreateCustomization::class)
      ->setName("MailTemplateCreateCustomization");
 
+ \App::$slim->get('/mailtemplates/dummyPreview/{mailStatus}/', \BO\Zmsadmin\Helper\MailTemplateDummyPreview::class)
+     ->setName("MailTemplateDummyPreview");
+
+ \App::$slim->post('/mailtemplates/previewEmail/{mailStatus}/{scopeId:\d+}/', \BO\Zmsadmin\Helper\MailTemplatePreviewMail::class)
+     ->setName("MailTemplatePreviewMail");
      
 
  /*
@@ -122,6 +128,12 @@ use Slim\Routing\RouteCollectorProxy;
 
 \App::$slim->get('/department/{id:\d+}/useraccount/', \BO\Zmsadmin\UseraccountByDepartment::class)
     ->setName("useraccountByDepartment");
+
+\App::$slim->get('/role/{level:\d+}/useraccount/', \BO\Zmsadmin\UseraccountByRole::class)
+    ->setName("useraccountByRole");
+
+\App::$slim->get('/useraccount/search/', \BO\Zmsadmin\UseraccountSearch::class)
+    ->setName("useraccountSearch");
 
 \App::$slim->post('/department/{id:\d+}/useraccount/logout/', \BO\Zmsadmin\LogoutBySuperuser::class)
     ->setName("logoutBySuperuser");
@@ -321,7 +333,7 @@ use Slim\Routing\RouteCollectorProxy;
  * Search
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/search/', \BO\Zmsadmin\Search::class)
+\App::$slim->get('/search/', \BO\Zmsadmin\ProcessSearch::class)
     ->setName("search");
 
 /*
@@ -478,3 +490,7 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->getContainer()->offsetSet('phpErrorHandler', function ($container) {
     return new \BO\Zmsadmin\Helper\TwigExceptionHandler($container);
 });
+
+
+\App::$slim->post('/scope/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/closure/toggle/', \BO\Zmsadmin\ScopeAvailabilityDayClosure::class)
+    ->setName("scopeAvailabilityDayClosure");

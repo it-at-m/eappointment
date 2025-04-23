@@ -2,10 +2,10 @@
 
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Process;
-use \BO\Zmsentities\Collection\ProcessList;
-use \BO\Zmsentities\Helper\Messaging;
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Helper\Messaging;
+use BO\Zmsentities\Helper\Property;
 
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
@@ -13,7 +13,7 @@ use \BO\Zmsentities\Helper\Property;
  */
 class Mail extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "mail.json";
 
@@ -112,18 +112,20 @@ class Mail extends Schema\Entity
     {
         $entity = clone $this;
         $message = '';
-        if (Property::__keyExists(
-            'message',
-            $collection
-        ) &&
+        if (
+            Property::__keyExists(
+                'message',
+                $collection
+            ) &&
             '' != $collection['message']->getValue()
         ) {
             $message = $collection['message']->getValue();
         }
-        if (Property::__keyExists(
-            'subject',
-            $collection
-        ) &&
+        if (
+            Property::__keyExists(
+                'subject',
+                $collection
+            ) &&
             '' != $collection['subject']->getValue()
         ) {
             $entity->subject = $collection['subject']->getValue();
@@ -158,7 +160,7 @@ class Mail extends Schema\Entity
      */
     public function toResolvedEntity($processList, Config $config, $status, $initiator = null)
     {
-        $collection = (new ProcessList)->testProcessListLength(
+        $collection = (new ProcessList())->testProcessListLength(
             $processList,
             Messaging::isEmptyProcessListAllowed($status)
         );
@@ -168,8 +170,8 @@ class Mail extends Schema\Entity
 
         $entity->process = ($mainProcess) ? ($mainProcess) : new Process();
         $entity->subject = ($mainProcess) ?
-            Messaging::getMailSubject($mainProcess, $config, $initiator, $status) :
-            Messaging::getMailSubject((new Process()), $config, $initiator, $status);
+            Messaging::getMailSubject($mainProcess, $config, $initiator, $status, $this->templateProvider) :
+            Messaging::getMailSubject((new Process()), $config, $initiator, $status, $this->templateProvider);
         $entity->createIP = ($mainProcess) ? $mainProcess->createIP : '';
         $entity['client'] = (! isset($entity['client'])) ? $entity->getFirstClient() : $entity['client'];
 
@@ -184,12 +186,20 @@ class Mail extends Schema\Entity
             'base64' => false
         ));
 
-        if ($mainProcess && $mainProcess->getAppointments()->getFirst()->hasTime() &&
+        if (
+            $mainProcess && $mainProcess->getAppointments()->getFirst()->hasTime() &&
             Messaging::isIcsRequired($config, $mainProcess, $status)
         ) {
             $entity->multipart[] = new Mimepart(array(
                 'mime' => 'text/calendar',
-                'content' => Messaging::getMailIcs($mainProcess, $config, $status, $initiator, false, $this->templateProvider)->getContent(),
+                'content' => Messaging::getMailIcs(
+                    $mainProcess,
+                    $config,
+                    $status,
+                    $initiator,
+                    false,
+                    $this->templateProvider
+                )->getContent(),
                 'base64' => false
             ));
         }
@@ -203,7 +213,7 @@ class Mail extends Schema\Entity
     ) {
         $entity = clone $this;
         $content = Messaging::getScopeAdminProcessListContent($processList, $scope, $dateTime);
-        $entity->subject = 'Termine am '. $dateTime->format('Y-m-d');
+        $entity->subject = 'Termine am ' . $dateTime->format('Y-m-d');
         $entity->createIP = 0;
         $entity->client = new Client([
             'email' => $scope->getContactEmail(),
@@ -251,8 +261,8 @@ class Mail extends Schema\Entity
     {
         $string = "mail#";
         $string .= ($this->hasId()) ? $this->getId() : 0;
-        $string .= " recipient:". $this->getRecipient();
-        $string .= " process:". $this->getProcessId();
+        $string .= " recipient:" . $this->getRecipient();
+        $string .= " process:" . $this->getProcessId();
         return $string;
     }
 }

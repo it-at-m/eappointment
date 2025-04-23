@@ -1,12 +1,13 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
-use \BO\Zmsentities\Helper\Sorter;
-use \BO\Zmsentities\Scope;
+use BO\Zmsentities\Helper\Sorter;
+use BO\Zmsentities\Scope;
 
 class ScopeList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Scope';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Scope';
 
     protected $slotsByID = [];
 

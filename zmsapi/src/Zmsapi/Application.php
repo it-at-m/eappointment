@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -11,7 +12,9 @@ class Application extends \BO\Slim\Application
     /**
      * Name of the application
      */
-    const IDENTIFIER = 'Zmsapi';
+    const IDENTIFIER = 'zms';
+
+    const MODULE_NAME = 'zmsapi';
 
     /**
      * @var Bool DEBUG

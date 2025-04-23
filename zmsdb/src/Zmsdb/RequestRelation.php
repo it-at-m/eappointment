@@ -1,9 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\RequestRelation as Entity;
-
-use \BO\Zmsentities\Collection\RequestRelationList as Collection;
+use BO\Zmsentities\RequestRelation as Entity;
+use BO\Zmsentities\Collection\RequestRelationList as Collection;
 
 class RequestRelation extends Base
 {
@@ -74,7 +74,9 @@ class RequestRelation extends Base
                         'source' => $source->getSource(),
                         'provider' => $provider,
                         'request' => $request,
-                        'slots' => 1
+                        'slots' => 1,
+                        'public' => true,
+                        'maxQuantity' => null,
                     ]);
                     $this->writeEntity($entity);
                 }
@@ -91,7 +93,9 @@ class RequestRelation extends Base
             'source' => $entity->getSource(),
             'provider__id' => $entity->getProvider()->getId(),
             'request__id' => $entity->getRequest()->getId(),
-            'slots' => $entity->getSlotCount()
+            'slots' => $entity->getSlotCount(),
+            'public_visibility' => $entity->isPublic(),
+            'max_quantity' => $entity->getMaxQuantity()
         ]);
         $this->writeItem($query);
         return $this->readEntity($entity->getRequest()->getId(), $entity->getProvider()->getId());
@@ -109,6 +113,8 @@ class RequestRelation extends Base
                         'provider__id' => $provider['id'],
                         'request__id' => $reference['service'],
                         'slots' => $reference['appointment']['slots'],
+                        'public_visibility' => isset($reference['public']) && !$reference['public'] ? 0 : 1,
+                        'max_quantity' => $reference['maxQuantity'] ?? null,
                         'bookable' => ($reference['appointment']['allowed'] ? 1 : 0)
                     ]);
                     $this->writeItem($query);

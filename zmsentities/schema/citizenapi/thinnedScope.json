@@ -1,0 +1,80 @@
+{
+    "title": "thinnedScope",
+    "type": [
+        "array",
+        "object",
+        "null"
+    ],
+    "description": "The scope of the office's operations",
+    "properties": {
+        "id": {
+            "type": [
+                "string",
+                "integer"
+            ],
+            "description": "Unique identifier of the scope"
+        },
+        "provider": {
+            "$ref": "./thinnedProvider.json"
+        },
+        "shortName": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Short name of the scope"
+        },
+        "emailFrom": {
+            "type": "string",
+            "description": "Mail address for sending mails to clients",
+            "default": "",
+            "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+            "x-locale": {
+                "de_DE": {
+                    "pointer": "Absender E-Mail",
+                    "messages": {
+                        "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                    }
+                }
+            }
+        },
+        "emailRequired": {
+            "type": "boolean",
+            "description": "Whether email is required"
+        },
+        "telephoneActivated": {
+            "type": "boolean",
+            "description": "Whether telephone is activated"
+        },
+        "telephoneRequired": {
+            "type": "boolean",
+            "description": "Whether telephone is required"
+        },
+        "customTextfieldActivated": {
+            "type": "boolean",
+            "description": "Whether a custom textfield is activated"
+        },
+        "customTextfieldRequired": {
+            "type": "boolean",
+            "description": "Whether a custom textfield is required"
+        },
+        "customTextfieldLabel": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Label for the custom textfield"
+        },
+        "captchaActivatedRequired": {
+            "type": "boolean",
+            "description": "Whether captcha is activated and required"
+        },
+        "displayInfo": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Additional display information"
+        }
+    }
+}

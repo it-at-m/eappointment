@@ -4,14 +4,24 @@ namespace BO\Zmsentities;
 
 class Provider extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "provider.json";
+
+    public function getDefaults()
+    {
+        return [
+            'id' => 0,
+            'name' => '',
+            'source' => 'dldb'
+        ];
+    }
 
     public function addData($input)
     {
         $refString = '$ref';
-        if ((is_array($input) || $input instanceof \ArrayAccess)
+        if (
+            (is_array($input) || $input instanceof \ArrayAccess)
             && isset($input[$refString])
             && (!isset($input['id']) || !isset($input['source']))
         ) {

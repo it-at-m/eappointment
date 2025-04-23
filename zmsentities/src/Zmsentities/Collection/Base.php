@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Zmsentities\Collection;
 
-use \BO\Zmsentities\Helper\Sorter;
-use \BO\Zmsentities\Schema\Entity;
+use BO\Zmsentities\Helper\Sorter;
+use BO\Zmsentities\Schema\Entity;
 
 /**
  * @SuppressWarnings(NumberOfChildren)
@@ -17,7 +18,7 @@ use \BO\Zmsentities\Schema\Entity;
  */
 class Base extends \ArrayObject implements \JsonSerializable
 {
-    const ENTITY_CLASS = '';
+    public const ENTITY_CLASS = '';
 
     /**
      * @var Int $resolveLevel indicator on data integrity
@@ -119,7 +120,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         } elseif (is_array($value)) {
             return parent::offsetSet($index, new $className($value));
         } else {
-            throw new \Exception('Invalid entity ' . get_class($value) . ' for collection '. __CLASS__);
+            throw new \Exception('Invalid entity ' . get_class($value) . ' for collection ' . __CLASS__);
         }
     }
 
@@ -224,6 +225,16 @@ class Base extends \ArrayObject implements \JsonSerializable
         foreach ($this as $item) {
             $item->setJsonCompressLevel($jsonCompressLevel);
         }
+    }
+
+    public function getAsArray()
+    {
+        $array = [];
+        foreach ($this as $item) {
+            $array[] = $item;
+        }
+
+        return $array;
     }
 
     public function jsonSerialize()
