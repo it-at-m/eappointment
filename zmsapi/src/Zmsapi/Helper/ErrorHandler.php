@@ -21,25 +21,34 @@ class ErrorHandler implements ErrorHandlerInterface
             // Handle encoded/escaped characters
             $encodedPassword = preg_quote($password, '/');
             $trace = preg_replace('/' . $encodedPassword . '/', '***', $trace);
+            // Also replace any URL-encoded versions
             $trace = preg_replace('/' . preg_quote(urlencode($password), '/') . '/', '***', $trace);
+            // Handle PDO constructor format
+            $trace = preg_replace('/\'' . preg_quote($password, '/') . '\'/', '\'***\'', $trace);
         }
         if (defined('\App::DB_USER')) {
             $user = \App::DB_USER;
             $encodedUser = preg_quote($user, '/');
             $trace = preg_replace('/' . $encodedUser . '/', '***', $trace);
             $trace = preg_replace('/' . preg_quote(urlencode($user), '/') . '/', '***', $trace);
+            // Handle PDO constructor format
+            $trace = preg_replace('/\'' . preg_quote($user, '/') . '\'/', '\'***\'', $trace);
         }
         if (defined('\App::DB_HOST')) {
             $host = \App::DB_HOST;
             $encodedHost = preg_quote($host, '/');
             $trace = preg_replace('/' . $encodedHost . '/', '***', $trace);
             $trace = preg_replace('/' . preg_quote(urlencode($host), '/') . '/', '***', $trace);
+            // Handle PDO constructor format
+            $trace = preg_replace('/\'' . preg_quote($host, '/') . '\'/', '\'***\'', $trace);
         }
         if (defined('\App::DB_NAME')) {
             $dbname = \App::DB_NAME;
             $encodedDbname = preg_quote($dbname, '/');
             $trace = preg_replace('/' . $encodedDbname . '/', '***', $trace);
             $trace = preg_replace('/' . preg_quote(urlencode($dbname), '/') . '/', '***', $trace);
+            // Handle PDO constructor format
+            $trace = preg_replace('/\'' . preg_quote($dbname, '/') . '\'/', '\'***\'', $trace);
         }
 
         // Replace connection strings with more robust pattern matching
@@ -48,6 +57,9 @@ class ErrorHandler implements ErrorHandlerInterface
 
         // Replace any remaining credentials in the format username:password@host
         $trace = preg_replace('/[^:\s]+:[^@\s]+@[^:\s]+/', '***:***@***', $trace);
+
+        // Handle PDO constructor format with separate parameters
+        $trace = preg_replace('/mysql:dbname=[^;\']+.*?Array/', 'mysql:dbname=***\', \'***\', \'***\', Array', $trace);
 
         return $trace;
     }
