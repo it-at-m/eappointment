@@ -1,0 +1,12 @@
+{% extends "layout/main.twig" %}
+
+{% block headline %}
+    <h1>{{ title }}</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="error-message">
+        <p>{{ errorMessage }}</p>
+    </div>
+    <a href="/terminvereinbarung/admin/mailtemplates/" class="button button-submit">Zurück</a>
+{% endblock %}

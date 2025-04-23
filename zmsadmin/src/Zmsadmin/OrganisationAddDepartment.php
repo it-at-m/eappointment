@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -28,7 +29,7 @@ class OrganisationAddDepartment extends BaseController
             $input = $this->withCleanupDayoffs($input);
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
-            $department = \App::$http->readPostResult('/organisation/'. $organisationId .'/department/', $entity)
+            $department = \App::$http->readPostResult('/organisation/' . $organisationId . '/department/', $entity)
                 ->getEntity();
             return \BO\Slim\Render::redirect(
                 'department',

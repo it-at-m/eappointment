@@ -1,13 +1,15 @@
 <?php
+
 /**
  * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KGd
  *
  */
+
 namespace BO\Zmscalldisplay;
 
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use BO\Slim\Helper as SlimHelper;
 
 /**

@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter\Helper;
 
 use BO\Mellon\Validator;
@@ -23,7 +24,7 @@ class EntryFromOldRoute
             foreach ($scopeData as $scope) {
                 $scope = Validator::value($scope)->isNumber();
                 if (! $scope->hasFailed()) {
-                    $scopes[] = 's'. $scope->getValue();
+                    $scopes[] = 's' . $scope->getValue();
                 }
             }
         }
@@ -41,7 +42,7 @@ class EntryFromOldRoute
             foreach ($clusterData as $cluster) {
                 $cluster = Validator::value($cluster)->isNumber();
                 if (! $cluster->hasFailed()) {
-                    $clusters[] = 'c'. $cluster->getValue();
+                    $clusters[] = 'c' . $cluster->getValue();
                 }
             }
         }

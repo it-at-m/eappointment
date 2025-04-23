@@ -1,9 +1,10 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
 class ProviderList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Provider';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Provider';
 
     public function hasProvider($providerIdCsv)
     {

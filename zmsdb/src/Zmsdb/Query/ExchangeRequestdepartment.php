@@ -25,7 +25,7 @@ class ExchangeRequestdepartment extends Base
         ) as name,
         SUM(statistikJoin.requestscount) as requestscount,
         AVG(statistikJoin.processingtime) as processingtime
-    FROM '. Department::TABLE .' d
+    FROM ' . Department::TABLE . ' d
         INNER JOIN (
             SELECT
                 s.anliegenid,
@@ -34,15 +34,15 @@ class ExchangeRequestdepartment extends Base
                 COUNT(s.anliegenid) as requestscount,
                 AVG(s.bearbeitungszeit) as processingtime,
                 s.`datum`
-            FROM '. self::TABLE .' s
+            FROM ' . self::TABLE . ' s
             WHERE s.behoerdenid = :departmentid AND s.`datum` BETWEEN :datestart AND :dateend
             GROUP BY s.`datum`, s.anliegenid
         ) as statistikJoin ON statistikJoin.`behoerdenid` = d.BehoerdenID
-        LEFT JOIN '. self::REQUESTTABLE .' r ON r.id = statistikJoin.anliegenid
+        LEFT JOIN ' . self::REQUESTTABLE . ' r ON r.id = statistikJoin.anliegenid
     WHERE d.`behoerdenid` = :departmentid AND statistikJoin.`datum` BETWEEN :datestart AND :dateend
     GROUP BY DATE_FORMAT(statistikJoin.`datum`, :groupby), name, statistikJoin.anliegenid
     ORDER BY r.name, statistikJoin.anliegenid
-    ';    
+    ';
 
     const QUERY_SUBJECTS = '
       SELECT
@@ -51,30 +51,30 @@ class ExchangeRequestdepartment extends Base
           periodend,
           o.`Organisationsname` AS organisationname,
           d.`Name` AS description
-      FROM '. Department::TABLE .' AS d
+      FROM ' . Department::TABLE . ' AS d
           INNER JOIN
             (
               SELECT
                 s.`behoerdenid` as departmentid,
                 MIN(s.`datum`) AS periodstart,
                 MAX(s.`datum`) AS periodend
-              FROM '. self::TABLE .' s
+              FROM ' . self::TABLE . ' s
               group by departmentid
             )
           maxAndminDate ON maxAndminDate.`departmentid` = d.`BehoerdenID`
-          LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
+          LEFT JOIN ' . Organisation::TABLE . ' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
       GROUP BY d.`BehoerdenID`
       ORDER BY d.`BehoerdenID` ASC
     ';
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT date
-        FROM '. Department::TABLE .' AS d
+        FROM ' . Department::TABLE . ' AS d
             INNER JOIN (
               SELECT
                 behoerdenid,
                 DATE_FORMAT(`datum`,"%Y-%m") AS date
-              FROM '. self::TABLE .'
+              FROM ' . self::TABLE . '
             ) s ON s.behoerdenid = d.BehoerdenID
         WHERE d.`BehoerdenID` = :departmentid
         GROUP BY date

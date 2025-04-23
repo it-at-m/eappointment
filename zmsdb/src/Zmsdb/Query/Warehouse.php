@@ -23,7 +23,7 @@ class Warehouse extends Base
             MAX(`datum`) AS periodend,
             CONCAT(`Bezeichnung`, " ", `standortinfozeile`) AS description
         FROM ' . self::TABLE . ' AS w
-            LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Scope::TABLE . ' AS s ON w.`standortid` = s.`StandortID`
         GROUP BY w.`standortid`
         ORDER BY w.`standortid` ASC
     ';

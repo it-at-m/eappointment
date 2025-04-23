@@ -53,7 +53,7 @@ class WorkstationRequests
     public function readDepartment(): \BO\Zmsentities\Department
     {
         if (!$this->department) {
-            $this->department = $this->http->readGetResult('/scope/'. $this->scope['id'] .'/department/')
+            $this->department = $this->http->readGetResult('/scope/' . $this->scope['id'] . '/department/')
                 ->getEntity();
         }
         return $this->department ? $this->department : new \BO\Zmsentities\Department();
@@ -62,7 +62,7 @@ class WorkstationRequests
     public function readCluster(): \BO\Zmsentities\Cluster
     {
         if (!$this->cluster) {
-            $this->cluster = $this->http->readGetResult('/scope/'. $this->scope['id'] .'/cluster/')
+            $this->cluster = $this->http->readGetResult('/scope/' . $this->scope['id'] . '/cluster/')
                 ->getEntity();
         }
         return $this->cluster ? $this->cluster : new \BO\Zmsentities\Cluster();
@@ -71,11 +71,11 @@ class WorkstationRequests
     public function readProcessListByDate(
         \DateTimeInterface $selectedDate,
         $gql = ""
-    ) : \BO\Zmsentities\Collection\ProcessList {
+    ): \BO\Zmsentities\Collection\ProcessList {
         if ($this->workstation->isClusterEnabled()) {
             $processList = $this->http
                 ->readGetResult(
-                    '/cluster/'. $this->readCluster()->id .'/process/'. $selectedDate->format('Y-m-d') .'/',
+                    '/cluster/' . $this->readCluster()->id . '/process/' . $selectedDate->format('Y-m-d') . '/',
                     [
                         'resolveReferences' => 2,
                         'gql' => $gql
@@ -85,7 +85,7 @@ class WorkstationRequests
         } else {
             $processList = $this->http
                 ->readGetResult(
-                    '/scope/'. $this->scope['id'] .'/process/'. $selectedDate->format('Y-m-d') .'/',
+                    '/scope/' . $this->scope['id'] . '/process/' . $selectedDate->format('Y-m-d') . '/',
                     [
                         'resolveReferences' => 2,
                         'gql' => $gql
@@ -101,12 +101,12 @@ class WorkstationRequests
     {
         if ($this->workstation->isClusterEnabled()) {
             $process = $this->http
-                ->readGetResult('/cluster/'. $this->cluster['id'] .'/queue/next/', ['exclude' => $excludedIds])
+                ->readGetResult('/cluster/' . $this->cluster['id'] . '/queue/next/', ['exclude' => $excludedIds])
                 ->getEntity();
         } else {
             $process = $this->http
                 ->readGetResult(
-                    '/scope/'. $this->scope['id'] .'/queue/next/',
+                    '/scope/' . $this->scope['id'] . '/queue/next/',
                     ['exclude' => $excludedIds]
                 )
                 ->getEntity();

@@ -195,7 +195,7 @@
                 }) }}
 
                 <a class="button button-default" href="{{ urlGet('useraccountByDepartment', {'id':department.id}, {}) }}">Nutzer</a>
-                {#{ inputsubmit({"type": "new", "name": "neuer_nutzer", "value": "Nutzer hinzufügen" }) }#}
+                {#{ inputsubmit({"type": "new", "name": "neuer_nutzer", "value": "Nutzer*in hinzufügen" }) }#}
 
                 {{ custombutton({ "type":"new", "disabled":(hasAccess == false), "class": "button button-default","target": urlGet('departmentAddCluster', {'departmentId':department.id}, {}), "label":"Cluster hinzufügen", "title":accessDeniedTitle|trans}) }}
 

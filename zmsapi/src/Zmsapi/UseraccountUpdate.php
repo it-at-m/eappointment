@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Useraccount;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Useraccount;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -26,22 +27,22 @@ class UseraccountUpdate extends BaseController
         array $args
     ) {
         (new Helper\User($request, 2))->checkRights('useraccount');
-        
+
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Useraccount($input);
-        if (! (new Useraccount)->readIsUserExisting($args['loginname'])) {
+        if (! (new Useraccount())->readIsUserExisting($args['loginname'])) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
 
         $this->testEntity($entity, $input, $args);
-       
+
         if (isset($entity->changePassword)) {
             $entity->password = $entity->getHash(reset($entity->changePassword));
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Useraccount)->writeUpdatedEntity($args['loginname'], $entity, $resolveReferences);
+        $message->data = (new Useraccount())->writeUpdatedEntity($args['loginname'], $entity, $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
@@ -60,7 +61,7 @@ class UseraccountUpdate extends BaseController
             throw $exception;
         }
 
-        if ($args['loginname'] != $entity->id && (new Useraccount)->readIsUserExisting($entity->id)) {
+        if ($args['loginname'] != $entity->id && (new Useraccount())->readIsUserExisting($entity->id)) {
             throw new Exception\Useraccount\UseraccountAlreadyExists();
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,11 +7,11 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Collection\QueueList;
+use BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
 {
-    protected $processStatusList = ['preconfirmed','confirmed', 'queued', 'reserved', 'deleted'];
+    protected $processStatusList = ['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted'];
 
     /**
      * @SuppressWarnings(Param)
@@ -24,12 +25,13 @@ class QueueTable extends BaseController
         // parameters
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
+        $withCalledList = $validator->getParameter('withCalled')->isBool()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedDateTime = $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
         $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
 
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-        
+
         // HTTP requests
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
@@ -42,19 +44,45 @@ class QueueTable extends BaseController
             Helper\GraphDefaults::getProcess()
         );
         $changedProcess = ($selectedProcessId)
-          ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/', [
-            'gql' => Helper\GraphDefaults::getProcess()
-          ])->getEntity()
-          : null;
+            ? \App::$http->readGetResult('/process/' . $selectedProcessId . '/', [
+                'gql' => Helper\GraphDefaults::getProcess()
+            ])->getEntity()
+            : null;
 
         // data refinement
         $queueList = $processList->toQueueList(\App::$now);
+        $queueList->uasort(function ($queueA, $queueB) {
+            return $queueA->arrivalTime - $queueB->arrivalTime;
+        });
         $queueListVisible = $queueList->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
         $queueListMissed = $queueList->withStatus(['missed']);
         $queueListParked = $queueList->withStatus(['parked']);
         $queueListFinished = $queueList->withStatus(['finished']);
 
-        // rendering
+        $queueListCalled = $withCalledList ? (\App::$http
+            ->readGetResult(
+                '/useraccount/queue/',
+                [
+                    'resolveReferences' => 2,
+                    'status' => 'called,processing',
+                ]
+            )
+            ->getCollection() ?? []) : [];
+
+        if ($queueListCalled instanceof \BO\Zmsentities\Collection\QueueList) {
+            $queueListCalled->uasort(function ($queueA, $queueB) {
+                $statusOrder = ['called' => 0, 'processing' => 1];
+
+                $statusValueA = $statusOrder[$queueA->status] ?? PHP_INT_MAX;
+                $statusValueB = $statusOrder[$queueB->status] ?? PHP_INT_MAX;
+
+                $cmp = $statusValueA <=> $statusValueB;
+                return $cmp !== 0 ? $cmp : $queueB->callTime <=> $queueA->callTime;
+            });
+        } else {
+            $queueListCalled = [];
+        }
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/queue/table.twig',
@@ -69,6 +97,8 @@ class QueueTable extends BaseController
                 'processListMissed' => $queueListMissed->toProcessList(),
                 'processListParked' => $queueListParked->toProcessList(),
                 'processListFinished' => $queueListFinished->toProcessList(),
+                'showCalledList' => $withCalledList,
+                'queueListCalled' => $queueListCalled,
                 'changedProcess' => $changedProcess,
                 'success' => $success,
                 'debug' => \App::DEBUG,

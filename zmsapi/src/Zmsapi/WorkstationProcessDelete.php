@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Workstation;
-use \BO\Zmsdb\Process as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Workstation;
+use BO\Zmsdb\Process as Query;
 
 class WorkstationProcessDelete extends BaseController
 {
@@ -28,9 +29,18 @@ class WorkstationProcessDelete extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
-        $process = (new Query())->updateEntity($process, \App::$now, 0, $process->status);
+        if ('called' == $workstation->process->status && $workstation->process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')) {
+            $process->setWasMissed(true);
+        }
+        $process = (new Query())->updateEntity(
+            $process,
+            \App::$now,
+            0,
+            $process->status,
+            $workstation->getUseraccount()
+        );
         $workstation->process->setStatusBySettings();
-        (new Workstation)->writeRemovedProcess($workstation);
+        (new Workstation())->writeRemovedProcess($workstation);
         unset($workstation->process);
 
         $message = Response\Message::create($request);

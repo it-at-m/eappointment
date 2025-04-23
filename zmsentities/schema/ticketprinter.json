@@ -22,6 +22,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": true,
         "properties": {
           "name": {
             "type": "string",
@@ -46,10 +47,12 @@
             "description": "url to scope, cluster or external target"
           },
           "scope": {
-            "$ref": "scope.json"
+            "type": "object",
+            "additionalProperties": true
           },
           "cluster": {
-            "$ref": "cluster.json"
+            "type": "object",
+            "additionalProperties": true
           }
         }
       },
@@ -60,9 +63,17 @@
       "description": "comma separated list of scope, cluster, links (s = scope, c = cluster, l = link), max of 6 buttons"
     },
     "enabled": {
-      "type": [
-        "boolean",
-        "number"
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "pattern": "^[01]$"
+        }
       ],
       "description": "true if browser is allowed to hand out waiting numbers to the client"
     },
@@ -71,10 +82,26 @@
       "description": "identifier for a browser (usually cookie content)"
     },
     "id": {
-      "type": "number"
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      ]
     },
     "lastUpdate": {
-      "type": "number",
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      ],
       "description": "unix timestamp of last status change"
     },
     "name": {

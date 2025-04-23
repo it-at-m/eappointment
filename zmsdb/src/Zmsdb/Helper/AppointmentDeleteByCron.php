@@ -81,7 +81,7 @@ class AppointmentDeleteByCron
         $this->count = array_fill_keys($this->statuslist, 0);
         $this->deleteBlockedProcesses($commit);
         $this->deleteExpiredProcesses($commit);
-        $this->log("\nSUMMARY: Deleted processes: ".var_export($this->count, true));
+        $this->log("\nSUMMARY: Deleted processes: " . var_export($this->count, true));
     }
 
     protected function deleteExpiredProcesses($commit)

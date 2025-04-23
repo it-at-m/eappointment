@@ -14,13 +14,14 @@
 		}
 	</script>
 	<div class="noprint">
-		<span class="msg_wartenummer_lautet">
+		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+			<span class="msg_wartenummer_lautet">
 		    {% trans %}Ihre Wartenummer lautet{% endtrans %}: <br>
 		</span>
-		<div class="nummernanzeige">
-		    {{ process.queue.number }}
-		</div>
-        <span>
+			<div class="nummernanzeige">
+				{{ process.queue.number }}
+			</div>
+			<span>
         	{% if waitingClients >= 1 %}
 				{% if waitingClients == 1 %}
 					Es wartet 1 Kunde vor Ihnen.
@@ -28,69 +29,70 @@
 					Es warten {{ waitingClients }} Kunden vor Ihnen.
 				{% endif %}
 
-        	{% else %}
-        	Es wartet niemand vor Ihnen.
-        	{% endif %}
+			{% else %}
+				Es wartet niemand vor Ihnen.
+			{% endif %}
         </span>
-    	<br />
+			<br />
 
-        {% trans %}Voraussichtliche Wartezeit{% endtrans %}:
-    	{% if waitingTime %}
-    		{% if waitingTime < 120 %}
-    	        {{ waitingTime }} {% trans %}Minuten{% endtrans %}
-    	    {% else %}
-    	    	{{ (waitingTime / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %}
-    	    {% endif %}
-    	{% else %}
-    	    {% trans %}keine{% endtrans %}
-    	{% endif %}
-		
-    	{% if
-    	    waitingTime > (scope.preferences.ticketprinter.notificationsDelay)|round() and
-    	    process.scope.preferences.ticketprinter.notificationsEnabled and department.preferences.notifications.enabled
-    	%}
-		{% set headsUpTime = config.notifications.erinnerungsvorlauf %}
-		{% if process.scope.preferences.notifications.headsUpTime %}
-			{% set headsUpTime = process.scope.preferences.notifications.headsUpTime %}
-		{% endif %}
-        <p>Wartenummer wird im Anschluss ausgedruckt.</p>
-        <span>
+			{% trans %}Voraussichtliche Wartezeit{% endtrans %}:
+			{% if waitingTime %}
+				{% if waitingTime < 120 %}
+					{{ waitingTime }} {% trans %}Minuten{% endtrans %}
+				{% else %}
+					{{ (waitingTime / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %}
+				{% endif %}
+			{% else %}
+				{% trans %}keine{% endtrans %}
+			{% endif %}
+
+			{% if
+				waitingTime > (scope.preferences.ticketprinter.notificationsDelay)|round() and
+				process.scope.preferences.ticketprinter.notificationsEnabled and department.preferences.notifications.enabled
+			%}
+				{% set headsUpTime = config.notifications.erinnerungsvorlauf %}
+				{% if process.scope.preferences.notifications.headsUpTime %}
+					{% set headsUpTime = process.scope.preferences.notifications.headsUpTime %}
+				{% endif %}
+				<p>Wartenummer wird im Anschluss ausgedruckt.</p>
+				<span>
             Wünschen Sie eine SMS-Benachrichtigung<br/>
             {{ headsUpTime }} Minuten vor ihrem Aufruf?
         </span>
 
-    		<form action="{{ urlGet('Notification', {}, {}) }}" method="post" id="postNotification">
-            {{ hiddenfield({ "name": "waitingNumber", "value": process.queue.number }) }}
-            {{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
-            {{ hiddenfield({ "name": "organisationId", "value": organisation.id }) }}
-        </form>
+				<form action="{{ urlGet('Notification', {}, {}) }}" method="post" id="postNotification">
+					{{ hiddenfield({ "name": "waitingNumber", "value": process.queue.number }) }}
+					{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
+					{{ hiddenfield({ "name": "organisationId", "value": organisation.id }) }}
+				</form>
 
-    		<form action="{{ urlGet('Message', {'status': 'process_notification_amendment_canceled'}, {}) }}" method="post" id="postCancel">
-        	{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
-        </form>
+				<form action="{{ urlGet('Message', {'status': 'process_notification_amendment_canceled'}, {}) }}" method="post" id="postCancel">
+					{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
+				</form>
 
-        <div class="smsoptionbutton">
-            {% set label = "Ja" %}
-            {{ formbutton({ "type":"submit", "name": "processWithNotifiation", "formTarget":"postNotification", "class": "button ja_nein", "label":label|trans, "value": 1 }) }}
+				<div class="smsoptionbutton">
+					{% set label = "Ja" %}
+					{{ formbutton({ "type":"submit", "name": "processWithNotifiation", "formTarget":"postNotification", "class": "button ja_nein", "label":label|trans, "value": 1 }) }}
 
-            {% set label = "Nein" %}
-            {{ formbutton({ "type":"submit", "name": "processWithNotification", "formTarget":"postCancel", "class": "button ja_nein option_nein", "label":label|trans, "value": 0 }) }}
-    	 </div>
+					{% set label = "Nein" %}
+					{{ formbutton({ "type":"submit", "name": "processWithNotification", "formTarget":"postCancel", "class": "button ja_nein option_nein", "label":label|trans, "value": 0 }) }}
+				</div>
 
-    	{% else %}
-		<p>Ihre Wartenummer wird gedruckt.</p>
-        {{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
-        {{ hiddenfield({ "name": "status", "value": "process_success" }) }}
-        </form>
-        {% set label = "OK" %}
-			{{ custombutton({ "type":"submit", "href":urlGet('Home', {}, {}), "class": "button ja_nein", "name": "submit_ok", "label":label|trans, "value": label|trans }) }}
-    	{% endif %}
+			{% else %}
+				<p>Ihre Wartenummer wird gedruckt.</p>
+				{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
+				{{ hiddenfield({ "name": "status", "value": "process_success" }) }}
+				</form>
+				{% set label = "OK" %}
+				{{ custombutton({ "type":"submit", "href":urlGet('Home', {}, {}), "class": "button ja_nein", "name": "submit_ok", "label":label|trans, "value": label|trans }) }}
+			{% endif %}
 
-		<script>
-			window.setTimeout(function(){
-				window.location.href = "{{ urlGet('Home', {}, {}) }}";
-			}, 10000);
-		</script>
+			<script>
+				window.setTimeout(function(){
+					window.location.href = "{{ urlGet('Home', {}, {}) }}";
+				}, 10000);
+			</script>
+		</div>
     </div>
 </div>
 {% endblock %}

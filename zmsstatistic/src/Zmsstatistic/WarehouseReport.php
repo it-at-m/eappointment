@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -24,12 +25,12 @@ class WarehouseReport extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $report = \App::$http
-          ->readGetResult('/warehouse/'. $args['subject'] .'/'. $args['subjectid'] .'/'. $args['period'] .'/')
+          ->readGetResult('/warehouse/' . $args['subject'] . '/' . $args['subjectid'] . '/' . $args['period'] . '/')
           ->getEntity();
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
-            $args['category'] = 'raw-'. $args['subject'];
+            $args['category'] = 'raw-' . $args['subject'];
             $args['report'] = $report;
             return (new Download(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }

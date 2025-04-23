@@ -243,7 +243,7 @@ class Scope extends Base implements MappingInterface
                         SELECT COUNT(*)
                         FROM nutzer
                         WHERE nutzer.StandortID = scope.StandortID
-                        AND nutzer.Datum = "'. $dateTime->format('Y-m-d') .'"
+                        AND nutzer.Datum = "' . $dateTime->format('Y-m-d') . '"
                         AND nutzer.Arbeitsplatznr <> 0
                     )
                 )
@@ -357,9 +357,9 @@ class Scope extends Base implements MappingInterface
 
     public function setEmergencyEntityMapping(\BO\Zmsentities\Scope $entity)
     {
-        $data['notrufantwort'] = intval($entity->toProperty()->status->emergency->acceptedByWorkstation->get(-1));
+        $data['notrufantwort'] = ($entity->toProperty()->status->emergency->acceptedByWorkstation->get(-1));
         $data['notrufausgeloest'] = intval($entity->toProperty()->status->emergency->activated->get(0));
-        $data['notrufinitiierung'] = intval($entity->toProperty()->status->emergency->calledByWorkstation->get(-1));
+        $data['notrufinitiierung'] = ($entity->toProperty()->status->emergency->calledByWorkstation->get(-1));
         return $data;
     }
 
@@ -389,8 +389,8 @@ class Scope extends Base implements MappingInterface
         if (!$data[$this->getPrefixed('contact__email')]) {
             $data[$this->getPrefixed("preferences__client__adminMailOnAppointment")] = 0;
             $data[$this->getPrefixed("preferences__client__adminMailOnDeleted")] = 0;
-            $data[$this->getPrefixed("preferences__client__adminMailOnUpdated")] = 0;            
-            $data[$this->getPrefixed("preferences__client__adminMailOnMailSent")] = 0;            
+            $data[$this->getPrefixed("preferences__client__adminMailOnUpdated")] = 0;
+            $data[$this->getPrefixed("preferences__client__adminMailOnMailSent")] = 0;
         }
         if (!$data[$this->getPrefixed('preferences__client__customTextfieldActivated')]) {
             $data[$this->getPrefixed("preferences__client__customTextfieldRequired")] = 0;

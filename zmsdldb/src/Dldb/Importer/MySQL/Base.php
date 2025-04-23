@@ -7,12 +7,13 @@ use BO\Dldb\Importer\OptionsTrait;
 use BO\Dldb\Importer\PDOTrait;
 use BO\Dldb\Importer\ItemNeedsUpdateTrait;
 use BO\Dldb\Importer\Options;
-use \BO\Dldb\Importer\MySQL\Entity\Meta as MetaEntity
+use BO\Dldb\Importer\MySQL\Entity\Meta as MetaEntity
 ;
 
 abstract class Base implements Options
 {
-    use PDOTrait, OptionsTrait;
+    use PDOTrait;
+    use OptionsTrait;
 
     protected $entityClass = null;
     protected $importData = [];
@@ -29,7 +30,7 @@ abstract class Base implements Options
             $this->setImportData($importData['data']);
             $this->setImportHash($importData['hash']);
             $this->setLocale($locale);
-            
+
             $this->setOptions($options);
             $this->clearEntity();
         } catch (\Exception $e) {
@@ -37,24 +38,24 @@ abstract class Base implements Options
         }
     }
 
-    public function getPDOAccess() : PDOAccess
+    public function getPDOAccess(): PDOAccess
     {
         return $this->pdoAccess;
     }
-    
-    public function getImportData() : array
+
+    public function getImportData(): array
     {
         return $this->importData;
     }
 
-    public function getIterator() : iterable
+    public function getIterator(): iterable
     {
         foreach ($this->importData as $item) {
             yield $item;
         }
     }
 
-    public function getCurrentEntitys() : array
+    public function getCurrentEntitys(): array
     {
         return $this->entitysToDelete;
     }
@@ -77,8 +78,8 @@ abstract class Base implements Options
             FROM meta AS m
             JOIN " . $this->entityClass::getTableName() . " AS e ON e.id = m.object_id AND e.locale = ?
             WHERE m.locale = ?";
-            
-            
+
+
             $stm = $this->getPDOAccess()->prepare($sql);
             $stm->setFetchMode(\PDO::FETCH_OBJ);
             $stm->execute([$this->getLocale(),$this->getLocale()]);
@@ -122,13 +123,13 @@ abstract class Base implements Options
         }
     }
 
-    public function getMetaObject() : MetaEntity
+    public function getMetaObject(): MetaEntity
     {
         $this->createMetaObject();
         return $this->metaObject;
     }
 
-    public function saveMetaObject() : self
+    public function saveMetaObject(): self
     {
         $this->getMetaObject()->save();
         return $this;
@@ -144,30 +145,30 @@ abstract class Base implements Options
         return $needsUpdate;
     }
 
-    public function setImportData(array $importData = []) : self
+    public function setImportData(array $importData = []): self
     {
         $this->importData = $importData;
         return $this;
     }
 
-    public function setLocale(string $locale) : self
+    public function setLocale(string $locale): self
     {
         $this->locale = $locale;
         return $this;
     }
 
-    public function getLocale() : string
+    public function getLocale(): string
     {
         return $this->locale;
     }
 
-    public function setImportHash(string $hash) : self
+    public function setImportHash(string $hash): self
     {
         $this->hash = $hash;
         return $this;
     }
 
-    public function getImportHash() : string
+    public function getImportHash(): string
     {
         return $this->hash;
     }

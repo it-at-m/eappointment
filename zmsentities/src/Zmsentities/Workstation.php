@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 /**
  * @SuppressWarnings(Complexity)
@@ -10,16 +10,18 @@ use \BO\Zmsentities\Helper\Property;
  */
 class Workstation extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "workstation.json";
 
     public function getDefaults()
     {
         return [
+            'id' => 0,
             'useraccount' => new Useraccount(),
             'process' => new Process(),
             'name' => '',
+            'scope' => new Scope()
         ];
     }
 
@@ -87,6 +89,16 @@ class Workstation extends Schema\Entity
             $isSuperuser = true;
         }
         return $isSuperuser;
+    }
+
+    public function hasAuditAccount()
+    {
+        $userRights = $this->getUseraccountRights();
+        if (isset($userRights['audit']) && $userRights['audit']) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getAuthKey()

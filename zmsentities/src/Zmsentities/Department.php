@@ -2,11 +2,11 @@
 
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 class Department extends Schema\Entity implements Useraccount\AccessInterface
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "department.json";
 

@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Apikey as Entity;
+use BO\Zmsentities\Apikey as Entity;
 
 class Apikey extends Base
 {
@@ -35,7 +36,7 @@ class Apikey extends Base
         $query->addValues([
             'key' => $entity->key,
             'createIP' => $entity->createIP,
-            'ts' => (new \DateTimeImmutable)->getTimestamp()
+            'ts' => (new \DateTimeImmutable())->getTimestamp()
         ]);
         if ($this->writeItem($query)) {
             $this->updateQuota($entity->key, $entity);
@@ -117,7 +118,7 @@ class Apikey extends Base
             'route' => $route,
             'period' => $period,
             'requests' => $requests,
-            'ts' => (new \DateTimeImmutable)->getTimestamp()
+            'ts' => (new \DateTimeImmutable())->getTimestamp()
         ]);
         $this->writeItem($query);
     }

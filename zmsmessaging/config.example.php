@@ -9,6 +9,9 @@ define('ZMS_API_PASSWORD_MESSAGING', getenv('ZMS_API_PASSWORD_MESSAGING')
 
 define('ZMS_API_PROXY', getenv('ZMS_API_PROXY') ? getenv('ZMS_API_PROXY') : NULL);
 
+define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
+define('ZMS_MODULE_NAME', 'zmsmessaging');
+
 define('ZMS_MESSAGING_SMTP_ENABLED', getenv('ZMS_MESSAGING_SMTP_ENABLED') !== false);
 define('ZMS_MESSAGING_SMTP_HOST', getenv('ZMS_MESSAGING_SMTP_HOST'));
 define('ZMS_MESSAGING_SMTP_PORT', intval(getenv('ZMS_MESSAGING_SMTP_PORT')));
@@ -30,6 +33,12 @@ class App extends \BO\Zmsmessaging\Application
      * HTTP access for api
      */
     const HTTP_BASE_URL = ZMS_API_URL;
+
+    const IDENTIFIER = ZMS_IDENTIFIER;
+    /**
+     * Name of the module
+     */
+    const MODULE_NAME = ZMS_MODULE_NAME;
 
     public static $httpUser = '_system_messenger';
 

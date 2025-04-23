@@ -35,7 +35,7 @@ class UseraccountTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString('Systemweite Nutzer', (string)$response->getBody());
+        $this->assertStringContainsString('Gesamtnutzerliste', (string)$response->getBody());
         $this->assertStringContainsString('/useraccount/berlinonline', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }

@@ -35,7 +35,13 @@ class ProcessDeleteMailTest extends Base
                 "id": 123456,
                 "authKey": "'. self::AUTHKEY .'",
                 "scope": {
-                    "id": 141
+                    "id": 141,
+                    "provider": {
+                        "id": 123456,
+                        "name": "Flughafen Schönefeld, Aufsicht",
+                        "source": "dldb"
+                    },
+                    "shortName": "Zentrale"
                 },
                 "clients": [
                     {
@@ -48,7 +54,13 @@ class ProcessDeleteMailTest extends Base
                     {
                         "date": 1447869172,
                         "scope": {
-                            "id": 141
+                            "id": 141,
+                            "provider": {
+                                "id": 123456,
+                                "name": "Flughafen Schönefeld, Aufsicht",
+                                "source": "dldb"
+                            },
+                            "shortName": "Zentrale"
                         },
                         "slotCount": 2
                     }
@@ -70,7 +82,7 @@ class ProcessDeleteMailTest extends Base
                     "id": 141,
                     "preferences": {
                         "client": {
-            				"emailRequired": "1"
+            				"emailRequired": 1
             			}
                     }
                 },
@@ -100,7 +112,7 @@ class ProcessDeleteMailTest extends Base
         $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '{
-                "status": "confirmed"
+                "status": "unvalid"
             }'
         ], []);
     }

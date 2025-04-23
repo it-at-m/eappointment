@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
 
 class WarehousePeriodListGet extends BaseController
 {
@@ -29,7 +30,7 @@ class WarehousePeriodListGet extends BaseController
         if (! class_exists($exchangeClass)) {
             throw new Exception\Warehouse\UnknownReportType();
         }
-        $subjectPeriodList = (new $exchangeClass)->readPeriodList($subjectId, $period);
+        $subjectPeriodList = (new $exchangeClass())->readPeriodList($subjectId, $period);
 
         $message = Response\Message::create($request);
         $message->data = $subjectPeriodList;

@@ -1,13 +1,15 @@
 <?php
+
 /**
  *
  * @package Events\Xmas
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin\Helper;
 
-use \BO\Zmsentities\Mimepart;
+use BO\Zmsentities\Mimepart;
 
 class FileUploader
 {
@@ -32,7 +34,7 @@ class FileUploader
     public function writeUploadToScope($entityId)
     {
         $this->imageData = \App::$http->readPostResult(
-            '/scope/'. $entityId .'/imagedata/calldisplay/',
+            '/scope/' . $entityId . '/imagedata/calldisplay/',
             $this->imageData
         )->getEntity();
         return $this;
@@ -41,7 +43,7 @@ class FileUploader
     public function writeUploadToCluster($entityId)
     {
         $this->imageData = \App::$http->readPostResult(
-            '/cluster/'. $entityId .'/imagedata/calldisplay/',
+            '/cluster/' . $entityId . '/imagedata/calldisplay/',
             $this->imageData
         )->getEntity();
         return $this;

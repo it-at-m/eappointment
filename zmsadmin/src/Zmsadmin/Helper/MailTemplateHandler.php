@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -25,7 +26,7 @@ class MailTemplateHandler extends BaseController
 
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->getValue();
-        
+
         $template = \App::$http->readPostResult('/mailtemplates/', array(
             "templateId" => $input['templateId'],
             "templateContent" => $input['templateContent']

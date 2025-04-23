@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter\Helper;
 
 use BO\Zmsentities\Ticketprinter as Entity;
@@ -80,7 +82,7 @@ class Ticketprinter
 
     protected function getByHash(string $hash, Entity $entity): Entity
     {
-        $entityWithHash = \App::$http->readGetResult('/ticketprinter/'. $hash . '/')->getEntity();
+        $entityWithHash = \App::$http->readGetResult('/ticketprinter/' . $hash . '/')->getEntity();
         $entity->hash = $entityWithHash->hash;
         $entity->enabled = $entityWithHash->enabled;
         return $entity;
@@ -92,7 +94,7 @@ class Ticketprinter
             throw new OrganisationNotFoundException();
         }
         $entityWithHash = \App::$http->readGetResult(
-            '/organisation/'. $this->organisation->getId() . '/hash/',
+            '/organisation/' . $this->organisation->getId() . '/hash/',
             ['name' => (isset($this->requestParams['name'])) ? $this->requestParams['name'] : '']
         )->getEntity();
         TicketprinterClient::setHash($entityWithHash->hash, $request);
@@ -112,7 +114,7 @@ class Ticketprinter
         $entity = new Entity($this->requestParams);
         if ($this->scopeId) {
             $entity = new Entity();
-            $entity->buttonlist = 's'. $this->scopeId;
+            $entity->buttonlist = 's' . $this->scopeId;
         }
         $entity = $entity->toStructuredButtonList();
         return $entity;
@@ -124,7 +126,7 @@ class Ticketprinter
         $ticketprinter = $this->getAssembledEntity();
         if ($this->scopeId) {
             $organisation = \App::$http->readGetResult(
-                '/scope/'. $this->scopeId . '/organisation/',
+                '/scope/' . $this->scopeId . '/organisation/',
                 ['resolveReferences' => 2]
             )->getEntity();
         }
@@ -132,7 +134,7 @@ class Ticketprinter
         while (! $organisation && $nextButton) {
             if (in_array($nextButton['type'], ['scope', 'request'])) {
                 $organisation = \App::$http->readGetResult(
-                    '/scope/'. $nextButton['scope']['id'] . '/organisation/',
+                    '/scope/' . $nextButton['scope']['id'] . '/organisation/',
                     ['resolveReferences' => 2]
                 )->getEntity();
             }

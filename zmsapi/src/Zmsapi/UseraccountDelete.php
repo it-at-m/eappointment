@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Useraccount;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Useraccount;
 
 class UseraccountDelete extends BaseController
 {
@@ -24,8 +25,8 @@ class UseraccountDelete extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
 
         (new Helper\User($request, $resolveReferences))->checkRights('useraccount');
-        $useraccount = (new Useraccount)->readEntity($args['loginname'], $resolveReferences);
-        if (! $useraccount->hasId() || ! (new Useraccount)->deleteEntity($useraccount->getId())) {
+        $useraccount = (new Useraccount())->readEntity($args['loginname'], $resolveReferences);
+        if (! $useraccount->hasId() || ! (new Useraccount())->deleteEntity($useraccount->getId())) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
         Helper\User::testWorkstationAccessRights($useraccount);

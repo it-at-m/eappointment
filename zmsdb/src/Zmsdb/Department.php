@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Department as Entity;
-use \BO\Zmsentities\Collection\DepartmentList as Collection;
+use BO\Zmsentities\Department as Entity;
+use BO\Zmsentities\Collection\DepartmentList as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -12,7 +12,6 @@ use \BO\Zmsentities\Collection\DepartmentList as Collection;
  */
 class Department extends Base
 {
-
     /**
      *
      * @var Array \BO\Zmsentities\Department
@@ -113,7 +112,8 @@ class Department extends Base
     {
         $entity = $this->readEntity($departmentId, 1);
         if ($entity) {
-            if (0 < $entity->toProperty()->scopes->get()->count()
+            if (
+                0 < $entity->toProperty()->scopes->get()->count()
                 || 0 < $entity->toProperty()->clusters->get()->count()
             ) {
                 throw new Exception\Department\ScopeListNotEmpty();
@@ -234,7 +234,7 @@ class Department extends Base
                 [
                     'behoerdenid' => $departmentId,
                     'Feiertag' => $dayoff['name'],
-                    'Datum' => (new \DateTimeImmutable('@'. $dayoff['date']))->format('Y-m-d')
+                    'Datum' => (new \DateTimeImmutable('@' . $dayoff['date']))->format('Y-m-d')
                 ]
             );
             $this->writeItem($query);
@@ -373,5 +373,24 @@ class Department extends Base
                 'departmentId' => $departmentId
             )
         );
+    }
+
+    public function readQueueList(
+        $departmentId,
+        \DateTimeInterface $dateTime,
+        $resolveReferences = 0
+    ) {
+        $queueList = new \BO\Zmsentities\Collection\QueueList();
+        $department = $this->readEntity($departmentId, 2);
+
+        foreach ($department->getScopeList() as $scope) {
+            $scope = (new Scope())->readWithWorkstationCount($scope->id, $dateTime);
+            $scopeQueueList = (new Scope())
+                ->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences);
+            if (0 < $scopeQueueList->count()) {
+                $queueList->addList($scopeQueueList);
+            }
+        }
+        return $queueList;
     }
 }

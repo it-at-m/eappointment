@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,8 @@
 
 namespace BO\Zmsstatistic;
 
-use \BO\Mellon\Validator;
-
-use \BO\Zmsentities\Workstation as Entity;
+use BO\Mellon\Validator;
+use BO\Zmsentities\Workstation as Entity;
 
 class QuickLogin extends BaseController
 {
@@ -49,6 +49,6 @@ class QuickLogin extends BaseController
         $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
         $basePath = $request->getBasePath();
 
-        return $response->withRedirect($basePath .'/'. trim($loginData['redirectUrl']['value'], "/"));
+        return $response->withRedirect($basePath . '/' . trim($loginData['redirectUrl']['value'], "/"));
     }
 }

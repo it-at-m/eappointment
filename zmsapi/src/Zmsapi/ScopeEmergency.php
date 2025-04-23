@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope;
 
 class ScopeEmergency extends BaseController
 {
@@ -31,7 +32,7 @@ class ScopeEmergency extends BaseController
         $workstation->scope->status['emergency']['acceptedByWorkstation'] = -1;
 
         $message = Response\Message::create($request);
-        $message->data = (new Scope)->updateEmergency($args['id'], $workstation->scope);
+        $message->data = (new Scope())->updateEmergency($args['id'], $workstation->scope);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

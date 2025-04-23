@@ -3,16 +3,13 @@
 namespace BO\Zmsdb\Query;
 
 /**
- *
  * @SuppressWarnings(Methods)
  * @SuppressWarnings(Complexity)
  */
 class Process extends Base implements MappingInterface
 {
-
     /**
-     *
-     * @var String TABLE mysql table reference
+     *     * @var String TABLE mysql table reference
      */
     const TABLE = 'buerger';
 
@@ -245,6 +242,7 @@ class Process extends Base implements MappingInterface
             ),
             'reminderTimestamp' => 'process.Erinnerungszeitpunkt',
             '__clientsCount' => 'process.AnzahlPersonen',
+            'wasMissed' => 'process.wasMissed'
         ];
     }
 
@@ -258,7 +256,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionHasTelephone()
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) {
             $condition
                 ->andWith('process.telefonnummer_fuer_rueckfragen', '!=', '')
                 ->orWith('process.Telefonnummer', '!=', '');
@@ -268,7 +266,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionProcessDeleteInterval(\DateTimeInterface $expirationDate)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($expirationDate) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($expirationDate) {
             $query->andWith(
                 self::expression(
                     'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
@@ -283,7 +281,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionProcessExpiredIPTimeStamp(\DateTimeInterface $expirationDate)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($expirationDate) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($expirationDate) {
             $query->andWith('process.IPTimeStamp', '<=', $expirationDate->getTimestamp());
         });
         $this->query->orderBy('appointments__0__date', 'ASC');
@@ -292,7 +290,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionProcessReminderInterval(\DateTimeInterface $dateTime)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($dateTime) {
             $query
                 ->andWith('process.Erinnerungszeitpunkt', '<=', $dateTime->getTimestamp())
                 ->andWith('process.Erinnerungszeitpunkt', '>=', $dateTime->modify("-5 Minutes")->getTimestamp());
@@ -307,7 +305,7 @@ class Process extends Base implements MappingInterface
         $defaultReminderInMinutes
     ) {
         $this->query
-            ->where(function (\Solution10\SQL\ConditionBuilder $query) use ($now, $lastRun, $defaultReminderInMinutes) {
+            ->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($now, $lastRun, $defaultReminderInMinutes) {
                 $query
                     ->andWith(
                         self::expression(
@@ -355,7 +353,7 @@ class Process extends Base implements MappingInterface
     public function addConditionProcessId($processId)
     {
         $this->query->where('process.BuergerID', '=', $processId);
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) {
             $condition
                 ->andWith('process.istFolgeterminvon', 'IS', null)
                 ->orWith('process.istFolgeterminvon', '=', 0);
@@ -365,7 +363,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionProcessIdFollow($processId)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($processId) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($processId) {
             $condition
                 ->andWith('process.BuergerID', '=', $processId)
                 ->orWith('process.istFolgeterminvon', '=', $processId);
@@ -375,7 +373,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionIgnoreSlots()
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) {
             $condition
                 ->andWith('process.istFolgeterminvon', 'IS', null)
                 ->orWith('process.istFolgeterminvon', '=', 0);
@@ -385,7 +383,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionScopeId($scopeId)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($scopeId) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($scopeId) {
             $query
                 ->andWith('process.StandortID', '=', $scopeId)
                 ->orWith('process.AbholortID', '=', $scopeId);
@@ -403,7 +401,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionWorkstationId($workstationId)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($workstationId) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($workstationId) {
             $query->andWith('process.NutzerID', '=', $workstationId);
             $query->andWith('process.StandortID', '>', 0);
         });
@@ -418,11 +416,10 @@ class Process extends Base implements MappingInterface
 
     /**
      * Identify processes between two dates
-     *
      */
     public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($startDate, $endDate) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($startDate, $endDate) {
             $condition
                 ->andWith('process.Datum', '<=', $endDate->format('Y-m-d'))
                 ->andWith('process.Datum', '>=', $startDate->format('Y-m-d'));
@@ -434,7 +431,7 @@ class Process extends Base implements MappingInterface
     {
         $authKey = urldecode($authKey);
         $this->query
-            ->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($authKey) {
+            ->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($authKey) {
                 $condition
                     ->andWith('process.absagecode', '=', $authKey)
                     ->orWith('process.Name', '=', $authKey);
@@ -450,7 +447,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionStatus($status, $scopeId = 0)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($status, $scopeId) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($status, $scopeId) {
             if ('deleted' == $status) {
                 $query
                     ->andWith('process.Name', '=', '(abgesagt)');
@@ -513,7 +510,8 @@ class Process extends Base implements MappingInterface
             if ('queued' == $status) {
                 $query->andWith('process.Uhrzeit', '=', '00:00:00')
                     ->andWith('process.StandortID', '!=', 0)
-                    ->andWith('process.AbholortID', '=', 0);;
+                    ->andWith('process.AbholortID', '=', 0);
+                ;
             }
             if ('confirmed' == $status) {
                 $query
@@ -548,7 +546,7 @@ class Process extends Base implements MappingInterface
         ))
             ->where('process.vorlaeufigeBuchung', '=', 1)
             ->where('process.StandortID', '>', 0);
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) {
             $condition
                 ->andWith('process.istFolgeterminvon', 'IS', null)
                 ->orWith('process.istFolgeterminvon', '=', 0);
@@ -558,7 +556,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionSearch($queryString, $orWhere = false)
     {
-        $condition = function (\Solution10\SQL\ConditionBuilder $query) use ($queryString) {
+        $condition = function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($queryString) {
             $queryString = trim($queryString);
             $query->orWith('process.Name', 'LIKE', "%$queryString%");
             $query->orWith('process.EMail', 'LIKE', "%$queryString%");
@@ -576,11 +574,11 @@ class Process extends Base implements MappingInterface
     public function addConditionName($name, $exactMatching = false)
     {
         if ($exactMatching) {
-            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($name) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($name) {
                 $query->andWith('process.Name', '=', $name);
             });
         } else {
-            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($name) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($name) {
                 $query->andWith('process.Name', 'LIKE', "%$name%");
             });
         }
@@ -590,26 +588,25 @@ class Process extends Base implements MappingInterface
     public function addConditionMail($mailAddress, $exactMatching = false)
     {
         if ($exactMatching) {
-            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($mailAddress) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($mailAddress) {
                 $query->andWith('process.Email', '=', $mailAddress);
             });
         } else {
-            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($mailAddress) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($mailAddress) {
                 $query->andWith('process.Email', 'LIKE', "%$mailAddress%");
             });
         }
         return $this;
     }
 
-
     public function addConditionCustomTextfield($customText, $exactMatching = false)
     {
         if ($exactMatching) {
-            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($customText) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText) {
                 $query->andWith('process.custom_text_field', '=', $customText);
             });
         } else {
-            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($customText) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText) {
                 $query->andWith('process.custom_text_field', 'LIKE', "%$customText%");
             });
         }
@@ -618,7 +615,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionAmendment($amendment)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($amendment) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($amendment) {
             $query->andWith('process.Anmerkung', 'LIKE', "%$amendment%");
         });
         return $this;
@@ -644,7 +641,7 @@ class Process extends Base implements MappingInterface
      */
     public function addConditionDeallocate($now)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($now) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($now) {
             $query
                 ->andWith('process.Name', '=', '(abgesagt)')
                 ->andWith('process.IPTimeStamp', '<', $now->getTimestamp());
@@ -652,7 +649,6 @@ class Process extends Base implements MappingInterface
         $this->query->orderBy('process.IPTimeStamp', 'ASC');
         return $this;
     }
-
 
     public function addValuesNewProcess(\BO\Zmsentities\Process $process, $parentProcess = 0, $childProcessCount = 0)
     {
@@ -688,6 +684,7 @@ class Process extends Base implements MappingInterface
         if ($process->isWithAppointment()) {
             $this->addValuesFollowingProcessData($process, $parentProcess);
         }
+        $this->addValuesWasMissed($process);
     }
 
     public function addValuesIPAdress($process)
@@ -825,10 +822,10 @@ class Process extends Base implements MappingInterface
         ) {
             $timeoutTime = $dateTime->format('Y-m-d H:i:s');
             $data['timeoutTime'] = $timeoutTime;
-        } else if ($process->status == 'processing') {
+        } elseif ($process->status == 'processing') {
             $showUpTime = $dateTime->format('Y-m-d H:i:s');
             $data['showUpTime'] = $showUpTime;
-        } else if ($process->status == 'finished') {
+        } elseif ($process->status == 'finished') {
             $finishTime = $dateTime->format('Y-m-d H:i:s');
             $data['finishTime'] = $finishTime;
         }
@@ -840,7 +837,7 @@ class Process extends Base implements MappingInterface
 
             $processingTimeStr = $process->getProcessingTime();
             $previousProcessingTimeInSeconds = 0; // Default to 0 if not set
-            
+
             if (!empty($processingTimeStr)) {
                 // Assume the format is HH:MM:SS and parse it
                 list($hours, $minutes, $seconds) = explode(':', $processingTimeStr);
@@ -852,18 +849,17 @@ class Process extends Base implements MappingInterface
             $totalSeconds = ($interval->days * 24 * 60 * 60) + ($interval->h * 60 * 60) + ($interval->i * 60) + $interval->s;
 
             $totalSeconds += $previousProcessingTimeInSeconds;
-        
+
             $hours = intdiv($totalSeconds, 3600);
             $minutes = intdiv($totalSeconds % 3600, 60);
             $seconds = $totalSeconds % 60;
-        
+
             $data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-        
         } elseif (isset($timeoutTime) && isset($process->showUpTime)) {
             $showUpDateTime = new \DateTime($process->showUpTime);
             $timeoutDateTime = new \DateTime($timeoutTime);
             $processingTimeStr = $process->getProcessingTime();
-            
+
             $previousProcessingTimeInSeconds = 0; // Default to 0 if not set
             if (!empty($processingTimeStr)) {
                 // Assume the format is HH:MM:SS and parse it
@@ -873,19 +869,18 @@ class Process extends Base implements MappingInterface
             }
             $interval = $showUpDateTime->diff($timeoutDateTime);
             $totalSeconds = ($interval->days * 24 * 60 * 60) + ($interval->h * 60 * 60) + ($interval->i * 60) + $interval->s;
-        
+
             $totalSeconds += $previousProcessingTimeInSeconds;
-        
+
             $hours = intdiv($totalSeconds, 3600);
             $minutes = intdiv($totalSeconds % 3600, 60);
             $seconds = $totalSeconds % 60;
-        
+
             $data['processingTime'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
 
         $this->addValues($data);
     }
-
 
     protected function addValuesQueueData($process)
     {
@@ -917,11 +912,26 @@ class Process extends Base implements MappingInterface
     protected function addValuesWaitingTimeData($process, $previousStatus = null)
     {
         $data = array();
-        if (($previousStatus == 'queued' || $previousStatus == 'missed' || $previousStatus == 'confirmed') && $process['status'] == 'called') {
-            // Retrieve waiting time in seconds
-            $wartezeitInSeconds = $process->getWaitedSeconds();
 
-            // Check if there is any waiting time; if not, default to 0 seconds
+        if (
+            (
+                // Szenario 1: Vorheriger Status ist queued, missed oder confirmed und aktueller Status ist called
+                in_array($previousStatus, ['queued', 'missed', 'confirmed'])
+                && $process['status'] == 'called'
+                && ($process->queue['callCount'] <= 0 || !empty($process['wasMissed']))
+            )
+            ||
+            (
+                // Szenario 2: Vorheriger Status ist missed, aktueller Status ist queued,
+                // es gibt den Hinweis wasMissed und die Queue sowie waitingTime sind gesetzt
+                $previousStatus == 'missed'
+                && $process['status'] == 'queued'
+                && !empty($process['wasMissed'])
+                && isset($process->queue)
+                && isset($process->queue->waitingTime)
+            )
+        ) {
+            $wartezeitInSeconds = $process->getWaitedSeconds();
             $wartezeitInSeconds = $wartezeitInSeconds > 0 ? $wartezeitInSeconds : 0;
 
             // Convert total seconds into HH:MM:SS format
@@ -929,11 +939,12 @@ class Process extends Base implements MappingInterface
             $minutes = intdiv($wartezeitInSeconds % 3600, 60);
             $seconds = $wartezeitInSeconds % 60;
 
-            // Format and store the time in HH:MM:SS
             $data['wartezeit'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
+
         $this->addValues($data);
     }
+
 
     protected function addValuesWayTimeData($process)
     {
@@ -943,6 +954,16 @@ class Process extends Base implements MappingInterface
             $data['wegezeit'] = $wegezeit > 0 ? $wegezeit : 0;
         }
         $this->addValues($data);
+    }
+
+    protected function addValuesWasMissed($process)
+    {
+        $data = [
+            'wasMissed' => $process->wasMissed ? 1 : 0,
+        ];
+
+        $this->addValues($data);
+        return $this;
     }
 
     public function postProcess($data)
@@ -987,6 +1008,12 @@ class Process extends Base implements MappingInterface
             (new \DateTimeImmutable($data[$this->getPrefixed("lastChange")] .
                 \BO\Zmsdb\Connection\Select::$connectionTimezone))->getTimestamp();
         return $data;
+    }
+
+    public function removeDuplicates()
+    {
+        $this->query->groupBy('process.BuergerID');
+        return $this;
     }
 
     protected function addRequiredJoins()

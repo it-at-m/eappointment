@@ -1,11 +1,10 @@
 <?php
 
-
 namespace BO\Dldb\Helper\MySQL;
 
-use \BO\Dldb\MySQLAccess;
-use \BO\Dldb\Entity\SearchResult;
-use \BO\Dldb\Collection\SearchResults;
+use BO\Dldb\MySQLAccess;
+use BO\Dldb\Entity\SearchResult;
+use BO\Dldb\Collection\SearchResults;
 use Error;
 
 class Search
@@ -22,7 +21,7 @@ class Search
     protected $mysqlAccess = null;
 
     protected $entityIds = [];
-   
+
     public function __construct(MySQLAccess $mysqlAccess, array $entityTypes = [], array $searchTypes = [])
     {
         $this->entityTypes = $entityTypes;
@@ -43,7 +42,7 @@ class Search
         }
     }
 
-    protected function getSearchResults(string $query) : SearchResults
+    protected function getSearchResults(string $query): SearchResults
     {
         try {
             $resultList = new SearchResults();
@@ -54,7 +53,7 @@ class Search
                     $where = [];
 
                     foreach ($this->entityIds[$type] as $locale => $ids) {
-                        $where[] = "(locale = '" . $locale ."' AND id IN (" . implode(',', $ids) . "))";
+                        $where[] = "(locale = '" . $locale . "' AND id IN (" . implode(',', $ids) . "))";
                     }
                     $sql .= implode(' OR ', $where);
 
@@ -63,7 +62,7 @@ class Search
                     $stm->fetchAll(\PDO::FETCH_FUNC, function ($data_json) use ($entityClass, $resultList) {
                         $entity = new $entityClass();
                         $entity->offsetSet('data_json', $data_json);
-                        
+
                         $resultList[] = SearchResult::create($entity);
                     });
                 }
@@ -79,7 +78,7 @@ class Search
         }
     }
 
-    public function execute(string $query) : SearchResults
+    public function execute(string $query): SearchResults
     {
         try {
             $query = '+' . implode(' +', explode(' ', $query));
@@ -107,9 +106,9 @@ class Search
             $sql .= ' GROUP BY object_id, entity_type, locale';
 
             $stm = $this->mysqlAccess->prepare($sql);
-            
+
             $stm->execute($sqlArgs);
-                
+
             $stm->fetchAll(\PDO::FETCH_FUNC, [$this, 'fetchSearchRow']);
 
             $resultList = $this->getSearchResults($query);

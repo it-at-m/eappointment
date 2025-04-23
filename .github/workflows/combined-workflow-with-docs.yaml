@@ -1,0 +1,106 @@
+name: Combined Workflow with Documentation
+
+on:
+  push:
+    branches: [next]
+
+permissions:
+  contents: read
+  packages: write
+  pages: write
+  id-token: write
+
+jobs:
+  call-php-code-quality:
+    uses: ./.github/workflows/php-code-quality.yaml
+
+  call-php-unit-tests:
+    uses: ./.github/workflows/php-unit-tests.yaml
+
+  call-owasp-security-checks:
+    uses: ./.github/workflows/owasp-security-checks.yaml
+
+  aggregate-reports:
+    needs: [call-php-unit-tests, call-owasp-security-checks]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create directories
+        run: |
+          mkdir -p public/coverage
+          mkdir -p public/security
+
+      - name: Download coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'coverage-*'
+          path: public/coverage-temp
+          merge-multiple: false
+
+      - name: Download security reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'security-report-*'
+          path: public/security-temp
+          merge-multiple: false
+
+      - name: Fix directory structure
+        run: |
+          # Fix coverage reports
+          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
+            if [ -d "public/coverage-temp/coverage-$module" ]; then
+              mkdir -p "public/coverage/coverage-$module"
+              mv "public/coverage-temp/coverage-$module"/* "public/coverage/coverage-$module/"
+            fi
+          done
+          rm -rf public/coverage-temp
+
+          # Fix security reports
+          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
+            if [ -f "public/security-temp/security-report-$module/dependency-check-report.html" ]; then
+              mkdir -p "public/security/security-report-$module"
+              mv "public/security-temp/security-report-$module/dependency-check-report.html" "public/security/security-report-$module/"
+            fi
+          done
+          rm -rf public/security-temp
+
+      - name: Debug - List final structure
+        run: |
+          echo "=== Final Coverage Structure ==="
+          ls -R public/coverage/
+          echo "=== Final Security Structure ==="
+          ls -R public/security/
+
+      - name: Upload aggregated reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: aggregated-reports
+          path: public/
+          retention-days: 7
+
+  call-build-api-docs:
+    uses: ./.github/workflows/build-api-docs.yaml
+
+  generate-schema-diagrams:
+    uses: ./.github/workflows/generate-schema-diagrams.yaml
+
+  deploy-to-pages:
+    needs: [aggregate-reports, call-build-api-docs, generate-schema-diagrams]
+    if: |
+      needs.call-build-api-docs.result == 'success' &&
+      needs.aggregate-reports.result == 'success' &&
+      needs.generate-schema-diagrams.result == 'success'
+    uses: ./.github/workflows/deploy-pages.yaml
+    with:
+      coverage_artifact: aggregated-reports
+      api_docs_artifact: api-docs
+      security_artifact: aggregated-reports
+      git_commit: ${{ github.sha }}
+      git_branch: ${{ github.ref_name }}
+
+  call-php-build-images:
+    needs: [call-php-code-quality, call-php-unit-tests]
+    if: |
+      always() &&
+      needs.call-php-code-quality.result == 'success' &&
+      needs.call-php-unit-tests.result == 'success'
+    uses: ./.github/workflows/php-build-images.yaml

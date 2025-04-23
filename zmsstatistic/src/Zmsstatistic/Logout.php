@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -21,7 +22,7 @@ class Logout extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        \App::$http->readDeleteResult('/workstation/login/'. $this->workstation->useraccount['id'] .'/');
+        \App::$http->readDeleteResult('/workstation/login/' . $this->workstation->useraccount['id'] . '/');
         return Render::redirect(
             'index',
             array(

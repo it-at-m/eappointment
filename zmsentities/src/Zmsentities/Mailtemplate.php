@@ -40,5 +40,4 @@ class Mailtemplate extends Schema\Entity
         }
         return $this;
     }
-
 }

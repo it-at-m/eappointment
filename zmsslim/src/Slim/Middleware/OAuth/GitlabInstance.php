@@ -2,8 +2,8 @@
 
 namespace BO\Slim\Middleware\OAuth;
 
-use \Psr\Http\Message\ServerRequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use League\OAuth2\Client\Token\AccessToken;
 
 class GitlabInstance
@@ -85,7 +85,7 @@ class GitlabInstance
     {
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
-        $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientName']);
+        $sessionHandler->open('/' . $realmData['realm'] . '/', $realmData['clientName']);
         $sessionHandler->write(\BO\Zmsclient\Auth::getKey(), serialize($token), ['oidc' => true]);
         return $sessionHandler->close();
     }
@@ -94,7 +94,7 @@ class GitlabInstance
     {
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
-        $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientName']);
+        $sessionHandler->open('/' . $realmData['realm'] . '/', $realmData['clientName']);
         $sessionHandler->destroy(\BO\Zmsclient\Auth::getKey());
     }
 
@@ -102,7 +102,7 @@ class GitlabInstance
     {
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
         $sessionHandler = (new \BO\Zmsclient\SessionHandler(\App::$http));
-        $sessionHandler->open('/'. $realmData['realm'] . '/', $realmData['clientName']);
+        $sessionHandler->open('/' . $realmData['realm'] . '/', $realmData['clientName']);
         $tokenData = unserialize($sessionHandler->read(\BO\Zmsclient\Auth::getKey(), ['oidc' => true]));
         return $tokenData;
     }

@@ -10,7 +10,7 @@ class View extends BaseView {
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
-        this.load();
+        this.load(this.withCalled);
     }
 
     setOptions(options) {
@@ -38,10 +38,24 @@ class View extends BaseView {
     }
 
 
-    load() {
-        const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}`
-        return this.loadContent(url, 'GET', null, null, this.showLoader).catch(err => this.loadErrorCallback(err));
+    load(withCalled = false) {
+        const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}&withCalled=${withCalled ? 1 : 0}`;
+
+        return this.loadContent(url, 'GET', null, null, this.showLoader)
+            .then(() => {
+                if (withCalled) {
+                    $('#called-appointments').addClass('active');
+                    $('#called-appointments').next('.accordion-panel').css('display', 'block');
+                    this.withCalled = true;
+                } else {
+                    $('#called-appointments').removeClass('active');
+                    $('#called-appointments').next('.accordion-panel').css('display', 'none');
+                    this.withCalled = false;
+                }
+            })
+            .catch(err => this.loadErrorCallback(err));
     }
+
 
     bindEvents() {
         this.$main.off('click').on('click', '.queue-table .reload', (ev) => {
@@ -63,6 +77,11 @@ class View extends BaseView {
             this.onEditProcess(ev)
         }).on('click', 'a.process-reset', (ev) => {
             this.onResetProcess(ev);
+        }).on('click', '#called-appointments', (ev) => {
+            this.withCalled = ! this.withCalled
+            if (this.withCalled) {
+                this.load(true)
+            }
         }).on('click', 'a.process-delete', (ev) => {
             this.onConfirm(ev, "confirm_delete", () => { this.onDeleteProcess(ev) });
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {

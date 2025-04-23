@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Schema;
 
-use \Exception;
+use Exception;
 
 class Loader
 {
@@ -22,7 +22,7 @@ class Loader
                 JSON_ERROR_NONE => 'No errors',
             );
             throw new \BO\Zmsentities\Exception\SchemaFailedParseJsonFile(
-                "Could not parse JSON File $schemaFilename: ".$json_error_list[$json_error]
+                "Could not parse JSON File $schemaFilename: " . $json_error_list[$json_error]
             );
         }
         $schema = new Schema($array);

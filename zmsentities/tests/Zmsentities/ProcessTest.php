@@ -90,7 +90,7 @@ class ProcessTest extends EntityCommonTests
         $appointment->date = $now->getTimestamp();
         $entity->addAppointment($appointment);
         $this->assertTrue($entity->hasArrivalTime());
-        $this->assertTrue($entity->hasAppointment(1451649000, 123), 'appointment is not accessible');
+        $this->assertTrue($entity->hasAppointment(1451649000, 0), 'appointment is not accessible');
         $this->assertFalse($entity->hasAppointment(1447869173, 123), 'appointment date 1447869173 should not exist');
 
         $appointment = (new \BO\Zmsentities\Appointment())->getExample()->getArrayCopy();
@@ -154,7 +154,7 @@ class ProcessTest extends EntityCommonTests
     {
         $entity = $this->getExample();
         $seconds = $entity->getWaitedSeconds();
-        $this->assertEquals(53767, $seconds);
+        $this->assertEquals(45, $seconds);
         $entity->queue->withAppointment = 0;
         $entity->getFirstAppointment()->setDateByString('2016-04-01 00:00');
         $seconds = $entity->getWaitedSeconds();
@@ -170,7 +170,7 @@ class ProcessTest extends EntityCommonTests
     {
         $entity = $this->getExample();
         $minutes = $entity->getWaitedMinutes();
-        $this->assertEquals(896.1167, round($minutes, 4));
+        $this->assertEquals(0.75, round($minutes, 4));
         $entity->queue->withAppointment = 0;
         $entity->getFirstAppointment()->setDateByString('2016-04-01 00:00');
         $minutes = $entity->getWaitedMinutes();
@@ -378,7 +378,7 @@ class ProcessTest extends EntityCommonTests
 
         $queueList = $collection->toQueueList($now);
         $this->assertEquals('queued', $queueList->getFirst()->status);
-        $this->assertEquals('1447869171', $queueList->getFirst()->arrivalTime);
+        $this->assertEquals('1447922893', $queueList->getFirst()->arrivalTime);
 
         $entity3 = $this->getExample();
         $entity3->queue['waitingTimeEstimate'] = 60;

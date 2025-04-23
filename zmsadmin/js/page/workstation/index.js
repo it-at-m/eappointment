@@ -51,6 +51,7 @@ class View extends BaseView {
             'onChangeProcess',
             'onReserveProcess',
             'onCopyProcess',
+            'onCopyButton',
             'onQueueProcess',
             'onResetProcess',
             'onSendCustomMail',
@@ -83,18 +84,6 @@ class View extends BaseView {
             }
             this.setReloadTimer();
         }
-        window.onblur = () => {
-            //console.log("lost Focus");
-            clearTimeout(this.reloadTimer);
-        }
-        this.$main.find('[data-queue-table]').on("mouseenter", () => {
-            //console.log("stop Reload on mouse enter");
-            clearTimeout(this.reloadTimer);
-        });
-        this.$main.find('[data-queue-table]').on("mouseleave", () => {
-            //console.log("start reload on mouse leave");
-            this.setReloadTimer();
-        });
     }
 
     setReloadTimer() {
@@ -117,11 +106,16 @@ class View extends BaseView {
     onDatePick(date) {
         this.selectedDate = date;
         this.loadCalendar();
-        this.loadClientNext(true, false);
         if ('counter' == this.page)
             this.loadQueueInfo();
         this.loadQueueTable();
-        this.loadAppointmentForm(true, true);
+        if (this.selectedProcess) {
+            // Editing an existing appointment -> full reload
+            this.loadAppointmentForm(true, false);
+        } else {
+            // Creating a new appointment -> partial reload
+            this.loadAppointmentForm(true, true);
+        }
     }
 
     addFocusTrap(elem) {
@@ -423,13 +417,42 @@ class View extends BaseView {
         this.loadAppointmentForm();
     }
 
+    onCopyButton(event) {
+        stopEvent(event);
+        var popupContent = document.getElementById('copy-content');
+        var textToCopy = popupContent.innerText || popupContent.textContent;
+        navigator.clipboard.writeText(textToCopy)
+    }
+    
+
     onPrintProcessMail(event) {
         stopEvent(event);
         this.selectedProcess = $(event.currentTarget).data('id');
-        $(event.currentTarget).closest('.message').fadeOut().remove();
-        window.open(`${this.includeUrl}/process/queue/?print=1&printType=mail&selectedprocess=${this.selectedProcess}`)
-        this.selectedProcess = null;
-        this.loadAppointmentForm();
+
+        // URL for mail_confirmation.twig
+        const url = `${this.includeUrl}/process/queue/?print=1&printType=mail&selectedprocess=${this.selectedProcess}`;
+
+        // Ajax request to get content from mail_confirmation.twig
+        $.ajax({
+            url: url,
+            success(data) {
+                // Creating new window
+                const printWindow = window.open('', '', 'height=800,width=1000');
+                printWindow.document.write(data);
+                printWindow.document.write(`
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.close();
+                        }
+                    <\/script>`
+                );
+                printWindow.document.close();
+            },
+            error() {
+                alert('Der Inhalt konnte nicht geladen werden.');
+            }
+        });
     }
 
     onSendCustomMail($container, event) {
@@ -522,18 +545,20 @@ class View extends BaseView {
     }
 
     loadCalendar(showLoader = true) {
-        return new CalendarView($.find('[data-calendar]'), {
-            selectedDate: this.selectedDate,
-            selectedScope: this.selectedScope,
-            selectedProcess: this.selectedProcess,
-            slotsRequired: this.slotsRequired,
-            slotType: this.slotType,
-            onDatePick: this.onDatePick,
-            onDateToday: this.onDateToday,
-            includeUrl: this.includeUrl,
-            onAbortMessage: this.onAbortMessage,
-            showLoader: showLoader
-        })
+        if ('counter' == this.page) {
+            return new CalendarView($.find('[data-calendar]'), {
+                selectedDate: this.selectedDate,
+                selectedScope: this.selectedScope,
+                selectedProcess: this.selectedProcess,
+                slotsRequired: this.slotsRequired,
+                slotType: this.slotType,
+                onDatePick: this.onDatePick,
+                onDateToday: this.onDateToday,
+                includeUrl: this.includeUrl,
+                onAbortMessage: this.onAbortMessage,
+                showLoader: showLoader
+            })
+        }
     }
 
     loadClientNext(showLoader = true, loadProcess = true) {
@@ -571,6 +596,7 @@ class View extends BaseView {
             onChangeProcess: this.onChangeProcess,
             onReserveProcess: this.onReserveProcess,
             onCopyProcess: this.onCopyProcess,
+            onCopyButton: this.onCopyButton,
             onChangeScope: this.onChangeScope,
             onAbortProcess: this.onAbortProcess,
             onCancelAppointmentForm: this.onCancelAppointmentForm,
@@ -593,6 +619,7 @@ class View extends BaseView {
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
             onEditProcess: this.onEditProcess,
+            onCopyButton: this.onCopyButton,
             onNextProcess: this.onNextProcess,
             onCallNextProcess: this.onCallNextProcess,
             onCancelNextProcess: this.onCancelNextProcess,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,15 +7,14 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Organisation as Query;
+use BO\Slim\Render;
+use BO\Zmsdb\Organisation as Query;
 
 /**
  * Delete an organisation by Id
  */
 class OrganisationDelete extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String

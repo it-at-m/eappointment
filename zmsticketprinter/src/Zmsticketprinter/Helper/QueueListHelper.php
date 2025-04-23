@@ -1,15 +1,16 @@
 <?php
+
 /**
  *
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter\Helper;
 
-use \BO\Mellon\Validator;
-
-use \BO\Zmsentities\Collection\QueueList;
+use BO\Mellon\Validator;
+use BO\Zmsentities\Collection\QueueList;
 
 class QueueListHelper
 {
@@ -49,7 +50,7 @@ class QueueListHelper
     protected static function createFullList($scope)
     {
         $fullList = \App::$http
-            ->readGetResult('/scope/'. $scope->getId() . '/queue/')
+            ->readGetResult('/scope/' . $scope->getId() . '/queue/')
             ->getCollection();
         return ($fullList) ? $fullList : new QueueList();
     }

@@ -1,16 +1,20 @@
 div.wartebuttonbereich_einzeilig {
     position: absolute;
     top: 295px;
-    width: 875px;
-    left: 160px;
+    width: auto;
+    //left: 160px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 div.wartebuttonbereich_zweizeilig
 {
 	position: absolute;
 	top:180px;
-	width:1005px;
-	left:35px;
+	width:1010px;
+	//left:35px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 div.wartebuttonbereich_zweizeilig_tief {
@@ -38,6 +42,7 @@ div.warteschlangebutton_gross a.eintragen {
 
 div.variablerwarteschlangebutton {
     float: left;
+    margin-left: 25px;
     margin-right: 25px;
 }
 
@@ -108,6 +113,10 @@ a.button.ja_nein, .ja_nein {
     font-weight: bold;
     height: 141px;
     width: 314px;
+
+    display: flex;
+    justify-content: center; /* Vertikale Zentrierung */
+    align-items: center; /* Horizontale Zentrierung */
 }
 
 .smsbuttons

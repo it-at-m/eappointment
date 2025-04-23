@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   BO Slim
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsclient;
 
-use \BO\Mellon\Validator;
+use BO\Mellon\Validator;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -43,7 +44,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     public function dumpHttpLog()
     {
         $output = '<h2>HTTP API-Log</h2>'
-            .' <p>For debugging: This log contains HTTP calls. <strong>DISABLE FOR PRODUCTION!</strong></p>';
+            . ' <p>For debugging: This log contains HTTP calls. <strong>DISABLE FOR PRODUCTION!</strong></p>';
         foreach (Http::$log as $entry) {
             if ($entry instanceof \Psr\Http\Message\RequestInterface) {
                 $entry = $this->formatRequest($entry);
@@ -62,7 +63,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         if ($content->hasFailed() && !$allowEmpty) {
             $output =
                 'API-Call failed, JSON parsing with error: ' . $content->getMessages()
-                    . ' - Snippet: ' .substr(\strip_tags((string)$body), 0, 2000) . '...'
+                    . ' - Snippet: ' . substr(\strip_tags((string)$body), 0, 2000) . '...'
             ;
         } else {
             $output = $content->getValue();

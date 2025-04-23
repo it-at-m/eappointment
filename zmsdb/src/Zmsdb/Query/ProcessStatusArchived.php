@@ -9,7 +9,6 @@ namespace BO\Zmsdb\Query;
  */
 class ProcessStatusArchived extends Base implements MappingInterface
 {
-
     /**
      *
      * @var String TABLE mysql table reference
@@ -19,7 +18,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
     const ALIAS = 'process';
 
     const QUERY_INSERT_IN_STATISTIC = '
-        INSERT INTO '. self::STATISTIC_TABLE .' SET
+        INSERT INTO ' . self::STATISTIC_TABLE . ' SET
             lastbuergerarchivid = :archiveId,
             termin = :withAppointment,
             datum = :date,
@@ -77,9 +76,32 @@ class ProcessStatusArchived extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionScopeIds($scopeIds)
+    {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($scopeIds) {
+            foreach ($scopeIds as $scopeId) {
+                $condition
+                    ->orWith('process.StandortID', '=', $scopeId);
+            }
+        });
+        return $this;
+    }
+
+
     public function addConditionTime(\DateTimeInterface $now)
     {
         $this->query->where('process.Datum', '=', $now->format('Y-m-d'));
+        return $this;
+    }
+
+    public function addConditionTimes(array $dateTimes)
+    {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $condition) use ($dateTimes) {
+            foreach ($dateTimes as $dateTime) {
+                $condition
+                    ->orWith('process.Datum', '=', $dateTime->format('Y-m-d'));
+            }
+        });
         return $this;
     }
 
@@ -106,7 +128,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
                 AND `statistic`.`lastbuergerarchivid` = `process`.`BuergerarchivID`
             ')
         );
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime, $scope) {
+        $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($dateTime, $scope) {
             $query->andWith(
                 self::expression('statistic.lastbuergerarchivid IS NULL AND process.Datum'),
                 '>',
@@ -136,7 +158,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
             $totalMinutes = (double) ($hours * 60 + $minutes + $seconds / 60);
             $warteZeit = $totalMinutes;
         }
-    
+
         $this->addValues([
             'StandortID' => $process->scope['id'],
             'name' => $process->getFirstClient()['familyName'],
@@ -151,7 +173,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'wartezeit' => ($warteZeit > 0) ? $warteZeit : 0,
             'AnzahlPersonen' => $process->getClients()->count()
         ]);
-    }    
+    }
 
     public function postProcess($data)
     {
@@ -165,7 +187,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
             $clientsCount = $data[$this->getPrefixed('__clientsCount')];
             unset($data[$this->getPrefixed('__clientsCount')]);
             while ($clientsCount-- > 0) {
-                $data[$this->getPrefixed('clients__'.$clientsCount.'__familyName')] = 'Unknown';
+                $data[$this->getPrefixed('clients__' . $clientsCount . '__familyName')] = 'Unknown';
             }
         }
         return $data;
@@ -176,7 +198,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
         if ($process->getRequests()->count() === 0) {
             return '';
         }
-        
+
         $services = $process->getRequests()->getFirst()->name;
 
         if ($process->getRequests()->count() > 1) {
@@ -193,6 +215,4 @@ class ProcessStatusArchived extends Base implements MappingInterface
         $this->query->where('Datum', '<', $dateTime->format('Y-m-d'));
         return $this;
     }
-    
-    
 }

@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter\Helper;
 
 class TemplateFinder
@@ -94,7 +95,7 @@ class TemplateFinder
 
     protected function getExistingTemplate(\BO\Zmsentities\Schema\Entity $entity)
     {
-        $path = $this->subPath .'/buttonDisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig';
+        $path = $this->subPath . '/buttonDisplay_' . $entity->getEntityName() . '_' . $entity->id . '.twig';
         if ($entity->hasId() && $this->isTemplateReadable($path)) {
             return $path;
         }
@@ -111,6 +112,6 @@ class TemplateFinder
      */
     protected function getTemplatePath()
     {
-        return realpath(__DIR__) .'/../../../templates';
+        return realpath(__DIR__) . '/../../../templates';
     }
 }

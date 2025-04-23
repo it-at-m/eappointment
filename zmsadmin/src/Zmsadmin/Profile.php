@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -7,7 +8,6 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Schema\Loader;
-
 use BO\Zmsentities\Useraccount as Entity;
 
 class Profile extends BaseController
@@ -39,7 +39,7 @@ class Profile extends BaseController
         // TODO: there should be common functions to access configuration and user or account data
         // Currently we depend on these magic string like "useraccount".
         // A better approach would be a function called readUserAccountData($accountId)
-        $userAccount = \App::$http->readGetResult('/useraccount/'. $entity->getId() .'/')->getEntity();
+        $userAccount = \App::$http->readGetResult('/useraccount/' . $entity->getId() . '/')->getEntity();
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
 
@@ -68,7 +68,8 @@ class Profile extends BaseController
             $entity = \App::$http->readPostResult('/workstation/password/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
-            if ('' != $exception->template
+            if (
+                '' != $exception->template
                 && \App::$slim->getContainer()->get('view')->getLoader()->exists($template)
             ) {
                 return [

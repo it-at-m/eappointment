@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Scope as Entity;
-use \BO\Zmsentities\Collection\ScopeList as Collection;
+use BO\Zmsentities\Scope as Entity;
+use BO\Zmsentities\Collection\ScopeList as Collection;
 
 /**
  *
@@ -40,6 +40,7 @@ class Scope extends Base
     ) {
         if (0 < $resolveReferences) {
             $scope['dayoff'] = (new DayOff())->readByScopeId($scope->id);
+            $scope['closure'] = (new Closure())->readByScopeId($scope->id);
         }
         return $scope;
     }
@@ -99,7 +100,7 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
-                        $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                        $entity = $this->readResolvedReferences($entity, $resolveReferences - 1);
                         $scopeList->addEntity($entity);
                     }
                 }
@@ -112,7 +113,7 @@ class Scope extends Base
     {
         $scopeList = new Collection();
         $providerList = (new Provider())->readListBySource($source, 0, true, $requestId);
-        
+
         foreach ($providerList as $provider) {
             $scopeListByProvider = $this->readByProviderId($provider->getId(), $resolveReferences);
             if ($scopeListByProvider->count()) {
@@ -256,7 +257,7 @@ class Scope extends Base
             (new Query\Scope(Query\Base::SELECT))->getQueryLastWaitingNumber(),
             ['scope_id' => $scopeId]
         );
-        $entity = $this->readEntity($scopeId)->updateStatusQueue($dateTime);
+        $entity = $this->readEntity($scopeId, 0, true)->updateStatusQueue($dateTime);
         $scope = $this->updateEntity($scopeId, $entity);
         return $scope->getStatus('queue', 'lastGivenNumber');
     }
@@ -327,7 +328,7 @@ class Scope extends Base
     public function readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences = 0)
     {
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
-        $scope = (! $timeAverage) ? (new Scope)->readEntity($scope->id) : $scope;
+        $scope = (! $timeAverage) ? (new Scope())->readEntity($scope->id) : $scope;
         $queueList = $this->readQueueList($scope->id, $dateTime, $resolveReferences);
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         $workstationCount = $scope->getCalculatedWorkstationCount();
@@ -476,7 +477,7 @@ class Scope extends Base
             if ($extension == 'jpeg') {
                 $extension = 'jpg'; //compatibility ZMS1
             }
-            $imageName = 's_'. $scopeId .'_bild.'. $extension;
+            $imageName = 's_' . $scopeId . '_bild.' . $extension;
             $this->getWriter()->perform(
                 (new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData(),
                 array(
@@ -499,7 +500,7 @@ class Scope extends Base
      */
     public function readImageData($scopeId)
     {
-        $imageName = 's_'. $scopeId .'_bild';
+        $imageName = 's_' . $scopeId . '_bild';
         $imageData = new \BO\Zmsentities\Mimepart();
         $fileData = $this->getReader()->fetchAll(
             (new Query\Scope(Query\Base::SELECT))->getQueryReadImageData(),
@@ -522,7 +523,7 @@ class Scope extends Base
      */
     public function deleteImage($scopeId)
     {
-        $imageName = 's_'. $scopeId .'_bild';
+        $imageName = 's_' . $scopeId . '_bild';
         return $this->perform((new Query\Scope(Query\Base::DELETE))->getQueryDeleteImage(), array(
             'imagename' => "$imageName%"
         ));

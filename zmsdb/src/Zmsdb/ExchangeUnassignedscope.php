@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
+use BO\Zmsentities\Exchange;
 
 class ExchangeUnassignedscope extends Base
 {
@@ -36,7 +36,7 @@ class ExchangeUnassignedscope extends Base
         $entity->addDataSet(["_", "", "", "Alle Standorte"]);
         return $entity;
     }
-    
+
     public function readPeriodList()
     {
         $entity = new Exchange();

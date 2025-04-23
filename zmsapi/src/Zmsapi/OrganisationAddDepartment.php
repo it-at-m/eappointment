@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Department as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Department as Query;
 
 class OrganisationAddDepartment extends BaseController
 {
@@ -22,7 +23,7 @@ class OrganisationAddDepartment extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $organisation = (new \BO\Zmsdb\Organisation)->readEntity($args['id'], 1);
+        $organisation = (new \BO\Zmsdb\Organisation())->readEntity($args['id'], 1);
         (new Helper\User($request, 2))->checkRights(
             'department',
             new \BO\Zmsentities\Useraccount\EntityAccess($organisation)

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Slim\Render;
+use BO\Slim\Render;
 
 /**
  * Handle requests concerning services
@@ -26,7 +27,6 @@ class WorkstationStatus extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $workstation = $this->withFixedLastLogin($workstation);
         $response = Render::withLastModified($response, time(), '0');
-        $workstation->useraccount->password = null;
 
         return Render::withJson($response, ['workstation' => $workstation]);
     }

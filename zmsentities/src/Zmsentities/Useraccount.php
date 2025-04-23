@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 /**
  * @SuppressWarnings(Complexity)
@@ -11,7 +11,7 @@ use \BO\Zmsentities\Helper\Property;
  */
 class Useraccount extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "useraccount.json";
 
@@ -203,7 +203,8 @@ class Useraccount extends Schema\Entity
         if (isset($this['password']) && '' == $this['password'] && false === $keepPassword) {
             unset($this['password']);
         }
-        if (isset($this['changePassword']) &&
+        if (
+            isset($this['changePassword']) &&
             0 == count(array_filter($this['changePassword'])) &&
             false === $keepPassword
         ) {
@@ -292,7 +293,7 @@ class Useraccount extends Schema\Entity
     {
         $providerName = '';
         if (($pos = strpos($this->id, "@")) !== false) {
-            $providerName = substr($this->id, $pos+1);
+            $providerName = substr($this->id, $pos + 1);
         }
         return ('' !== $providerName) ? $providerName : null;
     }

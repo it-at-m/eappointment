@@ -7,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Ticketprinter as Query;
-use \BO\Zmsentities\Ticketprinter as Entity;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Ticketprinter as Query;
+use BO\Zmsentities\Ticketprinter as Entity;
 
 /**
  *
@@ -29,7 +29,7 @@ class Ticketprinter extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::setCriticalReadSession();
-        
+
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new Entity($input);
         $entity->testValid();
@@ -38,7 +38,7 @@ class Ticketprinter extends BaseController
             $entity = $entity->toStructuredButtonList();
         }
 
-        $ticketprinter = (new Query)->readByButtonList($entity, \App::$now);
+        $ticketprinter = (new Query())->readByButtonList($entity, \App::$now);
         Helper\TicketprinterAccess::testTicketprinter($ticketprinter);
 
         $message = Response\Message::create($request);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,12 +7,12 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Notification as Query;
-use \BO\Zmsdb\Config;
-use \BO\Zmsdb\Process;
-use \BO\Zmsdb\Department;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Notification as Query;
+use BO\Zmsdb\Config;
+use BO\Zmsdb\Process;
+use BO\Zmsdb\Department;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -34,11 +35,11 @@ class ProcessConfirmationNotification extends BaseController
         $process = (new Process())->readEntity($process->id, $process->authKey);
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        
+
         $notification = $this->writeNotification($process);
         $message = Response\Message::create($request);
         $message->data = ($notification->hasId()) ? $notification : null;
-        
+
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
         return $response;

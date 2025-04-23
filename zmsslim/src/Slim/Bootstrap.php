@@ -1,9 +1,10 @@
 <?php
+
 namespace BO\Slim;
 
 use App;
 use Monolog\Formatter\JsonFormatter;
-use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Slim\HttpCache\CacheProvider;
 use BO\Slim\Factory\ResponseFactory;
@@ -76,8 +77,27 @@ class Bootstrap
     {
         App::$log = new Logger($identifier);
         $level = $this->parseDebugLevel($level);
-        $handler = new ErrorLogHandler(ErrorLogHandler::OPERATING_SYSTEM, $level);
-        $handler->setFormatter(new JsonFormatter());
+        $handler = new StreamHandler('php://stderr', $level);
+
+        $formatter = new JsonFormatter();
+
+        // Add processor to format time_local first
+        App::$log->pushProcessor(function ($record) {
+            return array(
+                'time_local' => (new \DateTime())->format('Y-m-d\TH:i:sP'),
+                'client_ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+                'remote_addr' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '',
+                'remote_user' => '',
+                'application' => defined('\App::IDENTIFIER') ? App::IDENTIFIER : 'zms',
+                'module' => defined('\App::MODULE_NAME') ? App::MODULE_NAME : 'zmsslim',
+                'message' => $record['message'],
+                'level' => $record['level_name'],
+                'context' => $record['context'],
+                'extra' => $record['extra']
+            );
+        });
+
+        $handler->setFormatter($formatter);
         App::$log->pushHandler($handler);
     }
 

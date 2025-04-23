@@ -29,6 +29,6 @@ class TrailingSlashTest extends TestCase
 
         self::assertTrue($response->hasHeader('Location'));
         self::assertSame(StatusCodeInterface::STATUS_MOVED_PERMANENTLY, $response->getStatusCode());
-        self::assertContains('//localhost/admin/', $response->getHeader('Location'));
+        self::assertContainsEquals('//localhost/admin/', $response->getHeader('Location'));
     }
 }

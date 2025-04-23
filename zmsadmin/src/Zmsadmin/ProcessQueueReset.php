@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
@@ -16,7 +17,6 @@ use BO\Slim\Render;
  */
 class ProcessQueueReset extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -31,8 +31,13 @@ class ProcessQueueReset extends BaseController
         $processId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         if ($processId) {
-            $selectedProcess = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
+            $selectedProcess = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
         }
+
+        if (isset($selectedProcess->queue)) {
+            $selectedProcess->queue->arrivalTime = time();
+        }
+
         \App::$http->readPostResult('/process/status/queued/', $selectedProcess);
 
         return \BO\Slim\Render::redirect(

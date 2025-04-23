@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -35,8 +36,8 @@ class CalldisplayQueue extends BaseController
         $queueList = (count($statusList)) ?
             $this->readQueueListByStatus($calldisplay, $statusList, $resolveReferences) :
             $this->readFullQueueList($calldisplay, $resolveReferences);
-            
-       
+
+
 
         $message = Response\Message::create($request);
         $message->data = $queueList->withoutDublicates();
@@ -54,13 +55,13 @@ class CalldisplayQueue extends BaseController
             throw new Exception\Calldisplay\ScopeAndClusterNotFound();
         }
         foreach ($calldisplay->getClusterList() as $cluster) {
-            $cluster = (new \BO\Zmsdb\Cluster)->readEntity($cluster->getId());
+            $cluster = (new \BO\Zmsdb\Cluster())->readEntity($cluster->getId());
             if (! $cluster) {
                 throw new Exception\Cluster\ClusterNotFound();
             }
         }
         foreach ($calldisplay->getScopeList() as $scope) {
-            $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->getId(), \App::$now, $resolveReferences);
+            $scope = (new \BO\Zmsdb\Scope())->readWithWorkstationCount($scope->getId(), \App::$now, $resolveReferences);
             if (! $scope) {
                 throw new Exception\Scope\ScopeNotFound();
             }

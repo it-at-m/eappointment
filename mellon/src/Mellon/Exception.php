@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Mellon
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG

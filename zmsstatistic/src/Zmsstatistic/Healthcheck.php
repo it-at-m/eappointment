@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -13,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 class Healthcheck extends BaseController
 {
     protected $withAccess = false;
-    
+
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */

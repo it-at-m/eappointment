@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsentities;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 /**
  * @SuppressWarnings(Complexity)
@@ -11,28 +12,25 @@ use \BO\Zmsentities\Helper\Property;
  */
 class Process extends Schema\Entity
 {
-    const PRIMARY = 'id';
-
-    public const STATUS_FREE       = 'free';
-    public const STATUS_RESERVED   = 'reserved';
-    public const STATUS_CONFIRMED  = 'confirmed';
-    public const STATUS_PRECONFIRMED  = 'preconfirmed';
-    public const STATUS_QUEUED     = 'queued';
-    public const STATUS_CALLED     = 'called';
+    public const PRIMARY = 'id';
+    public const STATUS_FREE = 'free';
+    public const STATUS_RESERVED = 'reserved';
+    public const STATUS_CONFIRMED = 'confirmed';
+    public const STATUS_PRECONFIRMED = 'preconfirmed';
+    public const STATUS_QUEUED = 'queued';
+    public const STATUS_CALLED = 'called';
     public const STATUS_PROCESSING = 'processing';
-    public const STATUS_PENDING    = 'pending';
-    public const STATUS_PICKUP     = 'pickup';
-    public const STATUS_FINISHED   = 'finished';
-    public const STATUS_MISSED     = 'missed';
-    public const STATUS_PARKED     = 'parked';
-    public const STATUS_ARCHIVED   = 'archived';
-    public const STATUS_DELETED    = 'deleted';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_PICKUP = 'pickup';
+    public const STATUS_FINISHED = 'finished';
+    public const STATUS_MISSED = 'missed';
+    public const STATUS_PARKED = 'parked';
+    public const STATUS_ARCHIVED = 'archived';
+    public const STATUS_DELETED = 'deleted';
     public const STATUS_ANONYMIZED = 'anonymized';
-    public const STATUS_BLOCKED    = 'blocked';
-    public const STATUS_CONFLICT   = 'conflict';
-
+    public const STATUS_BLOCKED = 'blocked';
+    public const STATUS_CONFLICT = 'conflict';
     public static $schema = "process.json";
-
     public function getDefaults()
     {
         return [
@@ -51,7 +49,8 @@ class Process extends Schema\Entity
             'requests' => new Collection\RequestList(),
             'scope' => new Scope(),
             'status' => 'free',
-            'lastChange' => time()
+            'lastChange' => time(),
+            'wasMissed' => false,
         ];
     }
 
@@ -114,7 +113,7 @@ class Process extends Schema\Entity
     {
         $requestList = $this->getRequests();
         foreach (explode(',', $requestCSV) as $id) {
-            if (! $requestList->hasRequests($id)) {
+            if (!$requestList->hasRequests($id)) {
                 $this->requests[] = new Request(array(
                     'source' => $source,
                     'id' => $id
@@ -129,14 +128,10 @@ class Process extends Schema\Entity
         $this->requests = new Collection\RequestList();
         if ($requestCSV) {
             foreach (explode(',', $requestCSV) as $id) {
-                $this->requests->addEntity(
-                    new Request(
-                        array(
+                $this->requests->addEntity(new Request(array(
                             'source' => $source,
                             'id' => $id
-                        )
-                    )
-                );
+                        )));
             }
         }
         return $this;
@@ -149,22 +144,22 @@ class Process extends Schema\Entity
 
     public function sendAdminMailOnConfirmation()
     {
-        return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnAppointment->get());
+        return (bool) ((int) $this->toProperty()->scope->preferences->client->adminMailOnAppointment->get());
     }
-    
+
     public function sendAdminMailOnDeleted()
     {
-        return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnDeleted->get());
+        return (bool) ((int) $this->toProperty()->scope->preferences->client->adminMailOnDeleted->get());
     }
 
     public function sendAdminMailOnUpdated()
     {
-        return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnUpdated->get());
+        return (bool) ((int) $this->toProperty()->scope->preferences->client->adminMailOnUpdated->get());
     }
 
     public function shouldSendAdminMailOnClerkMail()
     {
-        return (bool)((int)$this->toProperty()->scope->preferences->client->adminMailOnMailSent->get());
+        return (bool) ((int) $this->toProperty()->scope->preferences->client->adminMailOnMailSent->get());
     }
 
     public function withUpdatedData($requestData, \DateTimeInterface $dateTime, $scope = null, $notice = '')
@@ -176,6 +171,7 @@ class Process extends Schema\Entity
         $this->addClientFromForm($requestData);
         $this->addReminderTimestamp($requestData, $dateTime);
         $this->addAmendment($requestData, $notice);
+        $this->addCustomTextfield($requestData, $notice);
         return $this;
     }
 
@@ -190,7 +186,7 @@ class Process extends Schema\Entity
             $dateTime->setTime($time[0], $time[1]);
         }
 
-        $appointment = (new Appointment)
+        $appointment = (new Appointment())
             ->addDate($dateTime->getTimestamp())
             ->addScope($this->scope['id']);
         if (isset($requestData['slotCount'])) {
@@ -248,7 +244,7 @@ class Process extends Schema\Entity
         if (!$this['appointments'] instanceof Collection\AppointmentList) {
             $this['appointments'] = new Collection\AppointmentList($this['appointments']);
             foreach ($this['appointments'] as $index => $appointment) {
-                if (! $appointment instanceof Appointment) {
+                if (!$appointment instanceof Appointment) {
                     $this['appointments'][$index] = new Appointment($appointment);
                 }
             }
@@ -265,7 +261,7 @@ class Process extends Schema\Entity
         if (!$this['clients'] instanceof Collection\ClientList) {
             $this['clients'] = new Collection\ClientList($this['clients']);
             foreach ($this['clients'] as $index => $client) {
-                if (! $client instanceof Client) {
+                if (!$client instanceof Client) {
                     $this['clients'][$index] = new Client($client);
                 }
             }
@@ -487,16 +483,15 @@ class Process extends Schema\Entity
     public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;
-
-        if (! in_array('availability', $keepArray)) {
+        if (!in_array('availability', $keepArray)) {
             foreach ($entity['appointments'] as $appointment) {
                 if ($appointment->toProperty()->scope->isAvailable()) {
                     $scopeId = $appointment['scope']['id'];
-                    unset($appointment['scope']);
-                    $appointment['scope'] = ['id' => $entity->toProperty()->scope->id->get()];
-                    if ($scopeId != $entity->toProperty()->scope->id->get()) {
-                        $appointment['scope'] = ['id' => $scopeId];
-                    }
+                    $appointment['scope'] = [
+                        'id' => $scopeId,
+                        'provider' => $appointment['scope']['provider'] ?? [],
+                        'shortName' => $appointment['scope']['shortName'] ?? ''
+                    ];
                 }
                 if ($appointment->toProperty()->availability->isAvailable()) {
                     unset($appointment['availability']);
@@ -506,43 +501,32 @@ class Process extends Schema\Entity
 
         unset($entity['createTimestamp']);
         unset($entity['createIP']);
-
         if ($entity->toProperty()->scope->status->isAvailable()) {
             unset($entity['scope']['status']);
         }
 
         if ($entity->status == 'free') {
-            // delete keys
-            foreach ([
-                'authKey',
-                'queue',
-                'requests',
-            ] as $key) {
-                if (! in_array($key, $keepArray) && $entity->toProperty()->$key->isAvailable()) {
+// delete keys
+            foreach (['authKey', 'queue', 'requests',] as $key) {
+                if (!in_array($key, $keepArray) && $entity->toProperty()->$key->isAvailable()) {
                     unset($entity[$key]);
                 }
             }
             // delete if empty
-            foreach ([
-                'amendment',
-                'id',
-                'authKey',
-                'archiveId',
-                'reminderTimestamp',
-            ] as $key) {
-                if (! in_array($key, $keepArray) && $entity->toProperty()->$key->isAvailable() && !$entity[$key]) {
+            foreach (['amendment', 'id', 'authKey', 'archiveId', 'reminderTimestamp',] as $key) {
+                if (!in_array($key, $keepArray) && $entity->toProperty()->$key->isAvailable() && !$entity[$key]) {
                     unset($entity[$key]);
                 }
             }
-            if (! in_array('provider', $keepArray) && $entity->toProperty()->scope->provider->data->isAvailable()) {
+            if (!in_array('provider', $keepArray) && $entity->toProperty()->scope->provider->data->isAvailable()) {
                 unset($entity['scope']['provider']['data']);
             }
         }
 
-        if (! in_array('dayoff', $keepArray) && $entity->toProperty()->scope->dayoff->isAvailable()) {
+        if (!in_array('dayoff', $keepArray) && $entity->toProperty()->scope->dayoff->isAvailable()) {
             unset($entity['scope']['dayoff']);
         }
-        if (! in_array('scope', $keepArray) && $entity->toProperty()->scope->preferences->isAvailable()) {
+        if (!in_array('scope', $keepArray) && $entity->toProperty()->scope->preferences->isAvailable()) {
             unset($entity['scope']['preferences']);
         }
         return $entity;
@@ -589,17 +573,29 @@ class Process extends Schema\Entity
 
     public function getArrivalTime($default = 'now', $timezone = null)
     {
-        $arrivalTime = 0;
-        if ($this->isWithAppointment()) {
+        $queueArrivalTime = $this->toProperty()->queue->arrivalTime->get();
+
+        if ($queueArrivalTime) {
+            // Falls der Queue-Wert vorhanden ist – auch wenn ein Termin existiert – verwende diesen (dabei ist handelt es sich, um verpasste Termine)
+            $arrivalTime = $queueArrivalTime;
+        } elseif ($this->isWithAppointment()) {
             $arrivalTime = $this->getFirstAppointment()->date;
         } else {
-            $arrivalTime = $this->toProperty()->queue->arrivalTime->get();
+            $arrivalTime = 0;
         }
+
+        $arrivalTime = (int)$arrivalTime;
         $arrivalDateTime = Helper\DateTime::create($default, $timezone);
         if ($arrivalTime) {
             $arrivalDateTime = $arrivalDateTime->setTimestamp($arrivalTime);
         }
         return $arrivalDateTime;
+    }
+
+    public function setArrivalTime(\DateTimeInterface $dateTime = null)
+    {
+        $this->queue['arrivalTime'] = ($dateTime) ? $dateTime->getTimestamp() : 0;
+        return $this;
     }
 
     /**
@@ -625,45 +621,50 @@ class Process extends Schema\Entity
         return $this->getWaySeconds($defaultTime) / 60;
     }
 
+    public function setWasMissed(bool $bool)
+    {
+        $this->wasMissed = $bool;
+        return $this;
+    }
+
+    public function getWasMissed(): bool
+    {
+        return (bool) $this->wasMissed;
+    }
+
     public function toDerefencedAmendment()
     {
-        $lastChange = (new \DateTimeImmutable)->setTimestamp($this->createTimestamp)->format('c');
-        return var_export(
-            array(
+        $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
+        return var_export(array(
                 'BuergerID' => $this->id,
                 'StandortID' => $this->scope['id'],
-                'Anmerkung' => $this->amendment,
+                'Anmerkung' => null,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
-            ),
-            1
-        );
+            ), 1);
     }
 
     public function toDerefencedCustomTextfield()
     {
-        $lastChange = (new \DateTimeImmutable)->setTimestamp($this->createTimestamp)->format('c');
-        return var_export(
-            array(
+        $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
+        return var_export(array(
                 'BuergerID' => $this->id,
                 'StandortID' => $this->scope['id'],
-                'CustomTextfield' => $this->customTextfield,
+                'CustomTextfield' => null,
                 'IPTimeStamp' => $this->createTimestamp,
                 'LastChange' => $lastChange,
-            ),
-            1
-        );
+            ), 1);
     }
 
     public function __toString()
     {
         $string = "process#";
         $string .= $this->id ?: $this->archiveId;
-        $string .= ":".$this->authKey;
+        $string .= ":" . $this->authKey;
         $string .= " (" . $this->status . ")";
         $string .= " " . $this->getFirstAppointment()->toDateTime()->format('c');
         $string .= " " . ($this->isWithAppointment() ? "appoint" : "arrival:" . $this->getArrivalTime()->format('c'));
-        $string .= " " . $this->getFirstAppointment()->slotCount."slots";
+        $string .= " " . $this->getFirstAppointment()->slotCount . "slots";
         $string .= "*" . count($this->appointments);
         foreach ($this->getRequests() as $request) {
             $string .= " " . $request['source'] . "." . $request['id'];

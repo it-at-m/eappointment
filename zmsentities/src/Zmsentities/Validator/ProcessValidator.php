@@ -2,13 +2,13 @@
 
 namespace BO\Zmsentities\Validator;
 
-use \BO\Mellon\Valid;
-use \BO\Mellon\Unvalidated;
-use \BO\Mellon\Validator;
-use \BO\Mellon\Parameter;
-use \BO\Mellon\Collection;
-use \BO\Zmsentities\Process;
-use \BO\Zmsentities\Helper\Delegate;
+use BO\Mellon\Valid;
+use BO\Mellon\Unvalidated;
+use BO\Mellon\Validator;
+use BO\Mellon\Parameter;
+use BO\Mellon\Collection;
+use BO\Zmsentities\Process;
+use BO\Zmsentities\Helper\Delegate;
 
 /**
  *
@@ -102,7 +102,7 @@ class ProcessValidator
             $valid = $unvalid
                 ->isMail("Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.")
                 ->hasDNS(
-                    "Zu der angegebenen E-Mail-Adresse können keine Mails verschickt werden. ".
+                    "Zu der angegebenen E-Mail-Adresse können keine Mails verschickt werden. " .
                     "Der Host zur Domain nach dem '@' ist nicht erreichbar. "
                 );
         }
@@ -123,7 +123,15 @@ class ProcessValidator
         return $this;
     }
 
-    public function validateTelephone(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null):self
+    public function validateCustomField(Unvalidated $unvalid, callable $setter): self
+    {
+        $valid = $unvalid->isString();
+        $valid->isBiggerThan(1, "Dieses Feld darf nicht leer sein");
+        $this->getCollection()->validatedAction($valid, $setter);
+        return $this;
+    }
+
+    public function validateTelephone(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
         $length = strlen($valid->getValue());
@@ -131,16 +139,17 @@ class ProcessValidator
         try {
             $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
             $phoneNumberObject = $phoneNumberUtil->parse($valid->getValue(), 'DE');
-            $telephone = '+'.$phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
+            $telephone = '+' . $phoneNumberObject->getCountryCode() . $phoneNumberObject->getNationalNumber();
         } catch (\Exception $exception) {
             $telephone = $valid->getValue();
         }
         $valid = (new \BO\Mellon\Unvalidated($telephone, 'telephone'))->isString();
-        
-        if (!$length
+
+        if (
+            !$length
             && $this->getProcess()->getCurrentScope()->isTelephoneRequired()
             && $this->getProcess()->isWithAppointment()
-            ) {
+        ) {
             $valid
                 ->isBiggerThan(10, "Für den Standort muss eine gültige Telefonnummer eingetragen werden");
         } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
@@ -171,14 +180,14 @@ class ProcessValidator
         $valid = $unvalid->isString();
         $length = strlen($valid->getUnvalidated());
         if ($length) {
-            $valid->isSmallerThan(300, "Die Anmerkung sollte 300 Zeichen nicht überschreiten");
+            $valid->isSmallerThan(500, "Die Anmerkung sollte 500 Zeichen nicht überschreiten");
             $this->getCollection()->validatedAction($valid, $setter);
         } else {
             $this->getCollection()->addValid($valid);
         }
         return $this;
     }
-    
+
     public function validateReminderTimestamp(Unvalidated $unvalid, callable $setter, callable $conditionCallback): self
     {
         $valid = $unvalid->isNumber();
@@ -190,7 +199,7 @@ class ProcessValidator
         return $this;
     }
 
-    public function validateRequests(Unvalidated $unvalid, callable $setter):self
+    public function validateRequests(Unvalidated $unvalid, callable $setter): self
     {
         if ($this->getProcess()->isWithAppointment()) {
              $valid = $unvalid->isArray("Es muss mindestens eine Dienstleistung ausgewählt werden!");

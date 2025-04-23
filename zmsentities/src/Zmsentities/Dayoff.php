@@ -4,9 +4,17 @@ namespace BO\Zmsentities;
 
 class Dayoff extends Schema\Entity
 {
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     public static $schema = "dayoff.json";
+
+    public function getDefaults()
+    {
+        return [
+            'date' => 1447924981,
+            'name' => ''
+        ];
+    }
 
     public function setTimestampFromDateformat($fromFormat = 'd.m.Y')
     {

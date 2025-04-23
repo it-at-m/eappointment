@@ -25,6 +25,10 @@ js: now
 
 live: # init live system
 	composer install --no-dev --prefer-dist
+	npm install --legacy-peer-deps
+	npm run build
+	npm install requirejs --no-save --legacy-peer-deps
+	mkdir -p public/_libs/requirejs && cp -r node_modules/requirejs/* public/_libs/requirejs/
 
 dev: # init development system
 	composer update

@@ -25,7 +25,7 @@ class UnconfirmedAppointmentDeleteByCron
     {
         $this->now = $now;
         $this->verbose = $verbose;
-        $this->scopeList = (new \BO\Zmsdb\Scope)->readList();
+        $this->scopeList = (new \BO\Zmsdb\Scope())->readList();
     }
 
     protected function log($message)
@@ -53,7 +53,7 @@ class UnconfirmedAppointmentDeleteByCron
     public function startProcessing($commit)
     {
         $this->deleteUnconfirmedProcesses($commit);
-        $this->log("\nSUMMARY: Deleted processes: ".var_export($this->count, true));
+        $this->log("\nSUMMARY: Deleted processes: " . var_export($this->count, true));
     }
 
     protected function deleteUnconfirmedProcesses($commit)

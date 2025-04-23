@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\Collection;
 
 /**
@@ -11,7 +13,6 @@ namespace BO\Dldb\Collection;
  */
 class Authorities extends Base
 {
-
     public function __clone()
     {
         foreach ($this as $key => $authority) {
@@ -21,7 +22,8 @@ class Authorities extends Base
 
     public function addLocation(\BO\Dldb\Entity\Location $location)
     {
-        if ($location->offsetExists('authority')
+        if (
+            $location->offsetExists('authority')
             && (($location['authority'] instanceof \BO\Dldb\Entity\Base
                     && $location['authority']->offsetExists('id')
                     && $location['authority']->offsetExists('authority')

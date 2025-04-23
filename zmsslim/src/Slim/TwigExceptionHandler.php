@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   BO Slim
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Slim;
 
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\ErrorHandlerInterface;
 
@@ -16,7 +17,6 @@ use Slim\Interfaces\ErrorHandlerInterface;
   */
 class TwigExceptionHandler implements ErrorHandlerInterface
 {
-
     const DEFAULT_TEMPLATE = "exception/default.twig";
 
     /**
@@ -35,7 +35,7 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         bool $logErrors,
         bool $logErrorDetails
     ): ResponseInterface {
-        
+
         $decoratedRequest = \BO\Slim\Middleware\ZmsSlimRequest::getDecoratedRequest($request);
         $response = \App::$slim->getResponseFactory()->createResponse();
         return static::withHtml($decoratedRequest, $response, $exception);
@@ -63,16 +63,16 @@ class TwigExceptionHandler implements ErrorHandlerInterface
                 // Some error-reporting is limited to a defined amount of chars
                 // Remove unnecessary chars, for ordering see self::getExtendedExceptionInfo()
                 $logText = json_encode($logInfo);
-                $logText = preg_replace('#'.preg_quote('\\/').'#', "/", $logText);
-                $logText = preg_replace('#'.preg_quote('\\"').'#', "", $logText);
-                $logText = preg_replace('#'.preg_quote('\\n').'#', " ", $logText);
-                $logText = preg_replace('#'.preg_quote('\\').'#', ".", $logText);
+                $logText = preg_replace('#' . preg_quote('\\/') . '#', "/", $logText);
+                $logText = preg_replace('#' . preg_quote('\\"') . '#', "", $logText);
+                $logText = preg_replace('#' . preg_quote('\\n') . '#', " ", $logText);
+                $logText = preg_replace('#' . preg_quote('\\') . '#', ".", $logText);
                 $logText = preg_replace('#"#', "", $logText);
                 $logText = preg_replace('#\s+#', ' ', $logText);
                 $logText = preg_replace('#\.\.#', ".", $logText);
                 $logText = preg_replace('#(/[^/\s]+)+/([^/\s]+/[^/\s]+)\.php#', "$2.php", $logText);
-                $logText = preg_replace('#'.preg_quote(\APP::APP_PATH).'/?#', "", $logText);
-                \App::$log->critical("PHP-Exception #{$extendedInfo['uniqueid']}: ". $logText);
+                $logText = preg_replace('#' . preg_quote(\APP::APP_PATH) . '/?#', "", $logText);
+                \App::$log->critical("PHP-Exception #{$extendedInfo['uniqueid']}: " . $logText);
                 /*
                 \App::$log->critical(
                     "PHP Fatal Exception #{$extendedInfo['uniqueid']}"
@@ -102,7 +102,7 @@ class TwigExceptionHandler implements ErrorHandlerInterface
                 . $exception->getLine()
                 . " "
                 . $exception->getTraceAsString()
-                ." ---- because of "
+                . " ---- because of "
                 . $subexception->getMessage()
                 . " "
                 . $subexception->getTraceAsString()
@@ -188,7 +188,7 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         if (isset($exception->templatedata)) {
             $templatedata = $exception->templatedata;
         }
-        
+
         // Due to shortened error logs in some reportings, important informations first!
         return array_merge(array(
             "exceptionclass" => $exceptionclass,

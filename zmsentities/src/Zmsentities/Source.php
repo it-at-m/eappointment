@@ -4,7 +4,7 @@ namespace BO\Zmsentities;
 
 class Source extends Schema\Entity
 {
-    const PRIMARY = 'source';
+    public const PRIMARY = 'source';
 
     public static $schema = 'source.json';
 
@@ -49,6 +49,18 @@ class Source extends Schema\Entity
             $providerList->addEntity($provider);
         }
         return $providerList;
+    }
+
+    public function getScopeList()
+    {
+        $scopeList = new Collection\ScopeList();
+        foreach ($this->toProperty()->scopes->get() as $scope) {
+            if (!$scope instanceof Scope) {
+                $scope = new Scope($scope);
+            }
+            $scopeList->addEntity($scope);
+        }
+        return $scopeList;
     }
 
     public function getRequestList()

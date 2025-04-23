@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -23,7 +24,7 @@ class WarehouseReport extends Base
         ResponseInterface $response,
         array $args
     ) {
-        $title = 'raw_statistic_'. $args['subject'] .'_'. $args['subjectid'] .'_'. $args['period'];
+        $title = 'raw_statistic_' . $args['subject'] . '_' . $args['subjectid'] . '_' . $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
 
         $this->writeRawReport($args['report'], $download->getSpreadSheet());
@@ -43,7 +44,7 @@ class WarehouseReport extends Base
                 $reportData[$row][] = (is_numeric($item)) ? (string)($item) : $item;
             }
         }
-        $sheet->fromArray($reportData, null, 'A'. ($sheet->getHighestRow()));
+        $sheet->fromArray($reportData, null, 'A' . ($sheet->getHighestRow()));
         return $spreadsheet;
     }
 }

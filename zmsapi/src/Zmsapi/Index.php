@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
+use BO\Slim\Render;
 use BO\Slim\Request;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

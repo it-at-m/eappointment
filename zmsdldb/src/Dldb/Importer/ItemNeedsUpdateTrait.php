@@ -7,7 +7,7 @@ namespace BO\Dldb\Importer;
  */
 trait ItemNeedsUpdateTrait
 {
-    public function itemNeedsUpdate(int $objectId, string $locale, string $objectHash, string $type) : bool
+    public function itemNeedsUpdate(int $objectId, string $locale, string $objectHash, string $type): bool
     {
         try {
             $statment = $this->getPDOAccess()->prepare(

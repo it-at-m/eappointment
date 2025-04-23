@@ -19,10 +19,18 @@ class SendMailTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
-                        'resolveReferences' => 2,
-                        'limit' => 300
+                        'resolveReferences' => 0, 'limit' => 300, 'onlyIds' => true
                     ],
-                    'response' => $this->readFixture("GET_mails_queue.json"),
+                    'response' => $this->readFixture("GET_mails_queue_id_only.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'ids' => '1234'
+                    ],
+                    'response' => $this->readFixture("GET_mail.json")
                 ],
             ]
         );
@@ -47,8 +55,7 @@ class SendMailTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
-                        'resolveReferences' => 2,
-                        'limit' => 300
+                        'resolveReferences' => 0, 'limit' => 300, 'onlyIds' => true
                     ],
                     'response' => $this->readFixture("GET_queue_empty.json"),
                 ],
@@ -69,10 +76,18 @@ class SendMailTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
-                        'resolveReferences' => 2,
-                        'limit' => 300
+                        'resolveReferences' => 0, 'limit' => 300, 'onlyIds' => true
                     ],
-                    'response' => $this->readFixture("GET_mails_queue_no_content.json")
+                    'response' => $this->readFixture("GET_mails_queue.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'ids' => '1234'
+                    ],
+                    'response' => $this->readFixture("GET_mail_no_content.json")
                 ],
                 [
                     'function' => 'readDeleteResult',

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,11 +7,11 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Process;
-use \BO\Zmsdb\Mail;
-use \BO\Zmsdb\Config;
-use \BO\Mellon\Validator;
+use BO\Slim\Render;
+use BO\Zmsdb\Process;
+use BO\Zmsdb\Mail;
+use BO\Zmsdb\Config;
+use BO\Mellon\Validator;
 
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
@@ -26,16 +27,22 @@ class ProcessDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $workstation = (new Helper\User($request))->readWorkstation();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
+        $process = (new Process())->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 2);
         $this->testProcessData($process, $args['authKey']);
         if ('reserved' == $process->status) {
-            if (!(new Process)->writeBlockedEntity($process)) {
+            if (!(new Process())->writeBlockedEntity($process, false, $workstation->getUseraccount())) {
                 throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
             }
             $processDeleted = $process;
         } else {
-            $processDeleted = (new Process)->writeCanceledEntity($args['id'], $args['authKey']);
+            $processDeleted = (new Process())->writeCanceledEntity(
+                $args['id'],
+                $args['authKey'],
+                null,
+                $workstation->getUseraccount()
+            );
             if (! $processDeleted || ! $processDeleted->hasId()) {
                 throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
             }

@@ -181,7 +181,7 @@ class Service extends Base
                     'type' => 'forms',
                 ],
                 'clearFields' => [
-                    'type' =>'forms',
+                    'type' => 'forms',
                     'locale' => $this->get('meta.locale')
                 ],
             ],
@@ -263,7 +263,7 @@ class Service extends Base
             ]
         ];
     }
-    
+
     public function preSetup()
     {
         try {
@@ -285,7 +285,7 @@ class Service extends Base
             */
             $fields = $this->get(['id', 'meta.locale', 'meta.hash']);
             $fields[] = static::getTableName();
-            
+
             if (is_array($fields[2])) {
                 error_log(print_r($fields[2]));
             }
@@ -314,7 +314,7 @@ class Service extends Base
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool
+    public function clearEntity(array $addWhere = []): bool
     {
         try {
             #print_r((array)$this->get(['meta.locale']));exit;

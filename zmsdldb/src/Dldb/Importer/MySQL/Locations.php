@@ -6,7 +6,7 @@ class Locations extends Base
 {
     protected $entityClass = '\\BO\\Dldb\\Importer\\MySQL\\Entity\\Location';
 
-    public function runImport() : bool
+    public function runImport(): bool
     {
         try {
             if ($this->needsUpdate()) {

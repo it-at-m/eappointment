@@ -4,15 +4,15 @@
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Apikey as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Apikey as Query;
 
 class ApikeyGet extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String

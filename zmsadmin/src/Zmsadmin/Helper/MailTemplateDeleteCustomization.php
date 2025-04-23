@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -25,7 +26,7 @@ class MailTemplateDeleteCustomization extends BaseController
 
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->getValue();
-        
+
         $result = \App::$http->readDeleteResult('/mailtemplates/' . $input['templateId'] . '/');
 
         return \BO\Slim\Render::withJson(

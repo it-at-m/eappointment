@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,10 +7,10 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Cluster as Query;
-use \BO\Zmsentities\Helper\DateTime;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Cluster as Query;
+use BO\Zmsentities\Helper\DateTime;
 
 class ClusterQueue extends BaseController
 {
@@ -34,7 +35,8 @@ class ClusterQueue extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = $query->readQueueList($cluster->id, $dateTime, $resolveReferences);
+        $queues = $query->readQueueList($cluster->id, $dateTime, $resolveReferences);
+        $message->data = $queues;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);

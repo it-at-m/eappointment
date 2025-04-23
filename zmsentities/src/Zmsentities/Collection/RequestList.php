@@ -1,11 +1,12 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 class RequestList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Request';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Request';
 
     public function hasRequests($requestIdCsv)
     {

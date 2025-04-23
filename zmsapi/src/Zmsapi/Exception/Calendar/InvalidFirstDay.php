@@ -7,5 +7,4 @@ namespace BO\Zmsapi\Exception\Calendar;
  */
 class InvalidFirstDay extends \Exception
 {
-
 }

@@ -35,7 +35,7 @@
                 "de_DE": {
                     "pointer": "Benutzername",
                     "messages": {
-                        "minLength": "Es muss ein aussagekräftiger Nutzername eingegeben werden",
+                        "minLength": "Bitte tragen Sie hier die LDAP-Kennung ein (erster Teil der E-Mail-Adresse)",
                         "maxLength": "Der Nutzername sollte 40 Zeichen nicht überschreiten"
                     }
                 }

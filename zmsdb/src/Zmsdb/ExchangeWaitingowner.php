@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Exchange;
+use BO\Zmsentities\Exchange;
 
 class ExchangeWaitingowner extends Base implements Interfaces\ExchangeSubject
 {
@@ -33,7 +33,7 @@ class ExchangeWaitingowner extends Base implements Interfaces\ExchangeSubject
             $raw = $this
                 ->getReader()
                 ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeWaitingowner::QUERY_READ_". strtoupper($period)),
+                    constant("\BO\Zmsdb\Query\ExchangeWaitingowner::QUERY_READ_" . strtoupper($period)),
                     [
                         'ownerid' => $subjectid,
                         'datestart' => $datestart->format('Y-m-d'),

@@ -135,7 +135,52 @@ class ProcessFreeTest extends Base
         foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
             $this->assertEquals(4, $processData['appointments'][0]['slotCount']);
         }
+
         $this->assertEquals(19, count(json_decode((string)$response->getBody(), true)['data']));
+        $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
+    }
+
+    public function testGettingAvailableSlotsFor2Requests3Days()
+    {
+        \App::$now->modify('2016-05-24 15:00');
+        $response = $this->render([], [
+            '__body' => '{
+                "firstDay": {
+                    "year": 2016,
+                    "month": 5,
+                    "day": 27
+                },
+                "lastDay": {
+                    "year": 2016,
+                    "month": 5,
+                    "day": 29
+                },
+                "requests": [
+                    {
+                        "id": "120703",
+                        "name": "Personalausweis beantragen",
+                        "source": "dldb"
+                    },
+                    {
+                        "id": "120703",
+                        "name": "Personalausweis beantragen",
+                        "source": "dldb"
+                    }
+                ],
+                "providers": [
+                    {
+                        "id": 122304,
+                        "source": "dldb"
+                    }
+                ]
+            }'
+        ], []);
+
+        foreach(json_decode((string)$response->getBody(), true)['data'] as $processData) {
+            $this->assertEquals(4, $processData['appointments'][0]['slotCount']);
+        }
+
+        $this->assertEquals(21, count(json_decode((string)$response->getBody(), true)['data']));
         $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
     }
 

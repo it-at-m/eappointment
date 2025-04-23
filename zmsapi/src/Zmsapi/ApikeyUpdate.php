@@ -4,15 +4,15 @@
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Apikey as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Apikey as Query;
 
 class ApikeyUpdate extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -30,7 +30,7 @@ class ApikeyUpdate extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $apiKey = (new Query())->readEntity($entity->key);
         if ($clientKey) {
-            $apiClient = (new \BO\Zmsdb\Apiclient)->readEntity($clientKey);
+            $apiClient = (new \BO\Zmsdb\Apiclient())->readEntity($clientKey);
             if (!$apiClient || !isset($apiClient->accesslevel) || $apiClient->accesslevel == 'blocked') {
                 throw new Exception\Process\ApiclientInvalid();
             }

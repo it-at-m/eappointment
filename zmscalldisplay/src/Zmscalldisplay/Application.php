@@ -1,20 +1,21 @@
 <?php
+
 /**
  *
  * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmscalldisplay;
 
 class Application extends \BO\Slim\Application
 {
-
     /**
      * Name of the application
      */
-    const IDENTIFIER = 'Zmscalldisplay';
-
+    const IDENTIFIER = 'zms';
+    const MODULE_NAME = 'zmscalldisplay';
     const DEBUG = false;
 
     /**

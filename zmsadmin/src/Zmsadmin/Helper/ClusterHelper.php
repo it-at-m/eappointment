@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package Zmsappointment
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin\Helper;
 
 class ClusterHelper
@@ -16,7 +18,7 @@ class ClusterHelper
     public function __construct(\BO\Zmsentities\Workstation $workstation)
     {
         static::$workstation = $workstation;
-        static::$cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
+        static::$cluster = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/cluster/')->getEntity();
     }
 
     public static function getEntity()
@@ -34,13 +36,13 @@ class ClusterHelper
         if (static::isClusterEnabled()) {
             $processList = \App::$http
                 ->readGetResult(
-                    '/cluster/'. static::$cluster->id .'/process/'. $selectedDate .'/',
+                    '/cluster/' . static::$cluster->id . '/process/' . $selectedDate . '/',
                     ['resolveReferences' => 1, 'gql' => GraphDefaults::getProcess()]
                 );
         } else {
             $processList = \App::$http
                 ->readGetResult(
-                    '/scope/'. static::$workstation->scope['id'] .'/process/'. $selectedDate .'/',
+                    '/scope/' . static::$workstation->scope['id'] . '/process/' . $selectedDate . '/',
                     ['resolveReferences' => 1, 'gql' => GraphDefaults::getProcess()]
                 );
         }
@@ -59,7 +61,7 @@ class ClusterHelper
         }
         if (static::isClusterEnabled()) {
             $nextProcess =  \App::$http->readGetResult(
-                '/cluster/'. static::$cluster['id'] .'/queue/next/',
+                '/cluster/' . static::$cluster['id'] . '/queue/next/',
                 [
                     'exclude' => $excludedIds,
                     'allowClusterWideCall' => \App::$allowClusterWideCall
@@ -67,12 +69,12 @@ class ClusterHelper
             )->getEntity();
         } else {
             $nextProcess = \App::$http->readGetResult(
-                '/scope/'. static::$workstation->scope['id'] .'/queue/next/',
+                '/scope/' . static::$workstation->scope['id'] . '/queue/next/',
                 ['exclude' => $excludedIds]
             )->getEntity();
         }
-        
-        
+
+
         return ($nextProcess) ? $nextProcess : new \BO\Zmsentities\Process();
     }
 

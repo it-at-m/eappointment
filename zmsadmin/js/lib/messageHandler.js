@@ -51,7 +51,13 @@ class MessageHandler {
         }).on('click', '.button-callback', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            var callback = $(ev.target).data('callback');
+            let target = ev.target;
+    
+            if (target.tagName.toLowerCase() === 'i') {
+                target = target.parentElement;
+            }
+    
+            var callback = $(target).data('callback');
             this.callback = this.parent[callback];
             this.removeFocusTrap(this.$main);
             this.callback(ev);

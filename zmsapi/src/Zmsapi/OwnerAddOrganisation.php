@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Organisation as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Organisation as Query;
 
 class OwnerAddOrganisation extends BaseController
 {
@@ -22,7 +23,7 @@ class OwnerAddOrganisation extends BaseController
         array $args
     ) {
         \BO\Zmsdb\Connection\Select::getWriteConnection();
-        $owner = (new \BO\Zmsdb\Owner)->readEntity($args['id'], 2);
+        $owner = (new \BO\Zmsdb\Owner())->readEntity($args['id'], 2);
         (new Helper\User($request, 2))->checkRights(
             new \BO\Zmsentities\Useraccount\EntityAccess($owner)
         );

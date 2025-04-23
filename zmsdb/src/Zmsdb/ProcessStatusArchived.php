@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Processarchived as Entity;
-use \BO\Zmsentities\Collection\ProcessList as Collection;
+use BO\Zmsentities\Processarchived as Entity;
+use BO\Zmsentities\Collection\ProcessList as Collection;
 
 /**
  *
@@ -48,6 +49,17 @@ class ProcessStatusArchived extends Process
             ->addConditionScopeId($scopeId)
             ->addResolvedReferences($resolveReferences)
             ->addConditionTime($dateTime);
+        return $this->readResolvedList($query, $resolveReferences);
+    }
+
+    public function readListByScopesAndDates($scopeIds, $dateTimes, $resolveReferences = 0)
+    {
+        $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionScopeIds($scopeIds)
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionTimes($dateTimes);
+
         return $this->readResolvedList($query, $resolveReferences);
     }
 
@@ -101,9 +113,16 @@ class ProcessStatusArchived extends Process
     public function writeEntityFinished(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        bool $calculateStatistic = false
+        bool $calculateStatistic = false,
+        ?\BO\Zmsentities\Useraccount $useraccount = null
     ) {
-        $process = $this->updateEntity($process, $now, 1);
+        $process = $this->updateEntity(
+            $process,
+            $now,
+            1,
+            null,
+            $useraccount
+        );
         $archived = null;
         if ($this->writeBlockedEntity($process)) {
             $archived = $this->writeNewArchivedProcess($process, $now, 0, $calculateStatistic);
@@ -162,12 +181,16 @@ class ProcessStatusArchived extends Process
         $query->addValuesNewArchive($process, $now);
         $this->writeItem($query);
         $archiveId = $this->getWriter()->lastInsertId();
-        Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ", $process->id);
+        Log::writeProcessLog(
+            "ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ",
+            Log::ACTION_ARCHIVED,
+            $process
+        );
 
         if ($calculateStatistic) {
             (new ExchangeWaitingscope())->updateWaitingStatistics($process, $now);
         }
-        
+
         return $this->readArchivedEntity($archiveId, $resolveReferences);
     }
 
@@ -191,12 +214,11 @@ class ProcessStatusArchived extends Process
     public function anonymizeNames(\DateTimeInterface $dateTime)
     {
         $query = new Query\ProcessStatusArchived(Query\Base::UPDATE);
-        $query->addConditionOlderThanDate($dateTime);  
+        $query->addConditionOlderThanDate($dateTime);
         $query->addValues([
             'name' => 'ANONYMIZED'
         ]);
-    
+
         return $this->writeItem($query);
     }
-        
 }

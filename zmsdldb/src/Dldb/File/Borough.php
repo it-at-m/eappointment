@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Dldb\File;
 
-use \BO\Dldb\Entity\Borough as Entity;
-use \BO\Dldb\Collection\Boroughs as Collection;
+use BO\Dldb\Entity\Borough as Entity;
+use BO\Dldb\Collection\Boroughs as Collection;
 
 /**
   * Common methods shared by access classes
@@ -15,7 +16,6 @@ use \BO\Dldb\Collection\Boroughs as Collection;
   */
 class Borough extends Base
 {
-
     protected function parseData($data)
     {
         $itemList = new Collection();

@@ -1,8 +1,9 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Calendar as Entity;
-use \BO\Zmsdb\Query\SlotList;
+use BO\Zmsentities\Calendar as Entity;
+use BO\Zmsdb\Query\SlotList;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -40,7 +41,7 @@ class Calendar extends Base
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $scopeReader = new Scope();
         foreach ($calendar->scopes as $scope) {
-            $scope = $scopeReader->readEntity($scope['id'], 2);
+            $scope = $scopeReader->readEntity($scope['id'], 1);
             $scopeList->addEntity($scope);
         }
         $calendar['scopes'] = $scopeList->withUniqueScopes();
@@ -87,11 +88,7 @@ class Calendar extends Base
         foreach ($calendar['clusters'] as $cluster) {
             $cluster = new \BO\Zmsentities\Cluster($cluster);
             $scopeList = $scopeReader->readByClusterId($cluster->getId(), 1);
-            foreach ($scopeList as $scope) {
-                if (! $calendar['scopes']->hasEntity($scope->getId())) {
-                    $calendar['scopes']->addEntity($scope);
-                }
-            }
+            $calendar['scopes'] = $calendar['scopes']->addList($scopeList)->withUniqueScopes();
         }
         return $calendar;
     }
@@ -103,13 +100,8 @@ class Calendar extends Base
         foreach ($calendar['providers'] as $key => $provider) {
             $provider = new \BO\Zmsentities\Provider($provider);
             $calendar['providers'][$key] = $providerReader->readEntity($provider->getSource(), $provider->getId());
-            $scopeList = $scopeReader->readByProviderId($provider->getId(), 2);
-            foreach ($scopeList as $scope) {
-                $scope = new \BO\Zmsentities\Scope($scope);
-                if (! $calendar['scopes']->hasEntity($scope->getId())) {
-                    $calendar['scopes']->addEntity($scope);
-                }
-            }
+            $scopeList = $scopeReader->readByProviderId($provider->getId(), 1);
+            $calendar['scopes'] = $calendar['scopes']->addList($scopeList)->withUniqueScopes();
         }
         return $calendar;
     }

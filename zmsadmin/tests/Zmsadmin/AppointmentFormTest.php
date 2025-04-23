@@ -57,7 +57,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertStringContainsString('Terminvereinbarung Neu', (string)$response->getBody());
+        $this->assertStringContainsString('Termin erstellen', (string)$response->getBody());
         $this->assertStringContainsString('title="Spontankunde"', (string)$response->getBody());
         $this->assertStringContainsString('Liste leeren', (string)$response->getBody());
     }
@@ -240,7 +240,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selectedprocess' => 100044]);
-        $this->assertStringContainsString('Terminvereinbarung Aktualisieren', (string)$response->getBody());
+        $this->assertStringContainsString('Termin aktualisieren', (string)$response->getBody());
     }
 
     public function testSelectedDate()
@@ -290,7 +290,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27']);
-        $this->assertStringContainsString('Terminvereinbarung Neu', (string)$response->getBody());
+        $this->assertStringContainsString('Termin erstellen', (string)$response->getBody());
         $this->assertStringContainsString('2016-05-27', (string)$response->getBody());
         $this->assertStringNotContainsString('slotCount', (string)$response->getBody());
     }

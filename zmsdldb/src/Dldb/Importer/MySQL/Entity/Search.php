@@ -44,7 +44,7 @@ class Search extends Base
         }
     }
 
-    public function clearEntity(array $addWhere = []) : bool
+    public function clearEntity(array $addWhere = []): bool
     {
         try {
             #print_r(static::class);

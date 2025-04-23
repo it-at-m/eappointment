@@ -2,7 +2,7 @@
 
 namespace BO\Zmsapi\Helper;
 
-use \BO\Slim\Render;
+use BO\Slim\Render;
 
 /**
  *
@@ -37,13 +37,13 @@ class ExchangePeriod
             static::$startDateTime = \App::$now;
         } elseif (static::$year && static::$month && static::$day) {
             static::$periodIdentifier = 'hour';
-            static::$startDateTime = new \DateTimeImmutable(static::$year .'-'. static::$month .'-'. static::$day);
+            static::$startDateTime = new \DateTimeImmutable(static::$year . '-' . static::$month . '-' . static::$day);
         } elseif (static::$year && static::$month && ! static::$day) {
             static::$periodIdentifier = 'day';
-            static::$startDateTime = new \DateTimeImmutable(static::$year .'-'. static::$month .'-01');
+            static::$startDateTime = new \DateTimeImmutable(static::$year . '-' . static::$month . '-01');
         } elseif (! static::$month) {
             static::$periodIdentifier = 'month';
-            static::$startDateTime = new \DateTimeImmutable(static::$year .'-01-01');
+            static::$startDateTime = new \DateTimeImmutable(static::$year . '-01-01');
         }
         return static::$startDateTime;
     }
@@ -55,7 +55,7 @@ class ExchangePeriod
         } elseif ('day' == static::$periodIdentifier) {
             static::$endDateTime = static::$startDateTime->modify('last day of this month');
         } elseif ('month' == static::$periodIdentifier) {
-            static::$endDateTime = new \DateTimeImmutable(static::$year .'-12-31');
+            static::$endDateTime = new \DateTimeImmutable(static::$year . '-12-31');
         }
         return static::$endDateTime;
     }

@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Schema;
 
-use \BO\Zmsentities\Helper\Property;
+use BO\Zmsentities\Helper\Property;
 
 /**
  * @SuppressWarnings(NumberOfChildren)
@@ -15,7 +15,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * primary id for entity
      *
      */
-    const PRIMARY = 'id';
+    public const PRIMARY = 'id';
 
     /**
      * @var String $schema Filename of JSON-Schema file
@@ -87,7 +87,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * This method is private, because the used library should not be used outside of this class!
      */
-    private function getValidator($locale = 'de_DE', $resolveLevel = 0)
+    public function getValidator($locale = 'de_DE', $resolveLevel = 0)
     {
         $jsonSchema = self::readJsonSchema()->withResolvedReferences($resolveLevel);
         $data = (new Schema($this))->withoutRefs();
@@ -101,9 +101,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Check if the given data validates against the given jsonSchema
      *
-     * @return Boolean
+     * @return bool
      */
-    public function isValid($resolveLevel = 0)
+    public function isValid($resolveLevel = 0): bool
     {
         $validator = $this->getValidator('de_DE', $resolveLevel = 0);
         return $validator->isValid();
@@ -113,12 +113,11 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * Check if the given data validates against the given jsonSchema
      *
      * @throws \BO\Zmsentities\Expcetion\SchemaValidation
-     * @return Boolean
+     * @return bool
      */
-    public function testValid($locale = 'de_DE', $resolveLevel = 0)
+    public function testValid($locale = 'de_DE', $resolveLevel = 0): bool
     {
         $validator = $this->getValidator($locale, $resolveLevel);
-        $validator = $this->registerExtensions($validator);
         if (!$validator->isValid()) {
             $exception = new \BO\Zmsentities\Exception\SchemaValidation();
             $exception->setSchemaName($this->getEntityName());
@@ -126,12 +125,6 @@ class Entity extends \ArrayObject implements \JsonSerializable
             throw $exception;
         }
         return true;
-    }
-
-    public function registerExtensions($validator)
-    {
-        $validator->registerFormatExtension('sameValues', new Extensions\SameValues());
-        return $validator;
     }
 
     /**
@@ -308,7 +301,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function withCleanedUpFormData()
     {
         $entity = clone $this;
-        unset($entity['save']);
+        if (isset($entity['save'])) {
+            unset($entity['save']);
+        }
         if (isset($entity['removeImage'])) {
             unset($entity['removeImage']);
         }

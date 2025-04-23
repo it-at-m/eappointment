@@ -3,7 +3,6 @@
 namespace BO\Slim;
 
 use Psr\Http\Message\RequestInterface;
-
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 
 class Language
@@ -27,7 +26,8 @@ class Language
         $this->setCurrentLocale();
         $defaultLang = $this->getDefault();
 
-        if (\App::MULTILANGUAGE
+        if (
+            \App::MULTILANGUAGE
             || (strlen($fallbackLocale) > 0 && strlen($this->currentLocale) > 0 && strlen($defaultLang) > 0)
         ) {
             if (null === self::$translatorInstance) {
@@ -58,8 +58,10 @@ class Language
     public function getLocale($locale = '')
     {
         $locale = ('' == $locale) ? $this->getDefault() : $locale;
-        if (isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]) &&
-            isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'])) {
+        if (
+            isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]) &&
+            isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'])
+        ) {
             $locale = self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'];
         }
         return $locale;
@@ -84,7 +86,7 @@ class Language
         $localeList[] = $locale;
         $suffixList = ['utf8', 'utf-8'];
         foreach ($suffixList as $suffix) {
-            array_unshift($localeList, $locale .'.'. $suffix);
+            array_unshift($localeList, $locale . '.' . $suffix);
         }
         return $localeList;
     }

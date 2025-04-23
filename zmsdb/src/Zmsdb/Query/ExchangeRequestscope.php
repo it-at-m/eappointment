@@ -26,8 +26,8 @@ class ExchangeRequestscope extends Base
             ) as name,
         COUNT(s.anliegenid) as requestscount,
         AVG(s.bearbeitungszeit) as processingtime
-    FROM '. self::TABLE .' AS s
-        LEFT JOIN '. self::REQUESTTABLE .' as r ON r.id = s.anliegenid
+    FROM ' . self::TABLE . ' AS s
+        LEFT JOIN ' . self::REQUESTTABLE . ' as r ON r.id = s.anliegenid
     WHERE s.`standortid` = :scopeid AND s.`Datum` BETWEEN :datestart AND :dateend
     GROUP BY DATE_FORMAT(s.`datum`, :groupby), s.anliegenid
     ORDER BY r.name, s.anliegenid
@@ -39,14 +39,14 @@ class ExchangeRequestscope extends Base
           periodstart,
           periodend,
           CONCAT(scope.`Bezeichnung`, " ", scope.`standortinfozeile`) AS description
-      FROM '. Scope::TABLE .' AS scope
+      FROM ' . Scope::TABLE . ' AS scope
           INNER JOIN
             (
               SELECT
                 s.standortid as scopeid,
                 MIN(s.`datum`) AS periodstart,
                 MAX(s.`datum`) AS periodend
-              FROM '. self::TABLE .' s
+              FROM ' . self::TABLE . ' s
               group by scopeid
             )
           maxAndminDate ON maxAndminDate.`scopeid` = scope.`StandortID`
@@ -56,12 +56,12 @@ class ExchangeRequestscope extends Base
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT date
-        FROM '. Scope::TABLE .' AS scope
+        FROM ' . Scope::TABLE . ' AS scope
             INNER JOIN (
               SELECT
                 `StandortID`,
                 DATE_FORMAT(`Datum`,"%Y-%m") AS date
-              FROM '. self::TABLE .'
+              FROM ' . self::TABLE . '
             ) s ON scope.`StandortID` = s.`standortid`
         WHERE scope.`StandortID` = :scopeid
         GROUP BY date

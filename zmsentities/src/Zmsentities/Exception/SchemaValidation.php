@@ -2,11 +2,9 @@
 
 namespace BO\Zmsentities\Exception;
 
-use \BO\Zmsentities\Schema\Validator;
+use BO\Zmsentities\Schema\Validator;
+use Opis\JsonSchema\ValidationError;
 
-/**
- * example class to generate an exception
- */
 class SchemaValidation extends \Exception
 {
     protected $code = 400;
@@ -31,14 +29,24 @@ class SchemaValidation extends \Exception
     protected function setMessages($validationErrorList)
     {
         foreach ($validationErrorList as $error) {
-            $pointer = Validator::getOriginPointer($error);
-            $this->data[$pointer]['messages'][$error->getKeyword()] = $error->getMessage();
-            $this->data[$pointer]['headline'] = $error->getDataPath();
+            $pointer = is_array($error->data()->path())
+                ? "/" . implode("/", $error->data()->path())
+                : (string) ($error->data()->path() ?? "(root)");
+
+            $message = $error->message();
+            foreach ($error->args() as $key => $value) {
+                $message = str_replace("{" . $key . "}", json_encode($value, JSON_UNESCAPED_SLASHES), $message);
+            }
+
+            $this->data[$pointer]['messages'][$error->keyword()] = $message;
+            $this->data[$pointer]['headline'] = $pointer;
             $this->data[$pointer]['failed'] = 1;
-            $this->data[$pointer]['data'] = $error->getData();
+            $this->data[$pointer]['data'] = $error->data() !== null ? $error->data()->value() : null;
+
+            $this->message .= ($this->message ? " | " : "")
+                . '[property ' . $pointer . '] '
+                . json_encode($this->data[$pointer]['messages'], JSON_UNESCAPED_SLASHES);
         }
-        $message = '[property '. $error->getDataPath() .'] '. json_encode($this->data[$pointer]['messages'], 1);
-        $this->message = (! $this->message) ? $message : $this->message;
         return $this;
     }
 }

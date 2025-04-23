@@ -1,17 +1,18 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Scope;
 
 class ScopeGet extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -27,7 +28,7 @@ class ScopeGet extends BaseController
         $hasGQL = Validator::param('gql')->isString()->getValue();
         $accessRights = Validator::param('accessRights')->isString()->isBiggerThan(4)->setDefault('basic')->getValue();
         $getIsOpened = Validator::param('getIsOpened')->isNumber()->setDefault(0)->getValue();
-        $scope = (new Scope)->readEntity($args['id'], $resolveReferences);
+        $scope = (new Scope())->readEntity($args['id'], $resolveReferences);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
@@ -44,7 +45,7 @@ class ScopeGet extends BaseController
         }
 
         if ($getIsOpened) {
-            $scope->setStatusAvailability('isOpened', (new Scope)->readIsOpened($scope->getId(), \App::$now));
+            $scope->setStatusAvailability('isOpened', (new Scope())->readIsOpened($scope->getId(), \App::$now));
         }
         $message->data = $scope;
 

@@ -1,19 +1,20 @@
 <?php
+
 /**
  *
  * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
-use \BO\Mellon\Validator;
+use BO\Mellon\Validator;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Message extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   BO Slim
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG

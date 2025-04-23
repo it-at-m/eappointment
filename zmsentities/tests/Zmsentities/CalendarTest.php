@@ -31,7 +31,7 @@ class CalendarTest extends EntityCommonTests
         $this->assertEquals(2, count($entity->getProviderList()));
         $entity->addRequest('dldb', self::REQUESTS);
         $this->assertEquals(2, count($entity->getRequestList()));
-        $entity->addCluster('dldb', self::CLUSTER);
+        $entity->addCluster(self::CLUSTER);
         $this->assertEquals(2, count($entity->clusters));
         $entity->addScope(self::SCOPE);
         $this->assertEquals(2, count($entity->getScopeList()));

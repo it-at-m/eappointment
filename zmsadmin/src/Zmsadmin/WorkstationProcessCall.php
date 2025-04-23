@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,7 +7,7 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Mellon\Validator;
+use BO\Mellon\Validator;
 
 class WorkstationProcessCall extends BaseController
 {
@@ -23,7 +24,7 @@ class WorkstationProcessCall extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $validator = $request->getAttribute('validator');
         $isDirectCall = $validator->getParameter('direct')->isNumber()->getValue();
-        $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
+        $process = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
         if ($process->toProperty()->amendment->get() && ! $isDirectCall) {
             return \BO\Slim\Render::redirect(
                 'workstationProcessPreCall',

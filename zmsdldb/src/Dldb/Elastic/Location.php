@@ -1,20 +1,21 @@
 <?php
+
 /**
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\Elastic;
 
-use \BO\Dldb\Entity\Location as Entity;
-use \BO\Dldb\Collection\Locations as Collection;
-use \BO\Dldb\File\Location as Base;
+use BO\Dldb\Entity\Location as Entity;
+use BO\Dldb\Collection\Locations as Collection;
+use BO\Dldb\File\Location as Base;
 
 /**
  * @SuppressWarnings(Coupling)
  */
 class Location extends Base
 {
-
     /**
      *
      * @return Entity

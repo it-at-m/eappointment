@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,11 +7,11 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\ProcessStatusArchived as Query;
-use \BO\Zmsdb\Process;
-use \BO\Zmsdb\Workstation;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\ProcessStatusArchived as Query;
+use BO\Zmsdb\Process;
+use BO\Zmsdb\Workstation;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -37,16 +38,22 @@ class ProcessFinished extends BaseController
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $query = new Query();
         if ('pending' == $process['status']) {
-            $process = $query->updateEntity($process, \App::$now, 0, $process['status']);
-            (new Workstation)->writeRemovedProcess($workstation);
+            $process = $query->updateEntity(
+                $process,
+                \App::$now,
+                0,
+                $process['status'],
+                $workstation->getUseraccount()
+            );
+            (new Workstation())->writeRemovedProcess($workstation);
         } else {
-            $query->writeEntityFinished($process, \App::$now, true);
+            $query->writeEntityFinished($process, \App::$now, false, $workstation->getUseraccount());
         }
 
         if ($survey) {
             $this->writeSurveyMail($process);
         }
-        
+
         $message = Response\Message::create($request);
         $message->data = $process;
 
@@ -57,7 +64,7 @@ class ProcessFinished extends BaseController
 
     protected function testProcessInWorkstation($process, $workstation)
     {
-        $department = (new \BO\Zmsdb\Department)->readByScopeId($workstation->scope['id'], 1);
+        $department = (new \BO\Zmsdb\Department())->readByScopeId($workstation->scope['id'], 1);
         $workstation->process = $process;
         $workstation->testMatchingProcessScope($department->getScopeList());
     }

@@ -37,10 +37,10 @@ class ExchangeClientowner extends Base
             0 as withappointment,
             0 as missedwithappointment,
             0 as requestcount
-          FROM '. Owner::TABLE .' o
-              LEFT JOIN '. Department::TABLE .' d ON d.`KundenID` = o.`KundenID`
-              LEFT JOIN '. Scope::TABLE .' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
-              LEFT JOIN '. self::NOTIFICATIONSTABLE .' n ON n.`StandortID` = scope.`StandortID`
+          FROM ' . Owner::TABLE . ' o
+              LEFT JOIN ' . Department::TABLE . ' d ON d.`KundenID` = o.`KundenID`
+              LEFT JOIN ' . Scope::TABLE . ' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
+              LEFT JOIN ' . self::NOTIFICATIONSTABLE . ' n ON n.`StandortID` = scope.`StandortID`
           WHERE o.`KundenID` = :ownerid AND n.`Datum` BETWEEN :datestart AND :dateend
           GROUP BY date
 
@@ -55,10 +55,10 @@ class ExchangeClientowner extends Base
             SUM(IF(a.`nicht_erschienen`=0 AND a.mitTermin=1,a.AnzahlPersonen,0)) as withappointment,
             SUM(IF(a.`nicht_erschienen`=1 AND a.mitTermin=1,a.AnzahlPersonen,0)) as missedwithappointment,
             0 as requestcount                
-            FROM '. Owner::TABLE .' o
-                LEFT JOIN '. Department::TABLE .' d ON d.`KundenID` = o.`KundenID`
-                LEFT JOIN '. Scope::TABLE .' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.`StandortID` = scope.`StandortID`
+            FROM ' . Owner::TABLE . ' o
+                LEFT JOIN ' . Department::TABLE . ' d ON d.`KundenID` = o.`KundenID`
+                LEFT JOIN ' . Scope::TABLE . ' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
+                LEFT JOIN ' . ProcessStatusArchived::TABLE . ' a ON a.`StandortID` = scope.`StandortID`
             WHERE o.`KundenID` = :ownerid AND a.`Datum` BETWEEN :datestart AND :dateend
             GROUP BY date
 
@@ -73,11 +73,11 @@ class ExchangeClientowner extends Base
             	0 as withappointment,
             	0 as missedwithappointment,
               COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as requestcount
-                FROM '. Owner::TABLE .' o
-                    LEFT JOIN '. Department::TABLE .' d ON d.`KundenID` = o.`KundenID`
-                    LEFT JOIN '. Scope::TABLE .' as scope ON d.`BehoerdenID` = scope.`BehoerdenID`
-                    LEFT JOIN '. ProcessStatusArchived::TABLE .' as a ON scope.`StandortID` = a.`StandortID`
-                    LEFT JOIN '. self::BATABLE .' as ba ON a.BuergerarchivID = ba.BuergerarchivID
+                FROM ' . Owner::TABLE . ' o
+                    LEFT JOIN ' . Department::TABLE . ' d ON d.`KundenID` = o.`KundenID`
+                    LEFT JOIN ' . Scope::TABLE . ' as scope ON d.`BehoerdenID` = scope.`BehoerdenID`
+                    LEFT JOIN ' . ProcessStatusArchived::TABLE . ' as a ON scope.`StandortID` = a.`StandortID`
+                    LEFT JOIN ' . self::BATABLE . ' as ba ON a.BuergerarchivID = ba.BuergerarchivID
                 WHERE
                   o.`KundenID` = :ownerid AND
                   a.nicht_erschienen=0 AND
@@ -96,14 +96,14 @@ class ExchangeClientowner extends Base
           periodstart,
           periodend,
           o.`Kundenname` AS description
-      FROM '. Owner::TABLE .' AS o
+      FROM ' . Owner::TABLE . ' AS o
           INNER JOIN
             (
               SELECT
                 s.`kundenid` AS kundenid,
                 MIN(s.`datum`) AS periodstart,
                 MAX(s.`datum`) AS periodend
-              FROM '. self::TABLE .' s
+              FROM ' . self::TABLE . ' s
               group by kundenid
             )
           maxAndminDate ON maxAndminDate.`kundenid` = o.`KundenID`
@@ -113,12 +113,12 @@ class ExchangeClientowner extends Base
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT date
-        FROM '. Owner::TABLE .' AS o
+        FROM ' . Owner::TABLE . ' AS o
             INNER JOIN (
               SELECT
                 kundenid,
                 DATE_FORMAT(`datum`,"%Y-%m") AS date
-              FROM '. self::TABLE .'
+              FROM ' . self::TABLE . '
             ) s ON s.kundenid = o.`KundenID`
         WHERE o.`KundenID` = :ownerid
         GROUP BY date

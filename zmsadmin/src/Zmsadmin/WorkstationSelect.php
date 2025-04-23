@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsadmin\Helper\LoginForm;
-use \BO\Mellon\Validator;
+use BO\Zmsadmin\Helper\LoginForm;
+use BO\Mellon\Validator;
 
 class WorkstationSelect extends BaseController
 {

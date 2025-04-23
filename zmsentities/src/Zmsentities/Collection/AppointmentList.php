@@ -1,11 +1,12 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
-use \BO\Zmsentities\Appointment;
+use BO\Zmsentities\Appointment;
 
 class AppointmentList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\Appointment';
+    public const ENTITY_CLASS = '\BO\Zmsentities\Appointment';
 
     public function getByDate($date)
     {

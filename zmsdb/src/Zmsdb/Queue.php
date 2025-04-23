@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Queue as Entity;
+use BO\Zmsentities\Queue as Entity;
 
 class Queue extends Base implements Interfaces\ResolveReferences
 {

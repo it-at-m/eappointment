@@ -4,15 +4,15 @@
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Apikey as Query;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Apikey as Query;
 
 class ApikeyDelete extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -23,7 +23,7 @@ class ApikeyDelete extends BaseController
         array $args
     ) {
         $message = Response\Message::create($request);
-        $message->data = (new Query)->deleteEntity($args['key']);
+        $message->data = (new Query())->deleteEntity($args['key']);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

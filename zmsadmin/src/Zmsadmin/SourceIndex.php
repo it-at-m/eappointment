@@ -6,11 +6,11 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsadmin;
 
 class SourceIndex extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String

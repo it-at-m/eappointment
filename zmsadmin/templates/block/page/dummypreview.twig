@@ -1,0 +1,12 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+{% block headline %}
+    {{ headline1("Dummy Preview") }}
+{% endblock %}
+
+{% block content %}
+    <pre>
+        {{previewHtml | raw}}
+    </pre>
+    <a href="/terminvereinbarung/admin/mailtemplates/" class="button button-submit">Zurück</a>
+{% endblock %}

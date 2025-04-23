@@ -220,8 +220,8 @@ class ExchangeWaitingscope extends Base
     const QUERY_READ_MONTH = "
         SELECT
             DATE_FORMAT(`datum`, '%Y-%m') as datum,
-            ". self::WAITING_VALUES ."
-        FROM ". self::TABLE ."
+            " . self::WAITING_VALUES . "
+        FROM " . self::TABLE . "
         WHERE
             `standortid` = :scopeid AND
             `datum` BETWEEN :datestart AND :dateend
@@ -232,8 +232,8 @@ class ExchangeWaitingscope extends Base
     const QUERY_READ_QUARTER = "
         SELECT
           CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`)) as datum,
-          ". self::WAITING_VALUES ."
-        FROM ". self::TABLE ." w
+          " . self::WAITING_VALUES . "
+        FROM " . self::TABLE . " w
         WHERE
           w.`standortid` = :scopeid AND
           w.`datum` BETWEEN :datestart AND :dateend
@@ -247,14 +247,14 @@ class ExchangeWaitingscope extends Base
             periodstart,
             periodend,
             CONCAT(scope.`Bezeichnung`, " ", scope.`standortinfozeile`) AS description
-        FROM '. Scope::TABLE .' AS scope
+        FROM ' . Scope::TABLE . ' AS scope
             INNER JOIN
               (
           SELECT
             w.standortid as scopeid,
             MIN(w.`datum`) AS periodstart,
             MAX(w.`datum`) AS periodend
-          FROM '. self::TABLE .' w
+          FROM ' . self::TABLE . ' w
           group by scopeid
         )
             maxAndminDate ON maxAndminDate.`scopeid` = scope.`StandortID`

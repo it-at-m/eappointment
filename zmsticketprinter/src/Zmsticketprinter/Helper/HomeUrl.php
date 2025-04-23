@@ -6,6 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter\Helper;
 
 use BO\Mellon\Validator;

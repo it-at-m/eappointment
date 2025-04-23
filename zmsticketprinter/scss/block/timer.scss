@@ -1,9 +1,7 @@
 .digitaluhr {
-    position: 				absolute;
-    left: 					922px;
-    top: 					56px;
-    font-weight: 			normal;
-    font-size: 				20px;
-    color: 					$white;
-    text-align: 			left;
+    font-weight: normal;
+    font-size: 20px;
+    color: $white;
+    text-align: right;
+    align-self: flex-end;   /* Element rechts unten ausrichten */
 }

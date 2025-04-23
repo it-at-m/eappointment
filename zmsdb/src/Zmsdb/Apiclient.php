@@ -1,7 +1,8 @@
 <?php
+
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Apiclient as Entity;
+use BO\Zmsentities\Apiclient as Entity;
 
 class Apiclient extends Base
 {

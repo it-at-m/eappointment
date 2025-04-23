@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ClientDLDB
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG

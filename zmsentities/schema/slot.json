@@ -11,17 +11,41 @@
     "additionalProperties": false,
     "properties": {
         "callcenter": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^-?[0-9]+$"
+                }
+            ],
             "default": 0,
             "description": "Appointments of this type are usually only available via human agents, usually by phone"
         },
         "intern": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^-?[0-9]+$"
+                }
+            ],
             "default": 0,
             "description": "Appointments of this type are usually only available for authenticated workstations"
         },
         "public": {
-            "type": "number",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^-?[0-9]+$"
+                }
+            ],
             "default": 0,
             "description": "Appointments of this type are available for everyone"
         },

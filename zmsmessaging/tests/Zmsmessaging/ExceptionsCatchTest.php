@@ -18,10 +18,20 @@ class ExceptionsCatchTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
-                        'resolveReferences' => 2,
-                        'limit' => 300
+                        'resolveReferences' => 0,
+                        'limit' => 300,
+                        'onlyIds' => true 
                     ],
                     'response' => $this->readFixture("GET_mails_queue_no_department.json"),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'ids' => '1234,1234'
+                    ],
+                    'response' => $this->readFixture("GET_mails_queue_no_department.json")
                 ],
                 [
                     'function' => 'readDeleteResult',
@@ -30,7 +40,6 @@ class ExceptionsCatchTest extends Base
                 ]
             ]
         );
-
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         $resultList = \App::$messaging->initQueueTransmission();
         $this->assertEquals(0, count($resultList));
@@ -90,6 +99,15 @@ class ExceptionsCatchTest extends Base
         $this->setApiCalls(
             [
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/mails/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'ids' => '1234'
+                    ],
+                    'response' => $this->readFixture("GET_mails_queue_old.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/log/process/123456/',
                     'response' => $this->readFixture("POST_log.json"),
@@ -99,8 +117,9 @@ class ExceptionsCatchTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'parameters' => [
-                        'resolveReferences' => 2,
-                        'limit' => 300
+                        'resolveReferences' => 0,
+                        'limit' => 300,
+                        "onlyIds" => true
                     ],
                     'response' => $this->readFixture("GET_mails_queue_old.json")
                 ],
@@ -108,7 +127,7 @@ class ExceptionsCatchTest extends Base
                     'function' => 'readDeleteResult',
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
-                ],
+                ]
             ]
         );
 

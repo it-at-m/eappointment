@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,8 +7,8 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Zmsdb\Notification as Query;
+use BO\Slim\Render;
+use BO\Zmsdb\Notification as Query;
 
 class NotificationDelete extends BaseController
 {

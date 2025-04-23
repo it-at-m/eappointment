@@ -26,6 +26,7 @@ import PickupKeyboardHandheldView from "./page/pickup/keyboard-handheld"
 import StatisticView from './page/statistic'
 
 import LoginScopeSelectView from './block/scope/loginselectform'
+import EmergencyEnd from './block/scope/emergencyend'
 //import AvailabilityDayPage from './page/availabilityDay'
 import WeekCalendarPage from './page/weekCalendar'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
@@ -106,6 +107,10 @@ $('.config-view').each(function () {
 
 $('[data-scope-select-form]').each(function () {
     new LoginScopeSelectView(this, getDataAttributes(this));
+})
+
+$('.emergency-end').each(function () {
+    new EmergencyEnd(this, getDataAttributes(this));
 })
 
 $('.pickup-view').each(function () {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -15,7 +16,6 @@ use Error;
  */
 class TwigExtension extends \Twig\Extension\AbstractExtension
 {
-
     public function __construct($container = null)
     {
         $this->container = $container;
@@ -59,20 +59,20 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
 
     public function dump($item)
     {
-        return '<pre>' . print_r($item, 1).'</pre>';
+        return '<pre>' . print_r($item, 1) . '</pre>';
     }
 
     public function currentRoute($lang = null)
     {
         if ($this->container->has('currentRoute')) {
             $routeParams = $this->container->get('currentRouteParams');
-            
+
             if (null !== $lang && 'de' == $lang) {
                 unset($routeParams['lang']);
             } else {
                 $routeParams['lang'] = ($lang !== null) ? $lang : \App::$language->getCurrentLanguage();
             }
-            
+
 
             $routeName = $this->container->get('currentRoute');
             $route = array(
@@ -88,12 +88,12 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $route;
     }
 
-    
+
     public function getD115Enabeld()
     {
         $settingsRepository = \App::$repository->fromSetting();
         $active = (bool)($settingsRepository->fetchName('d115.active') ?? true);
-        
+
 
         return $active;
     }
@@ -143,14 +143,14 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     public function convertOpeningTimes($name)
     {
         $days = array(
-            'monday'=>'Montag',
-            'tuesday'=>'Dienstag',
-            'wednesday'=>'Mittwoch',
-            'thursday'=>'Donnerstag',
-            'friday'=>'Freitag',
-            'saturday'=>'Samstag',
-            'sunday'=>'Sonntag',
-            'special'=>''
+            'monday' => 'Montag',
+            'tuesday' => 'Dienstag',
+            'wednesday' => 'Mittwoch',
+            'thursday' => 'Donnerstag',
+            'friday' => 'Freitag',
+            'saturday' => 'Samstag',
+            'sunday' => 'Sonntag',
+            'special' => ''
         );
         return $days[$name];
     }
@@ -185,7 +185,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         $formatDate['ts']       = $dateTime->getTimestamp();
         $formatDate['dateId']   = $dateTime->format('Y-m-d');
         $formatDate['ym']      = $dateTime->format('Y-m');
-        
+
         return $formatDate;
     }
 

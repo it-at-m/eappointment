@@ -7,7 +7,6 @@ use Ulrichsg\Getopt\Option;
 
 class Status extends Base
 {
-
     /**
      * @SuppressWarnings(Parameter)
      * @codeCoverageIgnore

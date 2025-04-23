@@ -1,17 +1,18 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Source;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Source;
 
 class SourceList extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -23,7 +24,7 @@ class SourceList extends BaseController
     ) {
         $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $sourceList = (new Source)->readList($resolveReferences);
+        $sourceList = (new Source())->readList($resolveReferences);
         $message->data = $sourceList;
 
         $response = Render::withLastModified($response, time(), '0');

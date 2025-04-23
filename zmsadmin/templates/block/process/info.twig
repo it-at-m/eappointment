@@ -60,10 +60,8 @@
             </dl>
             <a class="button button--positive button--fullwidth button-finish right" href="{{ urlGet("workstationProcessFinished", {}, {}) }}" style="margin: 0.5em 0;">Fertig stellen</a>
 
-            {% if workstation.process.withAppointment %}
-                <a class="button button--default button--fullwidth button-finish right" href="{{ urlGet("workstationProcessRedirect", {}, {}) }}" style="margin: 0.5em 0;">Weiterleiten</a>
-            {% endif %}
-            <button 
+            <a class="button button--default button--fullwidth button-finish right" href="{{ urlGet("workstationProcessRedirect", {}, {}) }}" style="margin: 0.5em 0;">Weiterleiten</a>
+            <button
                 type="button" 
                 class="button button--fullwidth client-called_button-parked left" 
                 style="margin: 0.5em 0; background-color: #edc00f; border-color: #edc00f !important;" 

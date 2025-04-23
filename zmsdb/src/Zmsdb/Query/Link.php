@@ -44,7 +44,7 @@ class Link extends Base
         $this->query->orWhere('link.behoerdenid', '=', $departmentId);
         return $this;
     }
-    
+
     public function reverseEntityMapping(\BO\Zmsentities\Link $entity, $departmentId)
     {
         $data = array();

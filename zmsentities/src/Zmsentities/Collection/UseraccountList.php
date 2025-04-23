@@ -1,9 +1,10 @@
 <?php
+
 namespace BO\Zmsentities\Collection;
 
 class UseraccountList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\UserAccount';
+    public const ENTITY_CLASS = '\BO\Zmsentities\UserAccount';
 
     public function withRights($requiredRights)
     {

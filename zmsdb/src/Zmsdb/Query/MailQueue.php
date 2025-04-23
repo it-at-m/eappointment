@@ -11,9 +11,16 @@ class MailQueue extends Base
 
     const QUERY_DELETE = '
         DELETE mq,  mp
-            FROM '. self::TABLE .' mq
-            LEFT JOIN '. Mimepart::TABLE .' mp ON mp.queueId = mq.id
+            FROM ' . self::TABLE . ' mq
+            LEFT JOIN ' . Mimepart::TABLE . ' mp ON mp.queueId = mq.id
             WHERE mq.id=?
+    ';
+
+    const QUERY_MULTI_DELETE = '
+        DELETE mq, mp
+        FROM ' . self::TABLE . ' mq
+        LEFT JOIN ' . Mimepart::TABLE . ' mp ON mp.queueId = mq.id
+        WHERE mq.id IN (?)
     ';
 
     public function getEntityMapping()
@@ -38,7 +45,21 @@ class MailQueue extends Base
 
     public function addOrderBy($parameter, $order = 'ASC')
     {
-        $this->query->orderBy('mailQueue.'. $parameter, $order);
+        $this->query->orderBy('mailQueue.' . $parameter, $order);
+        return $this;
+    }
+
+    public function addWhereIn($column, array $itemIds)
+    {
+        if (!empty($itemIds)) {
+            $this->query->where($column, 'IN', $itemIds);
+        }
+        return $this;
+    }
+
+    public function selectFields(array $fields)
+    {
+        $this->query->select($fields);
         return $this;
     }
 }

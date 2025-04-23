@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -9,5 +10,4 @@ namespace BO\Dldb\Collection;
 
 class Settings extends Base
 {
-
 }

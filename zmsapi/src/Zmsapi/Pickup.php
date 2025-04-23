@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -6,9 +7,9 @@
 
 namespace BO\Zmsapi;
 
-use \BO\Slim\Render;
-use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process;
+use BO\Slim\Render;
+use BO\Mellon\Validator;
+use BO\Zmsdb\Process;
 
 class Pickup extends BaseController
 {
@@ -27,12 +28,12 @@ class Pickup extends BaseController
         $offset = Validator::param('offset')->isNumber()->setDefault(null)->getValue();
         $selectedScope = Validator::param('selectedScope')->isNumber()->getValue();
         $scopeId = ($selectedScope) ? $selectedScope : $workstation->scope['id'];
-        $scope = (new \BO\Zmsdb\Scope)->readEntity($scopeId, 0);
+        $scope = (new \BO\Zmsdb\Scope())->readEntity($scopeId, 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
 
-        $processList = (new Process)->readProcessListByScopeAndStatus(
+        $processList = (new Process())->readProcessListByScopeAndStatus(
             $scope['id'],
             'pending',
             $resolveReferences,

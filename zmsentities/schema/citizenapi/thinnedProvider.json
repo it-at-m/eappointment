@@ -1,0 +1,42 @@
+{
+    "title": "ThinnedProvider",
+    "type": [
+        "array",
+        "object",
+        "null"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "Provider ID"
+        },
+        "name": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Provider name"
+        },
+        "lat": {
+            "type": [
+                "number",
+                "null"
+            ],
+            "description": "Latitude in decimal degrees."
+        },
+        "lon": {
+            "type": [
+                "number",
+                "null"
+            ],
+            "description": "Longitude in decimal degrees."
+        },
+        "source": {
+            "type": "string",
+            "description": "Data source"
+        },
+        "contact": {
+            "$ref": "./thinnedContact.json"
+        }
+    }
+}

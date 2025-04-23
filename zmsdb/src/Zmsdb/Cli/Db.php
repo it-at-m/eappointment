@@ -50,7 +50,7 @@ class Db
         $pdo->exec($query);
     }
 
-    public static function startUsingDatabase($dbname = null, $verbose = true) : \BO\Zmsdb\Connection\Pdo
+    public static function startUsingDatabase($dbname = null, $verbose = true): \BO\Zmsdb\Connection\Pdo
     {
         if (!self::$baseDSN) {
             self::$baseDSN = \BO\Zmsdb\Connection\Select::$writeSourceName;
@@ -66,7 +66,7 @@ class Db
         }
 
         if ($verbose) {
-            error_log("Use Connection ".\BO\Zmsdb\Connection\Select::$writeSourceName);
+            error_log("Use Connection " . \BO\Zmsdb\Connection\Select::$writeSourceName);
         }
 
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
@@ -81,7 +81,7 @@ class Db
         $pdo->exec("DROP DATABASE IF EXISTS `$dbname_zms`;");
         $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname_zms`;");
 
-        self::startExecuteSqlFile($fixtures .'/'. $filename);
+        self::startExecuteSqlFile($fixtures . '/' . $filename);
     }
 
     public static function startConfigDataImport()

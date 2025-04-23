@@ -17,7 +17,7 @@ class RestoreDeletedDataByCron
             error_log("INFO: Restoring deleted appointments based on delay time");
             $this->verbose = true;
         }
-        $this->scopeList = (new \BO\Zmsdb\Scope)->readList();
+        $this->scopeList = (new \BO\Zmsdb\Scope())->readList();
     }
 
     public function startProcessing($commit)
@@ -26,7 +26,7 @@ class RestoreDeletedDataByCron
             $time = new \DateTimeImmutable();
             $reservationDuration = $scope->toProperty()->preferences->appointment->reservationDuration->get();
             $time = $time->setTimestamp($time->getTimestamp() - ($reservationDuration * 60));
-            $processList = (new \BO\Zmsdb\Process)->readExpiredReservationsList($time, $scope->id, 10000);
+            $processList = (new \BO\Zmsdb\Process())->readExpiredReservationsList($time, $scope->id, 10000);
 
             foreach ($processList as $process) {
                 if ($this->verbose) {

@@ -7,7 +7,6 @@ namespace BO\Zmsapi\Exception\Notification;
  */
 class NotificationNotFound extends \Exception
 {
-
     protected $code = 404;
 
     protected $message = 'Notification does not exists';

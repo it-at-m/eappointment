@@ -1,10 +1,12 @@
 <?php
+
 /**
  *
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
+
 namespace BO\Zmsticketprinter;
 
 use BO\Slim\Render;
@@ -17,7 +19,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Healthcheck extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return ResponseInterface

@@ -7,7 +7,6 @@ namespace BO\Zmsentities\Helper;
  */
 class Sorter
 {
-
     /**
      * @todo check against ISO definition
      */
