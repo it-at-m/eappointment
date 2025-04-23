@@ -58,7 +58,8 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
             'data' => [
                 'meta' => ['success' => true],
                 'data' => ['valid' => true],
-            ]
+            ],
+            'token' => 'eyJpcCI6IjE...UqUoHoUk='
         ];
 
         $mockResponse = new Response(200, [], json_encode($expectedResponse['data']));
@@ -83,7 +84,11 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         $payload = base64_encode(json_encode(['challenge' => 'abcdefg0123456789']));
         $result = $captcha->verifySolution($payload);
 
-        $this->assertEquals($expectedResponse, $result);
+        $this->assertEquals($expectedResponse['meta'], $result['meta']);
+        $this->assertEquals($expectedResponse['data'], $result['data']);
+        $this->assertArrayHasKey('token', $result);
+        $this->assertNotEmpty($result['token']);
+
     }
 
     public function testVerifySolutionInvalidJson()

@@ -17,11 +17,13 @@ class AvailableDaysListController extends BaseController
 {
     private AvailableDaysListService $service;
     private TokenValidationService $tokenValidator;
+    private ZmsApiFacadeService $zmsApiFacadeService;
 
     public function __construct()
     {
         $this->service = new AvailableDaysListService();
         $this->tokenValidator = new TokenValidationService();
+        $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
@@ -30,13 +32,18 @@ class AvailableDaysListController extends BaseController
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
         }
-        error_log('QUERY-PARAMS: ' . print_r($request->getQueryParams(), true));
+        
         $queryParams = $request->getQueryParams();
         $officeId = (int)($queryParams['officeId'] ?? 0);
 
-        $thinnedScope = ZmsApiFacadeService::getScopeByOfficeId($officeId);
-        $captchaActivated = $thinnedScope->captchaActivatedRequired;
-        error_log('CAPTCHA ACTIVATED? ' . print_r($captchaActivated, true));
+        try {
+            $thinnedScope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
+        } catch (\Throwable $e) {
+            error_log('Scope not found for officeId: ' . $officeId);
+            $thinnedScope = null;
+        }
+
+        $captchaActivated = $thinnedScope->captchaActivatedRequired ?? false;
 
         if ($captchaActivated) {
             $token = $queryParams['captchaToken'] ?? null;

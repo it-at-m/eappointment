@@ -78,7 +78,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         $base64Signature = base64_encode($signature);
 
         $token = $base64Payload . '.' . $base64Signature;
-        error_log('TOKEN: ' . print_r($token, true));
+        // error_log('TOKEN: ' . print_r($token, true));
 
         return $token;
     }
