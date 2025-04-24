@@ -12,7 +12,6 @@ class Closure extends Schema\Entity
     {
         return [
             'id' => 0,
-            'Datum' => 1447924981,
             'lastChange' => 1447924981
         ];
     }
