@@ -4,7 +4,7 @@
     "example": {
         "id": 1234
     },
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
         "id": {
             "oneOf": [
