@@ -93,7 +93,7 @@
       v-if="showCaptcha"
       style="margin: 2rem 0 2rem 0"
     >
-      <Altcha
+      <AltchaCaptcha
         @validationResult="(valid) => (isCaptchaValid = valid)"
         @tokenChanged="
           (token: string | null) => emit('captchaTokenChanged', token)
@@ -121,7 +121,7 @@ import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import Altcha from "@/components/Appointment/Altcha.vue";
+import AltchaCaptcha from "@/components/Appointment/AltchaCaptcha.vue.js";
 import ClockSvg from "@/components/Appointment/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -134,7 +134,6 @@ import {
 } from "@/utils/Constants";
 
 const isCaptchaValid = ref<boolean>(false);
-const captchaToken = ref<string | null>(null);
 
 const props = defineProps<{
   baseUrl: string | undefined;
