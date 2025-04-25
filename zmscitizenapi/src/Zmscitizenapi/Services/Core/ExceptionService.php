@@ -34,6 +34,12 @@ class ExceptionService
         $error = null;
 
         switch ($exceptionName) {
+            // Zmsslim exception
+            case 'Slim\\Exception\\HttpNotFoundException':
+                $error = self::getError('notFound');
+
+                break;
+
             // ZmsClient exception
             case 'BO\\Zmsclient\\Exception':
                 $error = self::getError('zmsClientCommunicationError');
@@ -131,6 +137,9 @@ class ExceptionService
                 break;
             case 'BO\\Zmsapi\\Exception\\Request\\RequestNotFound':
                 $error = self::getError('requestNotFound');
+                // Fall-through intentional - same error handling for both RequestNotFound exceptions
+            case 'BO\\Zmsdb\\Exception\\Request\\RequestNotFound':
+                $error = self::getError('requestNotFound');
 
                 break;
             case 'BO\\Zmsapi\\Exception\\Scope\\ScopeNotFound':
@@ -139,6 +148,10 @@ class ExceptionService
                 break;
             case 'BO\\Zmsapi\\Exception\\Source\\SourceNotFound':
                 $error = self::getError('sourceNotFound');
+
+                break;
+            case 'BO\\Zmsentities\\Exception\\SchemaValidation':
+                $error = self::getError('invalidSchema');
 
                 break;
 

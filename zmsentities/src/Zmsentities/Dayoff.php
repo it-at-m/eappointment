@@ -8,6 +8,14 @@ class Dayoff extends Schema\Entity
 
     public static $schema = "dayoff.json";
 
+    public function getDefaults()
+    {
+        return [
+            'date' => 1447924981,
+            'name' => ''
+        ];
+    }
+
     public function setTimestampFromDateformat($fromFormat = 'd.m.Y')
     {
         $dateTime = \DateTimeImmutable::createFromFormat($fromFormat, $this->date, new \DateTimeZone('UTC'));

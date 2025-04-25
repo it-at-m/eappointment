@@ -1,3 +1,39 @@
+## Release Muc-23 (23.04.2025)
+                  
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-345'>ZMSKVR-345</a>] -         Standortkonfiguration nicht speicherbar bei aktivierter Öffnungszeitensperre
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-346'>ZMSKVR-346</a>] -          Automatischer ungewollter Aufruf 
+</li>
+</ul>
+                                                                                                                                                                                                        
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-71'>ZMSKVR-71</a>] -         Berechtigungen zur Generierung von Auswertungen auf Behördenebene für Fachlichen Administratoren erweitern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-143'>ZMSKVR-143</a>] -         League/json-guard ausbauen und durch opis/json-schema ersetzen für PHP 8.1 Upgrade
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-145'>ZMSKVR-145</a>] -         Wartezeit Statistik - Kunde erscheint nicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-150'>ZMSKVR-150</a>] -         Ausnahmenserien farblich kennzeichnen 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-169'>ZMSKVR-169</a>] -         Solution10/sql Direkte Integration in Zmsdb
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-304'>ZMSKVR-304</a>] -         ZMSAPI libphonenumber update für Bürgerfrontend
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-307'>ZMSKVR-307</a>] -         Iconbeschriftung:   &quot;Offener Aufruf&quot; / &quot;In Bearbeitung&quot; 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-310'>ZMSKVR-310</a>] -         Anzeige der Dienstleistungen &quot;Führungszeugnis&quot; und &quot;Meldebescheinigung&quot; im Hauptkalender für interne Buchungen im Bürgerbüro
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-318'>ZMSKVR-318</a>] -         Fehlerhafte Fehlermeldung bei API-Abfrage für verfügbare Termine
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-309'>ZMSKVR-309</a>] -         Separater Kalender für Dienstleistungen im Bürgerbüro bei hoher Nachfrage nach Reisepässen
+</li>
+</ul>
+
 ## Release Muc-22 (28.03.2025)
                        
 <h2>        Bug
