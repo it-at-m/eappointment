@@ -121,7 +121,7 @@ import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import AltchaCaptcha from "@/components/Appointment/AltchaCaptcha.vue.js";
+import AltchaCaptcha from "@/components/Appointment/AltchaCaptcha.vue";
 import ClockSvg from "@/components/Appointment/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
 import { OfficeImpl } from "@/types/OfficeImpl";
