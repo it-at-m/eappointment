@@ -48,7 +48,7 @@ class AppointmentReserveController extends BaseController
 
         if ($captchaActivated) {
             $token = $parsedBody['captchaToken'] ?? null;
-            
+
             if (!$this->tokenValidator->isCaptchaTokenValid($token)) {
                 return $this->createJsonResponse($response, [
                     'meta' => ['success' => false, 'error'   => 'Ungültiges oder fehlendes Captcha-Token'],
