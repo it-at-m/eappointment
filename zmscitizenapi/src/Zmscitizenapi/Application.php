@@ -46,6 +46,7 @@ class Application extends \BO\Slim\Application
     public static string $ALTCHA_CAPTCHA_SITE_SECRET;
     public static string $ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
     public static string $ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
+    public static string $CAPTCHA_TOKEN_SECRET;
     // Rate limiting config
     public static int $RATE_LIMIT_MAX_REQUESTS;
     public static int $RATE_LIMIT_CACHE_TTL;
@@ -103,14 +104,15 @@ class Application extends \BO\Slim\Application
     private static function initializeCaptcha(): void
     {
         self::$CAPTCHA_ENABLED = filter_var(getenv('CAPTCHA_ENABLED'), FILTER_VALIDATE_BOOLEAN);
+        self::$CAPTCHA_TOKEN_SECRET = getenv('CAPTCHA_TOKEN_SECRET') ?: '';
         self::$FRIENDLY_CAPTCHA_SECRET_KEY = getenv('FRIENDLY_CAPTCHA_SECRET_KEY') ?: '';
         self::$FRIENDLY_CAPTCHA_SITE_KEY = getenv('FRIENDLY_CAPTCHA_SITE_KEY') ?: '';
         self::$FRIENDLY_CAPTCHA_ENDPOINT = getenv('FRIENDLY_CAPTCHA_ENDPOINT')
             ?: 'https://eu-api.friendlycaptcha.eu/api/v1/siteverify';
         self::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE = getenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE')
             ?: 'https://eu-api.friendlycaptcha.eu/api/v1/puzzle';
-        self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: 'zms-dev';
-        self::$ALTCHA_CAPTCHA_SITE_SECRET = getenv('ALTCHA_CAPTCHA_SITE_SECRET') ?: 'zms-dev';
+        self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: '';
+        self::$ALTCHA_CAPTCHA_SITE_SECRET = getenv('ALTCHA_CAPTCHA_SITE_SECRET') ?: '';
         self::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE = getenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE')
             ?: 'https://captcha-k.muenchen.de/api/v1/captcha/challenge';
         self::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY = getenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY')

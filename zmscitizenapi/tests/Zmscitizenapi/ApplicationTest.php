@@ -94,6 +94,7 @@ class ApplicationTest extends TestCase
     {
         // Test with custom values
         putenv('CAPTCHA_ENABLED=true');
+        putenv('CAPTCHA_TOKEN_SECRET=token_secret');
         putenv('FRIENDLY_CAPTCHA_SECRET_KEY=test_secret');
         putenv('FRIENDLY_CAPTCHA_SITE_KEY=test_site');
         putenv('FRIENDLY_CAPTCHA_ENDPOINT=https://test.example.com/verify');
@@ -106,6 +107,7 @@ class ApplicationTest extends TestCase
         Application::initialize();
 
         $this->assertTrue(Application::$CAPTCHA_ENABLED);
+        $this->assertEquals('token_secret', Application::$CAPTCHA_TOKEN_SECRET);
         $this->assertEquals('test_secret', Application::$FRIENDLY_CAPTCHA_SECRET_KEY);
         $this->assertEquals('test_site', Application::$FRIENDLY_CAPTCHA_SITE_KEY);
         $this->assertEquals('https://test.example.com/verify', Application::$FRIENDLY_CAPTCHA_ENDPOINT);
@@ -224,6 +226,7 @@ class ApplicationTest extends TestCase
         putenv('LOGGER_BACKOFF_MAX');
         putenv('LOGGER_LOCK_TIMEOUT');
         putenv('CAPTCHA_ENABLED');
+        putenv('CAPTCHA_TOKEN_SECRET');
         putenv('FRIENDLY_CAPTCHA_SECRET_KEY');
         putenv('FRIENDLY_CAPTCHA_SITE_KEY');
         putenv('FRIENDLY_CAPTCHA_ENDPOINT');

@@ -16,9 +16,9 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
 /** @var string */
     public string $service;
 /** @var string */
-    public string $siteKey;
+    private string $siteKey;
 /** @var string */
-    public string $siteSecret;
+    private string $siteSecret;
 /** @var string */
     private string $tokenSecret;
 /** @var string */
@@ -35,7 +35,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         $this->service = 'AltchaCaptcha';
         $this->siteKey = \App::$ALTCHA_CAPTCHA_SITE_KEY;
         $this->siteSecret = \App::$ALTCHA_CAPTCHA_SITE_SECRET;
-        $this->tokenSecret = 'geheimes_passwort';
+        $this->tokenSecret = \App::$CAPTCHA_TOKEN_SECRET;
         $this->challengeUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
         $this->verifyUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
         $this->httpClient = new Client(['verify' => false]);

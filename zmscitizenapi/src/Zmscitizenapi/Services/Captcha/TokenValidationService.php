@@ -8,7 +8,12 @@ use BO\Zmscitizenapi\Helper\ClientIpHelper;
 
 class TokenValidationService
 {
-    private const CAPTCHA_TOKEN_SECRET = 'geheimes_passwort';
+    private string $captchaTokenSecret;
+
+    public function __construct()
+    {
+        $this->captchaTokenSecret = \App::$CAPTCHA_TOKEN_SECRET;
+    }
 
     public function isCaptchaTokenValid(?string $token): bool
     {
@@ -28,7 +33,7 @@ class TokenValidationService
             return false;
         }
 
-        $expectedSig = base64_encode(hash_hmac('sha256', $base64Payload, self::CAPTCHA_TOKEN_SECRET, true));
+        $expectedSig = base64_encode(hash_hmac('sha256', $base64Payload, $this->captchaTokenSecret, true));
         if (!hash_equals($expectedSig, $base64Signature)) {
             return false;
         }
