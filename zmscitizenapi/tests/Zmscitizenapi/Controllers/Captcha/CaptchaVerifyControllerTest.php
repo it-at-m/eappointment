@@ -48,6 +48,10 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $this->assertEquals(200, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $this->assertArrayHasKey('meta', $responseBody);
+        $this->assertArrayHasKey('data', $responseBody);
         return $response;
     }
 
@@ -83,6 +87,8 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
 
         $payload = base64_encode(json_encode(['challenge' => 'abcdefg0123456789']));
         $result = $captcha->verifySolution($payload);
+
+        var_dump(json_encode($result, JSON_PRETTY_PRINT));
 
         $this->assertEquals($expectedResponse['meta'], $result['meta']);
         $this->assertEquals($expectedResponse['data'], $result['data']);
