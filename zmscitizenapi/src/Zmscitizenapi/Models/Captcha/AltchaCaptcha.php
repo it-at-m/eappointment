@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Models\Captcha;
 use BO\Zmscitizenapi\Helper\ClientIpHelper;
 use BO\Zmscitizenapi\Models\CaptchaInterface;
 use BO\Zmsentities\Schema\Entity;
+use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
@@ -72,15 +73,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
             'exp' => time() + 300, // 5 Minuten gültig
         ];
 
-        $json = json_encode($payload);
-        $base64Payload = base64_encode($json);
-        $signature = hash_hmac('sha256', $base64Payload, $this->tokenSecret, true);
-        $base64Signature = base64_encode($signature);
-
-        $token = $base64Payload . '.' . $base64Signature;
-        // error_log('TOKEN: ' . print_r($token, true));
-
-        return $token;
+        return JWT::encode($payload, $this->tokenSecret, 'HS256');
     }
 
     /**
