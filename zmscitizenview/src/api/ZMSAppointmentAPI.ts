@@ -75,13 +75,15 @@ export function fetchAvailableTimeSlots(
   provider: OfficeImpl,
   serviceIds: string[],
   serviceCounts: number[],
-  baseUrl?: string
+  baseUrl?: string,
+  captchaToken?: string
 ): Promise<AvailableTimeSlotsDTO | ErrorDTO> {
   const params: Record<string, any> = {
     date: date,
     officeId: provider.id,
     serviceId: serviceIds,
     serviceCount: serviceCounts,
+    ...(captchaToken && { captchaToken }),
   };
 
   return fetch(

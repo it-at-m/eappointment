@@ -343,7 +343,7 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
     props.baseUrl ?? undefined,
     props.captchaToken ?? undefined
   ).then((data) => {
-    console.log("Token aus CalendarView:", props.captchaToken);
+    console.log("Token aus fetchAvailableDays:", props.captchaToken);
     if ((data as AvailableDaysDTO).availableDays !== undefined) {
       availableDays.value = (data as AvailableDaysDTO).availableDays;
       selectedDay.value = new Date(availableDays.value[0]);
@@ -365,8 +365,10 @@ const getAppointmentsOfDay = (date: string) => {
     selectedProvider.value,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
-    props.baseUrl ?? undefined
+    props.baseUrl ?? undefined,
+    props.captchaToken ?? undefined
   ).then((data) => {
+    console.log("Token aus getAppointmentsOfDay:", props.captchaToken);
     if (data as AvailableTimeSlotsDTO) {
       appointmentTimestamps.value = (
         data as AvailableTimeSlotsDTO
