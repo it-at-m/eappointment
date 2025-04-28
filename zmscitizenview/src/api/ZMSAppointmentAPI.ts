@@ -60,8 +60,6 @@ export function fetchAvailableDays(
     ...(captchaToken && { captchaToken }),
   };
 
-  console.log("baseURL aus fetchAvailableDays:", baseUrl);
-
   return fetch(
     getAPIBaseURL(baseUrl) +
       VUE_APP_ZMS_API_CALENDAR_ENDPOINT +
@@ -118,7 +116,6 @@ export function reserveAppointment(
     serviceCount: serviceCount,
     officeId: providerId,
     serviceId: serviceIds,
-    captchaSolution: null,
     ...(captchaToken && { captchaToken }),
   };
 
@@ -168,7 +165,6 @@ export function preconfirmAppointment(
     processId: appointment.processId,
     authKey: appointment.authKey,
     scope: appointment.scope,
-    captchaSolution: null,
   };
 
   return fetch(

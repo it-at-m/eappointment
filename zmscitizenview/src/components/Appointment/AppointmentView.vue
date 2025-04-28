@@ -478,10 +478,6 @@ watch(currentView, (newCurrentView) => {
   goToTop();
 });
 
-watch(captchaToken, (newVal) => {
-  console.log("Aktueller Captcha-Token in AppointmentView:", newVal);
-});
-
 /**
  * Sets the view to the top of the page after change the current view
  */

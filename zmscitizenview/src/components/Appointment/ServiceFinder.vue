@@ -95,6 +95,7 @@
     >
       <AltchaCaptcha
         :base-url="baseUrl"
+        :t="t"
         @validationResult="(valid) => (isCaptchaValid = valid)"
         @tokenChanged="
           (token: string | null) => emit('captchaTokenChanged', token)
