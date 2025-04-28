@@ -26,6 +26,7 @@ import {
 import "altcha";
 
 const props = defineProps<{
+  t: (key: string) => string;
   baseUrl: string | undefined;
 }>();
 
@@ -80,15 +81,13 @@ const configureWidget = () => {
     try {
       widget.configure({
         strings: {
-          error:
-            "Verifizierung fehlgeschlagen. Versuche es später noch einmal.",
-          expired: "Verifizierung abgelaufen. Versuche es erneut.",
-          footer:
-            'Geschützt durch <a href=\"https://altcha.org/\" target=\"_blank\" aria-label=\"Besuche Altcha.org\">ALTCHA</a>',
-          label: "Ich bin kein Bot.",
-          verified: "Erfolgreich verifiziert!",
-          verifying: "Überprüfe...",
-          waitAlert: "Überprüfung läuft... bitte warten.",
+          error: props.t('altcha.error'),
+          expired: props.t('altcha.expired'),
+          footer: props.t('altcha.footer'),
+          label: props.t('altcha.label'),
+          verified: props.t('altcha.verified'),
+          verifying: props.t('altcha.verifying'),
+          waitAlert: props.t('altcha.waitAlert'),
         },
       });
     } catch (error) {

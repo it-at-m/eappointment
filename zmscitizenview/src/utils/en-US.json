@@ -70,6 +70,16 @@
   "updateAppointmentErrorHeader": "Appointment update failed.",
   "updateAppointmentErrorText": "Appointment update failed.",
   "your": "Ihr",
+  "altcha": {
+    "loadError": "The widget could not be loaded.",
+    "error": "Verification failed. Try again later.",
+    "expired": "Verification expired. Try again.",
+    "footer": "Protected by <a href=\"https://altcha.org/\" target=\"_blank\" aria-label=\"Visit Altcha.org\">ALTCHA</a>",
+    "label": "I'm not a robot",
+    "verified": "Verified",
+    "verifying": "Verifying...",
+    "waitAlert": "Verifying... please wait."
+  },
 
   "languages": {
     "de": "German",

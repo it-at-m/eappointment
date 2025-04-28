@@ -70,6 +70,16 @@
   "updateAppointmentErrorHeader": "Terminupdate fehlgeschlagen",
   "updateAppointmentErrorText": "Terminupdate fehlgeschlagen.",
   "your": "Ihr",
+  "altcha": {
+    "loadError": "Das Widget konnte nicht geladen werden.",
+    "error": "Verifizierung fehlgeschlagen. Versuche es später noch einmal.",
+    "expired": "Verifizierung abgelaufen. Versuche es erneut.",
+    "footer": "Geschützt durch <a href=\"https://altcha.org/\" target=\"_blank\" aria-label=\"Besuche Altcha.org\">ALTCHA</a>",
+    "label": "Ich bin kein Bot.",
+    "verified": "Erfolgreich verifiziert!",
+    "verifying": "Überprüfe...",
+    "waitAlert": "Überprüfung läuft... bitte warten."
+  },
 
   "languages": {
     "de": "Deutsch",

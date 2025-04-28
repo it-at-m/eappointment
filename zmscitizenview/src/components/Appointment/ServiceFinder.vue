@@ -94,6 +94,7 @@
       style="margin: 2rem 0 2rem 0"
     >
       <AltchaCaptcha
+        :t="t"
         :base-url="baseUrl"
         @validationResult="(valid) => (isCaptchaValid = valid)"
         @tokenChanged="
