@@ -31,7 +31,8 @@ class Logout extends BaseController
         }
         $sessionHash = hash('sha256', \BO\Zmsclient\Auth::getKey());
         App::$log->info(sprintf(
-            "Logout - Manual logout: hashed_session_token=%s",
+            "Logout - Manual logout: username=%s hashed_session_token=%s",
+            $workstation->useraccount['id'],
             $sessionHash
         ));
         \BO\Zmsclient\Auth::removeKey();
