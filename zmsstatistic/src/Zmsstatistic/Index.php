@@ -77,6 +77,14 @@ class Index extends BaseController
         try {
             /** @var \BO\Zmsentities\Workstation $workstation */
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+
+            $sessionHash = hash('sha256', $workstation->authkey);
+            \App::$log->info(sprintf(
+                "Login - Successful login: username=%s hashed_session_token=%s",
+                $userAccount->id,
+                $sessionHash
+            ));
+
             return $workstation;
         } catch (\BO\Zmsclient\Exception $exception) {
             $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);

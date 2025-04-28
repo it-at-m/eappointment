@@ -74,16 +74,13 @@ class OAuthMiddleware
     private function handleLogin(ServerRequestInterface $request, ResponseInterface $response, $instance, $next)
     {
         if (! $request->getParam("code") && '' == \BO\Zmsclient\Auth::getKey()) {
-            App::$log->info("OAuthMiddleware - No code and no key, redirecting to auth");
             return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
         } elseif ($request->getParam("state") !== \BO\Zmsclient\Auth::getKey()) {
-            App::$log->info("OAuthMiddleware - State mismatch, removing key and redirecting");
             \BO\Zmsclient\Auth::removeKey();
             \BO\Zmsclient\Auth::removeOidcProvider();
             return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
         }
         if ('login' == $request->getAttribute('authentificationHandler')) {
-            App::$log->info("OAuthMiddleware - Processing login");
             $instance->doLogin($request, $response);
             $response = $next->handle($request);
             return $response;
@@ -120,15 +117,6 @@ class OAuthMiddleware
 
         $state = $instance->getProvider()->getState();
         $sessionHash = hash('sha256', $state);
-
-        App::$log->info(sprintf(
-            "OAuthMiddleware - Auth URL: duration=%ds (%.1fh), current=%s, expires=%s, hashed_session_token=%s",
-            \App::SESSION_DURATION,
-            \App::SESSION_DURATION / 3600,
-            date('Y-m-d H:i:s'),
-            date('Y-m-d H:i:s', time() + \App::SESSION_DURATION),
-            $sessionHash
-        ));
 
         \BO\Zmsclient\Auth::setKey($state, time() + \App::SESSION_DURATION);
         return $authUrl;
