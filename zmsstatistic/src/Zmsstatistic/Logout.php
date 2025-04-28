@@ -7,28 +7,37 @@
 
 namespace BO\Zmsstatistic;
 
-use BO\Slim\Render;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use BO\Zmsclient\Auth;
 
 class Logout extends BaseController
 {
+    protected $resolveLevel = 0;
+    protected $withAccess = false;
+
     /**
      * @SuppressWarnings(Param)
-     * @return ResponseInterface
+     * @return String
      */
     public function readResponse(
-        RequestInterface $request,
-        ResponseInterface $response,
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        \App::$http->readDeleteResult('/workstation/login/' . $this->workstation->useraccount['id'] . '/');
-        return Render::redirect(
-            'index',
+        try {
+            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
+            \App::$http->readDeleteResult('/workstation/login/' . $workstation->useraccount['id'] . '/')->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ("BO\Zmsentities\Exception\UseraccountMissingLogin" !== $exception->template) {
+                throw $exception;
+            }
+        }
+        \BO\Zmsclient\Auth::removeKey();
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/logout.twig',
             array(
-                'title' => 'Anmeldung'
-            ),
-            array()
+                'title' => 'Erfolgreich abgemeldet'
+            )
         );
     }
 }
