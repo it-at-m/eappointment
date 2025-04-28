@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Query;
 
+use BO\Slim\Application as App;
+
 class Useraccount extends Base implements MappingInterface
 {
     /**
@@ -96,6 +98,7 @@ class Useraccount extends Base implements MappingInterface
     public function addConditionXauthKey($xAuthKey)
     {
         $this->query->where('useraccount.SessionID', '=', $xAuthKey);
+        $this->query->where('useraccount.SessionExpiry', '>', date('Y-m-d H:i:s', time() - App::SESSION_DURATION));
         return $this;
     }
 

@@ -93,16 +93,10 @@ class OAuthMiddleware
 
     private function handleLogout(ServerRequestInterface $request, ResponseInterface $response, $instance)
     {
-        error_log("handleLogout");
         if (
             'logout' == $request->getAttribute('authentificationHandler') &&
             ! $request->getParam('state')
         ) {
-            $sessionHash = hash('sha256', \BO\Zmsclient\Auth::getKey());
-            App::$log->info(sprintf(
-                "OAuthMiddleware - Manual logout: hashed_session_token=%s",
-                $sessionHash
-            ));
             return $instance->doLogout($response);
         }
         return $response;
@@ -114,11 +108,6 @@ class OAuthMiddleware
             'refresh' == $request->getAttribute('authentificationHandler') &&
             ! $instance->writeNewAccessTokenIfExpired()
         ) {
-            $sessionHash = hash('sha256', \BO\Zmsclient\Auth::getKey());
-            App::$log->info(sprintf(
-                "OAuthMiddleware - Automatic logout: hashed_session_token=%s",
-                $sessionHash
-            ));
             return $instance->doLogout($response);
         }
         return $response;

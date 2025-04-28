@@ -11,7 +11,7 @@ use BO\Zmsclient\Http;
 
 define(
     'ZMS_STATISTIC_SESSION_DURATION',
-    getenv('ZMS_STATISTIC_SESSION_DURATION') ? getenv('ZMS_STATISTIC_SESSION_DURATION') : 28800
+    getenv('ZMS_STATISTIC_SESSION_DURATION') ? getenv('ZMS_STATISTIC_SESSION_DURATION') : 10
 );
 
 class Application extends \BO\Slim\Application

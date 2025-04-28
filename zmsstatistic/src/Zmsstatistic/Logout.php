@@ -8,6 +8,7 @@
 namespace BO\Zmsstatistic;
 
 use BO\Zmsclient\Auth;
+use App;
 
 class Logout extends BaseController
 {
@@ -31,6 +32,11 @@ class Logout extends BaseController
                 throw $exception;
             }
         }
+        $sessionHash = hash('sha256', \BO\Zmsclient\Auth::getKey());
+        App::$log->info(sprintf(
+            "Logout - Manual logout: hashed_session_token=%s",
+            $sessionHash
+        ));
         \BO\Zmsclient\Auth::removeKey();
         return \BO\Slim\Render::withHtml(
             $response,
