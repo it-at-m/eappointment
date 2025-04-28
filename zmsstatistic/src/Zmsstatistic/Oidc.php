@@ -23,19 +23,22 @@ class Oidc extends BaseController
         try {
             $state = $request->getParam("state");
             $authKey = \BO\Zmsclient\Auth::getKey();
+            $sessionHash = hash('sha256', $authKey);
 
             \App::$log->info('OIDC state validation', [
                 'event' => 'oauth_state_validation',
                 'timestamp' => date('c'),
                 'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
                 'application' => 'zmsstatistic',
-                'state_match' => ($state == $authKey)
+                'state_match' => ($state == $authKey),
+                'hashed_session_token' => $sessionHash
             ]);
 
             if ($state == $authKey) {
                 try {
                     $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
                     $username = $workstation->getUseraccount()->id . '@' . \BO\Zmsclient\Auth::getOidcProvider();
+                    $sessionHash = hash('sha256', $workstation->authkey);
 
                     \App::$log->info('OIDC workstation access', [
                         'event' => 'oauth_workstation_access',
@@ -43,7 +46,8 @@ class Oidc extends BaseController
                         'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
                         'application' => 'zmsstatistic',
                         'username' => $username,
-                        'workstation_id' => $workstation->id ?? 'unknown'
+                        'workstation_id' => $workstation->id ?? 'unknown',
+                        'hashed_session_token' => $sessionHash
                     ]);
 
                     $departmentCount = $workstation->getUseraccount()->getDepartmentList()->count();
@@ -56,7 +60,8 @@ class Oidc extends BaseController
                         'application' => 'zmsstatistic',
                         'username' => $username,
                         'department_count' => $departmentCount,
-                        'has_departments' => ($departmentCount > 0)
+                        'has_departments' => ($departmentCount > 0),
+                        'hashed_session_token' => $sessionHash
                     ]);
 
                     if (0 == $departmentCount) {
