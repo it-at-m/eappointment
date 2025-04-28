@@ -74,13 +74,16 @@ class OAuthMiddleware
     private function handleLogin(ServerRequestInterface $request, ResponseInterface $response, $instance, $next)
     {
         if (! $request->getParam("code") && '' == \BO\Zmsclient\Auth::getKey()) {
+            App::$log->info("OAuthMiddleware - No code and no key, redirecting to auth");
             return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
         } elseif ($request->getParam("state") !== \BO\Zmsclient\Auth::getKey()) {
+            App::$log->info("OAuthMiddleware - State mismatch, removing key and redirecting");
             \BO\Zmsclient\Auth::removeKey();
             \BO\Zmsclient\Auth::removeOidcProvider();
             return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
         }
         if ('login' == $request->getAttribute('authentificationHandler')) {
+            App::$log->info("OAuthMiddleware - Processing login");
             $instance->doLogin($request, $response);
             $response = $next->handle($request);
             return $response;
