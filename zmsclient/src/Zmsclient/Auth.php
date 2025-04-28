@@ -16,10 +16,10 @@ class Auth
     {
         $_COOKIE[self::getCookieName()] = $authKey; // for access in the same process
         if (!headers_sent()) {
-            if (!defined('PHPUNIT_RUNNING')) {
-                error_log("Auth::setKey - Expiration time: " . date('Y-m-d H:i:s', $expires));
-                error_log("Auth::setKey - Local timezone: " . date_default_timezone_get());
-            }
+            \BO\Zmsclient\Log::info("Auth::setKey - Session hash: " . $authKey);
+            \BO\Zmsclient\Log::info("Auth::setKey - Expiration time: " . date('Y-m-d H:i:s', $expires));
+            \BO\Zmsclient\Log::info("Auth::setKey - Local timezone: " . date_default_timezone_get());
+            
             setcookie(self::getCookieName(), $authKey, $expires, '/', null, true, true);
         }
     }
