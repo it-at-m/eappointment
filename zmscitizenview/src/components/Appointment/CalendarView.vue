@@ -342,7 +342,7 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
     Array.from(props.selectedServiceMap.values()),
     props.baseUrl ?? undefined,
     props.captchaToken ?? undefined
-    ).then((data) => {
+  ).then((data) => {
     console.log("fetchAvailableDays");
     console.log("Base URL:", props.baseUrl);
     console.log("Token aus fetchAvailableDays:", props.captchaToken);
@@ -373,8 +373,14 @@ const getAppointmentsOfDay = (date: string) => {
     console.log("getAppointmentsOfDay");
     console.log("Datum:", date);
     console.log("Selected Provider:", selectedProvider.value);
-    console.log("ServiceMap keys:", Array.from(props.selectedServiceMap.keys()));
-    console.log("ServiceMap values:", Array.from(props.selectedServiceMap.values()));
+    console.log(
+      "ServiceMap keys:",
+      Array.from(props.selectedServiceMap.keys())
+    );
+    console.log(
+      "ServiceMap values:",
+      Array.from(props.selectedServiceMap.values())
+    );
     console.log("Base URL:", props.baseUrl);
     console.log("Token:", props.captchaToken);
     if (data as AvailableTimeSlotsDTO) {
