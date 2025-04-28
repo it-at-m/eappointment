@@ -81,13 +81,13 @@ const configureWidget = () => {
     try {
       widget.configure({
         strings: {
-          error: props.t('altcha.error'),
-          expired: props.t('altcha.expired'),
-          footer: props.t('altcha.footer'),
-          label: props.t('altcha.label'),
-          verified: props.t('altcha.verified'),
-          verifying: props.t('altcha.verifying'),
-          waitAlert: props.t('altcha.waitAlert'),
+          error: props.t("altcha.error"),
+          expired: props.t("altcha.expired"),
+          footer: props.t("altcha.footer"),
+          label: props.t("altcha.label"),
+          verified: props.t("altcha.verified"),
+          verifying: props.t("altcha.verifying"),
+          waitAlert: props.t("altcha.waitAlert"),
         },
       });
     } catch (error) {
