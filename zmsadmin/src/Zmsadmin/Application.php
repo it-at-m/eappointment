@@ -15,7 +15,7 @@ define(
 
 define(
     'ZMS_ADMIN_SESSION_DURATION',
-    getenv('ZMS_ADMIN_SESSION_DURATION') ? getenv('ZMS_ADMIN_SESSION_DURATION') : 10
+    getenv('ZMS_ADMIN_SESSION_DURATION') ? getenv('ZMS_ADMIN_SESSION_DURATION') : 28800
 );
 
 class Application extends \BO\Slim\Application

@@ -2,7 +2,7 @@
 
 namespace BO\Slim;
 
-define('ZMS_SESSION_DURATION', getenv('ZMS_SESSION_DURATION') ? getenv('ZMS_SESSION_DURATION') : 10);
+define('ZMS_SESSION_DURATION', getenv('ZMS_SESSION_DURATION') ? getenv('ZMS_SESSION_DURATION') : 28800);
 class Application
 {
     /**

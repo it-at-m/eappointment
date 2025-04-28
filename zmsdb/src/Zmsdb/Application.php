@@ -9,7 +9,7 @@ namespace BO\Zmsdb;
 
 define(
     'ZMSDB_SESSION_DURATION',
-    getenv('ZMSDB_SESSION_DURATION') ? getenv('ZMSDB_SESSION_DURATION') : 10
+    getenv('ZMSDB_SESSION_DURATION') ? getenv('ZMSDB_SESSION_DURATION') : 28800
 );
 
 class Application extends \BO\Slim\Application
