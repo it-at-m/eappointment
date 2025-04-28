@@ -94,8 +94,7 @@ class OAuthMiddleware
             'logout' == $request->getAttribute('authentificationHandler') &&
             ! $request->getParam('state')
         ) {
-            $username = $instance->getProvider()->getUserInfo()['preferred_username'] ?? 'unknown';
-            App::$log->info("OAuthMiddleware - Initiating logout for user: " . $username);
+            App::$log->info("OAuthMiddleware - Initiating logout");
             return $instance->doLogout($response);
         }
         return $response;
@@ -118,14 +117,14 @@ class OAuthMiddleware
         \BO\Zmsclient\Auth::setOidcProvider($request->getParam('provider'));
 
         $state = $instance->getProvider()->getState();
+        $sessionHash = hash('sha256', $state);
 
         // Debug logging for session duration
         App::$log->info("OAuthMiddleware - SESSION_DURATION constant value: " . \App::SESSION_DURATION);
         App::$log->info("OAuthMiddleware - SESSION_DURATION in hours: " . (\App::SESSION_DURATION / 3600));
         App::$log->info("OAuthMiddleware - Current time: " . date('Y-m-d H:i:s'));
         App::$log->info("OAuthMiddleware - Expiration time: " . date('Y-m-d H:i:s', time() + \App::SESSION_DURATION));
-        App::$log->info("OAuthMiddleware - Session state hash: " . $state);
-        App::$log->info("OAuthMiddleware - User: " . $instance->getProvider()->getUserInfo()['preferred_username'] ?? 'unknown');
+        App::$log->info("OAuthMiddleware - Session tracking hash: " . $sessionHash);
 
         \BO\Zmsclient\Auth::setKey($state, time() + \App::SESSION_DURATION);
         return $authUrl;
