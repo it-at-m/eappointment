@@ -60,6 +60,8 @@ export function fetchAvailableDays(
     ...(captchaToken && { captchaToken }),
   };
 
+  console.log("baseURL aus fetchAvailableDays:", baseUrl);
+
   return fetch(
     getAPIBaseURL(baseUrl) +
       VUE_APP_ZMS_API_CALENDAR_ENDPOINT +
@@ -108,7 +110,8 @@ export function reserveAppointment(
   serviceIds: string[],
   serviceCount: number[],
   providerId: string,
-  baseUrl?: string
+  baseUrl?: string,
+  captchaToken?: string
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     timestamp: timeSlot,
@@ -116,6 +119,7 @@ export function reserveAppointment(
     officeId: providerId,
     serviceId: serviceIds,
     captchaSolution: null,
+    ...(captchaToken && { captchaToken }),
   };
 
   return fetch(

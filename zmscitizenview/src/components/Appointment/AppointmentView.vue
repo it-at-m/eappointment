@@ -372,7 +372,8 @@ const nextReserveAppointment = () => {
     Array.from(selectedServiceMap.value.keys()),
     Array.from(selectedServiceMap.value.values()),
     selectedProvider.value.id,
-    props.baseUrl ?? undefined
+    props.baseUrl ?? undefined,
+    captchaToken
   ).then((data) => {
     if ((data as AppointmentDTO).processId != undefined) {
       if (appointment.value && !isRebooking.value) {
