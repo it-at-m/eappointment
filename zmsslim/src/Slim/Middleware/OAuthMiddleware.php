@@ -113,7 +113,24 @@ class OAuthMiddleware
     {
         $authUrl = $instance->getProvider()->getAuthorizationUrl();
         \BO\Zmsclient\Auth::setOidcProvider($request->getParam('provider'));
-        \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState(), time() + \App::SESSION_DURATION);
+
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $sessionDuration = \App::SESSION_DURATION;
+
+        // Debug logging for session duration
+        error_log("OAuthMiddleware - SESSION_DURATION constant value: " . $sessionDuration);
+        error_log("OAuthMiddleware - SESSION_DURATION in hours: " . ($sessionDuration / 3600));
+
+        $expires = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))
+            ->add(new \DateInterval('PT' . \App::SESSION_DURATION . 'S'))
+            ->getTimestamp();
+
+        error_log("OAuthMiddleware - Current UTC time: " . $now->format('Y-m-d H:i:s'));
+        error_log("OAuthMiddleware - Expiration UTC time: " . date('Y-m-d H:i:s', $expires));
+        error_log("OAuthMiddleware - Time difference in seconds: " . ($expires - $now->getTimestamp()));
+        error_log("OAuthMiddleware - Time difference in hours: " . (($expires - $now->getTimestamp()) / 3600));
+
+        \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState(), $expires);
         return $authUrl;
     }
 }
