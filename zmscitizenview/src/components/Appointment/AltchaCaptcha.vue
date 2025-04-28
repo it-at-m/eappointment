@@ -48,11 +48,8 @@ const fetchCaptchaDetails = async () => {
     );
     if (!response.ok) throw new Error("Fehler beim Laden der Captcha-Daten");
     const data = await response.json();
-    console.log("DATA:", data);
     captchaChallengeUrl.value = `${getAPIBaseURL(props.baseUrl)}${VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT}`;
     captchaVerifyUrl.value = `${getAPIBaseURL(props.baseUrl)}${VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT}`;
-    console.log("CHALLENGE-URL:", captchaChallengeUrl.value);
-    console.log("VERIFY-URL:", captchaVerifyUrl.value);
     captchaEnabled.value = data.captchaEnabled;
   } catch (error) {
     console.error("Fehler beim Abrufen der Captcha-Details:", error);
@@ -63,8 +60,6 @@ const fetchCaptchaDetails = async () => {
 const handleStateChange = (ev: CustomEvent | Event) => {
   if ("detail" in ev) {
     const state = ev.detail.state;
-    console.log("EV:", ev);
-    console.log("STATE:", state);
     if (state === "verified") {
       emit("validationResult", true);
     } else {
@@ -74,9 +69,7 @@ const handleStateChange = (ev: CustomEvent | Event) => {
 };
 
 const handleServerVerification = (ev: CustomEvent | Event) => {
-  console.log("SERVER VERIFICATION EVENT:", ev);
   if ("detail" in ev) {
-    console.log("TOKEN:", ev.detail.token);
     emit("tokenChanged", ev.detail.token);
   }
 };
