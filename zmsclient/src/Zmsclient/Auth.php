@@ -2,6 +2,8 @@
 
 namespace BO\Zmsclient;
 
+use App;
+
 /**
  * Session handler for mysql
  */
@@ -16,10 +18,12 @@ class Auth
     {
         $_COOKIE[self::getCookieName()] = $authKey; // for access in the same process
         if (!headers_sent()) {
-            \BO\Zmsclient\Log::info("Auth::setKey - Session hash: " . $authKey);
-            \BO\Zmsclient\Log::info("Auth::setKey - Expiration time: " . date('Y-m-d H:i:s', $expires));
-            \BO\Zmsclient\Log::info("Auth::setKey - Local timezone: " . date_default_timezone_get());
-
+            $username = $_SESSION['user']['preferred_username'] ?? 'unknown';
+            if (class_exists('App') && isset(App::$log)) {
+                App::$log->info("Auth::setKey - Creating session with hash: " . $authKey . " for user: " . $username);
+                App::$log->info("Auth::setKey - Expiration time: " . date('Y-m-d H:i:s', $expires));
+                App::$log->info("Auth::setKey - Local timezone: " . date_default_timezone_get());
+            }
             setcookie(self::getCookieName(), $authKey, $expires, '/', null, true, true);
         }
     }
@@ -47,7 +51,9 @@ class Auth
         if (array_key_exists(self::getCookieName(), $_COOKIE)) {
             $oldKey = $_COOKIE[self::getCookieName()];
             $username = $_SESSION['user']['preferred_username'] ?? 'unknown';
-            \BO\Zmsclient\Log::info("Auth::removeKey - Removing session with hash: " . $oldKey . " for user: " . $username);
+            if (class_exists('App') && isset(App::$log)) {
+                App::$log->info("Auth::removeKey - Removing session with hash: " . $oldKey . " for user: " . $username);
+            }
             unset($_COOKIE[self::getCookieName()]);
             if (!headers_sent()) {
                 setcookie(self::getCookieName(), '', time() - 3600, '/');

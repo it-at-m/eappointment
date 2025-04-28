@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
+use App;
 
 /**
  * @SuppressWarnings(PHPMD)
@@ -94,7 +95,7 @@ class OAuthMiddleware
             ! $request->getParam('state')
         ) {
             $username = $instance->getProvider()->getUserInfo()['preferred_username'] ?? 'unknown';
-            \BO\Zmsclient\Log::info("OAuthMiddleware - Initiating logout for user: " . $username);
+            App::$log->info("OAuthMiddleware - Initiating logout for user: " . $username);
             return $instance->doLogout($response);
         }
         return $response;
@@ -119,12 +120,12 @@ class OAuthMiddleware
         $state = $instance->getProvider()->getState();
 
         // Debug logging for session duration
-        \BO\Zmsclient\Log::info("OAuthMiddleware - SESSION_DURATION constant value: " . \App::SESSION_DURATION);
-        \BO\Zmsclient\Log::info("OAuthMiddleware - SESSION_DURATION in hours: " . (\App::SESSION_DURATION / 3600));
-        \BO\Zmsclient\Log::info("OAuthMiddleware - Current time: " . date('Y-m-d H:i:s'));
-        \BO\Zmsclient\Log::info("OAuthMiddleware - Expiration time: " . date('Y-m-d H:i:s', time() + \App::SESSION_DURATION));
-        \BO\Zmsclient\Log::info("OAuthMiddleware - Session state hash: " . $state);
-        \BO\Zmsclient\Log::info("OAuthMiddleware - User: " . $instance->getProvider()->getUserInfo()['preferred_username'] ?? 'unknown');
+        App::$log->info("OAuthMiddleware - SESSION_DURATION constant value: " . \App::SESSION_DURATION);
+        App::$log->info("OAuthMiddleware - SESSION_DURATION in hours: " . (\App::SESSION_DURATION / 3600));
+        App::$log->info("OAuthMiddleware - Current time: " . date('Y-m-d H:i:s'));
+        App::$log->info("OAuthMiddleware - Expiration time: " . date('Y-m-d H:i:s', time() + \App::SESSION_DURATION));
+        App::$log->info("OAuthMiddleware - Session state hash: " . $state);
+        App::$log->info("OAuthMiddleware - User: " . $instance->getProvider()->getUserInfo()['preferred_username'] ?? 'unknown');
 
         \BO\Zmsclient\Auth::setKey($state, time() + \App::SESSION_DURATION);
         return $authUrl;
