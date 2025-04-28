@@ -19,7 +19,7 @@ class Auth
             \BO\Zmsclient\Log::info("Auth::setKey - Session hash: " . $authKey);
             \BO\Zmsclient\Log::info("Auth::setKey - Expiration time: " . date('Y-m-d H:i:s', $expires));
             \BO\Zmsclient\Log::info("Auth::setKey - Local timezone: " . date_default_timezone_get());
-            
+
             setcookie(self::getCookieName(), $authKey, $expires, '/', null, true, true);
         }
     }
@@ -45,6 +45,9 @@ class Auth
     public static function removeKey()
     {
         if (array_key_exists(self::getCookieName(), $_COOKIE)) {
+            $oldKey = $_COOKIE[self::getCookieName()];
+            $username = $_SESSION['user']['preferred_username'] ?? 'unknown';
+            \BO\Zmsclient\Log::info("Auth::removeKey - Removing session with hash: " . $oldKey . " for user: " . $username);
             unset($_COOKIE[self::getCookieName()]);
             if (!headers_sent()) {
                 setcookie(self::getCookieName(), '', time() - 3600, '/');
