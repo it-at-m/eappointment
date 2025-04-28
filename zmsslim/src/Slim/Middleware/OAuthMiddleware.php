@@ -122,12 +122,14 @@ class OAuthMiddleware
         $state = $instance->getProvider()->getState();
         $sessionHash = hash('sha256', $state);
 
-        // Debug logging for session duration
-        App::$log->info("OAuthMiddleware - SESSION_DURATION constant value: " . \App::SESSION_DURATION);
-        App::$log->info("OAuthMiddleware - SESSION_DURATION in hours: " . (\App::SESSION_DURATION / 3600));
-        App::$log->info("OAuthMiddleware - Current time: " . date('Y-m-d H:i:s'));
-        App::$log->info("OAuthMiddleware - Expiration time: " . date('Y-m-d H:i:s', time() + \App::SESSION_DURATION));
-        App::$log->info("OAuthMiddleware - Session tracking hash: " . $sessionHash);
+        App::$log->info(sprintf(
+            "OAuthMiddleware - Auth URL: duration=%ds (%.1fh), current=%s, expires=%s, hashed_session_token=%s",
+            \App::SESSION_DURATION,
+            \App::SESSION_DURATION / 3600,
+            date('Y-m-d H:i:s'),
+            date('Y-m-d H:i:s', time() + \App::SESSION_DURATION),
+            $sessionHash
+        ));
 
         \BO\Zmsclient\Auth::setKey($state, time() + \App::SESSION_DURATION);
         return $authUrl;
