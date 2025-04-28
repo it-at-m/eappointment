@@ -25,6 +25,10 @@ import {
 
 import "altcha";
 
+const props = defineProps<{
+  baseUrl: string | undefined;
+}>();
+
 const altchaWidget = ref<Partial<AltchaWidget> | null>(null);
 const getWidget = () => altchaWidget.value as AltchaWidget;
 
@@ -40,13 +44,13 @@ const emit = defineEmits<{
 const fetchCaptchaDetails = async () => {
   try {
     const response = await fetch(
-      `${getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL)}${VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT}`
+      `${getAPIBaseURL(props.baseUrl)}${VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT}`
     );
     if (!response.ok) throw new Error("Fehler beim Laden der Captcha-Daten");
     const data = await response.json();
     console.log("DATA:", data);
-    captchaChallengeUrl.value = `${getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL)}${VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT}`;
-    captchaVerifyUrl.value = `${getAPIBaseURL(import.meta.env.VITE_VUE_APP_API_URL)}${VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT}`;
+    captchaChallengeUrl.value = `${getAPIBaseURL(props.baseUrl)}${VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT}`;
+    captchaVerifyUrl.value = `${getAPIBaseURL(props.baseUrl)}${VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT}`;
     console.log("CHALLENGE-URL:", captchaChallengeUrl.value);
     console.log("VERIFY-URL:", captchaVerifyUrl.value);
     captchaEnabled.value = data.captchaEnabled;
