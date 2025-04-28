@@ -16,9 +16,10 @@ class Auth
     {
         $_COOKIE[self::getCookieName()] = $authKey; // for access in the same process
         if (!headers_sent()) {
-            error_log("Auth::setKey - Expiration time: " . date('Y-m-d H:i:s', $expires));
-            error_log("Auth::setKey - Local timezone: " . date_default_timezone_get());
-
+            if (!defined('PHPUNIT_RUNNING')) {
+                error_log("Auth::setKey - Expiration time: " . date('Y-m-d H:i:s', $expires));
+                error_log("Auth::setKey - Local timezone: " . date_default_timezone_get());
+            }
             setcookie(self::getCookieName(), $authKey, $expires, '/', null, true, true);
         }
     }

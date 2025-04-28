@@ -114,11 +114,13 @@ class OAuthMiddleware
         $authUrl = $instance->getProvider()->getAuthorizationUrl();
         \BO\Zmsclient\Auth::setOidcProvider($request->getParam('provider'));
 
-        // Debug logging for session duration
-        error_log("OAuthMiddleware - SESSION_DURATION constant value: " . \App::SESSION_DURATION);
-        error_log("OAuthMiddleware - SESSION_DURATION in hours: " . (\App::SESSION_DURATION / 3600));
-        error_log("OAuthMiddleware - Current time: " . date('Y-m-d H:i:s'));
-        error_log("OAuthMiddleware - Expiration time: " . date('Y-m-d H:i:s', time() + \App::SESSION_DURATION));
+        if (!defined('PHPUNIT_RUNNING')) {
+            // Debug logging for session duration
+            error_log("OAuthMiddleware - SESSION_DURATION constant value: " . \App::SESSION_DURATION);
+            error_log("OAuthMiddleware - SESSION_DURATION in hours: " . (\App::SESSION_DURATION / 3600));
+            error_log("OAuthMiddleware - Current time: " . date('Y-m-d H:i:s'));
+            error_log("OAuthMiddleware - Expiration time: " . date('Y-m-d H:i:s', time() + \App::SESSION_DURATION));
+        }
 
         \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState(), time() + \App::SESSION_DURATION);
         return $authUrl;
