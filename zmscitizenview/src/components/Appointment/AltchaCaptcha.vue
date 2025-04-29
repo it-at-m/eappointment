@@ -7,7 +7,7 @@
     />
   </div>
   <div v-else>
-    <p>Das Captcha konnte nicht geladen werden.</p>
+    <p>{{ props.t("altcha.loadError") }}</p>
   </div>
 </template>
 
