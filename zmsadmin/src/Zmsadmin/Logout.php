@@ -30,11 +30,14 @@ class Logout extends BaseController
             }
         }
         $sessionHash = hash('sha256', \BO\Zmsclient\Auth::getKey());
-        App::$log->info(sprintf(
-            "Logout - Manual logout: username=%s hashed_session_token=%s",
-            $workstation->useraccount['id'],
-            $sessionHash
-        ));
+        App::$log->info('User logged out', [
+            'event' => 'auth_logout',
+            'timestamp' => date('c'),
+            'username' => $workstation->useraccount['id'],
+            'hashed_session_token' => $sessionHash,
+            'logout_type' => 'manual',
+            'application' => 'zmsadmin'
+        ]);
         \BO\Zmsclient\Auth::removeKey();
         return \BO\Slim\Render::withHtml(
             $response,

@@ -75,11 +75,13 @@ class Index extends BaseController
             $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
 
             $sessionHash = hash('sha256', $workstation->authkey);
-            \App::$log->info(sprintf(
-                "Login - Successful login: username=%s hashed_session_token=%s",
-                $userAccount->id,
-                $sessionHash
-            ));
+            \App::$log->info('Login successful', [
+                'event' => 'auth_login_success',
+                'timestamp' => date('c'),
+                'username' => $userAccount->id,
+                'hashed_session_token' => $sessionHash,
+                'application' => 'zmsadmin'
+            ]);
 
             return $workstation;
         } catch (\BO\Zmsclient\Exception $exception) {
@@ -91,8 +93,22 @@ class Index extends BaseController
                 $exceptionData['data']['password']['messages'] = [
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
                 ];
+                \App::$log->info('Login failed - invalid credentials', [
+                    'event' => 'auth_login_failed',
+                    'timestamp' => date('c'),
+                    'username' => $userAccount->id,
+                    'error_type' => 'invalid_credentials',
+                    'application' => 'zmsadmin'
+                ]);
             } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey'], time() + \App::SESSION_DURATION);
+                \App::$log->info('User already logged in - reusing existing session', [
+                    'event' => 'auth_session_reuse',
+                    'timestamp' => date('c'),
+                    'username' => $userAccount->id,
+                    'hashed_session_token' => hash('sha256', $exception->data['authkey']),
+                    'application' => 'zmsadmin'
+                ]);
                 throw $exception;
             } elseif (
                 '' != $exception->template
@@ -102,6 +118,14 @@ class Index extends BaseController
                   'template' => $template,
                   'data' => $exception->data
                 ];
+                \App::$log->info('Login failed - other error', [
+                    'event' => 'auth_login_failed',
+                    'timestamp' => date('c'),
+                    'username' => $userAccount->id,
+                    'error_type' => 'other',
+                    'error_message' => $exception->getMessage(),
+                    'application' => 'zmsadmin'
+                ]);
             } else {
                 throw $exception;
             }

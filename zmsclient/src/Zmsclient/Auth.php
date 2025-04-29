@@ -20,12 +20,13 @@ class Auth
         if (!headers_sent()) {
             if (class_exists('App') && isset(App::$log)) {
                 $sessionHash = hash('sha256', $authKey);
-                App::$log->info(sprintf(
-                    "Auth::setKey - Session: hashed_session_token=%s, expires=%s, tz=%s",
-                    $sessionHash,
-                    date('Y-m-d H:i:s', $expires),
-                    date_default_timezone_get()
-                ));
+                App::$log->info('Auth session set', [
+                    'event' => 'auth_session_set',
+                    'timestamp' => date('c'),
+                    'hashed_session_token' => $sessionHash,
+                    'expires' => date('Y-m-d H:i:s', $expires),
+                    'timezone' => date_default_timezone_get()
+                ]);
             }
             setcookie(self::getCookieName(), $authKey, $expires, '/', null, true, true);
         }
@@ -55,10 +56,11 @@ class Auth
             $oldKey = $_COOKIE[self::getCookieName()];
             if (class_exists('App') && isset(App::$log)) {
                 $sessionHash = hash('sha256', $oldKey);
-                App::$log->info(sprintf(
-                    "Auth::removeKey - Session: hashed_session_token=%s",
-                    $sessionHash
-                ));
+                App::$log->info('Auth session removed', [
+                    'event' => 'auth_session_removed',
+                    'timestamp' => date('c'),
+                    'hashed_session_token' => $sessionHash
+                ]);
             }
             unset($_COOKIE[self::getCookieName()]);
             if (!headers_sent()) {
