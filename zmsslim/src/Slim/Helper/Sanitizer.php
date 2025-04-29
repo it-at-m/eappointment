@@ -15,15 +15,69 @@ class Sanitizer
      */
     public static function sanitizeStackTrace($trace)
     {
-        // Replace database credentials
+        // First, apply catch-all patterns that work regardless of constants
+        $trace = self::applyCatchAllPatterns($trace);
+
+        // Then, apply specific patterns if constants are defined
+        $trace = self::applySpecificPatterns($trace);
+
+        return $trace;
+    }
+
+    /**
+     * Apply catch-all patterns that work regardless of constants
+     *
+     * @param string $trace The text to sanitize
+     * @return string The sanitized text
+     */
+    protected static function applyCatchAllPatterns($trace)
+    {
+        // Sanitize connection strings
+        $trace = preg_replace('/mysql:dbname=[^;]+;host=[^;]+;port=\d+/', 'mysql:dbname=***;host=***;port=***', $trace);
+        $trace = preg_replace('/sqlite:[^;]+/', 'sqlite:***', $trace);
+
+        // Sanitize credentials in various formats
+        $trace = preg_replace('/[^:\s]+:[^@\s]+@[^:\s]+:\d+/', '***:***@***:***', $trace);
+        $trace = preg_replace('/[^:\s]+:[^@\s]+@[^:\s]+/', '***:***@***', $trace);
+
+        // Sanitize ports
+        $trace = preg_replace('/port=\d+/', 'port=***', $trace);
+        $trace = preg_replace('/:\d+(\/|$)/', ':***$1', $trace);
+
+        // Sanitize IP addresses and hostnames
+        $trace = preg_replace('/@[\d\.]+/', '@***', $trace); // IP addresses
+        $trace = preg_replace('/@[a-zA-Z0-9\-\.]+/', '@***', $trace); // Hostnames
+        $trace = preg_replace('/host=[a-zA-Z0-9\-\.]+/', 'host=***', $trace); // Hostnames in connection strings
+        $trace = preg_replace('/host=\d+\.\d+\.\d+\.\d+/', 'host=***', $trace); // IP addresses in connection strings
+
+        // Sanitize database names
+        $trace = preg_replace('/dbname=[a-zA-Z0-9\-_]+/', 'dbname=***', $trace);
+        $trace = preg_replace('/database \'[a-zA-Z0-9\-_]+\'/', 'database \'***\'', $trace);
+
+        // Sanitize usernames
+        $trace = preg_replace('/user=\'[^\']+\'/', 'user=\'***\'', $trace);
+        $trace = preg_replace('/user=[^;]+/', 'user=***', $trace);
+
+        // Sanitize passwords
+        $trace = preg_replace('/password=\'[^\']+\'/', 'password=\'***\'', $trace);
+        $trace = preg_replace('/password=[^;]+/', 'password=***', $trace);
+
+        return $trace;
+    }
+
+    /**
+     * Apply specific patterns if constants are defined
+     *
+     * @param string $trace The text to sanitize
+     * @return string The sanitized text
+     */
+    protected static function applySpecificPatterns($trace)
+    {
         if (defined('\App::DB_PASSWORD')) {
             $password = \App::DB_PASSWORD;
-            // Handle encoded/escaped characters
             $encodedPassword = preg_quote($password, '/');
             $trace = preg_replace('/' . $encodedPassword . '/', '***', $trace);
-            // Also replace any URL-encoded versions
             $trace = preg_replace('/' . preg_quote(urlencode($password), '/') . '/', '***', $trace);
-            // Handle PDO constructor format
             $trace = preg_replace('/\'' . preg_quote($password, '/') . '\'/', '\'***\'', $trace);
         }
         if (defined('\App::DB_USER')) {
@@ -31,7 +85,6 @@ class Sanitizer
             $encodedUser = preg_quote($user, '/');
             $trace = preg_replace('/' . $encodedUser . '/', '***', $trace);
             $trace = preg_replace('/' . preg_quote(urlencode($user), '/') . '/', '***', $trace);
-            // Handle PDO constructor format
             $trace = preg_replace('/\'' . preg_quote($user, '/') . '\'/', '\'***\'', $trace);
         }
         if (defined('\App::DB_HOST')) {
@@ -39,7 +92,6 @@ class Sanitizer
             $encodedHost = preg_quote($host, '/');
             $trace = preg_replace('/' . $encodedHost . '/', '***', $trace);
             $trace = preg_replace('/' . preg_quote(urlencode($host), '/') . '/', '***', $trace);
-            // Handle PDO constructor format
             $trace = preg_replace('/\'' . preg_quote($host, '/') . '\'/', '\'***\'', $trace);
         }
         if (defined('\App::DB_NAME')) {
@@ -47,34 +99,17 @@ class Sanitizer
             $encodedDbname = preg_quote($dbname, '/');
             $trace = preg_replace('/' . $encodedDbname . '/', '***', $trace);
             $trace = preg_replace('/' . preg_quote(urlencode($dbname), '/') . '/', '***', $trace);
-            // Handle PDO constructor format
             $trace = preg_replace('/\'' . preg_quote($dbname, '/') . '\'/', '\'***\'', $trace);
         }
         if (defined('\App::DB_PORT')) {
             $port = \App::DB_PORT;
             $encodedPort = preg_quote($port, '/');
-            // Replace port in various formats
             $trace = preg_replace('/' . $encodedPort . '/', '***', $trace);
             $trace = preg_replace('/' . preg_quote(urlencode($port), '/') . '/', '***', $trace);
             $trace = preg_replace('/\'' . preg_quote($port, '/') . '\'/', '\'***\'', $trace);
-            // Handle port in connection strings
             $trace = preg_replace('/port=' . $encodedPort . '/', 'port=***', $trace);
             $trace = preg_replace('/port=' . preg_quote(urlencode($port), '/') . '/', 'port=***', $trace);
         }
-
-        // Replace connection strings with more robust pattern matching
-        $trace = preg_replace('/mysql:host=[^;]+;port=\d+;dbname=[^;]+/', 'mysql:host=***;port=***;dbname=***', $trace);
-        $trace = preg_replace('/sqlite:[^;]+/', 'sqlite:***', $trace);
-
-        // Replace any remaining credentials in the format username:password@host:port
-        $trace = preg_replace('/[^:\s]+:[^@\s]+@[^:\s]+:\d+/', '***:***@***:***', $trace);
-
-        // Handle PDO constructor format with separate parameters
-        $trace = preg_replace('/mysql:dbname=[^;\']+.*?Array/', 'mysql:dbname=***\', \'***\', \'***\', Array', $trace);
-
-        // Additional port sanitization for any remaining port numbers
-        $trace = preg_replace('/port=\d+/', 'port=***', $trace);
-        $trace = preg_replace('/:\d+(\/|$)/', ':***$1', $trace);
 
         return $trace;
     }
