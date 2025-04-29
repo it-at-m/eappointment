@@ -170,12 +170,10 @@ class Select
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $exception) {
             // Extend exception message with connection information
-            $connectInfo = self::sanitizeStackTrace($dataSourceName);
-            $message = self::sanitizeStackTrace($connectInfo . $exception->getMessage());
+            $sanitizedDsn     = self::sanitizeStackTrace($dataSourceName);
+            $sanitizedMessage = self::sanitizeStackTrace($exception->getMessage());
             throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
-                $connectInfo . $message,
-                (int)$exception->getCode(),
-                $exception
+                $sanitizedDsn . ': ' . $sanitizedMessage,
             );
         }
         return $pdo;
