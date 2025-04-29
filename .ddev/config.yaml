@@ -1,7 +1,7 @@
 name: zms
 type: php
 docroot: ""
-php_version: "8.0"
+php_version: "8.3"
 webserver_type: apache-fpm
 xdebug_enabled: false
 additional_hostnames: []
@@ -230,8 +230,8 @@ webimage_extra_packages:
 #  https_port: 4000
 #  http_port: 3999
 # Allows a set of extra ports to be exposed via ddev-router
-# Fill in all three fields even if you don’t intend to use the https_port!
-# If you don’t add https_port, then it defaults to 0 and ddev-router will fail to start.
+# Fill in all three fields even if you don't intend to use the https_port!
+# If you don't add https_port, then it defaults to 0 and ddev-router will fail to start.
 #
 # The port behavior on the ddev-webserver must be arranged separately, for example
 # using web_extra_daemons.
