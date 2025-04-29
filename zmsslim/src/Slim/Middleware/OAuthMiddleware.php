@@ -6,7 +6,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
-use App;
 
 /**
  * @SuppressWarnings(PHPMD)
@@ -114,11 +113,7 @@ class OAuthMiddleware
     {
         $authUrl = $instance->getProvider()->getAuthorizationUrl();
         \BO\Zmsclient\Auth::setOidcProvider($request->getParam('provider'));
-
-        $state = $instance->getProvider()->getState();
-        $sessionHash = hash('sha256', $state);
-
-        \BO\Zmsclient\Auth::setKey($state, time() + \App::SESSION_DURATION);
+        \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState(), time() + \App::SESSION_DURATION);
         return $authUrl;
     }
 }
