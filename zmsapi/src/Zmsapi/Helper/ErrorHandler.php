@@ -3,6 +3,7 @@
 namespace BO\Zmsapi\Helper;
 
 use BO\Slim\Render;
+use BO\Slim\Helper\Sanitizer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\ErrorHandlerInterface;
@@ -13,57 +14,6 @@ use Slim\Interfaces\ErrorHandlerInterface;
  */
 class ErrorHandler implements ErrorHandlerInterface
 {
-    protected static function sanitizeStackTrace($trace)
-    {
-        // Replace database credentials
-        if (defined('\App::DB_PASSWORD')) {
-            $password = \App::DB_PASSWORD;
-            // Handle encoded/escaped characters
-            $encodedPassword = preg_quote($password, '/');
-            $trace = preg_replace('/' . $encodedPassword . '/', '***', $trace);
-            // Also replace any URL-encoded versions
-            $trace = preg_replace('/' . preg_quote(urlencode($password), '/') . '/', '***', $trace);
-            // Handle PDO constructor format
-            $trace = preg_replace('/\'' . preg_quote($password, '/') . '\'/', '\'***\'', $trace);
-        }
-        if (defined('\App::DB_USER')) {
-            $user = \App::DB_USER;
-            $encodedUser = preg_quote($user, '/');
-            $trace = preg_replace('/' . $encodedUser . '/', '***', $trace);
-            $trace = preg_replace('/' . preg_quote(urlencode($user), '/') . '/', '***', $trace);
-            // Handle PDO constructor format
-            $trace = preg_replace('/\'' . preg_quote($user, '/') . '\'/', '\'***\'', $trace);
-        }
-        if (defined('\App::DB_HOST')) {
-            $host = \App::DB_HOST;
-            $encodedHost = preg_quote($host, '/');
-            $trace = preg_replace('/' . $encodedHost . '/', '***', $trace);
-            $trace = preg_replace('/' . preg_quote(urlencode($host), '/') . '/', '***', $trace);
-            // Handle PDO constructor format
-            $trace = preg_replace('/\'' . preg_quote($host, '/') . '\'/', '\'***\'', $trace);
-        }
-        if (defined('\App::DB_NAME')) {
-            $dbname = \App::DB_NAME;
-            $encodedDbname = preg_quote($dbname, '/');
-            $trace = preg_replace('/' . $encodedDbname . '/', '***', $trace);
-            $trace = preg_replace('/' . preg_quote(urlencode($dbname), '/') . '/', '***', $trace);
-            // Handle PDO constructor format
-            $trace = preg_replace('/\'' . preg_quote($dbname, '/') . '\'/', '\'***\'', $trace);
-        }
-
-        // Replace connection strings with more robust pattern matching
-        $trace = preg_replace('/mysql:host=[^;]+;port=\d+;dbname=[^;]+/', 'mysql:host=***;port=***;dbname=***', $trace);
-        $trace = preg_replace('/sqlite:[^;]+/', 'sqlite:***', $trace);
-
-        // Replace any remaining credentials in the format username:password@host
-        $trace = preg_replace('/[^:\s]+:[^@\s]+@[^:\s]+/', '***:***@***', $trace);
-
-        // Handle PDO constructor format with separate parameters
-        $trace = preg_replace('/mysql:dbname=[^;\']+.*?Array/', 'mysql:dbname=***\', \'***\', \'***\', Array', $trace);
-
-        return $trace;
-    }
-
     /**
      * @SuppressWarnings("PMD.UnusedFormalParameter")
      * @SuppressWarnings(Complexity)
@@ -104,7 +54,7 @@ class ErrorHandler implements ErrorHandlerInterface
             $message->meta->trace .= isset($call['line']) ? $call['line'] : '';
             $message->meta->trace .= "\n";
         }
-        $message->meta->trace = self::sanitizeStackTrace($message->meta->trace);
+        $message->meta->trace = Sanitizer::sanitizeStackTrace($message->meta->trace);
 
         if (isset($exception->data)) {
             $message->data = $exception->data;
@@ -119,7 +69,7 @@ class ErrorHandler implements ErrorHandlerInterface
                 "[API] Fatal Exception: "
                 . " in " . $exception->getFile() . " +" . $exception->getLine()
                 . " -> " . $exception->getMessage()
-                . " | Trace: " . self::sanitizeStackTrace(preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace)))
+                . " | Trace: " . Sanitizer::sanitizeStackTrace(preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace)))
             );
         }
         return Render::withJson($response, $message, $status);
