@@ -95,10 +95,6 @@ class ApplicationTest extends TestCase
         // Test with custom values
         putenv('CAPTCHA_ENABLED=true');
         putenv('CAPTCHA_TOKEN_SECRET=token_secret');
-        putenv('FRIENDLY_CAPTCHA_SECRET_KEY=test_secret');
-        putenv('FRIENDLY_CAPTCHA_SITE_KEY=test_site');
-        putenv('FRIENDLY_CAPTCHA_ENDPOINT=https://test.example.com/verify');
-        putenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE=https://test.example.com/puzzle');
         putenv('ALTCHA_CAPTCHA_SITE_KEY=alt_site');
         putenv('ALTCHA_CAPTCHA_SITE_SECRET=alt_secret');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=https://captcha-k.muenchen.de/api/v1/captcha/challenge');
@@ -108,10 +104,6 @@ class ApplicationTest extends TestCase
 
         $this->assertTrue(Application::$CAPTCHA_ENABLED);
         $this->assertEquals('token_secret', Application::$CAPTCHA_TOKEN_SECRET);
-        $this->assertEquals('test_secret', Application::$FRIENDLY_CAPTCHA_SECRET_KEY);
-        $this->assertEquals('test_site', Application::$FRIENDLY_CAPTCHA_SITE_KEY);
-        $this->assertEquals('https://test.example.com/verify', Application::$FRIENDLY_CAPTCHA_ENDPOINT);
-        $this->assertEquals('https://test.example.com/puzzle', Application::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE);
         $this->assertEquals('alt_site', Application::$ALTCHA_CAPTCHA_SITE_KEY);
         $this->assertEquals('alt_secret', Application::$ALTCHA_CAPTCHA_SITE_SECRET);
         $this->assertEquals('https://captcha-k.muenchen.de/api/v1/captcha/challenge', Application::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE);
@@ -227,10 +219,6 @@ class ApplicationTest extends TestCase
         putenv('LOGGER_LOCK_TIMEOUT');
         putenv('CAPTCHA_ENABLED');
         putenv('CAPTCHA_TOKEN_SECRET');
-        putenv('FRIENDLY_CAPTCHA_SECRET_KEY');
-        putenv('FRIENDLY_CAPTCHA_SITE_KEY');
-        putenv('FRIENDLY_CAPTCHA_ENDPOINT');
-        putenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE');
         putenv('ALTCHA_CAPTCHA_SITE_KEY');
         putenv('ALTCHA_CAPTCHA_SITE_SECRET');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE');

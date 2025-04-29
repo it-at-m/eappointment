@@ -64,10 +64,6 @@ sequenceDiagram
 | **Captcha Configuration** |
 | CAPTCHA_ENABLED | Enable captcha globally | false |
 | CAPTCHA_TOKEN_SECRET | Secret key for signing and validating captcha token | "" |
-| FRIENDLY_CAPTCHA_SECRET_KEY | FriendlyCaptcha secret key | "" |
-| FRIENDLY_CAPTCHA_SITE_KEY | FriendlyCaptcha site key | "" |
-| FRIENDLY_CAPTCHA_ENDPOINT | FriendlyCaptcha verification endpoint | https://eu-api.friendlycaptcha.eu/api/v1/siteverify |
-| FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE | FriendlyCaptcha puzzle endpoint | https://eu-api.friendlycaptcha.eu/api/v1/puzzle |
 | ALTCHA_CAPTCHA_SITE_KEY | Altcha site key | "" |
 | ALTCHA_CAPTCHA_SITE_SECRET | Altcha site secret | "" |
 | ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE | Altcha challenge endpoint | https://captcha-k.muenchen.de/api/v1/captcha/challenge |

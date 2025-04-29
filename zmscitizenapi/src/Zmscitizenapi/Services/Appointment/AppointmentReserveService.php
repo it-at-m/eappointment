@@ -6,7 +6,6 @@ namespace BO\Zmscitizenapi\Services\Appointment;
 
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
-use BO\Zmscitizenapi\Models\Captcha\FriendlyCaptcha;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmsentities\Process;
@@ -19,11 +18,6 @@ class AppointmentReserveService
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
-        }
-
-        $captchaErrors = $this->verifyCaptcha($clientData->officeId, $clientData->captchaSolution);
-        if (!empty($captchaErrors['errors'])) {
-            return $captchaErrors;
         }
 
         $errors = ValidationService::validateServiceLocationCombination($clientData->officeId, $clientData->serviceIds);
@@ -46,7 +40,6 @@ class AppointmentReserveService
             'officeId' => isset($body['officeId']) && is_numeric($body['officeId']) ? (int) $body['officeId'] : null,
             'serviceIds' => $body['serviceId'] ?? null,
             'serviceCounts' => $body['serviceCount'] ?? [1],
-            'captchaSolution' => $body['captchaSolution'] ?? null,
             'timestamp' => isset($body['timestamp']) && is_numeric($body['timestamp']) ? (int) $body['timestamp'] : null,
         ];
     }
@@ -54,38 +47,6 @@ class AppointmentReserveService
     private function validateClientData(object $data): array
     {
         return ValidationService::validatePostAppointmentReserve($data->officeId, $data->serviceIds, $data->serviceCounts, $data->timestamp);
-    }
-
-    private function verifyCaptcha(?int $officeId, ?string $captchaSolution): array
-    {
-        $providerScope = ZmsApiFacadeService::getScopeByOfficeId($officeId);
-        $captchaRequired = \App::$CAPTCHA_ENABLED === true &&
-            isset($providerScope->captchaActivatedRequired) &&
-            $providerScope->captchaActivatedRequired === "1";
-        if (!$captchaRequired) {
-            return [];
-        }
-
-        try {
-            $captcha = new FriendlyCaptcha();
-            if (!$captcha->verifyCaptcha($captchaSolution)) {
-                return ['errors' => [
-                    [
-                        'errorCode' => 'captchaVerificationFailed',
-                        'statusCode' => 400
-                    ]
-                ]];
-            }
-        } catch (\Exception $e) {
-            return ['errors' => [
-                [
-                    'errorCode' => 'captchaVerificationError',
-                    'statusCode' => 400
-                ]
-            ]];
-        }
-
-        return [];
     }
 
     private function findMatchingProcess(int $officeId, array $serviceIds, array $serviceCounts, int $timestamp): ?Process

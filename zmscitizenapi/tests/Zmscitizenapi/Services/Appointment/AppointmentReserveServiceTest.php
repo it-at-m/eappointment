@@ -38,7 +38,6 @@ class AppointmentReserveServiceTest extends MiddlewareTestCase
             'officeId' => '12345',
             'serviceId' => ['1', '2'],
             'serviceCount' => [1, 2],
-            'captchaSolution' => 'abc123',
             'timestamp' => '1704114000'
         ];
 
@@ -47,7 +46,6 @@ class AppointmentReserveServiceTest extends MiddlewareTestCase
         $this->assertEquals(12345, $result->officeId);
         $this->assertEquals(['1', '2'], $result->serviceIds);
         $this->assertEquals([1, 2], $result->serviceCounts);
-        $this->assertEquals('abc123', $result->captchaSolution);
         $this->assertEquals(1704114000, $result->timestamp);
     }
 
@@ -63,7 +61,6 @@ class AppointmentReserveServiceTest extends MiddlewareTestCase
         $this->assertNull($result->officeId);
         $this->assertNull($result->serviceIds);
         $this->assertEquals([1], $result->serviceCounts);
-        $this->assertNull($result->captchaSolution);
         $this->assertNull($result->timestamp);
     }
 

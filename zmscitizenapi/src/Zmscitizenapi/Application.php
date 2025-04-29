@@ -38,10 +38,6 @@ class Application extends \BO\Slim\Application
     public static int $LOGGER_LOCK_TIMEOUT;
     // Captcha config
     public static bool $CAPTCHA_ENABLED;
-    public static string $FRIENDLY_CAPTCHA_SECRET_KEY;
-    public static string $FRIENDLY_CAPTCHA_SITE_KEY;
-    public static string $FRIENDLY_CAPTCHA_ENDPOINT;
-    public static string $FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
     public static string $ALTCHA_CAPTCHA_SITE_KEY;
     public static string $ALTCHA_CAPTCHA_SITE_SECRET;
     public static string $ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
@@ -105,12 +101,6 @@ class Application extends \BO\Slim\Application
     {
         self::$CAPTCHA_ENABLED = filter_var(getenv('CAPTCHA_ENABLED'), FILTER_VALIDATE_BOOLEAN);
         self::$CAPTCHA_TOKEN_SECRET = getenv('CAPTCHA_TOKEN_SECRET') ?: '';
-        self::$FRIENDLY_CAPTCHA_SECRET_KEY = getenv('FRIENDLY_CAPTCHA_SECRET_KEY') ?: '';
-        self::$FRIENDLY_CAPTCHA_SITE_KEY = getenv('FRIENDLY_CAPTCHA_SITE_KEY') ?: '';
-        self::$FRIENDLY_CAPTCHA_ENDPOINT = getenv('FRIENDLY_CAPTCHA_ENDPOINT')
-            ?: 'https://eu-api.friendlycaptcha.eu/api/v1/siteverify';
-        self::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE = getenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE')
-            ?: 'https://eu-api.friendlycaptcha.eu/api/v1/puzzle';
         self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: '';
         self::$ALTCHA_CAPTCHA_SITE_SECRET = getenv('ALTCHA_CAPTCHA_SITE_SECRET') ?: '';
         self::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE = getenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE')
