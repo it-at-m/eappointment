@@ -37,7 +37,7 @@ class Oidc extends BaseController
             if ($state == $authKey) {
                 try {
                     $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-                    $username = $workstation->getUseraccount()->id . '@' . \BO\Zmsclient\Auth::getOidcProvider();
+                    $username = $workstation->getUseraccount()->id;
                     $sessionHash = hash('sha256', $workstation->authkey);
 
                     \App::$log->info('OIDC workstation access', [
