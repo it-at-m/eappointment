@@ -62,6 +62,10 @@ class Sanitizer
         $trace = preg_replace('/password=\'[^\']+\'/', 'password=\'***\'', $trace);
         $trace = preg_replace('/password=[^;]+/', 'password=***', $trace);
 
+        // Sanitize MySQL access denied messages
+        $trace = preg_replace('/Access denied for user \'[^\']+\'@\'[^\']+\'/', 'Access denied for user \'***\'@\'***\'', $trace);
+        $trace = preg_replace('/Access denied for user [^@]+@[^\s]+/', 'Access denied for user ***@***', $trace);
+
         return $trace;
     }
 
