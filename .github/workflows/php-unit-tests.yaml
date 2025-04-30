@@ -102,6 +102,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - module: mellon
+            php_version: "8.0"        
           - module: zmsadmin
             php_version: "8.0"
           - module: zmscalldisplay
