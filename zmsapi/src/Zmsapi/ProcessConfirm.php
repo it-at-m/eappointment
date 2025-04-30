@@ -40,7 +40,7 @@ class ProcessConfirm extends BaseController
         if ('preconfirmed' != $process->status && 'reserved' != $process->status) {
             throw new Exception\Process\ProcessNotPreconfirmedAnymore();
         }
-
+        $this->updateOverallCalendar($process);
         $process = (new Process())->updateProcessStatus(
             $process,
             'confirmed',
@@ -72,6 +72,41 @@ class ProcessConfirm extends BaseController
             (new Mail())->writeInQueueWithAdmin($mail, \App::$now);
         }
     }
+
+    private function updateOverallCalendar(\BO\Zmsentities\Process $process): void
+    {
+        $appointment = null;
+        foreach ($process->appointments as $appointment) {
+            break;
+        }
+        if (!$appointment) {
+            return;
+        }
+
+        $scopeId = (int) $appointment->scope->id;
+
+        $time = (new \DateTimeImmutable('@' . $appointment->date))
+            ->setTimezone(new \DateTimeZone(\BO\Zmsdb\Connection\Select::$connectionTimezone))
+            ->format('Y-m-d H:i:00');
+
+        $duration = 0;
+        foreach ($process->requests as $req) {
+            if (!empty($req['data']['duration'])) {
+                $duration += (int) $req['data']['duration'];
+            }
+        }
+        $duration = $duration ?: 5;
+        $slotUnits = (int) ceil($duration / 5);
+
+        (new \BO\Zmsdb\OverallCalendar())->book(
+            $scopeId,
+            $time,
+            $process->id,
+            $slotUnits
+        );
+
+    }
+
     protected function testProcessData($entity)
     {
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
