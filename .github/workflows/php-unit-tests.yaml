@@ -54,6 +54,11 @@ jobs:
           if [ "${{ matrix.module }}" = "zmsslim" ] && [ ! -f "phpunit.xml" ] && [ -f "phpunit.xml.dist" ]; then
             cp phpunit.xml.dist phpunit.xml
           fi
+
+          # Handle mellon missing phpunit.xml
+          if [ "${{ matrix.module }}" = "mellon" ] && [ ! -f "phpunit.xml" ] && [ -f "phpunit.xml.dist" ]; then
+            cp phpunit.xml.dist phpunit.xml
+          fi
           
           # Different approach for problematic modules vs regular modules
           case "${{ matrix.module }}" in
@@ -102,6 +107,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - module: mellon
+            php_version: "8.0"        
           - module: zmsadmin
             php_version: "8.0"
           - module: zmscalldisplay
