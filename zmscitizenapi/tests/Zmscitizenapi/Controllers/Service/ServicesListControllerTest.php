@@ -18,12 +18,10 @@ class ServicesListControllerTest extends ControllerTestCase
 
         if (\App::$cache) {
             \App::$cache->clear();
-            // Clear specific cache keys that might affect this test
             \App::$cache->delete('processed_services');
             \App::$cache->delete('processed_services_unpublished');
         }
 
-        // Ensure headers are set to prevent unpublished access
         $_SERVER['HTTP_HOST'] = 'test.example.com';
         unset($_SERVER['HTTP_X_FORWARDED_HOST']);
     }

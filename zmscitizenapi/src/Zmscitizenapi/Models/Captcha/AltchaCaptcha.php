@@ -37,6 +37,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         $this->siteKey = \App::$ALTCHA_CAPTCHA_SITE_KEY;
         $this->siteSecret = \App::$ALTCHA_CAPTCHA_SITE_SECRET;
         $this->tokenSecret = \App::$CAPTCHA_TOKEN_SECRET;
+        $this->tokenExpirationSeconds = \App::$CAPTCHA_TOKEN_TTL;
         $this->challengeUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
         $this->verifyUrl = \App::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
         $this->httpClient = new Client(['verify' => false]);
@@ -70,7 +71,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         $payload = [
             'ip' => ClientIpHelper::getClientIp(),
             'iat' => time(),
-            'exp' => time() + 300, // 5 Minuten gültig
+            'exp' => time() + $this->tokenExpirationSeconds,
         ];
 
         return JWT::encode($payload, $this->tokenSecret, 'HS256');

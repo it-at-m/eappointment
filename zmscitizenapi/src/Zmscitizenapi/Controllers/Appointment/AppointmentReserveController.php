@@ -34,13 +34,11 @@ class AppointmentReserveController extends BaseController
         }
 
         $parsedBody = $request->getParsedBody();
-        error_log('PARSED BODY: ' . print_r($parsedBody, true));
         $officeId   = isset($parsedBody['officeId']) ? (int)$parsedBody['officeId'] : 0;
 
         try {
             $thinnedScope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
         } catch (\Throwable $e) {
-            error_log('Scope not found for officeId: ' . $officeId);
             $thinnedScope = null;
         }
 

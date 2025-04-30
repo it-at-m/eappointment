@@ -64,6 +64,7 @@ sequenceDiagram
 | **Captcha Configuration** |
 | CAPTCHA_ENABLED | Enable captcha globally | false |
 | CAPTCHA_TOKEN_SECRET | Secret key for signing and validating captcha token | "" |
+| CAPTCHA_TOKEN_TTL | Captcha Token TTL in seconds | 300 |
 | ALTCHA_CAPTCHA_SITE_KEY | Altcha site key | "" |
 | ALTCHA_CAPTCHA_SITE_SECRET | Altcha site secret | "" |
 | ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE | Altcha challenge endpoint | https://captcha-k.muenchen.de/api/v1/captcha/challenge |

@@ -28,15 +28,13 @@ class TokenValidationService
             $payload = (array) JWT::decode($token, new Key($this->captchaTokenSecret, 'HS256'));
 
             if (empty($payload['ip']) || $payload['ip'] !== ClientIpHelper::getClientIp()) {
-                return false; // IP stimmt nicht überein
+                return false;
             }
 
             return true;
         } catch (ExpiredException $e) {
-            // abgelaufen
             return false;
         } catch (\Exception $e) {
-            // Invalid token, invalid signature, etc.
             return false;
         }
     }

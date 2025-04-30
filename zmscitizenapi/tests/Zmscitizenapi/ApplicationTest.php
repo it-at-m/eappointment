@@ -94,18 +94,20 @@ class ApplicationTest extends TestCase
     {
         // Test with custom values
         putenv('CAPTCHA_ENABLED=true');
-        putenv('CAPTCHA_TOKEN_SECRET=token_secret');
-        putenv('ALTCHA_CAPTCHA_SITE_KEY=alt_site');
-        putenv('ALTCHA_CAPTCHA_SITE_SECRET=alt_secret');
+        putenv('CAPTCHA_TOKEN_TTL=300');
+        putenv('CAPTCHA_TOKEN_SECRET=test_token_secret');
+        putenv('ALTCHA_CAPTCHA_SITE_KEY=test_site_key');
+        putenv('ALTCHA_CAPTCHA_SITE_SECRET=test_site_secret');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=https://captcha-k.muenchen.de/api/v1/captcha/challenge');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY=https://captcha-k.muenchen.de/api/v1/captcha/verify');
 
         Application::initialize();
 
         $this->assertTrue(Application::$CAPTCHA_ENABLED);
-        $this->assertEquals('token_secret', Application::$CAPTCHA_TOKEN_SECRET);
-        $this->assertEquals('alt_site', Application::$ALTCHA_CAPTCHA_SITE_KEY);
-        $this->assertEquals('alt_secret', Application::$ALTCHA_CAPTCHA_SITE_SECRET);
+        $this->assertEquals(300, Application::$CAPTCHA_TOKEN_TTL);
+        $this->assertEquals('test_token_secret', Application::$CAPTCHA_TOKEN_SECRET);
+        $this->assertEquals('test_site_key', Application::$ALTCHA_CAPTCHA_SITE_KEY);
+        $this->assertEquals('test_site_secret', Application::$ALTCHA_CAPTCHA_SITE_SECRET);
         $this->assertEquals('https://captcha-k.muenchen.de/api/v1/captcha/challenge', Application::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE);
         $this->assertEquals('https://captcha-k.muenchen.de/api/v1/captcha/verify', Application::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY);
     }
@@ -218,6 +220,7 @@ class ApplicationTest extends TestCase
         putenv('LOGGER_BACKOFF_MAX');
         putenv('LOGGER_LOCK_TIMEOUT');
         putenv('CAPTCHA_ENABLED');
+        putenv('CAPTCHA_TOKEN_TTL');
         putenv('CAPTCHA_TOKEN_SECRET');
         putenv('ALTCHA_CAPTCHA_SITE_KEY');
         putenv('ALTCHA_CAPTCHA_SITE_SECRET');

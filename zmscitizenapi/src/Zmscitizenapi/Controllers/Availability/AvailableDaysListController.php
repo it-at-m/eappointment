@@ -39,7 +39,6 @@ class AvailableDaysListController extends BaseController
         try {
             $thinnedScope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
         } catch (\Throwable $e) {
-            error_log('Scope not found for officeId: ' . $officeId);
             $thinnedScope = null;
         }
 

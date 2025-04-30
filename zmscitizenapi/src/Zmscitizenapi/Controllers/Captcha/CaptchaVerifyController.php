@@ -22,6 +22,7 @@ class CaptchaVerifyController extends BaseController
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $requestErrors = ValidationService::validateServerPostRequest($request);
+
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse(
                 $response,
@@ -32,9 +33,7 @@ class CaptchaVerifyController extends BaseController
 
         $data = $request->getParsedBody();
         $payload = $data['payload'] ?? null;
-        // error_log('PAYLOAD: ' . print_r($payload, true));
         $result = $this->service->verifySolution($payload);
-        // error_log('RESULT: ' . print_r($result, true));
         return is_array($result) && isset($result['errors'])
             ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
             : $this->createJsonResponse($response, $result, 200);
