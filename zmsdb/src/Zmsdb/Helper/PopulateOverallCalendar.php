@@ -20,7 +20,6 @@ class PopulateOverallCalendar extends CalculateSlots
 
     public function writeCalendar(\DateTimeInterface $now): void
     {
-        $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
         $this->log('PopulateOverallCalendar gestartet ' . $now->format('c'));
 
         foreach ((new \BO\Zmsdb\Scope())->readList() as $scope) {
