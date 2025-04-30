@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsdb;
 
 use BO\Zmsdb\Query\OverallCalendar as Q;
@@ -71,7 +72,4 @@ class OverallCalendar extends Base
             'process_id' => $processId,
         ]);
     }
-
-
-
 }

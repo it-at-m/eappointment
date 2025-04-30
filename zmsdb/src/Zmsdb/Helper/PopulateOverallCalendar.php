@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsdb\Helper;
 
 use BO\Zmsdb\OverallCalendar;
@@ -36,9 +37,9 @@ class PopulateOverallCalendar extends CalculateSlots
         if ($this->cal->existsToday($scopeId)) {
             return;
         }
-        $start = (new \DateTimeImmutable('today', $now->getTimezone()))->setTime(0,0);
+        $start = (new \DateTimeImmutable('today', $now->getTimezone()))->setTime(0, 0);
         for ($i = 0; $i < 288; $i++) {
-            $slotTime = $start->add(new \DateInterval('PT' . ($i*5) . 'M'));
+            $slotTime = $start->add(new \DateInterval('PT' . ($i * 5) . 'M'));
             $this->cal->insertClosed($scopeId, $slotTime);
         }
         $this->log("Raster 'closed' für Scope $scopeId erzeugt");
@@ -47,15 +48,15 @@ class PopulateOverallCalendar extends CalculateSlots
 
     private function updateFreeByAvailabilities(int $scopeId, \DateTimeInterface $now): void
     {
-        $from = $now->setTime(0,0)->format('Y-m-d H:i:s');
-        $to   = (clone $now)->modify('+'.self::MAX_DAYS.' days 23:59:59')
+        $from = $now->setTime(0, 0)->format('Y-m-d H:i:s');
+        $to   = (clone $now)->modify('+' . self::MAX_DAYS . ' days 23:59:59')
             ->format('Y-m-d H:i:s');
 
         $this->cal->resetRange($scopeId, $from, $to);
 
         $availList = (new \BO\Zmsdb\Availability())
             ->readAvailabilityListByScope(
-                (new \BO\Zmsentities\Scope(['id'=>$scopeId]))
+                (new \BO\Zmsentities\Scope(['id' => $scopeId]))
             );
 
         foreach ($availList as $a) {

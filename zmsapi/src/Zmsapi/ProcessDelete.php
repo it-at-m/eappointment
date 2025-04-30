@@ -37,7 +37,6 @@ class ProcessDelete extends BaseController
             }
             $processDeleted = $process;
         } else {
-
             $scopeId = (int) $process->scope->id;
             (new \BO\Zmsdb\OverallCalendar())->unbook($scopeId, $process->id);
 
