@@ -188,7 +188,7 @@ class ProcessQueue extends BaseController
             $templateProvider = new MailTemplateArrayProvider();
             $templateProvider->setTemplates($templates);
 
-            $config = new \BO\Zmsentities\Config();
+            $config = \App::$http->readGetResult('/config/')->getEntity();
 
             $mail = (new \BO\Zmsentities\Mail())
                 ->setTemplateProvider($templateProvider)
