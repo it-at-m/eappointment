@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsdb\Query;
 
 class OverallCalendar extends Base
@@ -65,5 +66,4 @@ class OverallCalendar extends Base
      WHERE scope_id   = :scope_id
        AND process_id = :process_id
     ';
-
 }

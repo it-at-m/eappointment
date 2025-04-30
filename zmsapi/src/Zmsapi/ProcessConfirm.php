@@ -104,7 +104,6 @@ class ProcessConfirm extends BaseController
             $process->id,
             $slotUnits
         );
-
     }
 
     protected function testProcessData($entity)
