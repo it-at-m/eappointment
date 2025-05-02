@@ -33,7 +33,7 @@ abstract class BaseController extends \BO\Slim\Controller
                 $response,
                 ['errors' => [[
                     'errorCode'   => $errorCode,
-                    'errorMessage'=> $errorMessage,
+                    'errorMessage' => $errorMessage,
                     'statusCode'  => $e->getCode() ?: 500
                 ]]],
                 $e->getCode() ?: 500

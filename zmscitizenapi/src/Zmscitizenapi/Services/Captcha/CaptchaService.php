@@ -76,10 +76,6 @@ class CaptchaService extends Entity implements CaptchaInterface
      */
     public function generateToken(): string
     {
-        if ($this->tokenSecret === '') {
-            throw new \RuntimeException('CAPTCHA_TOKEN_SECRET must be configured');
-        }
-
         $payload = [
             'ip' => ClientIpHelper::getClientIp(),
             'iat' => time(),
