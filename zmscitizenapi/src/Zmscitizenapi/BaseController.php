@@ -25,19 +25,17 @@ abstract class BaseController extends \BO\Slim\Controller
             $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
             return $this->readResponse($request, $noCacheResponse, $args);
         } catch (\RuntimeException $e) {
-            $parts       = explode(': ', $e->getMessage(), 2);
-            $errorCode   = $parts[0];
-            $errorMessage = $parts[1] ?? '';
-
-            return $this->createJsonResponse(
-                $response,
-                ['errors' => [[
-                    'errorCode'   => $errorCode,
-                    'errorMessage' => $errorMessage,
-                    'statusCode'  => $e->getCode() ?: 500
-                ]]],
-                $e->getCode() ?: 500
-            );
+        // Extract error details from the exception message
+            [$errorCode, $errorMessage] = explode(': ', $e->getMessage(), 2);
+            return $this->createJsonResponse($response, [
+                'errors' => [
+                    [
+                        'errorCode' => $errorCode,
+                        'errorMessage' => $errorMessage,
+                        'statusCode' => $e->getCode()
+                    ]
+                ]
+            ], $e->getCode() ?: 500);
         }
     }
 
