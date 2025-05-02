@@ -5,11 +5,19 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Appointment;
 
 use BO\Zmscitizenapi\Models\ThinnedProcess;
+use BO\Zmscitizenapi\Models\Captcha\AltchaCaptcha;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
 class AppointmentByIdService
 {
+    private AltchaCaptcha $captchaService;
+
+    public function __construct()
+    {
+        $this->captchaService = new AltchaCaptcha();
+    }
+
     public function getAppointmentById(array $queryParams): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($queryParams);
@@ -18,7 +26,12 @@ class AppointmentByIdService
             return $errors;
         }
 
-        return $this->getAppointment($clientData->processId, $clientData->authKey);
+        $appointment = $this->getAppointment($clientData->processId, $clientData->authKey);
+
+        $token = $this->captchaService->generateToken();
+        $appointment->setCaptchaToken($token);
+
+        return $appointment;
     }
 
     private function extractClientData(array $queryParams): object
