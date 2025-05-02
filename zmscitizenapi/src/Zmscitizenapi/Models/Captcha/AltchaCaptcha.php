@@ -66,7 +66,7 @@ class AltchaCaptcha extends Entity implements CaptchaInterface
         ];
     }
 
-    private function generateToken(): string
+    public function generateToken(): string
     {
         $payload = [
             'ip' => ClientIpHelper::getClientIp(),

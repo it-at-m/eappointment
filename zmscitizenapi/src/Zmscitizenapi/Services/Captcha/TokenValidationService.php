@@ -11,6 +11,10 @@ use Firebase\JWT\ExpiredException;
 
 class TokenValidationService
 {
+    public const TOKEN_VALID = 'valid';
+    public const TOKEN_MISSING = 'missing';
+    public const TOKEN_INVALID = 'invalid';
+    public const TOKEN_EXPIRED = 'expired';
     private string $captchaTokenSecret;
 
     public function __construct()
@@ -18,24 +22,23 @@ class TokenValidationService
         $this->captchaTokenSecret = \App::$CAPTCHA_TOKEN_SECRET;
     }
 
-    public function isCaptchaTokenValid(?string $token): bool
+    public function validateCaptchaToken(?string $token): string
     {
         if (empty($token)) {
-            return false;
+            return self::TOKEN_MISSING;
         }
 
         try {
             $payload = (array) JWT::decode($token, new Key($this->captchaTokenSecret, 'HS256'));
-
             if (empty($payload['ip']) || $payload['ip'] !== ClientIpHelper::getClientIp()) {
-                return false;
+                return self::TOKEN_INVALID;
             }
 
-            return true;
+            return self::TOKEN_VALID;
         } catch (ExpiredException $e) {
-            return false;
+            return self::TOKEN_EXPIRED;
         } catch (\Exception $e) {
-            return false;
+            return self::TOKEN_INVALID;
         }
     }
 }
