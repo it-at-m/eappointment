@@ -6,32 +6,68 @@ namespace BO\Zmscitizenapi\Services\Appointment;
 
 use BO\Zmscitizenapi\Helper\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
+use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmsentities\Process;
 
 class AppointmentReserveService
 {
+    private TokenValidationService $tokenValidator;
+    private ZmsApiFacadeService $zmsApiFacadeService;
+
+    public function __construct()
+    {
+        $this->tokenValidator = new TokenValidationService();
+        $this->zmsApiFacadeService = new ZmsApiFacadeService();
+    }
+
     public function processReservation(array $body): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($body);
-        $errors = $this->validateClientData($clientData);
+
+        $captchaRequired = $this->isCaptchaRequired($clientData->officeId);
+        $captchaToken = $body['captchaToken'] ?? null;
+
+        $errors = ValidationService::validatePostAppointmentReserve(
+            $clientData->officeId,
+            $clientData->serviceIds,
+            $clientData->serviceCounts,
+            $clientData->timestamp,
+            $captchaRequired,
+            $captchaToken,
+            $this->tokenValidator
+        );
         if (!empty($errors['errors'])) {
             return $errors;
         }
 
-        $errors = ValidationService::validateServiceLocationCombination($clientData->officeId, $clientData->serviceIds);
+        $errors = ValidationService::validateServiceLocationCombination(
+            $clientData->officeId,
+            $clientData->serviceIds
+        );
         if (!empty($errors['errors'])) {
             return $errors;
         }
 
-        $selectedProcess = $this->findMatchingProcess($clientData->officeId, $clientData->serviceIds, $clientData->serviceCounts, $clientData->timestamp);
+        $selectedProcess = $this->findMatchingProcess(
+            $clientData->officeId,
+            $clientData->serviceIds,
+            $clientData->serviceCounts,
+            $clientData->timestamp
+        );
+
         $errors = ValidationService::validateGetProcessNotFound($selectedProcess);
         if (!empty($errors['errors'])) {
             return $errors;
         }
 
-        return $this->reserveAppointment($selectedProcess, $clientData->serviceIds, $clientData->serviceCounts, $clientData->officeId);
+        return $this->reserveAppointment(
+            $selectedProcess,
+            $clientData->serviceIds,
+            $clientData->serviceCounts,
+            $clientData->officeId
+        );
     }
 
     private function extractClientData(array $body): object
@@ -42,6 +78,16 @@ class AppointmentReserveService
             'serviceCounts' => $body['serviceCount'] ?? [1],
             'timestamp' => isset($body['timestamp']) && is_numeric($body['timestamp']) ? (int) $body['timestamp'] : null,
         ];
+    }
+
+    private function isCaptchaRequired(?int $officeId): bool
+    {
+        try {
+            $scope = $this->zmsApiFacadeService->getScopeByOfficeId((int) $officeId);
+            return $scope->captchaActivatedRequired ?? false;
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     private function validateClientData(object $data): array

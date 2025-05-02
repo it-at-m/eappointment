@@ -7,23 +7,17 @@ namespace BO\Zmscitizenapi\Controllers\Appointment;
 use BO\Zmscitizenapi\BaseController;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Services\Appointment\AppointmentReserveService;
-use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
-use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class AppointmentReserveController extends BaseController
 {
     private AppointmentReserveService $service;
-    private TokenValidationService $tokenValidator;
-    private ZmsApiFacadeService $zmsApiFacadeService;
 
     public function __construct()
     {
         $this->service = new AppointmentReserveService();
-        $this->tokenValidator = new TokenValidationService();
-        $this->zmsApiFacadeService = new ZmsApiFacadeService();
     }
 
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
@@ -31,28 +25,6 @@ class AppointmentReserveController extends BaseController
         $requestErrors = ValidationService::validateServerPostRequest($request);
         if (!empty($requestErrors['errors'])) {
             return $this->createJsonResponse($response, $requestErrors, ErrorMessages::get('invalidRequest', $this->language)['statusCode']);
-        }
-
-        $parsedBody = $request->getParsedBody();
-        $officeId   = isset($parsedBody['officeId']) ? (int)$parsedBody['officeId'] : 0;
-
-        try {
-            $thinnedScope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
-        } catch (\Throwable $e) {
-            $thinnedScope = null;
-        }
-
-        $captchaActivated = $thinnedScope->captchaActivatedRequired ?? false;
-
-        if ($captchaActivated) {
-            $token = $parsedBody['captchaToken'] ?? null;
-
-            if (!$this->tokenValidator->isCaptchaTokenValid($token)) {
-                return $this->createJsonResponse($response, [
-                    'meta' => ['success' => false, 'error'   => 'Ungültiges oder fehlendes Captcha-Token'],
-                    'data' => null,
-                ], 403);
-            }
         }
 
         $result = $this->service->processReservation($request->getParsedBody());
