@@ -106,9 +106,9 @@ class Application extends \BO\Slim\Application
         self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: '';
         self::$ALTCHA_CAPTCHA_SITE_SECRET = getenv('ALTCHA_CAPTCHA_SITE_SECRET') ?: '';
         self::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE = getenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE')
-            ?: 'https://captcha-k.muenchen.de/api/v1/captcha/challenge';
+            ?: 'https://captcha.muenchen.de/api/v1/captcha/challenge';
         self::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY = getenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY')
-            ?: 'https://captcha-k.muenchen.de/api/v1/captcha/verify';
+            ?: 'https://captcha.muenchen.de/api/v1/captcha/verify';
     }
 
     private static function initializeCache(): void
