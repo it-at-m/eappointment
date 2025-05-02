@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Appointment;
 
 use BO\Zmscitizenapi\Models\ThinnedProcess;
-use BO\Zmscitizenapi\Models\Captcha\AltchaCaptcha;
+use BO\Zmscitizenapi\Services\Captcha\CaptchaService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Core\MapperService;
 
 class AppointmentConfirmService
 {
-    private AltchaCaptcha $captchaService;
+    private CaptchaService $captchaService;
 
     public function __construct()
     {
-        $this->captchaService = new AltchaCaptcha();
+        $this->captchaService = new CaptchaService();
     }
 
     public function processConfirm(array $body): ThinnedProcess|array

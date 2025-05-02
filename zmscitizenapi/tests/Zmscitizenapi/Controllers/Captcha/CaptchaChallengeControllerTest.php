@@ -3,7 +3,7 @@
 namespace BO\Zmscitizenapi\Tests\Controllers\Captcha;
 
 use BO\Zmscitizenapi\Tests\ControllerTestCase;
-use BO\Zmscitizenapi\Models\Captcha\AltchaCaptcha;
+use BO\Zmscitizenapi\Services\Captcha\CaptchaService;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Client;
@@ -61,7 +61,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         $handlerStack = HandlerStack::create($mockHandler);
         $mockClient = new Client(['handler' => $handlerStack]);
 
-        $captcha = new class($mockClient) extends AltchaCaptcha {
+        $captcha = new class($mockClient) extends CaptchaService {
             public function __construct($client)
             {
                 parent::__construct();
@@ -86,7 +86,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         $handlerStack = HandlerStack::create($mockHandler);
         $mockClient = new Client(['handler' => $handlerStack]);
 
-        $captcha = new class($mockClient) extends AltchaCaptcha {
+        $captcha = new class($mockClient) extends CaptchaService {
             public function __construct($client)
             {
                 parent::__construct();
@@ -113,7 +113,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         $handlerStack = HandlerStack::create($mockHandler);
         $mockClient = new Client(['handler' => $handlerStack]);
 
-        $captcha = new class($mockClient) extends AltchaCaptcha {
+        $captcha = new class($mockClient) extends CaptchaService {
             public function __construct($client)
             {
                 parent::__construct();
@@ -143,7 +143,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         ]);
         $mockClient = new Client(['handler' => HandlerStack::create($mockHandler)]);
 
-        $captcha = new class($mockClient) extends AltchaCaptcha {
+        $captcha = new class($mockClient) extends CaptchaService {
             public function __construct($client)
             {
                 parent::__construct();
