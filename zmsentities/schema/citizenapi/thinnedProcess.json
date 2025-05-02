@@ -41,6 +41,13 @@
       ],
       "description": "Custom text field for the process"
     },
+    "customTextfield2": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Custom text field for the process"
+    },
     "email": {
       "type": [
         "string",

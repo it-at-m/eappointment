@@ -93,6 +93,9 @@ class MapperService
                     customTextfieldActivated: isset($providerScope->customTextfieldActivated) ? (bool) $providerScope->customTextfieldActivated : null,
                     customTextfieldRequired: isset($providerScope->customTextfieldRequired) ? (bool) $providerScope->customTextfieldRequired : null,
                     customTextfieldLabel: isset($providerScope->customTextfieldLabel) ? $providerScope->customTextfieldLabel : null,
+                    customTextfield2Activated: isset($providerScope->customTextfield2Activated) ? (bool) $providerScope->customTextfield2Activated : null,
+                    customTextfield2Required: isset($providerScope->customTextfield2Required) ? (bool) $providerScope->customTextfield2Required : null,
+                    customTextfield2Label: isset($providerScope->customTextfield2Label) ? $providerScope->customTextfield2Label : null,
                     captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? (bool) $providerScope->captchaActivatedRequired : null,
                     displayInfo: isset($providerScope->displayInfo) ? $providerScope->displayInfo : null
                 ) : null
@@ -214,6 +217,9 @@ class MapperService
             customTextfieldActivated: isset($scope->data['customTextfieldActivated']) ? (bool) $scope->data['customTextfieldActivated'] : null,
             customTextfieldRequired: isset($scope->data['customTextfieldRequired']) ? (bool) $scope->data['customTextfieldRequired'] : null,
             customTextfieldLabel: $scope->data['customTextfieldLabel'] ?? null,
+            customTextfield2Activated: isset($scope->data['customTextfield2Activated']) ? (bool) $scope->data['customTextfield2Activated'] : null,
+            customTextfield2Required: isset($scope->data['customTextfield2Required']) ? (bool) $scope->data['customTextfield2Required'] : null,
+            customTextfield2Label: $scope->data['customTextfield2Label'] ?? null,
             captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
             displayInfo: $scope->data['displayInfo'] ?? null
         );
@@ -260,6 +266,7 @@ class MapperService
             authKey: isset($myProcess->authKey) ? $myProcess->authKey : null,
             familyName: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->familyName)) ? $myProcess->clients[0]->familyName : null,
             customTextfield: isset($myProcess->customTextfield) ? $myProcess->customTextfield : null,
+            customTextfield2: isset($myProcess->customTextfield2) ? $myProcess->customTextfield2 : null,
             email: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->email)) ? $myProcess->clients[0]->email : null,
             telephone: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->telephone)) ? $myProcess->clients[0]->telephone : null,
             officeName: (isset($myProcess->scope->contact) && isset($myProcess->scope->contact->name)) ? $myProcess->scope->contact->name : null,
@@ -282,6 +289,7 @@ class MapperService
         $processEntity->id = $thinnedProcess->processId;
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
         $processEntity->customTextfield = $thinnedProcess->customTextfield ?? null;
+        $processEntity->customTextfield2 = $thinnedProcess->customTextfield2 ?? null;
 
         $client = new Client();
         $client->familyName = $thinnedProcess->familyName ?? null;
@@ -305,8 +313,11 @@ class MapperService
                     'telephoneActivated' => $thinnedProcess->scope->getTelephoneActivated() ?? false,
                     'telephoneRequired' => $thinnedProcess->scope->getTelephoneRequired() ?? false,
                     'customTextfieldActivated' => $thinnedProcess->scope->getCustomTextfieldActivated() ?? false,
-                    'customTextfieldRequired' => $thinnedProcess->scope->getCaptchaActivatedRequired() ?? false,
-                    'customTextfieldLabel' => $thinnedProcess->scope->getCustomTextfieldLabel() ?? null
+                    'customTextfieldRequired' => $thinnedProcess->scope->getCustomTextfieldRequired() ?? false,
+                    'customTextfieldLabel' => $thinnedProcess->scope->getCustomTextfieldLabel() ?? null,
+                    'customTextfield2Activated' => $thinnedProcess->scope->getCustomTextfield2Activated() ?? false,
+                    'customTextfield2Required' => $thinnedProcess->scope->getCustomTextfield2Required() ?? false,
+                    'customTextfield2Label' => $thinnedProcess->scope->getCustomTextfield2Label() ?? null
                 ],
                 'notifications' => [
                     'enabled' => true

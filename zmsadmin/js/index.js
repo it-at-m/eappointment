@@ -37,6 +37,7 @@ import { getDataAttributes, forceHttps } from './lib/utils'
 import preventFormResubmit from './element/form/preventFormResubmit'
 import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
+import maxCharsInput from './element/form/maxCharsInput'
 import DialogHandler from './lib/dialogHandler'
 
 // Import JS from patternlab
@@ -138,6 +139,10 @@ $('textarea.maxchars').each(function () {
     maxChars(this);
 })
 
+$('input.charcounter').each(function () {
+    maxCharsInput(this);
+})
+
 printScopeAppointmentsByDay();
 printWaitingNumber();
 DialogHandler.hideMessages();
@@ -151,5 +156,3 @@ console.log("Welcome to the ZMS admin interface...");
 //bindReact('[data-department-daysoff]', DepartmentDaysOffView)
 //bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
 //bindReact('[data-calldisplay-config]', CallDisplayConfigView)
-
-

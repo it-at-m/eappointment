@@ -39,7 +39,8 @@ class CalculateDailyWaitingStatisticByCron extends Base
               wegezeit,
               Name,
               Anmerkung,
-              custom_text_field
+              custom_text_field,
+              custom_text_field2
             FROM buerger
             WHERE Datum = :theDay
               AND Name NOT IN ('(abgesagt)')  
@@ -89,7 +90,8 @@ class CalculateDailyWaitingStatisticByCron extends Base
         if ($scopeId <= 0) {
             $parsedScope = $this->extractScopeFromAnmerkung(
                 $buergerRecord['Anmerkung'],
-                $buergerRecord['custom_text_field']
+                $buergerRecord['custom_text_field'],
+                $buergerRecord['custom_text_field2'],
             );
 
             if ($parsedScope) {
@@ -220,13 +222,13 @@ class CalculateDailyWaitingStatisticByCron extends Base
         $updateParams[$colWayTime] = $avgWay;
     }
 
-    private function extractScopeFromAnmerkung(?string $anmerkung, ?string $customText): ?int
+    private function extractScopeFromAnmerkung(?string $anmerkung, ?string $customText, ?string $customText2): ?int
     {
         if (!$anmerkung && !$customText) {
             return null;
         }
         $pattern = "/'StandortID' => '(\d+)'/";
-        foreach ([$anmerkung, $customText] as $txt) {
+        foreach ([$anmerkung, $customText, $customText2] as $txt) {
             if (preg_match($pattern, (string)$txt, $matches)) {
                 return (int)$matches[1];
             }
