@@ -73,11 +73,6 @@ class AvailableDaysListService
         }
     }
 
-    private function validateClientData(object $data): array
-    {
-        return ValidationService::validateGetBookableFreeDays($data->officeIds, $data->serviceIds, $data->startDate, $data->endDate, $data->serviceCounts);
-    }
-
     private function getAvailableDays(object $data): AvailableDays|array
     {
         return ZmsApiFacadeService::getBookableFreeDays($data->officeIds, $data->serviceIds, $data->serviceCounts, $data->startDate, $data->endDate);

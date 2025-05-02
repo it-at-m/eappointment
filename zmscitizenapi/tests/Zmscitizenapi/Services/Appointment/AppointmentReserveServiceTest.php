@@ -64,34 +64,6 @@ class AppointmentReserveServiceTest extends MiddlewareTestCase
         $this->assertNull($result->timestamp);
     }
 
-    public function testValidateClientDataWithValidData(): void
-    {
-        $data = (object)[
-            'officeId' => 12345,
-            'serviceIds' => [1, 2],
-            'serviceCounts' => [1, 2],
-            'timestamp' => time() + 3600 // 1 hour in future
-        ];
-    
-        $result = $this->invokePrivateMethod('validateClientData', [$data]);
-    
-        $this->assertEquals(['errors' => []], $result);
-    }
-
-    public function testValidateClientDataWithInvalidData(): void
-    {
-        $data = (object)[
-            'officeId' => null,
-            'serviceIds' => null,
-            'serviceCounts' => null,
-            'timestamp' => null
-        ];
-
-        $result = $this->invokePrivateMethod('validateClientData', [$data]);
-
-        $this->assertArrayHasKey('errors', $result);
-    }
-
     public function testProcessReservationWithValidationErrors(): void
     {
         $body = [

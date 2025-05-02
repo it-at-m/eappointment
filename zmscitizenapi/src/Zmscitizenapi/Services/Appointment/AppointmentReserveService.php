@@ -90,11 +90,6 @@ class AppointmentReserveService
         }
     }
 
-    private function validateClientData(object $data): array
-    {
-        return ValidationService::validatePostAppointmentReserve($data->officeId, $data->serviceIds, $data->serviceCounts, $data->timestamp);
-    }
-
     private function findMatchingProcess(int $officeId, array $serviceIds, array $serviceCounts, int $timestamp): ?Process
     {
         $freeAppointments = ZmsApiFacadeService::getFreeAppointments($officeId, $serviceIds, $serviceCounts, DateTimeFormatHelper::getInternalDateFromTimestamp($timestamp));
