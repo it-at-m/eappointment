@@ -229,7 +229,7 @@ class ZmsApiFacadeService
             $relationList,
             $showUnpublished
         ) ?? new ServiceList();
-        $relations = MapperService::mapRelations($relationList) ?? new OfficeServiceRelationList();
+        $relations = MapperService::mapRelations($relationList, $showUnpublished) ?? new OfficeServiceRelationList();
 
         $result = new OfficeServiceAndRelationList($offices, $services, $relations);
 

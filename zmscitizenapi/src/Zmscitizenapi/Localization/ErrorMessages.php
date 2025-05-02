@@ -35,6 +35,11 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
             'errorMessage' => 'Feature not implemented yet.',
         ],
+        'notFound' => [
+            'errorCode' => 'notFound',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'Endpoint not found.',
+        ],
         'invalidRequest' => [
             'errorCode' => 'invalidRequest',
             'statusCode' => self::HTTP_BAD_REQUEST,
@@ -159,6 +164,11 @@ class ErrorMessages
             'errorCode' => 'serviceUnavailable',
             'statusCode' => self::HTTP_UNAVAILABLE,
             'errorMessage' => 'Service Unavailable: The application is under maintenance.'
+        ],
+        'invalidSchema' => [
+            'errorCode' => 'invalidSchema',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Data does not match the required schema.'
         ],
 
         //Zmsapi exceptions
@@ -328,6 +338,11 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
             'errorMessage' => 'Funktion ist noch nicht implementiert.',
         ],
+        'notFound' => [
+            'errorCode' => 'notFound',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'Endpunkt nicht gefunden.',
+        ],
         'invalidRequest' => [
             'errorCode' => 'invalidRequest',
             'statusCode' => self::HTTP_BAD_REQUEST,
@@ -452,6 +467,11 @@ class ErrorMessages
             'errorCode' => 'serviceUnavailable',
             'statusCode' => self::HTTP_UNAVAILABLE,
             'errorMessage' => 'Der Dienst ist nicht verfügbar: Die Anwendung wird gerade gewartet.'
+        ],
+        'invalidSchema' => [
+            'errorCode' => 'invalidSchema',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Daten entsprechen nicht dem erforderlichen Schema.'
         ],
 
         //Zmsapi exceptions
@@ -620,6 +640,11 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_IMPLEMENTED,
             'errorMessage' => 'Функцію ще не реалізовано.',
         ],
+        'notFound' => [
+            'errorCode' => 'notFound',
+            'statusCode' => self::HTTP_NOT_FOUND,
+            'errorMessage' => 'Кінцеву точку не знайдено.',
+        ],
         'invalidRequest' => [
             'errorCode' => 'invalidRequest',
             'statusCode' => self::HTTP_BAD_REQUEST,
@@ -744,6 +769,11 @@ class ErrorMessages
             'errorCode' => 'serviceUnavailable',
             'statusCode' => self::HTTP_UNAVAILABLE,
             'errorMessage' => 'Сервіс недоступний: Додаток перебуває на технічному обслуговуванні.'
+        ],
+        'invalidSchema' => [
+            'errorCode' => 'invalidSchema',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Дані не відповідають необхідній схемі.'
         ],
         'internalError' => [
             'errorCode' => 'internalError',
