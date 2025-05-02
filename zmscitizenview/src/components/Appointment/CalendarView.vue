@@ -188,19 +188,19 @@
     </div>
   </div>
   <div
-    v-if="error"
+    v-if="showError"
     class="m-component"
   >
     <muc-callout type="warning">
       <template #header>
         {{
-          errorKey === "altcha.invalidCaptcha"
+          showErrorKey === "altcha.invalidCaptcha"
             ? t("altcha.invalidCaptchaHeader")
             : t("noAppointmentsAvailableHeader")
         }}
       </template>
       <template #content>
-        {{ t(errorKey) }}
+        {{ t(showErrorKey) }}
       </template>
     </muc-callout>
   </div>
@@ -253,6 +253,8 @@ const props = defineProps<{
   preselectedOfficeId: string | undefined;
   selectedServiceMap: Map<string, number>;
   captchaToken: string | null;
+  bookingError: boolean;
+  bookingErrorKey: string;
   t: (key: string) => string;
 }>();
 
@@ -270,9 +272,14 @@ const selectableProviders = ref<OfficeImpl[]>();
 const availableDays = ref<string[]>();
 const appointmentTimestamps = ref<number[]>([]);
 
-const selectedDay = ref<Date>();
 const errorKey = ref("");
 const error = ref<boolean>(false);
+const showError = computed(() => error.value || props.bookingError);
+const showErrorKey = computed(() =>
+  error.value ? errorKey.value : props.bookingErrorKey
+);
+
+const selectedDay = ref<Date>();
 const minDate = ref<Date>();
 const maxDate = ref<Date>();
 
