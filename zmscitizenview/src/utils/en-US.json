@@ -73,7 +73,7 @@
   "altcha": {
     "error": "Verification failed. Try again later.",
     "expired": "Verification expired. Try again.",
-    "footer": "Protected by <a href=\"https://altcha.org/\" target=\"_blank\" aria-label=\"Visit Altcha.org\">ALTCHA</a>",
+    "footer": "Protected by ALTCHA",
     "invalidCaptchaHeader": "Something went wrong.",
     "invalidCaptcha": "Please refresh this page.",
     "label": "I'm not a robot",
