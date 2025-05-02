@@ -27,6 +27,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=https://captcha-k.muenchen.de/api/v1/captcha/challenge');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY=https://captcha-k.muenchen.de/api/v1/captcha/verify');
         putenv('CAPTCHA_ENABLED=1');
+        putenv('CAPTCHA_TOKEN_SECRET=FAKE_TOKEN_SECRET');
 
         \App::initialize();
     }
@@ -37,6 +38,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY=');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE=');
         putenv('CAPTCHA_ENABLED=');
+        putenv('CAPTCHA_TOKEN_SECRET=');
 
         parent::tearDown();
     }
@@ -87,8 +89,6 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
 
         $payload = base64_encode(json_encode(['challenge' => 'abcdefg0123456789']));
         $result = $captcha->verifySolution($payload);
-
-        var_dump(json_encode($result, JSON_PRETTY_PRINT));
 
         $this->assertEquals($expectedResponse['meta'], $result['meta']);
         $this->assertEquals($expectedResponse['data'], $result['data']);

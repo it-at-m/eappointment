@@ -70,7 +70,7 @@ class CaptchaService extends Entity implements CaptchaInterface
     }
 
     /**
-     * Generiert einen JWT für die Captcha-Validierung. 
+     * Generiert einen JWT für die Captcha-Validierung.
      *
      * @return string
      */
