@@ -23,6 +23,7 @@
   "confirmAppointmentHeader": "Confirm your appointment.",
   "confirmAppointmentText": "In the next minutes you will receive an e-mail with an activation link. Click on the link to finalise the booking. If you do not activate the appointment within one hour, your booking will expire.",
   "errorMessageCustomTextfield": "Please enter the required information.",
+  "errorMessageCustomTextfield2": "Please enter the required information.",
   "errorMessageFirstName": "Please enter your first name.",
   "errorMessageLastName": "Please enter your surname.",
   "errorMessageMailAddressRequired": "Please enter your email address.",

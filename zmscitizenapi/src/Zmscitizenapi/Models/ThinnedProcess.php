@@ -23,6 +23,8 @@ class ThinnedProcess extends Entity implements JsonSerializable
 /** @var string|null */
     public ?string $customTextfield;
 /** @var string|null */
+    public ?string $customTextfield2;
+/** @var string|null */
     public ?string $email;
 /** @var string|null */
     public ?string $telephone;
@@ -40,13 +42,14 @@ class ThinnedProcess extends Entity implements JsonSerializable
     public int $serviceCount;
 /** @var string|null */
     public ?string $status;
-    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, int $serviceCount = 0, ?string $status = null)
+    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $customTextfield2 = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, int $serviceCount = 0, ?string $status = null)
     {
         $this->processId = $processId;
         $this->timestamp = $timestamp;
         $this->authKey = $authKey;
         $this->familyName = $familyName;
         $this->customTextfield = $customTextfield;
+        $this->customTextfield2 = $customTextfield2;
         $this->email = $email;
         $this->telephone = $telephone;
         $this->officeName = $officeName;
@@ -72,6 +75,7 @@ class ThinnedProcess extends Entity implements JsonSerializable
             'authKey' => $this->authKey ?? null,
             'familyName' => $this->familyName ?? null,
             'customTextfield' => $this->customTextfield ?? null,
+            'customTextfield2' => $this->customTextfield2 ?? null,
             'email' => $this->email ?? null,
             'telephone' => $this->telephone ?? null,
             'officeName' => $this->officeName ?? null,

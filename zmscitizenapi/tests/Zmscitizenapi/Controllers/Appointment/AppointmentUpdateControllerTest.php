@@ -56,6 +56,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
+            'customTextfield2' => "Another custom text",
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -65,6 +66,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             "authKey" => "fb43",
             "familyName" => "TEST_USER",
             "customTextfield" => "Some custom text",
+            'customTextfield2' => "Another custom text",
             "email" => "test@muenchen.de",
             "telephone" => "123456789",
             "officeName" => null,
@@ -87,6 +89,9 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 "customTextfieldActivated" => null,
                 "customTextfieldRequired" => null,
                 "customTextfieldLabel" => null,
+                "customTextfield2Activated" => null,
+                "customTextfield2Required" => null,
+                "customTextfield2Label" => null,
                 "captchaActivatedRequired" => null,
                 "displayInfo" => null
             ],

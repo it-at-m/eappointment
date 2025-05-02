@@ -2,94 +2,328 @@
 
 declare(strict_types=1);
 
-namespace BO\Zmscitizenapi\Services\Appointment;
+namespace BO\Zmscitizenapi\Tests\Services\Appointment;
 
+use PHPUnit\Framework\TestCase;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
-use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
-use BO\Zmscitizenapi\Services\Core\MapperService;
+use BO\Zmscitizenapi\Services\Appointment\AppointmentUpdateService;
 
-class AppointmentUpdateService
+class AppointmentUpdateServiceTest extends TestCase
 {
-    public function processUpdate(array $body): ThinnedProcess|array
+    private AppointmentUpdateService $service;
+    private \ReflectionClass $reflector;
+    private static $originalFacade;
+
+    protected function setUp(): void
     {
-        $clientData = $this->extractClientData($body);
-
-        $errors = $this->validateClientData($clientData);
-        if (!empty($errors['errors'])) {
-            return $errors;
-        }
-
-        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey);
-
-        $updatedProcess = $this->updateProcessWithClientData($reservedProcess, $clientData);
-        return $this->saveProcessUpdate($updatedProcess);
+        parent::setUp();
+        $this->service = new AppointmentUpdateService();
+        $this->reflector = new \ReflectionClass(AppointmentUpdateService::class);
+        
+        $facadeReflection = new \ReflectionClass(ZmsApiFacadeService::class);
+        $staticProperties = $facadeReflection->getStaticProperties();
+        self::$originalFacade = reset($staticProperties);
     }
 
-    private function validateClientData(object $data): array
+    protected function tearDown(): void
     {
-        $authErrors = ValidationService::validateGetProcessById($data->processId, $data->authKey);
-        if (is_array($authErrors) && !empty($authErrors['errors'])) {
-            return $authErrors;
-        }
-
-        $reservedProcess = $this->getReservedProcess($data->processId, $data->authKey);
-        if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
-            return $reservedProcess;
-        }
-
-        $fieldErrors = ValidationService::validateAppointmentUpdateFields(
-            $data->familyName,
-            $data->email,
-            $data->telephone,
-            $data->customTextfield,
-            $reservedProcess->scope ?? null
-        );
-        if (is_array($fieldErrors) && !empty($fieldErrors['errors'])) {
-            return $fieldErrors;
-        }
-
-        return ['errors' => []];
+        parent::tearDown();
+        $facadeReflection = new \ReflectionClass(ZmsApiFacadeService::class);
+        $staticProperty = $facadeReflection->getProperties(\ReflectionProperty::IS_STATIC)[0];
+        $staticProperty->setAccessible(true);
+        $staticProperty->setValue(null, self::$originalFacade);
     }
 
-    private function extractClientData(array $body): object
+    private function invokePrivateMethod(string $methodName, array $params = []): mixed
     {
-        return (object) [
-            'processId' => isset($body['processId']) && is_numeric($body['processId'])
-                ? (int) $body['processId']
-                : null,
-            'authKey' => isset($body['authKey']) && is_string($body['authKey']) && trim($body['authKey']) !== ''
-                ? htmlspecialchars(trim($body['authKey']), ENT_QUOTES, 'UTF-8')
-                : null,
-            'familyName' => isset($body['familyName']) && is_string($body['familyName']) ? (string) $body['familyName'] : null,
-            'email' => isset($body['email']) && is_string($body['email']) ? (string) $body['email'] : null,
-            'telephone' => isset($body['telephone']) && is_string($body['telephone']) ? (string) $body['telephone'] : null,
-            'customTextfield' => isset($body['customTextfield']) && is_string($body['customTextfield']) ? (string) $body['customTextfield'] : null,
+        $method = $this->reflector->getMethod($methodName);
+        $method->setAccessible(true);
+        return $method->invokeArgs($this->service, $params);
+    }
+
+    public function testExtractClientDataWithValidInput(): void
+    {
+        $body = [
+            'processId' => '12345',
+            'authKey' => 'abc123',
+            'familyName' => 'Doe',
+            'email' => 'john@example.com',
+            'telephone' => '1234567890',
+            'customTextfield' => 'Custom Info',
+            'customTextfield2' => 'Custom Info 2'
         ];
+
+        $result = $this->invokePrivateMethod('extractClientData', [$body]);
+
+        $this->assertEquals(12345, $result->processId);
+        $this->assertEquals('abc123', $result->authKey);
+        $this->assertEquals('Doe', $result->familyName);
+        $this->assertEquals('john@example.com', $result->email);
+        $this->assertEquals('1234567890', $result->telephone);
+        $this->assertEquals('Custom Info', $result->customTextfield);
+        $this->assertEquals('Custom Info 2', $result->customTextfield2);
     }
 
-    private function getReservedProcess(int $processId, string $authKey): ThinnedProcess|array
+    public function testExtractClientDataWithInvalidProcessId(): void
     {
-        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey);
+        $body = [
+            'processId' => 'invalid',
+            'authKey' => 'abc123'
+        ];
+
+        $result = $this->invokePrivateMethod('extractClientData', [$body]);
+
+        $this->assertNull($result->processId);
+        $this->assertEquals('abc123', $result->authKey);
+        $this->assertNull($result->familyName);
+        $this->assertNull($result->email);
+        $this->assertNull($result->telephone);
+        $this->assertNull($result->customTextfield);
+        $this->assertNull($result->customTextfield2);
     }
 
-    private function updateProcessWithClientData(ThinnedProcess $process, object $data): ThinnedProcess
+    public function testExtractClientDataWithEmptyAuthKey(): void
     {
-        $process->familyName = $data->familyName ?? $process->familyName ?? null;
-        $process->email = $data->email ?? $process->email ?? null;
-        $process->telephone = $data->telephone ?? $process->telephone ?? null;
-        $process->customTextfield = $data->customTextfield ?? $process->customTextfield ?? null;
-        return $process;
+        $body = [
+            'processId' => '12345',
+            'authKey' => ''
+        ];
+
+        $result = $this->invokePrivateMethod('extractClientData', [$body]);
+
+        $this->assertEquals(12345, $result->processId);
+        $this->assertNull($result->authKey);
     }
 
-    private function saveProcessUpdate(ThinnedProcess $process): ThinnedProcess|array
+    public function testValidateClientDataWithValidData(): void
     {
-        $processEntity = MapperService::thinnedProcessToProcess($process);
-        $result = ZmsApiFacadeService::updateClientData($processEntity);
-        if (is_array($result) && !empty($result['errors'])) {
-            return $result;
+        $processJson = [
+            '$schema' => 'https://localhost/terminvereinbarung/api/2/',
+            'meta' => [
+                '$schema' => 'https://schema.berlin.de/queuemanagement/metaresult.json',
+                'error' => false,
+                'generated' => '2019-02-08T14:45:15+01:00',
+                'server' => 'Zmsapi'
+            ],
+            'data' => [
+                '$schema' => 'https://schema.berlin.de/queuemanagement/process.json',
+                'id' => 101002,
+                'authKey' => 'fb43',
+                'status' => 'confirmed',
+                'appointments' => [
+                    [
+                        'date' => 1724907600,
+                        'scope' => [
+                            'id' => '1063424'
+                        ],
+                        'slotCount' => '1'
+                    ]
+                ],
+                'scope' => [
+                    '$schema' => 'https://schema.berlin.de/queuemanagement/scope.json',
+                    'id' => '64',
+                    'source' => 'dldb',
+                    'provider' => [
+                        'id' => '64',
+                        'source' => 'dldb',
+                        'name' => 'Test Provider'
+                    ],
+                    'preferences' => [
+                        'client' => [
+                            'customTextfieldActivated' => true,
+                            'customTextfieldRequired' => true,
+                            'customTextfieldLabel' => 'Test Label',
+                            'customTextfield2Activated' => true,
+                            'customTextfield2Required' => true,
+                            'customTextfield2Label' => 'Test Label 2',
+                            'telephoneActivated' => true,
+                            'telephoneRequired' => true
+                        ]
+                    ]
+                ],
+                'clients' => [
+                    [
+                        'familyName' => 'Doe',
+                        'email' => 'john@example.com',
+                        'emailSendCount' => '0',
+                        'notificationsSendCount' => '0',
+                        'surveyAccepted' => 1,
+                        'telephone' => '1234567890'
+                    ]
+                ],
+                'requests' => [
+                    [
+                        'id' => '1063424',
+                        'name' => 'Test Service',
+                        'source' => 'dldb'
+                    ]
+                ]
+            ]
+        ];
+        $sourceJson = [
+            '$schema' => 'https://localhost/terminvereinbarung/api/2/',
+            'meta' => [
+                '$schema' => 'https://schema.berlin.de/queuemanagement/metaresult.json',
+                'error' => false,
+                'generated' => '2019-02-08T14:45:15+01:00',
+                'server' => 'Zmsapi'
+            ],
+            'data' => [
+                '$schema' => 'https://schema.berlin.de/queuemanagement/source.json',
+                'source' => 'unittest',
+                'providers' => [
+                    [
+                        'id' => '9999998',
+                        'link' => 'https://www.berlinonline.de',
+                        'name' => 'Unittest Source Dienstleister',
+                        'source' => 'unittest',
+                        'data' => [
+                            'geo' => [
+                                'lat' => '48.12750898398659',
+                                'lon' => '11.604317899956524'
+                            ],
+                            'showAlternativeLocations' => false
+                        ],
+                        'contact' => [
+                            'city' => 'Berlin',
+                            'country' => 'Germany',
+                            'name' => 'Unittest Source Dienstleister',
+                            'postalCode' => '10178',
+                            'region' => 'Berlin',
+                            'street' => 'Alte Jakobstraße',
+                            'streetNumber' => '105'
+                        ]
+                    ]
+                ],
+                'requests' => [
+                    [
+                        'id' => '1',
+                        'name' => 'Unittest Source Dienstleistung',
+                        'source' => 'unittest'
+                    ]
+                ],
+                'scopes' => [
+                    [
+                        'id' => '1',
+                        'provider' => [
+                            'id' => '9999998',
+                            'source' => 'unittest'
+                        ],
+                        'shortName' => 'Scope 1',
+                        'preferences' => [
+                            'client' => [
+                                'emailFrom' => 'no-reply@muenchen.de',
+                                'emailRequired' => '1',
+                                'telephoneActivated' => '1',
+                                'telephoneRequired' => '1',
+                                'customTextfieldActivated' => '1',
+                                'customTextfieldRequired' => '1',
+                                'customTextfield2Activated' => '1',
+                                'customTextfield2Required' => '1'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+    
+        $processResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
+        $processResponse->method('getBody')
+            ->willReturn(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($processJson)));
+        $processResponse->method('getStatusCode')
+            ->willReturn(200);
+    
+        $sourceResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
+        $sourceResponse->method('getBody')
+            ->willReturn(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($sourceJson)));
+        $sourceResponse->method('getStatusCode')
+            ->willReturn(200);
+
+        $mockHttpClient = $this->createMock(\BO\Zmsclient\Http::class);
+        $mockHttpClient->expects($this->exactly(2))
+            ->method('readGetResult')
+            ->willReturnCallback(function($url, $params) use ($processResponse, $sourceResponse) {
+                if (strpos($url, '/process/101002/fb43/') !== false) {
+                    return new \BO\Zmsclient\Result($processResponse);
+                }
+                if (strpos($url, '/source/unittest/') !== false) {
+                    return new \BO\Zmsclient\Result($sourceResponse);
+                }
+                throw new \RuntimeException("Unexpected URL: " . $url);
+            });
+    
+        $originalHttp = \App::$http;
+    
+        try {
+            \App::$http = $mockHttpClient;
+    
+            $data = (object)[
+                'processId' => 101002,
+                'authKey' => 'fb43',
+                'familyName' => 'Doe',
+                'email' => 'john@example.com',
+                'telephone' => '1234567890',
+                'customTextfield' => 'Custom Info',
+                'customTextfield2' => 'Custom Info 2'
+            ];
+    
+            $result = $this->invokePrivateMethod('validateClientData', [$data]);
+            $this->assertEquals(['errors' => []], $result);
+        } finally {
+            \App::$http = $originalHttp;
         }
+    }
 
-        return MapperService::processToThinnedProcess($result);
+    public function testValidateClientDataWithInvalidData(): void
+    {
+        $data = (object)[
+            'processId' => null,
+            'authKey' => null,
+            'familyName' => null,
+            'email' => null,
+            'telephone' => null,
+            'customTextfield' => null,
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('validateClientData', [$data]);
+
+        $this->assertArrayHasKey('errors', $result);
+    }
+
+    public function testUpdateProcessWithClientData(): void
+    {
+        $process = $this->createMock(ThinnedProcess::class);
+        $process->familyName = 'Old Name';
+        $process->email = 'old@example.com';
+        
+        $data = (object)[
+            'familyName' => 'New Name',
+            'email' => 'new@example.com',
+            'telephone' => null,
+            'customTextfield' => null,
+            'customTextfield2' => null
+        ];
+
+        $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data]);
+
+        $this->assertEquals('New Name', $result->familyName);
+        $this->assertEquals('new@example.com', $result->email);
+        $this->assertNull($result->telephone);
+        $this->assertNull($result->customTextfield);
+        $this->assertNull($result->customTextfield2);
+    }
+
+    public function testProcessUpdateWithValidationErrors(): void
+    {
+        $body = [
+            'processId' => 'invalid',
+            'authKey' => ''
+        ];
+
+        $result = $this->service->processUpdate($body);
+
+        $this->assertArrayHasKey('errors', $result);
     }
 }

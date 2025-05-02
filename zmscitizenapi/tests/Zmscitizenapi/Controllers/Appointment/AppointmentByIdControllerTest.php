@@ -55,6 +55,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
             "authKey" => "fb43",
             "familyName" => "Doe",
             "customTextfield" => "",
+            "customTextfield2" => "",
             "email" => "johndoe@example.com",
             "telephone" => "0123456789",
             "officeName" => "Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)",
@@ -86,6 +87,9 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "customTextfieldActivated" => true,
                 "customTextfieldRequired" => true,
                 "customTextfieldLabel" => "Nachname des Kindes",
+                "customTextfield2Activated" => true,
+                "customTextfield2Required" => true,
+                "customTextfield2Label" => "Zusätzliche Bemerkung",
                 "captchaActivatedRequired" => false,
                 "displayInfo" => null
             ],
