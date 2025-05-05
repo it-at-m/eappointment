@@ -449,7 +449,7 @@ class ValidationService
     {
         return $customTextfield === null || (is_string($customTextfield) && strlen(trim($customTextfield)) > 0);
     }
-    
+
     private static function isValidCustomTextfield2(?string $customTextfield2): bool
     {
         return $customTextfield2 === null || (is_string($customTextfield2) && strlen(trim($customTextfield2)) > 0);

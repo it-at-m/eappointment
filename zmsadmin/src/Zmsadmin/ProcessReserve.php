@@ -145,7 +145,7 @@ class ProcessReserve extends BaseController
         $processValidator->getCollection()->addValid(
             $validator->getParameter('sendConfirmation')->isNumber(),
             $validator->getParameter('sendReminder')->isNumber()
-        );        
+        );
 
         $form = $processValidator->getCollection()->getStatus(null, true);
         $form['failed'] = $processValidator->getCollection()->hasFailed();
