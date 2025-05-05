@@ -2,73 +2,70 @@
 
 namespace BO\Zmsdb;
 
-use BO\Zmsdb\Query\OverallCalendar as Q;
+use BO\Zmsdb\Exception\OverallCalendar\Conflict;
+use BO\Zmsdb\Query\OverallCalendar as Calender;
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeInterface;
 
 class OverallCalendar extends Base
 {
-    public function insertClosed($scopeId, \DateTimeInterface $time): void
+
+    public function insertSlot(int                $scopeId,
+                               DateTimeInterface $time,
+                               int                $seat,
+                               string             $status = 'free'): void
     {
-        $this->perform(Q::INSERT, [
+        $this->perform(Calender::INSERT, [
             'scope_id' => $scopeId,
-            'time'     => $time->format('Y-m-d H:i:s'),
-            'status'   => 'closed',
+            'time' => $time->format('Y-m-d H:i:s'),
+            'seat' => $seat,
+            'status' => $status,
         ]);
     }
 
-    public function existsToday($scopeId): bool
-    {
-        return (bool) $this->fetchValue(Q::EXISTS_TODAY, ['scope_id' => $scopeId]);
-    }
 
-    public function resetRange($scopeId, $from, $to): void
+    public function deleteFreeRange($scopeId, $from, $to): void
     {
-        $this->perform(Q::RESET_RANGE, [
+        $this->perform(Calender::DELETE_FREE_RANGE, [
             'scope_id' => $scopeId,
-            'begin'    => $from,
-            'finish'   => $to,
+            'begin' => $from,
+            'finish' => $to,
         ]);
     }
 
-    public function openRange($scopeId, $from, $to): void
+    public function book(int $scopeId,
+                         string $startTime,
+                         int    $processId,
+                         int    $slotUnits): void
     {
-        $this->perform(Q::UPDATE_STATUS, [
-            'scope_id' => $scopeId,
-            'begin'    => $from,
-            'finish'   => $to,
-            'status'   => 'free',
-        ]);
-    }
+        $start = new DateTimeImmutable($startTime);
+        $end   = $start->add(new DateInterval('PT' . ($slotUnits * 5) . 'M'));
 
-    public function book(int $scopeId, string $startTime, int $processId, int $slotUnits): void
-    {
-        $start = new \DateTimeImmutable($startTime);
-
-        $this->perform(Query\OverallCalendar::UPDATE_TO_BOOKED, [
-            'pid'   => $processId,
-            'slots' => $slotUnits,
+        $seat = $this->fetchValue(Calender::FIND_FREE_SEAT, [
             'scope' => $scopeId,
-            'time'  => $start->format('Y-m-d H:i:s'),
+            'start' => $start->format('Y-m-d H:i:s'),
+            'end'   => $end  ->format('Y-m-d H:i:s'),
+            'units' => $slotUnits,
         ]);
-
-        if ($slotUnits > 1) {
-            $startFollow = $start->modify('+5 minutes');
-            $end         = $start->add(new \DateInterval('PT' . ($slotUnits * 5) . 'M'));
-
-            $this->perform(Query\OverallCalendar::UPDATE_FOLLOWING_SLOTS, [
-                'pid'   => $processId,
-                'scope' => $scopeId,
-                'start' => $startFollow->format('Y-m-d H:i:s'),
-                'end'   => $end->format('Y-m-d H:i:s'),
-            ]);
+        if (!$seat) {
+            throw new Conflict();
         }
 
-        (new \BO\Zmsdb\Helper\CalculateSlots())->log("Booked $slotUnits slots for process $processId from $startTime");
+        $this->perform(Calender::BLOCK_SEAT_RANGE, [
+            'pid'   => $processId,
+            'units' => $slotUnits,
+            'scope' => $scopeId,
+            'seat'  => $seat,
+            'start' => $start->format('Y-m-d H:i:s'),
+            'end'   => $end  ->format('Y-m-d H:i:s'),
+        ]);
     }
 
     public function unbook(int $scopeId, int $processId): void
     {
-        $this->perform(Query\OverallCalendar::UNBOOK_PROCESS, [
-            'scope_id'   => $scopeId,
+        $this->perform(Calender::UNBOOK_PROCESS, [
+            'scope_id' => $scopeId,
             'process_id' => $processId,
         ]);
     }
