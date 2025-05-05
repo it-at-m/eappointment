@@ -20,7 +20,7 @@ class AppointmentUpdateServiceTest extends TestCase
         parent::setUp();
         $this->service = new AppointmentUpdateService();
         $this->reflector = new \ReflectionClass(AppointmentUpdateService::class);
-        
+
         $facadeReflection = new \ReflectionClass(ZmsApiFacadeService::class);
         $staticProperties = $facadeReflection->getStaticProperties();
         self::$originalFacade = reset($staticProperties);
@@ -227,13 +227,13 @@ class AppointmentUpdateServiceTest extends TestCase
                 ]
             ]
         ];
-    
+
         $processResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
         $processResponse->method('getBody')
             ->willReturn(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($processJson)));
         $processResponse->method('getStatusCode')
             ->willReturn(200);
-    
+
         $sourceResponse = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
         $sourceResponse->method('getBody')
             ->willReturn(\GuzzleHttp\Psr7\Utils::streamFor(json_encode($sourceJson)));
@@ -252,12 +252,12 @@ class AppointmentUpdateServiceTest extends TestCase
                 }
                 throw new \RuntimeException("Unexpected URL: " . $url);
             });
-    
+
         $originalHttp = \App::$http;
-    
+
         try {
             \App::$http = $mockHttpClient;
-    
+
             $data = (object)[
                 'processId' => 101002,
                 'authKey' => 'fb43',
@@ -267,7 +267,7 @@ class AppointmentUpdateServiceTest extends TestCase
                 'customTextfield' => 'Custom Info',
                 'customTextfield2' => 'Custom Info 2'
             ];
-    
+
             $result = $this->invokePrivateMethod('validateClientData', [$data]);
             $this->assertEquals(['errors' => []], $result);
         } finally {
@@ -297,7 +297,7 @@ class AppointmentUpdateServiceTest extends TestCase
         $process = $this->createMock(ThinnedProcess::class);
         $process->familyName = 'Old Name';
         $process->email = 'old@example.com';
-        
+
         $data = (object)[
             'familyName' => 'New Name',
             'email' => 'new@example.com',

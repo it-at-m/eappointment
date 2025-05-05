@@ -166,7 +166,7 @@ class MapperServiceTest extends TestCase
             ]
         ];
         $process->customTextfield = 'Custom Text';
-        $process->customTextfield = 'Another Custom Text';
+        $process->customTextfield2 = 'Another Custom Text';
         $process->scope = new Scope();
         $process->scope->contact = new Contact();
         $process->scope->contact->name = 'Test Office';

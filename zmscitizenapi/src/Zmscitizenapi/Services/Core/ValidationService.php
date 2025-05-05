@@ -255,8 +255,8 @@ class ValidationService
         }
 
         if (
-            ($scope->customTextfield2Required && !self::isValidCustomTextfield2($customTextfield2)) ||
-            ($customTextfield2 !== null && !self::isValidCustomTextfield2($customTextfield2))
+            ($scope->customTextfield2Required && ($customTextfield2 === "" || !self::isValidCustomTextfield2($customTextfield2))) ||
+            ($customTextfield2 !== null && $customTextfield2 !== "" && !self::isValidCustomTextfield2($customTextfield2))
         ) {
             $errors[] = self::getError('invalidCustomTextfield2');
         }

@@ -85,7 +85,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     {
         return $this->getPreference('client', 'customTextfield2Label', '');
     }
-    
+
     public function getCaptchaActivatedRequired()
     {
         return $this->getPreference('client', 'captchaActivatedRequired', null);

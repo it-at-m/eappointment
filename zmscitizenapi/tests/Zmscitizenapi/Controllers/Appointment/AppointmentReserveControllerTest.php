@@ -94,7 +94,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 "customTextfieldActivated" => false,
                 "customTextfieldRequired" => true,
                 "customTextfieldLabel" => "",
-                'customTextfiel2Activated' => false,
+                'customTextfield2Activated' => false,
                 'customTextfield2Required' => true,
                 'customTextfield2Label' => "",
                 "captchaActivatedRequired" => false,
