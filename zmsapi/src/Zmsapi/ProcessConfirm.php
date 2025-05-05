@@ -12,6 +12,8 @@ use BO\Zmsdb\Process;
 use BO\Zmsdb\Mail;
 use BO\Zmsdb\Config;
 use BO\Mellon\Validator;
+use BO\Zmsdb\Exception\OverallCalendar\Conflict as SlotDBConflict;
+use BO\Zmsapi\Exception\OverallCalendar\SlotConflict     as ApiConflict;
 
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
@@ -40,7 +42,12 @@ class ProcessConfirm extends BaseController
         if ('preconfirmed' != $process->status && 'reserved' != $process->status) {
             throw new Exception\Process\ProcessNotPreconfirmedAnymore();
         }
-        $this->updateOverallCalendar($process);
+        try {
+            $this->updateOverallCalendar($process);
+        } catch (SlotDBConflict $e) {
+            throw new ApiConflict();
+        }
+
         $process = (new Process())->updateProcessStatus(
             $process,
             'confirmed',
