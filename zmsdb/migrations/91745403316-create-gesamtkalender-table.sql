@@ -3,13 +3,14 @@ CREATE TABLE `gesamtkalender` (
     `id`         INT          UNSIGNED NOT NULL AUTO_INCREMENT,
     `scope_id`   INT          UNSIGNED NOT NULL,
     `time`       DATETIME              NOT NULL,
+    `seat`       TINYINT      UNSIGNED NOT NULL DEFAULT 1,
     `process_id` INT          UNSIGNED NULL,
     `slots`      INT          UNSIGNED NULL,
-    `status`     VARCHAR(64)           NOT NULL DEFAULT 'closed',
+    `status`     VARCHAR(64)           NOT NULL DEFAULT 'free',
     `updated_at` TIMESTAMP             NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_scope_time` (`scope_id`, `time`),
+    UNIQUE KEY `uk_scope_time` (`scope_id`, `time`, `seat`),
 
     KEY `idx_status`    (`status`),
     KEY `idx_process`   (`process_id`),
