@@ -42,11 +42,8 @@ class ProcessConfirm extends BaseController
         if ('preconfirmed' != $process->status && 'reserved' != $process->status) {
             throw new Exception\Process\ProcessNotPreconfirmedAnymore();
         }
-        try {
-            $this->updateOverallCalendar($process);
-        } catch (SlotDBConflict $e) {
-            throw new ApiConflict();
-        }
+
+        $this->updateOverallCalendar($process);
 
         $process = (new Process())->updateProcessStatus(
             $process,
