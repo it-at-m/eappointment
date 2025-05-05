@@ -82,11 +82,8 @@ class ProcessConfirm extends BaseController
 
     private function updateOverallCalendar(\BO\Zmsentities\Process $process): void
     {
-        $appointment = null;
-        foreach ($process->appointments as $appointment) {
-            break;
-        }
-        if (!$appointment) {
+        $appointment = $process->getFirstAppointment();
+        if (!$appointment || !$appointment->date || !$appointment->scope) {
             return;
         }
 
@@ -102,6 +99,7 @@ class ProcessConfirm extends BaseController
                 $duration += (int) $req['data']['duration'];
             }
         }
+
         $duration = $duration ?: 5;
         $slotUnits = (int) ceil($duration / 5);
 

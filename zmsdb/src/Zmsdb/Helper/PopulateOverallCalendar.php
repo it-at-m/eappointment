@@ -31,34 +31,31 @@ class PopulateOverallCalendar extends CalculateSlots
         $this->log('PopulateOverallCalendar beendet');
     }
 
-    private function updateFreeByAvailabilities(int $scopeId,
-                                                DateTimeInterface $now): void
-    {
+    private function updateFreeByAvailabilities(
+        int $scopeId,
+        DateTimeInterface $now
+    ): void {
 
-        $from = $now->setTime(0,0)->format('Y-m-d H:i:s');
+        $from = $now->setTime(0, 0)->format('Y-m-d H:i:s');
         $to   = (clone $now)->modify('+' . self::MAX_DAYS . ' days 23:59:59')
             ->format('Y-m-d H:i:s');
 
         $this->cal->deleteFreeRange($scopeId, $from, $to);
 
         $availList = (new Availability())
-            ->readAvailabilityListByScope(new \BO\Zmsentities\Scope(['id'=>$scopeId]));
+            ->readAvailabilityListByScope(new \BO\Zmsentities\Scope(['id' => $scopeId]));
 
         foreach ($availList as $availability) {
-
             $cursor = $availability->getBookableStart($now);
             $endAll = $availability->getBookableEnd($now);
 
             while ($cursor <= $endAll) {
-
                 if ($availability->hasDate($cursor, $now)) {
-
                     $slot     = $cursor->setTime(...explode(':', $availability->startTime));
                     $slotEnd  = $cursor->setTime(...explode(':', $availability->endTime));
                     $maxSeat  = (int)$availability->workstationCount['intern'];
 
                     while ($slot < $slotEnd) {
-
                         for ($seat = 1; $seat <= $maxSeat; $seat++) {
                             $this->cal->insertSlot($scopeId, $slot, $seat);
                         }

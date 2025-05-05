@@ -10,12 +10,12 @@ use DateTimeInterface;
 
 class OverallCalendar extends Base
 {
-
-    public function insertSlot(int                $scopeId,
-                               DateTimeInterface $time,
-                               int                $seat,
-                               string             $status = 'free'): void
-    {
+    public function insertSlot(
+        int $scopeId,
+        DateTimeInterface $time,
+        int $seat,
+        string $status = 'free'
+    ): void {
         $this->perform(Calender::INSERT, [
             'scope_id' => $scopeId,
             'time' => $time->format('Y-m-d H:i:s'),
@@ -34,11 +34,12 @@ class OverallCalendar extends Base
         ]);
     }
 
-    public function book(int $scopeId,
-                         string $startTime,
-                         int    $processId,
-                         int    $slotUnits): void
-    {
+    public function book(
+        int $scopeId,
+        string $startTime,
+        int $processId,
+        int $slotUnits
+    ): void {
         $start = new DateTimeImmutable($startTime);
         $end   = $start->add(new DateInterval('PT' . ($slotUnits * 5) . 'M'));
 
