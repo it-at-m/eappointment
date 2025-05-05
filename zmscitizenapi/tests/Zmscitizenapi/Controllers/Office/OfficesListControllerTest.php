@@ -79,7 +79,7 @@ class OfficesListControllerTest extends ControllerTestCase
                         "customTextfieldLabel" => "Custom Label",
                         "customTextfield2Activated" => true,
                         "customTextfield2Required" => false,
-                        "customTextfield2Label" => "Another Label",
+                        "customTextfield2Label" => "Second Custom Label",
                         "captchaActivatedRequired" => true,
                         "displayInfo" => null
                     ]
