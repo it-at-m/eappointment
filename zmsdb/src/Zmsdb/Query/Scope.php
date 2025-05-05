@@ -400,7 +400,7 @@ class Scope extends Base implements MappingInterface
         }
         if (!$data[$this->getPrefixed('preferences__client__customTextfieldActivated')]) {
             $data[$this->getPrefixed("preferences__client__customTextfieldRequired")] = 0;
-        }        
+        }
         if (!$data[$this->getPrefixed('preferences__client__customTextfield2Activated')]) {
             $data[$this->getPrefixed("preferences__client__customTextfield2Required")] = 0;
         }
