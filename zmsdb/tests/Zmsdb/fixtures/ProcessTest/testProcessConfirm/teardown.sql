@@ -1,0 +1,2 @@
+DELETE FROM gesamtkalender
+WHERE scope_id = 380 AND time BETWEEN '2016-05-27 09:30:00' AND '2016-05-27 09:35:00';
