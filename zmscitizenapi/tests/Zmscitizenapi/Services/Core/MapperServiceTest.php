@@ -270,7 +270,7 @@ class MapperServiceTest extends TestCase
             authKey: 'test-key',
             familyName: 'Doe',
             customTextfield: 'Custom Text',
-            customTextfield: 'Another Custom Text',
+            customTextfield2: 'Another Custom Text',
             email: 'john@example.com',
             telephone: '123456789',
             officeName: 'Test Office',

@@ -134,7 +134,7 @@
                   "customTextfieldLabel":"Nachname des Kindes",
                   "customTextfield2Activated":"1",
                   "customTextfield2Required":"1",
-                  "customTextfield2Label":"Zusätzliche Bermerkung",
+                  "customTextfield2Label":"Zusätzliche Bemerkung",
                   "captchaActivatedRequired":"0",
                   "adminMailOnAppointment":0,
                   "adminMailOnDeleted":0,

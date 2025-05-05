@@ -66,7 +66,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
             'customTextfield' => 'Some custom text',
-            'customTextfield2' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'officeName' => null,
