@@ -6,6 +6,7 @@
 namespace BO\Zmsapi\Tests;
 
 use BO\Zmsapi\Helper\User;
+use BO\Zmsdb\Cli\Db;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
 use BO\Zmsentities\Scope;
@@ -18,6 +19,10 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::setProfiling();
+
+        $className = explode('\\', static::class);
+        $testName = end($className) . '/' . $this->getName();
+        Db::executeTestData($testName, 'setup');
     }
 
     public function tearDown(): void
@@ -26,6 +31,10 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         \BO\Zmsdb\Connection\Select::writeRollback();
         \BO\Zmsdb\Connection\Select::closeWriteConnection();
         \BO\Zmsdb\Connection\Select::closeReadConnection();
+
+        $className = explode('\\', static::class);
+        $testName = end($className) . '/' . $this->getName();
+        Db::executeTestData($testName, 'teardown');
     }
 
     public function readFixture($filename)
