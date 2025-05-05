@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsapi\Exception\OverallCalendar;
 
 use Exception;

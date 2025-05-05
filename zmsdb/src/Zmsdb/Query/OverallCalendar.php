@@ -56,4 +56,3 @@ class OverallCalendar extends Base
            AND process_id = :process_id
     ';
 }
-
