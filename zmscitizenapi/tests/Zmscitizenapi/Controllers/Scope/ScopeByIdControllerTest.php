@@ -62,6 +62,9 @@ class ScopeByIdControllerTest extends ControllerTestCase
             "customTextfieldActivated" => true,
             "customTextfieldRequired" => false,
             "customTextfieldLabel" => "Custom Label",
+            "customTextfield2Activated" => true,
+            "customTextfield2Required" => false,
+            "customTextfield2Label" => "Second Custom Label",
             "captchaActivatedRequired" => true,
             "displayInfo" => null
         ];               
