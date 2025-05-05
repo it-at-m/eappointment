@@ -353,7 +353,6 @@ class MapperService
         $processEntity->lastChange = time();
         $processEntity->createIP = ClientIpHelper::getClientIp();
         $processEntity->createTimestamp = time();
-        // var_dump("PROCESS ENTITY:", $processEntity);
         return $processEntity;
     }
 
