@@ -6,7 +6,6 @@
 namespace BO\Zmsapi\Tests;
 
 use BO\Zmsapi\Helper\User;
-use BO\Zmsdb\Cli\Db;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
 use BO\Zmsentities\Scope;
