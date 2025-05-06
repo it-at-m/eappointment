@@ -98,6 +98,15 @@
               <p>{{ appointment.customTextfield }}</p>
               <br />
             </div>
+            <div
+              v-if="appointment.customTextfield2"
+              tabindex="0"
+            >
+              <strong>{{ selectedProvider.scope.customTextfield2Label }}</strong
+              ><br />
+              <p>{{ appointment.customTextfield2 }}</p>
+              <br />
+            </div>
           </div>
           <div v-if="!rebookOrCancelDialog">
             <div class="m-content">

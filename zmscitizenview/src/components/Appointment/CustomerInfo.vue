@@ -54,6 +54,18 @@
       :label="selectedProvider.scope.customTextfieldLabel"
       :required="selectedProvider.scope.customTextfieldRequired"
     />
+    <muc-text-area
+      v-if="
+        selectedProvider &&
+        selectedProvider.scope &&
+        selectedProvider.scope.customTextfield2Activated
+      "
+      id="remarks"
+      v-model="customerData.customTextfield2"
+      :error-msg="showErrorMessage ? errorMessageCustomTextfield2 : undefined"
+      :label="selectedProvider.scope.customTextfield2Label"
+      :required="selectedProvider.scope.customTextfield2Required"
+    />
   </form>
   <div class="m-button-group">
     <muc-button
@@ -150,13 +162,27 @@ const errorMessageCustomTextfield = computed(() => {
   }
 });
 
+const errorMessageCustomTextfield2 = computed(() => {
+  if (
+    !customerData.value.customTextfield2 &&
+    selectedProvider.value &&
+    selectedProvider.value.scope &&
+    selectedProvider.value.scope.customTextfield2Required
+  ) {
+    return props.t("errorMessageCustomTextfield2");
+  } else {
+    return undefined;
+  }
+});
+
 const validForm = computed(
   () =>
     !errorMessageFirstName.value &&
     !errorMessageLastName.value &&
     !errorMessageMailAddress.value &&
     !errorMessageTelephoneNumber.value &&
-    !errorMessageCustomTextfield.value
+    !errorMessageCustomTextfield.value &&
+    !errorMessageCustomTextfield2.value
 );
 
 const nextStep = () => {
