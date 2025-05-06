@@ -46,6 +46,7 @@
   "privacyCheckboxLabel": "Datenschutz und Datenverarbeitung",
   "privacyCheckboxText": "Ich habe die <a href=\"https://stadt.muenchen.de/infos/dsgvo-datenschutzgrundverordnung.html\" target='_blank'>Datenschutzerklärung</a> zur Kenntnis genommen und akzeptiere die Speicherung und Verarbeitung meiner Daten zu meinem Termin.",
   "remarks": "Bemerkungen",
+  "remarks2": "Weitere Bemerkungen",
   "remarkCompletionInstructions": "Sie möchten uns zu Ihrem Termin noch etwas mitteilen? Geben Sie hier an, wenn Sie Hilfe benötigen, auf Übersetzungen angewiesen sind oder sonstige Anliegen haben.",
   "rescheduleAppointment": "Termin verschieben",
   "selectedAppointment": "Ausgewählter Termin",

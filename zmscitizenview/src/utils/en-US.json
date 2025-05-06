@@ -46,6 +46,7 @@
   "privacyCheckboxLabel": "Privacy and data processing",
   "privacyCheckboxText": "I acknowledge the <a href=\"https://stadt.muenchen.de/infos/dsgvo-datenschutzgrundverordnung.html\" target='_blank'>privacy policy</a> and accept the storage and processing of data relating to my appointment.",
   "remarks": "Remarks",
+  "remarks2": "More remarks",
   "remarkCompletionInstructions": "Would you like to tell us something else about your appointment? Please indicate here if you need help, require translations or have any other concerns.",
   "rescheduleAppointment": "Reschedule appointment",
   "selectedAppointment": "Selected Appointment",

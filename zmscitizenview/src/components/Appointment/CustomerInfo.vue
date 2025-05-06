@@ -60,7 +60,7 @@
         selectedProvider.scope &&
         selectedProvider.scope.customTextfield2Activated
       "
-      id="remarks"
+      id="remarks2"
       v-model="customerData.customTextfield2"
       :error-msg="showErrorMessage ? errorMessageCustomTextfield2 : undefined"
       :label="selectedProvider.scope.customTextfield2Label"
