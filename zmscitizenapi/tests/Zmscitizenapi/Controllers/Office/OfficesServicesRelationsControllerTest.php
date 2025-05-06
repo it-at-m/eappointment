@@ -275,7 +275,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfieldRequired" => true,
                         "customTextfieldLabel" => "",
                         "customTextfield2Activated" => false,
-                        "customTextfield2equired" => true,
+                        "customTextfield2Required" => true,
                         "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null
