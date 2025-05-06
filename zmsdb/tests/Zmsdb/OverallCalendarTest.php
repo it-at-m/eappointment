@@ -4,62 +4,56 @@ namespace BO\Zmsdb\Tests;
 use BO\Zmsdb\OverallCalendar;
 use BO\Zmsdb\Exception\OverallCalendar\Conflict;
 use DateTimeImmutable;
+use DateInterval;
 
-/**
- * @covers \BO\Zmsdb\OverallCalendar
- */
 class OverallCalendarTest extends Base
 {
-    /** Scope mit **einem** Seat, vgl. Fixture‑SQL */
+    /** Scope 1300 hat nur 1 Seat */
     private const SCOPE = 1300;
-    private const START = '2016-05-27 09:30:00';
 
     public function testBookAndConflict()
     {
         $cal   = new OverallCalendar();
-        $pidOk = 900001;
+        $start = '2016-05-27 09:30:00';
 
-        /* ---------- Buchung soll funktionieren ----------------------- */
-        $cal->book(self::SCOPE, self::START, $pidOk, 1);
+        /* ---------------------- Happy Path -------------------------------- */
+        $cal->book(self::SCOPE, $start, 900001, 2);   // 2 Slots (09:30–09:40)
 
-        $row = \BO\Zmsdb\Connection\Select::getReadConnection()
-            ->fetchRow('SELECT process_id, status, slots
-                          FROM gesamtkalender
-                         WHERE scope_id = ? AND time = ?', [
-                self::SCOPE,
-                self::START,
-            ]);
+        $cnt = \BO\Zmsdb\Connection\Select::getReadConnection()
+            ->fetchValue(
+                'SELECT COUNT(*) FROM gesamtkalender
+                       WHERE scope_id = ?
+                         AND process_id = 900001',
+                [self::SCOPE]
+            );
+        $this->assertEquals(2, $cnt);
 
-        $this->assertEquals($pidOk,      $row['process_id']);
-        $this->assertEquals('termin',    $row['status']);
-        $this->assertEquals(1,           $row['slots']);
-
-        /* ---------- zweite Buchung gleicher Slot ⇒ Conflict ---------- */
+        /* ---------------------- Conflict erwartet ------------------------- */
         $this->expectException(Conflict::class);
-        $cal->book(self::SCOPE, self::START, 900002, 1);
+        $cal->book(self::SCOPE, $start, 900002, 1);   // gleicher Slot, kein Platz frei
     }
 
     public function testUnbook()
     {
         $cal   = new OverallCalendar();
-        $pid   = 900003;
+        $start = '2016-05-27 09:35:00';
 
-        /* erst buchen … */
-        $cal->book(self::SCOPE, self::START, $pid, 1);
+        // erst buchen
+        $cal->book(self::SCOPE, $start, 900010, 1);
 
-        /* … dann stornieren … */
-        $cal->unbook(self::SCOPE, $pid);
+        // dann wieder stornieren
+        $cal->unbook(self::SCOPE, 900010);
 
         $row = \BO\Zmsdb\Connection\Select::getReadConnection()
-            ->fetchRow('SELECT process_id, status, slots
-                          FROM gesamtkalender
-                         WHERE scope_id = ? AND time = ?', [
-                self::SCOPE,
-                self::START,
-            ]);
+            ->fetchOne(
+                'SELECT status, process_id
+                         FROM gesamtkalender
+                        WHERE scope_id = ?
+                          AND time      = ?',
+                [self::SCOPE, $start]
+            );
 
+        $this->assertEquals('free',  $row['status']);
         $this->assertNull($row['process_id']);
-        $this->assertNull($row['slots']);
-        $this->assertEquals('free', $row['status']);
     }
 }
