@@ -224,7 +224,7 @@ class CalculateDailyWaitingStatisticByCron extends Base
 
     private function extractScopeFromAnmerkung(?string $anmerkung, ?string $customText, ?string $customText2): ?int
     {
-        if (!$anmerkung && !$customText) {
+        if (!$anmerkung && !$customText && !$customText2) {
             return null;
         }
         $pattern = "/'StandortID' => '(\d+)'/";
