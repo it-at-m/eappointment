@@ -14,6 +14,7 @@
             }
         ],
         "authKey": "abcd",
+        "captchaToken": "eyJ0e...",
         "clients": [
             {
                 "familyName": "Max Mustermann",
@@ -167,6 +168,10 @@
             "type": "string",
             "description": "key for client to delete or change process"
         },
+        "captchaToken": {
+            "type": ["null", "string"],
+            "description": "Token used for captcha validation"
+          },
         "clients": {
             "type": "array",
             "items": {
