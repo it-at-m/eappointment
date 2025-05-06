@@ -341,8 +341,10 @@ const setRebookData = () => {
     appointment.value.familyName = rebookedAppointment.value.familyName;
     appointment.value.email = rebookedAppointment.value.email;
     appointment.value.telephone = rebookedAppointment.value.telephone;
-    appointment.value.customTextfield = rebookedAppointment.value.customTextfield;
-    appointment.value.customTextfield2 = rebookedAppointment.value.customTextfield2;
+    appointment.value.customTextfield =
+      rebookedAppointment.value.customTextfield;
+    appointment.value.customTextfield2 =
+      rebookedAppointment.value.customTextfield2;
     updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
       (data) => {
         if ((data as AppointmentDTO).processId != undefined) {
