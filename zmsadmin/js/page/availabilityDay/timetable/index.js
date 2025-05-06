@@ -36,4 +36,4 @@ export const renderOpenings = (items, onSelect) => {return items
     .filter(item => item.type === "openinghours")
     .map((data, key) => <OpeningTimebar key={key} {...{ key, data, onSelect }} />)}
 
-export const renderFooter = () => {return <small>Zum Bearbeiten einer Öffnungszeit, bitte auf den entsprechenden blauen oder grünen Zeitstrahl klicken.</small>}
+export const renderFooter = () => {}
