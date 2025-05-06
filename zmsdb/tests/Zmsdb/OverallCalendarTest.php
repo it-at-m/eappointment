@@ -8,7 +8,6 @@ use DateInterval;
 
 class OverallCalendarTest extends Base
 {
-    /** Scope 1300 hat nur 1 Seat */
     private const SCOPE = 1300;
 
     public function testBookAndConflict()
@@ -16,8 +15,7 @@ class OverallCalendarTest extends Base
         $cal   = new OverallCalendar();
         $start = '2016-05-27 09:30:00';
 
-        /* ---------------------- Happy Path -------------------------------- */
-        $cal->book(self::SCOPE, $start, 900001, 2);   // 2 Slots (09:30–09:40)
+        $cal->book(self::SCOPE, $start, 900001, 2);
 
         $cnt = \BO\Zmsdb\Connection\Select::getReadConnection()
             ->fetchValue(
@@ -28,9 +26,8 @@ class OverallCalendarTest extends Base
             );
         $this->assertEquals(2, $cnt);
 
-        /* ---------------------- Conflict erwartet ------------------------- */
         $this->expectException(Conflict::class);
-        $cal->book(self::SCOPE, $start, 900002, 1);   // gleicher Slot, kein Platz frei
+        $cal->book(self::SCOPE, $start, 900002, 1);
     }
 
     public function testUnbook()
@@ -38,10 +35,8 @@ class OverallCalendarTest extends Base
         $cal   = new OverallCalendar();
         $start = '2016-05-27 09:35:00';
 
-        // erst buchen
         $cal->book(self::SCOPE, $start, 900010, 1);
 
-        // dann wieder stornieren
         $cal->unbook(self::SCOPE, 900010);
 
         $row = \BO\Zmsdb\Connection\Select::getReadConnection()
