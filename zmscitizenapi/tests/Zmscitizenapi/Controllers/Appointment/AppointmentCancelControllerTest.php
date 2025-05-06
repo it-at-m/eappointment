@@ -64,7 +64,11 @@ class AppointmentCancelControllerTest extends ControllerTestCase
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-        
+
+        $this->assertArrayHasKey('captchaToken', $responseBody);
+        $this->assertIsString($responseBody['captchaToken']);
+        unset($responseBody['captchaToken']);
+
         $expectedResponse = [
             'processId' => 101002,
             'timestamp' => '1727865900',

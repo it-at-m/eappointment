@@ -22,6 +22,7 @@
                 :exclusive-location="exclusiveLocation"
                 :t="t"
                 @next="setServices"
+                @captchaTokenChanged="captchaToken = $event"
               />
             </div>
             <div v-if="currentView === 1">
@@ -31,7 +32,10 @@
                 :exclusive-location="exclusiveLocation"
                 :preselected-office-id="preselectedLocationId"
                 :selected-service-map="selectedServiceMap"
+                :captcha-token="captchaToken"
                 :t="t"
+                :booking-error="captchaError || appointmentNotAvailableError"
+                :booking-error-key="bookingErrorKey"
                 @back="decreaseCurrentView"
                 @next="nextReserveAppointment"
               />
@@ -173,7 +177,7 @@
 
 <script setup lang="ts">
 import { MucCallout, MucStepper } from "@muenchen/muc-patternlab-vue";
-import { nextTick, onMounted, provide, ref, watch } from "vue";
+import { computed, nextTick, onMounted, provide, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
@@ -264,7 +268,14 @@ const offices = ref<Office[]>([]);
 
 const rebookOrCanelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
+const captchaToken = ref<string | null>(null);
+const captchaError = ref<boolean>(false);
 
+const bookingErrorKey = computed(() => {
+  if (captchaError.value) return "altcha.invalidCaptcha";
+  if (appointmentNotAvailableError.value) return "noAppointmentsAvailable";
+  return "";
+});
 const appointmentNotAvailableError = ref<boolean>(false);
 const updateAppointmentError = ref<boolean>(false);
 const tooManyAppointmentsWithSameMailError = ref<boolean>(false);
@@ -363,15 +374,19 @@ const setRebookData = () => {
 };
 
 const nextReserveAppointment = () => {
+  appointmentNotAvailableError.value = false;
+  captchaError.value = false;
   rebookOrCanelDialog.value = false;
+
   reserveAppointment(
     selectedTimeslot.value,
     Array.from(selectedServiceMap.value.keys()),
     Array.from(selectedServiceMap.value.values()),
     selectedProvider.value.id,
-    props.baseUrl ?? undefined
+    props.baseUrl ?? undefined,
+    captchaToken.value
   ).then((data) => {
-    if ((data as AppointmentDTO).processId != undefined) {
+    if ((data as AppointmentDTO).processId !== undefined) {
       if (appointment.value && !isRebooking.value) {
         cancelAppointment(appointment.value, props.baseUrl ?? undefined);
       }
@@ -382,8 +397,15 @@ const nextReserveAppointment = () => {
         increaseCurrentView();
       }
     } else {
-      if ((data as ErrorDTO).errorCode === "appointmentNotAvailable") {
+      const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+      if (firstErrorCode === "appointmentNotAvailable") {
         appointmentNotAvailableError.value = true;
+      } else if (
+        ["captchaMissing", "captchaExpired", "captchaInvalid"].includes(
+          firstErrorCode
+        )
+      ) {
+        captchaError.value = true;
       }
     }
   });
@@ -554,6 +576,9 @@ onMounted(() => {
       fetchAppointment(appointmentData, props.baseUrl ?? undefined).then(
         (data) => {
           if ((data as AppointmentDTO).processId != undefined) {
+            if ("captchaToken" in data && data.captchaToken) {
+              captchaToken.value = data.captchaToken;
+            }
             appointment.value = data as AppointmentDTO;
             selectedService.value = services.value.find(
               (service) => service.id == appointment.value.serviceId
