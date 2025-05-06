@@ -576,6 +576,9 @@ onMounted(() => {
       fetchAppointment(appointmentData, props.baseUrl ?? undefined).then(
         (data) => {
           if ((data as AppointmentDTO).processId != undefined) {
+            if ("captchaToken" in data && data.captchaToken) {
+              captchaToken.value = data.captchaToken;
+            }
             appointment.value = data as AppointmentDTO;
             selectedService.value = services.value.find(
               (service) => service.id == appointment.value.serviceId
