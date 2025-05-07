@@ -49,13 +49,16 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
-            'timestamp' => "32526616522",
-            'captchaSolution' => null
+            'timestamp' => "32526616522"
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string)$response->getBody(), true);
-        
+
+        $this->assertArrayHasKey('captchaToken', $responseBody);
+        $this->assertIsString($responseBody['captchaToken']);
+        unset($responseBody['captchaToken']);
+
         $expectedResponse = [
             "processId" => 101002,
             "timestamp" => "32526616522",
@@ -129,8 +132,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
-            'timestamp' => "32526616300",
-            'captchaSolution' => null
+            'timestamp' => "32526616300"
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
@@ -151,8 +153,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
-            'timestamp' => "32526616522",
-            'captchaSolution' => null
+            'timestamp' => "32526616522"
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
@@ -173,8 +174,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 10546,
             'serviceCount' => [0],
-            'timestamp' => "32526616522",
-            'captchaSolution' => null
+            'timestamp' => "32526616522"
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
@@ -195,8 +195,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         $parameters = [
             'officeId' => 10546,
             'serviceId' => ['1063423'],
-            'serviceCount' => [0],
-            'captchaSolution' => null
+            'serviceCount' => [0]
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
@@ -216,8 +215,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
         $parameters = [
             'serviceCount' => [0],
-            'timestamp' => "32526616522",
-            'captchaSolution' => null
+            'timestamp' => "32526616522"
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
@@ -239,8 +237,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
         $parameters = [
             'serviceId' => ['1063423'],
-            'serviceCount' => [0],
-            'captchaSolution' => null
+            'serviceCount' => [0]
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
@@ -262,8 +259,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 
         $parameters = [
             'officeId' => 10546,
-            'serviceCount' => [0],
-            'captchaSolution' => null
+            'serviceCount' => [0]
         ];
 
         $response = $this->render([], $parameters, [], 'POST');
@@ -308,8 +304,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             'officeId' => 'invalid_id',
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
-            'timestamp' => "32526616522",
-            'captchaSolution' => null
+            'timestamp' => "32526616522"
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
@@ -331,8 +326,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             'officeId' => 10546,
             'serviceId' => ['invalid_service_id'],
             'serviceCount' => [0],
-            'timestamp' => "32526616522",
-            'captchaSolution' => null
+            'timestamp' => "32526616522"
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
@@ -354,8 +348,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
-            'timestamp' => 'invalid_timestamp',
-            'captchaSolution' => null
+            'timestamp' => 'invalid_timestamp'
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
@@ -376,8 +369,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             'officeId' => 10546,
             'serviceId' => [],
             'serviceCount' => [0],
-            'timestamp' => "32526616522",
-            'captchaSolution' => null
+            'timestamp' => "32526616522"
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
@@ -399,8 +391,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => ['invalid'],
-            'timestamp' => "32526616522",
-            'captchaSolution' => null
+            'timestamp' => "32526616522"
         ];
     
         $response = $this->render([], $parameters, [], 'POST');
@@ -445,8 +436,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
-            'timestamp' => "32526616522",
-            'captchaSolution' => null
+            'timestamp' => "32526616522"
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
@@ -489,8 +479,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             'officeId' => 10546,
             'serviceId' => ['1063423'],
             'serviceCount' => [0],
-            'timestamp' => "32526616522",
-            'captchaSolution' => null
+            'timestamp' => "32526616522"
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);

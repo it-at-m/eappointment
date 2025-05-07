@@ -14,6 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 class AvailableDaysListController extends BaseController
 {
     private AvailableDaysListService $service;
+
     public function __construct()
     {
         $this->service = new AvailableDaysListService();
@@ -27,6 +28,7 @@ class AvailableDaysListController extends BaseController
         }
 
         $result = $this->service->getAvailableDaysList($request->getQueryParams());
+
         return is_array($result) && isset($result['errors'])
             ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
             : $this->createJsonResponse($response, $result->toArray(), 200);

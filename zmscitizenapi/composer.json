@@ -33,7 +33,8 @@
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsentities": "@dev",
         "symfony/cache": "^6.0",
-        "psr/simple-cache": "^3.0"
+        "psr/simple-cache": "^3.0",
+        "firebase/php-jwt": "^6.11"
     },
     "scripts": {
         "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",

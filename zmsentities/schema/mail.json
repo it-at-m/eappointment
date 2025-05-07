@@ -49,6 +49,7 @@
                 "clientKey": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs"  
             },
             "authKey":"1234",
+            "captchaToken": "eyJ0e...",
             "reminderTimestamp": 1447931730000,
             "scope": {
                 "id": 151,

@@ -20,6 +20,13 @@
       ],
       "description": "Authentication key for the process"
     },
+    "captchaToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Token used for captcha validation"
+    },
     "timestamp": {
       "type": [
         "string",
