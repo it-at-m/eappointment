@@ -113,7 +113,7 @@
             "customTextfield2Activated": "1",
             "customTextfield2Required": "0",
             "customTextfield2Label": "Second Custom Label",
-            "captchaActivatedRequired": "1",
+            "captchaActivatedRequired": "0",
             "displayInfo": "Infos zum Standort."
           }
         }

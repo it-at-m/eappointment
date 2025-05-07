@@ -42,7 +42,7 @@ class ThinnedProcess extends Entity implements JsonSerializable
     public int $serviceCount;
 /** @var string|null */
     public ?string $status;
-    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $customTextfield2 = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, int $serviceCount = 0, ?string $status = null)
+    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $customTextfield2 = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, int $serviceCount = 0, ?string $status = null, ?string $captchaToken = null)
     {
         $this->processId = $processId;
         $this->timestamp = $timestamp;

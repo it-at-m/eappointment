@@ -80,7 +80,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Activated" => true,
                         "customTextfield2Required" => false,
                         "customTextfield2Label" => "Second Custom Label",
-                        "captchaActivatedRequired" => true,
+                        "captchaActivatedRequired" => false,
                         "displayInfo" => null
                     ]
                 ],
@@ -230,7 +230,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Activated" => true,
                         "customTextfield2Required" => false,
                         "customTextfield2Label" => "Second Custom Label",
-                        "captchaActivatedRequired" => true,
+                        "captchaActivatedRequired" => false,
                         "displayInfo" => null
                     ]
                 ],

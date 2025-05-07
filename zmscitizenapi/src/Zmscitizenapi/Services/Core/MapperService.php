@@ -290,6 +290,7 @@ class MapperService
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
         $processEntity->customTextfield = $thinnedProcess->customTextfield ?? null;
         $processEntity->customTextfield2 = $thinnedProcess->customTextfield2 ?? null;
+        $processEntity->captchaToken = $thinnedProcess->captchaToken ?? null;
 
         $client = new Client();
         $client->familyName = $thinnedProcess->familyName ?? null;
