@@ -72,6 +72,18 @@
   "updateAppointmentErrorHeader": "Terminupdate fehlgeschlagen",
   "updateAppointmentErrorText": "Terminupdate fehlgeschlagen.",
   "your": "Ihr",
+  "altcha": {
+    "error": "Verifizierung fehlgeschlagen. Versuche es später noch einmal.",
+    "expired": "Verifizierung abgelaufen. Versuche es erneut.",
+    "footer": "Geschützt durch ALTCHA",
+    "invalidCaptchaHeader": "Das hat leider nicht geklappt.",
+    "invalidCaptcha": "Bitte aktualisieren Sie diese Seite.",
+    "label": "Ich bin kein Bot.",
+    "loadError": "Das Widget konnte nicht geladen werden.",
+    "verified": "Erfolgreich verifiziert!",
+    "verifying": "Überprüfe...",
+    "waitAlert": "Überprüfung läuft... bitte warten."
+  },
 
   "languages": {
     "de": "Deutsch",
