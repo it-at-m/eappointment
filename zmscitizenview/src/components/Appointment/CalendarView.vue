@@ -188,15 +188,20 @@
     </div>
   </div>
   <div
-    v-if="error"
+    v-if="showError"
     class="m-component"
   >
     <muc-callout type="warning">
-      <template #content>
-        {{ t("noAppointmentsAvailable") }}
+      <template #header>
+        {{
+          showErrorKey === "altcha.invalidCaptcha"
+            ? t("altcha.invalidCaptchaHeader")
+            : t("noAppointmentsAvailableHeader")
+        }}
       </template>
-
-      <template #header>{{ t("noAppointmentsAvailableHeader") }}</template>
+      <template #content>
+        {{ t(showErrorKey) }}
+      </template>
     </muc-callout>
   </div>
   <div class="m-button-group">
@@ -247,6 +252,9 @@ const props = defineProps<{
   exclusiveLocation: string | undefined;
   preselectedOfficeId: string | undefined;
   selectedServiceMap: Map<string, number>;
+  captchaToken: string | null;
+  bookingError: boolean;
+  bookingErrorKey: string;
   t: (key: string) => string;
 }>();
 
@@ -264,8 +272,14 @@ const selectableProviders = ref<OfficeImpl[]>();
 const availableDays = ref<string[]>();
 const appointmentTimestamps = ref<number[]>([]);
 
-const selectedDay = ref<Date>();
+const errorKey = ref("");
 const error = ref<boolean>(false);
+const showError = computed(() => error.value || props.bookingError);
+const showErrorKey = computed(() =>
+  error.value ? errorKey.value : props.bookingErrorKey
+);
+
+const selectedDay = ref<Date>();
 const minDate = ref<Date>();
 const maxDate = ref<Date>();
 
@@ -339,20 +353,33 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
     selectedProvider.value,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
-    props.baseUrl ?? undefined
+    props.baseUrl ?? undefined,
+    props.captchaToken ?? undefined
   ).then((data) => {
-    if ((data as AvailableDaysDTO).availableDays !== undefined) {
-      availableDays.value = (data as AvailableDaysDTO).availableDays;
-      selectedDay.value = new Date(availableDays.value[0]);
-      minDate.value = new Date(availableDays.value[0]);
-      maxDate.value = new Date(
-        availableDays.value[availableDays.value.length - 1]
-      );
-      getAppointmentsOfDay(availableDays.value[0]);
+    const days = (data as AvailableDaysDTO)?.availableDays;
+    if (Array.isArray(days) && days.length > 0) {
+      availableDays.value = days;
+      selectedDay.value = new Date(days[0]);
+      minDate.value = new Date(days[0]);
+      maxDate.value = new Date(days[days.length - 1]);
+      getAppointmentsOfDay(days[0]);
+      error.value = false;
+      errorKey.value = "";
     } else {
-      error.value = true;
+      handleError(data);
     }
   });
+};
+
+const handleError = (data: any): void => {
+  error.value = true;
+
+  const tokenErrors = ["captchaMissing", "captchaExpired", "captchaInvalid"];
+  const errorCode = data?.errors?.[0]?.errorCode;
+
+  errorKey.value = tokenErrors.includes(errorCode)
+    ? "altcha.invalidCaptcha"
+    : "noAppointmentsAvailable";
 };
 
 const getAppointmentsOfDay = (date: string) => {
@@ -362,7 +389,8 @@ const getAppointmentsOfDay = (date: string) => {
     selectedProvider.value,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
-    props.baseUrl ?? undefined
+    props.baseUrl ?? undefined,
+    props.captchaToken ?? undefined
   ).then((data) => {
     if (data as AvailableTimeSlotsDTO) {
       appointmentTimestamps.value = (

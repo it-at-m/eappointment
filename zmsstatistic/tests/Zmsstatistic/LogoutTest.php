@@ -17,23 +17,8 @@ class LogoutTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/department/74/organisation/',
-                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/organisation/71/owner/',
-                    'response' => $this->readFixture("GET_owner_23.json")
                 ],
                 [
                     'function' => 'readDeleteResult',
@@ -42,9 +27,9 @@ class LogoutTest extends Base
                 ]
             ]
         );
-        $response = $this->render($this->arguments, ['__uri' => '/logout'], [], 'POST');
-        $this->assertRedirect($response, '/');
-        $this->assertEquals(302, $response->getStatusCode());
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertStringContainsString('Erfolgreich abgemeldet', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testLogoutFailed()
@@ -57,23 +42,8 @@ class LogoutTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/department/74/organisation/',
-                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/organisation/71/owner/',
-                    'response' => $this->readFixture("GET_owner_23.json")
                 ],
                 [
                     'function' => 'readDeleteResult',
@@ -83,6 +53,6 @@ class LogoutTest extends Base
             ]
         );
 
-        $this->render($this->arguments, ['__uri' => '/logout'], [], 'POST');
+        $this->render($this->arguments, $this->parameters, [], 'POST');
     }
 }

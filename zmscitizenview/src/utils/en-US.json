@@ -72,6 +72,18 @@
   "updateAppointmentErrorHeader": "Appointment update failed.",
   "updateAppointmentErrorText": "Appointment update failed.",
   "your": "Ihr",
+  "altcha": {
+    "error": "Verification failed. Try again later.",
+    "expired": "Verification expired. Try again.",
+    "footer": "Protected by ALTCHA",
+    "invalidCaptchaHeader": "Something went wrong.",
+    "invalidCaptcha": "Please refresh this page.",
+    "label": "I'm not a robot",
+    "loadError": "The widget could not be loaded.",
+    "verified": "Verified",
+    "verifying": "Verifying...",
+    "waitAlert": "Verifying... please wait."
+  },
 
   "languages": {
     "de": "German",

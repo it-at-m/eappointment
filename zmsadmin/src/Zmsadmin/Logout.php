@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsclient\Auth;
+use App;
 
 class Logout extends BaseController
 {
@@ -28,6 +29,15 @@ class Logout extends BaseController
                 throw $exception;
             }
         }
+        $sessionHash = hash('sha256', \BO\Zmsclient\Auth::getKey());
+        App::$log->info('User logged out', [
+            'event' => 'auth_logout',
+            'timestamp' => date('c'),
+            'username' => $workstation->useraccount['id'],
+            'hashed_session_token' => $sessionHash,
+            'logout_type' => 'manual',
+            'application' => 'zmsadmin'
+        ]);
         \BO\Zmsclient\Auth::removeKey();
         return \BO\Slim\Render::withHtml(
             $response,

@@ -28,6 +28,7 @@
             ],
             "id": 123456,
             "authKey": "abcd",
+            "captchaToken": "eyJ0e...",
             "reminderTimestamp": 1447931730000,
             "scope": {
                 "id": 123
@@ -219,6 +220,7 @@
                     }
                 ],
                 "authKey": "abcd",
+                "captchaToken": "eyJ0e...",
                 "clients": [
                     {
                         "familyName": "Max Mustermann",
@@ -309,6 +311,10 @@
                     "type": "string",
                     "description": "key for client to delete or change process"
                 },
+                "captchaToken": {
+                    "type": ["null", "string"],
+                    "description": "Token used for captcha validation"
+                  },
                 "showUpTime": {
                     "type": "string",
                     "description": "unix timestamp of showing up after call"
