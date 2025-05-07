@@ -258,6 +258,7 @@ class MapperService
             processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
             timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null,
             authKey: isset($myProcess->authKey) ? $myProcess->authKey : null,
+            captchaToken: isset($myProcess->captchaToken) ? $myProcess->captchaToken : null,
             familyName: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->familyName)) ? $myProcess->clients[0]->familyName : null,
             customTextfield: isset($myProcess->customTextfield) ? $myProcess->customTextfield : null,
             email: (isset($myProcess->clients[0]) && isset($myProcess->clients[0]->email)) ? $myProcess->clients[0]->email : null,
@@ -282,6 +283,7 @@ class MapperService
         $processEntity->id = $thinnedProcess->processId;
         $processEntity->authKey = $thinnedProcess->authKey ?? null;
         $processEntity->customTextfield = $thinnedProcess->customTextfield ?? null;
+        $processEntity->captchaToken = $thinnedProcess->captchaToken ?? null;
 
         $client = new Client();
         $client->familyName = $thinnedProcess->familyName ?? null;

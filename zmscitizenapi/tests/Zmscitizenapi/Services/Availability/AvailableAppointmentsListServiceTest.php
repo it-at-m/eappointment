@@ -20,7 +20,6 @@ class AvailableAppointmentsListServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new AvailableAppointmentsListService();
     }
 
     public function testGetAvailableAppointmentsListReturnsAvailableAppointments(): void
@@ -32,11 +31,12 @@ class AvailableAppointmentsListServiceTest extends TestCase
             'serviceId' => '456,789',
             'serviceCount' => '1,2'
         ];
-        
+
         $expectedAppointments = new AvailableAppointments([1705317600, 1705321200]); // Example timestamps
-        
+
         $this->createMockValidationService([]);
         $this->createMockFacade($expectedAppointments);
+        $this->service = new AvailableAppointmentsListService();
 
         // Act
         $result = $this->service->getAvailableAppointmentsList($queryParams);
@@ -55,11 +55,12 @@ class AvailableAppointmentsListServiceTest extends TestCase
             'serviceId' => '456',
             'serviceCount' => '1'
         ];
-        
+
         $expectedAppointments = new AvailableAppointments([]);
-        
+
         $this->createMockValidationService([]);
         $this->createMockFacade($expectedAppointments);
+        $this->service = new AvailableAppointmentsListService();
 
         // Act
         $result = $this->service->getAvailableAppointmentsList($queryParams);
@@ -74,8 +75,9 @@ class AvailableAppointmentsListServiceTest extends TestCase
         // Arrange
         $queryParams = [];
         $expectedError = ['errors' => ['Required parameters missing']];
-        
+
         $this->createMockValidationService($expectedError);
+        $this->service = new AvailableAppointmentsListService();
 
         // Act
         $result = $this->service->getAvailableAppointmentsList($queryParams);
@@ -95,8 +97,9 @@ class AvailableAppointmentsListServiceTest extends TestCase
             'serviceCount' => '1'
         ];
         $expectedError = ['errors' => ['Invalid date format']];
-        
+
         $this->createMockValidationService($expectedError);
+        $this->service = new AvailableAppointmentsListService();
 
         // Act
         $result = $this->service->getAvailableAppointmentsList($queryParams);
@@ -116,8 +119,9 @@ class AvailableAppointmentsListServiceTest extends TestCase
             'serviceCount' => '1,1'
         ];
         $expectedError = ['errors' => ['Invalid service IDs']];
-        
+
         $this->createMockValidationService($expectedError);
+        $this->service = new AvailableAppointmentsListService();
 
         // Act
         $result = $this->service->getAvailableAppointmentsList($queryParams);
@@ -137,8 +141,9 @@ class AvailableAppointmentsListServiceTest extends TestCase
             'serviceCount' => '1'  // Only one count for two services
         ];
         $expectedError = ['errors' => ['Service counts must match service IDs']];
-        
+
         $this->createMockValidationService($expectedError);
+        $this->service = new AvailableAppointmentsListService();
 
         // Act
         $result = $this->service->getAvailableAppointmentsList($queryParams);
@@ -150,35 +155,44 @@ class AvailableAppointmentsListServiceTest extends TestCase
 
     private function createMockValidationService(array $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ValidationService {
-                public static function validateGetAvailableAppointments(
-                    ?string $date,
-                    ?array $officeIds,
-                    array $serviceIds,
-                    array $serviceCounts
-                ): array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
-                }
-            }
-        ');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ValidationService';
+        if (!\class_exists($class, false)) {
+            eval(
+                'namespace BO\\Zmscitizenapi\\Services\\Core; class ValidationService {
+                    public static function validateGetAvailableAppointments(
+                        ?string $date,
+                        ?array $officeIds,
+                        array $serviceIds,
+                        array $serviceCounts,
+                        ?bool $captchaRequired = null,
+                        ?string $captchaToken = null,
+                        $tokenValidator = null
+                    ): array {
+                            return unserialize(\'' . serialize($returnValue) . '\');
+                    }
+                }'
+            );
+        }
     }
 
     private function createMockFacade(AvailableAppointments $returnValue): void
     {
-        eval('
-            namespace BO\Zmscitizenapi\Services\Core;
-            class ZmsApiFacadeService {
-                public static function getAvailableAppointments(
-                    ?string $date,
-                    ?array $officeIds,
-                    ?array $serviceIds,
-                    ?array $serviceCounts
-                ): \BO\Zmscitizenapi\Models\AvailableAppointments|array {
-                    return unserialize(\'' . serialize($returnValue) . '\');
-                }
-            }
-        ');
+        $class = 'BO\\Zmscitizenapi\\Services\\Core\\ZmsApiFacadeService';
+        if (!\class_exists($class, false)) {
+            eval(
+                'namespace BO\\Zmscitizenapi\\Services\\Core; class ZmsApiFacadeService {
+                    public static function getAvailableAppointments(
+                        ?string $date,
+                        ?array $officeIds,
+                        ?array $serviceIds,
+                        ?array $serviceCounts, ?bool $groupByOffice = false
+                    ): \\BO\\Zmscitizenapi\\Models\\AvailableAppointments|array {
+                        return unserialize(\'' . serialize($returnValue) . '\'); }
+                    public function getScopeByOfficeId(int $officeId) {
+                        return (object)["captchaActivatedRequired" => false];
+                    }
+                }'
+            );
+        }
     }
 }

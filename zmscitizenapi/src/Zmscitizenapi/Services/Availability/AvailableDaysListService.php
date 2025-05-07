@@ -5,15 +5,38 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Availability;
 
 use BO\Zmscitizenapi\Models\AvailableDays;
+use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
 class AvailableDaysListService
 {
+    private TokenValidationService $tokenValidator;
+    private ZmsApiFacadeService $zmsApiFacadeService;
+
+    public function __construct()
+    {
+        $this->tokenValidator = new TokenValidationService();
+        $this->zmsApiFacadeService = new ZmsApiFacadeService();
+    }
+
     public function getAvailableDaysList(array $queryParams): AvailableDays|array
     {
         $clientData = $this->extractClientData($queryParams);
-        $errors = $this->validateClientData($clientData);
+        $captchaRequired = $this->isCaptchaRequired($clientData->officeIds);
+        $captchaToken = $queryParams['captchaToken'] ?? null;
+
+        $errors = ValidationService::validateGetBookableFreeDays(
+            $clientData->officeIds,
+            $clientData->serviceIds,
+            $clientData->startDate,
+            $clientData->endDate,
+            $clientData->serviceCounts,
+            $captchaRequired,
+            $captchaToken,
+            $this->tokenValidator
+        );
+
         if (!empty($errors['errors'])) {
             return $errors;
         }
@@ -38,9 +61,16 @@ class AvailableDaysListService
         ];
     }
 
-    private function validateClientData(object $data): array
+    private function isCaptchaRequired(array $officeIds): bool
     {
-        return ValidationService::validateGetBookableFreeDays($data->officeIds, $data->serviceIds, $data->startDate, $data->endDate, $data->serviceCounts);
+        $officeId = (int)($officeIds[0] ?? 0);
+
+        try {
+            $scope = $this->zmsApiFacadeService->getScopeByOfficeId($officeId);
+            return $scope->captchaActivatedRequired ?? false;
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     private function getAvailableDays(object $data): AvailableDays|array

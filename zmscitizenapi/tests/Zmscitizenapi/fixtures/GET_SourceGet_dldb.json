@@ -110,7 +110,7 @@
             "customTextfieldActivated": "1",
             "customTextfieldRequired": "0",
             "customTextfieldLabel": "Custom Label",
-            "captchaActivatedRequired": "1",
+            "captchaActivatedRequired": "0",
             "displayInfo": "Infos zum Standort."
           }
         }
