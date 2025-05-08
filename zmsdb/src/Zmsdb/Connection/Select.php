@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Connection;
 
+use BO\Slim\Helper\Sanitizer;
+
 /**
  *
  * @codeCoverageIgnore
@@ -100,6 +102,11 @@ class Select
      */
     protected static $useQueryCache = true;
 
+    protected static function sanitizeStackTrace($trace)
+    {
+        return Sanitizer::sanitizeStackTrace($trace);
+    }
+
     /**
      * Create a PDO compatible object
      *
@@ -118,12 +125,10 @@ class Select
             $pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $exception) {
-            // Extend exception message with connection information
-            $connectInfo = $dataSourceName;
+            $sanitizedDsn     = self::sanitizeStackTrace($dataSourceName);
+            $sanitizedMessage = self::sanitizeStackTrace($exception->getMessage());
             throw new \BO\Zmsdb\Exception\Pdo\PDOFailed(
-                $connectInfo . $exception->getMessage(),
-                (int)$exception->getCode(),
-                $exception
+                $sanitizedDsn . ': ' . $sanitizedMessage,
             );
         }
         return $pdo;

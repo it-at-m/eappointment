@@ -3,6 +3,7 @@
 namespace BO\Zmsapi\Helper;
 
 use BO\Slim\Render;
+use BO\Slim\Helper\Sanitizer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\ErrorHandlerInterface;
@@ -53,6 +54,8 @@ class ErrorHandler implements ErrorHandlerInterface
             $message->meta->trace .= isset($call['line']) ? $call['line'] : '';
             $message->meta->trace .= "\n";
         }
+        $message->meta->trace = Sanitizer::sanitizeStackTrace($message->meta->trace);
+
         if (isset($exception->data)) {
             $message->data = $exception->data;
         }
@@ -66,7 +69,7 @@ class ErrorHandler implements ErrorHandlerInterface
                 "[API] Fatal Exception: "
                 . " in " . $exception->getFile() . " +" . $exception->getLine()
                 . " -> " . $exception->getMessage()
-                . " | Trace: " . preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace))
+                . " | Trace: " . Sanitizer::sanitizeStackTrace(preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace)))
             );
         }
         return Render::withJson($response, $message, $status);

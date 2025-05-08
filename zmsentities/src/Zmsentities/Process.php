@@ -40,6 +40,7 @@ class Process extends Schema\Entity
             'appointments' => new Collection\AppointmentList(),
             'apiclient' => new Apiclient(),
             'authKey' => '',
+            'captchaToken' => '',
             'clients' => new Collection\ClientList(),
             'createIP' => '',
             'createTimestamp' => time(),
@@ -701,6 +702,7 @@ class Process extends Schema\Entity
         $string .= " scope." . $this['scope']['id'];
         $string .= " ~" . base_convert($this['lastChange'], 10, 35);
         $string .= " client:" . $this['apiclient']['shortname'];
+        $string .= " token:" . ($this['captchaToken'] ?? '(none)');
         return $string;
     }
 }

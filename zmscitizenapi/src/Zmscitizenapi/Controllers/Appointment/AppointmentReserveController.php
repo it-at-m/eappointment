@@ -14,6 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 class AppointmentReserveController extends BaseController
 {
     private AppointmentReserveService $service;
+
     public function __construct()
     {
         $this->service = new AppointmentReserveService();
