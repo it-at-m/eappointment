@@ -94,6 +94,9 @@
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
 								{% endif %}
+								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
+									<th>{{workstation.scope.preferences.client.customTextfield2Label}}</th>
+								{% endif %}
 								<th>Wartezeit</th>
 								<th>Aktion</th>
 							</tr>
@@ -154,6 +157,11 @@
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<td>
 										{{ item.customTextfield|decodeEntities|raw }}
+									</td>
+								{% endif %}
+								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
+									<td>
+										{{ item.customTextfield2|decodeEntities|raw }}
 									</td>
 								{% endif %}
 								<td class="nowrap">
@@ -281,6 +289,9 @@
 							<th>Anmerkung</th>
 							{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 								<th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
+							{% endif %}
+							{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
+								<th>{{workstation.scope.preferences.client.customTextfield2Label}}</th>
 							{% endif %}
 							<th>Wartezeit</th>
 							<th></th>
@@ -416,6 +427,11 @@
 											{{ item.customTextfield|decodeEntities|raw }}
 										</td>
 									{% endif %}
+									{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
+										<td>
+											{{ item.customTextfield2|decodeEntities|raw }}
+										</td>
+									{% endif %}
 									<td class="nowrap">
 										{% if item.queue.withAppointment %}
 											Termin
@@ -485,6 +501,9 @@
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<th>{{workstation.scope.preferences.client.customTextfieldLabel}}</th>
 								{% endif %}
+								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
+									<th>{{workstation.scope.preferences.client.customTextfield2Label}}</th>
+								{% endif %}
 								<th>Wartezeit</th>
 								<th>Aktion</th>
 							</tr>
@@ -545,6 +564,11 @@
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<td>
 										{{ item.customTextfield|decodeEntities|raw }}
+									</td>
+								{% endif %}
+								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
+									<td>
+										{{ item.customTextfield2|decodeEntities|raw }}
 									</td>
 								{% endif %}
 								<td class="nowrap">

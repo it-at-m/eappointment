@@ -19,6 +19,8 @@ export class AppointmentImpl implements AppointmentDTO {
 
   customTextfield?: string;
 
+  customTextfield2?: string;
+
   officeId: string;
 
   scope: Scope;
@@ -38,6 +40,7 @@ export class AppointmentImpl implements AppointmentDTO {
     email: string,
     telephone: string | undefined,
     customTextfield: string | undefined,
+    customTextfield2: string | undefined,
     officeId: string,
     scope: Scope,
     subRequestCounts: any[],
@@ -52,6 +55,7 @@ export class AppointmentImpl implements AppointmentDTO {
     this.email = email;
     this.telephone = telephone;
     this.customTextfield = customTextfield;
+    this.customTextfield2 = customTextfield2;
     this.officeId = officeId;
     this.scope = scope;
     this.subRequestCounts = subRequestCounts;

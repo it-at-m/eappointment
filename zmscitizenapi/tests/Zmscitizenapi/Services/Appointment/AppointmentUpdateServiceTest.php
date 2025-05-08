@@ -50,7 +50,8 @@ class AppointmentUpdateServiceTest extends TestCase
             'familyName' => 'Doe',
             'email' => 'john@example.com',
             'telephone' => '1234567890',
-            'customTextfield' => 'Custom Info'
+            'customTextfield' => 'Custom Info',
+            'customTextfield2' => 'Custom Info 2'
         ];
 
         $result = $this->invokePrivateMethod('extractClientData', [$body]);
@@ -61,6 +62,7 @@ class AppointmentUpdateServiceTest extends TestCase
         $this->assertEquals('john@example.com', $result->email);
         $this->assertEquals('1234567890', $result->telephone);
         $this->assertEquals('Custom Info', $result->customTextfield);
+        $this->assertEquals('Custom Info 2', $result->customTextfield2);
     }
 
     public function testExtractClientDataWithInvalidProcessId(): void
@@ -78,6 +80,7 @@ class AppointmentUpdateServiceTest extends TestCase
         $this->assertNull($result->email);
         $this->assertNull($result->telephone);
         $this->assertNull($result->customTextfield);
+        $this->assertNull($result->customTextfield2);
     }
 
     public function testExtractClientDataWithEmptyAuthKey(): void
@@ -131,6 +134,9 @@ class AppointmentUpdateServiceTest extends TestCase
                             'customTextfieldActivated' => true,
                             'customTextfieldRequired' => true,
                             'customTextfieldLabel' => 'Test Label',
+                            'customTextfield2Activated' => true,
+                            'customTextfield2Required' => true,
+                            'customTextfield2Label' => 'Test Label 2',
                             'telephoneActivated' => true,
                             'telephoneRequired' => true
                         ]
@@ -212,7 +218,9 @@ class AppointmentUpdateServiceTest extends TestCase
                                 'telephoneActivated' => '1',
                                 'telephoneRequired' => '1',
                                 'customTextfieldActivated' => '1',
-                                'customTextfieldRequired' => '1'
+                                'customTextfieldRequired' => '1',
+                                'customTextfield2Activated' => '1',
+                                'customTextfield2Required' => '1'
                             ]
                         ]
                     ]
@@ -256,7 +264,8 @@ class AppointmentUpdateServiceTest extends TestCase
                 'familyName' => 'Doe',
                 'email' => 'john@example.com',
                 'telephone' => '1234567890',
-                'customTextfield' => 'Custom Info'
+                'customTextfield' => 'Custom Info',
+                'customTextfield2' => 'Custom Info 2'
             ];
     
             $result = $this->invokePrivateMethod('validateClientData', [$data]);
@@ -274,7 +283,8 @@ class AppointmentUpdateServiceTest extends TestCase
             'familyName' => null,
             'email' => null,
             'telephone' => null,
-            'customTextfield' => null
+            'customTextfield' => null,
+            'customTextfield2' => null
         ];
 
         $result = $this->invokePrivateMethod('validateClientData', [$data]);
@@ -292,7 +302,8 @@ class AppointmentUpdateServiceTest extends TestCase
             'familyName' => 'New Name',
             'email' => 'new@example.com',
             'telephone' => null,
-            'customTextfield' => null
+            'customTextfield' => null,
+            'customTextfield2' => null
         ];
 
         $result = $this->invokePrivateMethod('updateProcessWithClientData', [$process, $data]);
@@ -301,6 +312,7 @@ class AppointmentUpdateServiceTest extends TestCase
         $this->assertEquals('new@example.com', $result->email);
         $this->assertNull($result->telephone);
         $this->assertNull($result->customTextfield);
+        $this->assertNull($result->customTextfield2);
     }
 
     public function testProcessUpdateWithValidationErrors(): void

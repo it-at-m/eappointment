@@ -65,6 +65,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             "authKey" => "fb43",
             "familyName" => "TEST_USER",
             "customTextfield" => "",
+            "customTextfield2" => "",
             "email" => "test@muenchen.de",
             "telephone" => "123456789",
             "officeName" => null,
@@ -96,6 +97,9 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 "customTextfieldActivated" => false,
                 "customTextfieldRequired" => true,
                 "customTextfieldLabel" => "",
+                'customTextfield2Activated' => false,
+                'customTextfield2Required' => true,
+                'customTextfield2Label' => "",
                 "captchaActivatedRequired" => false,
                 "displayInfo" => null
             ],

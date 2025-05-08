@@ -17,6 +17,7 @@ class Process extends Base implements MappingInterface
         SET
             process.Anmerkung = ?,
             process.custom_text_field = ?,
+            process.custom_text_field2 = ?,
             process.StandortID = 0,
             process.AbholortID = 0,
             process.Abholer = 0,
@@ -200,6 +201,7 @@ class Process extends Base implements MappingInterface
                 )'
             ),
             'customTextfield' => 'process.custom_text_field',
+            'customTextfield2' => 'process.custom_text_field2',
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
@@ -613,6 +615,20 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionCustomTextfield2($customText2, $exactMatching = false)
+    {
+        if ($exactMatching) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText2) {
+                $query->andWith('process.custom_text_field2', '=', $customText2);
+            });
+        } else {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText2) {
+                $query->andWith('process.custom_text_field2', 'LIKE', "%$customText2%");
+            });
+        }
+        return $this;
+    }
+
     public function addConditionAmendment($amendment)
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($amendment) {
@@ -801,6 +817,9 @@ class Process extends Base implements MappingInterface
         }
         if ($process->getCustomTextfield()) {
             $data['custom_text_field'] = $process->getCustomTextfield();
+        }
+        if ($process->getCustomTextfield2()) {
+            $data['custom_text_field2'] = $process->getCustomTextfield2();
         }
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();

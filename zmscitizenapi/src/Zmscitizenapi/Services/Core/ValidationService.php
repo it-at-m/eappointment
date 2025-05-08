@@ -227,6 +227,7 @@ class ValidationService
         ?string $email,
         ?string $telephone,
         ?string $customTextfield,
+        ?string $customTextfield2,
         ?ThinnedScope $scope
     ): array {
         $errors = [];
@@ -234,7 +235,8 @@ class ValidationService
         self::validateFamilyNameField($familyName, $errors);
         self::validateEmailField($email, $scope, $errors);
         self::validateTelephoneField($telephone, $scope, $errors);
-        self::validateCustomTextField($customTextfield, $scope, $errors);
+        self::validateCustomTextField($customTextfield, $scope?->customTextfieldActivated, $scope?->customTextfieldRequired, 'invalidCustomTextfield', $errors);
+        self::validateCustomTextField($customTextfield2, $scope?->customTextfield2Activated, $scope?->customTextfield2Required, 'invalidCustomTextfield2', $errors);
 
         return ['errors' => $errors];
     }
@@ -267,17 +269,17 @@ class ValidationService
         }
     }
 
-    private static function validateCustomTextField(?string $customTextfield, ?ThinnedScope $scope, array &$errors): void
+    private static function validateCustomTextField(?string $fieldValue, ?bool $fieldActivated, ?bool $fieldRequired, string $errorKey, array &$errors): void
     {
-        if (!$scope || !$scope->customTextfieldActivated) {
+        if (!$fieldActivated) {
             return;
         }
 
         if (
-            ($scope->customTextfieldRequired && ($customTextfield === "" || !self::isValidCustomTextfield($customTextfield))) ||
-            ($customTextfield !== null && $customTextfield !== "" && !self::isValidCustomTextfield($customTextfield))
+            ($fieldRequired && ($fieldValue === "" || !self::isValidCustomTextfield($fieldValue))) ||
+            ($fieldValue !== null && $fieldValue !== "" && !self::isValidCustomTextfield($fieldValue))
         ) {
-            $errors[] = self::getError('invalidCustomTextfield');
+            $errors[] = self::getError($errorKey);
         }
     }
 

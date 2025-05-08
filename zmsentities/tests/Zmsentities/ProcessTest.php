@@ -223,7 +223,8 @@ class ProcessTest extends EntityCommonTests
             'sendMailConfirmation' => 1,
             'sendReminder' => 1,
             'amendment' => 'Test Zusatz',
-            'customTextfield' => 'Test Zusatz zwei',
+            'customTextfield' => 'Test Zusatzfeld',
+            'customTextfield2' => 'Test Zusatzfeld zwei',
             'requests' => [120335,120697]
         ]);
         $validator->makeInstance();
@@ -255,7 +256,8 @@ class ProcessTest extends EntityCommonTests
             'requests' => [120335,120697],
             'surveyAccepted' => 1,
             'amendment' => 'Test Zusatz',
-            'customTextfield' => 'Test Zusatz zwei',
+            'customTextfield' => 'Test Zusatzfeld',
+            'customTextfield2' => 'Test Zusatzfeld zwei',
             'agbgelesen' => 1
         ]);
         $validator->makeInstance();
@@ -311,7 +313,8 @@ class ProcessTest extends EntityCommonTests
             'telephone' => '0123456789',
             'surveyAccepted' => 1,
             'amendment' => 'Test Zusatz',
-            'customTextfield' => 'Test Zusatz zwei',
+            'customTextfield' => 'Test Zusatzfeld',
+            'customTextfield2' => 'Test Zusatzfeld zwei',
             'agbgelesen' => 1,
             'sendReminder' => 1,
             'headsUpTime' => 60

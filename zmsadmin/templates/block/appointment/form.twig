@@ -272,13 +272,38 @@
                                     "required": selectedProcess.preferences.client.customTextfieldRequired|default(scope.preferences.client.customTextfieldRequired),
                                     "errors": formData.customTextfield.messages,
                                     "checked": scope.preferences.client.customTextfieldActivated,
+                                    "class": "form-group--nomaxwidth"
                                 },
                                 [{
                                     "type": "input",
                                     "parameter": {
                                         "name": "customTextfield",
                                         "value": selectedProcess.customTextfield,
-                                        "accesskey":"a"
+                                        "accesskey":"a",
+                                        "maxlength": 250,
+                                        "class": "charcounter"
+                                    }
+                                }]
+                            ) }}
+                        {% endif %}
+
+                        {% if scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
+                            {{ formgroup(
+                                {
+                                    "label": scope.preferences.client.customTextfield2Label,
+                                    "required": selectedProcess.preferences.client.customTextfield2Required|default(scope.preferences.client.customTextfield2Required),
+                                    "errors": formData.customTextfield2.messages,
+                                    "checked": scope.preferences.client.customTextfield2Activated,
+                                    "class": "form-group--nomaxwidth"
+                                },
+                                [{
+                                    "type": "input",
+                                    "parameter": {
+                                        "name": "customTextfield2",
+                                        "value": selectedProcess.customTextfield2,
+                                        "accesskey":"c",
+                                        "maxlength": 250,
+                                        "class": "charcounter"
                                     }
                                 }]
                             ) }}

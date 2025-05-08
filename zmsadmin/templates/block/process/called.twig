@@ -52,7 +52,15 @@
                 <dd>
                     {{ workstation.process.customTextfield }}
                 </dd>
-                {% endif %}    
+                {% endif %}
+                {% if workstation.process.customTextfield2 %}
+                <dt>
+                    {{workstation.scope.preferences.client.customTextfield2Label}}
+                </dt>
+                <dd>
+                    {{ workstation.process.customTextfield2 }}
+                </dd>
+                {% endif %}
                 <dt>
                     Wartezeit (Std.:Min.:Sek.)
                 </dt>

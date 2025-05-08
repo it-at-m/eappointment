@@ -442,7 +442,9 @@
                         }]
                     ) }}
 
-					{{ formgroup(
+                    {# Konfiguration Freitextfeld 1 #}
+
+                    {{ formgroup(
                         {
                             "legend": "Freitextfeld:",
                             "groupTag": "fieldset"
@@ -477,6 +479,48 @@
                             "parameter": {
                                 "name": "preferences[client][customTextfieldLabel]",
                                 "value": scope.preferences.client.customTextfieldLabel,
+                                "maxlength": 100
+                            }
+                        }]
+                    ) }}
+                    
+                    {# Konfiguration Freitextfeld 2 #}
+
+                    {{ formgroup(
+                        {
+                            "legend": "Freitextfeld 2:",
+                            "groupTag": "fieldset"
+                        },
+                        [{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "bei der Internetbuchung",
+                                "name": "preferences[client][customTextfield2Activated]",
+                                "value": 1,
+                                "checked": scope.preferences.client.customTextfield2Activated|default(0),
+                            }
+                        },{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "und ist Pflichtfeld",
+                                "name": "preferences[client][customTextfield2Required]",
+                                "id": "customTextfield2",
+                                "value": 1,
+                                "checked": scope.preferences.client.customTextfield2Required|default(0),
+                            }
+                        }]
+                    ) }}
+
+					{{ formgroup(
+                        {
+                            "label": "Freitextfeldlabel 2:",
+                            "description": "Der hier eingetragene Text wird als Name für das Freitextfeld 2 angezeigt (bspw. Hilfebedarf Inklusion). Im Freitextfeld können Bürger*innen Informationen hinterlassen, die für den Termin relevant sein könnten."
+                        },
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "preferences[client][customTextfield2Label]",
+                                "value": scope.preferences.client.customTextfield2Label,
                                 "maxlength": 100
                             }
                         }]

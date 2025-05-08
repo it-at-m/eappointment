@@ -293,6 +293,7 @@ EOS;
 {
     amendment
     customTextfield
+    customTextfield2
     authKey
     id
     status
@@ -367,6 +368,7 @@ EOS;
 {
     amendment
     customTextfield
+    customTextfield2
     id
     appointments{
         date

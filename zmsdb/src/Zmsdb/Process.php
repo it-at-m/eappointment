@@ -650,6 +650,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $amendment = $process->toDerefencedAmendment();
         $customTextfield = $process->toDerefencedcustomTextfield();
+        $customTextfield2 = $process->toDerefencedcustomTextfield2();
         if (!isset($process->queue['status'])) {
             $process->queue['status'] = $process->status;
         }
@@ -658,6 +659,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $status = $this->perform($query, array(
             $amendment,
             $customTextfield,
+            $customTextfield2,
             $process->id,
             $process->authKey,
             $process->id

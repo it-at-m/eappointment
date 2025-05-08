@@ -104,6 +104,10 @@ class ProcessQueue extends BaseController
                 $validator->getParameter('customTextfield'),
                 $delegatedProcess->setter('customTextfield')
             )
+            ->validateText(
+                $validator->getParameter('customTextfield2'),
+                $delegatedProcess->setter('customTextfield2')
+            )
             ->validateReminderTimestamp(
                 $validator->getParameter('headsUpTime'),
                 $delegatedProcess->setter('reminderTimestamp'),

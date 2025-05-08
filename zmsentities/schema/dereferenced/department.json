@@ -347,6 +347,7 @@
                             "whitelistedMails": "",
                             "amendmentLabel": "Zusatzinformationen zum Anliegen",
                             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
+                            "customTextfield2Label": "Zweites Zusatzfeld zum Anliegen",
                             "emailRequired": false,
                             "emailConfirmationActivated": true,
                             "adminMailOnAppointment": false,
@@ -561,7 +562,20 @@
                                             "boolean",
                                             "number"
                                         ],
-                                        "description": "true if an custom textfield is activated",
+                                        "description": "true if a custom textfield is activated",
+                                        "default": false
+                                    },
+                                    "customTextfield2Label": {
+                                        "type": "string",
+                                        "description": "label for a second form field to enter additional informations to a process",
+                                        "default": ""
+                                    },
+                                    "customTextfield2Activated": {
+                                        "type": [
+                                            "boolean",
+                                            "number"
+                                        ],
+                                        "description": "true if second custom textfield is activated",
                                         "default": false
                                     },
                                     "emailFrom": {

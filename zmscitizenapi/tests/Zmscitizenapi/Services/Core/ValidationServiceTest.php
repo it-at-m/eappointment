@@ -211,6 +211,8 @@ class ValidationServiceTest extends TestCase
         $scope = new ThinnedScope();
         $scope->customTextfieldActivated = true;
         $scope->customTextfieldRequired = true;
+        $scope->customTextfield2Activated = true;
+        $scope->customTextfield2Required = true;
         $scope->telephoneActivated = true;
         $scope->telephoneRequired = true;
         $scope->emailRequired = true;
@@ -220,6 +222,7 @@ class ValidationServiceTest extends TestCase
             'john@example.com',
             '+1234567890',
             'Custom text',
+            'Another Custom text',
             $scope
         );
         $this->assertEmpty($result['errors']);
@@ -229,6 +232,7 @@ class ValidationServiceTest extends TestCase
             'john@example.com',
             '+1234567890',
             'Custom text',
+            'Another Custom text',
             $scope
         );
         $this->assertContains(
@@ -241,6 +245,7 @@ class ValidationServiceTest extends TestCase
             'invalid-email',
             '+1234567890',
             'Custom text',
+            'Another Custom text',
             $scope
         );
         $this->assertContains(
@@ -253,6 +258,7 @@ class ValidationServiceTest extends TestCase
             'john@example.com',
             'invalid',
             'Custom text',
+            'Another Custom text',
             $scope
         );
         $this->assertContains(
@@ -265,16 +271,31 @@ class ValidationServiceTest extends TestCase
             'john@example.com',
             '+1234567890',
             '',
+            'Another Custom text',
             $scope
         );
         $this->assertContains(
             ErrorMessages::get('invalidCustomTextfield'),
             $result['errors']
         );
+
+        $result = ValidationService::validateAppointmentUpdateFields(
+            'John Doe',
+            'john@example.com',
+            '+1234567890',
+            'Custom Textfield',
+            '',
+            $scope
+        );
+        $this->assertContains(
+            ErrorMessages::get('invalidCustomTextfield2'),
+            $result['errors']
+        );
     
         $optionalScope = new ThinnedScope();
         $result = ValidationService::validateAppointmentUpdateFields(
             'John Doe',
+            null,
             null,
             null,
             null,
