@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Services\Core;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
+use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ScopeList;
@@ -89,11 +90,39 @@ class ValidationService
             : ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
     }
 
+    private static function validateCaptcha(bool $captchaRequired, ?string $captchaToken, ?TokenValidationService $tokenValidator): array
+    {
+        $errors = [];
+
+        if ($captchaRequired) {
+            if (!$tokenValidator) {
+                $status = TokenValidationService::TOKEN_MISSING;
+            } else {
+                $status = $tokenValidator->validateCaptchaToken($captchaToken);
+            }
+
+            if ($status !== TokenValidationService::TOKEN_VALID) {
+                switch ($status) {
+                    case TokenValidationService::TOKEN_MISSING:
+                        $errors[] = self::getError('captchaMissing');
+                        break;
+                    case TokenValidationService::TOKEN_EXPIRED:
+                        $errors[] = self::getError('captchaExpired');
+                        break;
+                    default:
+                        $errors[] = self::getError('captchaInvalid');
+                }
+            }
+        }
+
+        return $errors;
+    }
+
     /**
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract validation rules into separate rule objects using the specification pattern
      */
-    public static function validateGetBookableFreeDays(?array $officeIds, ?array $serviceIds, ?string $startDate, ?string $endDate, ?array $serviceCounts): array
+    public static function validateGetBookableFreeDays(?array $officeIds, ?array $serviceIds, ?string $startDate, ?string $endDate, ?array $serviceCounts, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
     {
         $errors = [];
         if (!self::isValidOfficeIds($officeIds)) {
@@ -126,6 +155,8 @@ class ValidationService
             $errors[] = self::getError('invalidServiceCount');
         }
 
+        $errors = array_merge($errors, self::validateCaptcha($captchaRequired, $captchaToken, $tokenValidator));
+
         return ['errors' => $errors];
     }
 
@@ -143,7 +174,7 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateGetAvailableAppointments(?string $date, ?array $officeIds, ?array $serviceIds, ?array $serviceCounts): array
+    public static function validateGetAvailableAppointments(?string $date, ?array $officeIds, ?array $serviceIds, ?array $serviceCounts, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
     {
         $errors = [];
         if (!$date || !self::isValidDate($date)) {
@@ -162,10 +193,12 @@ class ValidationService
             $errors[] = self::getError('invalidServiceCount');
         }
 
+        $errors = array_merge($errors, self::validateCaptcha($captchaRequired, $captchaToken, $tokenValidator));
+
         return ['errors' => $errors];
     }
 
-    public static function validatePostAppointmentReserve(?int $officeId, ?array $serviceIds, ?array $serviceCounts, ?int $timestamp): array
+    public static function validatePostAppointmentReserve(?int $officeId, ?array $serviceIds, ?array $serviceCounts, ?int $timestamp, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
     {
         $errors = [];
         if (!self::isValidOfficeId($officeId)) {
@@ -183,6 +216,8 @@ class ValidationService
         if (!self::isValidServiceCounts($serviceCounts)) {
             $errors[] = self::getError('invalidServiceCount');
         }
+
+        $errors = array_merge($errors, self::validateCaptcha($captchaRequired, $captchaToken, $tokenValidator));
 
         return ['errors' => $errors];
     }

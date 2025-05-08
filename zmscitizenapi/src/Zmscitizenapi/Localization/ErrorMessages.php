@@ -160,6 +160,21 @@ class ErrorMessages
             'statusCode' => self::HTTP_BAD_REQUEST,
             'errorMessage' => 'An error occurred during captcha verification.'
         ],
+        'captchaMissing' => [
+            'errorCode' => 'captchaMissing',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Missing captcha token.',
+        ],
+        'captchaInvalid' => [
+            'errorCode' => 'captchaInvalid',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Invalid captcha token.',
+        ],
+        'captchaExpired' => [
+            'errorCode' => 'captchaExpired',
+            'statusCode' => self::HTTP_BAD_REQUEST,
+            'errorMessage' => 'Captcha token expired.',
+        ],
         'serviceUnavailable' => [
             'errorCode' => 'serviceUnavailable',
             'statusCode' => self::HTTP_UNAVAILABLE,

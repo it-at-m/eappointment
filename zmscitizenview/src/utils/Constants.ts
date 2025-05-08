@@ -19,6 +19,10 @@ export const VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT =
   "/api/citizen/preconfirm-appointment/";
 export const VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT =
   "/api/citizen/captcha-details/";
+export const VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT =
+  "/api/citizen/captcha-challenge/";
+export const VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT =
+  "/api/citizen/captcha-verify/";
 
 export function getServiceBaseURL(): string {
   return import.meta.env.VITE_VUE_APP_SERVICE_BASE_URL;

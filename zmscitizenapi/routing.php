@@ -501,12 +501,12 @@ createLanguageRoutes(
  *             meta:
  *               $ref: "schema/metaresult.json"
  *             data:
- *               $ref: "schema/citizenapi/captcha/friendlyCaptcha.json"
+ *               $ref: "schema/citizenapi/captcha/altchaCaptcha.json"
  */
 createLanguageRoutes(
     \App::$slim,
     '/captcha-details/',
-    '\BO\Zmscitizenapi\Controllers\Security\CaptchaController',
+    '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaController',
     "CaptchaController",
     "get"
 );
@@ -516,6 +516,65 @@ createLanguageRoutes(
     '\BO\Zmscitizenapi\Controllers\Security\CaptchaController',
     "CaptchaController",
     "get"
+);
+
+/**
+ * @swagger
+ * /captcha-challenge/:
+ *   get:
+ *     summary: Create a new CAPTCHA challenge
+ *     tags:
+ *       - captcha
+ *     responses:
+ *       200:
+ *         description: CAPTCHA challenge created
+ *         schema:
+ *           type: object
+ *           properties:
+ *             meta:
+ *               $ref: "schema/metaresult.json"
+ *             data:
+ *               $ref: "schema/citizenapi/captcha/createChallengeResponse.json"
+ */
+createLanguageRoutes(
+    \App::$slim,
+    '/captcha-challenge/',
+    '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaChallengeController',
+    "CaptchaChallengeController",
+    "get"
+);
+
+/**
+ * @swagger
+ * /captcha-verify/:
+ *   post:
+ *     summary: Verify CAPTCHA challenge response
+ *     tags:
+ *       - captcha
+ *     parameters:
+ *       - in: body
+ *         name: captchaResponse
+ *         description: CAPTCHA response to verify
+ *         required: true
+ *         schema:
+ *           $ref: "schema/citizenapi/captcha/verifySolutionRequest.json"
+ *     responses:
+ *       200:
+ *         description: CAPTCHA verification result
+ *         schema:
+ *           type: object
+ *           properties:
+ *             meta:
+ *               $ref: "schema/metaresult.json"
+ *             data:
+ *               $ref: "schema/citizenapi/captcha/verifySolutionResponse.json"
+ */
+createLanguageRoutes(
+    \App::$slim,
+    '/captcha-verify/',
+    '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaVerifyController',
+    "CaptchaVerifyController",
+    "post"
 );
 
 /**

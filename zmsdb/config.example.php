@@ -36,14 +36,14 @@ if (getenv('MYSQL_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
 
 \BO\Zmsdb\Source\Dldb::$importPath = realpath(dirname(__FILE__) . '/tests/Zmsdb/fixtures/');
 
+class App extends \BO\Zmsdb\Application {
+    /**
+     * Name of the module
+     */
+    const IDENTIFIER = ZMS_IDENTIFIER;
+    const ZMS_MODULE_NAME = ZMS_MODULE_NAME;
+    public static $now;
+}
 if (getenv('ZMS_TIMEADJUST')) {
-    class App {
-        /**
-         * Name of the module
-         */
-        const IDENTIFIER = ZMS_IDENTIFIER;
-        const ZMS_MODULE_NAME = ZMS_MODULE_NAME;
-        public static $now;
-    }
     App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
 }

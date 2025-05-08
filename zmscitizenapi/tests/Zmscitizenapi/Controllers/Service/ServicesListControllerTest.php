@@ -18,7 +18,18 @@ class ServicesListControllerTest extends ControllerTestCase
 
         if (\App::$cache) {
             \App::$cache->clear();
+            \App::$cache->delete('processed_services');
+            \App::$cache->delete('processed_services_unpublished');
         }
+
+        $_SERVER['HTTP_HOST'] = 'test.example.com';
+        unset($_SERVER['HTTP_X_FORWARDED_HOST']);
+    }
+
+    public function tearDown(): void
+    {
+        unset($_SERVER['HTTP_HOST']);
+        parent::tearDown();
     }
 
     public function testRendering()
