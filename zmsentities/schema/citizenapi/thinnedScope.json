@@ -63,7 +63,7 @@
                 "string",
                 "null"
             ],
-            "description": "Label for the second custom textfield"
+            "description": "Label for the custom textfield"
         },
         "customTextfield2Activated": {
             "type": "boolean",
@@ -78,7 +78,7 @@
                 "string",
                 "null"
             ],
-            "description": "Label for the custom textfield"
+            "description": "Label for the second custom textfield"
         },
         "captchaActivatedRequired": {
             "type": "boolean",
