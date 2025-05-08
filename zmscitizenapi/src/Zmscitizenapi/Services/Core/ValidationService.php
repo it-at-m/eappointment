@@ -235,8 +235,8 @@ class ValidationService
         self::validateFamilyNameField($familyName, $errors);
         self::validateEmailField($email, $scope, $errors);
         self::validateTelephoneField($telephone, $scope, $errors);
-        self::validateCustomTextField($customTextfield, $scope?->customTextfieldActivated, $scope?->customTextfieldRequired, [self::class, 'isValidCustomTextfield'], 'invalidCustomTextfield', $errors);
-        self::validateCustomTextField($customTextfield2, $scope?->customTextfield2Activated, $scope?->customTextfield2Required, [self::class, 'isValidCustomTextfield2'], 'invalidCustomTextfield2', $errors);
+        self::validateCustomTextField($customTextfield, $scope?->customTextfieldActivated, $scope?->customTextfieldRequired, 'invalidCustomTextfield', $errors);
+        self::validateCustomTextField($customTextfield2, $scope?->customTextfield2Activated, $scope?->customTextfield2Required, 'invalidCustomTextfield2', $errors);
 
         return ['errors' => $errors];
     }
@@ -269,15 +269,15 @@ class ValidationService
         }
     }
 
-    private static function validateCustomTextField(?string $fieldValue, ?bool $fieldActivated, ?bool $fieldRequired, callable $validationFunction, string $errorKey, array &$errors): void
+    private static function validateCustomTextField(?string $fieldValue, ?bool $fieldActivated, ?bool $fieldRequired, string $errorKey, array &$errors): void
     {
         if (!$fieldActivated) {
             return;
         }
 
         if (
-            ($fieldRequired && ($fieldValue === "" || !$validationFunction($fieldValue))) ||
-            ($fieldValue !== null && $fieldValue !== "" && !$validationFunction($fieldValue))
+            ($fieldRequired && ($fieldValue === "" || !self::isValidCustomTextfield($fieldValue))) ||
+            ($fieldValue !== null && $fieldValue !== "" && !self::isValidCustomTextfield($fieldValue))
         ) {
             $errors[] = self::getError($errorKey);
         }
@@ -469,11 +469,6 @@ class ValidationService
     private static function isValidCustomTextfield(?string $customTextfield): bool
     {
         return $customTextfield === null || (is_string($customTextfield) && strlen(trim($customTextfield)) > 0);
-    }
-
-    private static function isValidCustomTextfield2(?string $customTextfield2): bool
-    {
-        return $customTextfield2 === null || (is_string($customTextfield2) && strlen(trim($customTextfield2)) > 0);
     }
 
     private static function isValidOfficeId(?int $officeId): bool
