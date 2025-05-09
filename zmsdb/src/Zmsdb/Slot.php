@@ -7,6 +7,7 @@ use BO\Zmsentities\Slot as Entity;
 use BO\Zmsentities\Collection\SlotList as Collection;
 use BO\Zmsentities\Availability as AvailabilityEntity;
 use BO\Zmsentities\Scope as ScopeEntity;
+use BO\Zmsdb\OverallCalendar as Calendar;
 
 /**
  * @SuppressWarnings(Public)
@@ -200,6 +201,14 @@ class Slot extends Base
             $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
                 'availabilityID' => $availability->id,
             ]);
+            $calendar = new Calendar();
+            $calendar->deleteFreeRange(
+                $availability->scope->id,
+                $availability->id,
+                $startDate,
+                $stopDate
+            );
+
             if (!$availability->withData(['bookable' => ['startInDays' => 0]])->hasBookableDates($now)) {
                 $availability['processingNote'][] = "cancelled $cancelledSlots slots: availability not bookable ";
                 return ($cancelledSlots > 0) ? true : false;
@@ -252,6 +261,16 @@ class Slot extends Base
     ) {
         $ancestors = [];
         $hasAddedSlots = false;
+
+        $calendar       = new OverallCalendar();
+        $scopeId        = $availability->scope->id;
+        $availabilityId = $availability->id;
+        $maxSeat        = (int)($availability->workstationCount['intern'] ?? 1);
+        if ($maxSeat < 1) {
+            $maxSeat = 1;
+        }
+        $timeZone = new \DateTimeZone(\BO\Zmsdb\Connection\Select::$connectionTimezone);
+
         foreach ($slotlist as $slot) {
             $slot = clone $slot;
             $slotID = $this->readByAvailability($slot, $availability, $time);
@@ -274,6 +293,22 @@ class Slot extends Base
             // TODO: Check if slot changed before writing ancestor IDs
             $this->writeAncestorIDs($slotID, $ancestors);
             $status = $writeStatus ? $writeStatus : $status;
+
+            if ($writeStatus) {
+                $slotDateTime = new \DateTimeImmutable(
+                    $time->format('Y-m-d') . ' ' . $slot->getTimeString(),
+                    $timeZone
+                );
+                for ($seat = 1; $seat <= $maxSeat; $seat++) {
+                    $calendar->insertSlot(
+                        $scopeId,
+                        $availabilityId,
+                        $slotDateTime,
+                        $seat,
+                        'free'
+                    );
+                }
+            }
         }
         if ($hasAddedSlots) {
             $availability['processingNote'][] = 'Added ' . $time->format('Y-m-d');
