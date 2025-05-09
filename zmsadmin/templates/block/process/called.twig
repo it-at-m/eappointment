@@ -13,12 +13,12 @@
                 <dd>
                     {{ workstation.process.clients|first.familyName }} <br>(Wartenr. {{ workstation.process.queue.number }})
                 </dd>
-                {% if process.requests %}
+                {% if workstation.process.requests %}
                 <dt>
                     Anliegen
                 </dt>
                 <dd>
-                    {{ namelist(process.requests) }}
+                   {{ namelist(process.requests|default(workstation.process.requests)) }}
                 </dd>
                 {% endif %}
                 {% if workstation.process.amendment %}
