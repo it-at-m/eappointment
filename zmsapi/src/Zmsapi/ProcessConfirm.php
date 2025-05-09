@@ -12,8 +12,6 @@ use BO\Zmsdb\Process;
 use BO\Zmsdb\Mail;
 use BO\Zmsdb\Config;
 use BO\Mellon\Validator;
-use BO\Zmsdb\Exception\OverallCalendar\Conflict as SlotDBConflict;
-use BO\Zmsapi\Exception\OverallCalendar\SlotConflict     as ApiConflict;
 
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
