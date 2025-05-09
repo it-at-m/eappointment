@@ -70,4 +70,30 @@ class OverallCalendar extends Base
             'process_id' => $processId,
         ]);
     }
+
+    public function readSlots(array $scopeIds,
+                              string $from,
+                              string $until,
+                              ?string $updatedAfter = null): array
+    {
+        if (empty($scopeIds)) {
+            return [];
+        }
+
+        $in_list = implode(',', array_map('intval', $scopeIds));
+
+        if ($updatedAfter === null) {
+            $sql = sprintf(Calender::SELECT_RANGE, $in_list);
+            $params = ['from' => $from, 'until' => $until];
+        } else {
+            $sql = sprintf(Calender::SELECT_RANGE_UPDATED, $in_list);
+            $params = [
+                'from'         => $from,
+                'until'        => $until,
+                'updatedAfter' => $updatedAfter
+            ];
+        }
+
+        return $this->fetchAll($sql, $params);
+    }
 }
