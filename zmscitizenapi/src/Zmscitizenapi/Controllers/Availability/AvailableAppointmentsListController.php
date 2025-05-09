@@ -14,6 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 class AvailableAppointmentsListController extends BaseController
 {
     private AvailableAppointmentsListService $service;
+
     public function __construct()
     {
         $this->service = new AvailableAppointmentsListService();
@@ -27,6 +28,7 @@ class AvailableAppointmentsListController extends BaseController
         }
 
         $result = $this->service->getAvailableAppointmentsList($request->getQueryParams());
+
         return is_array($result) && isset($result['errors'])
             ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
             : $this->createJsonResponse($response, $result->toArray(), 200);

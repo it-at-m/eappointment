@@ -25,6 +25,14 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->setApiCalls(
             [
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
                     'response' => $this->readFixture("GET_calendar.json")
@@ -75,6 +83,14 @@ class AvailableDaysListControllerTest extends ControllerTestCase
     {
         $this->setApiCalls(
             [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
@@ -595,6 +611,14 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $exception->template = 'BO\\Zmsapi\\Exception\\Calendar\\InvalidFirstDay';
 
         $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
             [
                 'function' => 'readPostResult',
                 'url' => '/calendar/',

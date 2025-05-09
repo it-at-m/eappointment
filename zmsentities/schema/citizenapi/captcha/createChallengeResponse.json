@@ -1,0 +1,36 @@
+{
+    "title": "AltchaCaptchaChallenge",
+    "type": "object",
+    "properties": {
+        "algorithm": {
+            "type": "string",
+            "description": "The algorithm used for HMAC signature"
+        },
+        "challenge": {
+            "type": "string",
+            "description": "The challenge itself"
+        },
+        "maxnumber": {
+            "type": "number",
+            "description": "The complexity of the challenge specified as a number"
+        },
+        "salt": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Random string as part of the challenge"
+        },
+        "signature": {
+            "type": "string",
+            "description": "HMAC signature of the verification data"
+        }
+    },
+    "required": [
+        "algorithm",
+        "challenge",
+        "maxnumber",
+        "salt",
+        "signature"
+    ],
+    "description": "Schema definition for an AltchaCaptcha challenge response"
+}
+    
