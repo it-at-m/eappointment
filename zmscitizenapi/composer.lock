@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "83e577f19cea26a1371db39fbe7d5e6f",
+    "content-hash": "a4e4a61f448f49399bf9c5a0172f5ebf",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
+                "reference": "9d8577ac3b9608372dee22c7404ca93f09dfc9b5"
             },
             "require": {
                 "ext-json": ">=0",
@@ -232,7 +232,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
+                "reference": "9d8577ac3b9608372dee22c7404ca93f09dfc9b5"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -251,10 +251,9 @@
             },
             "require-dev": {
                 "helmich/phpunit-psr7-assert": "^4.3.0",
-                "league/json-reference": "^1.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.6",
-                "squizlabs/php_codesniffer": "^3.5.8"
+                "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
             "autoload": {
@@ -289,7 +288,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
+                "reference": "9d8577ac3b9608372dee22c7404ca93f09dfc9b5"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -401,26 +400,26 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v6.10.0",
+            "version": "v6.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "a49db6f0a5033aef5143295342f1c95521b075ff"
+                "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/a49db6f0a5033aef5143295342f1c95521b075ff",
-                "reference": "a49db6f0a5033aef5143295342f1c95521b075ff",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
+                "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.4||^8.0"
+                "php": "^8.0"
             },
             "require-dev": {
-                "guzzlehttp/guzzle": "^6.5||^7.4",
+                "guzzlehttp/guzzle": "^7.4",
                 "phpspec/prophecy-phpunit": "^2.0",
                 "phpunit/phpunit": "^9.5",
-                "psr/cache": "^1.0||^2.0",
+                "psr/cache": "^2.0||^3.0",
                 "psr/http-client": "^1.0",
                 "psr/http-factory": "^1.0"
             },
@@ -458,9 +457,9 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v6.10.0"
+                "source": "https://github.com/firebase/php-jwt/tree/v6.11.1"
             },
-            "time": "2023-12-01T16:26:39+00:00"
+            "time": "2025-04-09T20:32:01+00:00"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
@@ -7240,15 +7239,15 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "eappointment/mellon": 20,
+        "eappointment/zmsslim": 20,
         "eappointment/zmsclient": 20,
         "eappointment/zmsentities": 20,
-        "eappointment/zmsslim": 20,
         "phpmd/phpmd": 0
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
-    "platform-dev": {},
+    "platform": [],
+    "platform-dev": [],
     "platform-overrides": {
         "php": "8.0.2"
     },

@@ -38,14 +38,12 @@ class Application extends \BO\Slim\Application
     public static int $LOGGER_LOCK_TIMEOUT;
     // Captcha config
     public static bool $CAPTCHA_ENABLED;
-    public static string $FRIENDLY_CAPTCHA_SECRET_KEY;
-    public static string $FRIENDLY_CAPTCHA_SITE_KEY;
-    public static string $FRIENDLY_CAPTCHA_ENDPOINT;
-    public static string $FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE;
-    public static string $ALTCHA_CAPTCHA_SECRET_KEY;
+    public static string $CAPTCHA_TOKEN_SECRET;
+    public static int $CAPTCHA_TOKEN_TTL;
     public static string $ALTCHA_CAPTCHA_SITE_KEY;
-    public static string $ALTCHA_CAPTCHA_ENDPOINT;
-    public static string $ALTCHA_CAPTCHA_ENDPOINT_PUZZLE;
+    public static string $ALTCHA_CAPTCHA_SITE_SECRET;
+    public static string $ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE;
+    public static string $ALTCHA_CAPTCHA_ENDPOINT_VERIFY;
     // Rate limiting config
     public static int $RATE_LIMIT_MAX_REQUESTS;
     public static int $RATE_LIMIT_CACHE_TTL;
@@ -103,18 +101,14 @@ class Application extends \BO\Slim\Application
     private static function initializeCaptcha(): void
     {
         self::$CAPTCHA_ENABLED = filter_var(getenv('CAPTCHA_ENABLED'), FILTER_VALIDATE_BOOLEAN);
-        self::$FRIENDLY_CAPTCHA_SECRET_KEY = getenv('FRIENDLY_CAPTCHA_SECRET_KEY') ?: '';
-        self::$FRIENDLY_CAPTCHA_SITE_KEY = getenv('FRIENDLY_CAPTCHA_SITE_KEY') ?: '';
-        self::$FRIENDLY_CAPTCHA_ENDPOINT = getenv('FRIENDLY_CAPTCHA_ENDPOINT')
-            ?: 'https://eu-api.friendlycaptcha.eu/api/v1/siteverify';
-        self::$FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE = getenv('FRIENDLY_CAPTCHA_ENDPOINT_PUZZLE')
-            ?: 'https://eu-api.friendlycaptcha.eu/api/v1/puzzle';
-        self::$ALTCHA_CAPTCHA_SECRET_KEY = getenv('ALTCHA_CAPTCHA_SECRET_KEY') ?: '';
+        self::$CAPTCHA_TOKEN_SECRET = getenv('CAPTCHA_TOKEN_SECRET') ?: '';
+        self::$CAPTCHA_TOKEN_TTL = (int) getenv('CAPTCHA_TOKEN_TTL') ?: 300;
         self::$ALTCHA_CAPTCHA_SITE_KEY = getenv('ALTCHA_CAPTCHA_SITE_KEY') ?: '';
-        self::$ALTCHA_CAPTCHA_ENDPOINT = getenv('ALTCHA_CAPTCHA_ENDPOINT')
-            ?: 'https://eu.altcha.org/form/';
-        self::$ALTCHA_CAPTCHA_ENDPOINT_PUZZLE = getenv('ALTCHA_CAPTCHA_ENDPOINT_PUZZLE')
-            ?: 'https://eu.altcha.org/';
+        self::$ALTCHA_CAPTCHA_SITE_SECRET = getenv('ALTCHA_CAPTCHA_SITE_SECRET') ?: '';
+        self::$ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE = getenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE')
+            ?: 'https://captcha.muenchen.de/api/v1/captcha/challenge';
+        self::$ALTCHA_CAPTCHA_ENDPOINT_VERIFY = getenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY')
+            ?: 'https://captcha.muenchen.de/api/v1/captcha/verify';
     }
 
     private static function initializeCache(): void

@@ -62,7 +62,7 @@ class ScopeByIdControllerTest extends ControllerTestCase
             "customTextfieldActivated" => true,
             "customTextfieldRequired" => false,
             "customTextfieldLabel" => "Custom Label",
-            "captchaActivatedRequired" => true,
+            "captchaActivatedRequired" => false,
             "displayInfo" => null
         ];               
         $responseBody = json_decode((string)$response->getBody(), true);

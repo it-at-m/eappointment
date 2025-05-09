@@ -5,12 +5,20 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Appointment;
 
 use BO\Zmscitizenapi\Models\ThinnedProcess;
+use BO\Zmscitizenapi\Services\Captcha\CaptchaService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 use BO\Zmscitizenapi\Services\Core\MapperService;
 
 class AppointmentConfirmService
 {
+    private CaptchaService $captchaService;
+
+    public function __construct()
+    {
+        $this->captchaService = new CaptchaService();
+    }
+
     public function processConfirm(array $body): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($body);
@@ -29,6 +37,9 @@ class AppointmentConfirmService
         if (is_array($result) && !empty($result['errors'])) {
             return $result;
         }
+
+        $token = $this->captchaService->generateToken();
+        $result->setCaptchaToken($token);
 
         if ($result->status === 'confirmed') {
             $this->sendConfirmationEmail($result);

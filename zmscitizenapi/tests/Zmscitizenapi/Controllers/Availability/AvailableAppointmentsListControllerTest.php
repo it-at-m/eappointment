@@ -25,6 +25,14 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
         $this->setApiCalls(
             [
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'response' => $this->readFixture("GET_appointments.json")
@@ -53,6 +61,14 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     {
         $this->setApiCalls(
             [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',

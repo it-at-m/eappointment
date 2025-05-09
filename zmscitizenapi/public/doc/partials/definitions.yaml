@@ -16,7 +16,7 @@ definitions:
   availableDays:
     $ref: "schema/citizenapi/availableDays.json"
   captchaDetails:
-    $ref: "schema/citizenapi/captcha/friendlyCaptcha.json"
+    $ref: "schema/citizenapi/captcha/altchaCaptcha.json"
   offices:
     $ref: "schema/citizenapi/collections/officeList.json"
   officesAndServices:
