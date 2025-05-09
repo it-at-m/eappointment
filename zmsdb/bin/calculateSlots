@@ -5,6 +5,11 @@ require_once __DIR__ . '/script_bootstrap.php';
 
 $scriptStart = microtime(true);
 
+function logMessage($message, $level = 'INFO') {
+    $time = date('Y-m-d H:i:s');
+    error_log("[$time] [$level] $message");
+}
+
 $dates = preg_grep('#^\d{4}-\d{1,2}-\d{1,2}#', $argv);
 $now   = new \DateTimeImmutable();
 if ($dates) {
@@ -20,34 +25,31 @@ $calendar = (bool) preg_grep('#^--calendar$#', $argv);
 $commit   = (bool) preg_grep('#^--commit$#',   $argv);
 
 if ($commit) {
-    echo "⏳ Start Slot-Berechnung:  {$now->format('c')}\n";
+    logMessage("⏳ Start Slot-Berechnung: {$now->format('c')}");
 
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots($verbose);
 
     try {
         $stepStart = microtime(true);
         $calculator->writeCalculations($now, $delete);
-        echo "✅ Slot-Berechnung fertig in "
-            . round(microtime(true) - $stepStart, 2) . " s\n";
+        logMessage("✅ Slot-Berechnung fertig in " . round(microtime(true) - $stepStart, 2) . " s");
 
         if ($calendar) {
-            echo "⏳ Befülle gesamtkalender …\n";
+            logMessage("⏳ Befülle Gesamtkalender …");
             $stepStart = microtime(true);
             $populate  = new \BO\Zmsdb\Helper\PopulateOverallCalendar($verbose);
             $populate->writeCalendar($now);
-            echo "✅ Gesamtkalender fertig in "
-                . round(microtime(true) - $stepStart, 2) . " s\n";
+            logMessage("✅ Gesamtkalender fertig in " . round(microtime(true) - $stepStart, 2) . " s");
         }
 
-        echo "🏁 Gesamtlaufzeit: "
-            . round(microtime(true) - $scriptStart, 2) . " s\n";
+        logMessage("🏁 Gesamtlaufzeit: " . round(microtime(true) - $scriptStart, 2) . " s");
 
     } catch (\BO\Zmsdb\Exception\Pdo\LockTimeout $e) {
-        echo "❌ Lock-Timeout – Logs folgen …\n";
+        logMessage("❌ Lock-Timeout – Logs folgen …", 'ERROR');
         $calculator->dumpLogs();
-        error_log($e->getTraceAsString());
+        $calculator->log($e->getTraceAsString());
     } catch (\Exception $e) {
-        echo "❌ Abbruch – Logs folgen …\n";
+        logMessage("❌ Abbruch – Logs folgen …", 'ERROR');
         $calculator->dumpLogs();
         throw $e;
     }
