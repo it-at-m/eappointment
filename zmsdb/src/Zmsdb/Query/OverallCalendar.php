@@ -8,13 +8,14 @@ class OverallCalendar extends Base
 
     const INSERT = '
         INSERT IGNORE INTO gesamtkalender
-               (scope_id, time, seat, status)
-        VALUES (:scope_id, :time, :seat, :status)
+               (scope_id, availability_id, time, seat, status)
+        VALUES (:scope_id, :availability_id, :time, :seat, :status)
     ';
 
     const DELETE_FREE_RANGE = '
         DELETE FROM gesamtkalender
          WHERE scope_id = :scope_id
+           AND availability_id = :availability_id  
            AND status   = "free"
            AND time    >= :begin
            AND time    <  :finish
