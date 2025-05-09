@@ -2,7 +2,6 @@
 
 namespace BO\Zmsdb;
 
-use BO\Zmsdb\Exception\OverallCalendar\Conflict;
 use BO\Zmsdb\Query\OverallCalendar as Calender;
 use DateInterval;
 use DateTimeImmutable;
@@ -12,25 +11,31 @@ class OverallCalendar extends Base
 {
     public function insertSlot(
         int $scopeId,
+        int $availabilityId,
         DateTimeInterface $time,
         int $seat,
         string $status = 'free'
     ): void {
         $this->perform(Calender::INSERT, [
             'scope_id' => $scopeId,
+            'availability_id' => $availabilityId,
             'time' => $time->format('Y-m-d H:i:s'),
             'seat' => $seat,
             'status' => $status,
         ]);
     }
 
-
-    public function deleteFreeRange($scopeId, $from, $to): void
-    {
+    public function deleteFreeRange(
+        int $scopeId,
+        int $availabilityId,
+        DateTimeInterface $begin,
+        DateTimeInterface $finish
+    ): void {
         $this->perform(Calender::DELETE_FREE_RANGE, [
             'scope_id' => $scopeId,
-            'begin' => $from,
-            'finish' => $to,
+            'availability_id' => $availabilityId,
+            'begin' => $begin->format('Y-m-d H:i:s'),
+            'finish' => $finish->format('Y-m-d H:i:s'),
         ]);
     }
 
@@ -49,8 +54,10 @@ class OverallCalendar extends Base
             'end'   => $end  ->format('Y-m-d H:i:s'),
             'units' => $slotUnits,
         ]);
+
         if (!$seat) {
-            throw new Conflict();
+            error_log("Failed to book a seat for scope ID {$scopeId} from {$start->format('Y-m-d H:i:s')} to {$end->format('Y-m-d H:i:s')}. No free seats available.");
+            return;
         }
 
         $this->perform(Calender::BLOCK_SEAT_RANGE, [
