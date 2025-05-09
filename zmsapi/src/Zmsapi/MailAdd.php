@@ -26,7 +26,7 @@ class MailAdd extends BaseController
 
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Mail($input);
-        // $entity->testValid();
+        $entity->testValid();
 
         $process = new \BO\Zmsentities\Process($entity->process);
 
