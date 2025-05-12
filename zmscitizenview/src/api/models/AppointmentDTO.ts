@@ -7,7 +7,6 @@ import { SubRequestCount } from "@/api/models/SubRequestCount";
  * @interface AppointmentDTO
  */
 export interface AppointmentDTO {
-  [x: string]: any;
   /**
    *
    * @type {string}
