@@ -39,6 +39,13 @@ class OverallCalendar extends Base
         ]);
     }
 
+    public function deleteOlderThan(DateTimeInterface $date): bool
+    {
+        return (bool) $this->perform(Calender::DELETE_ALL_BEFORE, [
+            'threshold' => $date->format('Y-m-d 00:00:00'),
+        ]);
+    }
+
     public function book(
         int $scopeId,
         string $startTime,

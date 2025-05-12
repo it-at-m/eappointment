@@ -21,6 +21,11 @@ class OverallCalendar extends Base
            AND time    <  :finish
     ';
 
+    const DELETE_ALL_BEFORE = '
+        DELETE FROM gesamtkalender
+         WHERE time < :threshold
+    ';
+
     const FIND_FREE_SEAT = '
         SELECT seat
           FROM gesamtkalender
