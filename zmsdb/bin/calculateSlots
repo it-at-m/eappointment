@@ -1,76 +1,45 @@
 #!/usr/bin/env php
 <?php
 ini_set('memory_limit', '1024M');
-require_once __DIR__ . '/script_bootstrap.php';
+require_once(__DIR__."/script_bootstrap.php");
 
-$scriptStart = microtime(true);
+function logMessage($message, $level = 'INFO') {
+    $time = date('Y-m-d H:i:s');
+    error_log("[$time] [$level] $message");
+}
 
-$dates = preg_grep('#^\d{4}-\d{1,2}-\d{1,2}#', $argv);
-$now   = new \DateTimeImmutable();
-if ($dates) {
+$dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
+$now = new \DateTimeImmutable();
+if (count($dates)) {
     $now = new \DateTimeImmutable(array_shift($dates));
 } elseif (class_exists('\App') && isset(\App::$now)) {
     $now = \App::$now;
 }
-
-$verbose  = (bool) preg_grep('#^--?v(erbose)?$#', $argv);
-$delete   = (bool) preg_grep('#^--delete$#',   $argv);
-$repair   = (bool) preg_grep('#^--repair$#',   $argv);
-$calendar = (bool) preg_grep('#^--calendar$#', $argv);
-$commit   = (bool) preg_grep('#^--commit$#',   $argv);
-
-if ($commit) {
-    echo "⏳ Start Slot-Berechnung:  {$now->format('c')}\n";
-
-    $calculator = new \BO\Zmsdb\Helper\CalculateSlots($verbose);
-
+$repair = false;
+if (preg_grep('#^--repair$#', $argv)) {
+    $repair = true;
+}
+if (preg_grep('#^--commit$#', $argv)) {
+    logMessage("⏳    Start Slot-Berechnung: {$now->format('c')}");
+    $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
     try {
         $stepStart = microtime(true);
+        $delete = preg_grep('#^--delete$#', $argv);
         $calculator->writeCalculations($now, $delete);
-        echo "✅ Slot-Berechnung fertig in "
-            . round(microtime(true) - $stepStart, 2) . " s\n";
-
-        if ($calendar) {
-            echo "⏳ Befülle gesamtkalender …\n";
-            $stepStart = microtime(true);
-            $populate  = new \BO\Zmsdb\Helper\PopulateOverallCalendar($verbose);
-            $populate->writeCalendar($now);
-            echo "✅ Gesamtkalender fertig in "
-                . round(microtime(true) - $stepStart, 2) . " s\n";
-        }
-
-        echo "🏁 Gesamtlaufzeit: "
-            . round(microtime(true) - $scriptStart, 2) . " s\n";
-
-    } catch (\BO\Zmsdb\Exception\Pdo\LockTimeout $e) {
-        echo "❌ Lock-Timeout – Logs folgen …\n";
+        logMessage("✅    Slot-Berechnung fertig in " . round(microtime(true) - $stepStart, 2) . " s");
+    } catch (\BO\Zmsdb\Exception\Pdo\LockTimeout $exception) {
+        $calculator->log("Unexpected end due to lock timeout, showing tracelog:");
         $calculator->dumpLogs();
-        error_log($e->getTraceAsString());
-    } catch (\Exception $e) {
-        echo "❌ Abbruch – Logs folgen …\n";
+        error_log($exception->getTraceAsString());
+    } catch (\Exception $exception) {
         $calculator->dumpLogs();
-        throw $e;
+        throw $exception;
     }
-    exit(0);
+} else {
+    $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
+    $username = \BO\Zmsdb\Connection\Select::$username;
+    echo "Usage: {$argv[0]} --commit [--verbose] [--delete] [--repair] [2018-04-01]\n"
+        . "\tCalculates and updates available appointments/slots for availabilities.\n\n";
+    echo "\tDatabase:             $dbname as $username\n";
+    echo "\tDate for calculation: ".$now->format('c')."\n\n";
 }
-
-
-$dbname   = \BO\Zmsdb\Connection\Select::$writeSourceName;
-$username = \BO\Zmsdb\Connection\Select::$username;
-
-echo <<<USAGE
-Usage: {$argv[0]} --commit [--calendar] [--verbose] [--delete] [--repair] [YYYY-MM-DD]
-
-    Calculates/updates appointment slots (always) and – with --calendar –
-    additionally populates table "gesamtkalender" in 5-minute steps.
-
-    --calendar   fill "gesamtkalender" after slot calculation
-    --verbose    verbose output
-    --delete     daily maintenance: delete old slots
-    --repair     reserved
-    YYYY-MM-DD   date to start calculation (default: today)
-
-    Database:             {$dbname} as {$username}
-    Date for calculation: {$now->format('c')}
-
-USAGE;
