@@ -42,6 +42,8 @@ class OverallCalendarTest extends TestCase
         $cal->book(self::SCOPE, $start, 900010, 1);
         $cal->unbook(self::SCOPE, 900010);
 
+        BO\Zmsdb\Connection\Select::writeCommit();
+
         $row = \BO\Zmsdb\Connection\Select::getReadConnection()
             ->fetchOne(
                 'SELECT status, process_id
