@@ -1,7 +1,6 @@
 import $ from 'jquery';
 import ExceptionHandler from './exceptionHandler'
 import maxChars from '../element/form/maxChars'
-import maxCharsInput from '../element/form/maxCharsInput'
 import settings from '../settings'
 
 class DialogHandler {
@@ -40,7 +39,7 @@ class DialogHandler {
             maxChars(this);
         });
         $('input.charcounter').each(function () {
-            maxCharsInput(this);
+            maxChars(this);
         });
     }
 
