@@ -2,35 +2,52 @@
 namespace BO\Zmsdb\Tests;
 
 use BO\Zmsdb\OverallCalendar;
-use BO\Zmsdb\Exception\OverallCalendar\Conflict;
 use DateTimeImmutable;
-use DateInterval;
 
 class OverallCalendarTest extends Base
 {
     private const SCOPE = 1300;
 
-    public function testBookAndConflict()
+    public function testBookAndConflict(): void
     {
-        $calendar   = new OverallCalendar();
+        $cal   = new OverallCalendar();
         $start = '2016-05-27 09:30:00';
 
-        $calendar->book(self::SCOPE, $start, 900001, 2);
+        $cal->book(self::SCOPE, $start, 900001, 2);
 
-        $connection = \BO\Zmsdb\Connection\Select::getReadConnection()
-            ->fetchValue(
-                'SELECT COUNT(*) FROM gesamtkalender
-                       WHERE scope_id = ?
-                         AND process_id = 900001',
-                [self::SCOPE]
-            );
-        $this->assertEquals(2, $connection);
+        $cnt = \BO\Zmsdb\Connection\Select::getReadConnection()->fetchValue(
+            'SELECT COUNT(*) FROM gesamtkalender
+              WHERE scope_id = ? AND process_id = 900001',
+            [self::SCOPE]
+        );
+        $this->assertSame(2, (int)$cnt, 'exactly 2 slots booked for 900001');
 
-        $this->expectException(Conflict::class);
-        $calendar->book(self::SCOPE, $start, 900002, 1);
+        $cal->book(self::SCOPE, $start, 900002, 1);
+
+        $cntConflict = \BO\Zmsdb\Connection\Select::getReadConnection()->fetchValue(
+            'SELECT COUNT(*) FROM gesamtkalender
+              WHERE scope_id = ? AND process_id = 900002',
+            [self::SCOPE]
+        );
+        $this->assertSame(
+            0,
+            (int)$cntConflict,
+            'second booking must not create additional slots'
+        );
+
+        $cntStill = \BO\Zmsdb\Connection\Select::getReadConnection()->fetchValue(
+            'SELECT COUNT(*) FROM gesamtkalender
+              WHERE scope_id = ? AND process_id = 900001',
+            [self::SCOPE]
+        );
+        $this->assertSame(
+            2,
+            (int)$cntStill,
+            'original booking remains intact'
+        );
     }
 
-    public function testUnbook()
+    public function testUnbook(): void
     {
         $cal   = new OverallCalendar();
         $start = '2016-05-27 09:35:00';
@@ -39,16 +56,14 @@ class OverallCalendarTest extends Base
 
         $cal->unbook(self::SCOPE, 900010);
 
-        $row = \BO\Zmsdb\Connection\Select::getReadConnection()
-            ->fetchOne(
-                'SELECT status, process_id
-                         FROM gesamtkalender
-                        WHERE scope_id = ?
-                          AND time      = ?',
-                [self::SCOPE, $start]
-            );
+        $row = \BO\Zmsdb\Connection\Select::getReadConnection()->fetchOne(
+            'SELECT status, process_id
+               FROM gesamtkalender
+              WHERE scope_id = ? AND time = ?',
+            [self::SCOPE, $start]
+        );
 
-        $this->assertEquals('free',  $row['status']);
+        $this->assertSame('free',  $row['status']);
         $this->assertNull($row['process_id']);
     }
 }
