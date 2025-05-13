@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "9d8577ac3b9608372dee22c7404ca93f09dfc9b5"
+                "reference": "3b53777853798ec388f9fa2f2d42b1310ff3062c"
             },
             "require": {
                 "ext-json": ">=0",
@@ -232,7 +232,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "9d8577ac3b9608372dee22c7404ca93f09dfc9b5"
+                "reference": "852f28a922ce9ba0705010c8b4712de094ed3741"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -288,7 +288,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "9d8577ac3b9608372dee22c7404ca93f09dfc9b5"
+                "reference": "13a59e7a34592936e535a28e485c504f8719b5f0"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -6753,16 +6753,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.9.2",
+            "version": "3.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "aac1f6f347a5c5ac6bc98ad395007df00990f480"
+                "reference": "65ff2489553b83b4597e89c3b8b721487011d186"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/aac1f6f347a5c5ac6bc98ad395007df00990f480",
-                "reference": "aac1f6f347a5c5ac6bc98ad395007df00990f480",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/65ff2489553b83b4597e89c3b8b721487011d186",
+                "reference": "65ff2489553b83b4597e89c3b8b721487011d186",
                 "shasum": ""
             },
             "require": {
@@ -6827,9 +6827,13 @@
                 {
                     "url": "https://opencollective.com/php_codesniffer",
                     "type": "open_collective"
+                },
+                {
+                    "url": "https://thanks.dev/u/gh/phpcsstandards",
+                    "type": "thanks_dev"
                 }
             ],
-            "time": "2024-04-23T20:25:34+00:00"
+            "time": "2025-05-11T03:36:00+00:00"
         },
         {
             "name": "symfony/config",
@@ -7239,15 +7243,15 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "eappointment/mellon": 20,
-        "eappointment/zmsslim": 20,
         "eappointment/zmsclient": 20,
         "eappointment/zmsentities": 20,
+        "eappointment/zmsslim": 20,
         "phpmd/phpmd": 0
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
+    "platform": {},
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.0.2"
     },
