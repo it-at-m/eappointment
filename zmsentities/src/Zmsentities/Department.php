@@ -15,6 +15,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         return [
             'id' => 0,
             'scopes' => new Collection\ScopeList(),
+            'clusters' => new Collection\ClusterList(),
             'links' => new Collection\LinkList(),
             'dayoff' => new Collection\DayoffList(),
             'name' => '',
