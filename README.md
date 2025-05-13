@@ -184,6 +184,14 @@ bin/importTestData --commit
   \BO\Zmsdb\Source\Dldb::$importPath = realpath(dirname(__FILE__) . '/tests/Zmsdb/fixtures/');
   ```
 
+## Cronjobs
+To run cronjobs locally use ddev
+```
+ddev exec zmsapi/cron/cronjob.minutly
+ddev exec zmsapi/cron/cronjob.hourly
+ddev exec zmsapi/cron/cronjob.daily
+```
+
 ## Branch Naming Convention
 To keep our branch names organized and easily understandable, we follow a specific naming convention for all branches created in this repository. Please adhere to this convention when creating new branches:
 
