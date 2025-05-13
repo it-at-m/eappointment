@@ -138,6 +138,10 @@ $('textarea.maxchars').each(function () {
     maxChars(this);
 })
 
+$('input.charcounter').each(function () {
+    maxChars(this);
+})
+
 printScopeAppointmentsByDay();
 printWaitingNumber();
 DialogHandler.hideMessages();
@@ -151,5 +155,3 @@ console.log("Welcome to the ZMS admin interface...");
 //bindReact('[data-department-daysoff]', DepartmentDaysOffView)
 //bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
 //bindReact('[data-calldisplay-config]', CallDisplayConfigView)
-
-

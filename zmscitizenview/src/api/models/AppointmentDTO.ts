@@ -54,6 +54,12 @@ export interface AppointmentDTO {
    * @type {string}
    * @memberof AppointmentDTO
    */
+  customTextfield2?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AppointmentDTO
+   */
   officeId: string;
   /**
    *

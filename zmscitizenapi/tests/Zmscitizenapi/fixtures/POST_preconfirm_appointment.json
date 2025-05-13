@@ -9,6 +9,7 @@
         "$schema": "https://schema.berlin.de/queuemanagement/process.json",
         "amendment": "",
         "customTextfield": "Some custom text",
+        "customTextfield2": "Another custom text",
         "appointments": [
             {
                 "date": 1727865900,
