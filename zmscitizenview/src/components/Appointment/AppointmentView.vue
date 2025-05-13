@@ -354,6 +354,8 @@ const setRebookData = () => {
     appointment.value.telephone = rebookedAppointment.value.telephone;
     appointment.value.customTextfield =
       rebookedAppointment.value.customTextfield;
+    appointment.value.customTextfield2 =
+      rebookedAppointment.value.customTextfield2;
     updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
       (data) => {
         if ((data as AppointmentDTO).processId != undefined) {
@@ -421,6 +423,9 @@ const nextUpdateAppointment = () => {
       : undefined;
     appointment.value.customTextfield = customerData.value.customTextfield
       ? customerData.value.customTextfield
+      : undefined;
+    appointment.value.customTextfield2 = customerData.value.customTextfield2
+      ? customerData.value.customTextfield2
       : undefined;
 
     updateAppointment(appointment.value, props.baseUrl ?? undefined).then(

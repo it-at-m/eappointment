@@ -33,10 +33,16 @@ class ThinnedScope extends Entity implements JsonSerializable
     /** @var string|null */
     public ?string $customTextfieldLabel;
     /** @var bool|null */
+    public ?bool $customTextfield2Activated;
+    /** @var bool|null */
+    public ?bool $customTextfield2Required;
+    /** @var string|null */
+    public ?string $customTextfield2Label;
+    /** @var bool|null */
     public ?bool $captchaActivatedRequired;
     /** @var string|null */
     public ?string $displayInfo;
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null)
     {
         $this->id = $id;
         $this->provider = $provider;
@@ -48,6 +54,9 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->customTextfieldActivated = $customTextfieldActivated;
         $this->customTextfieldRequired = $customTextfieldRequired;
         $this->customTextfieldLabel = $customTextfieldLabel;
+        $this->customTextfield2Activated = $customTextfield2Activated;
+        $this->customTextfield2Required = $customTextfield2Required;
+        $this->customTextfield2Label = $customTextfield2Label;
         $this->captchaActivatedRequired = $captchaActivatedRequired;
         $this->displayInfo = $displayInfo;
         $this->ensureValid();
@@ -105,6 +114,21 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->customTextfieldLabel;
     }
 
+    public function getCustomTextfield2Activated(): ?bool
+    {
+        return $this->customTextfield2Activated;
+    }
+
+    public function getCustomTextfield2Required(): ?bool
+    {
+        return $this->customTextfield2Required;
+    }
+
+    public function getCustomTextfield2Label(): ?string
+    {
+        return $this->customTextfield2Label;
+    }
+
     public function getCaptchaActivatedRequired(): ?bool
     {
         return $this->captchaActivatedRequired;
@@ -128,6 +152,9 @@ class ThinnedScope extends Entity implements JsonSerializable
             'customTextfieldActivated' => $this->customTextfieldActivated,
             'customTextfieldRequired' => $this->customTextfieldRequired,
             'customTextfieldLabel' => $this->customTextfieldLabel,
+            'customTextfield2Activated' => $this->customTextfield2Activated,
+            'customTextfield2Required' => $this->customTextfield2Required,
+            'customTextfield2Label' => $this->customTextfield2Label,
             'captchaActivatedRequired' => $this->captchaActivatedRequired,
             'displayInfo' => $this->displayInfo,
         ];

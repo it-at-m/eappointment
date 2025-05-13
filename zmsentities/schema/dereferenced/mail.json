@@ -67,6 +67,8 @@
                         "amendmentLabel": "",
                         "customTextfieldActivated": "0",
                         "customTextfieldLabel": "",
+                        "customTextfield2Activated": "0",
+                        "customTextfield2Label": "",
                         "emailRequired": "1",
                         "emailConfirmationActivated": 1,
                         "adminMailOnAppointment": "0",
