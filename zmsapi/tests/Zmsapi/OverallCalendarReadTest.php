@@ -6,7 +6,7 @@ class OverallCalendarReadTest extends Base
 {
     protected $classname = "OverallCalendarRead";
 
-    private const QUERY = [
+    private const VALID_PARAMS = [
         'scopeIds'  => '2001',
         'dateFrom'  => '2025-05-14',
         'dateUntil' => '2025-05-14',
@@ -16,7 +16,7 @@ class OverallCalendarReadTest extends Base
     {
         $this->setWorkstation();
 
-        $response = $this->render([], ['__query' => self::QUERY]);
+        $response = $this->render([], self::VALID_PARAMS);
         $json = json_decode((string) $response->getBody(), true);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -30,7 +30,7 @@ class OverallCalendarReadTest extends Base
     {
         $this->setWorkstation();
 
-        $response = $this->render([], ['__query' => self::QUERY]);
+        $response = $this->render([], self::VALID_PARAMS);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringContainsString('"days"', (string)$response->getBody());
     }
@@ -41,6 +41,6 @@ class OverallCalendarReadTest extends Base
 
         $this->expectException(\BO\Mellon\Failure\Exception::class);
 
-        $this->render([], ['__query' => ['scopeIds' => '']]);
+        $this->render([], ['scopeIds' => '', 'dateFrom' => '2025-05-14', 'dateUntil' => '2025-05-14']);
     }
 }
