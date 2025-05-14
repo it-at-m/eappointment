@@ -513,7 +513,8 @@ class ZmsApiFacadeService
     public static function getFreeAppointments(int $officeId, array $serviceIds, array $serviceCounts, array $date): ProcessList|array
     {
         $office = [
-            'id' => $officeId,
+            'id' =>
+                $officeId,
             'source' => \App::$source_name
         ];
         $requests = [];
@@ -537,30 +538,31 @@ class ZmsApiFacadeService
         }
 
         $currentTimestamp = time();
-        $allTimestamps = [];
-
-        foreach ($freeSlots as $slot) {
+        $appointmentTimestamps = array_reduce(iterator_to_array($freeSlots), function ($timestamps, $slot) use ($currentTimestamp) {
             if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                $providerId = (int) $slot->scope->provider->id;
                 foreach ($slot->appointments as $appointment) {
                     if (isset($appointment->date)) {
                         $timestamp = (int) $appointment->date;
                         if ($timestamp > $currentTimestamp) {
-                            $allTimestamps[] = $timestamp;
+                            $timestamps[$providerId][$timestamp] = true;
                         }
                     }
                 }
             }
+            return $timestamps;
+        }, []);
+        foreach ($appointmentTimestamps as $providerId => &$timestamps) {
+            $timestamps = array_keys($timestamps);
+            asort($timestamps);
         }
 
-        $uniqueTimestamps = array_values(array_unique($allTimestamps));
-        sort($uniqueTimestamps);
-
-        $errors = ValidationService::validateGetProcessByIdTimestamps($uniqueTimestamps);
+        $errors = ValidationService::validateGetProcessByIdTimestamps($appointmentTimestamps);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
 
-        return $uniqueTimestamps;
+        return $appointmentTimestamps;
     }
 
     public static function getAvailableAppointments(string $date, array $officeIds, array $serviceIds, array $serviceCounts, ?bool $groupByOffice = false): AvailableAppointments|AvailableAppointmentsByOffice|array
@@ -591,10 +593,10 @@ class ZmsApiFacadeService
         }
 
         if ($groupByOffice) {
-            return new AvailableAppointmentsByOffice(['appointmentTimestamps' => $timestamps]);
+            return new AvailableAppointmentsByOffice($timestamps);
         }
 
-        return new AvailableAppointments($timestamps);
+        return new AvailableAppointments(reset($timestamps));
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
