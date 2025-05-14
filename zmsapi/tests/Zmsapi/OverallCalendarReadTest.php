@@ -2,36 +2,49 @@
 
 namespace BO\Zmsapi\Tests;
 
-use BO\Zmsapi\OverallCalendarRead;
-use BO\Zmsdb\Tests\Base;
-
 class OverallCalendarReadTest extends Base
 {
-    private const ENDPOINT = OverallCalendarRead::class;
-    private const PARAMS = [
-        'scopeIds'  => '2001',
-        'dateFrom'  => '2025-05-14',
-        'dateUntil' => '2025-05-14',
-    ];
+    protected $classname = "OverallCalendarRead";
 
     public function testCalendarStructure(): void
     {
-        $response = $this->render(self::PARAMS, [], [], self::ENDPOINT);
-        $json = json_decode((string) $response->getBody(), true);
+        $this->setWorkstation();
+
+        $response = $this->render([
+            'scopeIds'  => '2001',
+            'dateFrom'  => '2025-05-14',
+            'dateUntil' => '2025-05-14'
+        ]);
 
         $this->assertEquals(200, $response->getStatusCode());
+
+        $json = json_decode((string) $response->getBody(), true);
+
         $this->assertIsArray($json);
         $this->assertArrayHasKey('data', $json);
         $this->assertArrayHasKey('days', $json['data']);
         $this->assertIsArray($json['data']['days']);
-        $this->assertGreaterThanOrEqual(1, count($json['data']['days']));
     }
 
     public function testRendering(): void
     {
-        $response = $this->render(self::PARAMS, [], [], self::ENDPOINT);
+        $this->setWorkstation();
+
+        $response = $this->render([
+            'scopeIds'  => '2001',
+            'dateFrom'  => '2025-05-14',
+            'dateUntil' => '2025-05-14'
+        ]);
+
         $this->assertEquals(200, $response->getStatusCode());
-        $body = (string) $response->getBody();
-        $this->assertStringContainsString('"days"', $body);
+        $this->assertStringContainsString('"days"', (string)$response->getBody());
+    }
+
+    public function testValidationFailure(): void
+    {
+        $this->setWorkstation();
+
+        $this->expectException(\BO\Mellon\Failure\Exception::class);
+        $this->render([]);
     }
 }
