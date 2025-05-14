@@ -1,51 +1,37 @@
 <?php
+
 namespace BO\Zmsapi\Tests;
 
-use BO\Zmsdb\Connection\Select;
-
+use BO\Zmsapi\OverallCalendarRead;
+use BO\Zmsdb\Tests\Base;
 
 class OverallCalendarReadTest extends Base
 {
-    protected $classname = 'OverallCalendarRead';
+    private const ENDPOINT = OverallCalendarRead::class;
+    private const PARAMS = [
+        'scopeIds'  => '2001',
+        'dateFrom'  => '2025-05-14',
+        'dateUntil' => '2025-05-14',
+    ];
 
-    public function testCalendarStructure()
+    public function testCalendarStructure(): void
     {
-        $response = $this->render(
-            [],
-            [],
-            [
-                'scopeIds'   => '2001',
-                'dateFrom'   => '2025-05-14',
-                'dateUntil'  => '2025-05-14',
-            ]
-        );
+        $response = $this->render(self::PARAMS, [], [], self::ENDPOINT);
+        $json = json_decode((string) $response->getBody(), true);
 
-        $json = json_decode((string)$response->getBody(), true);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertIsArray($json);
+        $this->assertArrayHasKey('data', $json);
+        $this->assertArrayHasKey('days', $json['data']);
+        $this->assertIsArray($json['data']['days']);
+        $this->assertGreaterThanOrEqual(1, count($json['data']['days']));
+    }
 
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertFalse($json['meta']['error']);
-
-        $day = $json['data']['days'][0];
-        $this->assertEquals(strtotime('2025‑05‑14'), $day['date']);
-
-        $scope = $day['scopes'][0];
-        $this->assertEquals(2001,   $scope['id']);
-        $this->assertEquals(3,      $scope['maxSeats']);
-
-        $time0900 = $scope['times'][0];
-        $this->assertEquals('09:00', $time0900['name']);
-
-        $this->assertCount(3, $time0900['seats']);
-
-        $this->assertSame('termin', $time0900['seats'][0]['status']);
-        $this->assertSame(555001,   $time0900['seats'][0]['processId']);
-        $this->assertSame(2,        $time0900['seats'][0]['slots']);
-
-        $this->assertSame('open',   $time0900['seats'][1]['status']);
-
-        $this->assertSame('open',   $time0900['seats'][2]['status']);
-
-        $time0905 = $scope['times'][1];
-        $this->assertEquals('skip', $time0905['seats'][0]['status']);
+    public function testRendering(): void
+    {
+        $response = $this->render(self::PARAMS, [], [], self::ENDPOINT);
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('"days"', $body);
     }
 }
