@@ -16,7 +16,7 @@ class OverallCalendarReadTest extends Base
     {
         $this->setWorkstation();
 
-        $response = $this->render([], ['__query' => self::QUERY]);
+        $response = $this->get([], self::QUERY);  // <- Änderung hier!
         $json = json_decode((string) $response->getBody(), true);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -30,7 +30,7 @@ class OverallCalendarReadTest extends Base
     {
         $this->setWorkstation();
 
-        $response = $this->render([], ['__query' => self::QUERY]);
+        $response = $this->get([], self::QUERY);  // <- Änderung hier!
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringContainsString('"days"', (string)$response->getBody());
     }
@@ -40,6 +40,6 @@ class OverallCalendarReadTest extends Base
         $this->setWorkstation();
 
         $this->expectException(\BO\Mellon\Failure\Exception::class);
-        $this->render([], []);
+        $this->get([], []);  // leerer Request ohne `scopeIds`
     }
 }
