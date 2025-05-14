@@ -165,7 +165,6 @@ class AvailabilityPage extends Component {
     onUpdateSingleAvailability(availability) {
         showSpinner();
         const ok = confirm('Soll diese Öffnungszeit wirklich aktualisiert werden?')
-        const id = availability.id
         if (ok) {
             let list = [availability];
             const sendData = list.map(availability => {
@@ -176,9 +175,9 @@ class AvailabilityPage extends Component {
                 return sendAvailability;
             }).map(cleanupAvailabilityForSave)
 
-            $.ajax(`${this.props.links.includeurl}/availability/save/${id}/`, {
+            $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
-                data: JSON.stringify(sendData[0])
+                data: JSON.stringify(sendData)
             }).done((data) => {
                 console.log('single update success data: ', data)
                 this.refreshData()

@@ -7,31 +7,32 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Availability as Entity;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use BO\Zmsentities\Availability;
+use BO\Zmsentities\Collection\AvailabilityList;
 use BO\Slim\Render;
 
 /**
  * Update availabilites, API proxy
  *
  */
-class AvailabilityUpdateSingle extends BaseController
+class AvailabilityListUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(UnusedFormalParameter)
-     * @return ResponseInterface
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,
         array $args
-    ): ResponseInterface {
+    ) {
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
-        $entity = new Entity($input);
-        $availability = \App::$http->readPostResult('/availability/' . $args['id'] . '/', $entity)->getEntity();
+        $collection = new AvailabilityList($input);
+        $availabilityList = \App::$http->readPostResult('/availability/', $collection)->getCollection();
         $response = Render::withLastModified($response, time(), '0');
-        return Render::withJson($response, $availability);
+        return Render::withJson($response, $availabilityList);
     }
 }

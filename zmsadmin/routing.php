@@ -15,17 +15,14 @@ use Slim\Routing\RouteCollectorProxy;
  * Availability
  * -------------------------------------------------------------------------
  */
- \App::$slim->post('/availability/', \BO\Zmsadmin\AvailabilityUpdateList::class)
-     ->setName("AvailabilityUpdateList");
+ \App::$slim->post('/availability/', \BO\Zmsadmin\AvailabilityListUpdate::class)
+     ->setName("AvailabilityListUpdate");
 
  \App::$slim->post('/availability/slots/', \BO\Zmsadmin\Helper\AvailabilityCalcSlots::class)
      ->setName("AvailabilityCalcSlots");
 
  \App::$slim->get('/availability/delete/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityDelete::class)
      ->setName("AvailabilityDelete");
-
- \App::$slim->post('/availability/save/{id:\d{1,11}}/', \BO\Zmsadmin\AvailabilityUpdateSingle::class)
-     ->setName("AvailabilityUpdateSingle");
 
  \App::$slim->post('/availability/conflicts/', \BO\Zmsadmin\AvailabilityConflicts::class)
      ->setName("AvailabilityConflicts");

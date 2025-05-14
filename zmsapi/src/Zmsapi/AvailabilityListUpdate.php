@@ -17,12 +17,12 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use BO\Zmsapi\AvailabilitySlotsUpdate;
 use BO\Zmsapi\Exception\BadRequest as BadRequestException;
-use BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed as UpdateFailedException;
+use BO\Zmsapi\Exception\Availability\AvailabilityListUpdateFailed as UpdateFailedException;
 
 /**
  * @SuppressWarnings(Coupling)
  */
-class AvailabilityAdd extends BaseController
+class AvailabilityListUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(Param)

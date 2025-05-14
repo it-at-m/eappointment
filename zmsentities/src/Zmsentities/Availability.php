@@ -414,6 +414,176 @@ class Availability extends Schema\Entity
         return true;
     }
 
+    public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now): bool
+    {
+        if ($startTime->getTimestamp() < $now->getTimestamp()) {
+            $startTime = $now;
+        }
+        if ($stopTime->getTimestamp() < $now->getTimestamp()) {
+            return false;
+        }
+        do {
+            if ($this->hasDate($startTime, $now)) {
+                return true;
+            }
+            $startTime = $startTime->modify('+1 day');
+        } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
+        return false;
+    }
+    public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+    {
+        $errorList = [];
+
+        $startTime = (clone $startDate)->setTime(0, 0);
+        $startHour = (int) $startDate->format('H');
+        $endHour = (int) $endDate->format('H');
+        $startMinute = (int) $startDate->format('i');
+        $endMinute = (int) $endDate->format('i');
+        $isFuture = ($kind && $kind === 'future');
+
+        if (
+            !$isFuture &&
+            $selectedDate->getTimestamp() > $today->getTimestamp() &&
+            $startTime->getTimestamp() > (clone $selectedDate)->setTime(0, 0)->getTimestamp()
+        ) {
+            $errorList[] = [
+                'type' => 'startTimeFuture',
+                'message' => "Das Startdatum der Öffnungszeit muss vor dem " . $tomorrow->format('d.m.Y') . " liegen."
+            ];
+        }
+
+        if (
+            ($startHour === 22 && $startMinute > 0) ||
+            $startHour === 23 ||
+            $startHour === 0 ||
+            ($endHour === 22 && $endMinute > 0) ||
+            $endHour === 23 ||
+            $endHour === 0 ||
+            ($startHour === 1 && $startMinute > 0) ||
+            ($endHour === 1 && $endMinute > 0)
+        ) {
+            $errorList[] = [
+                'type' => 'startOfDay',
+                'message' => 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
+            ];
+        }
+
+        return $errorList;
+    }
+
+    public function validateEndTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        $errorList = [];
+
+        $startHour = (int) $startDate->format('H');
+        $endHour = (int) $endDate->format('H');
+        $startMinute = (int) $startDate->format('i');
+        $endMinute = (int) $endDate->format('i');
+        $dayMinutesStart = ($startHour * 60) + $startMinute;
+        $dayMinutesEnd = ($endHour * 60) + $endMinute;
+        $startTimestamp = $startDate->getTimestamp();
+        $endTimestamp = $endDate->getTimestamp();
+
+        if ($dayMinutesEnd <= $dayMinutesStart) {
+            $errorList[] = [
+                'type' => 'endTime',
+                'message' => 'Die Endzeit darf nicht vor der Startzeit liegen.'
+            ];
+        } elseif ($startTimestamp >= $endTimestamp) {
+            $errorList[] = [
+                'type' => 'endTime',
+                'message' => 'Das Enddatum darf nicht vor dem Startdatum liegen.'
+            ];
+        }
+
+        return $errorList;
+    }
+
+    public function validateOriginEndTime(\DateTimeInterface $today, \DateTimeInterface $yesterday, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
+    {
+        $errorList = [];
+        $endHour = (int) $endDate->format('H');
+        $endMinute = (int) $endDate->format('i');
+        $endDateTime = (clone $endDate)->setTime($endHour, $endMinute);
+        $endTimestamp = $endDateTime->getTimestamp();
+        $isOrigin = ($kind && $kind === 'origin');
+
+        if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < (clone $selectedDate)->setTime(0, 0)) {
+            $errorList[] = [
+                'type' => 'endTimeFuture',
+                'message' => "Das Enddatum der Öffnungszeit muss nach dem " . $yesterday->format('d.m.Y') . " liegen."
+            ];
+        }
+
+        if (!$isOrigin && $endTimestamp < $today->getTimestamp()) {
+            $errorList[] = [
+                'type' => 'endTimePast',
+                'message' => 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
+                    . '(Die aktuelle Zeit "' . $today->format('d.m.Y H:i') . ' Uhr" liegt nach dem Terminende am "'
+                    . $endDateTime->format('d.m.Y H:i') . ' Uhr").'
+            ];
+        }
+
+        return $errorList;
+    }
+
+    public function validateType(string $kind): array
+    {
+        $errorList = [];
+        if (empty($kind)) {
+            $errorList[] = [
+                'type' => 'type',
+                'message' => 'Typ erforderlich'
+            ];
+        }
+        return $errorList;
+    }
+
+    public function validateSlotTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        $errorList = [];
+        $slotTime = $this['slotTimeInMinutes'];
+
+        // Extract time components
+        $startHour = (int)$startDate->format('H');
+        $startMinute = (int)$startDate->format('i');
+        $endHour = (int)$endDate->format('H');
+        $endMinute = (int)$endDate->format('i');
+
+        // Calculate total minutes
+        $totalMinutes = (($endHour - $startHour) * 60) + ($endMinute - $startMinute);
+
+        if ($slotTime === 0) {
+            $errorList[] = [
+                'type' => 'slotTime',
+                'message' => 'Die Slot-Zeit darf nicht 0 sein.'
+            ];
+            return $errorList;
+        }
+
+        if ($totalMinutes % $slotTime > 0) {
+            $errorList[] = [
+                'type' => 'slotCount',
+                'message' => 'Zeitschlitze müssen sich gleichmäßig in der Öffnungszeit aufteilen lassen.'
+            ];
+        }
+
+        return $errorList;
+    }
+
+    public function validateBookableDayRange(int $startInDays, int $endInDays): array
+    {
+        $errorList = [];
+        if ($startInDays > $endInDays) {
+            $errorList[] = [
+                'type' => 'bookableDayRange',
+                'message' => 'Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.'
+            ];
+        }
+
+        return $errorList;
+    }
+
     /**
      * Creates a list of slots available on a valid day
      *
@@ -440,29 +610,6 @@ class Availability extends Schema\Entity
     public function getSlotTimeInMinutes()
     {
         return $this['slotTimeInMinutes'];
-    }
-
-
-    /**
-     * Check, if a day between two dates is included
-     *
-     * @return Array of arrays with the keys time, public, callcenter, intern
-     */
-    public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now)
-    {
-        if ($startTime->getTimestamp() < $now->getTimestamp()) {
-            $startTime = $now;
-        }
-        if ($stopTime->getTimestamp() < $now->getTimestamp()) {
-            return false;
-        }
-        do {
-            if ($this->hasDate($startTime, $now)) {
-                return true;
-            }
-            $startTime = $startTime->modify('+1 day');
-        } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
-        return false;
     }
 
     /**

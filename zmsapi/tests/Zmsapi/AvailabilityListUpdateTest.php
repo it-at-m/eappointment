@@ -2,9 +2,9 @@
 
 namespace BO\Zmsapi\Tests;
 
-class AvailabilityAddTest extends Base
+class AvailabilityListUpdateTest extends Base
 {
-    protected $classname = "AvailabilityAdd";
+    protected $classname = "AvailabilityListUpdate";
 
     public function testRendering()
     {
@@ -50,7 +50,7 @@ class AvailabilityAddTest extends Base
     public function testUpdateFailed()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityUpdateFailed');
+        $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityListUpdateFailed');
         $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '[
