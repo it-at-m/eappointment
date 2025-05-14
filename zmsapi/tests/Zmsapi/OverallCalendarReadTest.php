@@ -6,20 +6,20 @@ class OverallCalendarReadTest extends Base
 {
     protected $classname = "OverallCalendarRead";
 
+    private const QUERY = [
+        'scopeIds'  => '2001',
+        'dateFrom'  => '2025-05-14',
+        'dateUntil' => '2025-05-14',
+    ];
+
     public function testCalendarStructure(): void
     {
         $this->setWorkstation();
 
-        $response = $this->render([
-            'scopeIds'  => '2001',
-            'dateFrom'  => '2025-05-14',
-            'dateUntil' => '2025-05-14'
-        ]);
-
-        $this->assertEquals(200, $response->getStatusCode());
-
+        $response = $this->render([], ['__query' => self::QUERY]);
         $json = json_decode((string) $response->getBody(), true);
 
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertIsArray($json);
         $this->assertArrayHasKey('data', $json);
         $this->assertArrayHasKey('days', $json['data']);
@@ -30,12 +30,7 @@ class OverallCalendarReadTest extends Base
     {
         $this->setWorkstation();
 
-        $response = $this->render([
-            'scopeIds'  => '2001',
-            'dateFrom'  => '2025-05-14',
-            'dateUntil' => '2025-05-14'
-        ]);
-
+        $response = $this->render([], ['__query' => self::QUERY]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringContainsString('"days"', (string)$response->getBody());
     }
@@ -45,6 +40,6 @@ class OverallCalendarReadTest extends Base
         $this->setWorkstation();
 
         $this->expectException(\BO\Mellon\Failure\Exception::class);
-        $this->render([]);
+        $this->render([], []);
     }
 }
