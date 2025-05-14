@@ -471,6 +471,73 @@ class Availability extends Schema\Entity
         return $errorList;
     }
 
+    public function validateWeekdays(\DateTimeInterface $startDate, \DateTimeInterface $endDate, array $weekday): array
+    {
+        $errorList = [];
+
+        // Check if at least one weekday is selected
+        $hasSelectedDay = false;
+        foreach (self::$weekdayNameList as $day) {
+            if ((int)$weekday[$day] > 0) {
+                $hasSelectedDay = true;
+                break;
+            }
+        }
+
+        if (!$hasSelectedDay) {
+            $errorList[] = [
+                'type' => 'weekdayRequired',
+                'message' => 'Mindestens ein Wochentag muss ausgewählt sein.'
+            ];
+            return $errorList;
+        }
+
+        // Map weekday names to German
+        $germanWeekdays = [
+            'sunday' => 'Sonntag',
+            'monday' => 'Montag',
+            'tuesday' => 'Dienstag',
+            'wednesday' => 'Mittwoch',
+            'thursday' => 'Donnerstag',
+            'friday' => 'Freitag',
+            'saturday' => 'Samstag'
+        ];
+
+        // Track which selected weekdays appear in the range
+        $selectedWeekdays = array_filter(self::$weekdayNameList, function ($day) use ($weekday) {
+            return (int)$weekday[$day] > 0;
+        });
+        $foundWeekdays = [];
+
+        // Check if dates fall on selected weekdays
+        $currentDate = clone $startDate;
+        while ($currentDate <= $endDate) {
+            $weekDayName = self::$weekdayNameList[$currentDate->format('w')];
+            if (in_array($weekDayName, $selectedWeekdays)) {
+                $foundWeekdays[] = $weekDayName;
+            }
+            $currentDate = $currentDate->modify('+1 day');
+        }
+
+        // Check if any selected weekday doesn't appear in the range
+        $missingWeekdays = array_diff($selectedWeekdays, array_unique($foundWeekdays));
+        if (!empty($missingWeekdays)) {
+            $germanMissingWeekdays = array_map(function ($day) use ($germanWeekdays) {
+                return $germanWeekdays[$day];
+            }, $missingWeekdays);
+
+            $errorList[] = [
+                'type' => 'invalidWeekday',
+                'message' => sprintf(
+                    'Die ausgewählten Wochentage (%s) kommen im gewählten Zeitraum nicht vor.',
+                    implode(', ', $germanMissingWeekdays)
+                )
+            ];
+        }
+
+        return $errorList;
+    }
+
     public function validateEndTime(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
     {
         $errorList = [];

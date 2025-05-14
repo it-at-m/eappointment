@@ -201,7 +201,7 @@ class AvailabilityList extends Base
         return $processList;
     }
 
-    public function validate(
+    public function validateTimeRangesAndRules(
         \DateTimeImmutable $startDate,
         \DateTimeImmutable $endDate,
         \DateTimeImmutable $selectedDate,

@@ -31,8 +31,21 @@ class AvailabilityListUpdate extends BaseController
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
         $collection = new AvailabilityList($input);
-        $availabilityList = \App::$http->readPostResult('/availability/', $collection)->getCollection();
-        $response = Render::withLastModified($response, time(), '0');
-        return Render::withJson($response, $availabilityList);
+
+        try {
+            $apiResponse = \App::$http->readPostResult('/availability/', $collection);
+            $availabilityList = $apiResponse->getCollection();
+            $statusCode = $apiResponse->getResponse()->getStatusCode();
+
+            $response = Render::withLastModified($response, time(), '0');
+            return Render::withJson($response, $availabilityList, $statusCode);
+        } catch (\Exception $e) {
+            // If there's an API error, preserve its status code and message
+            $errorResponse = $e->getResponse();
+            $statusCode = $errorResponse ? $errorResponse->getStatusCode() : 500;
+            $errorData = $errorResponse ? json_decode($errorResponse->getBody(), true) : ['error' => $e->getMessage()];
+
+            return Render::withJson($response, $errorData, $statusCode);
+        }
     }
 }

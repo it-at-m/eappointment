@@ -101,56 +101,138 @@ class AvailabilityPage extends Component {
     }
 
     onSaveUpdates() {
-        const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?')
+        const ok = confirm('Möchten Sie wirklich die Änderungen aller Öffnungszeiten speichern?');
         if (ok) {
             showSpinner();
-            const sendData = this.state.availabilitylist.filter((availability) => {
-                return (
-                    (availability.__modified || 
-                    availability.tempId && availability.tempId.includes('__temp__'))) &&
-                    ! this.hasErrors(availability)
-            }).map(availability => {
-                const sendAvailability = Object.assign({}, availability)
-                if (availability.tempId) {
-                    delete sendAvailability.tempId
-                }
-                return sendAvailability;
-            }).map(cleanupAvailabilityForSave)
-                
-            console.log('Saving updates', sendData)
+            const selectedDate = formatTimestampDate(this.props.timestamp);
+            const sendData = this.state.availabilitylist
+                .filter((availability) => {
+                    return (
+                        (availability.__modified ||
+                            (availability.tempId && availability.tempId.includes('__temp__'))) &&
+                        !this.hasErrors(availability)
+                    );
+                })
+                .map(availability => {
+                    const sendAvailability = Object.assign({}, availability);
+                    if (availability.tempId) {
+                        delete sendAvailability.tempId;
+                    }
+                    if (sendAvailability.kind === 'new' && sendAvailability.description.includes("Neue Öffnungszeit")) {
+                        sendAvailability.description = sendAvailability.description.replace("Neue Öffnungszeit", "");
+                    }
+                    return {
+                        ...sendAvailability,
+                        kind: availability.kind || 'default',
+                    };
+                })
+                .map(cleanupAvailabilityForSave);
+
+            const payload = {
+                availabilityList: sendData,
+                selectedDate: selectedDate
+            };
 
             $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
-                data: JSON.stringify(sendData)
+                data: JSON.stringify(payload),
+                contentType: 'application/json'
             }).done((success) => {
-                console.log('save success:', success)
                 this.refreshData();
-                this.setState({
-                    lastSave: new Date().getTime(),
-                }, () => {
+                this.getValidationList();
+                this.updateSaveBarState('save', true);
+
+                if (this.successElement) {
                     this.successElement.scrollIntoView();
-                })
+                }
                 hideSpinner();
             }).fail((err) => {
                 let isException = err.responseText.toLowerCase().includes('exception');
-                if (err.status >= 500 && isException) {
+                if (err.status >= 400 && isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
                         message: err.responseText
                     });
-                } else if (err.status === 404) {
-                    console.log('404 error, ignored')
                 } else {
-                    console.log('save all error', err)
+                    console.log('save all error', err);
                 }
+                this.updateSaveBarState('save', false);
                 this.getValidationList();
                 hideSpinner();
-            })
+            });
         } else {
             hideSpinner();
         }
     }
 
+    onUpdateSingleAvailability(availability) {
+        showSpinner();
+        const ok = confirm('Soll diese Öffnungszeit wirklich aktualisiert werden?');
+        const id = availability.id;
+
+        if (ok) {
+            const selectedDate = formatTimestampDate(this.props.timestamp);
+            const sendAvailability = Object.assign({}, availability);
+
+            if (sendAvailability.tempId) {
+                delete sendAvailability.tempId;
+            }
+
+            const payload = {
+                availabilityList: [
+                    {
+                        ...cleanupAvailabilityForSave(sendAvailability),
+                        kind: availability.kind || 'default'
+                    }
+                ],
+                selectedDate: selectedDate
+            };
+
+            $.ajax(`${this.props.links.includeurl}/availability/`, {
+                method: 'POST',
+                data: JSON.stringify(payload),
+                contentType: 'application/json'
+            }).done((data) => {
+                this.refreshData();
+                this.getValidationList();
+                this.updateSaveBarState('save', true);
+
+                if (this.successElement) {
+                    this.successElement.scrollIntoView();
+                }
+                hideSpinner();
+            }).fail(err => {
+                const isException = err.responseText.toLowerCase().includes('exception');
+                if (isException) {
+                    new ExceptionHandler($('.opened'), {
+                        code: err.status,
+                        message: err.responseText
+                    });
+                } else {
+                    console.log('Update error:', err);
+                }
+                this.updateSaveBarState('save', false);
+                this.getValidationList();
+                hideSpinner();
+            });
+        } else {
+            hideSpinner();
+        }
+    }
+
+    updateSaveBarState(type, success) {
+
+        this.setState({
+
+            lastSave: new Date().getTime(),
+
+            saveSuccess: success,
+
+            saveType: type
+
+        });
+
+    }
 
     onRevertUpdates() {
         this.isCreatingExclusion = false
@@ -162,49 +244,6 @@ class AvailabilityPage extends Component {
         })
     }
 
-    onUpdateSingleAvailability(availability) {
-        showSpinner();
-        const ok = confirm('Soll diese Öffnungszeit wirklich aktualisiert werden?')
-        if (ok) {
-            let list = [availability];
-            const sendData = list.map(availability => {
-                const sendAvailability = Object.assign({}, availability)
-                if (availability.tempId) {
-                    delete sendAvailability.tempId
-                }
-                return sendAvailability;
-            }).map(cleanupAvailabilityForSave)
-
-            $.ajax(`${this.props.links.includeurl}/availability/`, {
-                method: 'POST',
-                data: JSON.stringify(sendData)
-            }).done((data) => {
-                console.log('single update success data: ', data)
-                this.refreshData()
-                this.setState({
-                    lastSave: new Date().getTime(),
-                }, () => {
-                    this.successElement.scrollIntoView();
-                })
-                hideSpinner();
-            }).fail(err => {
-                let isException = err.responseText.toLowerCase().includes('exception');
-                if (isException) {
-                    new ExceptionHandler($('.opened'), {
-                        code: err.status,
-                        message: err.responseText
-                    });
-                } else {
-                    console.log('update error', err);
-                }
-                this.getValidationList()
-                hideSpinner();
-            })
-        } else {
-            hideSpinner();
-        }
-    }
-
     onDeleteAvailability(availability) {
         showSpinner();
         const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
@@ -213,18 +252,31 @@ class AvailabilityPage extends Component {
             $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
                 method: 'GET'
             }).done(() => {
-                this.setState(Object.assign({}, deleteAvailabilityInState(this.state, availability), {
-                    selectedAvailability: null
-                }), () => {
-                    this.refreshData()
-                    this.getConflictList(),
-                    this.getValidationList()
-                });
+                
+                const newState = deleteAvailabilityInState(this.state, availability);
+
+                if (this.state.fullAvailabilityList) {
+                    newState.fullAvailabilityList = this.state.fullAvailabilityList.filter(
+                        item => item.id !== availability.id
+                    );
+                }
+
+                this.refreshData();
+                if (newState.availabilitylist.length > 0) {
+                    this.getConflictList();
+                }
+                this.getValidationList();
+
+                this.updateSaveBarState('delete', true);
+
+                if (this.successElement) {
+                    this.successElement.scrollIntoView();
+                }
                 hideSpinner();
             }).fail(err => {
                 console.log('delete error', err);
                 let isException = err.responseText.toLowerCase().includes('exception');
-                if (err.status >= 500 && isException) {
+                if (err.status >= 400 && isException) {
                     new ExceptionHandler($('.opened'), {
                         code: err.status,
                         message: err.responseText
@@ -232,11 +284,12 @@ class AvailabilityPage extends Component {
                 } else {
                     console.log('delete error', err);
                 }
+                this.updateSaveBarState('delete', false);
                 hideSpinner();
             })
         } else {
             hideSpinner();
-        }        
+        }
     }
 
     onCopyAvailability(availability) {
@@ -259,7 +312,7 @@ class AvailabilityPage extends Component {
     }
 
     onSelectAvailability(availability) {
-        if (availability || ! this.state.selectedAvailability) {
+        if (availability || !this.state.selectedAvailability) {
             this.setState({
                 selectedAvailability: availability
             }, () => {
@@ -270,14 +323,14 @@ class AvailabilityPage extends Component {
                 selectedAvailability: null
             })
         }
-        
+
     }
 
     editExclusionAvailability(availability, startDate, endDate, description, kind) {
         (startDate) ? availability.startDate = startDate : null;
         (endDate) ? availability.endDate = endDate : null;
         availability.__modified = true;
-        if (! availability.kind && kind != 'origin') {
+        if (!availability.kind && kind != 'origin') {
             availability.tempId = tempId()
             availability.id = null
             availability.description = (description) ? description : availability.description
@@ -295,8 +348,8 @@ class AvailabilityPage extends Component {
 
         this.isCreatingExclusion = true;
 
-        let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ? 
-            parseInt(selectedDay.unix(), 10) : 
+        let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ?
+            parseInt(selectedDay.unix(), 10) :
             parseInt(yesterday.unix(), 10);
 
         let name = availability.description;
@@ -305,7 +358,7 @@ class AvailabilityPage extends Component {
 
         const originAvailability = this.editExclusionAvailability(
             Object.assign({}, availability),
-            null, 
+            null,
             endDateTimestamp,
             null,
             'origin'
@@ -319,7 +372,7 @@ class AvailabilityPage extends Component {
         if (originAvailability.startDate < selectedDay.unix()) {
             exclusionAvailability = this.editExclusionAvailability(
                 Object.assign({}, availability),
-                parseInt(selectedDay.unix(), 10), 
+                parseInt(selectedDay.unix(), 10),
                 parseInt(selectedDay.unix(), 10),
                 `Ausnahme zu Terminserie ` + name,
                 'exclusion'
@@ -343,27 +396,27 @@ class AvailabilityPage extends Component {
                 exclusionAvailability,
                 futureAvailability
             ]),
-            { 
-                selectedAvailability: exclusionAvailability, 
-                stateChanged: true 
+            {
+                selectedAvailability: exclusionAvailability,
+                stateChanged: true
             }
         ), () => {
             console.log('in after merging', this.state.availabilitylist);
             this.getConflictList(),
-            this.getValidationList()
+                this.getValidationList()
         })
     }
 
     onEditAvailabilityInFuture(availability) {
         const selectedDay = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = selectedDay.clone().subtract(1, 'days')
-        let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ? 
-            parseInt(selectedDay.unix(), 10) : 
+        let endDateTimestamp = (parseInt(yesterday.unix(), 10) < availability.startDate) ?
+            parseInt(selectedDay.unix(), 10) :
             parseInt(yesterday.unix(), 10);
 
         const originAvailability = this.editExclusionAvailability(
             Object.assign({}, availability),
-            null, 
+            null,
             endDateTimestamp,
             null,
             'origin'
@@ -385,13 +438,13 @@ class AvailabilityPage extends Component {
                 originAvailability,
                 futureAvailability
             ]),
-            { 
-                selectedAvailability: futureAvailability, 
-                stateChanged: true 
+            {
+                selectedAvailability: futureAvailability,
+                stateChanged: true
             }
         ), () => {
             this.getConflictList(),
-            this.getValidationList()
+                this.getValidationList()
         })
     }
 
@@ -400,8 +453,8 @@ class AvailabilityPage extends Component {
         const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
         newAvailability.type = "appointment"
         state = Object.assign(
-            state, 
-            updateAvailabilityInState(this.state, newAvailability), 
+            state,
+            updateAvailabilityInState(this.state, newAvailability),
             { selectedAvailability: null, stateChanged: true }
         );
         this.setState(state);
@@ -444,9 +497,9 @@ class AvailabilityPage extends Component {
         const validateData = data => {
             let validationResult = validate(data, this.props)
             if (!validationResult.valid) {
-                return validationResult.errorList              
-                
-            } 
+                return validationResult.errorList
+
+            }
             return [];
         }
 
@@ -469,7 +522,7 @@ class AvailabilityPage extends Component {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(Object.assign({}, {
-                availabilityList: this.state.availabilitylist, 
+                availabilityList: this.state.availabilitylist,
                 selectedDate: formatTimestampDate(this.props.timestamp),
                 selectedAvailability: this.state.selectedAvailability
             }))
@@ -480,9 +533,9 @@ class AvailabilityPage extends Component {
             .then(
                 (data) => {
                     this.setState({
-                        conflictList: Object.assign({}, 
+                        conflictList: Object.assign({},
                             {
-                                itemList: Object.assign({}, data.conflictList), 
+                                itemList: Object.assign({}, data.conflictList),
                                 conflictIdList: data.conflictIdList
                             }
                         )
@@ -493,7 +546,7 @@ class AvailabilityPage extends Component {
                 },
                 (err) => {
                     let isException = err.responseText.toLowerCase().includes('exception');
-                    if (err.status >= 500 && isException) {
+                    if (err.status >= 400 && isException) {
                         new ExceptionHandler($('.opened'), {
                             code: err.status,
                             message: err.responseText
@@ -539,12 +592,12 @@ class AvailabilityPage extends Component {
                 'busySlots': this.state.busyslots
             })
         }).done((responseData) => {
-            let availabilityList =  writeSlotCalculationIntoAvailability(
-                this.state.availabilitylist, 
-                responseData['maxSlots'], 
+            let availabilityList = writeSlotCalculationIntoAvailability(
+                this.state.availabilitylist,
+                responseData['maxSlots'],
                 responseData['busySlots']
             );
-            this.setState({ 
+            this.setState({
                 availabilitylistslices: availabilityList,
                 maxWorkstationCount: parseInt(responseData['maxWorkstationCount']),
             })
@@ -553,15 +606,15 @@ class AvailabilityPage extends Component {
                 console.log('404 error, ignored')
             } else {
                 let isException = err.responseText.toLowerCase().includes('exception');
-                    if (err.status >= 500 && isException) {
-                        new ExceptionHandler($('.opened'), {
-                            code: err.status,
-                            message: err.responseText
-                        });
-                    } else {
-                        console.log('reading calculated availability list error', err);
-                    }
-                    hideSpinner();
+                if (err.status >= 400 && isException) {
+                    new ExceptionHandler($('.opened'), {
+                        code: err.status,
+                        message: err.responseText
+                    });
+                } else {
+                    console.log('reading calculated availability list error', err);
+                }
+                hideSpinner();
             }
         })
     }
@@ -592,7 +645,7 @@ class AvailabilityPage extends Component {
             this.handleOriginChanges(data)
         }
         if ('exclusion' == data.kind && data.__modified) {
-            this.handleExclusionChanges(data)        
+            this.handleExclusionChanges(data)
         }
         if ('future' == data.kind && data.__modified) {
             this.handleFutureChanges(data)
@@ -602,14 +655,14 @@ class AvailabilityPage extends Component {
     handleOriginChanges(data) {
         const exclusionAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'exclusion');
         const futureAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'future');
-        
+
         const exclusionAvailability = (exclusionAvailabilityFromState) ? Object.assign({}, exclusionAvailabilityFromState, {
             startDate: moment(data.endDate, 'X').startOf('day').add(1, 'days').unix(),
             endDate: (exclusionAvailabilityFromState.endDate > moment(data.endDate, 'X').startOf('day').add(1, 'days').unix()) ?
                 exclusionAvailabilityFromState.endDate :
                 moment(data.endDate, 'X').startOf('day').add(1, 'days').unix()
         }) : data;
-    
+
         const futureAvailability = Object.assign({}, futureAvailabilityFromState, {
             startDate: moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').unix(),
             endDate: (
@@ -620,7 +673,7 @@ class AvailabilityPage extends Component {
         this.setState(Object.assign(
             {},
             mergeAvailabilityListIntoState(this.state, [exclusionAvailability, futureAvailability, data])
-        ));          
+        ));
     }
 
     handleExclusionChanges(data) {
@@ -634,7 +687,7 @@ class AvailabilityPage extends Component {
         const originAvailability = Object.assign({}, originAvailabilityFromState, {
             endDate: moment(exclusionAvailability.startDate, 'X').startOf('day').subtract(1, 'days').unix()
         });
-    
+
         const futureAvailability = Object.assign({}, futureAvailabilityFromState, {
             startDate: moment(exclusionAvailability.endDate, 'X').startOf('day').add(1, 'days').unix(),
             endDate: (
@@ -646,32 +699,32 @@ class AvailabilityPage extends Component {
         this.setState(Object.assign(
             {},
             mergeAvailabilityListIntoState(this.state, [
-                originAvailability, 
-                futureAvailability, 
+                originAvailability,
+                futureAvailability,
                 exclusionAvailability
             ])
-        ));  
+        ));
     }
 
     handleFutureChanges(data) {
         const startDate = moment(data.startDate, 'X').startOf('day').add(1, 'days').unix();
         const originAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'origin');
         const exclusionAvailabilityFromState = findAvailabilityInStateByKind(this.state, 'exclusion');
-        
+
         const exclusionAvailability = (exclusionAvailabilityFromState) ? Object.assign({}, exclusionAvailabilityFromState, {
-            startDate: (startDate < exclusionAvailabilityFromState.endDate) ? 
-                parseInt(startDate, 10) : 
+            startDate: (startDate < exclusionAvailabilityFromState.endDate) ?
+                parseInt(startDate, 10) :
                 exclusionAvailabilityFromState.endDate
         }) : data;
 
         const originAvailability = Object.assign({}, originAvailabilityFromState, {
             endDate: moment(exclusionAvailability.startDate, 'X').startOf('day').subtract(1, 'days').unix()
         });
-    
+
         this.setState(Object.assign(
             {},
             mergeAvailabilityListIntoState(this.state, [originAvailability, exclusionAvailability, data])
-        ));          
+        ));
     }
 
     renderAvailabilityAccordion() {
@@ -706,7 +759,7 @@ class AvailabilityPage extends Component {
             this.handleChange(data)
         }
 
-        return <AccordionLayout 
+        return <AccordionLayout
             availabilityList={this.state.availabilitylist}
             data={this.state.selectedAvailability}
             today={this.state.today}
@@ -725,12 +778,12 @@ class AvailabilityPage extends Component {
             stateChanged={this.state.stateChanged}
             includeUrl={this.props.links.includeurl}
             setErrorRef={this.setErrorRef}
-            errorList={this.state.errorList ? 
+            errorList={this.state.errorList ?
                 this.state.errorList : {}
             }
-            conflictList={this.state.conflictList ? 
-                this.state.conflictList : 
-                {itemList: {}, conflictIdList: {}}
+            conflictList={this.state.conflictList ?
+                this.state.conflictList :
+                { itemList: {}, conflictIdList: {} }
             }
             isCreatingExclusion={this.isCreatingExclusion}
         />
@@ -738,7 +791,14 @@ class AvailabilityPage extends Component {
 
     renderSaveBar() {
         if (this.state.lastSave) {
-            return <SaveBar lastSave={this.state.lastSave} setSuccessRef={this.setSuccessRef} />
+            return (
+                <SaveBar
+                    lastSave={this.state.lastSave}
+                    success={this.state.saveSuccess}
+                    setSuccessRef={this.setSuccessRef}
+                    type={this.state.saveType}
+                />
+            )
         }
     }
 
