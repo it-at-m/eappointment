@@ -63,7 +63,7 @@ class OverallCalendar extends Base
     ';
 
     const SELECT_RANGE = '
-        SELECT scope_id, time, seat, status, process_id, slots, updated_at
+        SELECT scope_id, time, availability_id, seat, status, process_id, slots, updated_at
           FROM gesamtkalender
          WHERE scope_id IN (%s)            
            AND time BETWEEN :from AND :until
@@ -71,7 +71,7 @@ class OverallCalendar extends Base
     ';
 
     const SELECT_RANGE_UPDATED = '
-        SELECT scope_id, time, seat, status, process_id, slots, updated_at
+        SELECT scope_id, time, availability_id, seat, status, process_id, slots, updated_at
           FROM gesamtkalender
          WHERE scope_id IN (%s)
            AND time BETWEEN :from AND :until
