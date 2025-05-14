@@ -72,7 +72,7 @@ export function fetchAvailableDays(
 
 export function fetchAvailableTimeSlots(
   date: string,
-  provider: OfficeImpl,
+  providerIds: number[],
   serviceIds: string[],
   serviceCounts: number[],
   baseUrl?: string,
@@ -80,7 +80,7 @@ export function fetchAvailableTimeSlots(
 ): Promise<AvailableTimeSlotsDTO | ErrorDTO> {
   const params: Record<string, any> = {
     date: date,
-    officeId: provider.id,
+    officeId: providerIds,
     serviceId: serviceIds,
     serviceCount: serviceCounts,
     ...(captchaToken && { captchaToken }),
