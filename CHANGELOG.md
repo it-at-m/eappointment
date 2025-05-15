@@ -1,3 +1,39 @@
+
+## Release Muc-24 (09.05.2025)
+                            
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-152'>ZMSKVR-152</a>] -         &quot;Termin drucken&quot; Template beinhaltet die umbuchen Links von Berliner System
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-371'>ZMSKVR-371</a>] -         Double CORS Problem in zmscitizenapi
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-389'>ZMSKVR-389</a>] -         CitizenAPI - Kombination von Dienstleistungen nicht möglich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-399'>ZMSKVR-399</a>] -         Entfernen des Passworts aus PDO-Verbindungs-Stacktraces in Logs
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-413'>ZMSKVR-413</a>] -         Closure Fehler Öffnungszeiten lassen sich teilweise nicht speichern
+</li>
+</ul>
+                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-123'>ZMSKVR-123</a>] -         Slot-Graf Öffnungszeiten: Satz entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-213'>ZMSKVR-213</a>] -         Bürgeransicht/API Call Optimierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-327'>ZMSKVR-327</a>] -         Erstellung neuer Datenbanktabelle und Speichern der Daten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-366'>ZMSKVR-366</a>] -         Cookiespeicherung auf 8 Stunden erhöhen 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-404'>ZMSKVR-404</a>] -         Absicherung der citizenapi-Endpunkte durch JWT nach Captcha-Verifizierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-433'>ZMSKVR-433</a>] -         Verbessertes Session Logging
+</li>
+</ul>
+                                                        
+
 ## Release Muc-23 (23.04.2025)
                   
 <h2>        Bug
