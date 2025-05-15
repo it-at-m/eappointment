@@ -143,6 +143,7 @@ export function updateAppointment(
     email: appointment.email,
     telephone: appointment.telephone,
     customTextfield: appointment.customTextfield,
+    customTextfield2: appointment.customTextfield2,
   };
 
   return fetch(
