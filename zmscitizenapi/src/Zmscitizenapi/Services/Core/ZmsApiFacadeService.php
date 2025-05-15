@@ -528,8 +528,7 @@ class ZmsApiFacadeService
     public static function getFreeAppointments(int $officeId, array $serviceIds, array $serviceCounts, array $date): ProcessList|array
     {
         $office = [
-            'id' =>
-                $officeId,
+            'id' => $officeId,
             'source' => \App::$source_name
         ];
         $requests = [];
