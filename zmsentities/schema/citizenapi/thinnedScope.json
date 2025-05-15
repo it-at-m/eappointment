@@ -78,10 +78,10 @@
         },
         "slotsPerAppointment": {
             "type": [
-                "integer",
+                "string",
                 "null"
             ],
-            "description": "Maximum number of slots that can be booked per appointment"
+            "description": "Number of slots that can be booked per appointment"
         }
     }
 }

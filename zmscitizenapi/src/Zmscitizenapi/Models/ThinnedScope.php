@@ -36,10 +36,10 @@ class ThinnedScope extends Entity implements JsonSerializable
     public ?bool $captchaActivatedRequired;
     /** @var string|null */
     public ?string $displayInfo;
-    /** @var int|null */
-    public ?int $slotsPerAppointment;
+    /** @var string|null */
+    public ?string $slotsPerAppointment;
 
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null, ?int $slotsPerAppointment = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null, ?string $slotsPerAppointment = null)
     {
         $this->id = $id;
         $this->provider = $provider;
@@ -119,7 +119,7 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->displayInfo;
     }
 
-    public function getSlotsPerAppointment(): ?int
+    public function getSlotsPerAppointment(): ?string
     {
         return $this->slotsPerAppointment;
     }

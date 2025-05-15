@@ -80,7 +80,8 @@ class OfficesListControllerTest extends ControllerTestCase
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null,
                         "slotsPerAppointment" => null
-                    ]
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ],
                 [
                     "id" => 9999999,
@@ -125,7 +126,8 @@ class OfficesListControllerTest extends ControllerTestCase
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null,
                         "slotsPerAppointment" => null
-                    ]
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ]
             ]
         ];

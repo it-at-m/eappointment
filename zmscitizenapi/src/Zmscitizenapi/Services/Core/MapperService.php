@@ -95,8 +95,9 @@ class MapperService
                     customTextfieldLabel: isset($providerScope->customTextfieldLabel) ? (string) $providerScope->customTextfieldLabel : null,
                     captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? (bool) $providerScope->captchaActivatedRequired : null,
                     displayInfo: isset($providerScope->displayInfo) ? (string) $providerScope->displayInfo : null,
-                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? (int) $providerScope->slotsPerAppointment : null
-                ) : null
+                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null
+                ) : null,
+                maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null
             );
         }
 
@@ -217,7 +218,7 @@ class MapperService
             customTextfieldLabel: isset($scope->data['customTextfieldLabel']) ? (string) $scope->data['customTextfieldLabel'] : null,
             captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
             displayInfo: isset($scope->data['displayInfo']) ? (string) $scope->data['displayInfo'] : null,
-            slotsPerAppointment: isset($scope->data['slotsPerAppointment']) ? (int) $scope->data['slotsPerAppointment'] : null
+            slotsPerAppointment: isset($scope->data['slotsPerAppointment']) ? ((string) $scope->data['slotsPerAppointment'] === '' ? null : (string) $scope->data['slotsPerAppointment']) : null
         );
     }
 

@@ -80,7 +80,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null,
                         "slotsPerAppointment" => null
-                    ]
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ],
                 [
                     "id" => 9999999,
@@ -125,7 +126,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null,
                         "slotsPerAppointment" => null
-                    ]
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ]
             ],
             "services" => [
@@ -226,7 +228,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null,
                         "slotsPerAppointment" => null
-                    ]
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ],
                 [
                     "id" => 9999999,
@@ -271,7 +274,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null,
                         "slotsPerAppointment" => null
-                    ]
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ]
             ],
             "services" => [
