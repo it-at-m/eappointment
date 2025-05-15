@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsapi;
 
 use BO\Slim\Render;
@@ -59,7 +60,6 @@ class OverallCalendarRead extends BaseController
         foreach ($calendar as &$day) {
             foreach ($day['scopes'] as &$scope) {
                 foreach ($scope['times'] as $timeKey => $slotInfo) {
-
                     for ($s = 1; $s <= $scope['maxSeats']; $s++) {
                         if (!isset($slotInfo['seats'][$s])) {
                             $slotInfo['seats'][$s] = ['status' => 'open'];
@@ -81,9 +81,9 @@ class OverallCalendarRead extends BaseController
     }
 
     public function readResponse(
-        \Psr\Http\Message\RequestInterface  $request,
+        \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
-        array                               $args
+        array $args
     ) {
         $scopeIdCsv = Validator::param('scopeIds')
             ->isString()->isMatchOf('/^\d+(,\d+)*$/')->assertValid()->getValue();
@@ -91,7 +91,7 @@ class OverallCalendarRead extends BaseController
 
         $dateFrom   = Validator::param('dateFrom')->isDate('Y-m-d')->assertValid()->getValue();
         $dateUntil  = Validator::param('dateUntil')->isDate('Y-m-d')->assertValid()->getValue();
-        $updateAfter= Validator::param('updateAfter')->isDatetime()->setDefault(null)->getValue();
+        $updateAfter = Validator::param('updateAfter')->isDatetime()->setDefault(null)->getValue();
 
         $flatRows = (new CalendarQuery())->readSlots(
             $scopeIds,

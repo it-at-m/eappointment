@@ -85,11 +85,12 @@ class OverallCalendar extends Base
         ]);
     }
 
-    public function readSlots(array $scopeIds,
-                              string $from,
-                              string $until,
-                              ?string $updatedAfter = null): array
-    {
+    public function readSlots(
+        array $scopeIds,
+        string $from,
+        string $until,
+        ?string $updatedAfter = null
+    ): array {
         if (empty($scopeIds)) {
             return [];
         }
