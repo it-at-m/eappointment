@@ -440,7 +440,7 @@ let initialized = false;
 watch(selectableProviders, (newVal) => {
   if (!initialized && newVal && newVal.length) {
     selectedProviders.value = newVal.reduce((acc, item) => {
-      acc[item.id] = true; // checked by default
+      acc[item.id] = true;
       return acc;
     }, {} as { [id: string]: boolean });
     initialized = true;
