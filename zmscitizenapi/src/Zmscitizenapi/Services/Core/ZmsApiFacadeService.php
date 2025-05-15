@@ -63,6 +63,9 @@ class ZmsApiFacadeService
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getOffices(bool $showUnpublished = false): OfficeList
     {
         $cacheKey = self::CACHE_KEY_OFFICES . ($showUnpublished ? '_unpublished' : '');
@@ -360,6 +363,9 @@ class ZmsApiFacadeService
         return $result;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getScopeById(?int $scopeId): ThinnedScope|array
     {
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
