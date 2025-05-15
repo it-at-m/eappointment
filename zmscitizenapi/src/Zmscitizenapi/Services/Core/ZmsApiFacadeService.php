@@ -109,7 +109,8 @@ class ZmsApiFacadeService
                     customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
                     customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
-                    displayInfo: $matchingScope->getDisplayInfo()
+                    displayInfo: $matchingScope->getDisplayInfo(),
+                    slotsPerAppointment: (int) $matchingScope->getSlotsPerAppointment()
                 ) : null
             );
         }
@@ -157,7 +158,8 @@ class ZmsApiFacadeService
                     customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
                     customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
-                    displayInfo: $matchingScope->getDisplayInfo()
+                    displayInfo: $matchingScope->getDisplayInfo(),
+                    slotsPerAppointment: (int) $matchingScope->getSlotsPerAppointment()
                 );
             }
         }
@@ -265,6 +267,7 @@ class ZmsApiFacadeService
             'customTextfieldLabel' => $matchingScope->getCustomTextfieldLabel() ?? null,
             'captchaActivatedRequired' => (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
             'displayInfo' => $matchingScope->getDisplayInfo() ?? null,
+            'slotsPerAppointment' => (int) $matchingScope->getSlotsPerAppointment() ?? null
         ];
         return new ThinnedScope(
             id: (int) $result['id'],
@@ -278,7 +281,8 @@ class ZmsApiFacadeService
             customTextfieldRequired: $result['customTextfieldRequired'],
             customTextfieldLabel: $result['customTextfieldLabel'],
             captchaActivatedRequired: $result['captchaActivatedRequired'],
-            displayInfo: $result['displayInfo']
+            displayInfo: $result['displayInfo'],
+            slotsPerAppointment: $result['slotsPerAppointment']
         );
     }
 
@@ -387,7 +391,8 @@ class ZmsApiFacadeService
             customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
             customTextfieldLabel: $matchingScope->getCustomTextfieldLabel() ?? null,
             captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
-            displayInfo: $matchingScope->getDisplayInfo() ?? null
+            displayInfo: $matchingScope->getDisplayInfo() ?? null,
+            slotsPerAppointment: (int) $matchingScope->getSlotsPerAppointment() ?? null
         );
     }
 
@@ -642,7 +647,8 @@ class ZmsApiFacadeService
                 customTextfieldRequired: (bool) $process->scope->getCustomTextfieldRequired() ?? false,
                 customTextfieldLabel: $process->scope->getCustomTextfieldLabel() ?? null,
                 captchaActivatedRequired: (bool) $process->scope->getCaptchaActivatedRequired() ?? false,
-                displayInfo: $process->scope->getDisplayInfo() ?? null
+                displayInfo: $process->scope->getDisplayInfo() ?? null,
+                slotsPerAppointment: (int) $process->scope->getSlotsPerAppointment() ?? null
             );
         }
 

@@ -64,7 +64,8 @@ class ScopesListControllerTest extends ControllerTestCase
                     "customTextfieldRequired" => false,
                     "customTextfieldLabel" => "Custom Label",
                     "captchaActivatedRequired" => false,
-                    "displayInfo" => null
+                    "displayInfo" => null,
+                    "slotsPerAppointment" => null
                 ],
                 [
                     "id" => 2,
@@ -93,7 +94,8 @@ class ScopesListControllerTest extends ControllerTestCase
                     "customTextfieldRequired" => true,
                     "customTextfieldLabel" => "",
                     "captchaActivatedRequired" => false,
-                    "displayInfo" => null
+                    "displayInfo" => null,
+                    "slotsPerAppointment" => null
                 ]
             ]
         ];

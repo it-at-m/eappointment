@@ -94,7 +94,8 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "customTextfieldRequired" => true,
                 "customTextfieldLabel" => "Nachname des Kindes",
                 "captchaActivatedRequired" => false,
-                "displayInfo" => null
+                "displayInfo" => null,
+                "slotsPerAppointment" => null
             ],
             "subRequestCounts" => [],
             "serviceId" => 1063424,

@@ -78,7 +78,8 @@ class OfficesListControllerTest extends ControllerTestCase
                         "customTextfieldRequired" => false,
                         "customTextfieldLabel" => "Custom Label",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
                     ]
                 ],
                 [
@@ -122,7 +123,8 @@ class OfficesListControllerTest extends ControllerTestCase
                         "customTextfieldRequired" => true,
                         "customTextfieldLabel" => "",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
                     ]
                 ]
             ]
