@@ -166,6 +166,9 @@ class Scope extends Base implements MappingInterface
             'preferences__client__customTextfieldActivated' => 'scope.custom_text_field_active',
             'preferences__client__customTextfieldRequired' => 'scope.custom_text_field_required',
             'preferences__client__customTextfieldLabel' => 'scope.custom_text_field_label',
+            'preferences__client__customTextfield2Activated' => 'scope.custom_text_field2_active',
+            'preferences__client__customTextfield2Required' => 'scope.custom_text_field2_required',
+            'preferences__client__customTextfield2Label' => 'scope.custom_text_field2_label',
             'preferences__client__captchaActivatedRequired' => 'scope.captcha_activated_required',
             'preferences__client__adminMailOnAppointment' => 'scope.admin_mail_on_appointment',
             'preferences__client__adminMailOnDeleted' => 'scope.admin_mail_on_deleted',
@@ -307,6 +310,9 @@ class Scope extends Base implements MappingInterface
         $data['custom_text_field_active'] = $entity->getPreference('client', 'customTextfieldActivated', true);
         $data['custom_text_field_required'] = $entity->getPreference('client', 'customTextfieldRequired', true);
         $data['custom_text_field_label'] = $entity->getPreference('client', 'customTextfieldLabel');
+        $data['custom_text_field2_active'] = $entity->getPreference('client', 'customTextfield2Activated', true);
+        $data['custom_text_field2_required'] = $entity->getPreference('client', 'customTextfield2Required', true);
+        $data['custom_text_field2_label'] = $entity->getPreference('client', 'customTextfield2Label');
         $data['captcha_activated_required'] = $entity->getPreference('client', 'captchaActivatedRequired');
         $data['appointments_per_mail'] = (int) $entity->getPreference('client', 'appointmentsPerMail');
         $data['slots_per_appointment'] = (int) $entity->getPreference('client', 'slotsPerAppointment');
@@ -372,38 +378,73 @@ class Scope extends Base implements MappingInterface
 
     public function postProcess($data)
     {
+        $data = $this->convertTimestamps($data);
+        $data = $this->setDefaultValues($data);
+        return $data;
+    }
+
+    private function convertTimestamps($data)
+    {
         $data[$this->getPrefixed("status__queue__lastGivenNumberTimestamp")] =
             strtotime($data[$this->getPrefixed("status__queue__lastGivenNumberTimestamp")]);
+
         $data[$this->getPrefixed("lastChange")] =
             (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsdb\Connection\Select::$connectionTimezone))
             ->getTimestamp();
-        if (!$data[$this->getPrefixed('preferences__client__emailFrom')]) {
-            $data[$this->getPrefixed("preferences__client__emailRequired")] = 0;
-        }
-        if (!$data[$this->getPrefixed('preferences__client__telephoneActivated')]) {
-            $data[$this->getPrefixed("preferences__client__telephoneRequired")] = 0;
-        }
-        if (!$data[$this->getPrefixed('preferences__client__emailConfirmationActivated')]) {
-            $data[$this->getPrefixed("preferences__client__emailConfirmationActivated")] = 0;
-        }
-        if (!$data[$this->getPrefixed('contact__email')]) {
-            $data[$this->getPrefixed("preferences__client__adminMailOnAppointment")] = 0;
-            $data[$this->getPrefixed("preferences__client__adminMailOnDeleted")] = 0;
-            $data[$this->getPrefixed("preferences__client__adminMailOnUpdated")] = 0;
-            $data[$this->getPrefixed("preferences__client__adminMailOnMailSent")] = 0;
-        }
-        if (!$data[$this->getPrefixed('preferences__client__customTextfieldActivated')]) {
-            $data[$this->getPrefixed("preferences__client__customTextfieldRequired")] = 0;
-        }
-        if (!$data[$this->getPrefixed('preferences__client__appointmentsPerMail')]) {
-            $data[$this->getPrefixed("preferences__client__appointmentsPerMail")] = null;
-        }
-        if (!$data[$this->getPrefixed('preferences__client__slotsPerAppointment')]) {
-            $data[$this->getPrefixed("preferences__client__slotsPerAppointment")] = null;
-        }
-        if (!$data[$this->getPrefixed('preferences__client__whitelistedMails')]) {
-            $data[$this->getPrefixed("preferences__client__whitelistedMails")] = null;
-        }
+
         return $data;
+    }
+
+    private function setDefaultValues($data)
+    {
+        $this->setIfEmpty($data, 'preferences__client__emailFrom', [
+            'preferences__client__emailRequired' => 0
+        ]);
+
+        $this->setIfEmpty($data, 'preferences__client__telephoneActivated', [
+            'preferences__client__telephoneRequired' => 0
+        ]);
+
+        $this->setIfEmpty($data, 'preferences__client__emailConfirmationActivated', [
+            'preferences__client__emailConfirmationActivated' => 0
+        ]);
+
+        $this->setIfEmpty($data, 'contact__email', [
+            'preferences__client__adminMailOnAppointment' => 0,
+            'preferences__client__adminMailOnDeleted' => 0,
+            'preferences__client__adminMailOnUpdated' => 0,
+            'preferences__client__adminMailOnMailSent' => 0,
+        ]);
+
+        $this->setIfEmpty($data, 'preferences__client__customTextfieldActivated', [
+            'preferences__client__customTextfieldRequired' => 0
+        ]);
+
+        $this->setIfEmpty($data, 'preferences__client__customTextfield2Activated', [
+            'preferences__client__customTextfield2Required' => 0
+        ]);
+
+        $this->setIfEmpty($data, 'preferences__client__appointmentsPerMail', [
+            'preferences__client__appointmentsPerMail' => null
+        ]);
+
+        $this->setIfEmpty($data, 'preferences__client__slotsPerAppointment', [
+            'preferences__client__slotsPerAppointment' => null
+        ]);
+
+        $this->setIfEmpty($data, 'preferences__client__whitelistedMails', [
+            'preferences__client__whitelistedMails' => null
+        ]);
+
+        return $data;
+    }
+
+    private function setIfEmpty(&$data, $checkKey, array $setKeys)
+    {
+        if (!$data[$this->getPrefixed($checkKey)]) {
+            foreach ($setKeys as $key => $value) {
+                $data[$this->getPrefixed($key)] = $value;
+            }
+        }
     }
 }

@@ -110,6 +110,9 @@
             "customTextfieldActivated": "1",
             "customTextfieldRequired": "0",
             "customTextfieldLabel": "Custom Label",
+            "customTextfield2Activated": "1",
+            "customTextfield2Required": "0",
+            "customTextfield2Label": "Second Custom Label",
             "captchaActivatedRequired": "0",
             "displayInfo": "Infos zum Standort."
           }
@@ -138,6 +141,9 @@
             "customTextfieldActivated": "0",
             "customTextfieldRequired": "1",
             "customTextfieldLabel": "",
+            "customTextfield2Activated": "0",
+            "customTextfield2Required": "1",
+            "customTextfield2Label": "",
             "captchaActivatedRequired": "0",
             "displayInfo": "Infos zum Standort."
           }

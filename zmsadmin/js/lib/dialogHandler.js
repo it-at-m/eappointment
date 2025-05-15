@@ -38,6 +38,9 @@ class DialogHandler {
         $('textarea.maxchars').each(function () {
             maxChars(this);
         });
+        $('input.charcounter').each(function () {
+            maxChars(this);
+        });
     }
 
     bindEvents() {
