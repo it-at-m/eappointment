@@ -9,7 +9,7 @@ set +a
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     if [[ $ZMS_ENV =~ ^prod|dev|stage$ ]]; then
-	$API config cron deleteUnconfirmedAppointmentData|grep -q "$ZMS_ENV" && $BIN/deleteUnconfirmedAppointmentData --commit
+	      $API config cron deleteUnconfirmedAppointmentData|grep -q "$ZMS_ENV" && $BIN/deleteUnconfirmedAppointmentData --commit
         $API config cron deallocateAppointmentData|grep -q "$ZMS_ENV" && $BIN/deallocateAppointmentData --commit
         $API config cron deleteSessionData|grep -q "$ZMS_ENV" && $BIN/deleteSessionData Zmsappointment 30 --commit
         $API config cron sendMailReminder|grep -q "$ZMS_ENV" && $BIN/sendMailReminder 120 --commit
