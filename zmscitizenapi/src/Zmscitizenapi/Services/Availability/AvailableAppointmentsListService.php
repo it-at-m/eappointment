@@ -41,6 +41,16 @@ class AvailableAppointmentsListService
             return $errors;
         }
 
+        foreach ($clientData->officeIds as $officeId) {
+            $errors = ValidationService::validateServiceLocationCombination(
+                (int) $officeId,
+                array_map('intval', $clientData->serviceIds)
+            );
+            if (!empty($errors['errors'])) {
+                return $errors;
+            }
+        }
+
         return $this->getAvailableAppointments($clientData);
     }
 
@@ -88,6 +98,17 @@ class AvailableAppointmentsListService
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
+        }
+
+        // Validate service-location combinations for each office
+        foreach ($clientData->officeIds as $officeId) {
+            $errors = ValidationService::validateServiceLocationCombination(
+                (int) $officeId,
+                array_map('intval', $clientData->serviceIds)
+            );
+            if (!empty($errors['errors'])) {
+                return $errors;
+            }
         }
 
         return $this->getAvailableAppointments($clientData, true);
