@@ -1,12 +1,17 @@
 <template>
   <div
-    v-if="selectedProvider && selectableProviders && selectableProviders.length > 1"
+    v-if="
+      selectedProvider && selectableProviders && selectableProviders.length > 1
+    "
   >
     <div class="m-component slider-no-margin">
       <div class="m-content">
         <h2 tabindex="0">{{ t("location") }}</h2>
       </div>
-      <div class="m-content" v-if="selectableProviders.length > 1">
+      <div
+        class="m-content"
+        v-if="selectableProviders.length > 1"
+      >
         <muc-checkbox
           v-for="provider in selectableProviders"
           :key="provider.id"
@@ -16,7 +21,10 @@
         ></muc-checkbox>
       </div>
 
-      <muc-slider v-else @change-slide="handleProviderSelection">
+      <muc-slider
+        v-else
+        @change-slide="handleProviderSelection"
+      >
         <muc-slider-item
           v-for="proverider in selectableProviders"
           :key="proverider.id"
@@ -118,14 +126,23 @@
     </div>
 
     <div
-      v-if="selectedDay && timeSlotsInHoursByOffice.size > 0 && averageAppointmentsPerProvider / selectableProviders.length > 18"
+      v-if="
+        selectedDay &&
+        timeSlotsInHoursByOffice.size > 0 &&
+        averageAppointmentsPerProvider / selectableProviders.length > 18
+      "
       :key="timeSlotsInHoursByOffice"
       class="m-component"
     >
       <div class="m-content">
         <h3 tabindex="0">{{ t("availableTimes") }}</h3>
       </div>
-      <div style="margin-bottom: 20px; background-color: var(--color-neutrals-blue-xlight)">
+      <div
+        style="
+          margin-bottom: 20px;
+          background-color: var(--color-neutrals-blue-xlight);
+        "
+      >
         <b tabindex="0">{{ formatDay(selectedDay) }}</b>
       </div>
 
@@ -133,9 +150,16 @@
         v-for="[officeId, office] in timeSlotsInHoursByOffice"
         :key="officeId + selectedProviders[officeId]"
       >
-        <div v-if="selectedProviders[officeId] && office.appointments.get(currentHour)">
+        <div
+          v-if="
+            selectedProviders[officeId] && office.appointments.get(currentHour)
+          "
+        >
           <div>
-            <div class="ml-4 location-title" v-if="selectableProviders.length > 1">
+            <div
+              class="ml-4 location-title"
+              v-if="selectableProviders.length > 1"
+            >
               <svg
                 aria-hidden="true"
                 class="icon icon--before"
@@ -149,7 +173,10 @@
             v-for="[timeslot, times] in office.appointments"
             :key="timeslot"
           >
-            <div class="wrapper" v-if="timeslot == currentHour">
+            <div
+              class="wrapper"
+              v-if="timeslot == currentHour"
+            >
               <div v-if="firstHour > 0">
                 <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
               </div>
@@ -203,16 +230,27 @@
       <div class="m-content">
         <h3 tabindex="0">{{ t("availableTimes") }}</h3>
       </div>
-      <div style="margin-bottom: 20px; background-color: var(--color-neutrals-blue-xlight)">
+      <div
+        style="
+          margin-bottom: 20px;
+          background-color: var(--color-neutrals-blue-xlight);
+        "
+      >
         <b tabindex="0">{{ formatDay(selectedDay) }}</b>
       </div>
 
-      <div
-        v-for="[officeId, office] in timeSlotsInDayPartByOffice"
-      >
-        <div v-if="selectedProviders[officeId] && office.appointments.get(currentDayPart)">
+      <div v-for="[officeId, office] in timeSlotsInDayPartByOffice">
+        <div
+          v-if="
+            selectedProviders[officeId] &&
+            office.appointments.get(currentDayPart)
+          "
+        >
           <div>
-            <div class="ml-4 location-title" v-if="selectableProviders.length > 1">
+            <div
+              class="ml-4 location-title"
+              v-if="selectableProviders.length > 1"
+            >
               <svg
                 aria-hidden="true"
                 class="icon icon--before"
@@ -226,7 +264,10 @@
             v-for="[timeslot, times] in office.appointments"
             :key="timeslot"
           >
-            <div class="wrapper" v-if="timeslot == currentDayPart">
+            <div
+              class="wrapper"
+              v-if="timeslot == currentDayPart"
+            >
               <div v-if="currentDayPart === 'am'">
                 <p class="centered-text">{{ t("am") }}</p>
               </div>
@@ -363,14 +404,16 @@ import {
   MucButton,
   MucCalendar,
   MucCallout,
+  MucCheckbox,
   MucSlider,
   MucSliderItem,
-  MucCheckbox
 } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
+import { AvailableTimeSlotsByOfficeDTO } from "@/api/models/AvailableTimeSlotsByOfficeDTO";
 import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
+import { OfficeAvailableTimeSlotsDTO } from "@/api/models/OfficeAvailableTimeSlotsDTO";
 import {
   fetchAvailableDays,
   fetchAvailableTimeSlots,
@@ -380,8 +423,6 @@ import {
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
-import {AvailableTimeSlotsByOfficeDTO} from "@/api/models/AvailableTimeSlotsByOfficeDTO";
-import {OfficeAvailableTimeSlotsDTO} from "@/api/models/OfficeAvailableTimeSlotsDTO";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -412,9 +453,9 @@ const currentHour = ref<number>(24);
 const firstHour = ref<number>(24);
 const lastHour = ref<number>(0);
 
-const currentDayPart = ref<string>('am');
-const firstDayPart = ref<string>('pm');
-const lastDayPart = ref<string>('am');
+const currentDayPart = ref<string>("am");
+const firstDayPart = ref<string>("pm");
+const lastDayPart = ref<string>("am");
 
 const averageAppointmentsPerProvider = ref<number>(0);
 
@@ -439,10 +480,13 @@ let initialized = false;
 
 watch(selectableProviders, (newVal) => {
   if (!initialized && newVal && newVal.length) {
-    selectedProviders.value = newVal.reduce((acc, item) => {
-      acc[item.id] = true;
-      return acc;
-    }, {} as { [id: string]: boolean });
+    selectedProviders.value = newVal.reduce(
+      (acc, item) => {
+        acc[item.id] = true;
+        return acc;
+      },
+      {} as { [id: string]: boolean }
+    );
     initialized = true;
   }
 });
@@ -475,26 +519,26 @@ const formatDay = (date: Date) => {
 };
 
 const getProvider = (id: number): string => {
-  return selectableProviders.value?.find(p => p.id === id);
+  return selectableProviders.value?.find((p) => p.id === id);
 };
 
 const officeName = (id: number): string => {
-  const office = selectableProviders.value?.find(p => p.id === id);
+  const office = selectableProviders.value?.find((p) => p.id === id);
   return office?.name ?? null;
 };
 
-const laterAppointments = (type = 'hour') => {
-  if (type === 'dayPart' && currentDayPart.value == 'am') {
-    currentDayPart.value = 'pm';
+const laterAppointments = (type = "hour") => {
+  if (type === "dayPart" && currentDayPart.value == "am") {
+    currentDayPart.value = "pm";
     return;
   }
 
   currentHour.value = currentHour.value + 1;
 };
 
-const earlierAppointments = (type = 'hour') => {
-  if (type === 'dayPart' && currentDayPart.value == 'pm') {
-    currentDayPart.value = 'am';
+const earlierAppointments = (type = "hour") => {
+  if (type === "dayPart" && currentDayPart.value == "pm") {
+    currentDayPart.value = "am";
     return;
   }
 
@@ -555,7 +599,10 @@ const timeSlotsInHoursByOffice = computed(() => {
       timesByHours.get(hour)?.push(time);
     });
 
-    offices.set(office.officeId, {officeId: office.officeId, appointments: timesByHours});
+    offices.set(office.officeId, {
+      officeId: office.officeId,
+      appointments: timesByHours,
+    });
   });
 
   currentHour.value = firstHour.value;
@@ -575,13 +622,14 @@ const timeSlotsInDayPartByOffice = computed(() => {
     const timesByPartOfDay = new Map<string, number[]>();
     office.appointments.forEach((time) => {
       const berlinDate = new Date(time * 1000);
-      const dayPart = parseInt(berlinHourFormatter.format(berlinDate)) > 12 ? 'pm' : 'am';
-      if (dayPart === 'am') {
-        firstDayPart.value = 'am';
+      const dayPart =
+        parseInt(berlinHourFormatter.format(berlinDate)) > 12 ? "pm" : "am";
+      if (dayPart === "am") {
+        firstDayPart.value = "am";
       }
 
-      if (dayPart === 'pm') {
-        lastDayPart.value = 'pm';
+      if (dayPart === "pm") {
+        lastDayPart.value = "pm";
       }
 
       if (!timesByPartOfDay.has(dayPart)) {
@@ -590,7 +638,10 @@ const timeSlotsInDayPartByOffice = computed(() => {
       timesByPartOfDay.get(dayPart)?.push(time);
     });
 
-    offices.set(office.officeId, {officeId: office.officeId, appointments: timesByPartOfDay});
+    offices.set(office.officeId, {
+      officeId: office.officeId,
+      appointments: timesByPartOfDay,
+    });
   });
 
   currentDayPart.value = firstDayPart.value;
@@ -708,7 +759,7 @@ const handleProviderCheckbox = (id: string) => {
 
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
-  selectedProvider.value = getProvider(officeId)
+  selectedProvider.value = getProvider(officeId);
   if (summary.value) {
     await nextTick();
     summary.value.focus();
@@ -787,9 +838,9 @@ onMounted(() => {
 
     // If alternative locations are allowed to be selected, they will be added to the slider.
     if (
-      offices.length == 0
-      || !props.exclusiveLocation
-      || (offices[0].showAlternativeLocations)
+      offices.length == 0 ||
+      !props.exclusiveLocation ||
+      offices[0].showAlternativeLocations
     ) {
       const otherOffices = selectableProviders.value.filter((office) => {
         if (props.preselectedOfficeId)
@@ -867,7 +918,8 @@ onMounted(() => {
   padding-top: 30px;
 }
 
-.m-button--ghost.disabled, .m-button--ghost:disabled {
+.m-button--ghost.disabled,
+.m-button--ghost:disabled {
   background: #fff;
   border-color: #fff;
 }

@@ -1,4 +1,4 @@
-import {OfficeAvailableTimeSlotsDTO} from "@/api/models/OfficeAvailableTimeSlotsDTO";
+import { OfficeAvailableTimeSlotsDTO } from "@/api/models/OfficeAvailableTimeSlotsDTO";
 
 /**
  *
