@@ -167,6 +167,8 @@ class AvailabilityListUpdateTest extends Base
         error_log("Weekday Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertArrayHasKey('meta', $responseData);
+        $this->assertTrue($responseData['meta']['error']);
         $this->assertArrayHasKey('data', $responseData);
         $this->assertArrayHasKey('errors', $responseData['data']);
         $this->assertNotEmpty($responseData['data']['errors']);
@@ -212,6 +214,8 @@ class AvailabilityListUpdateTest extends Base
         error_log("Start Time Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertArrayHasKey('meta', $responseData);
+        $this->assertTrue($responseData['meta']['error']);
         $this->assertArrayHasKey('data', $responseData);
         $this->assertArrayHasKey('errors', $responseData['data']);
         $this->assertNotEmpty($responseData['data']['errors']);
@@ -257,6 +261,8 @@ class AvailabilityListUpdateTest extends Base
         error_log("Slot Time Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertArrayHasKey('meta', $responseData);
+        $this->assertTrue($responseData['meta']['error']);
         $this->assertArrayHasKey('data', $responseData);
         $this->assertArrayHasKey('errors', $responseData['data']);
         $this->assertNotEmpty($responseData['data']['errors']);
@@ -305,6 +311,8 @@ class AvailabilityListUpdateTest extends Base
         error_log("Bookable Day Range Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertArrayHasKey('meta', $responseData);
+        $this->assertTrue($responseData['meta']['error']);
         $this->assertArrayHasKey('data', $responseData);
         $this->assertArrayHasKey('errors', $responseData['data']);
         $this->assertNotEmpty($responseData['data']['errors']);

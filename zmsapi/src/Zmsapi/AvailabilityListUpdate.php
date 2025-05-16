@@ -53,9 +53,10 @@ class AvailabilityListUpdate extends BaseController
                 'errors' => $validationErrors
             ]);
             $message = Response\Message::create($request);
-            $message->data = [];
-            $message->status = 'error';
-            $message->error = $validationErrors;
+            $message->meta['error'] = true;
+            $message->data = [
+                'errors' => $validationErrors
+            ];
             return Render::withJson($response, $message, 400);
         }
 
