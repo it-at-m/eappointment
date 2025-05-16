@@ -101,9 +101,19 @@ class AvailabilityListUpdate extends BaseController
             if ($existingAvailability && $existingAvailability->hasId()) {
                 $this->resetOpeningHours($existingAvailability);
                 $updatedAvailability = $repository->updateEntity($availability->id, $availability, $resolveReferences);
+                App::$log->info('Updated availability', [
+                    'id' => $availability->id,
+                    'scope_id' => $availability->scope['id'],
+                    'operation' => 'update'
+                ]);
             }
         } else {
             $updatedAvailability = $repository->writeEntity($availability, $resolveReferences);
+            App::$log->info('Created new availability', [
+                'id' => $updatedAvailability->id,
+                'scope_id' => $availability->scope['id'],
+                'operation' => 'create'
+            ]);
         }
         if (!$updatedAvailability) {
             throw new AvailabilityListUpdateFailed();

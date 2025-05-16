@@ -32,7 +32,4 @@
             <clover outputFile="./coverage/clover.xml" />
         </report>
     </coverage>
-    <logging>
-        <log type="null" />
-    </logging>
 </phpunit>
