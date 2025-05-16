@@ -164,8 +164,10 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
+        error_log("Weekday Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
+        error_log("Weekday Validation Response Data: " . print_r($responseData, true));
         $this->assertArrayHasKey('data', $responseData);
         $this->assertArrayHasKey('errors', $responseData['data']);
         $this->assertNotEmpty($responseData['data']['errors']);
@@ -208,8 +210,10 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
+        error_log("Start Time Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
+        error_log("Start Time Validation Response Data: " . print_r($responseData, true));
         $this->assertArrayHasKey('data', $responseData);
         $this->assertArrayHasKey('errors', $responseData['data']);
         $this->assertNotEmpty($responseData['data']['errors']);
@@ -220,8 +224,7 @@ class AvailabilityListUpdateTest extends Base
     public function testSlotTimeValidation()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
-        $this->render([], [
+        $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
                     {
@@ -253,6 +256,14 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
+        error_log("Slot Time Validation Response: " . (string)$response->getBody());
+        $responseData = json_decode((string)$response->getBody(), true);
+        error_log("Slot Time Validation Response Data: " . print_r($responseData, true));
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertArrayHasKey('data', $responseData);
+        $this->assertArrayHasKey('errors', $responseData['data']);
+        $this->assertNotEmpty($responseData['data']['errors']);
+        $this->assertEquals('slotTime', $responseData['data']['errors'][0]['type']);
     }
 
     public function testBookableDayRangeValidation()
@@ -294,8 +305,10 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
+        error_log("Bookable Day Range Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
+        error_log("Bookable Day Range Validation Response Data: " . print_r($responseData, true));
         $this->assertArrayHasKey('data', $responseData);
         $this->assertArrayHasKey('errors', $responseData['data']);
         $this->assertNotEmpty($responseData['data']['errors']);
