@@ -49,14 +49,21 @@ class AvailabilityListUpdate extends BaseController
         $validationErrors = $this->validateAvailabilityList($newAvailabilities, $existingAvailabilities, $selectedDate);
 
         if (count($validationErrors) > 0) {
+            $availabilityIds = array_map(
+                function ($availability) {
+                    return $availability->id ?? null;
+                },
+                $newAvailabilities->getArrayCopy()
+            );
             App::$log->warning('AvailabilityListUpdateFailed: Validation failed', [
+                'ids' => array_filter($availabilityIds),
+                'scope_id' => $scope->getId(),
                 'errors' => $validationErrors
             ]);
             $message = Response\Message::create($request);
-            $message->meta['error'] = true;
-            $message->data = [
-                'errors' => $validationErrors
-            ];
+            $message->data = [];
+            $message->status = 'error';
+            $message->error = $validationErrors;
             return Render::withJson($response, $message, 400);
         }
 

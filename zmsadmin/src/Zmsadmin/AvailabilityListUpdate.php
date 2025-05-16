@@ -40,12 +40,8 @@ class AvailabilityListUpdate extends BaseController
             $response = Render::withLastModified($response, time(), '0');
             return Render::withJson($response, $availabilityList, $statusCode);
         } catch (\Exception $e) {
-            \App::$log->error('Unexpected error in availability update', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'input' => $input
-            ]);
-            $errorResponse = method_exists($e, 'getResponse') ? $e->getResponse() : null;
+            // If there's an API error, preserve its status code and message
+            $errorResponse = $e->getResponse();
             $statusCode = $errorResponse ? $errorResponse->getStatusCode() : 500;
             $errorData = $errorResponse ? json_decode($errorResponse->getBody(), true) : ['error' => $e->getMessage()];
 
