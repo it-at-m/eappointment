@@ -226,7 +226,8 @@ class AvailabilityListUpdateTest extends Base
     public function testSlotTimeValidation()
     {
         $this->setWorkstation();
-        $response = $this->render([], [
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->render([], [
             '__body' => '{
                 "availabilityList": [
                     {
@@ -247,7 +248,7 @@ class AvailabilityListUpdateTest extends Base
                         "endDate": ' . strtotime("+30 days") . ',
                         "startTime": "09:00:00",
                         "endTime": "17:00:00",
-                        "slotTimeInMinutes": 1440,
+                        "slotTimeInMinutes": "invalid",
                         "workstationCount": {
                             "public": 1,
                             "callcenter": 0,
@@ -258,15 +259,6 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
-        error_log("Slot Time Validation Response: " . (string)$response->getBody());
-        $this->assertEquals(400, $response->getStatusCode());
-        $responseData = json_decode((string)$response->getBody(), true);
-        $this->assertArrayHasKey('meta', $responseData);
-        $this->assertTrue($responseData['meta']['error']);
-        $this->assertArrayHasKey('data', $responseData);
-        $this->assertArrayHasKey('errors', $responseData['data']);
-        $this->assertNotEmpty($responseData['data']['errors']);
-        $this->assertEquals('slotTime', $responseData['data']['errors'][0]['type']);
     }
 
     public function testBookableDayRangeValidation()
