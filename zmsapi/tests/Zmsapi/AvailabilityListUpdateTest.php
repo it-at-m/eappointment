@@ -164,15 +164,14 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
-        error_log("Weekday Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
-        error_log("Weekday Validation Response Data: " . print_r($responseData, true));
-        $this->assertArrayHasKey('data', $responseData);
-        $this->assertArrayHasKey('errors', $responseData['data']);
-        $this->assertNotEmpty($responseData['data']['errors']);
-        $this->assertEquals('weekdayRequired', $responseData['data']['errors'][0]['type']);
-        $this->assertEquals('Mindestens ein Wochentag muss ausgewählt sein.', $responseData['data']['errors'][0]['message']);
+        $this->assertArrayHasKey('meta', $responseData);
+        $this->assertTrue($responseData['meta']['error']);
+        $this->assertArrayHasKey('error', $responseData);
+        $this->assertCount(1, $responseData['error']);
+        $this->assertEquals('weekdayRequired', $responseData['error'][0]['type']);
+        $this->assertEquals('Mindestens ein Wochentag muss ausgewählt sein.', $responseData['error'][0]['message']);
     }
 
     public function testStartTimeValidation()
@@ -210,15 +209,14 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
-        error_log("Start Time Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
-        error_log("Start Time Validation Response Data: " . print_r($responseData, true));
-        $this->assertArrayHasKey('data', $responseData);
-        $this->assertArrayHasKey('errors', $responseData['data']);
-        $this->assertNotEmpty($responseData['data']['errors']);
-        $this->assertEquals('endTime', $responseData['data']['errors'][0]['type']);
-        $this->assertEquals('Die Endzeit darf nicht vor der Startzeit liegen.', $responseData['data']['errors'][0]['message']);
+        $this->assertArrayHasKey('meta', $responseData);
+        $this->assertTrue($responseData['meta']['error']);
+        $this->assertArrayHasKey('error', $responseData);
+        $this->assertCount(1, $responseData['error']);
+        $this->assertEquals('endTime', $responseData['error'][0]['type']);
+        $this->assertEquals('Die Endzeit darf nicht vor der Startzeit liegen.', $responseData['error'][0]['message']);
     }
 
     public function testSlotTimeValidation()
@@ -245,7 +243,7 @@ class AvailabilityListUpdateTest extends Base
                         "endDate": ' . strtotime("+30 days") . ',
                         "startTime": "09:00:00",
                         "endTime": "17:00:00",
-                        "slotTimeInMinutes": -1,
+                        "slotTimeInMinutes": 0,
                         "workstationCount": {
                             "public": 1,
                             "callcenter": 0,
@@ -256,14 +254,13 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
-        error_log("Slot Time Validation Response: " . (string)$response->getBody());
-        $responseData = json_decode((string)$response->getBody(), true);
-        error_log("Slot Time Validation Response Data: " . print_r($responseData, true));
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertArrayHasKey('data', $responseData);
-        $this->assertArrayHasKey('errors', $responseData['data']);
-        $this->assertNotEmpty($responseData['data']['errors']);
-        $this->assertEquals('slotTime', $responseData['data']['errors'][0]['type']);
+        $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertArrayHasKey('meta', $responseData);
+        $this->assertTrue($responseData['meta']['error']);
+        $this->assertArrayHasKey('error', $responseData);
+        $this->assertCount(1, $responseData['error']);
+        $this->assertEquals('slotTime', $responseData['error'][0]['type']);
     }
 
     public function testBookableDayRangeValidation()
@@ -305,15 +302,14 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
-        error_log("Bookable Day Range Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
-        error_log("Bookable Day Range Validation Response Data: " . print_r($responseData, true));
-        $this->assertArrayHasKey('data', $responseData);
-        $this->assertArrayHasKey('errors', $responseData['data']);
-        $this->assertNotEmpty($responseData['data']['errors']);
-        $this->assertEquals('bookableDayRange', $responseData['data']['errors'][0]['type']);
-        $this->assertEquals('Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.', $responseData['data']['errors'][0]['message']);
+        $this->assertArrayHasKey('meta', $responseData);
+        $this->assertTrue($responseData['meta']['error']);
+        $this->assertArrayHasKey('error', $responseData);
+        $this->assertCount(1, $responseData['error']);
+        $this->assertEquals('bookableDayRange', $responseData['error'][0]['type']);
+        $this->assertEquals('Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.', $responseData['error'][0]['message']);
     }
 
     public function testTypeValidation()
