@@ -39,9 +39,21 @@ class AvailabilityListUpdate extends BaseController
 
             $response = Render::withLastModified($response, time(), '0');
             return Render::withJson($response, $availabilityList, $statusCode);
+        } catch (\BO\Zmsclient\Exception $e) {
+            // Log validation errors as warnings
+            if (strpos($e->getMessage(), 'schema') !== false) {
+                \App::$log->warning('Availability validation error', [
+                    'error' => $e->getMessage(),
+                    'input' => $input
+                ]);
+            }
+            return Render::withJson($response, [
+                'error' => true,
+                'message' => $e->getMessage()
+            ], 400);
         } catch (\Exception $e) {
             // If there's an API error, preserve its status code and message
-            $errorResponse = $e->getResponse();
+            $errorResponse = method_exists($e, 'getResponse') ? $e->getResponse() : null;
             $statusCode = $errorResponse ? $errorResponse->getStatusCode() : 500;
             $errorData = $errorResponse ? json_decode($errorResponse->getBody(), true) : ['error' => $e->getMessage()];
 

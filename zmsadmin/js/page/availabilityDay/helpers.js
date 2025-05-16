@@ -103,8 +103,8 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         startTime: '07:00:00',
         endTime: '20:00:00',
         bookable: {
-            startInDays: "",
-            endInDays: ""
+            startInDays: scope.preferences.appointment.startInDaysDefault || 0,
+            endInDays: scope.preferences.appointment.endInDaysDefault || 60
         },
         multipleSlotsAllowed: 1,
         slotTimeInMinutes: scope.provider.data['slotTimeInMinutes'],
@@ -197,8 +197,12 @@ export const cleanupAvailabilityForSave = availability => {
 export const getDataValuesFromForm = (form, scope) => {
     return Object.assign({}, getFirstLevelValues(form), {
         bookable: {
-            startInDays: form.open_from === "" ? scope.preferences.appointment.startInDaysDefault : form.open_from,
-            endInDays: form.open_to === "" ? scope.preferences.appointment.endInDaysDefault : form.open_to
+            startInDays: form.open_from === "" || form.open_from === null ? 
+                parseInt(scope.preferences.appointment.startInDaysDefault || 0) : 
+                parseInt(form.open_from || 0),
+            endInDays: form.open_to === "" || form.open_to === null ? 
+                parseInt(scope.preferences.appointment.endInDaysDefault || 60) : 
+                parseInt(form.open_to || 60)
         },
         workstationCount: {
             intern: form.workstationCount_intern,
