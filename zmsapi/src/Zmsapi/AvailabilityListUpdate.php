@@ -41,12 +41,12 @@ class AvailabilityListUpdate extends BaseController
             throw new BadRequestException();
         }
 
-        $newAvailabilities = $this->createAvailabilityList($input);
-        $selectedDate = date('Y-m-d');  // Default to today if not specified
-        $scope = new \BO\Zmsentities\Scope($input[0]['scope']);
+        $newAvailabilities = $this->createAvailabilityList($input['availabilityList']);
+        $selectedDate = $this->createSelectedDateTime($input['selectedDate']);
+        $scope = new \BO\Zmsentities\Scope($input['availabilityList'][0]['scope']);
         $existingAvailabilities = $this->createMergedAvailabilityList($scope);
 
-        $validationErrors = $this->validateAvailabilityList($newAvailabilities, $existingAvailabilities, new \DateTimeImmutable($selectedDate));
+        $validationErrors = $this->validateAvailabilityList($newAvailabilities, $existingAvailabilities, $selectedDate);
 
         if (count($validationErrors) > 0) {
             App::$log->warning('AvailabilityListUpdateFailed: Validation failed', [
@@ -174,6 +174,14 @@ class AvailabilityListUpdate extends BaseController
             $availabilities->addEntity($availability);
         }
         return $availabilities;
+    }
+
+    private function createSelectedDateTime(string $selectedDate): \DateTimeImmutable
+    {
+        return \DateTimeImmutable::createFromFormat(
+            'Y-m-d H:i:s',
+            $selectedDate . ' 00:00:00'
+        );
     }
 
     private function createMergedAvailabilityList(\BO\Zmsentities\Scope $scope): AvailabilityList

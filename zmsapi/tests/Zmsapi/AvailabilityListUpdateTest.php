@@ -10,21 +10,24 @@ class AvailabilityListUpdateTest extends Base
     {
         $this->setWorkstation();
         $response = $this->render([], [
-            '__body' => '[
-                {
-                    "id": 21202,
-                    "description": "Test Öffnungszeit update",
-                    "scope": {
-                        "id": 312
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "id": 21202,
+                        "description": "Test Öffnungszeit update",
+                        "scope": {
+                            "id": 312
+                        }
+                    },
+                    {
+                        "description": "Test Öffnungszeit ohne id",
+                        "scope": {
+                            "id": 141
+                        }
                     }
-                },
-                {
-                    "description": "Test Öffnungszeit ohne id",
-                    "scope": {
-                        "id": 141
-                    }
-                }
-            ]'
+                ],
+                "selectedDate": "2016-04-01"
+            }'
         ], []);
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -53,15 +56,18 @@ class AvailabilityListUpdateTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityListUpdateFailed');
         $this->expectExceptionCode(400);
         $this->render([], [
-            '__body' => '[
-                {
-                  "id": 99999,
-                  "description": "Test Öffnungszeit update failed",
-                  "scope": {
-                      "id": 312
-                  }
-                }
-            ]',
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "id": 99999,
+                        "description": "Test Öffnungszeit update failed",
+                        "scope": {
+                            "id": 312
+                        }
+                    }
+                ],
+                "selectedDate": "2016-04-01"
+            }',
             'migrationfix' => 0
         ], []);
     }
