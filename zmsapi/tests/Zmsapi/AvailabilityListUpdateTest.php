@@ -247,7 +247,7 @@ class AvailabilityListUpdateTest extends Base
                         "endDate": ' . strtotime("+30 days") . ',
                         "startTime": "09:00:00",
                         "endTime": "17:00:00",
-                        "slotTimeInMinutes": -1,
+                        "slotTimeInMinutes": 1440,
                         "workstationCount": {
                             "public": 1,
                             "callcenter": 0,
