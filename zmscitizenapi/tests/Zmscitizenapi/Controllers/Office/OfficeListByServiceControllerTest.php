@@ -36,8 +36,6 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
         $response = $this->render([], [
             'serviceId' => '2'
         ], []);
-        $reponseBody = json_decode((string)$response->getBody(), true);
-        error_log(json_encode($reponseBody));
         $expectedResponse = [
             "offices" => [
                 [
@@ -104,8 +102,6 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
         $response = $this->render([], [
             'serviceId' => '1'
         ], []);
-        $reponseBody = json_decode((string)$response->getBody(), true);
-        error_log(json_encode($reponseBody));
         $expectedResponse = [
             "offices" => [
                 [
