@@ -164,7 +164,6 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
-        error_log("Weekday Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertArrayHasKey('meta', $responseData);
@@ -211,7 +210,6 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
-        error_log("Start Time Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertArrayHasKey('meta', $responseData);
@@ -300,7 +298,6 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
-        error_log("Bookable Day Range Validation Response: " . (string)$response->getBody());
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertArrayHasKey('meta', $responseData);
