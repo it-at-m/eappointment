@@ -168,11 +168,17 @@ class AvailabilityListUpdateTest extends Base
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertArrayHasKey('meta', $responseData);
         $this->assertTrue($responseData['meta']['error']);
+        $this->assertArrayHasKey('message', $responseData['meta']);
+        $this->assertNotEmpty($responseData['meta']['message']);
+        $this->assertArrayHasKey('exception', $responseData['meta']);
+        $this->assertEquals('BO\\Zmsapi\\Exception\\Availability\\AvailabilityListUpdateFailed', $responseData['meta']['exception']);
         $this->assertArrayHasKey('data', $responseData);
-        $this->assertArrayHasKey('errors', $responseData['data']);
-        $this->assertNotEmpty($responseData['data']['errors']);
-        $this->assertEquals('weekdayRequired', $responseData['data']['errors'][0]['type']);
-        $this->assertEquals('Mindestens ein Wochentag muss ausgewählt sein.', $responseData['data']['errors'][0]['message']);
+        $this->assertEmpty($responseData['data']);
+        $messageData = json_decode($responseData['meta']['message'], true);
+        $this->assertArrayHasKey('errors', $messageData);
+        $this->assertNotEmpty($messageData['errors']);
+        $this->assertEquals('weekdayRequired', $messageData['errors'][0]['type']);
+        $this->assertEquals('Mindestens ein Wochentag muss ausgewählt sein.', $messageData['errors'][0]['message']);
     }
 
     public function testStartTimeValidation()
@@ -214,11 +220,17 @@ class AvailabilityListUpdateTest extends Base
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertArrayHasKey('meta', $responseData);
         $this->assertTrue($responseData['meta']['error']);
+        $this->assertArrayHasKey('message', $responseData['meta']);
+        $this->assertNotEmpty($responseData['meta']['message']);
+        $this->assertArrayHasKey('exception', $responseData['meta']);
+        $this->assertEquals('BO\\Zmsapi\\Exception\\Availability\\AvailabilityListUpdateFailed', $responseData['meta']['exception']);
         $this->assertArrayHasKey('data', $responseData);
-        $this->assertArrayHasKey('errors', $responseData['data']);
-        $this->assertNotEmpty($responseData['data']['errors']);
-        $this->assertEquals('endTime', $responseData['data']['errors'][0]['type']);
-        $this->assertEquals('Die Endzeit darf nicht vor der Startzeit liegen.', $responseData['data']['errors'][0]['message']);
+        $this->assertEmpty($responseData['data']);
+        $messageData = json_decode($responseData['meta']['message'], true);
+        $this->assertArrayHasKey('errors', $messageData);
+        $this->assertNotEmpty($messageData['errors']);
+        $this->assertEquals('endTime', $messageData['errors'][0]['type']);
+        $this->assertEquals('Die Endzeit darf nicht vor der Startzeit liegen.', $messageData['errors'][0]['message']);
     }
 
     public function testSlotTimeValidation()
@@ -302,11 +314,17 @@ class AvailabilityListUpdateTest extends Base
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertArrayHasKey('meta', $responseData);
         $this->assertTrue($responseData['meta']['error']);
+        $this->assertArrayHasKey('message', $responseData['meta']);
+        $this->assertNotEmpty($responseData['meta']['message']);
+        $this->assertArrayHasKey('exception', $responseData['meta']);
+        $this->assertEquals('BO\\Zmsapi\\Exception\\Availability\\AvailabilityListUpdateFailed', $responseData['meta']['exception']);
         $this->assertArrayHasKey('data', $responseData);
-        $this->assertArrayHasKey('errors', $responseData['data']);
-        $this->assertNotEmpty($responseData['data']['errors']);
-        $this->assertEquals('bookableDayRange', $responseData['data']['errors'][0]['type']);
-        $this->assertEquals('Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.', $responseData['data']['errors'][0]['message']);
+        $this->assertEmpty($responseData['data']);
+        $messageData = json_decode($responseData['meta']['message'], true);
+        $this->assertArrayHasKey('errors', $messageData);
+        $this->assertNotEmpty($messageData['errors']);
+        $this->assertEquals('bookableDayRange', $messageData['errors'][0]['type']);
+        $this->assertEquals('Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.', $messageData['errors'][0]['message']);
     }
 
     public function testTypeValidation()
@@ -346,5 +364,75 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
+    }
+
+    public function testMultipleValidationErrors()
+    {
+        $this->setWorkstation();
+        $response = $this->render([], [
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "description": "Test multiple validation errors",
+                        "scope": {
+                            "id": 141
+                        },
+                        "weekday": {
+                            "monday": 0,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0,
+                            "sunday": 0
+                        },
+                        "startDate": ' . strtotime("+1 day") . ',
+                        "endDate": ' . strtotime("+30 days") . ',
+                        "startTime": "17:00:00",
+                        "endTime": "09:00:00",
+                        "slotTimeInMinutes": 60,
+                        "bookable": {
+                            "startInDays": 31,
+                            "endInDays": 30
+                        },
+                        "workstationCount": {
+                            "public": 1,
+                            "callcenter": 0,
+                            "intern": 0
+                        }
+                    }
+                ],
+                "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
+            }'
+        ], []);
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertArrayHasKey('meta', $responseData);
+        $this->assertTrue($responseData['meta']['error']);
+        $this->assertArrayHasKey('message', $responseData['meta']);
+        $this->assertNotEmpty($responseData['meta']['message']);
+        $this->assertArrayHasKey('exception', $responseData['meta']);
+        $this->assertEquals('BO\\Zmsapi\\Exception\\Availability\\AvailabilityListUpdateFailed', $responseData['meta']['exception']);
+        $this->assertArrayHasKey('data', $responseData);
+        $this->assertEmpty($responseData['data']);
+
+        $messageData = json_decode($responseData['meta']['message'], true);
+        $this->assertArrayHasKey('errors', $messageData);
+        $this->assertNotEmpty($messageData['errors']);
+        
+        // Should have at least 3 different types of errors
+        $errorTypes = array_unique(array_column($messageData['errors'], 'type'));
+        $this->assertGreaterThanOrEqual(3, count($errorTypes));
+        
+        // Check for specific error types
+        $this->assertContains('weekdayRequired', $errorTypes);
+        $this->assertContains('endTime', $errorTypes);
+        $this->assertContains('bookableDayRange', $errorTypes);
+        
+        // Check for specific error messages
+        $errorMessages = array_column($messageData['errors'], 'message');
+        $this->assertContains('Mindestens ein Wochentag muss ausgewählt sein.', $errorMessages);
+        $this->assertContains('Die Endzeit darf nicht vor der Startzeit liegen.', $errorMessages);
+        $this->assertContains('Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.', $errorMessages);
     }
 }

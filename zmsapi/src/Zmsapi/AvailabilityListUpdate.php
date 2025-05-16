@@ -62,8 +62,9 @@ class AvailabilityListUpdate extends BaseController
             ]);
             $message = Response\Message::create($request);
             $message->data = [];
-            $message->status = 'error';
-            $message->error = $validationErrors;
+            $message->meta->error = true;
+            $message->meta->message = json_encode(['errors' => $validationErrors]);
+            $message->meta->exception = 'BO\\Zmsapi\\Exception\\Availability\\AvailabilityListUpdateFailed';
             return Render::withJson($response, $message, 400);
         }
 

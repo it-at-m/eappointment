@@ -39,13 +39,13 @@ class AvailabilityListUpdate extends BaseController
 
             $response = Render::withLastModified($response, time(), '0');
             return Render::withJson($response, $availabilityList, $statusCode);
-        } catch (\Exception $e) {
-            // If there's an API error, preserve its status code and message
-            $errorResponse = $e->getResponse();
-            $statusCode = $errorResponse ? $errorResponse->getStatusCode() : 500;
-            $errorData = $errorResponse ? json_decode($errorResponse->getBody(), true) : ['error' => $e->getMessage()];
-
-            return Render::withJson($response, $errorData, $statusCode);
+        } catch (\Throwable $e) {
+            $response = Render::withLastModified($response, time(), '0');
+            return Render::withJson(
+                $response,
+                ['error' => true, 'message' => $e->getMessage()],
+                400
+            );
         }
     }
 }
