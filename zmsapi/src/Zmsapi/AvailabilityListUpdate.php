@@ -10,8 +10,8 @@ namespace BO\Zmsapi;
 use BO\Slim\Render;
 use BO\Mellon\Validator;
 use BO\Zmsapi\Exception\Availability\AvailabilityListUpdateFailed;
-use BO\Zmsentities\Availability as Entity;
-use BO\Zmsentities\Collection\AvailabilityList as Collection;
+use BO\Zmsentities\Availability;
+use BO\Zmsentities\Collection\AvailabilityList;
 use BO\Zmsdb\Availability as AvailabilityRepository;
 use BO\Zmsdb\Connection\Select as DbConnection;
 use Psr\Http\Message\RequestInterface;
@@ -41,15 +41,23 @@ class AvailabilityListUpdate extends BaseController
             throw new BadRequestException();
         }
 
-        $newCollection = $this->createNewCollection($input['availabilityList']);
+        $newAvailabilities = $this->createAvailabilityList($input['availabilityList']);
         $selectedDate = $this->createSelectedDateTime($input['selectedDate']);
         $scope = new \BO\Zmsentities\Scope($input['availabilityList'][0]['scope']);
-        $mergedCollection = $this->getMergedCollection($scope);
+        $existingAvailabilities = $this->createMergedAvailabilityList($scope);
 
-        $validationErrors = $this->validateNewAvailabilities($newCollection, $mergedCollection, $selectedDate);
+        $validationErrors = $this->validateAvailabilityList($newAvailabilities, $existingAvailabilities, $selectedDate);
 
         if (count($validationErrors) > 0) {
+            $availabilityIds = array_map(
+                function ($availability) {
+                    return $availability->id ?? null;
+                },
+                $newAvailabilities->getArrayCopy()
+            );
             App::$log->warning('AvailabilityListUpdateFailed: Validation failed', [
+                'ids' => array_filter($availabilityIds),
+                'scope_id' => $scope->getId(),
                 'errors' => $validationErrors
             ]);
             $message = Response\Message::create($request);
@@ -60,17 +68,17 @@ class AvailabilityListUpdate extends BaseController
         }
 
         DbConnection::getWriteConnection();
-        $result = $this->updateEntities($newCollection, $resolveReferences);
-        return $this->generateResponse($request, $response, $result);
+        $updatedAvailabilities = $this->updateAvailabilityList($newAvailabilities, $resolveReferences);
+        return $this->generateResponse($request, $response, $updatedAvailabilities);
     }
 
     private function generateResponse(
         RequestInterface $request,
         ResponseInterface $response,
-        Collection $updatedCollection
+        AvailabilityList $availabilities
     ): ResponseInterface {
         $message = Response\Message::create($request);
-        $message->data = $updatedCollection->getArrayCopy();
+        $message->data = $availabilities->getArrayCopy();
 
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson(
@@ -80,69 +88,79 @@ class AvailabilityListUpdate extends BaseController
         );
     }
 
-    private function updateEntities(Collection $newCollection, int $resolveReferences): Collection
+    private function updateAvailabilityList(AvailabilityList $availabilities, int $resolveReferences): AvailabilityList
     {
-        $updatedCollection = new Collection();
-        foreach ($newCollection as $entity) {
-            $updatedEntity = $this->writeEntityUpdate($entity, $resolveReferences);
-            AvailabilitySlotsUpdate::writeCalculatedSlots($updatedEntity, true);
-            $updatedCollection->addEntity($updatedEntity);
+        $updatedAvailabilities = new AvailabilityList();
+        foreach ($availabilities as $availability) {
+            $updatedAvailability = $this->updateAvailability($availability, $resolveReferences);
+            AvailabilitySlotsUpdate::writeCalculatedSlots($updatedAvailability, true);
+            $updatedAvailabilities->addEntity($updatedAvailability);
         }
-        return $updatedCollection;
+        return $updatedAvailabilities;
     }
 
-    protected function writeEntityUpdate($entity, $resolveReferences): ?Entity
+    protected function updateAvailability($availability, $resolveReferences): ?Availability
     {
         $repository = new AvailabilityRepository();
-        $updatedEntity = null;
-        if ($entity->id) {
-            $oldentity = $repository->readEntity($entity->id);
-            if ($oldentity && $oldentity->hasId()) {
-                $this->writeSpontaneousEntity($oldentity);
-                $updatedEntity = $repository->updateEntity($entity->id, $entity, $resolveReferences);
+        $updatedAvailability = null;
+        if ($availability->id) {
+            $existingAvailability = $repository->readEntity($availability->id);
+            if ($existingAvailability && $existingAvailability->hasId()) {
+                $this->resetOpeningHours($existingAvailability);
+                $updatedAvailability = $repository->updateEntity($availability->id, $availability, $resolveReferences);
+                App::$log->info('Updated availability', [
+                    'id' => $availability->id,
+                    'scope_id' => $availability->scope['id'],
+                    'operation' => 'update'
+                ]);
             }
         } else {
-            $updatedEntity = $repository->writeEntity($entity, $resolveReferences);
+            $updatedAvailability = $repository->writeEntity($availability, $resolveReferences);
+            App::$log->info('Created new availability', [
+                'id' => $updatedAvailability->id,
+                'scope_id' => $availability->scope['id'],
+                'operation' => 'create'
+            ]);
         }
-        if (!$updatedEntity) {
+        if (!$updatedAvailability) {
             throw new AvailabilityListUpdateFailed();
         }
-        return $updatedEntity;
+        return $updatedAvailability;
     }
 
-    protected function writeSpontaneousEntity(Entity $entity): void
+    protected function resetOpeningHours(Availability $availability): void
     {
-        $doubleTypesEntity = (new AvailabilityRepository())->readEntityDoubleTypes($entity->id);
-        if ($doubleTypesEntity) {
-            $doubleTypesEntity->workstationCount['intern'] = 0;
-            $doubleTypesEntity->workstationCount['callcenter'] = 0;
-            $doubleTypesEntity->workstationCount['public'] = 0;
-            $doubleTypesEntity['description'] = '';
-            $doubleTypesEntity['type'] = 'openinghours';
-            (new AvailabilityRepository())->writeEntity($doubleTypesEntity);
+        $doubleTypeAvailability = (new AvailabilityRepository())->readEntityDoubleTypes($availability->id);
+        if ($doubleTypeAvailability) {
+            $doubleTypeAvailability->workstationCount['intern'] = 0;
+            $doubleTypeAvailability->workstationCount['callcenter'] = 0;
+            $doubleTypeAvailability->workstationCount['public'] = 0;
+            $doubleTypeAvailability['description'] = '';
+            $doubleTypeAvailability['type'] = 'openinghours';
+            (new AvailabilityRepository())->writeEntity($doubleTypeAvailability);
         }
     }
 
-    private function validateNewAvailabilities(
-        Collection $newCollection,
-        Collection $mergedCollection,
+    private function validateAvailabilityList(
+        AvailabilityList $newAvailabilities,
+        AvailabilityList $existingAvailabilities,
         \DateTimeImmutable $selectedDate
     ): array {
         $validationErrors = [];
-        foreach ($newCollection as $newAvailability) {
-            $errors = $this->validateSingleAvailability($newAvailability, $mergedCollection, $selectedDate);
+        foreach ($newAvailabilities as $newAvailability) {
+            $errors = $this->validateAvailability($newAvailability, $existingAvailabilities, $selectedDate);
             if (count($errors) > 0) {
                 $validationErrors = array_merge($validationErrors, $errors);
             } else {
-                $mergedCollection->addEntity($newAvailability);
+                $existingAvailabilities->addEntity($newAvailability);
             }
         }
         return $validationErrors;
     }
 
-    private function validateSingleAvailability(
-        Entity $availability,
-        Collection $mergedCollection,
+    private function validateAvailability(
+        Availability $availability,
+        AvailabilityList $existingAvailabilities,
         \DateTimeImmutable $selectedDate
     ): array {
         $startDate = (new \DateTimeImmutable())->setTimestamp($availability->startDate);
@@ -154,7 +172,7 @@ class AvailabilityListUpdate extends BaseController
             "{$endDate->format('Y-m-d')} {$availability->endTime}"
         );
 
-        return $mergedCollection->validateTimeRangesAndRules(
+        return $existingAvailabilities->validateTimeRangesAndRules(
             $startDateTime,
             $endDateTime,
             $selectedDate,
@@ -165,15 +183,15 @@ class AvailabilityListUpdate extends BaseController
         );
     }
 
-    private function createNewCollection(array $availabilityList): Collection
+    private function createAvailabilityList(array $availabilityData): AvailabilityList
     {
-        $newCollection = new Collection();
-        foreach ($availabilityList as $item) {
-            $entity = new Entity($item);
-            $entity->testValid();
-            $newCollection->addEntity($entity);
+        $availabilities = new AvailabilityList();
+        foreach ($availabilityData as $data) {
+            $availability = new Availability($data);
+            $availability->testValid();
+            $availabilities->addEntity($availability);
         }
-        return $newCollection;
+        return $availabilities;
     }
 
     private function createSelectedDateTime(string $selectedDate): \DateTimeImmutable
@@ -184,15 +202,15 @@ class AvailabilityListUpdate extends BaseController
         );
     }
 
-    private function getMergedCollection(\BO\Zmsentities\Scope $scope): Collection
+    private function createMergedAvailabilityList(\BO\Zmsentities\Scope $scope): AvailabilityList
     {
         $availabilityRepo = new AvailabilityRepository();
-        $existingCollection = $availabilityRepo->readAvailabilityListByScope($scope, 1);
+        $existingAvailabilities = $availabilityRepo->readAvailabilityListByScope($scope, 1);
 
-        $mergedCollection = new Collection();
-        foreach ($existingCollection as $existingAvailability) {
-            $mergedCollection->addEntity($existingAvailability);
+        $mergedAvailabilities = new AvailabilityList();
+        foreach ($existingAvailabilities as $availability) {
+            $mergedAvailabilities->addEntity($availability);
         }
-        return $mergedCollection;
+        return $mergedAvailabilities;
     }
 }
