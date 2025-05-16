@@ -34,6 +34,7 @@
                 "whitelistedMails": "",
                 "amendmentLabel": "Zusatzinformationen zum Anliegen",
                 "customTextfieldLabel": "Zusatzfeld zum Anliegen",
+                "customTextfield2Label": "Zusatzfeld 2 zum Anliegen",
                 "emailRequired": false,
                 "emailConfirmationActivated": true,
                 "adminMailOnAppointment": false,
@@ -400,7 +401,7 @@
                                     "enum": ["true", "false"]
                                 }
                             ],
-                            "description": "true if an  custom text field is activated",
+                            "description": "true if an custom text field is activated",
                             "default": false
                         },
                         "customTextfieldRequired": {
@@ -421,6 +422,54 @@
                                 }
                             ],
                             "description": "true if client is required to enter a custom text field address",
+                            "default": false
+                        },
+                        "customTextfield2Label": {
+                            "type": ["string", "null"],
+                            "description": "label for the second form field to enter additional informations to a process",
+                            "default": ""
+                        },
+                        "customTextfield2Activated": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[01]$"
+                                },
+                                {
+                                    "type": "string",
+                                    "enum": ["true", "false"]
+                                }
+                            ],
+                            "description": "true if the second custom text field is activated",
+                            "default": false
+                        },
+                        "customTextfield2Required": {
+                            "oneOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[01]$"
+                                },
+                                {
+                                    "type": "string",
+                                    "enum": ["true", "false"]
+                                }
+                            ],
+                            "description": "true if client is required to enter the second custom text field address",
                             "default": false
                         },
                         "captchaActivatedRequired": {
