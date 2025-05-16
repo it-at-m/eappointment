@@ -21,18 +21,18 @@
             "reminderTimestamp": 0,
             "requests": [{
                 "$schema": "https://schema.berlin.de/queuemanagement/request.json",
-                "id": "1063424",
-                "link": "https://service.berlin.de/dienstleistung/1063424/",
-                "name": "Service Name",
-                "source": "dldb"
+                "id": "1",
+                "link": "https://www.berlinonline.de",
+                "name": "Unittest Source Dienstleistung",
+                "source": "unittest"
             }],
             "scope": {
                 "$schema": "https://schema.berlin.de/queuemanagement/scope.json",
-                "hint": "Bürgeramt | Nr. wird zum Termin aufgerufen",
-                "id": "141",
+                "hint": "Unittest | Nr. wird zum Termin aufgerufen",
+                "id": "1",
                 "contact": {
-                    "name": "Bürgeramt Heerstraße",
-                    "street": "Heerstr. 12, 14052 Berlin",
+                    "name": "Unittest Source Dienstleister",
+                    "street": "Alte Jakobstraße 105, 10178 Berlin",
                     "email": "",
                     "country": "Germany"
                 },
@@ -53,8 +53,13 @@
                         "emailRequired": "0",
                         "adminMailOnAppointment": "0",
                         "adminMailOnDeleted": "0",
-                        "telephoneActivated": "0",
-                        "telephoneRequired": "0"
+                        "telephoneActivated": "1",
+                        "telephoneRequired": "0",
+                        "customTextfieldActivated": "1",
+                        "customTextfieldRequired": "0",
+                        "customTextfieldLabel": "Custom Label",
+                        "captchaActivatedRequired": "0",
+                        "displayInfo": "Infos zum Standort."
                     },
                     "notifications": {
                         "confirmationContent": "",
@@ -90,7 +95,7 @@
                         "emergencyEnabled": "1"
                     }
                 },
-                "shortName": "",
+                "shortName": "Scope 1",
                 "status": {
                     "emergency": {
                         "acceptedByWorkstation": "-1",
@@ -108,20 +113,20 @@
                     }
                 },
                 "provider": {
-                    "id": "122217",
+                    "id": "9999998",
                     "contact": {
                         "email": "test@example.com",
                         "city": "Berlin",
                         "country": "Germany",
-                        "name": "Bürgeramt Heerstraße",
-                        "postalCode": "14052",
+                        "name": "Unittest Source Dienstleister",
+                        "postalCode": "10178",
                         "region": "Berlin",
-                        "street": "Heerstr.",
-                        "streetNumber": "12"
+                        "street": "Alte Jakobstraße",
+                        "streetNumber": "105"
                     },
-                    "source": "dldb",
-                    "link": "https://service.berlin.de/standort/122217/",
-                    "name": "Bürgeramt Heerstraße"
+                    "source": "unittest",
+                    "link": "https://www.berlinonline.de",
+                    "name": "Unittest Source Dienstleister"
                 },
                 "department": {
                     "id": "74",

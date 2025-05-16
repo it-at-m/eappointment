@@ -158,6 +158,29 @@ class AvailableDaysListServiceTest extends TestCase
         $this->assertEquals($expectedError, $result);
     }
 
+    public function testGetAvailableDaysListWithInvalidServiceLocationCombinationReturnsError(): void
+    {
+        // Arrange
+        $queryParams = [
+            'officeId' => '999',  // This office ID will trigger the validation error
+            'serviceId' => '456',
+            'serviceCount' => '1',
+            'startDate' => '2025-01-01',
+            'endDate' => '2025-01-31'
+        ];
+        $expectedError = ['errors' => [['errorCode' => 'invalidLocationAndServiceCombination']]];
+
+        $this->createMockValidationService([]);  // Initial validation passes
+        $this->service = new AvailableDaysListService();
+
+        // Act
+        $result = $this->service->getAvailableDaysList($queryParams);
+
+        // Assert
+        $this->assertIsArray($result);
+        $this->assertEquals($expectedError, $result);
+    }
+
     private function createMockValidationService(array $returnValue): void
     {
         $class = 'BO\\Zmscitizenapi\\Services\\Core\\ValidationService';
@@ -172,6 +195,16 @@ class AvailableDaysListServiceTest extends TestCase
                         array $serviceCounts
                     ): array {
                         return unserialize(\'' . serialize($returnValue) . '\');
+                    }
+
+                    public static function validateServiceLocationCombination(
+                        int $officeId,
+                        array $serviceIds
+                    ): array {
+                        if ($officeId === 999) {
+                            return ["errors" => [["errorCode" => "invalidLocationAndServiceCombination"]]];
+                        }
+                        return [];
                     }
                 }'
             );

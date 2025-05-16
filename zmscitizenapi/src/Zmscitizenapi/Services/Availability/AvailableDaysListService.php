@@ -41,6 +41,16 @@ class AvailableDaysListService
             return $errors;
         }
 
+        foreach ($clientData->officeIds as $officeId) {
+            $errors = ValidationService::validateServiceLocationCombination(
+                (int) $officeId,
+                array_map('intval', $clientData->serviceIds)
+            );
+            if (!empty($errors['errors'])) {
+                return $errors;
+            }
+        }
+
         return $this->getAvailableDays($clientData);
     }
 

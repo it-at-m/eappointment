@@ -153,6 +153,50 @@ class AvailableAppointmentsListServiceTest extends TestCase
         $this->assertEquals($expectedError, $result);
     }
 
+    public function testGetAvailableAppointmentsListWithInvalidServiceLocationCombinationReturnsError(): void
+    {
+        // Arrange
+        $queryParams = [
+            'date' => '2025-01-15',
+            'officeId' => '999',  // This office ID will trigger the validation error
+            'serviceId' => '456',
+            'serviceCount' => '1'
+        ];
+        $expectedError = ['errors' => [['errorCode' => 'invalidLocationAndServiceCombination']]];
+
+        $this->createMockValidationService([]);  // Initial validation passes
+        $this->service = new AvailableAppointmentsListService();
+
+        // Act
+        $result = $this->service->getAvailableAppointmentsList($queryParams);
+
+        // Assert
+        $this->assertIsArray($result);
+        $this->assertEquals($expectedError, $result);
+    }
+
+    public function testGetAvailableAppointmentsListByOfficeWithInvalidServiceLocationCombinationReturnsError(): void
+    {
+        // Arrange
+        $queryParams = [
+            'date' => '2025-01-15',
+            'officeId' => '999',  // This office ID will trigger the validation error
+            'serviceId' => '456',
+            'serviceCount' => '1'
+        ];
+        $expectedError = ['errors' => [['errorCode' => 'invalidLocationAndServiceCombination']]];
+
+        $this->createMockValidationService([]);  // Initial validation passes
+        $this->service = new AvailableAppointmentsListService();
+
+        // Act
+        $result = $this->service->getAvailableAppointmentsListByOffice($queryParams);
+
+        // Assert
+        $this->assertIsArray($result);
+        $this->assertEquals($expectedError, $result);
+    }
+
     private function createMockValidationService(array $returnValue): void
     {
         $class = 'BO\\Zmscitizenapi\\Services\\Core\\ValidationService';
@@ -169,6 +213,16 @@ class AvailableAppointmentsListServiceTest extends TestCase
                         $tokenValidator = null
                     ): array {
                             return unserialize(\'' . serialize($returnValue) . '\');
+                    }
+
+                    public static function validateServiceLocationCombination(
+                        int $officeId,
+                        array $serviceIds
+                    ): array {
+                        if ($officeId === 999) {
+                            return ["errors" => [["errorCode" => "invalidLocationAndServiceCombination"]]];
+                        }
+                        return [];
                     }
                 }'
             );
