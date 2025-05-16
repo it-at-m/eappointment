@@ -132,9 +132,7 @@ class AvailabilityListUpdateTest extends Base
     public function testWeekdayValidation()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
-        $this->expectExceptionCode(400);
-        $this->render([], [
+        $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
                     {
@@ -166,14 +164,17 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertNotEmpty($responseData['error']);
+        $this->assertEquals('weekdayRequired', $responseData['error'][0]['type']);
     }
 
     public function testStartTimeValidation()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
-        $this->expectExceptionCode(400);
-        $this->render([], [
+        $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
                     {
@@ -190,7 +191,7 @@ class AvailabilityListUpdateTest extends Base
                             "saturday": 0,
                             "sunday": 0
                         },
-                        "startDate": ' . strtotime("-1 day") . ',
+                        "startDate": ' . strtotime("+1 day") . ',
                         "endDate": ' . strtotime("+30 days") . ',
                         "startTime": "17:00:00",
                         "endTime": "09:00:00",
@@ -205,14 +206,17 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertNotEmpty($responseData['error']);
+        $this->assertEquals('endTime', $responseData['error'][0]['type']);
     }
 
     public function testSlotTimeValidation()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
-        $this->expectExceptionCode(400);
-        $this->render([], [
+        $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
                     {
@@ -244,14 +248,17 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertNotEmpty($responseData['error']);
+        $this->assertEquals('slotTime', $responseData['error'][0]['type']);
     }
 
     public function testBookableDayRangeValidation()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
-        $this->expectExceptionCode(400);
-        $this->render([], [
+        $response = $this->render([], [
             '__body' => '{
                 "availabilityList": [
                     {
@@ -287,13 +294,17 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertNotEmpty($responseData['error']);
+        $this->assertEquals('bookableDayRange', $responseData['error'][0]['type']);
     }
 
     public function testTypeValidation()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
-        $this->expectExceptionCode(400);
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->render([], [
             '__body' => '{
                 "availabilityList": [
