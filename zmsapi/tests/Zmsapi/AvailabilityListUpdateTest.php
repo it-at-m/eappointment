@@ -167,11 +167,18 @@ class AvailabilityListUpdateTest extends Base
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertArrayHasKey('meta', $responseData);
-        $this->assertTrue($responseData['meta']['error']);
-        $this->assertArrayHasKey('error', $responseData);
-        $this->assertCount(1, $responseData['error']);
-        $this->assertEquals('weekdayRequired', $responseData['error'][0]['type']);
-        $this->assertEquals('Mindestens ein Wochentag muss ausgewählt sein.', $responseData['error'][0]['message']);
+        $this->assertFalse($responseData['meta']['error']);
+        $this->assertEmpty($responseData['data']);
+        // Check the log for validation errors
+        $logEntries = \App::$log->getTestLogs();
+        $this->assertNotEmpty($logEntries);
+        $lastLog = end($logEntries);
+        $this->assertEquals('WARNING', $lastLog['level']);
+        $this->assertEquals('AvailabilityListUpdateFailed: Validation failed', $lastLog['message']);
+        $this->assertArrayHasKey('errors', $lastLog['context']);
+        $this->assertCount(1, $lastLog['context']['errors']);
+        $this->assertEquals('weekdayRequired', $lastLog['context']['errors'][0]['type']);
+        $this->assertEquals('Mindestens ein Wochentag muss ausgewählt sein.', $lastLog['context']['errors'][0]['message']);
     }
 
     public function testStartTimeValidation()
@@ -212,11 +219,18 @@ class AvailabilityListUpdateTest extends Base
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertArrayHasKey('meta', $responseData);
-        $this->assertTrue($responseData['meta']['error']);
-        $this->assertArrayHasKey('error', $responseData);
-        $this->assertCount(1, $responseData['error']);
-        $this->assertEquals('endTime', $responseData['error'][0]['type']);
-        $this->assertEquals('Die Endzeit darf nicht vor der Startzeit liegen.', $responseData['error'][0]['message']);
+        $this->assertFalse($responseData['meta']['error']);
+        $this->assertEmpty($responseData['data']);
+        // Check the log for validation errors
+        $logEntries = \App::$log->getTestLogs();
+        $this->assertNotEmpty($logEntries);
+        $lastLog = end($logEntries);
+        $this->assertEquals('WARNING', $lastLog['level']);
+        $this->assertEquals('AvailabilityListUpdateFailed: Validation failed', $lastLog['message']);
+        $this->assertArrayHasKey('errors', $lastLog['context']);
+        $this->assertCount(1, $lastLog['context']['errors']);
+        $this->assertEquals('endTime', $lastLog['context']['errors'][0]['type']);
+        $this->assertEquals('Die Endzeit darf nicht vor der Startzeit liegen.', $lastLog['context']['errors'][0]['message']);
     }
 
     public function testSlotTimeValidation()
@@ -257,10 +271,17 @@ class AvailabilityListUpdateTest extends Base
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertArrayHasKey('meta', $responseData);
-        $this->assertTrue($responseData['meta']['error']);
-        $this->assertArrayHasKey('error', $responseData);
-        $this->assertCount(1, $responseData['error']);
-        $this->assertEquals('slotTime', $responseData['error'][0]['type']);
+        $this->assertFalse($responseData['meta']['error']);
+        $this->assertEmpty($responseData['data']);
+        // Check the log for validation errors
+        $logEntries = \App::$log->getTestLogs();
+        $this->assertNotEmpty($logEntries);
+        $lastLog = end($logEntries);
+        $this->assertEquals('WARNING', $lastLog['level']);
+        $this->assertEquals('AvailabilityListUpdateFailed: Validation failed', $lastLog['message']);
+        $this->assertArrayHasKey('errors', $lastLog['context']);
+        $this->assertCount(1, $lastLog['context']['errors']);
+        $this->assertEquals('slotTime', $lastLog['context']['errors'][0]['type']);
     }
 
     public function testBookableDayRangeValidation()
@@ -305,11 +326,18 @@ class AvailabilityListUpdateTest extends Base
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertArrayHasKey('meta', $responseData);
-        $this->assertTrue($responseData['meta']['error']);
-        $this->assertArrayHasKey('error', $responseData);
-        $this->assertCount(1, $responseData['error']);
-        $this->assertEquals('bookableDayRange', $responseData['error'][0]['type']);
-        $this->assertEquals('Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.', $responseData['error'][0]['message']);
+        $this->assertFalse($responseData['meta']['error']);
+        $this->assertEmpty($responseData['data']);
+        // Check the log for validation errors
+        $logEntries = \App::$log->getTestLogs();
+        $this->assertNotEmpty($logEntries);
+        $lastLog = end($logEntries);
+        $this->assertEquals('WARNING', $lastLog['level']);
+        $this->assertEquals('AvailabilityListUpdateFailed: Validation failed', $lastLog['message']);
+        $this->assertArrayHasKey('errors', $lastLog['context']);
+        $this->assertCount(1, $lastLog['context']['errors']);
+        $this->assertEquals('bookableDayRange', $lastLog['context']['errors'][0]['type']);
+        $this->assertEquals('Bitte geben Sie im Feld \'von\' eine kleinere Zahl ein als im Feld \'bis\', wenn Sie bei \'Buchbar\' sind.', $lastLog['context']['errors'][0]['message']);
     }
 
     public function testTypeValidation()
