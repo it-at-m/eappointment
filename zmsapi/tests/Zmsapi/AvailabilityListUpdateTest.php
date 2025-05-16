@@ -128,4 +128,204 @@ class AvailabilityListUpdateTest extends Base
             'migrationfix' => 0
         ], []);
     }
+
+    public function testWeekdayValidation()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
+        $this->expectExceptionCode(400);
+        $this->render([], [
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "description": "Test invalid weekday configuration",
+                        "scope": {
+                            "id": 141
+                        },
+                        "weekday": {
+                            "monday": 0,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0,
+                            "sunday": 0
+                        },
+                        "startDate": ' . strtotime("+1 day") . ',
+                        "endDate": ' . strtotime("+30 days") . ',
+                        "startTime": "09:00:00",
+                        "endTime": "17:00:00",
+                        "slotTimeInMinutes": 60,
+                        "workstationCount": {
+                            "public": 1,
+                            "callcenter": 0,
+                            "intern": 0
+                        }
+                    }
+                ],
+                "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
+            }'
+        ], []);
+    }
+
+    public function testStartTimeValidation()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
+        $this->expectExceptionCode(400);
+        $this->render([], [
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "description": "Test invalid start time",
+                        "scope": {
+                            "id": 141
+                        },
+                        "weekday": {
+                            "monday": 1,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0,
+                            "sunday": 0
+                        },
+                        "startDate": ' . strtotime("-1 day") . ',
+                        "endDate": ' . strtotime("+30 days") . ',
+                        "startTime": "17:00:00",
+                        "endTime": "09:00:00",
+                        "slotTimeInMinutes": 60,
+                        "workstationCount": {
+                            "public": 1,
+                            "callcenter": 0,
+                            "intern": 0
+                        }
+                    }
+                ],
+                "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
+            }'
+        ], []);
+    }
+
+    public function testSlotTimeValidation()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
+        $this->expectExceptionCode(400);
+        $this->render([], [
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "description": "Test invalid slot time",
+                        "scope": {
+                            "id": 141
+                        },
+                        "weekday": {
+                            "monday": 1,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0,
+                            "sunday": 0
+                        },
+                        "startDate": ' . strtotime("+1 day") . ',
+                        "endDate": ' . strtotime("+30 days") . ',
+                        "startTime": "09:00:00",
+                        "endTime": "17:00:00",
+                        "slotTimeInMinutes": 0,
+                        "workstationCount": {
+                            "public": 1,
+                            "callcenter": 0,
+                            "intern": 0
+                        }
+                    }
+                ],
+                "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
+            }'
+        ], []);
+    }
+
+    public function testBookableDayRangeValidation()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
+        $this->expectExceptionCode(400);
+        $this->render([], [
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "description": "Test invalid bookable day range",
+                        "scope": {
+                            "id": 141
+                        },
+                        "weekday": {
+                            "monday": 1,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0,
+                            "sunday": 0
+                        },
+                        "startDate": ' . strtotime("+1 day") . ',
+                        "endDate": ' . strtotime("+30 days") . ',
+                        "startTime": "09:00:00",
+                        "endTime": "17:00:00",
+                        "slotTimeInMinutes": 60,
+                        "bookable": {
+                            "startInDays": 31,
+                            "endInDays": 30
+                        },
+                        "workstationCount": {
+                            "public": 1,
+                            "callcenter": 0,
+                            "intern": 0
+                        }
+                    }
+                ],
+                "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
+            }'
+        ], []);
+    }
+
+    public function testTypeValidation()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\BadRequest');
+        $this->expectExceptionCode(400);
+        $this->render([], [
+            '__body' => '{
+                "availabilityList": [
+                    {
+                        "description": "Test invalid type",
+                        "scope": {
+                            "id": 141
+                        },
+                        "weekday": {
+                            "monday": 1,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0,
+                            "sunday": 0
+                        },
+                        "startDate": ' . strtotime("+1 day") . ',
+                        "endDate": ' . strtotime("+30 days") . ',
+                        "startTime": "09:00:00",
+                        "endTime": "17:00:00",
+                        "slotTimeInMinutes": 60,
+                        "type": "invalid_type",
+                        "workstationCount": {
+                            "public": 1,
+                            "callcenter": 0,
+                            "intern": 0
+                        }
+                    }
+                ],
+                "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
+            }'
+        ], []);
+    }
 }
