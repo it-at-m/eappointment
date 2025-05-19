@@ -11,6 +11,8 @@ use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
 class AvailableDaysListService
 {
+    use ServiceLocationValidationTrait;
+
     private TokenValidationService $tokenValidator;
     private ZmsApiFacadeService $zmsApiFacadeService;
 
@@ -41,14 +43,9 @@ class AvailableDaysListService
             return $errors;
         }
 
-        foreach ($clientData->officeIds as $officeId) {
-            $errors = ValidationService::validateServiceLocationCombination(
-                (int) $officeId,
-                array_map('intval', $clientData->serviceIds)
-            );
-            if (!empty($errors['errors'])) {
-                return $errors;
-            }
+        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds);
+        if ($errors !== null) {
+            return $errors;
         }
 
         return $this->getAvailableDays($clientData);
