@@ -695,7 +695,9 @@ const lastDayPart = computed(() => {
 });
 
 const currentDayPart = computed(() => {
-  return selectedDayPart.value !== null ? selectedDayPart.value : firstDayPart.value;
+  return selectedDayPart.value !== null
+    ? selectedDayPart.value
+    : firstDayPart.value;
 });
 
 const showSelectionForProvider = (provider: OfficeImpl) => {
@@ -793,7 +795,7 @@ const allowedDates = (date: Date) => {
   if (!dayEntry) return false;
 
   return dayEntry.providerIDs
-    .split(',')
+    .split(",")
     .some((id) => selectedProviders.value[id]);
 };
 
