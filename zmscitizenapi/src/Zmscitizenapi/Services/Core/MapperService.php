@@ -191,6 +191,10 @@ class MapperService
         return new OfficeServiceRelationList($relations);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function scopeToThinnedScope(Scope $scope): ThinnedScope
     {
         if (!$scope || !isset($scope->id)) {
