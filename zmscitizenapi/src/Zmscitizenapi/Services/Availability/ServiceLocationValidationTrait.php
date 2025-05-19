@@ -19,7 +19,7 @@ trait ServiceLocationValidationTrait
                 return $errors;
             }
         }
-        
+
         return null;
     }
-} 
+}
