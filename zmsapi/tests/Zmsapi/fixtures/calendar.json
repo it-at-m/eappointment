@@ -1,63 +1,112 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["data", "meta"],
   "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
     "meta": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri"
+        },
+        "error": {
+          "type": "boolean"
+        },
+        "generated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "server": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": ["error", "generated", "server", "rows"],
+      "additionalProperties": false
     },
     "data": {
       "type": "object",
-      "required": ["days"],
       "properties": {
         "days": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["date", "scopes"],
             "properties": {
-              "date": { "type": "integer" },
+              "date": {
+                "type": "integer"
+              },
               "scopes": {
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": ["id", "name", "maxSeats", "times"],
                   "properties": {
-                    "id": { "type": "integer" },
-                    "name": { "type": "string" },
-                    "maxSeats": { "type": "integer" },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "maxSeats": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
                     "times": {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "required": ["name", "seats"],
                         "properties": {
-                          "name": { "type": "string" },
+                          "name": {
+                            "type": "string",
+                            "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"
+                          },
                           "seats": {
                             "type": "array",
                             "items": {
                               "type": "object",
-                              "required": ["status"],
                               "properties": {
                                 "status": {
                                   "type": "string",
-                                  "enum": ["open", "skip", "termin"]
+                                  "enum": ["open", "termin", "skip"]
                                 },
-                                "processId": { "type": ["integer", "null"] },
-                                "slots":     { "type": ["integer", "null"] }
-                              }
+                                "processId": {
+                                  "type": "integer"
+                                },
+                                "slots": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                }
+                              },
+                              "required": ["status"],
+                              "additionalProperties": false
                             }
                           }
-                        }
+                        },
+                        "required": ["name", "seats"],
+                        "additionalProperties": false
                       }
                     }
-                  }
+                  },
+                  "required": ["id", "name", "maxSeats", "times"],
+                  "additionalProperties": false
                 }
               }
-            }
+            },
+            "required": ["date", "scopes"],
+            "additionalProperties": false
           }
         }
-      }
+      },
+      "required": ["days"],
+      "additionalProperties": false
     }
-  }
+  },
+  "required": ["meta", "data"],
+  "additionalProperties": false
 }
