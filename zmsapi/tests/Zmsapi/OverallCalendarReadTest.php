@@ -54,11 +54,11 @@ class OverallCalendarReadTest extends Base
         $this->setWorkstation();
 
         $response = $this->render([], self::VALID_PARAMS);
-        $json = json_decode((string) $response->getBody());
+        $json     = json_decode((string) $response->getBody());
+        $this->assertNotNull($json, 'Response is not valid JSON');
 
         $schemaPath = __DIR__ . '/fixtures/calendar.json';
-        $schemaRaw = file_get_contents($schemaPath);
-
+        $schemaRaw  = file_get_contents($schemaPath);
         $this->assertNotFalse($schemaRaw, "Schema file could not be read: $schemaPath");
 
         $schemaDecoded = json_decode($schemaRaw);
@@ -68,16 +68,14 @@ class OverallCalendarReadTest extends Base
         $schema = $loader->loadObjectSchema($schemaDecoded);
 
         $validator = new Validator();
-        $result = $validator->schemaValidation($json, $schema);
+        $result    = $validator->schemaValidation($json, $schema);
 
         $this->assertNotNull($result, "Schema validation result is null");
-
         if (!$result->isValid()) {
             $formatter = new ErrorFormatter();
-            $errors = $formatter->format($result->error());
+            $errors    = $formatter->format($result->error());
             error_log("Schema validation failed:\n" . json_encode($errors, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
-
         $this->assertTrue($result->isValid(), 'Response does not match calendar schema');
     }
 
