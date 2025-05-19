@@ -51,7 +51,15 @@ const createWrapper = (overrides = {}) => {
 
 describe("CalendarView", () => {
   (fetchAvailableDays as vi.Mock).mockResolvedValue({
-    availableDays: ['2025-05-14', '2025-05-15']
+    availableDays: [
+      {
+        time: '2025-05-14',
+        providerIDs: '102522,54261,10489'
+      },
+      {
+        time: '2025-05-15',
+        providerIDs: '102522,54261,10489'
+      }]
   });
 
   (fetchAvailableTimeSlots as vi.Mock).mockResolvedValue({
@@ -312,5 +320,36 @@ describe("CalendarView", () => {
     expect(timeslotButton.text()).toContain('15:00');
     expect(wrapper.text()).toContain('Mittwoch, 14.05.2025');
     expect(wrapper.html()).toContain('15:00-15:59');
+  });
+
+  it("shows available day only by providers that have free appointments on that day", async () => {
+    (fetchAvailableDays as vi.Mock).mockResolvedValue({
+      availableDays: [
+        {
+          time: '2025-05-14',
+          providerIDs: '102522,54261,10489'
+        },
+        {
+          time: '2025-05-15',
+          providerIDs: '102522'
+        }]
+    });
+
+    const wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+          { name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" } },
+          { name: "Office BBB", id: 54261, address: { street: "Elm", house_number: "99" } },
+          { name: "Office CCC", id: 10489, address: { street: "Elm", house_number: "99" } }
+        ] }
+    });
+
+    await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" }});
+    await nextTick();
+
+    wrapper.vm.handleProviderCheckbox(102522)
+
+    expect(wrapper.vm.allowedDates(new Date('2025-05-14'))).toBeTruthy();
+    expect(wrapper.vm.allowedDates(new Date('2025-05-16'))).toBeFalsy();
+    expect(wrapper.vm.allowedDates(new Date('2025-05-17'))).toBeFalsy();
   });
 });
