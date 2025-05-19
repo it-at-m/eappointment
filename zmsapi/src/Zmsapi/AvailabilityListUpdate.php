@@ -37,10 +37,7 @@ class AvailabilityListUpdate extends BaseController
         (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        if (!$input || count($input) === 0) {
-            throw new BadRequestException();
-        }
-
+        self::validateClientData($input);
         $newAvailabilities = $this->createAvailabilityList($input['availabilityList']);
         $selectedDate = $this->createSelectedDateTime($input['selectedDate']);
         $scope = new \BO\Zmsentities\Scope($input['availabilityList'][0]['scope']);
@@ -213,5 +210,22 @@ class AvailabilityListUpdate extends BaseController
             $mergedAvailabilities->addEntity($availability);
         }
         return $mergedAvailabilities;
+    }
+
+    private static function validateClientData(array $input): void
+    {
+        if (empty($input)) {
+            App::$log->warning('No input data provided');
+            throw new BadRequestException('No input data provided');
+        }
+
+        if (!isset($input['availabilityList']) || !is_array($input['availabilityList']) || empty($input['availabilityList'])) {
+            App::$log->warning('Invalid availabilityList', [
+                'has_availabilityList' => isset($input['availabilityList']),
+                'is_array' => isset($input['availabilityList']) ? is_array($input['availabilityList']) : false,
+                'is_empty' => isset($input['availabilityList']) ? empty($input['availabilityList']) : true
+            ]);
+            throw new BadRequestException('Invalid availabilityList');
+        }
     }
 }

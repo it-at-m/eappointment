@@ -91,8 +91,6 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         'sunday'
     ][now.isoWeekday() - 1]
 
-    console.log(scope)
-
     const newAvailability = {
         id: null,
         tempId,
@@ -103,8 +101,8 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         startTime: '07:00:00',
         endTime: '20:00:00',
         bookable: {
-            startInDays: scope.preferences.appointment.startInDaysDefault || 0,
-            endInDays: scope.preferences.appointment.endInDaysDefault || 60
+            ...(scope.preferences.appointment.startInDaysDefault ? { startInDays: scope.preferences.appointment.startInDaysDefault } : {}),
+            ...(scope.preferences.appointment.endInDaysDefault ? { endInDays: scope.preferences.appointment.endInDaysDefault } : {})
         },
         multipleSlotsAllowed: 1,
         slotTimeInMinutes: scope.provider.data['slotTimeInMinutes'],
@@ -187,22 +185,14 @@ export const cleanupAvailabilityForSave = availability => {
         delete newAvailability.tempId;
     }
 
-    if (newAvailability.kind) {
-        delete newAvailability.kind;
-    }
-
     return newAvailability;
 }
 
 export const getDataValuesFromForm = (form, scope) => {
     return Object.assign({}, getFirstLevelValues(form), {
         bookable: {
-            startInDays: form.open_from === "" || form.open_from === null ? 
-                parseInt(scope.preferences.appointment.startInDaysDefault || 0) : 
-                parseInt(form.open_from || 0),
-            endInDays: form.open_to === "" || form.open_to === null ? 
-                parseInt(scope.preferences.appointment.endInDaysDefault || 60) : 
-                parseInt(form.open_to || 60)
+            ...(form.open_from && form.open_from !== "" ? { startInDays: parseInt(form.open_from) } : {}),
+            ...(form.open_to && form.open_to !== "" ? { endInDays: parseInt(form.open_to) } : {})
         },
         workstationCount: {
             intern: form.workstationCount_intern,

@@ -213,8 +213,8 @@ class AvailabilityList extends Base
         $errorList = [];
 
         $today = new \DateTimeImmutable();
-        $yesterday = $selectedDate->modify('-1 day');
-        $tomorrow = $selectedDate->modify('+1 day');
+        $yesterday = (clone $selectedDate)->modify('-1 day');
+        $tomorrow = (clone $selectedDate)->modify('+1 day');
 
         foreach ($this as $availability) {
             $errorList = array_merge(

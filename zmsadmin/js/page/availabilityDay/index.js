@@ -121,6 +121,12 @@ class AvailabilityPage extends Component {
                     if (sendAvailability.kind === 'new' && sendAvailability.description.includes("Neue Öffnungszeit")) {
                         sendAvailability.description = sendAvailability.description.replace("Neue Öffnungszeit", "");
                     }
+                    if (!sendAvailability.bookable.startInDays) {
+                        sendAvailability.bookable.startInDays = this.props.scope.preferences.appointment.startInDaysDefault || 0;
+                    }
+                    if (!sendAvailability.bookable.endInDays) {
+                        sendAvailability.bookable.endInDays = this.props.scope.preferences.appointment.endInDaysDefault || 60;
+                    }
                     return {
                         ...sendAvailability,
                         kind: availability.kind || 'default',
@@ -153,8 +159,6 @@ class AvailabilityPage extends Component {
                         code: err.status,
                         message: err.responseText
                     });
-                } else {
-                    console.log('save all error', err);
                 }
                 this.updateSaveBarState('save', false);
                 this.getValidationList();
@@ -177,6 +181,12 @@ class AvailabilityPage extends Component {
             if (sendAvailability.tempId) {
                 delete sendAvailability.tempId;
             }
+            if (!sendAvailability.bookable.startInDays) {
+                sendAvailability.bookable.startInDays = this.props.scope.preferences.appointment.startInDaysDefault || 0;
+            }
+            if (!sendAvailability.bookable.endInDays) {
+                sendAvailability.bookable.endInDays = this.props.scope.preferences.appointment.endInDaysDefault || 60;
+            }
 
             const payload = {
                 availabilityList: [
@@ -187,7 +197,6 @@ class AvailabilityPage extends Component {
                 ],
                 selectedDate: selectedDate
             };
-
             $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
                 data: JSON.stringify(payload),
@@ -390,21 +399,71 @@ class AvailabilityPage extends Component {
             )
         }
 
+        const newAvailabilities = [
+            originAvailability,
+            exclusionAvailability,
+            futureAvailability
+        ];
+
+        // Update weekdays for each availability using the same algorithm as validateWeekdays
+        const weekdayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const germanWeekdays = {
+            'sunday': 'Sonntag',
+            'monday': 'Montag',
+            'tuesday': 'Dienstag',
+            'wednesday': 'Mittwoch',
+            'thursday': 'Donnerstag',
+            'friday': 'Freitag',
+            'saturday': 'Samstag'
+        };
+
+        // First, get the original selected weekdays
+        const originalSelectedWeekdays = new Set();
+        weekdayNames.forEach(day => {
+            if (parseInt(availability.weekday[day] || '0') > 0) {
+                originalSelectedWeekdays.add(day);
+            }
+        });
+
+        newAvailabilities.forEach(availability => {
+            if (availability.startDate && availability.endDate) {
+                const startDate = moment.unix(availability.startDate);
+                const endDate = moment.unix(availability.endDate);
+                const currentDate = startDate.clone();
+                const validWeekdays = new Set();
+
+                // Find all weekdays that occur in this availability's range
+                while (currentDate <= endDate) {
+                    const dayIndex = currentDate.day();
+                    const weekDayName = weekdayNames[dayIndex];
+                    validWeekdays.add(weekDayName);
+                    currentDate.add(1, 'day');
+                }
+
+                // Create a new weekday object for this availability
+                const newWeekday = {};
+                weekdayNames.forEach(day => {
+                    const wasSelected = originalSelectedWeekdays.has(day);
+                    const isValidForRange = validWeekdays.has(day);
+                    newWeekday[day] = (wasSelected && isValidForRange) ? '1' : '0';
+                });
+
+                // Replace the entire weekday object
+                availability.weekday = newWeekday;
+
+            }
+        });
+
         this.setState(Object.assign({},
-            mergeAvailabilityListIntoState(this.state, [
-                originAvailability,
-                exclusionAvailability,
-                futureAvailability
-            ]),
+            mergeAvailabilityListIntoState(this.state, newAvailabilities),
             {
                 selectedAvailability: exclusionAvailability,
                 stateChanged: true
             }
         ), () => {
-            console.log('in after merging', this.state.availabilitylist);
             this.getConflictList(),
-                this.getValidationList()
-        })
+            this.getValidationList()
+        });
     }
 
     onEditAvailabilityInFuture(availability) {
@@ -494,28 +553,45 @@ class AvailabilityPage extends Component {
         return hasError || hasConflict;
     }
 
-    getValidationList(list = []) {
-        const validateData = data => {
-            let validationResult = validate(data, this.props)
-            if (!validationResult.valid) {
-                return validationResult.errorList
+    getValidationList() {
+        return new Promise((resolve, reject) => {
+            const validateData = (data) => {
+                const validationResult = validate(data, this.props);
+                if (!validationResult.valid) {
+                    return validationResult.errorList;
+                }
+                return [];
+            };
 
+            try {
+                const list = this.state.availabilitylist
+                    .map(validateData)
+                    .flat();
+
+                this.setState(
+                    {
+                        errorList: list.length ? list : [],
+                    },
+                    () => {
+                        if (list.length > 0) {
+                            const nonPastTimeErrors = list.filter(error =>
+                                !error.itemList?.flat(2).some(item => item?.type === 'endTimePast')
+                            );
+
+                            if (nonPastTimeErrors.length > 0) {
+                                console.warn("Validation failed with errors:", nonPastTimeErrors);
+                                this.errorElement?.scrollIntoView();
+                            }
+                        } else {
+                            resolve();
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error("Validation error:", error);
+                reject(error);
             }
-            return [];
-        }
-
-        this.state.availabilitylist.map(availability => {
-            list.push(validateData(availability))
-        })
-        list = list.filter(el => el.id)
-
-        this.setState({
-            errorList: list.length ? Object.assign({}, list) : {}
-        }, () => {
-            if (list.length) {
-                this.errorElement.scrollIntoView()
-            }
-        })
+        });
     }
 
     getConflictList() {

@@ -475,7 +475,6 @@ class Availability extends Schema\Entity
     {
         $errorList = [];
 
-        // Check if at least one weekday is selected
         $hasSelectedDay = false;
         foreach (self::$weekdayNameList as $day) {
             if ((int)$weekday[$day] > 0) {
@@ -492,7 +491,6 @@ class Availability extends Schema\Entity
             return $errorList;
         }
 
-        // Map weekday names to German
         $germanWeekdays = [
             'sunday' => 'Sonntag',
             'monday' => 'Montag',
@@ -503,13 +501,11 @@ class Availability extends Schema\Entity
             'saturday' => 'Samstag'
         ];
 
-        // Track which selected weekdays appear in the range
         $selectedWeekdays = array_filter(self::$weekdayNameList, function ($day) use ($weekday) {
             return (int)$weekday[$day] > 0;
         });
         $foundWeekdays = [];
 
-        // Check if dates fall on selected weekdays
         $currentDate = clone $startDate;
         while ($currentDate <= $endDate) {
             $weekDayName = self::$weekdayNameList[$currentDate->format('w')];
@@ -519,7 +515,6 @@ class Availability extends Schema\Entity
             $currentDate = $currentDate->modify('+1 day');
         }
 
-        // Check if any selected weekday doesn't appear in the range
         $missingWeekdays = array_diff($selectedWeekdays, array_unique($foundWeekdays));
         if (!empty($missingWeekdays)) {
             $germanMissingWeekdays = array_map(function ($day) use ($germanWeekdays) {
@@ -611,13 +606,11 @@ class Availability extends Schema\Entity
         $errorList = [];
         $slotTime = $this['slotTimeInMinutes'];
 
-        // Extract time components
         $startHour = (int)$startDate->format('H');
         $startMinute = (int)$startDate->format('i');
         $endHour = (int)$endDate->format('H');
         $endMinute = (int)$endDate->format('i');
 
-        // Calculate total minutes
         $totalMinutes = (($endHour - $startHour) * 60) + ($endMinute - $startMinute);
 
         if ($slotTime === 0) {
