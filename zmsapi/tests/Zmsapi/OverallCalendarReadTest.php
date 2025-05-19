@@ -2,10 +2,10 @@
 
 namespace BO\Zmsapi\Tests;
 
+use BO\Mellon\Failure\Exception;
 use Opis\JsonSchema\Validator;
 use Opis\JsonSchema\Errors\ErrorFormatter;
 use Opis\JsonSchema\SchemaLoader;
-use Opis\JsonSchema\Schema;
 
 class OverallCalendarReadTest extends Base
 {
@@ -44,7 +44,7 @@ class OverallCalendarReadTest extends Base
     {
         $this->setWorkstation();
 
-        $this->expectException(\BO\Mellon\Failure\Exception::class);
+        $this->expectException(Exception::class);
 
         $this->render([], ['scopeIds' => '', 'dateFrom' => '2025-05-14', 'dateUntil' => '2025-05-14']);
     }
@@ -56,13 +56,21 @@ class OverallCalendarReadTest extends Base
         $response = $this->render([], self::VALID_PARAMS);
         $json = json_decode((string) $response->getBody());
 
-        // Lade das JSON-Schema korrekt als Schema-Objekt
         $schemaPath = __DIR__ . '/fixtures/calendar.json';
+        $schemaRaw = file_get_contents($schemaPath);
+
+        $this->assertNotFalse($schemaRaw, "Schema file could not be read: $schemaPath");
+
+        $schemaDecoded = json_decode($schemaRaw);
+        $this->assertNotNull($schemaDecoded, "Schema file is not valid JSON");
+
         $loader = new SchemaLoader();
-        $schema = $loader->loadObjectSchema(json_decode(file_get_contents($schemaPath)));
+        $schema = $loader->loadObjectSchema($schemaDecoded);
 
         $validator = new Validator();
         $result = $validator->schemaValidation($json, $schema);
+
+        $this->assertNotNull($result, "Schema validation result is null");
 
         if (!$result->isValid()) {
             $formatter = new ErrorFormatter();
@@ -72,4 +80,5 @@ class OverallCalendarReadTest extends Base
 
         $this->assertTrue($result->isValid(), 'Response does not match calendar schema');
     }
+
 }
