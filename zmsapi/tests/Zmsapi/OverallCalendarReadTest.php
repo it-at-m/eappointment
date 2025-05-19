@@ -60,7 +60,7 @@ class OverallCalendarReadTest extends Base
         $json = json_decode((string) $response->getBody());
 
         // Lade das JSON-Schema von einer Datei
-        $schemaPath = __DIR__ . '/schema/calendar.json';
+        $schemaPath = __DIR__ . '/fixtures/calendar.json';
         $schemaData = json_decode(file_get_contents($schemaPath));
 
         $validator = new Validator();
