@@ -2,6 +2,14 @@
 
 namespace BO\Zmsapi\Tests;
 
+use Opis\JsonSchema\Validator;
+use Opis\JsonSchema\Schema;
+use Opis\JsonSchema\SchemaLoader;
+use Opis\JsonSchema\ValidationResult;
+use Opis\JsonSchema\Helper;
+use Opis\JsonSchema\Errors\ValidationError;
+use Opis\JsonSchema\Errors\ErrorFormatter;
+
 class OverallCalendarReadTest extends Base
 {
     protected $classname = "OverallCalendarRead";
@@ -42,5 +50,30 @@ class OverallCalendarReadTest extends Base
         $this->expectException(\BO\Mellon\Failure\Exception::class);
 
         $this->render([], ['scopeIds' => '', 'dateFrom' => '2025-05-14', 'dateUntil' => '2025-05-14']);
+    }
+
+    public function testResponseMatchesSchema(): void
+    {
+        $this->setWorkstation();
+
+        $response = $this->render([], self::VALID_PARAMS);
+        $json = json_decode((string) $response->getBody());
+
+        // Lade das JSON-Schema von einer Datei
+        $schemaPath = __DIR__ . '/schema/calendar.json';
+        $schemaData = json_decode(file_get_contents($schemaPath));
+
+        $validator = new Validator();
+
+        // Validierung durchführen
+        $result = $validator->schemaValidation($json, $schemaData);
+
+        if (!$result->isValid()) {
+            $formatter = new ErrorFormatter();
+            $errors = $formatter->format($result->error());
+            error_log("Schema validation failed:\n" . json_encode($errors, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+        }
+
+        $this->assertTrue($result->isValid(), 'Response does not match calendar schema');
     }
 }

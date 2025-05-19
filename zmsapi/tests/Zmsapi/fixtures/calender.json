@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["data", "meta"],
+  "properties": {
+    "meta": {
+      "type": "object"
+    },
+    "data": {
+      "type": "object",
+      "required": ["days"],
+      "properties": {
+        "days": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["date", "scopes"],
+            "properties": {
+              "date": { "type": "integer" },
+              "scopes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["id", "name", "maxSeats", "times"],
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "maxSeats": { "type": "integer" },
+                    "times": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["name", "seats"],
+                        "properties": {
+                          "name": { "type": "string" },
+                          "seats": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": ["status"],
+                              "properties": {
+                                "status": {
+                                  "type": "string",
+                                  "enum": ["open", "skip", "termin"]
+                                },
+                                "processId": { "type": ["integer", "null"] },
+                                "slots":     { "type": ["integer", "null"] }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

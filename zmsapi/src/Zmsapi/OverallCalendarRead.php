@@ -15,11 +15,11 @@ class OverallCalendarRead extends BaseController
         $calendar = [];
         $lastSlotInfo = [];
 
-        foreach ($rows as $r) {
-            $dateKey  = (new DateTimeImmutable($r['time']))->format('Y-m-d');
-            $timeKey  = (new DateTimeImmutable($r['time']))->format('H:i');
-            $scopeKey = (int)$r['scope_id'];
-            $seatNo   = (int)$r['seat'];
+        foreach ($rows as $row) {
+            $dateKey  = (new DateTimeImmutable($row['time']))->format('Y-m-d');
+            $timeKey  = (new DateTimeImmutable($row['time']))->format('H:i');
+            $scopeKey = (int)$row['scope_id'];
+            $seatNo   = (int)$row['seat'];
 
             $day   =& $calendar[$dateKey];
             $scope =& $day['scopes'][$scopeKey];
@@ -31,18 +31,18 @@ class OverallCalendarRead extends BaseController
             $scope['maxSeats']      = max($scope['maxSeats'] ?? 0, $seatNo, $defaultSeats);
             $time[$seatNo]['init']  = true;
 
-            if ($r['status'] === 'termin') {
-                if ($r['slots'] === null) {
+            if ($row['status'] === 'termin') {
+                if ($row['slots'] === null) {
                     $time[$seatNo] = ['status' => 'skip'];
                 } else {
                     $time[$seatNo] = [
                         'status'    => 'termin',
-                        'processId' => (int)$r['process_id'],
-                        'slots'     => (int)$r['slots'],
+                        'processId' => (int)$row['process_id'],
+                        'slots'     => (int)$row['slots'],
                     ];
                     $lastSlotInfo["$scopeKey|$seatNo"] = [
-                        'processId' => (int)$r['process_id'],
-                        'openSlots' => (int)$r['slots'] - 1,
+                        'processId' => (int)$row['process_id'],
+                        'openSlots' => (int)$row['slots'] - 1,
                     ];
                 }
             } else {
@@ -60,9 +60,9 @@ class OverallCalendarRead extends BaseController
         foreach ($calendar as &$day) {
             foreach ($day['scopes'] as &$scope) {
                 foreach ($scope['times'] as $timeKey => $slotInfo) {
-                    for ($s = 1; $s <= $scope['maxSeats']; $s++) {
-                        if (!isset($slotInfo['seats'][$s])) {
-                            $slotInfo['seats'][$s] = ['status' => 'open'];
+                    for ($seatNumber = 1; $seatNumber <= $scope['maxSeats']; $seatNumber++) {
+                        if (!isset($slotInfo['seats'][$seatNumber])) {
+                            $slotInfo['seats'][$seatNumber] = ['status' => 'open'];
                         }
                     }
                     ksort($slotInfo['seats']);
