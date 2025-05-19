@@ -325,6 +325,50 @@ createLanguageRoutes(
 
 /**
  * @swagger
+ * /available-days-by-office/:
+ *   get:
+ *     summary: Get the list of available days for appointments grouped by office
+ *     tags:
+ *       - appointments
+ *     parameters:
+ *       name: officeId
+ *         description: Comma separated Office IDs
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: serviceId
+ *         description: Service ID
+ *         in: query
+ *         required: true
+ *         type: integer
+ *     responses:
+ *       200:
+ *         description: List of available days
+ *         schema:
+ *           type: object
+ *           properties:
+ *             meta:
+ *               $ref: "schema/metaresult.json"
+ *             data:
+ *               $ref: "schema/citizenapi/availableDays.json"
+ */
+createLanguageRoutes(
+    \App::$slim,
+    '/available-days-by-office/',
+    '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListByOfficeController',
+    "AvailableDaysListController",
+    "get"
+);
+createLanguageRoutes(
+    \App::$slim,
+    '/available-days-by-office',
+    '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListByOfficeController',
+    "AvailableDaysListController",
+    "get"
+);
+
+/**
+ * @swagger
  * /available-appointments/:
  *   get:
  *     summary: Get available appointments for a specific day

@@ -131,7 +131,7 @@
         timeSlotsInHoursByOffice.size > 0 &&
         averageAppointmentsPerProvider / selectableProviders.length > 18
       "
-      :key="timeSlotsInHoursByOffice"
+      :key="selectableProviders && selectedDay && timeSlotsInHoursByOffice"
       class="m-component"
     >
       <div class="m-content">
@@ -225,6 +225,7 @@
 
     <div
       v-else-if="selectedDay && timeSlotsInDayPartByOffice.size > 0"
+      :key="selectedDay && timeSlotsInDayPartByOffice"
       class="m-component"
     >
       <div class="m-content">
@@ -448,14 +449,8 @@ const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
 
 const selectableProviders = ref<OfficeImpl[]>();
 const availableDays = ref<string[]>();
-
-const currentHour = ref<number>(24);
-const firstHour = ref<number>(24);
-const lastHour = ref<number>(0);
-
-const currentDayPart = ref<string>("am");
-const firstDayPart = ref<string>("pm");
-const lastDayPart = ref<string>("am");
+const selectedHour = ref<number | null>(null);
+const selectedDayPart = ref<"am" | "pm" | null>(null);
 
 const averageAppointmentsPerProvider = ref<number>(0);
 
@@ -528,21 +523,21 @@ const officeName = (id: number): string => {
 };
 
 const laterAppointments = (type = "hour") => {
-  if (type === "dayPart" && currentDayPart.value == "am") {
-    currentDayPart.value = "pm";
+  if (type === "dayPart" && currentDayPart.value === "am") {
+    selectedDayPart.value = "pm";
     return;
   }
 
-  currentHour.value = currentHour.value + 1;
+  selectedHour.value = currentHour.value + 1;
 };
 
 const earlierAppointments = (type = "hour") => {
-  if (type === "dayPart" && currentDayPart.value == "pm") {
-    currentDayPart.value = "am";
+  if (type === "dayPart" && currentDayPart.value === "pm") {
+    selectedDayPart.value = "am";
     return;
   }
 
-  currentHour.value = currentHour.value - 1;
+  selectedHour.value = currentHour.value - 1;
 };
 
 const timeSlotsInDayPartBySelectedOffice = computed(() => {
@@ -586,26 +581,29 @@ const timeSlotsInHours = computed(() => {
 
 const timeSlotsInHoursByOffice = computed(() => {
   const offices = new Map<number, Object[]>();
+
   appointmentTimestampsByOffice.value.forEach((office) => {
+    if (!selectedProviders.value[office.officeId]) return;
+
     const timesByHours = new Map<number, number[]>();
+
     office.appointments.forEach((time) => {
       const berlinDate = new Date(time * 1000);
       const hour = parseInt(berlinHourFormatter.format(berlinDate));
-      firstHour.value = Math.min(firstHour.value, hour);
-      lastHour.value = Math.max(lastHour.value, hour);
+
       if (!timesByHours.has(hour)) {
         timesByHours.set(hour, []);
       }
       timesByHours.get(hour)?.push(time);
     });
 
-    offices.set(office.officeId, {
-      officeId: office.officeId,
-      appointments: timesByHours,
-    });
+    if (timesByHours.size > 0) {
+      offices.set(office.officeId, {
+        officeId: office.officeId,
+        appointments: timesByHours,
+      });
+    }
   });
-
-  currentHour.value = firstHour.value;
 
   return new Map(
     [...offices.entries()].sort((a, b) => {
@@ -616,21 +614,46 @@ const timeSlotsInHoursByOffice = computed(() => {
   );
 });
 
+const firstHour = computed(() => {
+  let min = Infinity;
+
+  for (const [, office] of timeSlotsInHoursByOffice.value) {
+    for (const hour of office.appointments.keys()) {
+      min = Math.min(min, hour);
+    }
+  }
+
+  return min === Infinity ? null : min;
+});
+
+const lastHour = computed(() => {
+  let max = -Infinity;
+
+  for (const [, office] of timeSlotsInHoursByOffice.value) {
+    for (const hour of office.appointments.keys()) {
+      max = Math.max(max, hour);
+    }
+  }
+
+  return max === -Infinity ? null : max;
+});
+
+const currentHour = computed(() => {
+  return selectedHour.value !== null ? selectedHour.value : firstHour.value;
+});
+
 const timeSlotsInDayPartByOffice = computed(() => {
   const offices = new Map<number, Object[]>();
+
   appointmentTimestampsByOffice.value.forEach((office) => {
+    if (!selectedProviders.value[office.officeId]) return;
+
     const timesByPartOfDay = new Map<string, number[]>();
+
     office.appointments.forEach((time) => {
       const berlinDate = new Date(time * 1000);
-      const dayPart =
-        parseInt(berlinHourFormatter.format(berlinDate)) > 12 ? "pm" : "am";
-      if (dayPart === "am") {
-        firstDayPart.value = "am";
-      }
-
-      if (dayPart === "pm") {
-        lastDayPart.value = "pm";
-      }
+      const hour = parseInt(berlinHourFormatter.format(berlinDate));
+      const dayPart = hour > 12 ? "pm" : "am";
 
       if (!timesByPartOfDay.has(dayPart)) {
         timesByPartOfDay.set(dayPart, []);
@@ -638,13 +661,13 @@ const timeSlotsInDayPartByOffice = computed(() => {
       timesByPartOfDay.get(dayPart)?.push(time);
     });
 
-    offices.set(office.officeId, {
-      officeId: office.officeId,
-      appointments: timesByPartOfDay,
-    });
+    if (timesByPartOfDay.size > 0) {
+      offices.set(office.officeId, {
+        officeId: office.officeId,
+        appointments: timesByPartOfDay,
+      });
+    }
   });
-
-  currentDayPart.value = firstDayPart.value;
 
   return new Map(
     [...offices.entries()].sort((a, b) => {
@@ -655,14 +678,36 @@ const timeSlotsInDayPartByOffice = computed(() => {
   );
 });
 
+const firstDayPart = computed(() => {
+  for (const [, office] of timeSlotsInDayPartByOffice.value) {
+    if (office.appointments.has("am")) return "am";
+  }
+
+  return null;
+});
+
+const lastDayPart = computed(() => {
+  for (const [, office] of timeSlotsInDayPartByOffice.value) {
+    if (office.appointments.has("pm")) return "pm";
+  }
+
+  return null;
+});
+
+const currentDayPart = computed(() => {
+  return selectedDayPart.value !== null ? selectedDayPart.value : firstDayPart.value;
+});
+
 const showSelectionForProvider = (provider: OfficeImpl) => {
   selectedProvider.value = provider;
   error.value = false;
   selectedDay.value = undefined;
   selectedTimeslot.value = 0;
+  const providers = selectableProviders.value;
+  const providerIds = providers.map((p) => p.id);
 
   fetchAvailableDays(
-    selectedProvider.value,
+    providerIds,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
     props.baseUrl ?? undefined,
@@ -671,10 +716,9 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
     const days = (data as AvailableDaysDTO)?.availableDays;
     if (Array.isArray(days) && days.length > 0) {
       availableDays.value = days;
-      selectedDay.value = new Date(days[0]);
-      minDate.value = new Date(days[0]);
-      maxDate.value = new Date(days[days.length - 1]);
-      getAppointmentsOfDay(days[0]);
+      selectedDay.value = new Date(days[0].time);
+      minDate.value = new Date(days[0].time);
+      maxDate.value = new Date(days[days.length - 1].time);
       error.value = false;
       errorKey.value = "";
     } else {
@@ -737,9 +781,20 @@ const allowedDates = (date: Date) => {
     (date.getFullYear() === MAXDATE.getFullYear() &&
       date.getMonth() === MAXDATE.getMonth() &&
       date.getDate() < MAXDATE.getDate());
-  return (
-    beforeMaxDate && availableDays.value?.includes(convertDateToString(date))
+
+  if (!beforeMaxDate) return false;
+
+  const dateString = convertDateToString(date);
+
+  const dayEntry = availableDays.value?.find(
+    (day) => convertDateToString(new Date(day.time)) === dateString
   );
+
+  if (!dayEntry) return false;
+
+  return dayEntry.providerIDs
+    .split(',')
+    .some((id) => selectedProviders.value[id]);
 };
 
 watch(selectedDay, (newDate, oldDate) => {

@@ -487,7 +487,14 @@ class ZmsApiFacadeService
         return $resultRequestList;
     }
 
-    public static function getBookableFreeDays(array $officeIds, array $serviceIds, array $serviceCounts, string $startDate, string $endDate): AvailableDays|array
+    public static function getBookableFreeDays(
+        array $officeIds,
+        array $serviceIds,
+        array $serviceCounts,
+        string $startDate,
+        string $endDate,
+        ?bool $groupByOffice = false
+    ): AvailableDays|array
     {
         $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
         $lastDay = DateTimeFormatHelper::getInternalDateFromISO($endDate);
@@ -510,11 +517,23 @@ class ZmsApiFacadeService
             ];
         }
 
-        $freeDays = ZmsApiClientService::getFreeDays(new ProviderList($providers), new RequestList($services), $firstDay, $lastDay,) ?? new Calendar();
+        $freeDays = ZmsApiClientService::getFreeDays(new ProviderList($providers), new RequestList($services), $firstDay, $lastDay) ?? new Calendar();
         $daysCollection = $freeDays->days;
         $formattedDays = [];
+        $scopeToProvider = [];
+
+        foreach ($freeDays->scopes as $scope) {
+            $scopeToProvider[$scope['id']] = $scope['provider']['id'];
+        }
+
         foreach ($daysCollection as $day) {
-            $formattedDays[] = sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day);
+            $day = [
+                'time' => sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day),
+                'providerIDs' => implode(',', array_map(function($scopeId) use ($scopeToProvider) {
+                    return $scopeToProvider[$scopeId];
+                }, explode(',', $day->scopeIDs)))
+            ];
+            $formattedDays[] = $day;
         }
 
         $errors = ValidationService::validateAppointmentDaysNotFound($formattedDays);
@@ -579,7 +598,13 @@ class ZmsApiFacadeService
         return $appointmentTimestamps;
     }
 
-    public static function getAvailableAppointments(string $date, array $officeIds, array $serviceIds, array $serviceCounts, ?bool $groupByOffice = false): AvailableAppointments|AvailableAppointmentsByOffice|array
+    public static function getAvailableAppointments(
+        string $date,
+        array $officeIds,
+        array $serviceIds,
+        array $serviceCounts,
+        ?bool $groupByOffice = false
+    ): AvailableAppointments|AvailableAppointmentsByOffice|array
     {
         $requests = [];
         $providers = [];

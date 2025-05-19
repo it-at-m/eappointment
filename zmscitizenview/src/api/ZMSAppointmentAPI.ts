@@ -45,7 +45,7 @@ export function fetchServicesAndProviders(
 }
 
 export function fetchAvailableDays(
-  provider: OfficeImpl,
+  providerIds: number[],
   serviceIds: string[],
   serviceCounts: number[],
   baseUrl?: string,
@@ -54,7 +54,7 @@ export function fetchAvailableDays(
   const params: Record<string, any> = {
     startDate: convertDateToString(TODAY),
     endDate: convertDateToString(MAXDATE),
-    officeId: provider.id,
+    officeId: providerIds,
     serviceId: serviceIds,
     serviceCount: serviceCounts,
     ...(captchaToken && { captchaToken }),
