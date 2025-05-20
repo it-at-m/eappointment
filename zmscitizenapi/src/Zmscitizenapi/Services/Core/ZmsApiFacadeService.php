@@ -495,8 +495,7 @@ class ZmsApiFacadeService
         string $startDate,
         string $endDate,
         ?bool $groupByOffice = false
-    ): AvailableDays|AvailableDaysByOffice|array
-    {
+    ): AvailableDays|AvailableDaysByOffice|array {
         $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
         $lastDay = DateTimeFormatHelper::getInternalDateFromISO($endDate);
         $services = [];
@@ -530,7 +529,7 @@ class ZmsApiFacadeService
         foreach ($daysCollection as $day) {
             $day = [
                 'time' => sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day),
-                'providerIDs' => implode(',', array_map(function($scopeId) use ($scopeToProvider) {
+                'providerIDs' => implode(',', array_map(function ($scopeId) use ($scopeToProvider) {
                     return $scopeToProvider[$scopeId];
                 }, explode(',', $day->scopeIDs)))
             ];
@@ -609,8 +608,7 @@ class ZmsApiFacadeService
         array $serviceIds,
         array $serviceCounts,
         ?bool $groupByOffice = false
-    ): AvailableAppointments|AvailableAppointmentsByOffice|array
-    {
+    ): AvailableAppointments|AvailableAppointmentsByOffice|array {
         $requests = [];
         $providers = [];
         foreach ($serviceIds as $index => $serviceId) {
