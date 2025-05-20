@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri"
+        },
+        "error": {
+          "type": "boolean"
+        },
+        "generated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "server": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": ["error", "generated", "server", "rows"],
+      "additionalProperties": false
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "days": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "integer"
+              },
+              "scopes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "maxSeats": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "times": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"
+                          },
+                          "seats": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "status": {
+                                  "type": "string",
+                                  "enum": ["open", "termin", "skip"]
+                                },
+                                "processId": {
+                                  "type": "integer"
+                                },
+                                "slots": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                }
+                              },
+                              "required": ["status"],
+                              "additionalProperties": false
+                            }
+                          }
+                        },
+                        "required": ["name", "seats"],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": ["id", "name", "maxSeats", "times"],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": ["date", "scopes"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["days"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["meta", "data"],
+  "additionalProperties": false
+}
