@@ -414,6 +414,11 @@ class Availability extends Schema\Entity
         return true;
     }
 
+    /**
+     * Check, if a day between two dates is included
+     *
+     * @return Array of arrays with the keys time, public, callcenter, intern
+     */
     public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now): bool
     {
         if ($startTime->getTimestamp() < $now->getTimestamp()) {
@@ -430,6 +435,7 @@ class Availability extends Schema\Entity
         } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
         return false;
     }
+
     public function validateStartTime(\DateTimeInterface $today, \DateTimeInterface $tomorrow, \DateTimeInterface $startDate, \DateTimeInterface $endDate, \DateTimeInterface $selectedDate, string $kind): array
     {
         $errorList = [];

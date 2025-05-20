@@ -74,7 +74,6 @@ class SlotTest extends Base
         ]);
         (new \BO\Zmsdb\DayOff())->writeCommonDayoffsByYear([$dayoff], 2016);
         $availability = $this->readTestAvailability();
-        // Set realistic values for booking window
         $availability->bookable['startInDays'] = 0;
         $availability->bookable['endInDays'] = 14;
         $lastChange = $now->modify("-1 second");
@@ -299,9 +298,8 @@ class SlotTest extends Base
     {
         $now = new \DateTimeImmutable('2016-04-06 07:55:01');
         $availability = $this->readTestAvailability();
-        // Set realistic values for booking window
-        $availability->bookable['startInDays'] = 0;  // Can book from today
-        $availability->bookable['endInDays'] = 60;   // Can book up to 60 days in advance
+        $availability->bookable['startInDays'] = 0;
+        $availability->bookable['endInDays'] = 60;
         $availability->lastChange = $now->modify('-1 minute')->getTimestamp();
         (new Slot())->perform(
             "UPDATE slot SET updateTimestamp = :dateTime WHERE availabilityID = :availabilityID",
@@ -311,8 +309,7 @@ class SlotTest extends Base
             ]
         );
         (new Slot())->writeCanceledByTimeAndScope($now->modify('+5 minutes'), $availability->scope);
-        $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
-        
+        $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);      
         $this->assertEquals(
             '2016-04-06 07:53:01',
             $lastChange->format('Y-m-d H:i:s'),
