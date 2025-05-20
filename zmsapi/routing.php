@@ -6529,7 +6529,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              type: array
  *                              items:
- *                                  $ref: "schema/overallcalendar_slot.json"
+ *                                  $ref: "schema/overallCalendar.json"
  *              400:
  *                  description: Invalid or missing parameters
  *                  schema:
