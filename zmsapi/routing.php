@@ -6446,6 +6446,59 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("WorkstationProcessParked");
 
+/**
+ *  @swagger
+ *  "/overallcalendar/":
+ *      get:
+ *          summary: Returns slot information from the overall calendar
+ *          description: |
+ *              Returns all (or only the changed ones since *updateAfter*)
+ *              slot records from `overallcalendar`.
+ *          tags:
+ *              - overallcalendar
+ *          parameters:
+ *              - name: scopeIds
+ *                in: query
+ *                required: true
+ *                description: CSV list of scope IDs, e.g., `1300,1301`
+ *                type: string
+ *              - name: dateFrom
+ *                in: query
+ *                required: true
+ *                description: Start date `YYYY-MM-DD`
+ *                type: string
+ *              - name: dateUntil
+ *                in: query
+ *                required: true
+ *                description: End date `YYYY-MM-DD`
+ *                type: string
+ *              - name: updateAfter
+ *                in: query
+ *                required: false
+ *                description: ISO timestamp – only records with `updated_at` > value
+ *                type: string
+ *          responses:
+ *              200:
+ *                  description: List of slots
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/overallcalendar_slot.json"
+ *              400:
+ *                  description: Invalid or missing parameters
+ *                  schema:
+ *                      $ref: "schema/error.json"
+ */
+\App::$slim->get(
+    '/overallcalendar/',
+    '\BO\Zmsapi\OverallCalendarRead'
+)->setName('OverallCalendarRead');
+
 /* ---------------------------------------------------------------------------
  * maintenance
  * -------------------------------------------------------------------------*/
