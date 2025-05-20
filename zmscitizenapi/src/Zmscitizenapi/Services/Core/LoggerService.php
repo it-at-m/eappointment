@@ -18,8 +18,21 @@ class LoggerService
         'cookie',
         'x-api-key',
         'auth-key',
-        'authkey'
+        'authkey',
+        'captchaToken'
     ];
+
+    private const SENSITIVE_PARAMS = [
+        'authkey',
+        'authKey',
+        'auth_key',
+        'auth-key',
+        'key',
+        'captchaToken',
+        'captchatoken',
+        'captcha-token'
+    ];
+
     private const IMPORTANT_HEADERS = [
         'user-agent'
     ];
@@ -146,10 +159,13 @@ class LoggerService
         $queryParts = [];
         foreach ($queryParams as $key => $value) {
             $encodedKey = urlencode($key);
-            $encodedValue = in_array(strtolower($key), ['authkey', 'auth_key', 'key'])
-                ? '****'
-                : urlencode($value);
-            $queryParts[] = "$encodedKey=$encodedValue";
+            // Check if the key (case-insensitive) is in sensitive params
+            if (in_array(strtolower($key), self::SENSITIVE_PARAMS, true)) {
+                $queryParts[] = "$encodedKey=****";
+            } else {
+                $encodedValue = urlencode($value);
+                $queryParts[] = "$encodedKey=$encodedValue";
+            }
         }
 
         $data = [
