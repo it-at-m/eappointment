@@ -61,4 +61,21 @@ class OverallCalendar extends Base
          WHERE scope_id   = :scope_id
            AND process_id = :process_id
     ';
+
+    const SELECT_RANGE = '
+        SELECT scope_id, time, availability_id, seat, status, process_id, slots, updated_at
+          FROM gesamtkalender
+         WHERE scope_id IN (%s)            
+           AND time BETWEEN :from AND :until
+         ORDER BY scope_id, time, seat
+    ';
+
+    const SELECT_RANGE_UPDATED = '
+        SELECT scope_id, time, availability_id, seat, status, process_id, slots, updated_at
+          FROM gesamtkalender
+         WHERE scope_id IN (%s)
+           AND time BETWEEN :from AND :until
+           AND updated_at > :updatedAfter
+         ORDER BY scope_id, time, seat
+    ';
 }
