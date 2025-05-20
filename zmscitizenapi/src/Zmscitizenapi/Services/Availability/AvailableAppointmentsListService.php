@@ -44,7 +44,8 @@ class AvailableAppointmentsListService
                 : [],
             'serviceCounts' => isset($queryParams['serviceCount'])
                 ? array_map('trim', explode(',', (string) $queryParams['serviceCount']))
-                : []
+                : [],
+            'captchaToken' => isset($queryParams['captchaToken']) ? (string) $queryParams['captchaToken'] : null
         ];
     }
 
@@ -63,7 +64,7 @@ class AvailableAppointmentsListService
     private function validateClientData(object $data): array
     {
         $captchaRequired = $this->isCaptchaRequired($data->officeIds);
-        $captchaToken = $queryParams['captchaToken'] ?? null;
+        $captchaToken = $data->captchaToken;
 
         return ValidationService::validateGetAvailableAppointments(
             $data->date,
@@ -87,7 +88,7 @@ class AvailableAppointmentsListService
         );
     }
 
-    public function getAvailableAppointmentsListByOffice($queryParams): AvailableAppointmentsByOffice|array
+    public function getAvailableAppointmentsListByOffice($queryParams): AvailableAppointments|AvailableAppointmentsByOffice|array
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
