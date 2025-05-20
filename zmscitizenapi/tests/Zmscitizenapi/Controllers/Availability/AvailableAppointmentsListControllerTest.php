@@ -42,8 +42,8 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
 
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => 10546,
-            'serviceId' => '1063423',
+            'officeId' => '9999998',
+            'serviceId' => '1',
             'serviceCount' => '1',
         ];
 
@@ -79,12 +79,13 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
 
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => 10546,
-            'serviceId' => '1063423',
+            'officeId' => '9999998',
+            'serviceId' => '1',
             'serviceCount' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'errors' => [
                 ErrorMessages::get('appointmentNotAvailable')
@@ -97,8 +98,8 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     public function testDateMissing()
     {
         $parameters = [
-            'officeId' => 10546,
-            'serviceId' => '1063423',
+            'officeId' => '9999998',
+            'serviceId' => '1',
             'serviceCount' => '1',
         ];
 
@@ -117,7 +118,7 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     {
         $parameters = [
             'date' => '3000-09-21',
-            'serviceId' => '1063423',
+            'serviceId' => '1',
             'serviceCount' => '1',
         ];
 
@@ -136,7 +137,7 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     {
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => 10546,
+            'officeId' => '9999998',
             'serviceCount' => '1',
         ];
 
@@ -155,8 +156,8 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     {
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => 10546,
-            'serviceId' => '1063423',
+            'officeId' => '9999998',
+            'serviceId' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -173,7 +174,7 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     public function testDateAndOfficeIdMissing()
     {
         $parameters = [
-            'serviceId' => '1063423',
+            'serviceId' => '1',
             'serviceCount' => '1',
         ];
 
@@ -193,7 +194,7 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     public function testDateAndServiceIdMissing()
     {
         $parameters = [
-            'officeId' => 10546,
+            'officeId' => '9999998',
             'serviceCount' => '1',
         ];
 
@@ -213,8 +214,8 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     public function testDateAndServiceCountMissing()
     {
         $parameters = [
-            'officeId' => 10546,
-            'serviceId' => '1063423',
+            'officeId' => '9999998',
+            'serviceId' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -254,7 +255,7 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     {
         $parameters = [
             'date' => '3000-09-21',
-            'serviceId' => '1063423',
+            'serviceId' => '1',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -274,7 +275,7 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     {
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => 10546,
+            'officeId' => '9999998',
         ];
 
         $response = $this->render([], $parameters, []);
@@ -294,8 +295,8 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     {
         $parameters = [
             'date' => '21-09-3000',
-            'officeId' => 10546,
-            'serviceId' => '1063423',
+            'officeId' => '9999998',
+            'serviceId' => '1',
             'serviceCount' => '1',
         ];
     
@@ -314,7 +315,7 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
     {
         $parameters = [
             'date' => '3000-09-21',
-            'officeId' => 10546,
+            'officeId' => '9999998',
             'serviceId' => 'invalid',
             'serviceCount' => '1',
         ];
@@ -335,7 +336,7 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
         $parameters = [
             'date' => '3000-09-21',
             'officeId' => 'invalid',
-            'serviceId' => '1063423',
+            'serviceId' => '1',
             'serviceCount' => '1',
         ];
     

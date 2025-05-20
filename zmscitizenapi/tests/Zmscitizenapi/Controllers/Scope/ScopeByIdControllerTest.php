@@ -66,7 +66,8 @@ class ScopeByIdControllerTest extends ControllerTestCase
             "customTextfield2Required" => false,
             "customTextfield2Label" => "Second Custom Label",
             "captchaActivatedRequired" => false,
-            "displayInfo" => null
+            "displayInfo" => null,
+            "slotsPerAppointment" => null
         ];               
         $responseBody = json_decode((string)$response->getBody(), true);
         $this->assertEquals(200, $response->getStatusCode());
