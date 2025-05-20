@@ -9,6 +9,7 @@ use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
+use BO\Zmscitizenapi\Models\AvailableDaysByOffice;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
@@ -494,7 +495,7 @@ class ZmsApiFacadeService
         string $startDate,
         string $endDate,
         ?bool $groupByOffice = false
-    ): AvailableDays|array
+    ): AvailableDays|AvailableDaysByOffice|array
     {
         $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
         $lastDay = DateTimeFormatHelper::getInternalDateFromISO($endDate);
@@ -541,7 +542,11 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        return new AvailableDays($formattedDays);
+        if ($groupByOffice) {
+            return new AvailableDaysByOffice($formattedDays);
+        }
+
+        return new AvailableDays(array_column($formattedDays, 'time'));
     }
 
     public static function getFreeAppointments(int $officeId, array $serviceIds, array $serviceCounts, array $date): ProcessList|array
