@@ -18,7 +18,8 @@ class LoggerService
         'cookie',
         'x-api-key',
         'auth-key',
-        'authkey'
+        'authkey',
+        'captchaToken'
     ];
     private const IMPORTANT_HEADERS = [
         'user-agent'
@@ -146,7 +147,7 @@ class LoggerService
         $queryParts = [];
         foreach ($queryParams as $key => $value) {
             $encodedKey = urlencode($key);
-            $encodedValue = in_array(strtolower($key), ['authkey', 'auth_key', 'key'])
+            $encodedValue = in_array(strtolower($key), ['authkey', 'auth_key', 'key', 'captchaToken'])
                 ? '****'
                 : urlencode($value);
             $queryParts[] = "$encodedKey=$encodedValue";
