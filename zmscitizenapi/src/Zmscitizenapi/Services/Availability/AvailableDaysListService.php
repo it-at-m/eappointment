@@ -45,7 +45,8 @@ class AvailableDaysListService
             'serviceIds' => array_map('trim', explode(',', $queryParams['serviceId'])),
             'serviceCounts' => $serviceCounts,
             'startDate' => $queryParams['startDate'] ?? null,
-            'endDate' => $queryParams['endDate'] ?? null
+            'endDate' => $queryParams['endDate'] ?? null,
+            'captchaToken' => isset($queryParams['captchaToken']) ? (string) $queryParams['captchaToken'] : null
         ];
     }
 
@@ -64,7 +65,6 @@ class AvailableDaysListService
     private function validateClientData(object $data): array
     {
         $captchaRequired = $this->isCaptchaRequired($data->officeIds);
-        $captchaToken = $queryParams['captchaToken'] ?? null;
 
         return ValidationService::validateGetBookableFreeDays(
             $data->officeIds,
@@ -73,7 +73,7 @@ class AvailableDaysListService
             $data->endDate,
             $data->serviceCounts,
             $captchaRequired,
-            $captchaToken,
+            $data->captchaToken,
             $this->tokenValidator
         );
     }
