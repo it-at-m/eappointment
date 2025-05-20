@@ -118,9 +118,6 @@ class AvailabilityPage extends Component {
                     if (availability.tempId) {
                         delete sendAvailability.tempId;
                     }
-                    if (sendAvailability.kind === 'new' && sendAvailability.description.includes("Neue Öffnungszeit")) {
-                        sendAvailability.description = sendAvailability.description.replace("Neue Öffnungszeit", "");
-                    }
                     if (sendAvailability.bookable.startInDays === undefined || sendAvailability.bookable.startInDays === null || sendAvailability.bookable.startInDays === '') {
                         sendAvailability.bookable.startInDays = this.props.scope.preferences.appointment.startInDaysDefault || 0;
                     }
@@ -169,67 +166,6 @@ class AvailabilityPage extends Component {
         }
     }
 
-    onUpdateSingleAvailability(availability) {
-        showSpinner();
-        const ok = confirm('Soll diese Öffnungszeit wirklich aktualisiert werden?');
-        const id = availability.id;
-
-        if (ok) {
-            const selectedDate = formatTimestampDate(this.props.timestamp);
-            const sendAvailability = Object.assign({}, availability);
-
-            if (sendAvailability.tempId) {
-                delete sendAvailability.tempId;
-            }
-
-            if (sendAvailability.bookable.startInDays === undefined || sendAvailability.bookable.startInDays === null || sendAvailability.bookable.startInDays === '') {
-                sendAvailability.bookable.startInDays = this.props.scope.preferences.appointment.startInDaysDefault || 0;
-            }
-            if (sendAvailability.bookable.endInDays === undefined || sendAvailability.bookable.endInDays === null || sendAvailability.bookable.endInDays === '') {
-                sendAvailability.bookable.endInDays = this.props.scope.preferences.appointment.endInDaysDefault || 60;
-            }
-
-            const payload = {
-                availabilityList: [
-                    {
-                        ...cleanupAvailabilityForSave(sendAvailability),
-                        kind: availability.kind || 'default'
-                    }
-                ],
-                selectedDate: selectedDate
-            };
-            $.ajax(`${this.props.links.includeurl}/availability/`, {
-                method: 'POST',
-                data: JSON.stringify(payload),
-                contentType: 'application/json'
-            }).done((data) => {
-                this.refreshData();
-                this.getValidationList();
-                this.updateSaveBarState('save', true);
-
-                if (this.successElement) {
-                    this.successElement.scrollIntoView();
-                }
-                hideSpinner();
-            }).fail(err => {
-                const isException = err.responseText.toLowerCase().includes('exception');
-                if (isException) {
-                    new ExceptionHandler($('.opened'), {
-                        code: err.status,
-                        message: err.responseText
-                    });
-                } else {
-                    console.log('Update error:', err);
-                }
-                this.updateSaveBarState('save', false);
-                this.getValidationList();
-                hideSpinner();
-            });
-        } else {
-            hideSpinner();
-        }
-    }
-
     updateSaveBarState(type, success) {
 
         this.setState({
@@ -262,7 +198,7 @@ class AvailabilityPage extends Component {
             $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
                 method: 'GET'
             }).done(() => {
-                
+
                 const newState = deleteAvailabilityInState(this.state, availability);
 
                 if (this.state.fullAvailabilityList) {
@@ -463,7 +399,7 @@ class AvailabilityPage extends Component {
             }
         ), () => {
             this.getConflictList(),
-            this.getValidationList()
+                this.getValidationList()
         });
     }
 
@@ -825,10 +761,6 @@ class AvailabilityPage extends Component {
             this.onDeleteAvailability(data)
         }
 
-        const onUpdateSingle = data => {
-            this.onUpdateSingleAvailability(data)
-        }
-
         const onNew = data => {
             this.onNewAvailability(data)
         }
@@ -845,7 +777,7 @@ class AvailabilityPage extends Component {
             title=""
             onSelect={onSelect}
             onPublish={this.onPublishAvailability.bind(this)}
-            onUpdateSingle={onUpdateSingle}
+            onUpdateSingle={this.onPublishAvailability.bind(this)}
             onDelete={onDelete}
             onNew={onNew}
             onAbort={this.onRevertUpdates.bind(this)}
