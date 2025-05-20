@@ -121,10 +121,10 @@ class AvailabilityPage extends Component {
                     if (sendAvailability.kind === 'new' && sendAvailability.description.includes("Neue Öffnungszeit")) {
                         sendAvailability.description = sendAvailability.description.replace("Neue Öffnungszeit", "");
                     }
-                    if (!sendAvailability.bookable.startInDays) {
+                    if (sendAvailability.bookable.startInDays === undefined || sendAvailability.bookable.startInDays === null || sendAvailability.bookable.startInDays === '') {
                         sendAvailability.bookable.startInDays = this.props.scope.preferences.appointment.startInDaysDefault || 0;
                     }
-                    if (!sendAvailability.bookable.endInDays) {
+                    if (sendAvailability.bookable.endInDays === undefined || sendAvailability.bookable.endInDays === null || sendAvailability.bookable.endInDays === '') {
                         sendAvailability.bookable.endInDays = this.props.scope.preferences.appointment.endInDaysDefault || 60;
                     }
                     return {
@@ -181,10 +181,11 @@ class AvailabilityPage extends Component {
             if (sendAvailability.tempId) {
                 delete sendAvailability.tempId;
             }
-            if (!sendAvailability.bookable.startInDays) {
+
+            if (sendAvailability.bookable.startInDays === undefined || sendAvailability.bookable.startInDays === null || sendAvailability.bookable.startInDays === '') {
                 sendAvailability.bookable.startInDays = this.props.scope.preferences.appointment.startInDaysDefault || 0;
             }
-            if (!sendAvailability.bookable.endInDays) {
+            if (sendAvailability.bookable.endInDays === undefined || sendAvailability.bookable.endInDays === null || sendAvailability.bookable.endInDays === '') {
                 sendAvailability.bookable.endInDays = this.props.scope.preferences.appointment.endInDaysDefault || 60;
             }
 

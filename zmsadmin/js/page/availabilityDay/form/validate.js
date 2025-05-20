@@ -140,8 +140,18 @@ function validateNullValues(data) {
 function validateBookableDayRange(data) {
     const errorList = [];
 
-    const startInDays = parseInt(data.bookable?.startInDays || data.scope?.preferences?.appointment?.startInDaysDefault || 0, 10);
-    const endInDays = parseInt(data.bookable?.endInDays || data.scope?.preferences?.appointment?.endInDaysDefault || 60, 10);
+    const startInDays = parseInt(
+        data.bookable?.startInDays !== undefined && data.bookable?.startInDays !== null && data.bookable?.startInDays !== '' 
+            ? data.bookable.startInDays 
+            : data.scope?.preferences?.appointment?.startInDaysDefault || 0, 
+        10
+    );
+    const endInDays = parseInt(
+        data.bookable?.endInDays !== undefined && data.bookable?.endInDays !== null && data.bookable?.endInDays !== '' 
+            ? data.bookable.endInDays 
+            : data.scope?.preferences?.appointment?.endInDaysDefault || 60, 
+        10
+    );
 
     if (startInDays > endInDays) {
         errorList.push({

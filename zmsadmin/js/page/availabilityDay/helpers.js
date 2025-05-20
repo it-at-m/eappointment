@@ -191,8 +191,8 @@ export const cleanupAvailabilityForSave = availability => {
 export const getDataValuesFromForm = (form, scope) => {
     return Object.assign({}, getFirstLevelValues(form), {
         bookable: {
-            ...(form.open_from && form.open_from !== "" ? { startInDays: parseInt(form.open_from) } : {}),
-            ...(form.open_to && form.open_to !== "" ? { endInDays: parseInt(form.open_to) } : {})
+            ...(form.open_from !== undefined && form.open_from !== null && form.open_from !== "" ? { startInDays: parseInt(form.open_from) } : {}),
+            ...(form.open_to !== undefined && form.open_to !== null && form.open_to !== "" ? { endInDays: parseInt(form.open_to) } : {})
         },
         workstationCount: {
             intern: form.workstationCount_intern,
