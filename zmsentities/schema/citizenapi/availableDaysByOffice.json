@@ -1,0 +1,25 @@
+{
+  "title": "AvailableDays",
+  "type": ["array", "object", "null"],
+  "properties": {
+    "availableDays": {
+      "type": ["array", "null"],
+      "description": "Array of dates on which appointments are available",
+      "items": {
+        "type": ["array", "object", "null"],
+        "properties": {
+          "providerIDs": {
+            "type": "string",
+            "description": "Office IDs"
+          },
+          "time": {
+            "type": "string",
+            "description": "Day"
+          }
+        }
+      }
+    }
+  },
+  "required": ["availableDays"],
+  "description": "Schema defining the available days for an office and service"
+}

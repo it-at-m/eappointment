@@ -356,14 +356,14 @@ createLanguageRoutes(
     \App::$slim,
     '/available-days-by-office/',
     '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListByOfficeController',
-    "AvailableDaysListController",
+    "AvailableDaysListByOfficeController",
     "get"
 );
 createLanguageRoutes(
     \App::$slim,
     '/available-days-by-office',
     '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListByOfficeController',
-    "AvailableDaysListController",
+    "AvailableDaysListByOfficeController",
     "get"
 );
 

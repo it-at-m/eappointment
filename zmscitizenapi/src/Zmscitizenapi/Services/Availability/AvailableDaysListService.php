@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Availability;
 
 use BO\Zmscitizenapi\Models\AvailableDays;
+use BO\Zmscitizenapi\Models\AvailableDaysByOffice;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -77,7 +78,7 @@ class AvailableDaysListService
         );
     }
 
-    private function getAvailableDays(object $data, ?bool $groupByOffice = false): AvailableDays|array
+    private function getAvailableDays(object $data, ?bool $groupByOffice = false): AvailableDays|AvailableDaysByOffice|array
     {
         return ZmsApiFacadeService::getBookableFreeDays(
             $data->officeIds,
