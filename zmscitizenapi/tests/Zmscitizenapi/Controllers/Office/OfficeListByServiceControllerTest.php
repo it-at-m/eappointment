@@ -76,8 +76,10 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "customTextfieldRequired" => true,
                         "customTextfieldLabel" => "",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
-                    ]
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ]
             ]
         ];            
@@ -140,8 +142,10 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "customTextfieldRequired" => false,
                         "customTextfieldLabel" => "Custom Label",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
-                    ]
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ],
                 [
                     "id" => 9999999,
@@ -181,8 +185,10 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "customTextfieldRequired" => true,
                         "customTextfieldLabel" => "",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
-                    ]
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ]
             ]
         ];
