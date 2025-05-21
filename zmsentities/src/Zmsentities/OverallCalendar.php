@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsentities;
 
 /**
@@ -8,7 +9,6 @@ namespace BO\Zmsentities;
 class OverallCalendar implements \JsonSerializable
 {
     public $days = [];
-
     public function addDay(OverallCalendarDay $day): void
     {
         $this->days[] = $day;
@@ -24,7 +24,6 @@ class OverallCalendarDay implements \JsonSerializable
 {
     public $date;
     public $scopes = [];
-
     public function __construct(int $timestamp)
     {
         $this->date = $timestamp;
@@ -50,7 +49,6 @@ class OverallCalendarScope implements \JsonSerializable
     public $name = '';
     public $maxSeats = 1;
     public $times = [];
-
     public function __construct(int $id, string $name = '', int $maxSeats = 1)
     {
         $this->id       = $id;
@@ -78,7 +76,6 @@ class OverallCalendarTime implements \JsonSerializable
 {
     public $name;
     public $seats = [];
-
     public function __construct(string $name)
     {
         $this->name = $name;
@@ -103,7 +100,6 @@ class OverallCalendarSeat implements \JsonSerializable
     public $status;
     public $processId = null;
     public $slots     = null;
-
     public function __construct(string $status, ?int $processId = null, ?int $slots = null)
     {
         $this->status    = $status;
@@ -114,8 +110,12 @@ class OverallCalendarSeat implements \JsonSerializable
     public function jsonSerialize(): array
     {
         $data = ['status' => $this->status];
-        if ($this->processId !== null) $data['processId'] = $this->processId;
-        if ($this->slots     !== null) $data['slots']     = $this->slots;
+        if ($this->processId !== null) {
+            $data['processId'] = $this->processId;
+        }
+        if ($this->slots     !== null) {
+            $data['slots']     = $this->slots;
+        }
         return $data;
     }
 }
