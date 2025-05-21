@@ -55,6 +55,7 @@
   "service": "Service",
   "serviceSelectionPlaceholder": "Enter search term",
   "serviceSearch": "Search for citizen services",
+  "showAllServices": "Show all services",
   "skipCombinableServices": "Skip combinable services",
   "shortNameResidenceRegistration": "Residence registration",
   "shortNamePassport": "Passport",
