@@ -75,7 +75,10 @@
           </template>
         </ul>
       </div>
-      <div v-if="shouldShowMoreButton" class="m-button-group m-button-group--secondary">
+      <div
+        v-if="shouldShowMoreButton"
+        class="m-button-group m-button-group--secondary"
+      >
         <muc-button
           icon="chevron-down"
           variant="secondary"
@@ -182,13 +185,13 @@ const countOfService = ref<number>(1);
  */
 const filteredSubServices = computed(() => {
   if (!service.value.subServices) return [];
-  
+
   if (service.value.subServices.length <= 5) {
     return service.value.subServices;
   }
-  
-  return showAllServices.value 
-    ? service.value.subServices 
+
+  return showAllServices.value
+    ? service.value.subServices
     : service.value.subServices.slice(0, 3);
 });
 
@@ -196,9 +199,11 @@ const filteredSubServices = computed(() => {
  * Computed property to determine if show more button should be displayed
  */
 const shouldShowMoreButton = computed(() => {
-  return service.value.subServices && 
-         service.value.subServices.length > 5 && 
-         !showAllServices.value;
+  return (
+    service.value.subServices &&
+    service.value.subServices.length > 5 &&
+    !showAllServices.value
+  );
 });
 
 /**
