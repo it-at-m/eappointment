@@ -70,7 +70,7 @@ describe("ServiceFinder", () => {
       await nextTick();
       const button = wrapper.find(".m-button-group--secondary");
       expect(button.exists()).toBe(true);
-      expect(button.text()).toBe("Alle Leistungen anzeigen");
+      expect(button.text()).toBe("showAllServices");
     });
 
     it("should initially show only first 3 services when there are more than 5", async () => {
