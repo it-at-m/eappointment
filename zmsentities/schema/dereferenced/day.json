@@ -341,6 +341,13 @@
                         "description": "additional information for this process from the client",
                         "default": ""
                     },
+                    "customTextfield2": {
+                        "type": [
+                            "string"
+                        ],
+                        "description": "additional information for this process from the client",
+                        "default": ""
+                    },
                     "apiclient": {
                         "$ref": "apiclient.json"
                     },
