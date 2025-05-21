@@ -98,7 +98,8 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                 'customTextfieldRequired' => null,
                 'customTextfieldLabel' => null,
                 'captchaActivatedRequired' => null,
-                'displayInfo' => null
+                'displayInfo' => null,
+                'slotsPerAppointment' => null
             ],
             'subRequestCounts' => [],
             'serviceId' => 10242339,

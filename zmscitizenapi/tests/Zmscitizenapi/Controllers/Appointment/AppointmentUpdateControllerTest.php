@@ -93,7 +93,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 "customTextfieldRequired" => null,
                 "customTextfieldLabel" => null,
                 "captchaActivatedRequired" => null,
-                "displayInfo" => null
+                "displayInfo" => null,
+                "slotsPerAppointment" => null
             ],
             "status" => "reserved",
             "subRequestCounts" => [],

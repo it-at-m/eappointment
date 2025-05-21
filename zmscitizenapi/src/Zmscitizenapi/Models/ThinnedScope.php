@@ -12,31 +12,21 @@ use JsonSerializable;
 class ThinnedScope extends Entity implements JsonSerializable
 {
     public static $schema = 'citizenapi/thinnedScope.json';
-    /** @var int */
     public int $id;
-    /** @var ThinnedProvider|null */
     public ?ThinnedProvider $provider;
-    /** @var string|null */
     public ?string $shortName;
-    /** @var string|null */
     public ?string $emailFrom;
-    /** @var bool|null */
     public ?bool $emailRequired;
-    /** @var bool|null */
     public ?bool $telephoneActivated;
-    /** @var bool|null */
     public ?bool $telephoneRequired;
-    /** @var bool|null */
     public ?bool $customTextfieldActivated;
-    /** @var bool|null */
     public ?bool $customTextfieldRequired;
-    /** @var string|null */
     public ?string $customTextfieldLabel;
-    /** @var bool|null */
     public ?bool $captchaActivatedRequired;
-    /** @var string|null */
     public ?string $displayInfo;
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null)
+    public ?string $slotsPerAppointment;
+
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null, ?string $slotsPerAppointment = null)
     {
         $this->id = $id;
         $this->provider = $provider;
@@ -50,6 +40,7 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->customTextfieldLabel = $customTextfieldLabel;
         $this->captchaActivatedRequired = $captchaActivatedRequired;
         $this->displayInfo = $displayInfo;
+        $this->slotsPerAppointment = $slotsPerAppointment;
         $this->ensureValid();
     }
 
@@ -115,6 +106,11 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->displayInfo;
     }
 
+    public function getSlotsPerAppointment(): ?string
+    {
+        return $this->slotsPerAppointment;
+    }
+
     public function toArray(): array
     {
         return [
@@ -130,6 +126,7 @@ class ThinnedScope extends Entity implements JsonSerializable
             'customTextfieldLabel' => $this->customTextfieldLabel,
             'captchaActivatedRequired' => $this->captchaActivatedRequired,
             'displayInfo' => $this->displayInfo,
+            'slotsPerAppointment' => $this->slotsPerAppointment,
         ];
     }
 
