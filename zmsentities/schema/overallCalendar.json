@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OverallCalendar",
+  "type": "object",
+  "required": ["meta", "data"],
+  "additionalProperties": false,
+
+  "properties": {
+    "$schema": { "type": "string", "format": "uri" },
+
+    "meta": {
+      "$ref": "metaresult.json"
+    },
+
+    "data": {
+      "type": "object",
+      "required": ["days"],
+      "additionalProperties": false,
+
+      "properties": {
+        "days": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/day" },
+          "minItems": 1
+        }
+      }
+    }
+  },
+
+  "definitions": {
+    "seat": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["open", "termin", "skip"]
+        },
+        "processId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "slots": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "termin" } } },
+          "then": { "required": ["processId", "slots"] }
+        }
+      ]
+    },
+
+    "time": {
+      "type": "object",
+      "required": ["name", "seats"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "seats": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/seat" },
+          "minItems": 1
+        }
+      }
+    },
+
+    "scope": {
+      "type": "object",
+      "required": ["id", "name", "maxSeats", "times"],
+      "additionalProperties": false,
+      "properties": {
+        "id":       { "type": "integer" },
+        "name":     { "type": "string" },
+        "maxSeats": { "type": "integer", "minimum": 1 },
+        "times": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/time" },
+          "minItems": 1
+        }
+      }
+    },
+
+    "day": {
+      "type": "object",
+      "required": ["date", "scopes"],
+      "additionalProperties": false,
+      "properties": {
+        "date":   { "type": "integer" },
+        "scopes": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/scope" },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}
