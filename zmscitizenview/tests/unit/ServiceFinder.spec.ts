@@ -76,7 +76,6 @@ describe("ServiceFinder", () => {
     it("should initially show only first 3 services when there are more than 5", async () => {
       const wrapper = createWrapper(makeService(6));
       await nextTick();
-      // Only the first 3 subservices should be rendered
       const subServiceItems = wrapper.findAll(".subservice-stub");
       expect(subServiceItems.length).toBe(3);
     });

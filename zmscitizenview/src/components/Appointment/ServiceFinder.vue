@@ -174,15 +174,8 @@ const service = ref<ServiceImpl>(selectedService.value);
 const maxSlotsPerAppointment = ref<number>(25);
 const currentSlots = ref<number>(0);
 const showAllServices = ref<boolean>(false);
-
-/**
- * Count of the selected service
- */
 const countOfService = ref<number>(1);
 
-/**
- * Computed property to get filtered subservices based on showAllServices state
- */
 const filteredSubServices = computed(() => {
   if (!service.value.subServices) return [];
 
@@ -195,9 +188,6 @@ const filteredSubServices = computed(() => {
     : service.value.subServices.slice(0, 3);
 });
 
-/**
- * Computed property to determine if show more button should be displayed
- */
 const shouldShowMoreButton = computed(() => {
   return (
     service.value.subServices &&
@@ -206,10 +196,6 @@ const shouldShowMoreButton = computed(() => {
   );
 });
 
-/**
- * Reference to the duration info.
- * If a screen reader user wants to skip the subservices, the focus is placed on the duration info.
- */
 const durationInfo = ref<HTMLElement | null>(null);
 
 watch(service, (newService) => {
