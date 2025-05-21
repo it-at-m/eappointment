@@ -1,4 +1,5 @@
 <?php
+
 // phpcs:disable PSR12.Files.FileDeclaration.MultipleClasses
 namespace BO\Zmsentities;
 
