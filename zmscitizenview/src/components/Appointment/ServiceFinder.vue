@@ -63,7 +63,7 @@
       <div class="m-listing">
         <ul class="m-listing__list">
           <template
-            v-for="subService in service.subServices"
+            v-for="subService in filteredSubServices"
             :key="subService.id"
           >
             <subservice-list-item
@@ -74,6 +74,15 @@
             />
           </template>
         </ul>
+      </div>
+      <div v-if="shouldShowMoreButton" class="m-button-group m-button-group--secondary">
+        <muc-button
+          icon="chevron-down"
+          variant="secondary"
+          @click="showAllServices = true"
+        >
+          <template #default>Alle Leistungen anzeigen</template>
+        </muc-button>
       </div>
     </div>
     <div class="m-component">
@@ -161,11 +170,36 @@ const { selectedService, updateSelectedService } =
 const service = ref<ServiceImpl>(selectedService.value);
 const maxSlotsPerAppointment = ref<number>(25);
 const currentSlots = ref<number>(0);
+const showAllServices = ref<boolean>(false);
 
 /**
  * Count of the selected service
  */
 const countOfService = ref<number>(1);
+
+/**
+ * Computed property to get filtered subservices based on showAllServices state
+ */
+const filteredSubServices = computed(() => {
+  if (!service.value.subServices) return [];
+  
+  if (service.value.subServices.length <= 5) {
+    return service.value.subServices;
+  }
+  
+  return showAllServices.value 
+    ? service.value.subServices 
+    : service.value.subServices.slice(0, 3);
+});
+
+/**
+ * Computed property to determine if show more button should be displayed
+ */
+const shouldShowMoreButton = computed(() => {
+  return service.value.subServices && 
+         service.value.subServices.length > 5 && 
+         !showAllServices.value;
+});
 
 /**
  * Reference to the duration info.
@@ -396,5 +430,9 @@ onMounted(() => {
 
 .wrapper > * {
   margin: 0 8px;
+}
+
+.m-button-group--secondary {
+  margin-top: 1rem;
 }
 </style>
