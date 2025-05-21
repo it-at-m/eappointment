@@ -111,6 +111,9 @@ class ZmsApiFacadeService
                     customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
                     customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
                     customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
+                    customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated(),
+                    customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
+                    customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
                     displayInfo: $matchingScope->getDisplayInfo(),
                     slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment())
@@ -161,6 +164,9 @@ class ZmsApiFacadeService
                     customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
                     customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
                     customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
+                    customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated(),
+                    customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
+                    customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
                     displayInfo: $matchingScope->getDisplayInfo(),
                     slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment())
@@ -269,6 +275,9 @@ class ZmsApiFacadeService
             'customTextfieldActivated' => (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
             'customTextfieldRequired' => (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
             'customTextfieldLabel' => $matchingScope->getCustomTextfieldLabel() ?? null,
+            'customTextfield2Activated' => (bool) $matchingScope->getCustomTextfield2Activated() ?? null,
+            'customTextfield2Required' => (bool) $matchingScope->getCustomTextfield2Required() ?? null,
+            'customTextfield2Label' => $matchingScope->getCustomTextfield2Label() ?? null,
             'captchaActivatedRequired' => (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
             'displayInfo' => $matchingScope->getDisplayInfo() ?? null,
             'slotsPerAppointment' => ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null
@@ -284,6 +293,9 @@ class ZmsApiFacadeService
             customTextfieldActivated: $result['customTextfieldActivated'],
             customTextfieldRequired: $result['customTextfieldRequired'],
             customTextfieldLabel: $result['customTextfieldLabel'],
+            customTextfield2Activated: $result['customTextfield2Activated'],
+            customTextfield2Required: $result['customTextfield2Required'],
+            customTextfield2Label: $result['customTextfield2Label'],
             captchaActivatedRequired: $result['captchaActivatedRequired'],
             displayInfo: $result['displayInfo'],
             slotsPerAppointment: $result['slotsPerAppointment']
@@ -409,6 +421,9 @@ class ZmsApiFacadeService
             customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
             customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
             customTextfieldLabel: $matchingScope->getCustomTextfieldLabel() ?? null,
+            customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated() ?? null,
+            customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required() ?? null,
+            customTextfield2Label: $matchingScope->getCustomTextfield2Label() ?? null,
             captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
             displayInfo: $matchingScope->getDisplayInfo() ?? null,
             slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null
@@ -665,6 +680,9 @@ class ZmsApiFacadeService
                 customTextfieldActivated: (bool) $process->scope->getCustomTextfieldActivated() ?? false,
                 customTextfieldRequired: (bool) $process->scope->getCustomTextfieldRequired() ?? false,
                 customTextfieldLabel: $process->scope->getCustomTextfieldLabel() ?? null,
+                customTextfield2Activated: (bool) $process->scope->getCustomTextfield2Activated() ?? false,
+                customTextfield2Required: (bool) $process->scope->getCustomTextfield2Required() ?? false,
+                customTextfield2Label: $process->scope->getCustomTextfield2Label() ?? null,
                 captchaActivatedRequired: (bool) $process->scope->getCaptchaActivatedRequired() ?? false,
                 displayInfo: $process->scope->getDisplayInfo() ?? null,
                 slotsPerAppointment: ((string) $process->scope->getSlotsPerAppointment() === '' ? null : (string) $process->scope->getSlotsPerAppointment()) ?? null

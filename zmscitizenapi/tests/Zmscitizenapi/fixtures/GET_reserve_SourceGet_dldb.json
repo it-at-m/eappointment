@@ -67,6 +67,9 @@
             "customTextfieldActivated": "0",
             "customTextfieldRequired": "1",
             "customTextfieldLabel": "",
+            "customTextfield2Activated": "0",
+            "customTextfield2Required": "1",
+            "customTextfield2Label": "",
             "captchaActivatedRequired": "0"
           }
         }

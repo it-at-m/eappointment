@@ -77,6 +77,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfieldActivated" => true,
                         "customTextfieldRequired" => false,
                         "customTextfieldLabel" => "Custom Label",
+                        "customTextfield2Activated" => true,
+                        "customTextfield2Required" => false,
+                        "customTextfield2Label" => "Second Custom Label",
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null,
                         "slotsPerAppointment" => null
@@ -123,6 +126,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfieldActivated" => false,
                         "customTextfieldRequired" => true,
                         "customTextfieldLabel" => "",
+                        "customTextfield2Activated" => false,
+                        "customTextfield2Required" => true,
+                        "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null,
                         "slotsPerAppointment" => null
@@ -225,6 +231,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfieldActivated" => true,
                         "customTextfieldRequired" => false,
                         "customTextfieldLabel" => "Custom Label",
+                        "customTextfield2Activated" => true,
+                        "customTextfield2Required" => false,
+                        "customTextfield2Label" => "Second Custom Label",
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null,
                         "slotsPerAppointment" => null
@@ -271,6 +280,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfieldActivated" => false,
                         "customTextfieldRequired" => true,
                         "customTextfieldLabel" => "",
+                        "customTextfield2Activated" => false,
+                        "customTextfield2Required" => true,
+                        "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
                         "displayInfo" => null,
                         "slotsPerAppointment" => null
