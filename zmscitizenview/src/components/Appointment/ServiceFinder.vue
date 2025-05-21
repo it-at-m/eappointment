@@ -84,7 +84,7 @@
           variant="secondary"
           @click="showAllServices = true"
         >
-          <template #default>Alle Leistungen anzeigen</template>
+          <template #default>{{ t("showAllServices") }}</template>
         </muc-button>
       </div>
     </div>
