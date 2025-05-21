@@ -1,7 +1,11 @@
 <?php
 
-// phpcs:disable PSR12.Files.FileDeclaration.MultipleClasses
+/**
+ * @codingStandardsIgnoreFile
+ */
+
 namespace BO\Zmsentities;
+
 
 /**
  * Flache Modell-Struktur für den Overall-Calendar-Endpunkt.
@@ -120,4 +124,3 @@ class OverallCalendarSeat implements \JsonSerializable
         return $data;
     }
 }
-// phpcs:disable PSR12.Files.FileDeclaration.MultipleClasses
