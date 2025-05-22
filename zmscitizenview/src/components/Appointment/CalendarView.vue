@@ -1,10 +1,6 @@
 <template>
   {{ appointmentTimestampsByOffice }}
-  <div
-    v-if="
-      selectableProviders && selectableProviders.length > 1
-    "
-  >
+  <div v-if="selectableProviders && selectableProviders.length > 1">
     <div class="m-component slider-no-margin">
       <div class="m-content">
         <h2 tabindex="0">{{ t("location") }}</h2>
