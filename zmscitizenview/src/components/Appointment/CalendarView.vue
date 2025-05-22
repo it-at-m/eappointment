@@ -19,9 +19,10 @@
             :label="provider.name"
             v-model="selectedProviders[provider.id]"
           ></muc-checkbox>
-          <div class="provider-address">{{ provider.address.street }} {{ provider.address.house_number }}</div>
+          <div class="provider-address">
+            {{ provider.address.street }} {{ provider.address.house_number }}
+          </div>
         </div>
-
       </div>
 
       <muc-slider
