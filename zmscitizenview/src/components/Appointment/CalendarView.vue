@@ -1,5 +1,6 @@
 <template>
   {{ appointmentTimestampsByOffice }}
+  {{ selectableProviders }}
   <div v-if="selectableProviders && selectableProviders.length > 1">
     <div class="m-component slider-no-margin">
       <div class="m-content">
