@@ -751,7 +751,7 @@ const getAppointmentsOfDay = (date: string) => {
 
   fetchAvailableTimeSlots(
     date,
-    providerIds[0],
+    providerIds,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
     props.baseUrl ?? undefined,
