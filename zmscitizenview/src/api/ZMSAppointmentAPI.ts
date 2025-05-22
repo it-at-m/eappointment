@@ -23,7 +23,7 @@ import {
 const TODAY = new Date();
 const MAXDATE = new Date(
   TODAY.getFullYear(),
-  TODAY.getMonth() + 6,
+  TODAY.getMonth() + 1,
   TODAY.getDate()
 );
 
