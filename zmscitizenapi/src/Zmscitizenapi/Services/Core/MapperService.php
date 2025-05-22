@@ -86,20 +86,22 @@ class MapperService
                 scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(
                     id: isset($providerScope->id) ? (int) $providerScope->id : 0,
                     provider: isset($providerScope->provider) ? $providerScope->provider : null,
-                    shortName: isset($providerScope->shortName) ? $providerScope->shortName : null,
-                    emailFrom: isset($providerScope->emailFrom) ? $providerScope->emailFrom : null,
+                    shortName: isset($providerScope->shortName) ? (string) $providerScope->shortName : null,
+                    emailFrom: isset($providerScope->emailFrom) ? (string) $providerScope->emailFrom : null,
                     emailRequired: isset($providerScope->emailRequired) ? (bool) $providerScope->emailRequired : null,
                     telephoneActivated: isset($providerScope->telephoneActivated) ? (bool) $providerScope->telephoneActivated : null,
                     telephoneRequired: isset($providerScope->telephoneRequired) ? (bool) $providerScope->telephoneRequired : null,
                     customTextfieldActivated: isset($providerScope->customTextfieldActivated) ? (bool) $providerScope->customTextfieldActivated : null,
                     customTextfieldRequired: isset($providerScope->customTextfieldRequired) ? (bool) $providerScope->customTextfieldRequired : null,
-                    customTextfieldLabel: isset($providerScope->customTextfieldLabel) ? $providerScope->customTextfieldLabel : null,
+                    customTextfieldLabel: isset($providerScope->customTextfieldLabel) ? (string) $providerScope->customTextfieldLabel : null,
                     customTextfield2Activated: isset($providerScope->customTextfield2Activated) ? (bool) $providerScope->customTextfield2Activated : null,
                     customTextfield2Required: isset($providerScope->customTextfield2Required) ? (bool) $providerScope->customTextfield2Required : null,
-                    customTextfield2Label: isset($providerScope->customTextfield2Label) ? $providerScope->customTextfield2Label : null,
+                    customTextfield2Label: isset($providerScope->customTextfield2Label) ? (string) $providerScope->customTextfield2Label : null,
                     captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? (bool) $providerScope->captchaActivatedRequired : null,
-                    displayInfo: isset($providerScope->displayInfo) ? $providerScope->displayInfo : null
-                ) : null
+                    displayInfo: isset($providerScope->displayInfo) ? (string) $providerScope->displayInfo : null,
+                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null
+                ) : null,
+                maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null
             );
         }
 
@@ -190,6 +192,10 @@ class MapperService
         return new OfficeServiceRelationList($relations);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function scopeToThinnedScope(Scope $scope): ThinnedScope
     {
         if (!$scope || !isset($scope->id)) {
@@ -210,19 +216,20 @@ class MapperService
         return new ThinnedScope(
             id: (int) ($scope->id ?? 0),
             provider: $thinnedProvider,
-            shortName: $scope->shortName ?? null,
+            shortName: isset($scope->shortName) ? (string) $scope->shortName : null,
             emailFrom: (string) $scope->getEmailFrom() ?? null,
             emailRequired: isset($scope->data['emailRequired']) ? (bool) $scope->data['emailRequired'] : null,
             telephoneActivated: isset($scope->data['telephoneActivated']) ? (bool) $scope->data['telephoneActivated'] : null,
             telephoneRequired: isset($scope->data['telephoneRequired']) ? (bool) $scope->data['telephoneRequired'] : null,
             customTextfieldActivated: isset($scope->data['customTextfieldActivated']) ? (bool) $scope->data['customTextfieldActivated'] : null,
             customTextfieldRequired: isset($scope->data['customTextfieldRequired']) ? (bool) $scope->data['customTextfieldRequired'] : null,
-            customTextfieldLabel: $scope->data['customTextfieldLabel'] ?? null,
+            customTextfieldLabel: isset($scope->data['customTextfieldLabel']) ? (string) $scope->data['customTextfieldLabel'] : null,
             customTextfield2Activated: isset($scope->data['customTextfield2Activated']) ? (bool) $scope->data['customTextfield2Activated'] : null,
             customTextfield2Required: isset($scope->data['customTextfield2Required']) ? (bool) $scope->data['customTextfield2Required'] : null,
-            customTextfield2Label: $scope->data['customTextfield2Label'] ?? null,
+            customTextfield2Label: isset($scope->data['customTextfield2Label']) ? (string) $scope->data['customTextfield2Label'] : null,
             captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
-            displayInfo: $scope->data['displayInfo'] ?? null
+            displayInfo: isset($scope->data['displayInfo']) ? (string) $scope->data['displayInfo'] : null,
+            slotsPerAppointment: isset($scope->data['slotsPerAppointment']) ? ((string) $scope->data['slotsPerAppointment'] === '' ? null : (string) $scope->data['slotsPerAppointment']) : null
         );
     }
 

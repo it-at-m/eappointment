@@ -64,6 +64,9 @@ class ZmsApiFacadeService
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getOffices(bool $showUnpublished = false): OfficeList
     {
         $cacheKey = self::CACHE_KEY_OFFICES . ($showUnpublished ? '_unpublished' : '');
@@ -113,8 +116,10 @@ class ZmsApiFacadeService
                     customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
                     customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
-                    displayInfo: $matchingScope->getDisplayInfo()
-                ) : null
+                    displayInfo: $matchingScope->getDisplayInfo(),
+                    slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment())
+                ) : null,
+                maxSlotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
             );
         }
 
@@ -164,7 +169,8 @@ class ZmsApiFacadeService
                     customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
                     customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
-                    displayInfo: $matchingScope->getDisplayInfo()
+                    displayInfo: $matchingScope->getDisplayInfo(),
+                    slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment())
                 );
             }
         }
@@ -275,6 +281,7 @@ class ZmsApiFacadeService
             'customTextfield2Label' => $matchingScope->getCustomTextfield2Label() ?? null,
             'captchaActivatedRequired' => (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
             'displayInfo' => $matchingScope->getDisplayInfo() ?? null,
+            'slotsPerAppointment' => ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null
         ];
         return new ThinnedScope(
             id: (int) $result['id'],
@@ -291,7 +298,8 @@ class ZmsApiFacadeService
             customTextfield2Required: $result['customTextfield2Required'],
             customTextfield2Label: $result['customTextfield2Label'],
             captchaActivatedRequired: $result['captchaActivatedRequired'],
-            displayInfo: $result['displayInfo']
+            displayInfo: $result['displayInfo'],
+            slotsPerAppointment: $result['slotsPerAppointment']
         );
     }
 
@@ -340,7 +348,19 @@ class ZmsApiFacadeService
                     $scope = $scopeData;
                 }
 
-                $offices[] = new Office(id: (int) $provider->id, name: $provider->name, showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null, displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [], organization: $provider->data['organization'] ?? null, organizationUnit: $provider->data['organizationUnit'] ?? null, slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null, address: $provider->address ?? null, geo: $provider->geo ?? null, scope: $scope);
+                $offices[] = new Office(
+                    id: (int) $provider->id,
+                    name: $provider->name,
+                    showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null,
+                    displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
+                    organization: $provider->data['organization'] ?? null,
+                    organizationUnit: $provider->data['organizationUnit'] ?? null,
+                    slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
+                    address: $provider->address ?? null,
+                    geo: $provider->geo ?? null,
+                    scope: $scope,
+                    maxSlotsPerAppointment: $scope ? ((string) $scope->getSlotsPerAppointment() === '' ? null : (string) $scope->getSlotsPerAppointment()) : null
+                );
             }
         }
 
@@ -356,6 +376,9 @@ class ZmsApiFacadeService
         return $result;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getScopeById(?int $scopeId): ThinnedScope|array
     {
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
@@ -403,7 +426,8 @@ class ZmsApiFacadeService
             customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required() ?? null,
             customTextfield2Label: $matchingScope->getCustomTextfield2Label() ?? null,
             captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
-            displayInfo: $matchingScope->getDisplayInfo() ?? null
+            displayInfo: $matchingScope->getDisplayInfo() ?? null,
+            slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null
         );
     }
 
@@ -689,7 +713,8 @@ class ZmsApiFacadeService
                 customTextfield2Required: (bool) $process->scope->getCustomTextfield2Required() ?? false,
                 customTextfield2Label: $process->scope->getCustomTextfield2Label() ?? null,
                 captchaActivatedRequired: (bool) $process->scope->getCaptchaActivatedRequired() ?? false,
-                displayInfo: $process->scope->getDisplayInfo() ?? null
+                displayInfo: $process->scope->getDisplayInfo() ?? null,
+                slotsPerAppointment: ((string) $process->scope->getSlotsPerAppointment() === '' ? null : (string) $process->scope->getSlotsPerAppointment()) ?? null
             );
         }
 

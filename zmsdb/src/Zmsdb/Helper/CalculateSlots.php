@@ -188,11 +188,17 @@ class CalculateSlots
     {
         $this->log("Maintenance: Delete slots older than " . $now->format('Y-m-d'));
         $slotQuery = new \BO\Zmsdb\Slot();
+        $overallCalendar = new \BO\Zmsdb\OverallCalendar();
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
         $pdo->exec('SET SESSION innodb_lock_wait_timeout=600');
-        if ($slotQuery->deleteSlotsOlderThan($now)) {
-            \BO\Zmsdb\Connection\Select::writeCommit();
-            $this->log("Deleted old slots successfully");
+        try {
+            $slotQuery->deleteSlotsOlderThan($now);
+            $overallCalendar->deleteOlderThan($now);
+
+            $this->log("Deleted old slots and calendar entries successfully");
+        } catch (\Throwable $e) {
+            $this->log("Failed to delete old data: " . $e->getMessage(), 'ERROR');
+            throw $e;
         }
     }
 }

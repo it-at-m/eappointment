@@ -82,8 +82,10 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => false,
                         "customTextfield2Label" => "Second Custom Label",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
-                    ]
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ],
                 [
                     "id" => 9999999,
@@ -130,8 +132,10 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => true,
                         "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
-                    ]
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ]
             ],
             "services" => [
@@ -234,8 +238,10 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => false,
                         "customTextfield2Label" => "Second Custom Label",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
-                    ]
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ],
                 [
                     "id" => 9999999,
@@ -282,8 +288,10 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => true,
                         "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
-                    ]
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ]
             ],
             "services" => [

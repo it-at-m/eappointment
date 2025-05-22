@@ -32,6 +32,12 @@ class ProcessDeleteQuick extends ProcessDelete
         $this->testProcess($workstation, $process);
 
         $process->status = 'blocked';
+        if ($process->hasId() && $process->scope && $process->status !== 'cancelled') {
+            (new \BO\Zmsdb\OverallCalendar())->unbook(
+                (int) $process->scope->id,
+                (int) $process->id
+            );
+        }
         $this->writeMails($request, $process);
         $status = (new Process())->writeBlockedEntity($process, false, $workstation->getUseraccount());
         if (! $status) {
