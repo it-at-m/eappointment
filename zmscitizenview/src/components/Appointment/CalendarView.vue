@@ -1,7 +1,8 @@
 <template>
+  {{ appointmentTimestampsByOffice }}
   <div
     v-if="
-      selectedProvider && selectableProviders && selectableProviders.length > 1
+      selectableProviders && selectableProviders.length > 1
     "
   >
     <div class="m-component slider-no-margin">
@@ -69,6 +70,8 @@
     </div>
   </div>
 
+  {{ error }}
+  {{ showError }}
   <div v-if="!error">
     <div
       v-if="
