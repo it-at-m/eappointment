@@ -23,7 +23,7 @@ import {
 const TODAY = new Date();
 const MAXDATE = new Date(
   TODAY.getFullYear(),
-  TODAY.getMonth() + 1,
+  TODAY.getMonth() + 6,
   TODAY.getDate()
 );
 
@@ -44,7 +44,7 @@ export function fetchServicesAndProviders(
   });
 }
 
-export function fetchAvailableDays(
+export async function fetchAvailableDays(
   providerIds: number[],
   serviceIds: string[],
   serviceCounts: number[],
@@ -60,6 +60,8 @@ export function fetchAvailableDays(
     ...(captchaToken && { captchaToken }),
   };
 
+  await sleep(5000)
+
   return fetch(
     getAPIBaseURL(baseUrl) +
       VUE_APP_ZMS_API_CALENDAR_ENDPOINT +
@@ -70,7 +72,11 @@ export function fetchAvailableDays(
   });
 }
 
-export function fetchAvailableTimeSlots(
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export async function fetchAvailableTimeSlots(
   date: string,
   providerIds: number[],
   serviceIds: string[],
@@ -85,6 +91,8 @@ export function fetchAvailableTimeSlots(
     serviceCount: serviceCounts,
     ...(captchaToken && { captchaToken }),
   };
+
+  await sleep(5000)
 
   return fetch(
     getAPIBaseURL(baseUrl) +
