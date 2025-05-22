@@ -12,13 +12,16 @@
         class="m-content"
         v-if="selectableProviders.length > 1"
       >
-        <muc-checkbox
-          v-for="provider in selectableProviders"
-          :key="provider.id"
-          :id="provider.id"
-          :label="provider.name"
-          v-model="selectedProviders[provider.id]"
-        ></muc-checkbox>
+        <div v-for="provider in selectableProviders">
+          <muc-checkbox
+            :key="provider.id"
+            :id="provider.id"
+            :label="provider.name"
+            v-model="selectedProviders[provider.id]"
+          ></muc-checkbox>
+          <div class="provider-address">{{ provider.address.street }} {{ provider.address.house_number }}</div>
+        </div>
+
       </div>
 
       <muc-slider
@@ -973,6 +976,12 @@ onMounted(() => {
   margin-bottom: 20px;
   padding-bottom: 0;
   padding-top: 30px;
+}
+
+.provider-address {
+  margin-top: -20px;
+  margin-bottom: 20px;
+  margin-left: 34px;
 }
 
 .m-button--ghost.disabled,
