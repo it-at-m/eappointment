@@ -44,7 +44,7 @@ export function fetchServicesAndProviders(
   });
 }
 
-export async function fetchAvailableDays(
+export function fetchAvailableDays(
   providerIds: number[],
   serviceIds: string[],
   serviceCounts: number[],
@@ -60,8 +60,6 @@ export async function fetchAvailableDays(
     ...(captchaToken && { captchaToken }),
   };
 
-  await sleep(5000);
-
   return fetch(
     getAPIBaseURL(baseUrl) +
       VUE_APP_ZMS_API_CALENDAR_ENDPOINT +
@@ -72,11 +70,7 @@ export async function fetchAvailableDays(
   });
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export async function fetchAvailableTimeSlots(
+export function fetchAvailableTimeSlots(
   date: string,
   providerIds: number[],
   serviceIds: string[],
@@ -91,8 +85,6 @@ export async function fetchAvailableTimeSlots(
     serviceCount: serviceCounts,
     ...(captchaToken && { captchaToken }),
   };
-
-  await sleep(5000);
 
   return fetch(
     getAPIBaseURL(baseUrl) +

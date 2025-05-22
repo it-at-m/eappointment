@@ -6,7 +6,7 @@ export const VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT =
 export const VUE_APP_ZMS_API_CALENDAR_ENDPOINT =
   "/api/citizen/available-days-by-office/";
 export const VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT =
-  "/api/citizen/available-appointments-by-office/";
+  "/api/citizen/available-appointments/";
 export const VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT =
   "/api/citizen/reserve-appointment/";
 export const VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT = "/api/citizen/appointment/";
