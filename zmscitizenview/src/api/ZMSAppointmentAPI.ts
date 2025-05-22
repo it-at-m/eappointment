@@ -60,7 +60,7 @@ export async function fetchAvailableDays(
     ...(captchaToken && { captchaToken }),
   };
 
-  await sleep(5000)
+  await sleep(5000);
 
   return fetch(
     getAPIBaseURL(baseUrl) +
@@ -73,7 +73,7 @@ export async function fetchAvailableDays(
 }
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export async function fetchAvailableTimeSlots(
@@ -92,7 +92,7 @@ export async function fetchAvailableTimeSlots(
     ...(captchaToken && { captchaToken }),
   };
 
-  await sleep(5000)
+  await sleep(5000);
 
   return fetch(
     getAPIBaseURL(baseUrl) +
