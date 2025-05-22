@@ -12,6 +12,8 @@ use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
 class AvailableAppointmentsListService
 {
+    use ServiceLocationValidationTrait;
+
     private TokenValidationService $tokenValidator;
     private ZmsApiFacadeService $zmsApiFacadeService;
 
@@ -26,6 +28,11 @@ class AvailableAppointmentsListService
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
+            return $errors;
+        }
+
+        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds);
+        if ($errors !== null) {
             return $errors;
         }
 
@@ -93,6 +100,11 @@ class AvailableAppointmentsListService
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
+            return $errors;
+        }
+
+        $errors = $this->validateServiceLocations($clientData->officeIds, $clientData->serviceIds);
+        if ($errors !== null) {
             return $errors;
         }
 

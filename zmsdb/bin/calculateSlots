@@ -3,6 +3,11 @@
 ini_set('memory_limit', '1024M');
 require_once(__DIR__."/script_bootstrap.php");
 
+function logMessage($message, $level = 'INFO') {
+    $time = date('Y-m-d H:i:s');
+    error_log("[$time] [$level] $message");
+}
+
 $dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
 $now = new \DateTimeImmutable();
 if (count($dates)) {
@@ -15,10 +20,13 @@ if (preg_grep('#^--repair$#', $argv)) {
     $repair = true;
 }
 if (preg_grep('#^--commit$#', $argv)) {
+    logMessage("⏳    Start Slot-Berechnung: {$now->format('c')}");
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
     try {
+        $stepStart = microtime(true);
         $delete = preg_grep('#^--delete$#', $argv);
         $calculator->writeCalculations($now, $delete);
+        logMessage("✅    Slot-Berechnung fertig in " . round(microtime(true) - $stepStart, 2) . " s");
     } catch (\BO\Zmsdb\Exception\Pdo\LockTimeout $exception) {
         $calculator->log("Unexpected end due to lock timeout, showing tracelog:");
         $calculator->dumpLogs();

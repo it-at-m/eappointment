@@ -6487,6 +6487,55 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("WorkstationProcessParked");
 
+/**
+ *  @swagger
+ *  "/overallcalendar/":
+ *      get:
+ *          summary: Returns slot information from the overall calendar
+ *          description: |
+ *              Returns all slot rows (or only those changed after *updateAfter*)
+ *              aggregated by day, scope, time and seat.
+ *          tags:
+ *              - overallcalendar
+ *          parameters:
+ *              - name: scopeIds
+ *                in: query
+ *                required: true
+ *                description: CSV list of scope IDs, e.g. `58,60`
+ *                schema:
+ *                  type: string
+ *              - name: dateFrom
+ *                in: query
+ *                required: true
+ *                description: First day (YYYY-MM-DD)
+ *                schema:
+ *                  type: string
+ *              - name: dateUntil
+ *                in: query
+ *                required: true
+ *                description: Last day (YYYY-MM-DD)
+ *                schema:
+ *                  type: string
+ *              - name: updateAfter
+ *                in: query
+ *                required: false
+ *                description: Only rows with `updated_at` &gt; this ISO timestamp
+ *                schema:
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: List of days with slot information
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: "schema/overallCalendar.json"
+ */
+\App::$slim->get(
+    '/overallcalendar/',
+    '\BO\Zmsapi\OverallCalendarRead'
+)->setName('OverallCalendarRead');
+
+
 /* ---------------------------------------------------------------------------
  * maintenance
  * -------------------------------------------------------------------------*/
