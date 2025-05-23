@@ -17,7 +17,7 @@ use BO\Slim\Render;
  * Update availabilites, API proxy
  *
  */
-class AvailabilityUpdateList extends BaseController
+class AvailabilityListUpdate extends BaseController
 {
     /**
      * @SuppressWarnings(UnusedFormalParameter)
@@ -31,8 +31,21 @@ class AvailabilityUpdateList extends BaseController
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
         $collection = new AvailabilityList($input);
-        $availabilityList = \App::$http->readPostResult('/availability/', $collection)->getCollection();
-        $response = Render::withLastModified($response, time(), '0');
-        return Render::withJson($response, $availabilityList);
+
+        try {
+            $apiResponse = \App::$http->readPostResult('/availability/', $collection);
+            $availabilityList = $apiResponse->getCollection();
+            $statusCode = $apiResponse->getResponse()->getStatusCode();
+
+            $response = Render::withLastModified($response, time(), '0');
+            return Render::withJson($response, $availabilityList, $statusCode);
+        } catch (\Throwable $e) {
+            $response = Render::withLastModified($response, time(), '0');
+            return Render::withJson(
+                $response,
+                ['error' => true, 'message' => $e->getMessage()],
+                400
+            );
+        }
     }
 }

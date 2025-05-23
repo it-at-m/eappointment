@@ -150,7 +150,12 @@ const renderTable = (onDelete, onSelect, onAbort, availabilityList, data) => {
                 {availability.workstationCount.intern}/{availability.workstationCount.callcenter}/{availability.workstationCount.public}
             </td>
             <td>
-                {availability.bookable.startInDays}-{availability.bookable.endInDays}
+                {(availability.bookable?.startInDays !== undefined && availability.bookable?.startInDays !== null && availability.bookable?.startInDays !== '' 
+                    ? availability.bookable.startInDays 
+                    : availability.scope?.preferences?.appointment?.startInDaysDefault || 0)}-
+                {(availability.bookable?.endInDays !== undefined && availability.bookable?.endInDays !== null && availability.bookable?.endInDays !== '' 
+                    ? availability.bookable.endInDays 
+                    : availability.scope?.preferences?.appointment?.endInDaysDefault || 60)}
             </td>
             <td>
                 {availability.description ? availability.description : '-'}

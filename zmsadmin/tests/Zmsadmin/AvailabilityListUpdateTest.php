@@ -2,7 +2,7 @@
 
 namespace BO\Zmsadmin\Tests;
 
-class AvailabilityUpdateTest extends Base
+class AvailabilityListUpdateTest extends Base
 {
     protected $arguments = [];
 
@@ -45,7 +45,7 @@ class AvailabilityUpdateTest extends Base
         }'
     ];
 
-    protected $classname = "AvailabilityUpdateList";
+    protected $classname = "AvailabilityListUpdate";
 
     public function testRendering()
     {

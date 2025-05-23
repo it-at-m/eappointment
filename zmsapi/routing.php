@@ -197,51 +197,10 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post(
     '/availability/',
-    '\BO\Zmsapi\AvailabilityAdd'
+    '\BO\Zmsapi\AvailabilityListUpdate'
 )
-    ->setName("AvailabilityAdd");
+    ->setName("AvailabilityListUpdate");
 
-/**
- *  @swagger
- *  "/availability/{id}/":
- *      post:
- *          summary: Update an availability
- *          tags:
- *              - availability
- *          parameters:
- *              -   name: id
- *                  description: availability number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: availability
- *                  description: availability data to update
- *                  in: body
- *                  schema:
- *                      $ref: "schema/availability.json"
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/availability.json"
- *              404:
- *                  description: "availability id does not exists"
- */
-\App::$slim->post(
-    '/availability/{id:\d{1,11}}/',
-    '\BO\Zmsapi\AvailabilityUpdate'
-)
-    ->setName("AvailabilityUpdate");
 
 /**
  *  @swagger
