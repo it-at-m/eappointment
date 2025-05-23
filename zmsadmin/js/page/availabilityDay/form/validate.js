@@ -233,14 +233,6 @@ function isValidTimestamp(timestamp) {
     return !Number.isNaN(Number(timestamp)) && moment.unix(timestamp).isValid();
 }
 
-function parseTimestampAndTime(dateTimestamp, timeStr) {
-    const date = moment.unix(dateTimestamp);
-    if (!date.isValid()) return null;
-
-    const [hours, minutes, seconds] = timeStr.split(':').map((val, index) => parseInt(val || 0));
-    return date.set({ hour: hours, minute: minutes, second: seconds });
-}
-
 function validateStartTime(today, tomorrow, selectedDate, data) {
     let errorList = []
     const startTime = moment(data.startDate, 'X').startOf('day');
@@ -321,10 +313,15 @@ function validateEndTime(today, yesterday, selectedDate, data) {
 function validateOriginEndTime(today, yesterday, selectedDate, data) {
     var errorList = []
     const endTime = moment(data.endDate, 'X').startOf('day');
+    const startTime = moment(data.startDate, 'X').startOf('day');
     const endHour = data.endTime.split(':')[0]
     const endMinute = data.endTime.split(':')[1]
+    const startHour = data.startTime.split(':')[0]
+    const startMinute = data.startTime.split(':')[1]
     const endDateTime = endTime.clone().set({ h: endHour, m: endMinute });
-    const endTimestamp = endTime.clone().set({ h: endHour, m: endMinute }).unix();
+    const startDateTime = startTime.clone().set({ h: startHour, m: startMinute });
+    const endTimestamp = endDateTime.unix();
+    const startTimestamp = startDateTime.unix();
     const isOrigin = (data.kind && 'origin' == data.kind)
 
     if (!isOrigin && selectedDate.unix() > today.unix() && endTime.isBefore(selectedDate.startOf('day'), 'day')) {
@@ -334,13 +331,13 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
         })
     }
 
-    if (
-        (!isOrigin && endTimestamp < today.unix())
-    ) {
+    if (!isOrigin && startTimestamp < today.unix() && endTimestamp < today.unix()) {
         errorList.push({
             type: 'endTimePast',
             message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
-                + '(Die aktuelle Zeit "' + today.format('DD.MM.YYYY HH:mm') + ' Uhr" liegt nach dem Terminende am "' + endDateTime.format('DD.MM.YYYY HH:mm') + ' Uhr").'
+                + '(Die aktuelle Zeit "' + today.format('DD.MM.YYYY HH:mm') + ' Uhr" liegt nach dem Terminende am "'
+                + endDateTime.format('DD.MM.YYYY HH:mm') + ' Uhr" und dem Terminanfang am "'
+                + startDateTime.format('DD.MM.YYYY HH:mm') + ' Uhr").'
         })
     }
     return errorList;

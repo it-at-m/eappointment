@@ -576,8 +576,13 @@ class Availability extends Schema\Entity
         $errorList = [];
         $endHour = (int) $endDate->format('H');
         $endMinute = (int) $endDate->format('i');
+        $startDate = $this->getStartDateTime();
+        $startHour = (int) $startDate->format('H');
+        $startMinute = (int) $startDate->format('i');
         $endDateTime = (clone $endDate)->setTime($endHour, $endMinute);
+        $startDateTime = (clone $startDate)->setTime($startHour, $startMinute);
         $endTimestamp = $endDateTime->getTimestamp();
+        $startTimestamp = $startDateTime->getTimestamp();
         $isOrigin = ($kind && $kind === 'origin');
 
         if (!$isOrigin && $selectedDate->getTimestamp() > $today->getTimestamp() && $endDate < (clone $selectedDate)->setTime(0, 0)) {
@@ -587,12 +592,13 @@ class Availability extends Schema\Entity
             ];
         }
 
-        if (!$isOrigin && $endTimestamp < $today->getTimestamp()) {
+        if (!$isOrigin && $startTimestamp < $today->getTimestamp() && $endTimestamp < $today->getTimestamp()) {
             $errorList[] = [
                 'type' => 'endTimePast',
                 'message' => 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
                     . '(Die aktuelle Zeit "' . $today->format('d.m.Y H:i') . ' Uhr" liegt nach dem Terminende am "'
-                    . $endDateTime->format('d.m.Y H:i') . ' Uhr").'
+                    . $endDateTime->format('d.m.Y H:i') . ' Uhr" und dem Terminanfang am "'
+                    . $startDateTime->format('d.m.Y H:i') . ' Uhr").'
             ];
         }
 
