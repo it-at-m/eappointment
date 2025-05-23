@@ -799,12 +799,10 @@ const allowedDates = (date: Date) => {
     .some((id) => selectedProviders.value[id]);
 };
 
-watch(selectedDay, (newDate, oldDate) => {
+watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
-  alert(oldDate);
-  alert(newDate);
-  if (newDate && newDate !== oldDate) {
-    getAppointmentsOfDay(convertDateToString(newDate));
+  if (newDate) {
+    getAppointmentsOfDay(convertDateToString(selectedDay.value));
   }
 });
 
