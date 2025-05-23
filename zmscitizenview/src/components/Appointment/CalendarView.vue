@@ -131,7 +131,7 @@
         timeSlotsInHoursByOffice.size > 0 &&
         averageAppointmentsPerProvider / selectableProviders.length > 18
       "
-      :key="selectableProviders && selectedDay && timeSlotsInHoursByOffice"
+      :key="selectableProviders && timeSlotsInHoursByOffice"
       class="m-component"
     >
       <div class="m-content">
@@ -225,7 +225,7 @@
 
     <div
       v-else-if="selectedDay && timeSlotsInDayPartByOffice.size > 0"
-      :key="selectedDay && timeSlotsInDayPartByOffice"
+      :key="timeSlotsInDayPartByOffice"
       class="m-component"
     >
       <div class="m-content">
