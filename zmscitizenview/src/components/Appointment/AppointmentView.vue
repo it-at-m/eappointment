@@ -26,7 +26,6 @@
               />
             </div>
 
-            {{ currentView }}
             <div v-if="currentView === 1">
               <calendar-view
                 :base-url="baseUrl"
