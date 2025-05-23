@@ -38,6 +38,13 @@ const validate = (data, props) => {
 function validateWeekdays(data) {
     let errorList = [];
     
+    // Check if date range is valid
+    const startDate = moment.unix(data.startDate);
+    const endDate = moment.unix(data.endDate);
+    if (startDate > endDate) {
+        return errorList;
+    }
+    
     // Ensure weekday object exists
     if (!data.weekday) {
         errorList.push({
@@ -75,8 +82,6 @@ function validateWeekdays(data) {
     const foundWeekdays = new Set();
 
     // Check if dates fall on selected weekdays
-    const startDate = moment.unix(data.startDate);
-    const endDate = moment.unix(data.endDate);
     const currentDate = startDate.clone();
 
     while (currentDate <= endDate) {

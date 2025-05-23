@@ -481,6 +481,11 @@ class Availability extends Schema\Entity
     {
         $errorList = [];
 
+        // Check if date range is valid
+        if ($startDate > $endDate) {
+            return $errorList;
+        }
+
         $hasSelectedDay = false;
         foreach (self::$weekdayNameList as $day) {
             if ((int)$weekday[$day] > 0) {
