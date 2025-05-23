@@ -331,7 +331,23 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
         })
     }
 
-    if (!isOrigin && startTimestamp < today.unix() && endTimestamp < today.unix()) {
+    // Check if dates are today but times are in the past
+    const isStartDateToday = startTime.isSame(today, 'day');
+    const isEndDateToday = endTime.isSame(today, 'day');
+    const isStartTimePast = startTimestamp < today.unix();
+    const isEndTimePast = endTimestamp < today.unix();
+
+    if (!isOrigin && isStartDateToday && isEndDateToday && isStartTimePast && isEndTimePast) {
+        errorList.push({
+            type: 'timePastToday',
+            message: 'Die ausgewählten Zeiten liegen in der Vergangenheit. '
+                + '(Die aktuelle Zeit "' + today.format('DD.MM.YYYY HH:mm') + ' Uhr" liegt nach dem Terminende am "'
+                + endDateTime.format('DD.MM.YYYY HH:mm') + ' Uhr" und dem Terminanfang am "'
+                + startDateTime.format('DD.MM.YYYY HH:mm') + ' Uhr").'
+        })
+    }
+    // Check if dates are in the past (not today)
+    else if (!isOrigin && startTimestamp < today.startOf('day').unix() && endTimestamp < today.startOf('day').unix()) {
         errorList.push({
             type: 'endTimePast',
             message: 'Öffnungszeiten in der Vergangenheit lassen sich nicht bearbeiten '
