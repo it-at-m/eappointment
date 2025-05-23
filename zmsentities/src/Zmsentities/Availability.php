@@ -481,7 +481,6 @@ class Availability extends Schema\Entity
     {
         $errorList = [];
 
-        // Check if date range is valid
         if ($startDate > $endDate) {
             return $errorList;
         }
