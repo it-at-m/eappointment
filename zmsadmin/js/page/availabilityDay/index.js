@@ -198,7 +198,6 @@ class AvailabilityPage extends Component {
             $.ajax(`${this.props.links.includeurl}/availability/delete/${id}/`, {
                 method: 'GET'
             }).done(() => {
-
                 const newState = deleteAvailabilityInState(this.state, availability);
 
                 if (this.state.fullAvailabilityList) {
@@ -207,11 +206,17 @@ class AvailabilityPage extends Component {
                     );
                 }
 
-                this.refreshData();
-                if (newState.availabilitylist.length > 0) {
-                    this.getConflictList();
+                if (this.state.selectedAvailability && this.state.selectedAvailability.id === id) {
+                    newState.selectedAvailability = null;
                 }
-                this.getValidationList();
+
+                this.setState(newState, () => {
+                    this.refreshData();
+                    if (newState.availabilitylist.length > 0) {
+                        this.getConflictList();
+                    }
+                    this.getValidationList();
+                });
 
                 this.updateSaveBarState('delete', true);
 
