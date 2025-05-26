@@ -62,8 +62,8 @@
     <div
       v-if="
         selectedDay &&
-        timeSlotsInHoursByOffice.size > 0 &&
-        averageAppointmentsPerProvider > 18
+        timeSlotsInHoursByOffice &&
+        timeSlotsInHoursByOffice.size > 0
       "
       class="m-component"
     >
@@ -85,7 +85,7 @@
       >
         <div
           v-if="
-            selectedProviders[officeId] && office.appointments.get(currentHour)
+            selectedProviders[officeId]
           "
         >
           <div>
@@ -289,8 +289,6 @@ const selectableProviders = ref<OfficeImpl[]>();
 const availableDays = ref<string[]>();
 const selectedHour = ref<number | null>(null);
 const selectedDayPart = ref<"am" | "pm" | null>(null);
-
-const averageAppointmentsPerProvider = ref<number>(0);
 
 const appointmentTimestampsByOffice = ref<OfficeAvailableTimeSlotsDTO[]>([]);
 const appointmentTimestamps = ref<number[]>([]);
@@ -595,11 +593,6 @@ const getAppointmentsOfDay = (date: string) => {
       appointmentTimestampsByOffice.value = (
         data as AvailableTimeSlotsByOfficeDTO
       ).offices;
-
-      averageAppointmentsPerProvider.value = data.offices.reduce(
-        (sum, office) => sum + office.appointments.length,
-        0
-      );
     } else {
       error.value = true;
     }
