@@ -62,11 +62,11 @@
     <div
       v-if="
         selectedDay &&
-        timeSlotsInHoursByOffice &&
-        timeSlotsInHoursByOffice.size > 0
+        timeSlotsInHoursByOffice()
       "
       class="m-component"
     >
+      {{ timeSlotsInHoursByOffice() }}
       <div class="m-content">
         <h3 tabindex="0">{{ t("availableTimes") }}</h3>
       </div>
@@ -80,7 +80,7 @@
       </div>
 
       <div
-        v-for="[officeId, office] in timeSlotsInHoursByOffice"
+        v-for="[officeId, office] in timeSlotsInHoursByOffice()"
         :key="officeId + selectedProviders[officeId]"
       >
         <div>
@@ -99,6 +99,8 @@
             v-for="[timeslot, times] in office.appointments"
             :key="timeslot"
           >
+            {{ timeslot }}
+            -{{ currentHour }}
             <div
               class="wrapper"
               v-if="timeslot == currentHour"
@@ -387,7 +389,8 @@ const timeSlotsInHours = computed(() => {
   return timesByHours;
 });
 
-const timeSlotsInHoursByOffice = computed(() => {
+
+const timeSlotsInHoursByOffice = function() {
   const offices = new Map<number, Object[]>();
 
   appointmentTimestampsByOffice.value.forEach((office) => {
@@ -420,12 +423,12 @@ const timeSlotsInHoursByOffice = computed(() => {
       return indexA - indexB;
     })
   );
-});
+}
 
 const firstHour = computed(() => {
   let min = Infinity;
 
-  for (const [, office] of timeSlotsInHoursByOffice.value) {
+  for (const [, office] of timeSlotsInHoursByOffice()) {
     for (const hour of office.appointments.keys()) {
       min = Math.min(min, hour);
     }
@@ -437,7 +440,7 @@ const firstHour = computed(() => {
 const lastHour = computed(() => {
   let max = -Infinity;
 
-  for (const [, office] of timeSlotsInHoursByOffice.value) {
+  for (const [, office] of timeSlotsInHoursByOffice()) {
     for (const hour of office.appointments.keys()) {
       max = Math.max(max, hour);
     }
