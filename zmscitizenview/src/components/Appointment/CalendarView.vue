@@ -1,4 +1,12 @@
 <template>
+  currentHour: {{ currentHour }} selectedHour: {{ selectedHour }} firstHour:
+  {{ firstHour }} lastHour: {{ lastHour }} currentDayPart:
+  {{ currentDayPart }} selectedDayPart: {{ selectedDayPart }}
+
+  -----
+  {{ timeSlotsInHoursByOffice }}
+  ----
+  {{ timeSlotsInDayPartByOffice }}
   <div v-if="selectableProviders && selectableProviders.length > 1">
     <div class="m-component slider-no-margin">
       <div class="m-content">
@@ -131,7 +139,7 @@
         timeSlotsInHoursByOffice.size > 0 &&
         appointmentsCount / selectableProviders.length > 18
       "
-      :key="selectableProviders && timeSlotsInHoursByOffice"
+      :key="selectedDay && selectableProviders && timeSlotsInHoursByOffice"
       class="m-component"
     >
       <div class="m-content">
@@ -201,6 +209,7 @@
       </div>
       <div class="wrapper m-button-group">
         <muc-button
+          :key="currentHour"
           icon="chevron-left"
           icon-shown-left
           variant="ghost"
@@ -211,6 +220,7 @@
         </muc-button>
 
         <muc-button
+          :key="currentHour"
           class="float-right"
           icon="chevron-right"
           icon-shown-right
@@ -225,9 +235,10 @@
 
     <div
       v-else-if="selectedDay && timeSlotsInDayPartByOffice.size > 0"
-      :key="timeSlotsInDayPartByOffice"
+      :key="selectedDay && selectableProviders && timeSlotsInDayPartByOffice"
       class="m-component"
     >
+      da
       <div class="m-content">
         <h3 tabindex="0">{{ t("availableTimes") }}</h3>
       </div>
@@ -683,7 +694,7 @@ const firstDayPart = computed(() => {
     if (office.appointments.has("am")) return "am";
   }
 
-  return null;
+  return "pm";
 });
 
 const lastDayPart = computed(() => {
@@ -691,7 +702,7 @@ const lastDayPart = computed(() => {
     if (office.appointments.has("pm")) return "pm";
   }
 
-  return null;
+  return "am";
 });
 
 const currentDayPart = computed(() => {
