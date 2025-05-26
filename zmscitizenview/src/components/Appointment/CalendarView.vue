@@ -389,12 +389,16 @@ const timeSlotsInHoursByOffice = function () {
   try {
     const offices = new Map<number, Object[]>();
 
+    console.log(
+      "appointmentTimestampsByOffice",
+      appointmentTimestampsByOffice.value
+    );
     appointmentTimestampsByOffice.value.forEach((office) => {
       if (!selectedProviders.value[office.officeId]) return;
 
       const timesByHours = new Map<number, number[]>();
 
-      office.appointments.forEach((time) => {
+      office.appointments?.forEach?.((time) => {
         const berlinDate = new Date(time * 1000);
         const hour = parseInt(berlinHourFormatter.format(berlinDate));
 
@@ -421,7 +425,7 @@ const timeSlotsInHoursByOffice = function () {
     );
   } catch (error) {
     // Handle the error
-    alert("An error occurred:" + error);
+    alert("An error occurred2:" + error);
   }
 };
 
