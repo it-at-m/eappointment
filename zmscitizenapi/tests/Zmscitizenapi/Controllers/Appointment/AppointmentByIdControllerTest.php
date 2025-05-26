@@ -102,7 +102,8 @@ class AppointmentByIdControllerTest extends ControllerTestCase
             ],
             "subRequestCounts" => [],
             "serviceId" => 1063424,
-            "serviceCount" => 1
+            "serviceCount" => 1,
+            "slotCount" => 1
         ];        
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);

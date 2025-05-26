@@ -107,7 +107,8 @@ class AppointmentCancelControllerTest extends ControllerTestCase
             'subRequestCounts' => [],
             'serviceId' => 10242339,
             'serviceCount' => 1,
-            'status' => 'deleted'
+            'status' => 'deleted',
+            'slotCount' => 1
         ];
     
         $this->assertEquals(200, $response->getStatusCode());
