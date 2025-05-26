@@ -225,12 +225,19 @@ const setServiceData = (selectedService: ServiceImpl) => {
 
   if (selectedService.combinable) {
     const combinable = selectedService.combinable;
-    if (typeof combinable[parseInt(selectedService.id)] !== "undefined") {
-      delete combinable[parseInt(selectedService.id)];
+    // Find and remove the entry where the selected service ID exists
+    const selfEntry = Object.entries(combinable).find(
+      ([_, serviceObj]) =>
+        Object.keys(serviceObj)[0] === selectedService.id.toString()
+    );
+    if (selfEntry) {
+      delete combinable[selfEntry[0]];
     }
 
     service.value.subServices = Object.entries(combinable)
-      .map(([subServiceId, providers]) => {
+      .map(([_, serviceObj]) => {
+        // Get the first (and only) key-value pair from the service object
+        const [[subServiceId, providers]] = Object.entries(serviceObj);
         const subService = services.value.filter(
           (subService) => parseInt(subService.id) == parseInt(subServiceId)
         );

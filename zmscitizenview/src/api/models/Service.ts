@@ -23,9 +23,10 @@ export interface Service {
    */
   maxQuantity: number;
   /**
-   *
-   * @type {Array<Array<string>>}
+   * Object where keys are order numbers ("1", "2", etc.) and values are objects
+   * with a single key-value pair of serviceId => providerIds[]
+   * @type {{ [key: string]: { [serviceId: string]: number[] } }}
    * @memberof Service
    */
-  combinable?: string[][];
+  combinable?: { [key: string]: { [serviceId: string]: number[] } };
 }
