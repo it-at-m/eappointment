@@ -60,6 +60,104 @@
     </div>
 
     <div
+      v-if="
+        selectedDay &&
+        timeSlotsInHoursByOffice.size > 0 &&
+        averageAppointmentsPerProvider > 18
+      "
+      :key="selectableProviders && timeSlotsInHoursByOffice"
+      class="m-component"
+    >
+      <div class="m-content">
+        <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+      </div>
+      <div
+        style="
+          margin-bottom: 20px;
+          background-color: var(--color-neutrals-blue-xlight);
+        "
+      >
+        <b tabindex="0">{{ formatDay(selectedDay) }}</b>
+      </div>
+
+      <div
+        v-for="[officeId, office] in timeSlotsInHoursByOffice"
+        :key="officeId + selectedProviders[officeId]"
+      >
+        <div
+          v-if="
+            selectedProviders[officeId] && office.appointments.get(currentHour)
+          "
+        >
+          <div>
+            <div
+              class="ml-4 location-title"
+              v-if="selectableProviders.length > 1"
+            >
+              <svg
+                aria-hidden="true"
+                class="icon icon--before"
+              >
+                <use xlink:href="#icon-map-pin"></use>
+              </svg>
+              {{ officeName(officeId) }}
+            </div>
+          </div>
+          <div
+            v-for="[timeslot, times] in office.appointments"
+            :key="timeslot"
+          >
+            <div
+              class="wrapper"
+              v-if="timeslot == currentHour"
+            >
+              <div v-if="firstHour > 0">
+                <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
+              </div>
+              <div class="grid">
+                <div
+                  v-for="time in times"
+                  :key="time"
+                  class="grid-item"
+                >
+                  <muc-button
+                    class="timeslot"
+                    variant="secondary"
+                    @click="handleTimeSlotSelection(officeId, time)"
+                  >
+                    <template #default>{{ formatTime(time) }}</template>
+                  </muc-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="wrapper m-button-group">
+        <muc-button
+          icon="chevron-left"
+          icon-shown-left
+          variant="ghost"
+          @click="earlierAppointments"
+          :disabled="currentHour <= firstHour"
+        >
+          <template #default>{{ t("earlier") }}</template>
+        </muc-button>
+
+        <muc-button
+          class="float-right"
+          icon="chevron-right"
+          icon-shown-right
+          variant="ghost"
+          @click="laterAppointments"
+          :disabled="currentHour >= lastHour"
+        >
+          <template #default>{{ t("later") }}</template>
+        </muc-button>
+      </div>
+    </div>
+
+    <div
       ref="summary"
       tabindex="0"
     >
