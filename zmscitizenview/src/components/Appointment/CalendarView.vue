@@ -60,10 +60,7 @@
     </div>
 
     <div
-      v-if="
-        selectedDay &&
-        timeSlotsInHoursByOffice()
-      "
+      v-if="selectedDay && timeSlotsInHoursByOffice()"
       class="m-component"
     >
       {{ timeSlotsInHoursByOffice() }}
@@ -389,8 +386,7 @@ const timeSlotsInHours = computed(() => {
   return timesByHours;
 });
 
-
-const timeSlotsInHoursByOffice = function() {
+const timeSlotsInHoursByOffice = function () {
   const offices = new Map<number, Object[]>();
 
   appointmentTimestampsByOffice.value.forEach((office) => {
@@ -423,7 +419,7 @@ const timeSlotsInHoursByOffice = function() {
       return indexA - indexB;
     })
   );
-}
+};
 
 const firstHour = computed(() => {
   let min = Infinity;
