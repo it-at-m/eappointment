@@ -230,7 +230,6 @@
       :key="selectedDay && selectableProviders && timeSlotsInDayPartByOffice"
       class="m-component"
     >
-      da
       <div class="m-content">
         <h3 tabindex="0">{{ t("availableTimes") }}</h3>
       </div>
