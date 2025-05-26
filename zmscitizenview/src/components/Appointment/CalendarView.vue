@@ -65,7 +65,6 @@
         timeSlotsInHoursByOffice.size > 0 &&
         averageAppointmentsPerProvider > 18
       "
-      :key="selectableProviders && timeSlotsInHoursByOffice"
       class="m-component"
     >
       <div class="m-content">
@@ -100,7 +99,7 @@
               >
                 <use xlink:href="#icon-map-pin"></use>
               </svg>
-              {{ officeName(officeId) }}
+              name
             </div>
           </div>
           <div
