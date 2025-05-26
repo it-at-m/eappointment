@@ -224,7 +224,6 @@
 
     <div
       v-else-if="selectedDay && timeSlotsInDayPartByOffice.size > 0"
-      :key="timeSlotsInDayPartByOffice"
       class="m-component"
     >
       <div class="m-content">
