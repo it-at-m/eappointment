@@ -1,12 +1,4 @@
 <template>
-  currentHour: {{ currentHour }} selectedHour: {{ selectedHour }} firstHour:
-  {{ firstHour }} lastHour: {{ lastHour }} currentDayPart:
-  {{ currentDayPart }} selectedDayPart: {{ selectedDayPart }}
-
-  -----
-  {{ timeSlotsInHoursByOffice }}
-  ----
-  {{ timeSlotsInDayPartByOffice }}
   <div v-if="selectableProviders && selectableProviders.length > 1">
     <div class="m-component slider-no-margin">
       <div class="m-content">
