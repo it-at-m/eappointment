@@ -1,3 +1,5 @@
+import { Combinable } from "./Combinable";
+
 /**
  *
  * @export
@@ -23,8 +25,8 @@ export interface Service {
    */
   maxQuantity: number;
   /**
-   * @type {{ [key: string]: { [serviceId: string]: number[] } }}
+   * @type {Combinable}
    * @memberof Service
    */
-  combinable?: { [key: string]: { [serviceId: string]: number[] } };
+  combinable?: Combinable;
 }
