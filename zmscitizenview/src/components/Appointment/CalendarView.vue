@@ -83,12 +83,9 @@
         v-for="[officeId, office] in timeSlotsInHoursByOffice"
         :key="officeId + selectedProviders[officeId]"
       >
-        <div v-if="selectedProviders[officeId]">
+        <div>
           <div>
-            <div
-              class="ml-4 location-title"
-              v-if="selectableProviders.length > 1"
-            >
+            <div class="ml-4 location-title">
               <svg
                 aria-hidden="true"
                 class="icon icon--before"
@@ -120,7 +117,7 @@
                     variant="secondary"
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
-                    <template #default>{{ formatTime(time) }}</template>
+                    ..
                   </muc-button>
                 </div>
               </div>
@@ -128,28 +125,7 @@
           </div>
         </div>
       </div>
-      <div class="wrapper m-button-group">
-        <muc-button
-          icon="chevron-left"
-          icon-shown-left
-          variant="ghost"
-          @click="earlierAppointments"
-          :disabled="currentHour <= firstHour"
-        >
-          <template #default>{{ t("earlier") }}</template>
-        </muc-button>
-
-        <muc-button
-          class="float-right"
-          icon="chevron-right"
-          icon-shown-right
-          variant="ghost"
-          @click="laterAppointments"
-          :disabled="currentHour >= lastHour"
-        >
-          <template #default>{{ t("later") }}</template>
-        </muc-button>
-      </div>
+      <div class="wrapper m-button-group">buttons</div>
     </div>
 
     <div
