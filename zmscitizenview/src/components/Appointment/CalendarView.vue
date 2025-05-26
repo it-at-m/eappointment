@@ -129,7 +129,7 @@
       v-if="
         selectedDay &&
         timeSlotsInHoursByOffice.size > 0 &&
-        averageAppointmentsPerProvider / selectableProviders.length > 18
+        averageAppointmentsPerProvider > 18
       "
       :key="selectableProviders && timeSlotsInHoursByOffice"
       class="m-component"
@@ -148,7 +148,7 @@
 
       <div
         v-for="[officeId, office] in timeSlotsInHoursByOffice"
-        :key="officeId + selectedProviders[officeId]"
+        :key="selectedProviders[officeId]"
       >
         <div
           v-if="
@@ -517,7 +517,7 @@ const getProvider = (id: number): string => {
   return selectableProviders.value?.find((p) => p.id === id);
 };
 
-const officeName = (id: number): string => {
+const officeName = (id: number): string | null => {
   const office = selectableProviders.value?.find((p) => p.id === id);
   return office?.name ?? null;
 };
@@ -541,7 +541,7 @@ const earlierAppointments = (type = "hour") => {
 };
 
 const timeSlotsInDayPartBySelectedOffice = computed(() => {
-  return Object.entries(timeSlotsInDayPartByOffice).filter(
+  return Object.entries(timeSlotsInDayPartByOffice.value).filter(
     ([officeId]) => selectedProviders.value[officeId]
   );
 });
@@ -653,7 +653,7 @@ const timeSlotsInDayPartByOffice = computed(() => {
     office.appointments.forEach((time) => {
       const berlinDate = new Date(time * 1000);
       const hour = parseInt(berlinHourFormatter.format(berlinDate));
-      const dayPart = hour > 12 ? "pm" : "am";
+      const dayPart = hour >= 12 ? "pm" : "am";
 
       if (!timesByPartOfDay.has(dayPart)) {
         timesByPartOfDay.set(dayPart, []);
@@ -758,10 +758,13 @@ const getAppointmentsOfDay = (date: string) => {
         data as AvailableTimeSlotsByOfficeDTO
       ).offices;
 
-      averageAppointmentsPerProvider.value = data.offices.reduce(
-        (sum, office) => sum + office.appointments.length,
-        0
-      );
+      if (data.offices.length > 0) {
+        const officesCount = data.offices.length;
+        averageAppointmentsPerProvider.value = data.offices.reduce(
+          (sum, office, officesCount) => sum + office.appointments.length / officesCount,
+          0
+        );
+      }
     } else {
       error.value = true;
     }
