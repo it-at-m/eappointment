@@ -1,4 +1,70 @@
 <template>
+  <div v-if="selectableProviders && selectableProviders.length > 1">
+    <div class="m-component slider-no-margin">
+      <div class="m-content">
+        <h2 tabindex="0">{{ t("location") }}</h2>
+      </div>
+      <div
+        class="m-content"
+        v-if="selectableProviders.length > 1"
+      >
+        <div v-for="provider in selectableProviders">
+          <muc-checkbox
+            :key="provider.id"
+            :id="provider.id"
+            :label="provider.name"
+            v-model="selectedProviders[provider.id]"
+          ></muc-checkbox>
+          <div class="provider-address">
+            {{ provider.address.street }} {{ provider.address.house_number }}
+          </div>
+        </div>
+      </div>
+
+      <muc-slider
+        v-else
+        @change-slide="handleProviderSelection"
+      >
+        <muc-slider-item
+          v-for="proverider in selectableProviders"
+          :key="proverider.id"
+        >
+          <div class="m-teaser-contained m-teaser-contained-contact">
+            <div class="m-teaser-contained-contact__body">
+              <div class="m-teaser-contained-contact__body__inner">
+                <div class="m-teaser-contained-contact__icon">
+                  <svg
+                    aria-hidden="true"
+                    class="icon"
+                  >
+                    <use xlink:href="#icon-place"></use>
+                  </svg>
+                </div>
+                <h3 class="m-teaser-contained-contact__headline">
+                  {{ proverider.name }}
+                </h3>
+                <div class="m-teaser-contained-contact__details">
+                  <p class="m-teaser-contained-contact__detail">
+                    <svg
+                      aria-hidden="true"
+                      class="icon icon--before"
+                    >
+                      <use xlink:href="#icon-map-pin"></use>
+                    </svg>
+                    <span>
+                      {{ proverider.address.street }}
+                      {{ proverider.address.house_number }}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </muc-slider-item>
+      </muc-slider>
+    </div>
+  </div>
+
   <div v-if="!error">
     <div
       v-if="
@@ -60,10 +126,14 @@
     </div>
 
     <div
-      v-if="selectedDay && timeSlotsInHoursByOffice()"
+      v-if="
+        selectedDay &&
+        timeSlotsInHoursByOffice.size > 0 &&
+        averageAppointmentsPerProvider / selectableProviders.length > 18
+      "
+      :key="selectableProviders && timeSlotsInHoursByOffice"
       class="m-component"
     >
-      {{ timeSlotsInHoursByOffice() }}
       <div class="m-content">
         <h3 tabindex="0">{{ t("availableTimes") }}</h3>
       </div>
@@ -77,27 +147,32 @@
       </div>
 
       <div
-        v-for="[officeId, office] in timeSlotsInHoursByOffice()"
+        v-for="[officeId, office] in timeSlotsInHoursByOffice"
         :key="officeId + selectedProviders[officeId]"
       >
-        <div>
+        <div
+          v-if="
+            selectedProviders[officeId] && office.appointments.get(currentHour)
+          "
+        >
           <div>
-            <div class="ml-4 location-title">
+            <div
+              class="ml-4 location-title"
+              v-if="selectableProviders.length > 1"
+            >
               <svg
                 aria-hidden="true"
                 class="icon icon--before"
               >
                 <use xlink:href="#icon-map-pin"></use>
               </svg>
-              name
+              {{ officeName(officeId) }}
             </div>
           </div>
           <div
             v-for="[timeslot, times] in office.appointments"
             :key="timeslot"
           >
-            {{ timeslot }}
-            -{{ currentHour }}
             <div
               class="wrapper"
               v-if="timeslot == currentHour"
@@ -116,7 +191,7 @@
                     variant="secondary"
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
-                    ..
+                    <template #default>{{ formatTime(time) }}</template>
                   </muc-button>
                 </div>
               </div>
@@ -124,7 +199,123 @@
           </div>
         </div>
       </div>
-      <div class="wrapper m-button-group">buttons</div>
+      <div class="wrapper m-button-group">
+        <muc-button
+          icon="chevron-left"
+          icon-shown-left
+          variant="ghost"
+          @click="earlierAppointments"
+          :disabled="currentHour <= firstHour"
+        >
+          <template #default>{{ t("earlier") }}</template>
+        </muc-button>
+
+        <muc-button
+          class="float-right"
+          icon="chevron-right"
+          icon-shown-right
+          variant="ghost"
+          @click="laterAppointments"
+          :disabled="currentHour >= lastHour"
+        >
+          <template #default>{{ t("later") }}</template>
+        </muc-button>
+      </div>
+    </div>
+
+    <div
+      v-else-if="selectedDay && timeSlotsInDayPartByOffice.size > 0"
+      :key="timeSlotsInDayPartByOffice"
+      class="m-component"
+    >
+      <div class="m-content">
+        <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+      </div>
+      <div
+        style="
+          margin-bottom: 20px;
+          background-color: var(--color-neutrals-blue-xlight);
+        "
+      >
+        <b tabindex="0">{{ formatDay(selectedDay) }}</b>
+      </div>
+
+      <div v-for="[officeId, office] in timeSlotsInDayPartByOffice">
+        <div
+          v-if="
+            selectedProviders[officeId] &&
+            office.appointments.get(currentDayPart)
+          "
+        >
+          <div>
+            <div
+              class="ml-4 location-title"
+              v-if="selectableProviders.length > 1"
+            >
+              <svg
+                aria-hidden="true"
+                class="icon icon--before"
+              >
+                <use xlink:href="#icon-map-pin"></use>
+              </svg>
+              {{ officeName(office.officeId) }}
+            </div>
+          </div>
+          <div
+            v-for="[timeslot, times] in office.appointments"
+            :key="timeslot"
+          >
+            <div
+              class="wrapper"
+              v-if="timeslot == currentDayPart"
+            >
+              <div v-if="currentDayPart === 'am'">
+                <p class="centered-text">{{ t("am") }}</p>
+              </div>
+              <div v-else>
+                <p class="centered-text">{{ t("pm") }}</p>
+              </div>
+              <div class="grid">
+                <div
+                  v-for="time in times"
+                  :key="time"
+                  class="grid-item"
+                >
+                  <muc-button
+                    class="timeslot"
+                    variant="secondary"
+                    @click="handleTimeSlotSelection(officeId, time)"
+                  >
+                    <template #default>{{ formatTime(time) }}</template>
+                  </muc-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="wrapper m-button-group">
+        <muc-button
+          icon="chevron-left"
+          icon-shown-left
+          variant="ghost"
+          @click="earlierAppointments('dayPart')"
+          :disabled="currentDayPart === 'am' || firstDayPart === 'pm'"
+        >
+          <template #default>{{ t("earlier") }}</template>
+        </muc-button>
+
+        <muc-button
+          class="float-right"
+          icon="chevron-right"
+          icon-shown-right
+          variant="ghost"
+          @click="laterAppointments('dayPart')"
+          :disabled="currentDayPart === 'pm' || lastDayPart === 'am'"
+        >
+          <template #default>{{ t("later") }}</template>
+        </muc-button>
+      </div>
     </div>
 
     <div
@@ -261,7 +452,10 @@ const availableDays = ref<string[]>();
 const selectedHour = ref<number | null>(null);
 const selectedDayPart = ref<"am" | "pm" | null>(null);
 
+const averageAppointmentsPerProvider = ref<number>(0);
+
 const appointmentTimestampsByOffice = ref<OfficeAvailableTimeSlotsDTO[]>([]);
+const appointmentTimestamps = ref<number[]>([]);
 
 const errorKey = ref("");
 const error = ref<boolean>(false);
@@ -323,7 +517,7 @@ const getProvider = (id: number): string => {
   return selectableProviders.value?.find((p) => p.id === id);
 };
 
-const officeName = (id: number): string | null => {
+const officeName = (id: number): string => {
   const office = selectableProviders.value?.find((p) => p.id === id);
   return office?.name ?? null;
 };
@@ -347,7 +541,7 @@ const earlierAppointments = (type = "hour") => {
 };
 
 const timeSlotsInDayPartBySelectedOffice = computed(() => {
-  return Object.entries(timeSlotsInDayPartByOffice.value).filter(
+  return Object.entries(timeSlotsInDayPartByOffice).filter(
     ([officeId]) => selectedProviders.value[officeId]
   );
 });
@@ -385,54 +579,45 @@ const timeSlotsInHours = computed(() => {
   return timesByHours;
 });
 
-const timeSlotsInHoursByOffice = function () {
-  try {
-    const offices = new Map<number, Object[]>();
+const timeSlotsInHoursByOffice = computed(() => {
+  const offices = new Map<number, Object[]>();
 
-    console.log(
-      "appointmentTimestampsByOffice",
-      appointmentTimestampsByOffice.value
-    );
-    appointmentTimestampsByOffice.value.forEach((office) => {
-      if (!selectedProviders.value[office.officeId]) return;
+  appointmentTimestampsByOffice.value.forEach((office) => {
+    if (!selectedProviders.value[office.officeId]) return;
 
-      const timesByHours = new Map<number, number[]>();
+    const timesByHours = new Map<number, number[]>();
 
-      office.appointments?.forEach?.((time) => {
-        const berlinDate = new Date(time * 1000);
-        const hour = parseInt(berlinHourFormatter.format(berlinDate));
+    office.appointments?.forEach?.((time) => {
+      const berlinDate = new Date(time * 1000);
+      const hour = parseInt(berlinHourFormatter.format(berlinDate));
 
-        if (!timesByHours.has(hour)) {
-          timesByHours.set(hour, []);
-        }
-        timesByHours.get(hour)?.push(time);
-      });
-
-      if (timesByHours.size > 0) {
-        offices.set(office.officeId, {
-          officeId: office.officeId,
-          appointments: timesByHours,
-        });
+      if (!timesByHours.has(hour)) {
+        timesByHours.set(hour, []);
       }
+      timesByHours.get(hour)?.push(time);
     });
 
-    return new Map(
-      [...offices.entries()].sort((a, b) => {
-        const indexA = officeOrder.value.get(a[0]) ?? Infinity;
-        const indexB = officeOrder.value.get(b[0]) ?? Infinity;
-        return indexA - indexB;
-      })
-    );
-  } catch (error) {
-    // Handle the error
-    alert("An error occurred2:" + error);
-  }
-};
+    if (timesByHours.size > 0) {
+      offices.set(office.officeId, {
+        officeId: office.officeId,
+        appointments: timesByHours,
+      });
+    }
+  });
+
+  return new Map(
+    [...offices.entries()].sort((a, b) => {
+      const indexA = officeOrder.value.get(a[0]) ?? Infinity;
+      const indexB = officeOrder.value.get(b[0]) ?? Infinity;
+      return indexA - indexB;
+    })
+  );
+});
 
 const firstHour = computed(() => {
   let min = Infinity;
 
-  for (const [, office] of timeSlotsInHoursByOffice()) {
+  for (const [, office] of timeSlotsInHoursByOffice.value) {
     for (const hour of office.appointments.keys()) {
       min = Math.min(min, hour);
     }
@@ -444,7 +629,7 @@ const firstHour = computed(() => {
 const lastHour = computed(() => {
   let max = -Infinity;
 
-  for (const [, office] of timeSlotsInHoursByOffice()) {
+  for (const [, office] of timeSlotsInHoursByOffice.value) {
     for (const hour of office.appointments.keys()) {
       max = Math.max(max, hour);
     }
@@ -465,7 +650,7 @@ const timeSlotsInDayPartByOffice = computed(() => {
 
     const timesByPartOfDay = new Map<string, number[]>();
 
-    office.appointments.forEach((time) => {
+    office.appointments?.forEach?.((time) => {
       const berlinDate = new Date(time * 1000);
       const hour = parseInt(berlinHourFormatter.format(berlinDate));
       const dayPart = hour >= 12 ? "pm" : "am";
@@ -556,6 +741,7 @@ const handleError = (data: any): void => {
 };
 
 const getAppointmentsOfDay = (date: string) => {
+  appointmentTimestamps.value = [];
   appointmentTimestampsByOffice.value = [];
   const providers = selectableProviders.value;
   const providerIds = providers.map((p) => p.id);
@@ -568,17 +754,17 @@ const getAppointmentsOfDay = (date: string) => {
     props.baseUrl ?? undefined,
     props.captchaToken ?? undefined
   ).then((data) => {
-    try {
-      if (data as AvailableTimeSlotsByOfficeDTO) {
-        appointmentTimestampsByOffice.value = (
-          data as AvailableTimeSlotsByOfficeDTO
-        ).offices;
-      } else {
-        error.value = true;
-      }
-    } catch (error) {
-      // Handle the error
-      alert("An error occurred:" + error);
+    if (data as AvailableTimeSlotsByOfficeDTO) {
+      appointmentTimestampsByOffice.value = (
+        data as AvailableTimeSlotsByOfficeDTO
+      ).offices;
+
+      averageAppointmentsPerProvider.value = data.offices.reduce(
+        (sum, office) => sum + office.appointments.length,
+        0
+      );
+    } else {
+      error.value = true;
     }
   });
 };
