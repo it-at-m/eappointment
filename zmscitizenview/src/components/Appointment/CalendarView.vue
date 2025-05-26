@@ -1,5 +1,4 @@
 <template>
-
   <div v-if="!error">
     <div
       v-if="
@@ -696,7 +695,8 @@ const getAppointmentsOfDay = (date: string) => {
       if (data.offices.length > 0) {
         const officesCount = data.offices.length;
         averageAppointmentsPerProvider.value = data.offices.reduce(
-          (sum, office, officesCount) => sum + office.appointments.length / officesCount,
+          (sum, office, officesCount) =>
+            sum + office.appointments.length / officesCount,
           0
         );
       }
