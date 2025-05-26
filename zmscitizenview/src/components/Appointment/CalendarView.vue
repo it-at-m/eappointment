@@ -129,7 +129,7 @@
       v-if="
         selectedDay &&
         timeSlotsInHoursByOffice.size > 0 &&
-        averageAppointmentsPerProvider / selectableProviders.length > 18
+        appointmentsCount / selectableProviders.length > 18
       "
       :key="selectableProviders && timeSlotsInHoursByOffice"
       class="m-component"
@@ -452,7 +452,7 @@ const availableDays = ref<string[]>();
 const selectedHour = ref<number | null>(null);
 const selectedDayPart = ref<"am" | "pm" | null>(null);
 
-const averageAppointmentsPerProvider = ref<number>(0);
+const appointmentsCount = ref<number>(0);
 
 const appointmentTimestampsByOffice = ref<OfficeAvailableTimeSlotsDTO[]>([]);
 const appointmentTimestamps = ref<number[]>([]);
@@ -759,7 +759,7 @@ const getAppointmentsOfDay = (date: string) => {
         data as AvailableTimeSlotsByOfficeDTO
       ).offices;
 
-      averageAppointmentsPerProvider.value = data.offices.reduce(
+      appointmentsCount.value = data.offices.reduce(
         (sum, office) => sum + office.appointments.length,
         0
       );
