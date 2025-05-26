@@ -421,7 +421,7 @@ const timeSlotsInHoursByOffice = function () {
     );
   } catch (error) {
     // Handle the error
-    alert("An error occurred:", error);
+    alert("An error occurred:" + error);
   }
 };
 
@@ -574,7 +574,7 @@ const getAppointmentsOfDay = (date: string) => {
       }
     } catch (error) {
       // Handle the error
-      alert("An error occurred:", error);
+      alert("An error occurred:" + error);
     }
   });
 };
