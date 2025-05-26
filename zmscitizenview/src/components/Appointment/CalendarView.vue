@@ -262,7 +262,6 @@ const selectedHour = ref<number | null>(null);
 const selectedDayPart = ref<"am" | "pm" | null>(null);
 
 const appointmentTimestampsByOffice = ref<OfficeAvailableTimeSlotsDTO[]>([]);
-const appointmentTimestamps = ref<number[]>([]);
 
 const errorKey = ref("");
 const error = ref<boolean>(false);
@@ -387,38 +386,43 @@ const timeSlotsInHours = computed(() => {
 });
 
 const timeSlotsInHoursByOffice = function () {
-  const offices = new Map<number, Object[]>();
+  try {
+    const offices = new Map<number, Object[]>();
 
-  appointmentTimestampsByOffice.value.forEach((office) => {
-    if (!selectedProviders.value[office.officeId]) return;
+    appointmentTimestampsByOffice.value.forEach((office) => {
+      if (!selectedProviders.value[office.officeId]) return;
 
-    const timesByHours = new Map<number, number[]>();
+      const timesByHours = new Map<number, number[]>();
 
-    office.appointments.forEach((time) => {
-      const berlinDate = new Date(time * 1000);
-      const hour = parseInt(berlinHourFormatter.format(berlinDate));
+      office.appointments.forEach((time) => {
+        const berlinDate = new Date(time * 1000);
+        const hour = parseInt(berlinHourFormatter.format(berlinDate));
 
-      if (!timesByHours.has(hour)) {
-        timesByHours.set(hour, []);
+        if (!timesByHours.has(hour)) {
+          timesByHours.set(hour, []);
+        }
+        timesByHours.get(hour)?.push(time);
+      });
+
+      if (timesByHours.size > 0) {
+        offices.set(office.officeId, {
+          officeId: office.officeId,
+          appointments: timesByHours,
+        });
       }
-      timesByHours.get(hour)?.push(time);
     });
 
-    if (timesByHours.size > 0) {
-      offices.set(office.officeId, {
-        officeId: office.officeId,
-        appointments: timesByHours,
-      });
-    }
-  });
-
-  return new Map(
-    [...offices.entries()].sort((a, b) => {
-      const indexA = officeOrder.value.get(a[0]) ?? Infinity;
-      const indexB = officeOrder.value.get(b[0]) ?? Infinity;
-      return indexA - indexB;
-    })
-  );
+    return new Map(
+      [...offices.entries()].sort((a, b) => {
+        const indexA = officeOrder.value.get(a[0]) ?? Infinity;
+        const indexB = officeOrder.value.get(b[0]) ?? Infinity;
+        return indexA - indexB;
+      })
+    );
+  } catch (error) {
+    // Handle the error
+    alert("An error occurred:", error);
+  }
 };
 
 const firstHour = computed(() => {
@@ -548,7 +552,7 @@ const handleError = (data: any): void => {
 };
 
 const getAppointmentsOfDay = (date: string) => {
-  appointmentTimestamps.value = [];
+  appointmentTimestampsByOffice.value = [];
   const providers = selectableProviders.value;
   const providerIds = providers.map((p) => p.id);
 
@@ -560,12 +564,17 @@ const getAppointmentsOfDay = (date: string) => {
     props.baseUrl ?? undefined,
     props.captchaToken ?? undefined
   ).then((data) => {
-    if (data as AvailableTimeSlotsByOfficeDTO) {
-      appointmentTimestampsByOffice.value = (
-        data as AvailableTimeSlotsByOfficeDTO
-      ).offices;
-    } else {
-      error.value = true;
+    try {
+      if (data as AvailableTimeSlotsByOfficeDTO) {
+        appointmentTimestampsByOffice.value = (
+          data as AvailableTimeSlotsByOfficeDTO
+        ).offices;
+      } else {
+        error.value = true;
+      }
+    } catch (error) {
+      // Handle the error
+      alert("An error occurred:", error);
     }
   });
 };
