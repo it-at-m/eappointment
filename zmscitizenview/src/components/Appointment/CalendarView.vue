@@ -1,4 +1,70 @@
 <template>
+  <div v-if="selectableProviders && selectableProviders.length > 1">
+    <div class="m-component slider-no-margin">
+      <div class="m-content">
+        <h2 tabindex="0">{{ t("location") }}</h2>
+      </div>
+      <div
+        class="m-content"
+        v-if="selectableProviders.length > 1"
+      >
+        <div v-for="provider in selectableProviders">
+          <muc-checkbox
+            :key="provider.id"
+            :id="provider.id"
+            :label="provider.name"
+            v-model="selectedProviders[provider.id]"
+          ></muc-checkbox>
+          <div class="provider-address">
+            {{ provider.address.street }} {{ provider.address.house_number }}
+          </div>
+        </div>
+      </div>
+
+      <muc-slider
+        v-else
+        @change-slide="handleProviderSelection"
+      >
+        <muc-slider-item
+          v-for="provider in selectableProviders"
+          :key="provider.id"
+        >
+          <div class="m-teaser-contained m-teaser-contained-contact">
+            <div class="m-teaser-contained-contact__body">
+              <div class="m-teaser-contained-contact__body__inner">
+                <div class="m-teaser-contained-contact__icon">
+                  <svg
+                    aria-hidden="true"
+                    class="icon"
+                  >
+                    <use xlink:href="#icon-place"></use>
+                  </svg>
+                </div>
+                <h3 class="m-teaser-contained-contact__headline">
+                  {{ provider.name }}
+                </h3>
+                <div class="m-teaser-contained-contact__details">
+                  <p class="m-teaser-contained-contact__detail">
+                    <svg
+                      aria-hidden="true"
+                      class="icon icon--before"
+                    >
+                      <use xlink:href="#icon-map-pin"></use>
+                    </svg>
+                    <span>
+                      {{ provider.address.street }}
+                      {{ provider.address.house_number }}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </muc-slider-item>
+      </muc-slider>
+    </div>
+  </div>
+
   <div v-if="!error">
     <div
       v-if="
@@ -82,7 +148,7 @@
 
       <div
         v-for="[officeId, office] in timeSlotsInHoursByOffice"
-        :key="selectedProviders[officeId]"
+        :key="officeId + selectedProviders[officeId]"
       >
         <div
           v-if="
@@ -159,7 +225,6 @@
 
     <div
       v-else-if="selectedDay && timeSlotsInDayPartByOffice.size > 0"
-      :key="timeSlotsInDayPartByOffice"
       class="m-component"
     >
       <div class="m-content">
@@ -692,14 +757,10 @@ const getAppointmentsOfDay = (date: string) => {
         data as AvailableTimeSlotsByOfficeDTO
       ).offices;
 
-      if (data.offices.length > 0) {
-        const officesCount = data.offices.length;
-        averageAppointmentsPerProvider.value = data.offices.reduce(
-          (sum, office, officesCount) =>
-            sum + office.appointments.length / officesCount,
-          0
-        );
-      }
+      averageAppointmentsPerProvider.value = data.offices.reduce(
+        (sum, office) => sum + office.appointments.length,
+        0
+      );
     } else {
       error.value = true;
     }
@@ -740,7 +801,7 @@ const allowedDates = (date: Date) => {
 watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
   if (newDate) {
-    getAppointmentsOfDay(convertDateToString(selectedDay.value));
+    //getAppointmentsOfDay(convertDateToString(selectedDay.value));
   }
 });
 
