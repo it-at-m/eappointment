@@ -25,10 +25,7 @@ class Combinable extends Entity implements JsonSerializable
      */
     public function __construct(array $combinations = [])
     {
-        // Store the original order of keys
         $this->order = array_keys($combinations);
-
-        // Store the combinations
         foreach ($combinations as $id => $providerIds) {
             $this->combinations[(string)$id] = is_array($providerIds) ? array_map('intval', $providerIds) : [];
         }
