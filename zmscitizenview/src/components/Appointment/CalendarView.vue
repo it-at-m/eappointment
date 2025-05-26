@@ -83,11 +83,7 @@
         v-for="[officeId, office] in timeSlotsInHoursByOffice"
         :key="officeId + selectedProviders[officeId]"
       >
-        <div
-          v-if="
-            selectedProviders[officeId]
-          "
-        >
+        <div v-if="selectedProviders[officeId]">
           <div>
             <div
               class="ml-4 location-title"
