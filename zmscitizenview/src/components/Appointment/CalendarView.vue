@@ -757,14 +757,6 @@ const getAppointmentsOfDay = (date: string) => {
       appointmentTimestampsByOffice.value = (
         data as AvailableTimeSlotsByOfficeDTO
       ).offices;
-
-      if (data.offices.length > 0) {
-        const officesCount = data.offices.length;
-        averageAppointmentsPerProvider.value = data.offices.reduce(
-          (sum, office, officesCount) => sum + office.appointments.length / officesCount,
-          0
-        );
-      }
     } else {
       error.value = true;
     }
