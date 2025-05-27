@@ -201,6 +201,36 @@ class AvailabilityList extends Base
         return $processList;
     }
 
+    public function validateTimeRangesAndRules(
+        \DateTimeImmutable $startDate,
+        \DateTimeImmutable $endDate,
+        \DateTimeImmutable $selectedDate,
+        string $kind,
+        $startInDays,
+        $endInDays,
+        array $weekday
+    ): array {
+        $errorList = [];
+
+        $today = new \DateTimeImmutable('now', $selectedDate->getTimezone());
+        $yesterday = (clone $selectedDate)->modify('-1 day');
+        $tomorrow = (clone $selectedDate)->modify('+1 day');
+
+        foreach ($this as $availability) {
+            $errorList = array_merge(
+                $errorList,
+                $availability->validateWeekdays($startDate, $endDate, $weekday),
+                $availability->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $kind),
+                $availability->validateEndTime($startDate, $endDate),
+                $availability->validateOriginEndTime($today, $yesterday, $endDate, $selectedDate, $kind),
+                $availability->validateType($kind),
+                $availability->validateSlotTime($startDate, $endDate),
+                $availability->validateBookableDayRange((int) $startInDays, (int) $endInDays)
+            );
+        }
+        return $errorList;
+    }
+
     /**
      * @return integer
      */
