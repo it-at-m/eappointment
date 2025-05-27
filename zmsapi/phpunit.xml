@@ -28,7 +28,6 @@
             <directory>./tests</directory>
         </exclude>
         <report>
-            <html outputDirectory="./coverage/html" />
             <clover outputFile="./coverage/clover.xml" />
         </report>
     </coverage>
