@@ -138,6 +138,13 @@
         "null"
       ],
       "description": "Count of services in the process"
+    },
+    "slotCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Count of slots in the process"
     }
   },
   "required": [
