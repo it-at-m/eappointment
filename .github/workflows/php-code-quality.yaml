@@ -12,6 +12,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Composer cache directory
+        run: mkdir -p ~/.composer/cache/files
+
       - name: Cache Composer packages
         uses: actions/cache@v3
         with:
@@ -23,8 +26,6 @@ jobs:
             ${{ runner.os }}-composer-${{ matrix.php_version }}-
             ${{ runner.os }}-composer-
           enableCrossOsArchive: true
-          enableAutoCleanup: true
-          ttl: 604800 # 1 week in seconds
 
       - name: Install Composer Dependencies
         run: |

@@ -36,6 +36,9 @@ jobs:
           echo "xdebug.mode=coverage" >> /tmp/php/conf.d/xdebug.ini
           echo "xdebug.start_with_request=yes" >> /tmp/php/conf.d/xdebug.ini
 
+      - name: Setup Composer cache directory
+        run: mkdir -p ~/.composer/cache/files
+
       - name: Cache Composer packages
         uses: actions/cache@v3
         with:
@@ -171,6 +174,9 @@ jobs:
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
 
+      - name: Setup Composer cache directory
+        run: mkdir -p ~/.composer/cache/files
+
       - name: Cache Composer packages
         uses: actions/cache@v3
         with:
@@ -253,6 +259,9 @@ jobs:
           apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
+
+      - name: Setup Composer cache directory
+        run: mkdir -p ~/.composer/cache/files
 
       - name: Cache Composer packages
         uses: actions/cache@v3
