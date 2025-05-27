@@ -212,7 +212,7 @@ class AvailabilityList extends Base
     ): array {
         $errorList = [];
 
-        $today = new \DateTimeImmutable();
+        $today = new \DateTimeImmutable('now', $selectedDate->getTimezone());
         $yesterday = (clone $selectedDate)->modify('-1 day');
         $tomorrow = (clone $selectedDate)->modify('+1 day');
 

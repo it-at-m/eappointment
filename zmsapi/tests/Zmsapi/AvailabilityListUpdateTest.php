@@ -41,7 +41,7 @@ class AvailabilityListUpdateTest extends Base
                 {
                     "description": "Test Öffnungszeit ohne id",
                     "scope": {
-                        "id": 141
+                        "id": 312
                         },
                         "weekday": {
                             "monday": 1,
