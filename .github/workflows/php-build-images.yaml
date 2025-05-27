@@ -19,6 +19,19 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache Composer packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-composer-${{ matrix.php_version }}-${{ matrix.module }}-${{ github.ref_name }}-${{ hashFiles(format('{0}/composer.lock', matrix.module)) }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php_version }}-${{ matrix.module }}-${{ github.ref_name }}-
+            ${{ runner.os }}-composer-${{ matrix.php_version }}-${{ matrix.module }}-
+            ${{ runner.os }}-composer-${{ matrix.php_version }}-
+            ${{ runner.os }}-composer-
+          enableCrossOsArchive: true
+          enableAutoCleanup: true
+          ttl: 604800 # 1 week in seconds
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
         with:
