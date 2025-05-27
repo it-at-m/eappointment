@@ -209,19 +209,12 @@ jobs:
 
       - name: Install Composer Dependencies
         run: |
-          # First install zmsdb dependencies
-          cd zmsdb
-          rm -rf vendor
-          composer install --no-progress --prefer-dist --optimize-autoloader --no-scripts --no-plugins
-          cd ..
-          
-          # Then install zmsapi dependencies
-          cd zmsapi
-          rm -rf vendor
-          composer install --no-progress --prefer-dist --optimize-autoloader --no-scripts --no-plugins
-          cd ..
+          modules=('zmsapi' 'zmsdb')
+          for module in "${modules[@]}"; do
+            echo "Installing Composer dependencies for $module"
+            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+          done
         shell: bash
-
       - name: Import Test Data and Run Unit Tests
         env:
           MYSQL_PORT: "tcp://mariadb:3306"
