@@ -302,8 +302,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "name" => "Unittest Source Dienstleistung 2",
                     "maxQuantity" => 1,
                     "combinable" => [
-                        "1" => [9999999],
-                        "2" => [9999999]
+                        "1" => ["1" => [9999999]],
+                        "2" => ["2" => [9999999]]
                     ]
                 ]
             ],
