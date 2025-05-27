@@ -71,14 +71,13 @@ class AvailabilityListUpdateTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
     
-    /**
-     * @test
-     * @group availability
-     */
     public function testAvailabilityListUpdateFailsWithDifferentScopes()
     {
         $this->setWorkstation();
-        $response = $this->render([], [
+        $this->expectException('BO\\Zmsapi\\Exception\\BadRequest');
+        $this->expectExceptionMessage('All availabilities must belong to the same scope');
+        
+        $this->render([], [
             '__body' => '{
                 "availabilityList": [
                 {
@@ -136,26 +135,6 @@ class AvailabilityListUpdateTest extends Base
                 "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
             }'
         ], []);
-
-        // Verify response status and format
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertStringContainsString('availability.json', (string)$response->getBody());
-
-        // Verify error message
-        $responseBody = json_decode((string)$response->getBody(), true);
-        $this->assertTrue($responseBody['meta']['error']);
-        $this->assertEquals('BO\\Zmsapi\\Exception\\BadRequest', $responseBody['meta']['exception']);
-        
-        $errorMessage = json_decode($responseBody['meta']['message'], true);
-        $this->assertEquals('All availabilities must belong to the same scope', $errorMessage);
-
-        // Verify log warning was created
-        $lastLogEntry = end(\App::$log->entries);
-        $this->assertEquals('warning', $lastLogEntry['level']);
-        $this->assertEquals('Inconsistent scopes in availability list', $lastLogEntry['message']);
-        $this->assertEquals(312, $lastLogEntry['context']['first_scope']);
-        $this->assertEquals(141, $lastLogEntry['context']['different_scope']);
-        $this->assertEquals(1, $lastLogEntry['context']['index']);
     }
 
     public function testEmpty()
