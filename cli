@@ -72,10 +72,8 @@ def cli_modules_reference_libraries(no_symlink: bool):
     print_info(f"Installing dependencies for {module}")
     # Clean vendor directory first to prevent symlink issues
     os.system(f"cd {module_dir} && rm -rf vendor")
-    # Configure git to trust the module directory and its vendor
-    os.system(f"cd {module_dir} && git config --global --add safe.directory {module_dir}")
-    os.system(f"cd {module_dir} && git config --global --add safe.directory {module_dir}/vendor")
-    os.system(f"cd {module_dir} && COMPOSER_ROOT_VERSION=dev-main composer install --no-scripts --no-plugins --no-progress --prefer-dist" + (" --no-symlink" if no_symlink else ""))
+    # Force composer to use hard copies instead of symlinks
+    os.system(f"cd {module_dir} && COMPOSER_DISABLE_SYMLINKS=1 COMPOSER_ROOT_VERSION=dev-main composer install --no-scripts --no-plugins --no-progress --prefer-dist")
 
 
 @cli_modules.command("check-upgrade")
