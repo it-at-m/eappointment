@@ -83,7 +83,7 @@ def cli_modules_reference_libraries(no_symlink: bool):
   for module in modules:
     module_dir = os.path.join(repo_dir, module)
     print_info(f"Installing dependencies for {module}")
-    os.system(f"cd {module_dir} && composer install --no-scripts --no-plugins --no-progress --prefer-dist")
+    os.system(f"cd {module_dir} && composer install --no-scripts --no-plugins --no-progress --prefer-dist" + (" --no-symlink" if no_symlink else ""))
 
 
 @cli_modules.command("check-upgrade")
