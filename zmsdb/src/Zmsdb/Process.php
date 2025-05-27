@@ -321,14 +321,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcessJoins($processData));
             $entity = $this->readResolvedReferences($entity, $resolveReferences);
-
-
-            if ($entity->status !== $entity->dbstatus) {
-                var_dump($entity->status);
-                var_dump($entity->dbstatus);
-                exit;
-            }
-
             $processList->addEntity($entity);
         }
         return $processList;
