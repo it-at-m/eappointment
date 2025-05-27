@@ -70,6 +70,93 @@ class AvailabilityListUpdateTest extends Base
         $this->assertStringContainsString('availability.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
+    
+    /**
+     * @test
+     * @group availability
+     */
+    public function testAvailabilityListUpdateFailsWithDifferentScopes()
+    {
+        $this->setWorkstation();
+        $response = $this->render([], [
+            '__body' => '{
+                "availabilityList": [
+                {
+                    "id": 21202,
+                    "description": "Test Öffnungszeit update",
+                    "scope": {
+                        "id": 312
+                        },
+                        "weekday": {
+                            "monday": 1,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0,
+                            "sunday": 0
+                        },
+                        "startDate": ' . strtotime("+1 day") . ',
+                        "endDate": ' . strtotime("+30 days") . ',
+                        "startTime": "09:00:00",
+                        "endTime": "17:00:00",
+                        "slotTimeInMinutes": 60,
+                        "workstationCount": {
+                            "public": 1,
+                            "callcenter": 0,
+                            "intern": 0
+                    }
+                },
+                {
+                    "description": "Test Öffnungszeit ohne id",
+                    "scope": {
+                        "id": 141
+                        },
+                        "weekday": {
+                            "monday": 1,
+                            "tuesday": 0,
+                            "wednesday": 0,
+                            "thursday": 0,
+                            "friday": 0,
+                            "saturday": 0,
+                            "sunday": 0
+                        },
+                        "startDate": ' . strtotime("+1 day") . ',
+                        "endDate": ' . strtotime("+30 days") . ',
+                        "startTime": "09:00:00",
+                        "endTime": "17:00:00",
+                        "slotTimeInMinutes": 60,
+                        "workstationCount": {
+                            "public": 1,
+                            "callcenter": 0,
+                            "intern": 0
+                    }
+                }
+                ],
+                "selectedDate": "' . date("Y-m-d", strtotime("+1 day")) . '"
+            }'
+        ], []);
+
+        // Verify response status and format
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertStringContainsString('availability.json', (string)$response->getBody());
+
+        // Verify error message
+        $responseBody = json_decode((string)$response->getBody(), true);
+        $this->assertTrue($responseBody['meta']['error']);
+        $this->assertEquals('BO\\Zmsapi\\Exception\\BadRequest', $responseBody['meta']['exception']);
+        
+        $errorMessage = json_decode($responseBody['meta']['message'], true);
+        $this->assertEquals('All availabilities must belong to the same scope', $errorMessage);
+
+        // Verify log warning was created
+        $lastLogEntry = end(\App::$log->entries);
+        $this->assertEquals('warning', $lastLogEntry['level']);
+        $this->assertEquals('Inconsistent scopes in availability list', $lastLogEntry['message']);
+        $this->assertEquals(312, $lastLogEntry['context']['first_scope']);
+        $this->assertEquals(141, $lastLogEntry['context']['different_scope']);
+        $this->assertEquals(1, $lastLogEntry['context']['index']);
+    }
 
     public function testEmpty()
     {
