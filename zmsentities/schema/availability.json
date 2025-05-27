@@ -10,12 +10,15 @@
     "endDate": 1447919116,
     "endTime": "15:30",
     "id": 1234,
+    "kind": "default",
     "multipleSlotsAllowed": true,
     "type": "appointment",
     "repeat": {
       "afterWeeks": 0
     },
     "scope": {
+      "id": 123,
+      "kind": "default",
       "provider": {
         "id": 123456,
         "name": "Flughafen Schönefeld, Aufsicht",
@@ -97,6 +100,10 @@
     "id": {
       "type": ["string", "number", "null"],
       "description": "ID for the availability. A NULL or zero means, that the availability is new."
+    },
+    "kind": {
+      "type": ["null", "string"],
+      "description": "The kind of availability, used for validation and filtering"
     },
     "lastChange": {
       "type": "number",

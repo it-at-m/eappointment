@@ -39,7 +39,7 @@ class Availability extends Base implements MappingInterface
                     AS SIGNED)'
             ),
             'bookable__endInDays' => self::expression(
-                'IF(`availability`.`Offen_bis`, `availability`.`Offen_bis`, `availabilityscope`.`Termine_bis`)'
+                'IF((`availability`.`Offen_ab` = "0" AND `availability`.`Offen_bis` = "0") OR `availability`.`Offen_bis`, `availability`.`Offen_bis`, `availabilityscope`.`Termine_bis`)'
             ),
             'description' => 'availability.kommentar',
             'startDate' => 'availability.Startdatum',
