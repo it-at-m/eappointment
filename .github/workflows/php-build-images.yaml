@@ -11,8 +11,6 @@ jobs:
         uses: actions/checkout@main
       - name: Install python3
         run: sudo apt install -y python3 python3-click python3-git
-      - name: Configure Git to trust workspace
-        run: git config --global --add safe.directory "/__w/eappointment/eappointment"
       - name: Cache referenced libraries
         uses: actions/cache@v3
         with:
