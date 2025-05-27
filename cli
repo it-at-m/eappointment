@@ -71,7 +71,7 @@ def cli_modules_reference_libraries(no_symlink: bool):
     module_dir = os.path.join(repo_dir, module)
     print_info(f"Installing dependencies for {module}")
     # Clean vendor directory first to prevent symlink issues
-    os.system(f"cd {module_dir} && rm -rf vendor composer.lock")
+    os.system(f"cd {module_dir} && rm -rf vendor")
     os.system(f"cd {module_dir} && COMPOSER_ROOT_VERSION=dev-main composer install --no-scripts --no-plugins --no-progress --prefer-dist" + (" --no-symlink" if no_symlink else ""))
 
 
