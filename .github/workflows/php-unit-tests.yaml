@@ -188,7 +188,7 @@ jobs:
             ${{ runner.os }}-refs-${{ matrix.php_version }}-
 
       - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries
+        run: python3 ./cli modules reference-libraries --no-symlink
 
       - name: Setup Composer cache directory
         run: mkdir -p ~/.composer/cache/files
@@ -290,7 +290,7 @@ jobs:
             ${{ runner.os }}-refs-${{ matrix.php_version }}-
 
       - name: Referencing local Modules and Libraries
-        run: python3 ./cli modules reference-libraries
+        run: python3 ./cli modules reference-libraries --no-symlink
 
       - name: Setup Composer cache directory
         run: mkdir -p ~/.composer/cache/files
