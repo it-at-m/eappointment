@@ -212,7 +212,7 @@ jobs:
           modules=('zmsapi' 'zmsdb')
           for module in "${modules[@]}"; do
             echo "Installing Composer dependencies for $module"
-            (cd "$module" && composer install --no-progress --prefer-dist --optimize-autoloader)
+            (cd "$module" && rm -rf vendor && COMPOSER_ROOT_VERSION=dev-main composer install --no-progress --prefer-source --no-scripts --no-plugins --optimize-autoloader)
           done
         shell: bash
       - name: Import Test Data and Run Unit Tests
@@ -229,11 +229,13 @@ jobs:
           vendor/bin/importTestData --commit
           mkdir -p coverage
           echo "Running tests with coverage"
+          # Run tests first without coverage to ensure they pass
+          XDEBUG_MODE=off php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
+          # Then generate coverage reports separately
           php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
             ./vendor/bin/phpunit -c phpunit.xml \
-            --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
-            --log-junit coverage/junit.xml
+            --log-junit coverage/junit.xml || true
           echo "Coverage files generated:"
           ls -la coverage/
       - name: Upload Coverage
