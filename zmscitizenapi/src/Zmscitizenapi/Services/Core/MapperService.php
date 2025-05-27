@@ -283,7 +283,8 @@ class MapperService
             subRequestCounts: isset($subRequestCounts) ? array_values($subRequestCounts) : [],
             serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0,
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
-            status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null
+            status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
+            slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null
         );
     }
 
@@ -306,6 +307,7 @@ class MapperService
         $client->telephone = $thinnedProcess->telephone ?? null;
         $processEntity->clients = [$client];
         $appointment = new Appointment();
+        $appointment->slotCount = $thinnedProcess->slotCount ?? null;
         $appointment->date = $thinnedProcess->timestamp ?? null;
         $processEntity->appointments = [$appointment];
         // Set scope with all required fields
