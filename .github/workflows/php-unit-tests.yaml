@@ -171,6 +171,19 @@ jobs:
         run: |
           apt update
           apt install -y python3 python3-click python3-git
+
+      - name: Cache referenced libraries
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/composer.json
+            **/vendor
+          key: ${{ runner.os }}-refs-${{ matrix.php_version }}-${{ matrix.module }}-${{ github.ref_name }}-${{ hashFiles('**/composer.json', '**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-refs-${{ matrix.php_version }}-${{ matrix.module }}-${{ github.ref_name }}-
+            ${{ runner.os }}-refs-${{ matrix.php_version }}-${{ matrix.module }}-
+            ${{ runner.os }}-refs-${{ matrix.php_version }}-
+
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
 
@@ -257,6 +270,19 @@ jobs:
         run: |
           apt update
           apt install -y python3 python3-click python3-git
+
+      - name: Cache referenced libraries
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/composer.json
+            **/vendor
+          key: ${{ runner.os }}-refs-${{ matrix.php_version }}-${{ matrix.module }}-${{ github.ref_name }}-${{ hashFiles('**/composer.json', '**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-refs-${{ matrix.php_version }}-${{ matrix.module }}-${{ github.ref_name }}-
+            ${{ runner.os }}-refs-${{ matrix.php_version }}-${{ matrix.module }}-
+            ${{ runner.os }}-refs-${{ matrix.php_version }}-
+
       - name: Referencing local Modules and Libraries
         run: python3 ./cli modules reference-libraries --no-symlink
 
