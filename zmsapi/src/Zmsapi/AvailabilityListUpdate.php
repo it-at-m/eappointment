@@ -38,6 +38,7 @@ class AvailabilityListUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         self::validateClientData($input);
+        self::validateScopeConsistency($input['availabilityList']);
         $newAvailabilities = $this->createAvailabilityList($input['availabilityList']);
         $selectedDate = $this->createSelectedDateTime($input['selectedDate']);
         $scope = new \BO\Zmsentities\Scope($input['availabilityList'][0]['scope']);
@@ -226,6 +227,32 @@ class AvailabilityListUpdate extends BaseController
                 'is_empty' => isset($input['availabilityList']) ? empty($input['availabilityList']) : true
             ]);
             throw new BadRequestException('Invalid availabilityList');
+        }
+    }
+
+    private static function validateScopeConsistency(array $availabilityList): void
+    {
+        if (empty($availabilityList)) {
+            return;
+        }
+
+        $firstScope = null;
+        foreach ($availabilityList as $index => $availability) {
+            $currentScope = $availability['scope']['id'] ?? null;
+            if (!$currentScope) {
+                App::$log->warning('Missing scope id in availability', ['index' => $index]);
+                throw new BadRequestException('Missing scope id in availability list');
+            }
+            if ($firstScope === null) {
+                $firstScope = $currentScope;
+            } elseif ($currentScope !== $firstScope) {
+                App::$log->warning('Inconsistent scopes in availability list', [
+                    'first_scope' => $firstScope,
+                    'different_scope' => $currentScope,
+                    'index' => $index
+                ]);
+                throw new BadRequestException('All availabilities must belong to the same scope');
+            }
         }
     }
 }

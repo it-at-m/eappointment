@@ -261,15 +261,17 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
     */
     const startHourInt = parseInt(startHour);
     const endHourInt = parseInt(endHour);
+    const startMinuteInt = parseInt(startMinute);
+    const endMinuteInt = parseInt(endMinute);
     if (
-        (startHourInt === 22 && startMinute > 0) || 
+        (startHourInt === 22 && startMinuteInt > 0) || 
         startHourInt === 23 || 
         startHourInt === 0 || 
-        (endHourInt === 22 && endMinute > 0) || 
+        (endHourInt === 22 && endMinuteInt > 0) || 
         endHourInt === 23 || 
         endHourInt === 0 ||
-        (startHourInt === 1 && startMinute > 0) ||
-        (endHourInt === 1 && endMinute > 0)
+        (startHourInt === 1 && startMinuteInt > 0) ||
+        (endHourInt === 1 && endMinuteInt > 0)
     ) {
         errorList.push({
             type: 'startOfDay',
