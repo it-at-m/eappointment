@@ -50,13 +50,16 @@ def cli_modules():
 @cli_modules.command("reference-libraries")
 @click.option("--no-symlink", is_flag=True, show_default=True, default=False)
 def cli_modules_reference_libraries(no_symlink: bool):
-  module_dependencies = {}
+  # First, modify all composer.json files
   for module in modules:
     composer_file_path = os.path.join(repo_dir, module, "composer.json")
     with open(composer_file_path, "r") as f:
       composer_content = json.load(f)
 
+    # Remove existing path repositories
     composer_content["repositories"] = list([i for i in composer_content.get("repositories", []) if i.get("type") != "path" and i.get("url", None) != "../*"])
+    
+    # Add the path repository
     composer_content["repositories"].append({
       "type": "path",
       "url": "../*",
@@ -65,12 +68,10 @@ def cli_modules_reference_libraries(no_symlink: bool):
       }
     })
 
-    require = composer_content.get("require", [])
+    # Set all eappointment dependencies to @dev
+    require = composer_content.get("require", {})
     for dependency_key in require:
       if dependency_key.startswith("eappointment/"):
-        if module not in module_dependencies:
-          module_dependencies[module] = []
-        module_dependencies[module].append(dependency_key)
         require[dependency_key] = "@dev"
     composer_content["require"] = require
 
@@ -78,9 +79,11 @@ def cli_modules_reference_libraries(no_symlink: bool):
       json.dump(composer_content, f, indent=4)
       f.write("\n")
 
-  for module in module_dependencies:
+  # Then, run composer install once per module
+  for module in modules:
     module_dir = os.path.join(repo_dir, module)
-    os.system(f"cd {module_dir} && composer update {' '.join(module_dependencies[module])} --no-scripts --no-plugins 1>/dev/null")
+    print_info(f"Installing dependencies for {module}")
+    os.system(f"cd {module_dir} && composer install --no-scripts --no-plugins --no-progress --prefer-dist")
 
 
 @cli_modules.command("check-upgrade")
