@@ -32,7 +32,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $process = $this->fetchOne($query, new Entity());
         $process = $this->readResolvedReferences($process, $resolveReferences);
 
-        if ($process->dbstatus !== $process->status) {
+        if (isset($process->dbstatus) && $process->dbstatus !== $process->status) {
             \App::$log->info('STATUS DIFF', [
                 'status' => $process->status,
                 'status DB' => $process->dbstatus,

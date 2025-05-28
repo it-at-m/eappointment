@@ -142,18 +142,21 @@ class Process extends Base implements MappingInterface
         return $joinQuery;
     }
 
-    protected function calculateStatus($data) {
+    protected function calculateStatus($data)
+    {
         if (isset($data['Name']) && $data['Name'] === '(abgesagt)') {
             return 'deleted';
         }
 
-        if (isset($data['StandortID']) && $data['StandortID'] == 0
+        if (
+            isset($data['StandortID']) && $data['StandortID'] == 0
             && isset($data['AbholortID']) && $data['AbholortID'] == 0
         ) {
             return 'blocked';
         }
 
-        if (isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 1
+        if (
+            isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 1
             && isset($data['bestaetigt']) && $data['bestaetigt'] == 0
         ) {
             return 'reserved';
@@ -167,27 +170,31 @@ class Process extends Base implements MappingInterface
             return 'parked';
         }
 
-        if (isset($data['Abholer']) && $data['Abholer'] != 0
+        if (
+            isset($data['Abholer']) && $data['Abholer'] != 0
             && isset($data['AbholortID']) && $data['AbholortID'] != 0
             && isset($data['NutzerID']) && $data['NutzerID'] == 0
         ) {
             return 'pending';
         }
 
-        if (isset($data['AbholortID']) && $data['AbholortID'] != 0
+        if (
+            isset($data['AbholortID']) && $data['AbholortID'] != 0
             && isset($data['NutzerID']) && $data['NutzerID'] != 0
         ) {
             return 'pickup';
         }
 
-        if (isset($data['AbholortID']) && $data['AbholortID'] == 0
+        if (
+            isset($data['AbholortID']) && $data['AbholortID'] == 0
             && isset($data['aufruferfolgreich']) && $data['aufruferfolgreich'] != 0
             && isset($data['NutzerID']) && $data['NutzerID'] != 0
         ) {
             return 'processing';
         }
 
-        if (isset($data['aufrufzeit']) && $data['aufrufzeit'] != "00:00:00"
+        if (
+            isset($data['aufrufzeit']) && $data['aufrufzeit'] != "00:00:00"
             && isset($data['NutzerID']) && $data['NutzerID'] != 0
             && isset($data['AbholortID']) && $data['AbholortID'] == 0
         ) {
@@ -198,13 +205,15 @@ class Process extends Base implements MappingInterface
             return 'queued';
         }
 
-        if (isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 0
+        if (
+            isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 0
             && isset($data['bestaetigt']) && $data['bestaetigt'] == 0
         ) {
             return 'preconfirmed';
         }
 
-        if (isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 0
+        if (
+            isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 0
             && isset($data['bestaetigt']) && $data['bestaetigt'] == 1
         ) {
             return 'confirmed';
