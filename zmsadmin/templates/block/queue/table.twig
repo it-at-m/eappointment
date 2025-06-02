@@ -161,7 +161,7 @@
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
 									<td>
-										{{ item.customTextfield2|decodeEntities|raw }}
+										{{ item.customTextfield2 }}
 									</td>
 								{% endif %}
 								<td class="nowrap">
@@ -429,7 +429,7 @@
 									{% endif %}
 									{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
 										<td>
-											{{ item.customTextfield2|decodeEntities|raw }}
+											{{ item.customTextfield2 }}
 										</td>
 									{% endif %}
 									<td class="nowrap">
@@ -568,7 +568,7 @@
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
 									<td>
-										{{ item.customTextfield2|decodeEntities|raw }}
+										{{ item.customTextfield2 }}
 									</td>
 								{% endif %}
 								<td class="nowrap">
