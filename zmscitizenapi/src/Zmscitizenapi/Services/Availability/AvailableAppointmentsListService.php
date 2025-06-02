@@ -26,19 +26,7 @@ class AvailableAppointmentsListService
     public function getAvailableAppointmentsList(array $queryParams): AvailableAppointments|array
     {
         $clientData = $this->extractClientData($queryParams);
-        $captchaRequired = $this->isCaptchaRequired($clientData->officeIds);
-        $captchaToken = $queryParams['captchaToken'] ?? null;
-
-        $errors = ValidationService::validateGetAvailableAppointments(
-            $clientData->date,
-            $clientData->officeIds,
-            $clientData->serviceIds,
-            $clientData->serviceCounts,
-            $captchaRequired,
-            $captchaToken,
-            $this->tokenValidator
-        );
-
+        $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
         }
@@ -63,7 +51,8 @@ class AvailableAppointmentsListService
                 : [],
             'serviceCounts' => isset($queryParams['serviceCount'])
                 ? array_map('trim', explode(',', (string) $queryParams['serviceCount']))
-                : []
+                : [],
+            'captchaToken' => isset($queryParams['captchaToken']) ? (string) $queryParams['captchaToken'] : null
         ];
     }
 
@@ -81,15 +70,32 @@ class AvailableAppointmentsListService
 
     private function validateClientData(object $data): array
     {
-        return ValidationService::validateGetAvailableAppointments($data->date, $data->officeIds, $data->serviceIds, $data->serviceCounts);
+        $captchaRequired = $this->isCaptchaRequired($data->officeIds);
+        $captchaToken = $data->captchaToken;
+
+        return ValidationService::validateGetAvailableAppointments(
+            $data->date,
+            $data->officeIds,
+            $data->serviceIds,
+            $data->serviceCounts,
+            $captchaRequired,
+            $captchaToken,
+            $this->tokenValidator
+        );
     }
 
     private function getAvailableAppointments(object $data, ?bool $groupByOffice = false): array|AvailableAppointments|AvailableAppointmentsByOffice
     {
-        return ZmsApiFacadeService::getAvailableAppointments($data->date, $data->officeIds, $data->serviceIds, $data->serviceCounts, $groupByOffice);
+        return ZmsApiFacadeService::getAvailableAppointments(
+            $data->date,
+            $data->officeIds,
+            $data->serviceIds,
+            $data->serviceCounts,
+            $groupByOffice
+        );
     }
 
-    public function getAvailableAppointmentsListByOffice($queryParams): AvailableAppointmentsByOffice|array
+    public function getAvailableAppointmentsListByOffice($queryParams): AvailableAppointments|AvailableAppointmentsByOffice|array
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
