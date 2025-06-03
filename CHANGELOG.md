@@ -1,4 +1,41 @@
 
+## Release Muc-25 (04.06.2025)
+                       
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-222'>ZMSKVR-222</a>] -         Terminaufruf: Details zum aufgerufenen Termin verschwinden aus &quot;Kundeninformationen&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-453'>ZMSKVR-453</a>] -         Fehlermeldung beim Emailnotiz versenden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-466'>ZMSKVR-466</a>] -         Fehler beim Anlegen neuer leerer Öffnungszeiten ohne Stacktrace im Backend
+</li>
+</ul>
+                                                    
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-379'>ZMSKVR-379</a>] -         Terminvarianten
+</li>
+</ul>
+                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-321'>ZMSKVR-321</a>] -         Frontend: verbesserte Ansicht der häufig kombinierten Leistungen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-324'>ZMSKVR-324</a>] -         Backend: verbesserte Ansicht der kombinierbaren Leistungen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-327'>ZMSKVR-327</a>] -         Erstellung neuer Datenbanktabelle und Speichern der Daten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-328'>ZMSKVR-328</a>] -         Erstellung des API-Endpunkts für die Datenbank zur Gesamtübersicht mehrere Standorte
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-351'>ZMSKVR-351</a>] -         Validierung der Start- und Endwerte für die Terminvergabe durch Terminadministratoren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-363'>ZMSKVR-363</a>] -         Zusätzliches Freitextfeld
+</li>
+</ul>
+                                                        
 ## Release Muc-24 (09.05.2025)
                             
 <h2>        Bug
