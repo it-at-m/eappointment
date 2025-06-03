@@ -408,7 +408,7 @@
 										{% endif %}
 									</td>
 									<td>
-										{{ item.amendment|decodeEntities|raw }}
+										{{ item.amendment }}
 										<p class="queue-table-amendment-time">
 											{% if item.queue.status == "reserved" %}
 												{% trans %}reserviert am{% endtrans %}
