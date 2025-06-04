@@ -38,6 +38,8 @@ class ThinnedProcess extends Entity implements JsonSerializable
     public array $subRequestCounts;
 /** @var int|null */
     public ?int $serviceId;
+/** @var string|null */
+    public ?string $serviceName;
 /** @var int */
     public int $serviceCount;
 /** @var string|null */
@@ -47,7 +49,7 @@ class ThinnedProcess extends Entity implements JsonSerializable
 /** @var int|null */
     public ?int $slotCount;
 
-    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $customTextfield2 = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, int $serviceCount = 0, ?string $status = null, ?string $captchaToken = null, ?int $slotCount = null)
+    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $customTextfield2 = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, ?string $serviceName = null, int $serviceCount = 0, ?string $status = null, ?string $captchaToken = null, ?int $slotCount = null)
     {
         $this->processId = $processId;
         $this->timestamp = $timestamp;
@@ -62,6 +64,7 @@ class ThinnedProcess extends Entity implements JsonSerializable
         $this->scope = $scope;
         $this->subRequestCounts = $subRequestCounts;
         $this->serviceId = $serviceId;
+        $this->serviceName = $serviceName;
         $this->serviceCount = $serviceCount;
         $this->status = $status;
         $this->captchaToken = $captchaToken;
@@ -90,6 +93,7 @@ class ThinnedProcess extends Entity implements JsonSerializable
             'scope' => $this->scope ?? null,
             'subRequestCounts' => $this->subRequestCounts,
             'serviceId' => $this->serviceId ?? null,
+            'serviceName' => $this->serviceName ?? null,
             'serviceCount' => $this->serviceCount,
             'status' => $this->status ?? null,
             'captchaToken' => $this->captchaToken ?? null,
