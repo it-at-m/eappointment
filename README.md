@@ -110,6 +110,7 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
 - `npm install`
 - `npm run build`
 - `npm run dev`
+- `npm run test`
 
 ## Import Database
 - `ddev import-db --file=.resources/zms.sql`
