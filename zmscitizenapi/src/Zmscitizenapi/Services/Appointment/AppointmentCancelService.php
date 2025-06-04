@@ -33,7 +33,7 @@ class AppointmentCancelService
             ]];
         }
 
-        if($process->status !== 'reserved') {
+        if ($process->status !== 'reserved') {
             // Todo: check if the email template cancelled exists for the scope before submitting and sending
             $this->sendCancellationEmail($process);
         }
