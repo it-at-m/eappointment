@@ -104,9 +104,11 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             "status" => "reserved",
             "subRequestCounts" => [],
             "serviceId" => 10242339,
+            "serviceName" => "Adressänderung Personalausweis, Reisepass, eAT",
             "serviceCount" => 1,
             "slotCount" => 1
         ];
+
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
