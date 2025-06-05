@@ -37,7 +37,14 @@ const validate = (data, props) => {
 
 function validateWeekdays(data) {
     let errorList = [];
+
+    console.log(data);
     
+    // Skip validation if this is part of a split series
+    if (data.kind === 'origin' || data.kind === 'future') {
+        return errorList;
+    }
+
     // Check if date range is valid
     const startDate = moment.unix(data.startDate);
     const endDate = moment.unix(data.endDate);
