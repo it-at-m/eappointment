@@ -477,9 +477,14 @@ class Availability extends Schema\Entity
         return $errorList;
     }
 
-    public function validateWeekdays(\DateTimeInterface $startDate, \DateTimeInterface $endDate, array $weekday): array
+    public function validateWeekdays(\DateTimeInterface $startDate, \DateTimeInterface $endDate, array $weekday, string $kind): array
     {
         $errorList = [];
+
+        // Skip validation if this is part of a split series
+        if ($kind === 'origin' || $kind === 'future') {
+            return $errorList;
+        }
 
         if ($startDate > $endDate) {
             return $errorList;
