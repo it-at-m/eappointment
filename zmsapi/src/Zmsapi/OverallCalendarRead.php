@@ -10,7 +10,7 @@ use DateTimeInterface;
 
 class OverallCalendarRead extends BaseController
 {
-    private function buildCalendar(array $rows, int $defaultSeats = 1): array
+    private function buildCalendar(array $rows, int $defaultSeats = 1): \BO\Zmsentities\OverallCalendar
     {
         $calendar = [];
         $lastSlotInfo = [];
@@ -77,7 +77,8 @@ class OverallCalendarRead extends BaseController
             $day['scopes'] = array_values($day['scopes']);
         }
 
-        return ['days' => array_values($calendar)];
+        $data = ['days' => array_values($calendar)];
+        return new \BO\Zmsentities\OverallCalendar($data);
     }
 
     public function readResponse(
@@ -100,10 +101,10 @@ class OverallCalendarRead extends BaseController
             $updateAfter
         );
 
-        $structured = $this->buildCalendar($flatRows);
+        $calendar = $this->buildCalendar($flatRows);
 
         $msg           = Response\Message::create($request);
-        $msg->data     = $structured;
+        $msg->data     = $calendar;
         $msg->meta->rows = count($flatRows);
 
         $response = Render::withLastModified(
