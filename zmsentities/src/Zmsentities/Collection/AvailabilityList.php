@@ -219,7 +219,7 @@ class AvailabilityList extends Base
         foreach ($this as $availability) {
             $errorList = array_merge(
                 $errorList,
-                $availability->validateWeekdays($startDate, $endDate, $weekday),
+                $availability->validateWeekdays($startDate, $endDate, $weekday, $kind),
                 $availability->validateStartTime($today, $tomorrow, $startDate, $endDate, $selectedDate, $kind),
                 $availability->validateEndTime($startDate, $endDate),
                 $availability->validateOriginEndTime($today, $yesterday, $endDate, $selectedDate, $kind),
