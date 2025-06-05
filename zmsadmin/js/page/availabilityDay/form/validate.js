@@ -37,8 +37,6 @@ const validate = (data, props) => {
 
 function validateWeekdays(data) {
     let errorList = [];
-
-    console.log(data);
     
     // Skip validation if this is part of a split series
     if (data.kind === 'origin' || data.kind === 'future') {
