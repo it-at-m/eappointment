@@ -1,5 +1,26 @@
 {
+    "name": "eappointment/eappointment",
+    "description": "eAppointment system",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "slim/twig-view": "^3.4.1"
+        "php": ">=8.3",
+        "slim/twig-view": "^3.4.1",
+        "eappointment/zmsslim": "@dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "./*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "8.3"
+        }
     }
 }
