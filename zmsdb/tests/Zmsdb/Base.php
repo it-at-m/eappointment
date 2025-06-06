@@ -14,6 +14,12 @@ abstract class Base extends TestCase
     public static $requestRelationCount = 2532;
     public static $requestCount = 308;
 
+    protected function getTestName(): string
+    {
+        $className = explode('\\', static::class);
+        return end($className) . '/' . $this->name();
+    }
+
     public function setUp(): void
     {
         static::$now = new \DateTimeImmutable('2016-04-01 11:55:00');
@@ -23,9 +29,7 @@ abstract class Base extends TestCase
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         \BO\Zmsdb\Connection\Select::setTransaction(false);
 
-        $className = explode('\\', static::class);
-        $testName = end($className) . '/' . $this->getName();
-        Db::executeTestData($testName, 'setup');
+        Db::executeTestData($this->getTestName(), 'setup');
     }
 
     public function tearDown(): void
@@ -40,9 +44,7 @@ abstract class Base extends TestCase
         \BO\Zmsdb\Connection\Select::closeWriteConnection();
         \BO\Zmsdb\Connection\Select::closeReadConnection();
 
-        $className = explode('\\', static::class);
-        $testName = end($className) . '/' . $this->getName();
-        Db::executeTestData($testName, 'teardown');
+        Db::executeTestData($this->getTestName(), 'teardown');
     }
 
     protected function getFixturePath($filename)
