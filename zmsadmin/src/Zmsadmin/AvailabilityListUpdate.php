@@ -30,7 +30,6 @@ class AvailabilityListUpdate extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
-        error_log(json_encode($input));
 
         // Extract the availabilityList array from the input
         $availabilityData = isset($input['availabilityList']) ? $input['availabilityList'] : $input;

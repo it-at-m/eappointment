@@ -220,7 +220,6 @@ class AvailabilityListUpdate extends BaseController
             throw new BadRequestException('No input data provided');
         }
 
-        error_log(json_encode($input));
         if (!isset($input['availabilityList']) || !is_array($input['availabilityList']) || empty($input['availabilityList'])) {
             App::$log->warning('Invalid availabilityList', [
                 'has_availabilityList' => isset($input['availabilityList']),
