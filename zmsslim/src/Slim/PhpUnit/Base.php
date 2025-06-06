@@ -131,9 +131,9 @@ abstract class Base extends TestCase
             $headers->addHeader($key, $value);
         }
 
-        $body = (new StreamFactory())->createStream();
-
-        $request = new Request($method, $uri, $headers, [], $env, $body, []);
+        $stream = (new StreamFactory())->createStream();
+        $stream = (new StreamFactory())->createStreamFromFile('php://temp', 'r+');
+        $request = new Request($method, $uri, $headers, [], $env, $stream, []);
 
         if (
             $method === 'POST' &&
@@ -152,10 +152,11 @@ abstract class Base extends TestCase
      */
     protected function getResponse($content = '', $status = 200, array $headers = [])
     {
-        $body = (new StreamFactory())->createStream();
+        $body = (new StreamFactory())->createStreamFromFile('php://temp', 'r+');
         $headers = new Headers($headers);
         $response = new Response($status, $headers, $body);
         $body->write($content);
+        $body->rewind();
         return $response;
     }
 
@@ -206,8 +207,9 @@ abstract class Base extends TestCase
             $request = $request->withParsedBody($parameters);
         }
         if (array_key_exists('__body', $parameters)) {
-            $body = (new StreamFactory())->createStream();
+            $body = (new StreamFactory())->createStreamFromFile('php://temp', 'r+');
             $body->write($parameters['__body']);
+            $body->rewind();
             $request = $request->withBody($body);
         }
         if (array_key_exists('__cookie', $parameters)) {
