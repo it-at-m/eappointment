@@ -138,7 +138,8 @@ class Index extends BaseController
     }
     protected function getProviderList($config)
     {
-        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
+        $providerConfig = $config->getPreference('oidc', 'provider');
+        $allowedProviderList = $providerConfig ? explode(',', $providerConfig) : [];
         $oidcproviderlist = [];
         foreach (\BO\Slim\Middleware\OAuthMiddleware::$authInstances as $provider => $authInstance) {
             if (
