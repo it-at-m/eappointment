@@ -404,9 +404,19 @@
       "description": "unix timestamp of the last change on this process"
     },
     "wasMissed": {
-      "type": ["string", "boolean"],
-      "default": false,
-      "description": "Indicates whether the process was marked as missed at any prior point."
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string",
+          "pattern": "^[01]$"
+        }
+      ],
+      "description": "true if the client missed the appointment"
     },
     "showUpTime": {
       "type": ["string", "null"],
