@@ -24,7 +24,10 @@ class TwigExtensionsAndFilter extends TwigExtension
 
     public function decodeEntities($string)
     {
-        return trim(nl2br(html_entity_decode($string)));
+        if ($string === null) {
+            return '';
+        }
+        return trim(nl2br(html_entity_decode((string)$string)));
     }
 
     public function msort($array, $key, $sort_flags = SORT_REGULAR)

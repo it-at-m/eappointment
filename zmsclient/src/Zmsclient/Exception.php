@@ -33,6 +33,11 @@ class Exception extends \Exception
     public $trace;
 
     /**
+     * @var string|null $originalMessage Original error message from the API
+     */
+    public $originalMessage;
+
+    /**
      * @param String $message
      * @param \Psr\Http\Message\ResponseInterface $response
      * @param \Psr\Http\Message\RequestInterface $request (optional) reference for better error messages

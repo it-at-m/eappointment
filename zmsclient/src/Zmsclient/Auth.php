@@ -28,7 +28,7 @@ class Auth
                     'timezone' => date_default_timezone_get()
                 ]);
             }
-            setcookie(self::getCookieName(), $authKey, $expires, '/', null, true, true);
+            setcookie(self::getCookieName(), $authKey, $expires, '/', '', true, true);
         }
     }
 
@@ -64,7 +64,7 @@ class Auth
             }
             unset($_COOKIE[self::getCookieName()]);
             if (!headers_sent()) {
-                setcookie(self::getCookieName(), '', time() - 3600, '/');
+                setcookie(self::getCookieName(), '', time() - 3600, '/', '', false, true);
             }
         }
     }
@@ -88,7 +88,7 @@ class Auth
     {
         $_COOKIE[self::getOidcName()] = $provider; // for access in the same process
         if (!headers_sent()) {
-            setcookie(self::getOidcName(), $provider, 0, '/', null, true, true);
+            setcookie(self::getOidcName(), $provider, 0, '/', '', true, true);
         }
     }
 
@@ -115,7 +115,7 @@ class Auth
         if (array_key_exists(self::getOidcName(), $_COOKIE)) {
             unset($_COOKIE[self::getOidcName()]);
             if (!headers_sent()) {
-                setcookie(self::getOidcName(), '', time() - 3600, '/');
+                setcookie(self::getOidcName(), '', time() - 3600, '/', '', false, true);
             }
         }
     }

@@ -100,7 +100,7 @@ class Notification extends Base
 
     public function writeInCalculationTable(\BO\Zmsentities\Schema\Entity $notification)
     {
-        $amount = ceil((strlen(trim($notification->message))) / 160);
+        $amount = ceil((strlen(trim((string)$notification->message))) / 160);
         $scopeId = $notification->getScopeId();
         if (!$scopeId) {
             return false;

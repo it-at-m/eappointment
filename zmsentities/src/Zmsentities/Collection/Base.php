@@ -42,8 +42,8 @@ class Base extends \ArrayObject implements \JsonSerializable
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
-                Sorter::toSortableString(ucfirst($a->name)),
-                Sorter::toSortableString(ucfirst($b->name))
+                Sorter::toSortableString(ucfirst((string)($a->name ?? ''))),
+                Sorter::toSortableString(ucfirst((string)($b->name ?? '')))
             );
         });
         return $this;
@@ -52,9 +52,11 @@ class Base extends \ArrayObject implements \JsonSerializable
     public function sortByContactName()
     {
         $this->uasort(function ($a, $b) {
+            $aName = isset($a->contact['name']) ? (string)$a->contact['name'] : '';
+            $bName = isset($b->contact['name']) ? (string)$b->contact['name'] : '';
             return strcmp(
-                Sorter::toSortableString(ucfirst($a->contact['name'])),
-                Sorter::toSortableString(ucfirst($b->contact['name']))
+                Sorter::toSortableString(ucfirst($aName)),
+                Sorter::toSortableString(ucfirst($bName))
             );
         });
         return $this;
@@ -71,9 +73,11 @@ class Base extends \ArrayObject implements \JsonSerializable
     public function sortByCustomStringKey($key)
     {
         $this->uasort(function ($a, $b) use ($key) {
+            $aValue = isset($a[$key]) ? (string)$a[$key] : '';
+            $bValue = isset($b[$key]) ? (string)$b[$key] : '';
             return strcmp(
-                Sorter::toSortableString(ucfirst($a[$key])),
-                Sorter::toSortableString(ucfirst($b[$key]))
+                Sorter::toSortableString(ucfirst($aValue)),
+                Sorter::toSortableString(ucfirst($bValue))
             );
         });
         return $this;

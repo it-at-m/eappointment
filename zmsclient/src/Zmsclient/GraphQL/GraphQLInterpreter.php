@@ -6,6 +6,11 @@ class GraphQLInterpreter implements \JsonSerializable
 {
     protected $gqlString;
 
+    /**
+     * @var mixed
+     */
+    protected $data;
+
     public function __construct($gqlString)
     {
         $this->gqlString = $gqlString;
@@ -57,6 +62,7 @@ class GraphQLInterpreter implements \JsonSerializable
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->data;
