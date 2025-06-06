@@ -120,14 +120,14 @@ class Index extends BaseController
     {
         // Ensure we have a string value, defaulting to empty string if null or not set
         $queryString = isset($_SERVER['QUERY_STRING']) ? (string)$_SERVER['QUERY_STRING'] : '';
-        
+
         // Only append lang parameter if we have a non-empty string and it doesn't already contain lang
         if ($queryString !== '' && strpos($queryString, 'lang=') === false) {
             $queryString .= '&lang=de';
         } elseif ($queryString === '') {
             $queryString = 'lang=de';
         }
-        
+
         // Ensure we're working with a string before replacement
         return str_replace('/&', '', $queryString);
     }
