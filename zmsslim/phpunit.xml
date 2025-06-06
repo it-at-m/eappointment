@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
 <phpunit
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
   backupGlobals="false"
   backupStaticAttributes="false"
   bootstrap="tests/bootstrap.php"
   colors="true"
-  convertErrorsToExceptions="true"
-  convertNoticesToExceptions="true"
-  convertWarningsToExceptions="true"
-  forceCoversAnnotation="false"
+  displayDetailsOnTestsThatTriggerDeprecations="true"
+  displayDetailsOnTestsThatTriggerErrors="true"
+  displayDetailsOnTestsThatTriggerNotices="true"
+  displayDetailsOnTestsThatTriggerWarnings="true"
+  failOnWarning="false"
+  failOnRisky="false"
   stopOnFailure="false"
-  verbose="true"
   processIsolation="true"
 >
   <php>
@@ -19,7 +20,7 @@
     <ini name="xdebug.mode" value="coverage" />
     <env name="XDEBUG_MODE" value="coverage" />
   </php>
-  <coverage processUncoveredFiles="true">
+  <coverage includeUncoveredFiles="true">
     <include>
       <directory suffix=".php">./src</directory>
     </include>
