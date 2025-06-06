@@ -3,7 +3,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
   backupGlobals="false"
-  backupStaticAttributes="false"
   bootstrap="tests/bootstrap.php"
   colors="true"
   displayDetailsOnTestsThatTriggerDeprecations="true"
@@ -20,7 +19,7 @@
     <ini name="xdebug.mode" value="coverage" />
     <env name="XDEBUG_MODE" value="coverage" />
   </php>
-  <coverage includeUncoveredFiles="true">
+  <source>
     <include>
       <directory suffix=".php">./src</directory>
     </include>
@@ -28,6 +27,8 @@
       <directory>./vendor</directory>
       <directory>./tests</directory>
     </exclude>
+  </source>
+  <coverage>
     <report>
       <html outputDirectory="./coverage/html" />
       <clover outputFile="./coverage/clover.xml" />
