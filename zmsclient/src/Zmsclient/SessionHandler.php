@@ -44,17 +44,20 @@ class SessionHandler implements \SessionHandlerInterface
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */
+    #[\ReturnTypeWillChange]
     public function open($save_path, $name)
     {
         $this->sessionName = $name;
         return true;
     }
 
+    #[\ReturnTypeWillChange]
     public function close()
     {
         return true;
     }
 
+    #[\ReturnTypeWillChange]
     public function read($sessionId, $params = [])
     {
         $params['sync'] = static::$useSyncFlag;
@@ -79,6 +82,7 @@ class SessionHandler implements \SessionHandlerInterface
         return ($session && isset($session['content'])) ? serialize($session->getContent()) : '';
     }
 
+    #[\ReturnTypeWillChange]
     public function write($sessionId, $sessionData, $params = [])
     {
         $entity = new \BO\Zmsentities\Session();
@@ -99,6 +103,7 @@ class SessionHandler implements \SessionHandlerInterface
         return (null !== $session) ? true : false;
     }
 
+    #[\ReturnTypeWillChange]
     public function destroy($sessionId)
     {
         $result = $this->http->readDeleteResult('/session/' . $this->sessionName . '/' . $sessionId . '/');
@@ -110,6 +115,7 @@ class SessionHandler implements \SessionHandlerInterface
      * @SuppressWarnings(ShortMethodName)
      * @codeCoverageIgnore
      */
+    #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
         /*
