@@ -517,7 +517,7 @@ onMounted(() => {
         );
       });
     } else {
-      selectableProviders.value = selectedService.value.providers;
+      selectableProviders.value = availableProviders;
     }
 
     // Checks whether a provider is already selected so that it is displayed first in the slider.
