@@ -61,7 +61,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     }
 
     #[\ReturnTypeWillChange]
-    public function exchangeArray(object|array $input): array
+    public function exchangeArray($input)
     {
         parent::exchangeArray($this->getDefaults());
         $input = $this->getUnflattenedArray($input);

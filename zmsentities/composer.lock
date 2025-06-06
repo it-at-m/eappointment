@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "aceb1dcbc7e3215e1a207d6f232b6983374c8c16"
+                "reference": "ca1b3d66e0499128632ef764146e362d44786c9c"
             },
             "require": {
                 "ext-json": "*",
