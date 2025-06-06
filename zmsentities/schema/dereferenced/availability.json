@@ -320,7 +320,17 @@
                                     "default": ""
                                 },
                                 "appointmentsPerMail": {
-                                    "type": "string",
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "null"
+                                        }
+                                    ],
                                     "description": "allowed appointments per e-mail address",
                                     "default": ""
                                 },

@@ -560,7 +560,21 @@
                     },
                     "client": {
                         "alternateAppointmentUrl": "https:\/\/service.berlin.de",
-                        "appointmentsPerMail": "",
+                        "appointmentsPerMail": {
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "description": "allowed appointments per e-mail address",
+                            "default": ""
+                        },
                         "slotsPerAppointment": "",
                         "whitelistedMails": "",
                         "amendmentLabel": "Zusatzinformationen zum Anliegen",
@@ -743,7 +757,17 @@
                                     "default": ""
                                 },
                                 "appointmentsPerMail": {
-                                    "type": "string",
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "null"
+                                        }
+                                    ],
                                     "description": "allowed appointments per e-mail address",
                                     "default": ""
                                 },
