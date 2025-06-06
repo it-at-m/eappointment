@@ -108,30 +108,30 @@ jobs:
       matrix:
         include:
           - module: mellon
-            php_version: "8.0"        
+            php_version: "8.3"        
           - module: zmsadmin
-            php_version: "8.0"
+            php_version: "8.3"
           - module: zmscalldisplay
-            php_version: "8.0"
+            php_version: "8.3"
           - module: zmscitizenapi
-            php_version: "8.0"
+            php_version: "8.3"
           - module: zmsdldb
-            php_version: "8.0"
+            php_version: "8.3"
           - module: zmsentities
-            php_version: "8.0"
+            php_version: "8.3"
           - module: zmsmessaging
-            php_version: "8.0"
+            php_version: "8.3"
           - module: zmsslim
-            php_version: "8.0"
+            php_version: "8.3"
           - module: zmsstatistic
-            php_version: "8.0"
+            php_version: "8.3"
           - module: zmsticketprinter
-            php_version: "8.0"
+            php_version: "8.3"
 
   zmsapi-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment-php-base:8.0-dev"
+      image: "ghcr.io/it-at-m/eappointment-php-base:8.3-dev"
     services:
       mariadb:
         image: mariadb:10.11
@@ -199,7 +199,7 @@ jobs:
   zmsdb-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment-php-base:8.0-dev"
+      image: "ghcr.io/it-at-m/eappointment-php-base:8.3-dev"
     services:
       mariadb:
         image: mariadb:10.11
