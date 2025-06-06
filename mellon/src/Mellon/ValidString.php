@@ -21,6 +21,10 @@ class ValidString extends Valid
      */
     public function isString($message = 'no valid string', $sanitize = true)
     {
+        if ($this->value === null) {
+            $this->setFailure($message);
+            return $this;
+        }
         $this->isSmallerThan(65536, $message);
         if ($sanitize) {
             return $this->validate($message, FILTER_SANITIZE_SPECIAL_CHARS);
@@ -40,7 +44,7 @@ class ValidString extends Valid
     public function isFreeOf($regex, $message = 'value contains undesired content')
     {
         $this->validated = true;
-        if (preg_match($regex, $this->value)) {
+        if ($this->value !== null && preg_match($regex, $this->value)) {
             $this->setFailure($message);
         }
         return $this;
@@ -56,6 +60,10 @@ class ValidString extends Valid
      */
     public function isMatchOf($regex, $message = 'not a valid matching value')
     {
+        if ($this->value === null) {
+            $this->setFailure($message);
+            return $this;
+        }
         $this->isDeclared($message);
         return $this->validate($message, FILTER_VALIDATE_REGEXP, array(
             'options' => array(
@@ -75,7 +83,12 @@ class ValidString extends Valid
     public function isBiggerThan($size, $message = 'too small')
     {
         $this->validated = true;
-        if (strlen($this->value) < $size) {
+        if ($this->value === null) {
+            $this->setFailure($message);
+            return $this;
+        }
+        $strValue = (string)$this->value;
+        if (strlen($strValue) < $size) {
             $this->setFailure($message);
         }
         return $this;
@@ -92,7 +105,11 @@ class ValidString extends Valid
     public function isSmallerThan($size, $message = 'too big')
     {
         $this->validated = true;
-        if (strlen($this->value) > $size) {
+        if ($this->value === null) {
+            return $this;
+        }
+        $strValue = (string)$this->value;
+        if (strlen($strValue) > $size) {
             $this->setFailure($message);
         }
         return $this;
