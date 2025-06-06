@@ -16,8 +16,6 @@
 >
   <php>
     <ini name="error_reporting" value="-1" />
-    <ini name="xdebug.mode" value="coverage" />
-    <env name="XDEBUG_MODE" value="coverage" />
   </php>
   <source>
     <include>
@@ -28,15 +26,16 @@
       <directory>./tests</directory>
     </exclude>
   </source>
+  <testsuites>
+    <testsuite name="Zmsslim Basic">
+      <directory>./tests/Slim/</directory>
+    </testsuite>
+  </testsuites>
+  <!-- Coverage configuration is optional and only used when XDEBUG_MODE=coverage -->
   <coverage>
     <report>
       <html outputDirectory="./coverage/html" />
       <clover outputFile="./coverage/clover.xml" />
     </report>
   </coverage>
-  <testsuites>
-    <testsuite name="Zmsslim Basic">
-      <directory>./tests/Slim/</directory>
-    </testsuite>
-  </testsuites>
 </phpunit>
