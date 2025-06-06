@@ -72,6 +72,9 @@ class WorkstationInfo
 
     public static function stringTimeToMinute($time)
     {
+        if (null === $time || '' === $time) {
+            return 0;
+        }
         $timeArray = explode(':', $time);
 
         if (count($timeArray) === 3) {

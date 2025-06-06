@@ -47,7 +47,8 @@ class ProcessValidator
         $valid = $unvalid->isNumber(
             "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellige Nummer wie '123456'"
         );
-        $length = strlen((string)$valid->getValue());
+        $value = (string)$valid->getValue();
+        $length = $value !== null ? strlen($value) : 0;
         if ($length) {
             $valid->isGreaterThan(100000, "Eine Vorgangsnummer besteht aus mindestens 6 Ziffern");
             $valid->isLowerEqualThan(99999999999, "Eine Vorgangsnummer besteht aus maximal 11 Ziffern");
@@ -61,7 +62,8 @@ class ProcessValidator
     public function validateAuthKey(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
-        $length = strlen($valid->getValue());
+        $value = $valid->getValue();
+        $length = $value !== null ? strlen($value) : 0;
         if ($length || ($isRequiredCallback && $isRequiredCallback())) {
             $valid
                 ->isBiggerThan(4, "Es müssen mindestens 4 Zeichen eingegeben werden.")
@@ -74,7 +76,8 @@ class ProcessValidator
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
-        $length = strlen($valid->getUnvalidated());
+        $value = $valid->getUnvalidated();
+        $length = $value !== null ? strlen($value) : 0;
         $process = $this->getProcess();
 
         /*
@@ -113,7 +116,8 @@ class ProcessValidator
     public function validateName(Unvalidated $unvalid, callable $setter): self
     {
         $valid = $unvalid->isString();
-        $length = strlen($valid->getValue());
+        $value = $valid->getValue();
+        $length = $value !== null ? strlen($value) : 0;
         if ($length || $this->getProcess()->isWithAppointment()) {
             $valid
                 ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
@@ -134,7 +138,8 @@ class ProcessValidator
     public function validateTelephone(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
-        $length = strlen($valid->getValue());
+        $value = $valid->getValue();
+        $length = $value !== null ? strlen($value) : 0;
 
         try {
             $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();

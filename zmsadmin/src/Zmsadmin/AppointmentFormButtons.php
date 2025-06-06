@@ -32,7 +32,7 @@ class AppointmentFormButtons extends BaseController
         $isNewAppointment = $this->isNewAppointment(
             $selectedProcess,
             $selectedDate,
-            str_replace('-', ':', $selectedTime)
+            ($selectedTime) ? str_replace('-', ':', $selectedTime) : '00:00'
         );
 
         return \BO\Slim\Render::withHtml(
