@@ -31,11 +31,4 @@
       <directory>./tests/Slim/</directory>
     </testsuite>
   </testsuites>
-  <!-- Coverage configuration is optional and only used when XDEBUG_MODE=coverage -->
-  <coverage>
-    <report>
-      <html outputDirectory="./coverage/html" />
-      <clover outputFile="./coverage/clover.xml" />
-    </report>
-  </coverage>
 </phpunit>
