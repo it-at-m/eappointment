@@ -6,14 +6,14 @@ class WorkstationPasswordTest extends Base
 {
     protected $classname = "WorkstationPassword";
 
-    public static $loginName = 'testadmin';
+    public static $loginName = 'superuser';
 
     public static $authKey = 'vorschau';
 
     public function __construct()
     {
         parent::__construct();
-        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
+        static::$loginName = (! \App::DEBUG) ? static::$loginName : 'superuser';
         static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
     }
 
