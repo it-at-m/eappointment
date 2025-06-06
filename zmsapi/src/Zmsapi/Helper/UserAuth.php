@@ -22,6 +22,11 @@ class UserAuth
 
     public static function testPasswordMatching($useraccount, $password)
     {
+        if (!is_string($password)) {
+            throw new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials(
+                'Password must be a string'
+            );
+        }
         // Do you have old, turbo-legacy, non-crypt hashes?
         $result = (strpos($useraccount->password, '$') !== 0) ?
             ($useraccount->password === md5($password)) :

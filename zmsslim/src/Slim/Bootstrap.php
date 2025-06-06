@@ -83,18 +83,28 @@ class Bootstrap
 
         // Add processor to format time_local first
         App::$log->pushProcessor(function ($record) {
-            return array(
+            if (is_array($record)) {
+                // Convert array to LogRecord for Monolog 3.x compatibility
+                $record = new \Monolog\LogRecord(
+                    $record['datetime'] ?? new \DateTimeImmutable(),
+                    $record['channel'] ?? '',
+                    new \Monolog\Level($record['level'] ?? \Monolog\Level::Debug),
+                    $record['message'] ?? '',
+                    $record['context'] ?? [],
+                    $record['extra'] ?? [],
+                    $record['formatted'] ?? null
+                );
+            }
+
+            $record->extra = array_merge($record->extra, [
                 'time_local' => (new \DateTime())->format('Y-m-d\TH:i:sP'),
                 'client_ip' => $_SERVER['REMOTE_ADDR'] ?? '',
                 'remote_addr' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '',
                 'remote_user' => '',
                 'application' => defined('\App::IDENTIFIER') ? App::IDENTIFIER : 'zms',
-                'module' => defined('\App::MODULE_NAME') ? App::MODULE_NAME : 'zmsslim',
-                'message' => $record['message'],
-                'level' => $record['level_name'],
-                'context' => $record['context'],
-                'extra' => $record['extra']
-            );
+                'module' => defined('\App::MODULE_NAME') ? App::MODULE_NAME : 'zmsslim'
+            ]);
+            return $record;
         });
 
         $handler->setFormatter($formatter);

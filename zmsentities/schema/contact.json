@@ -12,7 +12,7 @@
     "street": "Zaunstraße",
     "streetNumber": "1"
   },
-  "additionalProperties": false,
+  "additionalProperties": true,
   "properties": {
     "city": {
       "default": "",
@@ -21,17 +21,17 @@
     "country": {
       "default": "",
       "description": "Name of the country or the ISO 3166-1 country code like 'de'.",
-      "type": "string"
+      "type": ["null", "string"]
     },
     "lat": {
-      "default": "",
+      "default": null,
       "description": "Latitute of a geo coordinate as wgs84 or etrs89",
-      "type": "number"
+      "type": ["null", "number"]
     },
     "lon": {
-      "default": "",
+      "default": null,
       "description": "Longitude of a geo coordinate as wgs84 or etrs89",
-      "type": "number"
+      "type": ["null", "number"]
     },
     "name": {
       "default": "",
@@ -39,7 +39,8 @@
     },
     "postalCode": {
       "default": "",
-      "type": ["null", "string"]
+      "type": ["null", "string", "integer"],
+      "description": "Postal code as string or integer"
     },
     "region": {
       "default": "",
@@ -51,7 +52,7 @@
     },
     "streetNumber": {
       "default": "",
-      "type": ["null", "string"]
+      "type": ["null", "string", "integer"]
     },
     "email": {
       "type": ["null", "string"],
@@ -68,7 +69,7 @@
     },
     "telephone": {
       "default": "",
-      "type": "string"
+      "type": ["null", "string"]
     }
   }
 }

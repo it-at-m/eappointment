@@ -24,7 +24,7 @@ class Ticketprinter
                 $hash,
                 time() + (60 * 60 * 24 * 365 * 10),
                 $request->getBasePath(),
-                null,
+                '',
                 false
             );
         }
@@ -58,7 +58,7 @@ class Ticketprinter
                 $url,
                 time() + (60 * 60 * 24 * 365 * 10),
                 $request->getBasePath(),
-                null,
+                '',
                 false,
                 true
             );

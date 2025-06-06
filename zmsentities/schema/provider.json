@@ -27,7 +27,14 @@
     "additionalProperties": true,
     "properties": {
         "contact": {
-            "$ref": "contact.json"
+            "oneOf": [
+                {
+                    "$ref": "contact.json"
+                },
+                {
+                    "type": "null"
+                }
+            ]
         },
         "id": {
             "default": "",

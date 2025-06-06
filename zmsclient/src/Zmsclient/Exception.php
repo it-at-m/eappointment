@@ -27,6 +27,11 @@ class Exception extends \Exception
     public $data = [];
 
     /**
+     * @var array $templatedata Template data for rendering exception
+     */
+    public $templatedata = [];
+
+    /**
      * @var Mixed $trace Code trace
      *
      */

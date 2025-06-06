@@ -166,27 +166,62 @@ export const filterEmptyAvailability = (availability) => {
     return availability.startDate != null && availability.endDate != null
 }
 
+export const formatAvailabilityForSchema = availability => {
+    // Ensure scope has all required properties
+    const scope = {
+        provider: {
+            id: availability.scope.provider.id,
+            name: availability.scope.provider.name,
+            source: availability.scope.provider.source || 'dldb',
+            contact: availability.scope.provider.contact || null
+        },
+        shortName: availability.scope.shortName || availability.scope.provider.displayName || '',
+        id: availability.scope.id,
+        preferences: {
+            client: {
+                appointmentsPerMail: String(availability.scope.preferences?.client?.appointmentsPerMail || ''),
+                // Add other required client preferences with proper types
+                emailRequired: false,
+                telephoneRequired: false
+            }
+        }
+    };
+
+    // Ensure all required availability properties
+    return {
+        ...availability,
+        scope,
+        type: availability.type || 'appointment',
+        weekday: availability.weekday || {
+            monday: 0,
+            tuesday: 0,
+            wednesday: 0,
+            thursday: 0,
+            friday: 0,
+            saturday: 0,
+            sunday: 0
+        },
+        startDate: availability.startDate || Math.floor(Date.now() / 1000),
+        endDate: availability.endDate || Math.floor(Date.now() / 1000) + (86400 * 30), // 30 days default
+        bookable: {
+            startInDays: String(availability.bookable?.startInDays || '1'),
+            endInDays: String(availability.bookable?.endInDays || '60')
+        }
+    };
+};
+
 export const cleanupAvailabilityForSave = availability => {
-    const newAvailability = Object.assign({}, availability)
+    const newAvailability = Object.assign({}, availability);
 
-    if (newAvailability.busySlots) {
-        delete newAvailability.busySlots;
-    }
+    // Remove non-schema properties
+    if (newAvailability.busySlots) delete newAvailability.busySlots;
+    if (newAvailability.maxSlots) delete newAvailability.maxSlots;
+    if (newAvailability.__modified) delete newAvailability.__modified;
+    if (newAvailability.tempId) delete newAvailability.tempId;
 
-    if (newAvailability.maxSlots) {
-        delete newAvailability.maxSlots;
-    }
-
-    if (newAvailability.__modified) {
-        delete newAvailability.__modified;
-    }
-
-    if (newAvailability.tempId) {
-        delete newAvailability.tempId;
-    }
-
-    return newAvailability;
-}
+    // Format according to schema
+    return formatAvailabilityForSchema(newAvailability);
+};
 
 export const getDataValuesFromForm = (form, scope) => {
     return Object.assign({}, getFirstLevelValues(form), {

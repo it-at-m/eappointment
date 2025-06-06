@@ -74,7 +74,7 @@ class Cluster extends Base
         $data = array();
         $data['name'] = $entity->name;
         $data['clusterinfozeile1'] = $entity->hint;
-        $data['standortkuerzelanzeigen'] = ($entity->shortNameEnabled)  ? 1 : 0;
+        $data['standortkuerzelanzeigen'] = (isset($entity->shortNameEnabled) && $entity->shortNameEnabled) ? 1 : 0;
         $data['aufrufanzeigetext'] = $entity->callDisplayText;
 
         $data = array_filter($data, function ($value) {

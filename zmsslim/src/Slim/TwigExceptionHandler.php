@@ -20,6 +20,11 @@ class TwigExceptionHandler implements ErrorHandlerInterface
     const DEFAULT_TEMPLATE = "exception/default.twig";
 
     /**
+     * @var array
+     */
+    protected $templatedata = [];
+
+    /**
      * @SuppressWarnings("PMD.UnusedFormalParameter")
      * @param ServerRequestInterface $request
      * @param \Throwable $exception
@@ -184,9 +189,14 @@ class TwigExceptionHandler implements ErrorHandlerInterface
         if (isset($exception->data)) {
             $data = $exception->data;
         }
+
+        // Get templatedata from property if it exists
         $templatedata = [];
-        if (isset($exception->templatedata)) {
-            $templatedata = $exception->templatedata;
+        $reflectionClass = new \ReflectionClass($exception);
+        if ($reflectionClass->hasProperty('templatedata')) {
+            $property = $reflectionClass->getProperty('templatedata');
+            $property->setAccessible(true);
+            $templatedata = $property->getValue($exception);
         }
 
         // Due to shortened error logs in some reportings, important informations first!

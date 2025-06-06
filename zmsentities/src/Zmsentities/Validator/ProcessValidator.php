@@ -178,7 +178,8 @@ class ProcessValidator
     public function validateText(Unvalidated $unvalid, callable $setter): self
     {
         $valid = $unvalid->isString();
-        $length = strlen($valid->getUnvalidated());
+        $text = $valid->getUnvalidated();
+        $length = ($text !== null) ? strlen((string)$text) : 0;
         if ($length) {
             $valid->isSmallerThan(500, "Die Anmerkung sollte 500 Zeichen nicht überschreiten");
             $this->getCollection()->validatedAction($valid, $setter);

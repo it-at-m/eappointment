@@ -30,6 +30,11 @@ class WorkstationPassword extends BaseController
         if (isset($input['email'])) {
             $useraccount->email = $input['email'];
         }
+        if (!isset($input['password'])) {
+            throw new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials(
+                'Password is required'
+            );
+        }
         Helper\UserAuth::testPasswordMatching($useraccount, $input['password']);
         if (isset($input['changePassword'])) {
             $useraccount->password = $useraccount->getHash(reset($input['changePassword']));

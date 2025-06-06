@@ -66,10 +66,16 @@ class ErrorHandler implements ErrorHandlerInterface
         }
         if ($exception->getCode() >= 500 || !$exception->getCode()) {
             \App::$log->critical(
-                "[API] Fatal Exception: "
-                . " in " . $exception->getFile() . " +" . $exception->getLine()
-                . " -> " . $exception->getMessage()
-                . " | Trace: " . Sanitizer::sanitizeStackTrace(preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace)))
+                sprintf(
+                    "[API] Fatal Exception: in %s +%d -> %s | Trace: %s",
+                    $exception->getFile(),
+                    $exception->getLine(),
+                    $exception->getMessage(),
+                    Sanitizer::sanitizeStackTrace(preg_replace("#(\s)+#", ' ', str_replace('\\', ':', $message->meta->trace)))
+                ),
+                [
+                    'exception' => $exception
+                ]
             );
         }
         return Render::withJson($response, $message, $status);

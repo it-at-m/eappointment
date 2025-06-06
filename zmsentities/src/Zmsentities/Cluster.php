@@ -13,6 +13,7 @@ class Cluster extends Schema\Entity
         return [
             //'name' => '',
             'scopes' => new Collection\ScopeList(),
+            'shortNameEnabled' => false,
         ];
     }
 

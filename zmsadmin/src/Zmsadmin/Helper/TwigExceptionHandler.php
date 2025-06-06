@@ -23,6 +23,15 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
             if (isset($exception->data)) {
                 $data = $exception->data;
             }
+            // Create a new property on the exception class if it doesn't exist
+            if (!property_exists($exception, 'templatedata')) {
+                $reflectionClass = new \ReflectionClass($exception);
+                $property = $reflectionClass->getProperty('templatedata');
+                if (!$property->isPublic()) {
+                    $property->setAccessible(true);
+                }
+                $property->setValue($exception, []);
+            }
             $exception->templatedata = array('workstation' => $workstation, 'sourceData' => $data);
         } catch (\Throwable $workstationexception) {
             // ignore

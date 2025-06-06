@@ -119,10 +119,10 @@ class AvailabilityPage extends Component {
                         delete sendAvailability.tempId;
                     }
                     if (sendAvailability.bookable.startInDays === undefined || sendAvailability.bookable.startInDays === null || sendAvailability.bookable.startInDays === '') {
-                        sendAvailability.bookable.startInDays = this.props.scope.preferences.appointment.startInDaysDefault || 0;
+                        sendAvailability.bookable.startInDays = String(this.props.scope.preferences.appointment.startInDaysDefault || '0');
                     }
                     if (sendAvailability.bookable.endInDays === undefined || sendAvailability.bookable.endInDays === null || sendAvailability.bookable.endInDays === '') {
-                        sendAvailability.bookable.endInDays = this.props.scope.preferences.appointment.endInDaysDefault || 60;
+                        sendAvailability.bookable.endInDays = String(this.props.scope.preferences.appointment.endInDaysDefault || '60');
                     }
                     return {
                         ...sendAvailability,
@@ -135,6 +135,8 @@ class AvailabilityPage extends Component {
                 availabilityList: sendData,
                 selectedDate: selectedDate
             };
+
+            console.log('Sending payload:', JSON.stringify(payload, null, 2));
 
             $.ajax(`${this.props.links.includeurl}/availability/`, {
                 method: 'POST',
