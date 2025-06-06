@@ -6,7 +6,7 @@ class WorkstationPasswordTest extends Base
 {
     protected $classname = "WorkstationPassword";
 
-    public static $loginName = 'superuser';
+    public static $loginName = 'testadmin';
 
     public static $authKey = 'vorschau';
 

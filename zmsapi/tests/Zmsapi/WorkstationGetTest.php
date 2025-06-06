@@ -17,11 +17,6 @@ class WorkstationGetTest extends Base
 
     public static $basicAuth = 'dGVzdGFkbWluOnZvcnNjaGF1';
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function testRendering()
     {
         $this->setWorkstation();

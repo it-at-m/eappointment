@@ -8,7 +8,7 @@ class WorkstationLoginTest extends Base
 
     public static $useraccount = '';
 
-    public static $loginName = 'superuser';
+    public static $loginName = 'testadmin';
 
     public static $authKey = 'vorschau';
 

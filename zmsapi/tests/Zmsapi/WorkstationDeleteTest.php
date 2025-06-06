@@ -10,11 +10,6 @@ class WorkstationDeleteTest extends Base
 
     public static $loginName = 'testadmin';
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function testRendering()
     {
         $this->setWorkstation();
