@@ -267,81 +267,20 @@
             "required": ["id"],
             "properties": {
               "id": {
-                "type": ["string", "integer"]
+                "oneOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                  }
+                ]
               }
-            }
+            },
+            "additionalProperties": true
           }
         ]
-      }
-    },
-    "clusters": {
-      "type": "array",
-      "items": {
-        "oneOf": [
-          {
-            "$ref": "cluster.json"
-          },
-          {
-            "type": "object",
-            "required": ["id"],
-            "properties": {
-              "id": {
-                "type": ["string", "integer"]
-              }
-            }
-          }
-        ]
-      }
-    },
-    "scopes": {
-      "type": "array",
-      "items": {
-        "oneOf": [
-          {
-            "$ref": "scope.json"
-          },
-          {
-            "type": "object",
-            "required": ["id"],
-            "properties": {
-              "id": {
-                "type": ["string", "integer"]
-              }
-            }
-          }
-        ]
-      }
-    },
-    "wasMissed": {
-      "description": "Indicates if the user missed their appointment",
-      "oneOf": [
-        {
-          "type": "boolean"
-        },
-        {
-          "type": "string",
-          "pattern": "^[01]$"
-        },
-        {
-          "type": "integer",
-          "enum": [0, 1]
-        }
-      ],
-      "default": false
-    },
-    "preferences": {
-      "type": "object",
-      "properties": {
-        "client": {
-          "type": "object",
-          "properties": {
-            "appointmentsPerMail": {
-              "type": ["integer", "string"],
-              "description": "Number of appointments to include in notification emails",
-              "default": 1
-            }
-          }
-        }
       }
     }
   }
