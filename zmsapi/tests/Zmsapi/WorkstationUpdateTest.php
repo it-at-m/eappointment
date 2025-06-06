@@ -19,9 +19,9 @@ class WorkstationUpdateTest extends Base
 
     public static $authKey = '128196aca512b2989d1d442455a57629';
 
-    public function __construct()
+    protected function setUp(): void
     {
-        parent::__construct();
+        parent::setUp();
     }
 
     public function testOveragedLogin()
