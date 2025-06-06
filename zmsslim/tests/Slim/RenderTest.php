@@ -7,12 +7,8 @@ class RenderTest extends Base
 
     public function testHtml()
     {
-        \BO\Slim\Render::$response = $this->getResponse();
-        $response = \BO\Slim\Render::html('unittest.twig', [
-            'title' => 'Test Response',
-            'message' => 'Test Response',
-            'lang' => 'en'
-        ]);
+        \BO\Slim\Render::$response = $this->getResponse("Test Response");
+        $response = \BO\Slim\Render::html('unittest.twig');
         $this->assertStringContainsString('Test Response', (string)$response->getBody());
     }
 
