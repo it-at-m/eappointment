@@ -9,18 +9,18 @@
         }
     ],
     "require": {
-        "php": ">=7.3.0",
-        "ext-curl": ">=0",
-        "ext-mbstring": ">=0",
-        "ext-json": ">=1.0",
-        "ext-pcre": ">=0",
+        "php": ">=8.3",
+        "ext-curl": "*",
+        "ext-mbstring": "*",
+        "ext-json": "*",
+        "ext-pcre": "*",
         "eappointment/mellon": "@dev",
-        "twig/twig": "3.*",
-        "league/html-to-markdown": "^5.0",
+        "twig/twig": "^3.7",
+        "league/html-to-markdown": "^5.1",
         "giggsey/libphonenumber-for-php": "^8.13.55",
-        "twig/intl-extra": "^3.4",
-        "symfony/translation": "^5.4",
-        "symfony/twig-bridge": "^5.4",
+        "twig/intl-extra": "^3.7",
+        "symfony/translation": "^6.4",
+        "symfony/twig-bridge": "^6.4",
         "opis/json-schema": "^2.4"
     },
     "scripts": {
@@ -42,9 +42,9 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.6",
+        "phpunit/phpunit": "^10.5",
         "helmich/phpunit-psr7-assert": "^4.3.0",
-        "phpmd/phpmd": "@stable",
-        "squizlabs/php_codesniffer": "*"
+        "phpmd/phpmd": "^2.15",
+        "squizlabs/php_codesniffer": "^3.8"
     }
 }

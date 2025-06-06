@@ -19,18 +19,18 @@
     ],
     "config": {
         "platform": {
-            "php": "8.0"
+            "php": "8.3"
         },
         "allow-plugins": {
             "php-http/discovery": true
         }
     },
     "require": {
-        "php": ">=7.3.0",
-        "ext-mbstring": ">=0",
+        "php": ">=8.3",
+        "ext-mbstring": "*",
         "ext-intl": "*",
-        "ext-json": ">=1.0",
-        "ext-pcre": ">=0",
+        "ext-json": "*",
+        "ext-pcre": "*",
         "eappointment/zmsentities": "@dev",
         "eappointment/zmsdldb": "@dev",
         "eappointment/mellon": "@dev",
@@ -38,7 +38,7 @@
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsapi": "@dev",
         "ext-pdo": "*",
-        "aura/sql": "^4"
+        "aura/sql": "^5.0"
     },
     "bin": [
         "bin/archiveStatisticData",
@@ -77,9 +77,9 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5.4",
-        "phpmd/phpmd": "@stable",
-        "squizlabs/php_codesniffer": "^3.5",
-        "mockery/mockery": "^0.9.4"
+        "phpunit/phpunit": "^10.5",
+        "phpmd/phpmd": "^2.15",
+        "squizlabs/php_codesniffer": "^3.8",
+        "mockery/mockery": "^1.6"
     }
 }
