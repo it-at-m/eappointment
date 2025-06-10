@@ -5,9 +5,19 @@ namespace BO\Zmsdb\Tests;
 use \BO\Zmsdb\Helper\AppointmentDeleteByCron;
 use \BO\Zmsdb\Process as Query;
 use \BO\Zmsdb\ProcessStatusArchived;
+use Psr\Log\LoggerInterface;
 
 class AppointmentDeleteByCronTest extends Base
 {
+    public function setUp(): void
+    {
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockLogger->expects($this->any())
+            ->method('info');
+        \App::$log = $mockLogger;
+
+        parent::setUp();
+    }
 
     public function testConstructor()
     {

@@ -142,6 +142,86 @@ class Process extends Base implements MappingInterface
         return $joinQuery;
     }
 
+    protected function calculateStatus($data)
+    {
+        if (isset($data['Name']) && $data['Name'] === '(abgesagt)') {
+            return 'deleted';
+        }
+
+        if (
+            isset($data['StandortID']) && $data['StandortID'] == 0
+            && isset($data['AbholortID']) && $data['AbholortID'] == 0
+        ) {
+            return 'blocked';
+        }
+
+        if (
+            isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 1
+            && isset($data['bestaetigt']) && $data['bestaetigt'] == 0
+        ) {
+            return 'reserved';
+        }
+
+        if (isset($data['nicht_erschienen']) && $data['nicht_erschienen'] != 0) {
+            return 'missed';
+        }
+
+        if (isset($data['parked']) && $data['parked'] != 0) {
+            return 'parked';
+        }
+
+        if (
+            isset($data['Abholer']) && $data['Abholer'] != 0
+            && isset($data['AbholortID']) && $data['AbholortID'] != 0
+            && isset($data['NutzerID']) && $data['NutzerID'] == 0
+        ) {
+            return 'pending';
+        }
+
+        if (
+            isset($data['AbholortID']) && $data['AbholortID'] != 0
+            && isset($data['NutzerID']) && $data['NutzerID'] != 0
+        ) {
+            return 'pickup';
+        }
+
+        if (
+            isset($data['AbholortID']) && $data['AbholortID'] == 0
+            && isset($data['aufruferfolgreich']) && $data['aufruferfolgreich'] != 0
+            && isset($data['NutzerID']) && $data['NutzerID'] != 0
+        ) {
+            return 'processing';
+        }
+
+        if (
+            isset($data['aufrufzeit']) && $data['aufrufzeit'] != "00:00:00"
+            && isset($data['NutzerID']) && $data['NutzerID'] != 0
+            && isset($data['AbholortID']) && $data['AbholortID'] == 0
+        ) {
+            return 'called';
+        }
+
+        if (isset($data['Uhrzeit']) && $data['Uhrzeit'] == "00:00:00") {
+            return 'queued';
+        }
+
+        if (
+            isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 0
+            && isset($data['bestaetigt']) && $data['bestaetigt'] == 0
+        ) {
+            return 'preconfirmed';
+        }
+
+        if (
+            isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 0
+            && isset($data['bestaetigt']) && $data['bestaetigt'] == 1
+        ) {
+            return 'confirmed';
+        }
+
+        return null;
+    }
+
     public function getEntityMapping()
     {
         $status_expression = self::expression(
@@ -209,6 +289,7 @@ class Process extends Base implements MappingInterface
             'processingTime' => 'process.processingTime',
             'timeoutTime' => 'process.timeoutTime',
             'finishTime' => 'process.finishTime',
+            'dbstatus' => 'process.status',
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
@@ -742,6 +823,18 @@ class Process extends Base implements MappingInterface
         $data = array();
         $data['StandortID'] = $process->getScopeId();
         $this->addValues($data);
+    }
+
+    public function addValues($values)
+    {
+        $status = $this->calculateStatus($values);
+
+        if (!empty($status)) {
+            $values['status'] = $status;
+        }
+
+        $this->query->values($values);
+        return $this;
     }
 
     public function addValuesStatusData($process, \DateTimeInterface $dateTime)

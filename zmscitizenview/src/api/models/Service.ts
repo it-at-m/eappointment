@@ -1,3 +1,5 @@
+import { Combinable } from "./Combinable";
+
 /**
  *
  * @export
@@ -23,9 +25,8 @@ export interface Service {
    */
   maxQuantity: number;
   /**
-   *
-   * @type {Array<Array<string>>}
+   * @type {Combinable}
    * @memberof Service
    */
-  combinable?: string[][];
+  combinable?: Combinable;
 }
