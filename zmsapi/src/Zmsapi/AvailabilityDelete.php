@@ -13,6 +13,7 @@ use BO\Zmsdb\Helper\CalculateSlots as CalculateSlotsHelper;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use BO\Zmsentities\Availability as Entity;
+use App;
 
 class AvailabilityDelete extends BaseController
 {
@@ -31,6 +32,11 @@ class AvailabilityDelete extends BaseController
 
         if ($entity->scope && $entity->hasId() && $repository->deleteEntity($entity->getId())) {
             (new CalculateSlotsHelper(\App::DEBUG))->writePostProcessingByScope($entity->scope, \App::$now);
+            App::$log->info('Deleted availability', [
+                'id' => $entity->getId(),
+                'scope_id' => $entity->scope['id'],
+                'operation' => 'delete'
+            ]);
         } else {
             $entity = new Entity(['id' => $args['id']]);
         }

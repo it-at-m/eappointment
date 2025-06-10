@@ -1,3 +1,4 @@
+import { Combinable } from "@/api/models/Combinable";
 import { Service } from "@/api/models/Service";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SubService } from "@/types/SubService";
@@ -9,7 +10,7 @@ export class ServiceImpl implements Service {
 
   maxQuantity: number;
 
-  combinable?: string[][];
+  combinable?: Combinable;
 
   providers?: OfficeImpl[];
 
@@ -21,7 +22,7 @@ export class ServiceImpl implements Service {
     id: string,
     name: string,
     maxQuantity: number,
-    combinable: string[][] | undefined,
+    combinable: Combinable | undefined,
     providers: OfficeImpl[] | undefined,
     subServices: SubService[] | undefined,
     count: number | undefined
