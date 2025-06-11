@@ -980,7 +980,8 @@ class Availability extends Schema\Entity
      * Delete cache on changes
      *
      */
-    public function offsetSet($index, $value)
+    #[\ReturnTypeWillChange]
+    public function offsetSet($index, $value): mixed
     {
         $this->startTimeCache = null;
         $this->endTimeCache = null;
