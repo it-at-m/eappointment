@@ -291,6 +291,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         }
     }
 
+    #[\ReturnTypeWillChange]
     final public function offsetExists($offset): bool
     {
         return $this->__isset($offset);
