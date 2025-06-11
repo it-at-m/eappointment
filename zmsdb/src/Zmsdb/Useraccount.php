@@ -108,11 +108,12 @@ class Useraccount extends Base
 
     public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
     {
+        $hashedAuthKey = hash('sha256', $xAuthKey);
         $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionXauthKey($xAuthKey);
-        $entity = ($xAuthKey) ? $this->fetchOne($query, new Entity()) : new Entity();
+            ->addConditionAuthKey($hashedAuthKey);
+        $entity = ($hashedAuthKey) ? $this->fetchOne($query, new Entity()) : new Entity();
         return $this->readResolvedReferences($entity, $resolveReferences);
     }
 

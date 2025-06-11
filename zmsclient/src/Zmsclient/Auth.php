@@ -9,6 +9,8 @@ use App;
  */
 class Auth
 {
+    private static $cookieName = 'X-AuthKey';
+
     /**
      *
      * @SuppressWarnings(Superglobals)
@@ -69,9 +71,21 @@ class Auth
         }
     }
 
-    protected static function getCookieName()
+    /**
+     * Get the cookie name used for storing the auth key
+     */
+    public static function getCookieName()
     {
-        return 'Zmsclient';
+        return self::$cookieName;
+    }
+
+    /**
+     * Get the hashed version of the current auth key
+     */
+    public static function getHashedKey()
+    {
+        $key = self::getKey();
+        return $key ? hash('sha256', $key) : null;
     }
 
     protected static function getOidcName()
