@@ -33,7 +33,6 @@ class ProcessReserve extends BaseController
         $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
         $process = $this->getProcess($input, $scope);
         $validatedForm = static::getValidatedForm($request->getAttribute('validator'), $process);
-        error_log(json_encode($validatedForm)); // {"familyName":{"failed":false,"value":"Unittest","messages":null,"_unvalidated":"Unittest"},"requests":{"failed":false,"value":[120703],"messages":null,"_unvalidated":[120703]},"email":{"failed":true,"value":null,"messages":{"0":{"message":"F\u00fcr den Standort muss eine g\u00fcltige E-Mail Adresse eingetragen werden"}},"_unvalidated":null},"telephone":{"failed":false,"value":null,"messages":null,"_unvalidated":null},"surveyAccepted":{"failed":false,"value":null,"messages":null,"_unvalidated":null},"amendment":{"failed":false,"value":null,"messages":null,"_unvalidated":null},"headsUpTime":{"failed":false,"value":null,"messages":null,"_unvalidated":null},"sendConfirmation":{"failed":false,"value":null,"messages":null,"_unvalidated":null},"sendReminder":{"failed":false,"value":null,"messages":null,"_unvalidated":null},"failed":true}
         if ($validatedForm['failed']) {
             return \BO\Slim\Render::withJson(
                 $response,
