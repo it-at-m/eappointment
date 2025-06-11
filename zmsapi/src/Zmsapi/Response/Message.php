@@ -108,7 +108,7 @@ class Message implements \JsonSerializable
     }
 
     #[\ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $schema = $this->request->getUri()->getScheme();
         $schema .= '://';

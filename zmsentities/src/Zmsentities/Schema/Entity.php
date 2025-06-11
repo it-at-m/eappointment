@@ -176,7 +176,8 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize()
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize(): mixed
     {
         $schema = array(
             '$schema' => 'https://schema.berlin.de/queuemanagement/' . $this->getEntityName() . '.json'
