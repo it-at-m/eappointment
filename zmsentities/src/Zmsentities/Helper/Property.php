@@ -55,7 +55,8 @@ class Property implements \ArrayAccess
             ->get();
     }
 
-    public function offsetSet($offset, $value)
+    #[\ReturnTypeWillChange]
+    public function offsetSet($offset, $value): mixed
     {
         throw new \BO\Zmsentities\Exception\PropertyOffsetReadOnly(
             __CLASS__ . "[$offset] is readonly, could not set " . htmlspecialchars($value)
