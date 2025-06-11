@@ -13,7 +13,9 @@ class Condition
     {
         $this->collection = new Collection([]);
         foreach ($validList as $valid) {
-            $this->addValid($valid);
+            if ($valid instanceof Valid) {
+                $this->addValid($valid);
+            }
         }
     }
 
