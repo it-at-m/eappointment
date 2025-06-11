@@ -74,9 +74,20 @@ class ProcessValidator
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
-        $length = strlen($valid->getUnvalidated());
+        $length = strlen($valid->getValue());
         $process = $this->getProcess();
 
+        /*
+        error_log(
+            "Mail validate: ".$valid->getUnvalidated()
+            ." ($length) with scope mail required="
+            . ($process->getCurrentScope()->isEmailRequired() ? 'yes' : 'no')
+            ." with appointment="
+            . ($process->isWithAppointment() ? 'yes' : 'no')
+            ." with callback="
+            . ( ($isRequiredCallback && $isRequiredCallback()) ? 'yes' : 'no')
+        );
+        */
         if (!$length && $process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
             $valid->isBiggerThan(
                 6,
@@ -95,7 +106,6 @@ class ProcessValidator
                     "Der Host zur Domain nach dem '@' ist nicht erreichbar. "
                 );
         }
-        
         $this->getCollection()->validatedAction($valid, $setter);
         return $this;
     }
