@@ -74,20 +74,13 @@ class ProcessValidator
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
-        $unvalidatedValue = $valid->getUnvalidated();
-        $length = $unvalidatedValue === null ? 0 : strlen($unvalidatedValue);
+        $length = strlen($valid->getUnvalidated());
         $process = $this->getProcess();
 
         if (!$length && $process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
-            $valid->isBiggerThan(
-                6,
-                "Für den Standort muss eine gültige E-Mail Adresse eingetragen werden"
-            );
+            $valid->setFailure("Für den Standort muss eine gültige E-Mail Adresse eingetragen werden");
         } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
-            $valid->isBiggerThan(
-                6,
-                "Für den Email-Versand muss eine gültige E-Mail Adresse angegeben werden"
-            );
+            $valid->setFailure("Für den Email-Versand muss eine gültige E-Mail Adresse angegeben werden");
         } elseif ($length) {
             $valid = $unvalid
                 ->isMail("Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.")
