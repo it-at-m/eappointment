@@ -44,6 +44,7 @@ class SessionHandler implements \SessionHandlerInterface
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */
+    #[\ReturnTypeWillChange]
     public function open($save_path, $name)
     {
         $this->sessionName = $name;
