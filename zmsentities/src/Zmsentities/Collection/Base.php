@@ -112,7 +112,8 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function offsetSet($index, $value)
+    #[\ReturnTypeWillChange]
+    public function offsetSet($index, $value): mixed
     {
         $className = $this::ENTITY_CLASS;
         if (is_a($value, $className)) {
