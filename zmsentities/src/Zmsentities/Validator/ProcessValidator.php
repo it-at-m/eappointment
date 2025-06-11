@@ -89,8 +89,7 @@ class ProcessValidator
         );
         */
         if (!$length && $process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
-            error_log("*");
-            error_log("*");
+            error_log("goes inside the if but isBiggerThan is not added?");
             $valid->isBiggerThan(
                 6,
                 "Für den Standort muss eine gültige E-Mail Adresse eingetragen werden"
