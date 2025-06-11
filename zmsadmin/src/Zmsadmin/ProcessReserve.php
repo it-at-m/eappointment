@@ -40,8 +40,12 @@ class ProcessReserve extends BaseController
             );
         }
 
-        $process = static::writeReservedProcess($input, $process);
-        $process = static::writeConfirmedProcess($input, $process);
+        // Only proceed with API calls if validation passed
+        if (isset($input['reserve']) && $input['reserve']) {
+            $process = static::writeReservedProcess($input, $process);
+            $process = static::writeConfirmedProcess($input, $process);
+        }
+
         $appointment = $process->getFirstAppointment();
         $conflictList = ($process->isWithAppointment()) ?
             ProcessSave::getConflictList($scope->getId(), $appointment) :
@@ -74,20 +78,6 @@ class ProcessReserve extends BaseController
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
-
-        // Validate email first if required by scope
-        if ($process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
-            $emailValid = $validator->getParameter('email')->isString();
-            if (!$emailValid->getValue() || strlen($emailValid->getValue()) < 6) {
-                $processValidator->getCollection()->addValid(
-                    $emailValid->isBiggerThan(6, "Für den Standort muss eine gültige E-Mail Adresse eingetragen werden")
-                );
-                $form = $processValidator->getCollection()->getStatus(null, true);
-                $form['failed'] = true;
-                return $form;
-            }
-        }
-
         $processValidator
             ->validateName(
                 $validator->getParameter('familyName'),
