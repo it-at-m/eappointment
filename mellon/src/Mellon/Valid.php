@@ -332,4 +332,20 @@ class Valid extends \BO\Mellon\Parameter
         }
         throw new Exception("function $name is not defined in " . get_class($this));
     }
+
+    /**
+     * Allow only string values
+     *
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isString($message = 'not a string')
+    {
+        $this->validated = true;
+        if (!is_string($this->value)) {
+            $this->setFailure($message);
+        }
+        return $this;
+    }
 }
