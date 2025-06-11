@@ -24,8 +24,9 @@ class ScopeGetTest extends Base
     public function testRendering()
     {
         $department = (new \BO\Zmsentities\Department());
-        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        $this->setWorkstation()->getUseraccount()->setRights('basic')->addDepartment($department);
+        $scope = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
+        $department->scopes[] = $scope;
+        $this->setWorkstation()->getUseraccount()->setRights(['basic', 'scope'])->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [], []); //Pankow
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertStringNotContainsString('"reducedData"', (string)$response->getBody());
@@ -35,8 +36,9 @@ class ScopeGetTest extends Base
     public function testWithIsOpenedParamter()
     {
         $department = (new \BO\Zmsentities\Department());
-        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
-        $this->setWorkstation()->getUseraccount()->setRights('scope')->addDepartment($department);
+        $scope = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
+        $department->scopes[] = $scope;
+        $this->setWorkstation()->getUseraccount()->setRights(['basic', 'scope'])->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], ['getIsOpened' => 1], []); //Pankow
         $this->assertStringContainsString('isOpened', (string)$response->getBody());
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
