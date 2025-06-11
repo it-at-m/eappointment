@@ -32,6 +32,7 @@ class ProcessReserve extends BaseController
         $input = $request->getParams();
         $scope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation);
         $process = $this->getProcess($input, $scope);
+        error_log(json_encode($process));
         $validatedForm = static::getValidatedForm($request->getAttribute('validator'), $process);
         if ($validatedForm['failed']) {
             return \BO\Slim\Render::withJson(
@@ -40,12 +41,8 @@ class ProcessReserve extends BaseController
             );
         }
 
-        // Only proceed with API calls if validation passed
-        if (isset($input['reserve']) && $input['reserve']) {
-            $process = static::writeReservedProcess($input, $process);
-            $process = static::writeConfirmedProcess($input, $process);
-        }
-
+        $process = static::writeReservedProcess($input, $process);
+        $process = static::writeConfirmedProcess($input, $process);
         $appointment = $process->getFirstAppointment();
         $conflictList = ($process->isWithAppointment()) ?
             ProcessSave::getConflictList($scope->getId(), $appointment) :
