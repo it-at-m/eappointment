@@ -115,6 +115,7 @@ class SessionHandler implements \SessionHandlerInterface
      * @SuppressWarnings(ShortMethodName)
      * @codeCoverageIgnore
      */
+    #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
         /*
