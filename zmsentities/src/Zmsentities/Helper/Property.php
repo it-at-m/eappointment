@@ -63,7 +63,8 @@ class Property implements \ArrayAccess
         );
     }
 
-    public function offsetUnset($offset)
+    #[\ReturnTypeWillChange]
+    public function offsetUnset($offset): mixed
     {
         throw new \BO\Zmsentities\Exception\PropertyOffsetReadOnly(__CLASS__ . "[$offset] is readonly");
     }
