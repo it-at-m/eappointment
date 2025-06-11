@@ -71,21 +71,9 @@ class Auth
         }
     }
 
-    /**
-     * Get the cookie name used for storing the auth key
-     */
     public static function getCookieName()
     {
         return self::$cookieName;
-    }
-
-    /**
-     * Get the hashed version of the current auth key
-     */
-    public static function getHashedKey()
-    {
-        $key = self::getKey();
-        return $key ? hash('sha256', $key) : null;
     }
 
     protected static function getOidcName()
