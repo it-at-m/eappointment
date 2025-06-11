@@ -47,6 +47,7 @@ class Property implements \ArrayAccess
         return $this->__get($property);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($property)
     {
         return null !== $this->__get($property)
