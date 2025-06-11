@@ -25,10 +25,10 @@
 
   <div
     v-if="
-        selectedProvider &&
-        selectableProviders &&
-        selectableProviders.length === 1
-      "
+      selectedProvider &&
+      selectableProviders &&
+      selectableProviders.length === 1
+    "
   >
     <div class="m-component">
       <div class="m-content">
@@ -57,9 +57,9 @@
                   <use xlink:href="#icon-map-pin"></use>
                 </svg>
                 <span>
-                    {{ selectedProvider.address.street }}
-                    {{ selectedProvider.address.house_number }}
-                  </span>
+                  {{ selectedProvider.address.street }}
+                  {{ selectedProvider.address.house_number }}
+                </span>
               </p>
             </div>
           </div>
@@ -69,7 +69,10 @@
   </div>
 
   <div
-    v-if="timeSlotsInHoursByOffice.size === 0 && timeSlotsInDayPartByOffice.size === 0"
+    v-if="
+      timeSlotsInHoursByOffice.size === 0 &&
+      timeSlotsInDayPartByOffice.size === 0
+    "
     class="m-component"
   >
     <muc-callout type="warning">
