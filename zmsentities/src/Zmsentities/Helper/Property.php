@@ -42,7 +42,8 @@ class Property implements \ArrayAccess
         return $default;
     }
 
-    public function offsetGet($property)
+    #[\ReturnTypeWillChange]
+    public function offsetGet($property): mixed
     {
         return $this->__get($property);
     }
