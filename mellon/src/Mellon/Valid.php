@@ -116,7 +116,7 @@ class Valid extends \BO\Mellon\Parameter
      */
     public function isDeclared($message = 'value is not declared')
     {
-        if (null === $this->value) {
+        if (null === $this->value || '' === $this->value) {
             $this->setFailure($message);
         }
         return $this;
