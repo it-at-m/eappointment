@@ -60,7 +60,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         }
     }
     #[\ReturnTypeWillChange]
-    public function exchangeArray($input)
+    public function exchangeArray($input): mixed
     {
         parent::exchangeArray($this->getDefaults());
         $input = $this->getUnflattenedArray($input);
