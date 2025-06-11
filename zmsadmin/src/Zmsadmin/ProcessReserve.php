@@ -74,6 +74,20 @@ class ProcessReserve extends BaseController
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
+
+        // Validate email first if required by scope
+        if ($process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
+            $emailValid = $validator->getParameter('email')->isString();
+            if (!$emailValid->getValue() || strlen($emailValid->getValue()) < 6) {
+                $processValidator->getCollection()->addValid(
+                    $emailValid->isBiggerThan(6, "Für den Standort muss eine gültige E-Mail Adresse eingetragen werden")
+                );
+                $form = $processValidator->getCollection()->getStatus(null, true);
+                $form['failed'] = true;
+                return $form;
+            }
+        }
+
         $processValidator
             ->validateName(
                 $validator->getParameter('familyName'),
