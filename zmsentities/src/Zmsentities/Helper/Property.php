@@ -48,7 +48,7 @@ class Property implements \ArrayAccess
     }
 
     #[\ReturnTypeWillChange]
-    public function offsetExists($property)
+    public function offsetExists($property): mixed
     {
         return null !== $this->__get($property)
             ->get();
