@@ -314,8 +314,12 @@ class ProcessReserveTest extends Base
             'familyName' => 'Unittest',
             'reserve' => 1
         ], [], 'POST');
+        
+        $responseData = json_decode((string)$response->getBody(), true);
+        $this->assertTrue($responseData['failed'], 'Expected validation to fail');
         $this->assertStringContainsString('den Standort muss eine', (string)$response->getBody());
         $this->assertStringContainsString('E-Mail Adresse eingetragen werden', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testValidationFailed()

@@ -41,25 +41,33 @@ class ProcessReserve extends BaseController
             );
         }
 
-        $process = static::writeReservedProcess($input, $process);
-        $process = static::writeConfirmedProcess($input, $process);
-        $appointment = $process->getFirstAppointment();
-        $conflictList = ($process->isWithAppointment()) ?
-            ProcessSave::getConflictList($scope->getId(), $appointment) :
-            null;
-        $queryParams = ('confirmed' == $process->getStatus()) ?
-            [
-                'selectedprocess' => $process,
-                'success' => 'process_reserved',
-                'conflictlist' => $conflictList
-            ] :
-            [];
+        try {
+            $process = static::writeReservedProcess($input, $process);
+            $process = static::writeConfirmedProcess($input, $process);
+            $appointment = $process->getFirstAppointment();
+            $conflictList = ($process->isWithAppointment()) ?
+                ProcessSave::getConflictList($scope->getId(), $appointment) :
+                null;
+            $queryParams = ('confirmed' == $process->getStatus()) ?
+                [
+                    'selectedprocess' => $process,
+                    'success' => 'process_reserved',
+                    'conflictlist' => $conflictList
+                ] :
+                [];
 
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'element/helper/messageHandler.twig',
-            $queryParams
-        );
+            return \BO\Slim\Render::withHtml(
+                $response,
+                'element/helper/messageHandler.twig',
+                $queryParams
+            );
+        } catch (\RuntimeException $e) {
+            return \BO\Slim\Render::withHtml(
+                $response,
+                'element/helper/messageHandler.twig',
+                ['error' => $e->getMessage()]
+            );
+        }
     }
 
     protected function getProcess($input, $scope)
