@@ -102,18 +102,6 @@ class Useraccount extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionAuthKey($hashedAuthKey)
-    {
-        $this->leftJoin(
-            new Alias('nutzer', 'workstation'),
-            'useraccount.NutzerID',
-            '=',
-            'workstation.NutzerID'
-        );
-        $this->query->where('workstation.SessionID', '=', $hashedAuthKey);
-        return $this;
-    }
-
     public function addConditionDepartmentAndSearch($departmentId, $queryString = null, $orWhere = false)
     {
 
