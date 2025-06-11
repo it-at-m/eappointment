@@ -74,20 +74,10 @@ class ProcessValidator
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
-        $length = strlen($valid->getUnvalidated());
+        $value = $valid->getUnvalidated();
+        $length = $value === null ? 0 : strlen($value);
         $process = $this->getProcess();
 
-        /*
-        error_log(
-            "Mail validate: ".$valid->getUnvalidated()
-            ." ($length) with scope mail required="
-            . ($process->getCurrentScope()->isEmailRequired() ? 'yes' : 'no')
-            ." with appointment="
-            . ($process->isWithAppointment() ? 'yes' : 'no')
-            ." with callback="
-            . ( ($isRequiredCallback && $isRequiredCallback()) ? 'yes' : 'no')
-        );
-        */
         if (!$length && $process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
             $valid->isBiggerThan(
                 6,
