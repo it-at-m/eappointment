@@ -365,4 +365,21 @@ class Valid extends \BO\Mellon\Parameter
         }
         return $this;
     }
+
+    /**
+     * Allow only strings with a length smaller than the given value
+     *
+     * @param Int $size value to compare length of the string
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isSmallerThan($size, $message = 'too big')
+    {
+        $this->validated = true;
+        if (strlen((string)$this->value) >= $size) {
+            $this->setFailure($message);
+        }
+        return $this;
+    }
 }
