@@ -74,8 +74,8 @@ class ProcessValidator
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
-        $value = $valid->getUnvalidated();
-        $length = $value === null ? 0 : strlen($value);
+        $unvalidatedValue = $valid->getUnvalidated();
+        $length = $unvalidatedValue === null ? 0 : strlen($unvalidatedValue);
         $process = $this->getProcess();
 
         if (!$length && $process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
