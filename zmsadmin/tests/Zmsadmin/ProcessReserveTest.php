@@ -312,13 +312,14 @@ class ProcessReserveTest extends Base
             'selecteddate' => '2016-04-01',
             'selectedtime' => '11-55',
             'familyName' => 'Unittest',
+            'email' => '',
             'reserve' => 1
         ], [], 'POST');
         
         $responseData = json_decode((string)$response->getBody(), true);
-        $this->assertTrue($responseData['failed'], 'Expected validation to fail');
-        $this->assertStringContainsString('den Standort muss eine', (string)$response->getBody());
-        $this->assertStringContainsString('E-Mail Adresse eingetragen werden', (string)$response->getBody());
+        $this->assertTrue($responseData['failed']);
+        $this->assertStringContainsString('den Standort muss eine', $responseData['messages'][0]);
+        $this->assertStringContainsString('E-Mail Adresse eingetragen werden', $responseData['messages'][0]);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
