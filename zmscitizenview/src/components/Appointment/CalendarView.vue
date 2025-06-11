@@ -20,96 +20,69 @@
           </div>
         </div>
       </div>
-
-      <muc-slider
-        v-else
-        @change-slide="handleProviderSelection"
-      >
-        <muc-slider-item
-          v-for="proverider in selectableProviders"
-          :key="proverider.id"
-        >
-          <div class="m-teaser-contained m-teaser-contained-contact">
-            <div class="m-teaser-contained-contact__body">
-              <div class="m-teaser-contained-contact__body__inner">
-                <div class="m-teaser-contained-contact__icon">
-                  <svg
-                    aria-hidden="true"
-                    class="icon"
-                  >
-                    <use xlink:href="#icon-place"></use>
-                  </svg>
-                </div>
-                <h3 class="m-teaser-contained-contact__headline">
-                  {{ proverider.name }}
-                </h3>
-                <div class="m-teaser-contained-contact__details">
-                  <p class="m-teaser-contained-contact__detail">
-                    <svg
-                      aria-hidden="true"
-                      class="icon icon--before"
-                    >
-                      <use xlink:href="#icon-map-pin"></use>
-                    </svg>
-                    <span>
-                      {{ proverider.address.street }}
-                      {{ proverider.address.house_number }}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </muc-slider-item>
-      </muc-slider>
     </div>
   </div>
 
-  <div v-if="!error">
-    <div
-      v-if="
+  <div
+    v-if="
         selectedProvider &&
         selectableProviders &&
         selectableProviders.length === 1
       "
-    >
-      <div class="m-component">
-        <div class="m-content">
-          <h2 tabindex="0">{{ t("location") }}</h2>
-        </div>
-        <div class="m-teaser-contained m-teaser-contained-contact">
-          <div class="m-teaser-contained-contact__body">
-            <div class="m-teaser-contained-contact__body__inner">
-              <div class="m-teaser-contained-contact__icon">
+  >
+    <div class="m-component">
+      <div class="m-content">
+        <h2 tabindex="0">{{ t("location") }}</h2>
+      </div>
+      <div class="m-teaser-contained m-teaser-contained-contact">
+        <div class="m-teaser-contained-contact__body">
+          <div class="m-teaser-contained-contact__body__inner">
+            <div class="m-teaser-contained-contact__icon">
+              <svg
+                aria-hidden="true"
+                class="icon"
+              >
+                <use xlink:href="#icon-place"></use>
+              </svg>
+            </div>
+            <h3 class="m-teaser-contained-contact__headline">
+              {{ selectedProvider.name }}
+            </h3>
+            <div class="m-teaser-contained-contact__details">
+              <p class="m-teaser-contained-contact__detail">
                 <svg
                   aria-hidden="true"
-                  class="icon"
+                  class="icon icon--before"
                 >
-                  <use xlink:href="#icon-place"></use>
+                  <use xlink:href="#icon-map-pin"></use>
                 </svg>
-              </div>
-              <h3 class="m-teaser-contained-contact__headline">
-                {{ selectedProvider.name }}
-              </h3>
-              <div class="m-teaser-contained-contact__details">
-                <p class="m-teaser-contained-contact__detail">
-                  <svg
-                    aria-hidden="true"
-                    class="icon icon--before"
-                  >
-                    <use xlink:href="#icon-map-pin"></use>
-                  </svg>
-                  <span>
+                <span>
                     {{ selectedProvider.address.street }}
                     {{ selectedProvider.address.house_number }}
                   </span>
-                </p>
-              </div>
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+
+  <div
+    v-if="timeSlotsInHoursByOffice.size === 0 && timeSlotsInDayPartByOffice.size === 0"
+    class="m-component"
+  >
+    <muc-callout type="warning">
+      <template #header>
+        {{ t("noAppointmentsAvailableHeader") }}
+      </template>
+      <template #content>
+        {{ t("noAppointmentsAvailable") }}
+      </template>
+    </muc-callout>
+  </div>
+
+  <div v-else-if="!error">
     <div class="m-content">
       <h2 tabindex="0">{{ t("time") }}</h2>
     </div>
@@ -994,5 +967,9 @@ onMounted(() => {
 <style>
 .slider-no-margin .m-component__column {
   margin: 0 !important;
+}
+
+.float-right .m-button__icon {
+  margin-left: 12px !important;
 }
 </style>

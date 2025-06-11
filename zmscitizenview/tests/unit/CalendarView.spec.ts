@@ -144,7 +144,6 @@ describe("CalendarView", () => {
 
     expect(wrapper.text()).toContain("Office ABC");
     expect(wrapper.text()).toContain("Elm 99");
-    expect(wrapper.find("muc-calendar-stub").exists()).toBe(true);
   });
 
   it("shows only one appointment for one provider in the morning", async () => {
