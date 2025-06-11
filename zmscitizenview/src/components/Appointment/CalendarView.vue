@@ -70,8 +70,8 @@
 
   <div
     v-if="
-      timeSlotsInHoursByOffice.size === 0 &&
-      timeSlotsInDayPartByOffice.size === 0
+      availableDaysFetched &&
+      !hasAppointmentsForSelectedProviders()
     "
     class="m-component"
   >
@@ -391,7 +391,6 @@ import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsByOfficeDTO } from "@/api/models/AvailableTimeSlotsByOfficeDTO";
-import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
 import { OfficeAvailableTimeSlotsDTO } from "@/api/models/OfficeAvailableTimeSlotsDTO";
 import {
   fetchAvailableDays,
@@ -450,6 +449,7 @@ const officeOrder = ref<Map<number, number>>(new Map());
 const selectedProviders = ref<{ [id: string]: boolean }>({});
 
 let initialized = false;
+const availableDaysFetched = ref(false);
 
 watch(selectableProviders, (newVal) => {
   if (!initialized && newVal && newVal.length) {
@@ -697,6 +697,7 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
     if (Array.isArray(days) && days.length > 0) {
       availableDays.value = days;
       selectedDay.value = new Date(days[0].time);
+      availableDaysFetched.value = true;
       minDate.value = new Date(days[0].time);
       maxDate.value = new Date(days[days.length - 1].time);
       error.value = false;
@@ -776,6 +777,11 @@ const allowedDates = (date: Date) => {
   return dayEntry.providerIDs
     .split(",")
     .some((id) => selectedProviders.value[id]);
+};
+const hasAppointmentsForSelectedProviders = () => {
+  return availableDays?.value?.some(day =>
+    day.providerIDs.split(",").some((id) => selectedProviders.value[id])
+  ) || false;
 };
 
 watch(selectedDay, (newDate) => {
