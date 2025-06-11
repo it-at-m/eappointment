@@ -26,7 +26,7 @@ class ScopeGetTest extends Base
         $department = (new \BO\Zmsentities\Department());
         $scope = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
         $department->scopes[] = $scope;
-        $this->setWorkstation()->getUseraccount()->setRights(['basic', 'scope'])->addDepartment($department);
+        $this->setWorkstation()->getUseraccount()->setRights('basic', 'scope')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [], []); //Pankow
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
         $this->assertStringNotContainsString('"reducedData"', (string)$response->getBody());
@@ -38,7 +38,7 @@ class ScopeGetTest extends Base
         $department = (new \BO\Zmsentities\Department());
         $scope = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
         $department->scopes[] = $scope;
-        $this->setWorkstation()->getUseraccount()->setRights(['basic', 'scope'])->addDepartment($department);
+        $this->setWorkstation()->getUseraccount()->setRights('basic', 'scope')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], ['getIsOpened' => 1], []); //Pankow
         $this->assertStringContainsString('isOpened', (string)$response->getBody());
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
