@@ -318,8 +318,8 @@ class ProcessReserveTest extends Base
         
         $responseData = json_decode((string)$response->getBody(), true);
         $this->assertTrue($responseData['failed']);
-        $this->assertStringContainsString('den Standort muss eine', $responseData['messages'][0]);
-        $this->assertStringContainsString('E-Mail Adresse eingetragen werden', $responseData['messages'][0]);
+        $this->assertStringContainsString('den Standort muss eine', $responseData['email']['message']);
+        $this->assertStringContainsString('E-Mail Adresse eingetragen werden', $responseData['email']['message']);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
