@@ -77,7 +77,7 @@ class ValidString extends Valid
         $this->validated = true;
         if (strlen((string) $this->value) < $size) {
             $this->setFailure($message);
-        }        
+        }
         return $this;
     }
 
@@ -94,7 +94,7 @@ class ValidString extends Valid
         $this->validated = true;
         if (strlen((string) $this->value) > $size) {
             $this->setFailure($message);
-        }        
+        }
         return $this;
     }
 }
