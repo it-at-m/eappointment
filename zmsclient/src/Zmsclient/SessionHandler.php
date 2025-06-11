@@ -57,6 +57,7 @@ class SessionHandler implements \SessionHandlerInterface
         return true;
     }
 
+    #[\ReturnTypeWillChange]
     public function read($sessionId, $params = [])
     {
         $params['sync'] = static::$useSyncFlag;
@@ -81,6 +82,7 @@ class SessionHandler implements \SessionHandlerInterface
         return ($session && isset($session['content'])) ? serialize($session->getContent()) : '';
     }
 
+    #[\ReturnTypeWillChange]
     public function write($sessionId, $sessionData, $params = [])
     {
         $entity = new \BO\Zmsentities\Session();
@@ -101,6 +103,7 @@ class SessionHandler implements \SessionHandlerInterface
         return (null !== $session) ? true : false;
     }
 
+    #[\ReturnTypeWillChange]
     public function destroy($sessionId)
     {
         $result = $this->http->readDeleteResult('/session/' . $this->sessionName . '/' . $sessionId . '/');
