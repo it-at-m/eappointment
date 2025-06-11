@@ -78,9 +78,15 @@ class ProcessValidator
         $process = $this->getProcess();
 
         if (!$length && $process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
-            $valid->setFailure("Für den Standort muss eine gültige E-Mail Adresse eingetragen werden");
+            $valid->isBiggerThan(
+                6,
+                "Für den Standort muss eine gültige E-Mail Adresse eingetragen werden"
+            );
         } elseif (!$length && $isRequiredCallback && $isRequiredCallback()) {
-            $valid->setFailure("Für den Email-Versand muss eine gültige E-Mail Adresse angegeben werden");
+            $valid->isBiggerThan(
+                6,
+                "Für den Email-Versand muss eine gültige E-Mail Adresse angegeben werden"
+            );
         } elseif ($length) {
             $valid = $unvalid
                 ->isMail("Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.")
@@ -89,6 +95,7 @@ class ProcessValidator
                     "Der Host zur Domain nach dem '@' ist nicht erreichbar. "
                 );
         }
+        
         $this->getCollection()->validatedAction($valid, $setter);
         return $this;
     }
