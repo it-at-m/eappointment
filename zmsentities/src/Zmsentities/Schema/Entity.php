@@ -59,6 +59,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
             $this->addData($input);
         }
     }
+
     #[\ReturnTypeWillChange]
     public function exchangeArray($input): mixed
     {
