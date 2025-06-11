@@ -70,7 +70,8 @@ class SessionContainer implements SessionInterface
         return $this->getSession()->isEmpty();
     }
 
-    public function jsonSerialize()
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize(): mixed
     {
         return $this->getSession()->jsonSerialize();
     }

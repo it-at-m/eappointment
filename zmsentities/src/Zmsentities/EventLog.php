@@ -77,7 +77,8 @@ class EventLog extends Schema\Entity
         return parent::addData($mergeData);
     }
 
-    public function jsonSerialize()
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize(): mixed
     {
         $clone = clone $this;
         if (isset($clone['creationDateTime']) && $clone['creationDateTime'] instanceof DateTimeInterface) {

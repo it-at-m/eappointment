@@ -189,7 +189,8 @@ class SessionData implements SessionInterface
         return empty($this->data);
     }
 
-    public function jsonSerialize()
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize(): mixed
     {
         return json_encode($this->data);
     }

@@ -237,7 +237,8 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $array;
     }
 
-    public function jsonSerialize()
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize(): mixed
     {
         return $this->getArrayCopy();
     }
