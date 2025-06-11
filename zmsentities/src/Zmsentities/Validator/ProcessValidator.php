@@ -74,7 +74,7 @@ class ProcessValidator
     public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
-        $length = strlen($valid->getValue());
+        $length = strlen($valid->getUnvalidated());
         $process = $this->getProcess();
 
         /*
@@ -89,6 +89,8 @@ class ProcessValidator
         );
         */
         if (!$length && $process->getCurrentScope()->isEmailRequired() && $process->isWithAppointment()) {
+            error_log("*");
+            error_log("*");
             $valid->isBiggerThan(
                 6,
                 "Für den Standort muss eine gültige E-Mail Adresse eingetragen werden"
@@ -107,6 +109,7 @@ class ProcessValidator
                 );
         }
         $this->getCollection()->validatedAction($valid, $setter);
+        error_log(json_encode($this->getCollection()));
         return $this;
     }
 
