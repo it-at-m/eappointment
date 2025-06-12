@@ -41,6 +41,17 @@ RewriteRule ^terminvereinbarung/calldisplay/+_(.*) /var/www/html/zmscalldisplay/
 
 # zmscitizenapi
 SetEnvIf Request_URI ^/zmscitizenapi ZMS_MODULE_BASEPATH=/terminvereinbarung/api/citizen
+
+# Add CORS headers for zmscitizenapi local development
+<IfModule mod_headers.c>
+    SetEnvIf Origin "^http(s)?://(.+\.)?(localhost:8082|127\.0\.0\.1:8082)$" ORIGIN=$0
+    Header always set Access-Control-Allow-Origin %{ORIGIN}e env=ORIGIN
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-CSRF-Token"
+    Header always set Access-Control-Allow-Credentials "true"
+    Header always set Access-Control-Max-Age "86400"
+</IfModule>
+
 RewriteCond %{REQUEST_URI} !^/terminvereinbarung/api/citizen/+(_|doc)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^terminvereinbarung/api/citizen(/.*)?$ /var/www/html/zmscitizenapi/public/index.php$1 [L]
