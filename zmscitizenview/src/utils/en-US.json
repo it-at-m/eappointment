@@ -68,6 +68,7 @@
   "telephoneNumber": "Telephone number",
   "termsOfUse": "Terms of Use",
   "time": "Time",
+  "timeStampSuffix": "",
   "tooManyAppointmentsWithSameMailErrorHeader": "You have already booked too many appointments.",
   "tooManyAppointmentsWithSameMailErrorText": "You can book a maximum of three appointments at once with your e-mail address. Please cancel another appointment before you book a new one.",
   "updateAppointmentErrorHeader": "Appointment update failed.",
