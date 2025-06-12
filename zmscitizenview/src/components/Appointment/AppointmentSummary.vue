@@ -55,7 +55,8 @@
             class="m-content border-bottom"
           >
             <p tabindex="0">
-              {{ formatTime(appointment.timestamp) }} {{ t("timeStampSuffix") }} <br />
+              {{ formatTime(appointment.timestamp) }}
+              {{ t("timeStampSuffix") }} <br />
               {{ t("estimatedDuration") }} {{ estimatedDuration() }}
               {{ t("minutes") }}<br />
             </p>
