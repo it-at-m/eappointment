@@ -49,7 +49,7 @@
         "command": "bin/configure",
         "prepare-dirs": "mkdir -p public/_test/assets && mkdir -p public/doc/assets",
         "wget-files": [
-            "wget https://eappointment.gitlab.io/zmsapi/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
+            "wget https://it-at-m.github.io/eappointment/zmsapi/public/doc/assets/redoc.min.js -O public/doc/assets/redoc.min.js",
             "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-bundle.js -O public/_test/assets/swagger-ui-bundle.js",
             "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui.css -O public/_test/assets/swagger-ui.css",
             "wget https://eappointment.gitlab.io/zmsapi/_test/assets/swagger-ui-standalone-preset.js -O public/_test/assets/swagger-ui-standalone-preset.js",
