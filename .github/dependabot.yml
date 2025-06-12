@@ -1,0 +1,7 @@
+version: 2
+updates:
+  - package-ecosystem: "npm" # or "docker", "pip", etc.
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "next"
