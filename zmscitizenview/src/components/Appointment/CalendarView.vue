@@ -69,10 +69,7 @@
   </div>
 
   <div
-    v-if="
-      availableDaysFetched &&
-      !hasAppointmentsForSelectedProviders()
-    "
+    v-if="availableDaysFetched && !hasAppointmentsForSelectedProviders()"
     class="m-component"
   >
     <muc-callout type="warning">
@@ -779,9 +776,11 @@ const allowedDates = (date: Date) => {
     .some((id) => selectedProviders.value[id]);
 };
 const hasAppointmentsForSelectedProviders = () => {
-  return availableDays?.value?.some(day =>
-    day.providerIDs.split(",").some((id) => selectedProviders.value[id])
-  ) || false;
+  return (
+    availableDays?.value?.some((day) =>
+      day.providerIDs.split(",").some((id) => selectedProviders.value[id])
+    ) || false
+  );
 };
 
 watch(selectedDay, (newDate) => {
