@@ -39,7 +39,6 @@ class AvailableAppointmentsByOffice extends Entity implements JsonSerializable
     {
         return [
             'offices' => array_map(function ($appointments, $officeId) {
-
                 return [
                     'officeId' => $officeId,
                     'appointments' => $appointments
