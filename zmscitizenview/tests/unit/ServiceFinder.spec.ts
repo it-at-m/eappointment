@@ -1,11 +1,23 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
 
 // @ts-expect-error: Vue SFC import for test
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 
 describe("ServiceFinder", () => {
+
+  beforeAll(() => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      status: 200,
+      json: async () => ({}),
+    }));
+  });
+
+  afterAll(() => {
+    vi.unstubAllGlobals();
+  })
+
   const mockT = (key: string) => key;
   const mockProvider = {
     id: "1",
@@ -36,7 +48,7 @@ describe("ServiceFinder", () => {
   const createWrapper = (service: any) => {
     return mount(ServiceFinder, {
       props: {
-        baseUrl: "http://test.com",
+        baseUrl: "https://www.muenchen.de",
         preselectedServiceId: undefined,
         preselectedOfficeId: undefined,
         exclusiveLocation: undefined,

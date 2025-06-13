@@ -850,32 +850,52 @@ const previousStep = () => emit("back");
 
 onMounted(() => {
   if (selectedService.value && selectedService.value.providers) {
+    // Gather all selected service IDs (main + any chosen subservices)
+    const mainId = selectedService.value.id;
+    const chosenSubservices = (selectedService.value.subServices || []).filter(
+      (subservice) => subservice.count > 0
+    );
+    const selectedIds = [mainId, ...chosenSubservices.map((s) => s.id)];
+
+    // Filter out any provider that is disabled by all of the selected IDs
+    let availableProviders = selectedService.value.providers.filter(
+      (provider) => {
+        if (
+          !provider.disabledByServices ||
+          provider.disabledByServices.length === 0
+        ) {
+          return true;
+        }
+        const allDisabled = selectedIds.every((svcId) =>
+          provider.disabledByServices.includes(svcId)
+        );
+        return !allDisabled;
+      }
+    );
+
+    // Checks whether there are restrictions on the providers due to the subservices.
+    if (selectedService.value.subServices) {
+      availableProviders = availableProviders.filter((provider) => {
+        return chosenSubservices.every((subservice) =>
+          subservice.providers.some(
+            (subserviceProvider) => subserviceProvider.id == provider.id
+          )
+        );
+      });
+    } else {
+      selectableProviders.value = availableProviders;
+    }
+
     // Checks whether a provider is already selected so that it is displayed first in the slider.
-    let offices = selectedService.value.providers.filter((office) => {
+    let offices = availableProviders.filter((office) => {
       if (props.preselectedOfficeId) {
         return office.id == props.preselectedOfficeId;
       } else if (selectedProvider.value) {
         return office.id == selectedProvider.value.id;
+      } else {
+        return false;
       }
     });
-
-    // Checks whether there are restrictions on the providers due to the subservices.
-    if (selectedService.value.subServices) {
-      const choosenSubservices = selectedService.value.subServices.filter(
-        (subservice) => subservice.count > 0
-      );
-      selectableProviders.value = selectedService.value.providers.filter(
-        (provider) => {
-          return choosenSubservices.every((subservice) => {
-            return subservice.providers.some(
-              (subserviceProvider) => subserviceProvider.id == provider.id
-            );
-          });
-        }
-      );
-    } else {
-      selectableProviders.value = selectedService.value.providers;
-    }
 
     // If alternative locations are allowed to be selected, they will be added to the slider.
     if (
@@ -883,7 +903,7 @@ onMounted(() => {
       !props.exclusiveLocation ||
       offices[0].showAlternativeLocations
     ) {
-      const otherOffices = selectableProviders.value.filter((office) => {
+      const otherOffices = availableProviders.filter((office) => {
         if (props.preselectedOfficeId)
           return office.id != props.preselectedOfficeId;
         else if (selectedProvider.value)
