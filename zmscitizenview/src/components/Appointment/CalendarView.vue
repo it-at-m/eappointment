@@ -875,7 +875,7 @@ onMounted(() => {
 
     // Checks whether there are restrictions on the providers due to the subservices.
     if (selectedService.value.subServices) {
-      availableProviders = availableProviders.filter((provider) => {
+      selectableProviders.value = availableProviders.filter((provider) => {
         return chosenSubservices.every((subservice) =>
           subservice.providers.some(
             (subserviceProvider) => subserviceProvider.id == provider.id
@@ -887,7 +887,7 @@ onMounted(() => {
     }
 
     // Checks whether a provider is already selected so that it is displayed first in the slider.
-    let offices = availableProviders.filter((office) => {
+    let offices = selectableProviders.value.filter((office) => {
       if (props.preselectedOfficeId) {
         return office.id == props.preselectedOfficeId;
       } else if (selectedProvider.value) {
@@ -903,7 +903,7 @@ onMounted(() => {
       !props.exclusiveLocation ||
       offices[0].showAlternativeLocations
     ) {
-      const otherOffices = availableProviders.filter((office) => {
+      const otherOffices = selectableProviders.value.filter((office) => {
         if (props.preselectedOfficeId)
           return office.id != props.preselectedOfficeId;
         else if (selectedProvider.value)
