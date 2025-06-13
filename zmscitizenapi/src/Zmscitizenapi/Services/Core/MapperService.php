@@ -332,7 +332,7 @@ class MapperService
             $processEntity->queue->status = $thinnedProcess->status;
             $processEntity->status = $thinnedProcess->status;
         }
-        
+
         $processEntity->lastChange = time();
         $processEntity->createIP = ClientIpHelper::getClientIp();
         $processEntity->createTimestamp = time();
@@ -385,7 +385,7 @@ class MapperService
             }
             $scope->provider->source = \App::$source_name;
         }
-        
+
         return $scope;
     }
 
