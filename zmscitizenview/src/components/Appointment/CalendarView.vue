@@ -327,9 +327,7 @@
           >
             <b>{{ t("hint") }}</b>
             <br />
-            <div
-              v-html="selectedProvider.scope.displayInfo"
-            ></div>
+            <div v-html="selectedProvider.scope.displayInfo"></div>
           </div>
         </template>
 
