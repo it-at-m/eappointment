@@ -6,9 +6,19 @@ use \BO\Zmsdb\Helper\AppointmentDeallocateByCron;
 use \BO\Zmsdb\Process as ProcessRepository;
 use \BO\Zmsdb\ProcessStatusFree;
 use \BO\Zmsentities\Process as Entity;
+use Psr\Log\LoggerInterface;
 
 class AppointmentDeallocateByCronTest extends Base
 {
+    public function setUp(): void
+    {
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockLogger->expects($this->any())
+            ->method('info');
+        \App::$log = $mockLogger;
+
+        parent::setUp();
+    }
 
     public function testConstructor()
     {
