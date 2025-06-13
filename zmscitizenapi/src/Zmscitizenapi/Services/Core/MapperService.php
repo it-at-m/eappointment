@@ -82,6 +82,7 @@ class MapperService
                 slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
                 geo: isset($provider->data['geo']) ? $provider->data['geo'] : null,
                 disabledByServices: isset($provider->data['dontShowByServices']) ? $provider->data['dontShowByServices'] : [],
+                priority: isset($provider->data['prio']) ? $provider->data['prio'] : 1,
                 scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(
                     id: isset($providerScope->id) ? (int) $providerScope->id : 0,
                     provider: isset($providerScope->provider) ? $providerScope->provider : null,

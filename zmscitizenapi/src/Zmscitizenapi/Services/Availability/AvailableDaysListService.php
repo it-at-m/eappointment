@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Availability;
 
 use BO\Zmscitizenapi\Models\AvailableDays;
+use BO\Zmscitizenapi\Models\AvailableDaysByOffice;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -25,20 +26,7 @@ class AvailableDaysListService
     public function getAvailableDaysList(array $queryParams): AvailableDays|array
     {
         $clientData = $this->extractClientData($queryParams);
-        $captchaRequired = $this->isCaptchaRequired($clientData->officeIds);
-        $captchaToken = $queryParams['captchaToken'] ?? null;
-
-        $errors = ValidationService::validateGetBookableFreeDays(
-            $clientData->officeIds,
-            $clientData->serviceIds,
-            $clientData->startDate,
-            $clientData->endDate,
-            $clientData->serviceCounts,
-            $captchaRequired,
-            $captchaToken,
-            $this->tokenValidator
-        );
-
+        $errors = $this->validateClientData($clientData);
         if (!empty($errors['errors'])) {
             return $errors;
         }
@@ -64,7 +52,8 @@ class AvailableDaysListService
             'serviceIds' => array_map('trim', explode(',', $queryParams['serviceId'])),
             'serviceCounts' => $serviceCounts,
             'startDate' => $queryParams['startDate'] ?? null,
-            'endDate' => $queryParams['endDate'] ?? null
+            'endDate' => $queryParams['endDate'] ?? null,
+            'captchaToken' => isset($queryParams['captchaToken']) ? (string) $queryParams['captchaToken'] : null
         ];
     }
 
@@ -80,8 +69,42 @@ class AvailableDaysListService
         }
     }
 
-    private function getAvailableDays(object $data): AvailableDays|array
+    private function validateClientData(object $data): array
     {
-        return ZmsApiFacadeService::getBookableFreeDays($data->officeIds, $data->serviceIds, $data->serviceCounts, $data->startDate, $data->endDate);
+        $captchaRequired = $this->isCaptchaRequired($data->officeIds);
+
+        return ValidationService::validateGetBookableFreeDays(
+            $data->officeIds,
+            $data->serviceIds,
+            $data->startDate,
+            $data->endDate,
+            $data->serviceCounts,
+            $captchaRequired,
+            $data->captchaToken,
+            $this->tokenValidator
+        );
+    }
+
+    private function getAvailableDays(object $data, ?bool $groupByOffice = false): AvailableDays|AvailableDaysByOffice|array
+    {
+        return ZmsApiFacadeService::getBookableFreeDays(
+            $data->officeIds,
+            $data->serviceIds,
+            $data->serviceCounts,
+            $data->startDate,
+            $data->endDate,
+            $groupByOffice
+        );
+    }
+
+    public function getAvailableDaysListByOffice($queryParams)
+    {
+        $clientData = $this->extractClientData($queryParams);
+        $errors = $this->validateClientData($clientData);
+        if (!empty($errors['errors'])) {
+            return $errors;
+        }
+
+        return $this->getAvailableDays($clientData, true);
     }
 }

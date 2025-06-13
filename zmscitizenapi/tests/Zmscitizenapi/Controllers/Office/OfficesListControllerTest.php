@@ -51,6 +51,7 @@ class OfficesListControllerTest extends ControllerTestCase
                         "lon" => "11.604317899956524"
                     ],
                     "disabledByServices" => [],
+                    "priority" => 1,
                     "scope" => [
                         "id" => 1,
                         "provider" => [
@@ -101,6 +102,7 @@ class OfficesListControllerTest extends ControllerTestCase
                         "lon" => "11.604317899956524"
                     ],
                     "disabledByServices" => [],
+                    "priority" => 1,
                     "scope" => [
                         "id" => 2,
                         "provider" => [
