@@ -146,6 +146,11 @@ To run Checks locally in your local docker container:
 4. Run PHPMD (using the phpmd.rules.xml in the project root):
 - `vendor/bin/phpmd src/ text ../phpmd.rules.xml`
 
+We use `prettier-codeformat` for checking and formatting code style in zmscitizenview. You can use format function to fix 
+code style (lint) problems:
+1. Go to `zmscitizenview`
+2. Run: `npm run format`
+
 ## Unit Testing
 To run unit tests locally refer to the [Github Workflows](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml) and in your local docker container run:
 

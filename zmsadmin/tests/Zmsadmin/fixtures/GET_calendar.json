@@ -16,6 +16,7 @@
                 "month": "04",
                 "day": "01",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -29,6 +30,7 @@
                 "month": "04",
                 "day": "02",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -42,6 +44,7 @@
                 "month": "04",
                 "day": "03",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -55,6 +58,7 @@
                 "month": "04",
                 "day": "04",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -68,6 +72,7 @@
                 "month": "04",
                 "day": "05",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -81,6 +86,7 @@
                 "month": "04",
                 "day": "06",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -94,6 +100,7 @@
                 "month": "04",
                 "day": "07",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -107,6 +114,7 @@
                 "month": "04",
                 "day": "08",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
@@ -120,6 +128,7 @@
                 "month": "04",
                 "day": "09",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -133,6 +142,7 @@
                 "month": "04",
                 "day": "10",
                 "status": "bookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 3,
@@ -146,6 +156,7 @@
                 "month": "04",
                 "day": "11",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -3,
@@ -159,6 +170,7 @@
                 "month": "04",
                 "day": "12",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -2,
@@ -172,6 +184,7 @@
                 "month": "04",
                 "day": "13",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -185,6 +198,7 @@
                 "month": "04",
                 "day": "14",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -198,6 +212,7 @@
                 "month": "04",
                 "day": "15",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -211,6 +226,7 @@
                 "month": "04",
                 "day": "16",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -224,6 +240,7 @@
                 "month": "04",
                 "day": "17",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -237,6 +254,7 @@
                 "month": "04",
                 "day": "18",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -250,6 +268,7 @@
                 "month": "04",
                 "day": "19",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -263,6 +282,7 @@
                 "month": "04",
                 "day": "20",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
@@ -276,6 +296,7 @@
                 "month": "04",
                 "day": "21",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -289,6 +310,7 @@
                 "month": "04",
                 "day": "22",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
@@ -302,6 +324,7 @@
                 "month": "04",
                 "day": "23",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -315,6 +338,7 @@
                 "month": "04",
                 "day": "24",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -328,6 +352,7 @@
                 "month": "04",
                 "day": "25",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
@@ -341,6 +366,7 @@
                 "month": "04",
                 "day": "26",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -354,6 +380,7 @@
                 "month": "04",
                 "day": "27",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -367,6 +394,7 @@
                 "month": "04",
                 "day": "28",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -380,6 +408,7 @@
                 "month": "04",
                 "day": "29",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
@@ -393,6 +422,7 @@
                 "month": "04",
                 "day": "30",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -406,6 +436,7 @@
                 "month": "05",
                 "day": "01",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -419,6 +450,7 @@
                 "month": "05",
                 "day": "02",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -432,6 +464,7 @@
                 "month": "05",
                 "day": "03",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
@@ -445,6 +478,7 @@
                 "month": "05",
                 "day": "04",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -458,6 +492,7 @@
                 "month": "05",
                 "day": "05",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -471,6 +506,7 @@
                 "month": "05",
                 "day": "06",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
@@ -484,6 +520,7 @@
                 "month": "05",
                 "day": "07",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -497,6 +534,7 @@
                 "month": "05",
                 "day": "08",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -510,6 +548,7 @@
                 "month": "05",
                 "day": "09",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -3,
@@ -523,6 +562,7 @@
                 "month": "05",
                 "day": "10",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
@@ -536,6 +576,7 @@
                 "month": "05",
                 "day": "11",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -549,6 +590,7 @@
                 "month": "05",
                 "day": "12",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -562,6 +604,7 @@
                 "month": "05",
                 "day": "13",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -575,6 +618,7 @@
                 "month": "05",
                 "day": "14",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -588,6 +632,7 @@
                 "month": "05",
                 "day": "15",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -601,6 +646,7 @@
                 "month": "05",
                 "day": "16",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -614,6 +660,7 @@
                 "month": "05",
                 "day": "17",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -627,6 +674,7 @@
                 "month": "05",
                 "day": "18",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -640,6 +688,7 @@
                 "month": "05",
                 "day": "19",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -653,6 +702,7 @@
                 "month": "05",
                 "day": "20",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": -1,
@@ -666,6 +716,7 @@
                 "month": "05",
                 "day": "21",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -679,6 +730,7 @@
                 "month": "05",
                 "day": "22",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -692,6 +744,7 @@
                 "month": "05",
                 "day": "23",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -705,6 +758,7 @@
                 "month": "05",
                 "day": "24",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -718,6 +772,7 @@
                 "month": "05",
                 "day": "25",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -731,6 +786,7 @@
                 "month": "05",
                 "day": "26",
                 "status": "full",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -744,6 +800,7 @@
                 "month": "05",
                 "day": "27",
                 "status": "bookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 2,
                     "intern": 2,
@@ -757,6 +814,7 @@
                 "month": "05",
                 "day": "28",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -770,6 +828,7 @@
                 "month": "05",
                 "day": "29",
                 "status": "notBookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 0,
                     "intern": 0,
@@ -783,6 +842,7 @@
                 "month": "05",
                 "day": "30",
                 "status": "bookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 72,
                     "intern": 72,
@@ -796,6 +856,7 @@
                 "month": "05",
                 "day": "31",
                 "status": "bookable",
+                "scopeIDs": "141",
                 "freeAppointments": {
                     "public": 60,
                     "intern": 60,
