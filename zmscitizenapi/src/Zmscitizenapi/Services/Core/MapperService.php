@@ -360,7 +360,7 @@ class MapperService
                 $provider = $thinnedProcess->scope->provider;
                 $scope->provider->name  = $provider->name ?? null;
                 $scope->provider->displayName = $provider->displayName ?? null;
-        
+
                 if (isset($provider->contact)) {
                     $scope->provider->contact = new Contact();
                     $scope->provider->contact->street = $provider->contact->street ?? null;
