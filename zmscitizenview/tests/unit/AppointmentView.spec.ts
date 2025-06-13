@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it, beforeEach, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
 
 // @ts-expect-error: Vue SFC import for test
@@ -9,8 +9,20 @@ import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 globalThis.scrollTo = vi.fn();
 
 describe("AppointmentView", () => {
+
+  beforeAll(() => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      status: 200,
+      json: async () => ({}),
+    }));
+  });
+
+  afterAll(() => {
+    vi.unstubAllGlobals();
+  })
+
   const mockT = (key: string) => key;
-  const mockBaseUrl = "http://test.com";
+  const mockBaseUrl = "https://www.muenchen.de";
   const mockServiceId = "123";
   const mockLocationId = "456";
   const mockExclusiveLocation = "test-location";
@@ -303,4 +315,4 @@ describe("AppointmentView", () => {
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
     });
   });
-}); 
+});

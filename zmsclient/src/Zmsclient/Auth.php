@@ -9,6 +9,8 @@ use App;
  */
 class Auth
 {
+    private static $cookieName = 'X-AuthKey';
+
     /**
      *
      * @SuppressWarnings(Superglobals)
@@ -69,9 +71,9 @@ class Auth
         }
     }
 
-    protected static function getCookieName()
+    public static function getCookieName()
     {
-        return 'Zmsclient';
+        return self::$cookieName;
     }
 
     protected static function getOidcName()

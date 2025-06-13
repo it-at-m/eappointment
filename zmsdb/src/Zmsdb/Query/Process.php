@@ -142,79 +142,79 @@ class Process extends Base implements MappingInterface
         return $joinQuery;
     }
 
-    protected function calculateStatus($data)
+    protected function calculateStatus()
     {
-        if (isset($data['Name']) && $data['Name'] === '(abgesagt)') {
+        if ($this->query->value('Name') === '(abgesagt)') {
             return 'deleted';
         }
 
         if (
-            isset($data['StandortID']) && $data['StandortID'] == 0
-            && isset($data['AbholortID']) && $data['AbholortID'] == 0
+            $this->query->value('StandortID') == 0
+            && $this->query->value('AbholortID') == 0
         ) {
             return 'blocked';
         }
 
         if (
-            isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 1
-            && isset($data['bestaetigt']) && $data['bestaetigt'] == 0
+            $this->query->value('vorlaeufigeBuchung') == 1
+            && $this->query->value('bestaetigt') == 0
         ) {
             return 'reserved';
         }
 
-        if (isset($data['nicht_erschienen']) && $data['nicht_erschienen'] != 0) {
+        if ($this->query->value('nicht_erschienen') != 0) {
             return 'missed';
         }
 
-        if (isset($data['parked']) && $data['parked'] != 0) {
+        if ($this->query->value('parked') != 0) {
             return 'parked';
         }
 
         if (
-            isset($data['Abholer']) && $data['Abholer'] != 0
-            && isset($data['AbholortID']) && $data['AbholortID'] != 0
-            && isset($data['NutzerID']) && $data['NutzerID'] == 0
+            $this->query->value('Abholer') != 0
+            && $this->query->value('AbholortID') != 0
+            && $this->query->value('NutzerID') == 0
         ) {
             return 'pending';
         }
 
         if (
-            isset($data['AbholortID']) && $data['AbholortID'] != 0
-            && isset($data['NutzerID']) && $data['NutzerID'] != 0
+            $this->query->value('AbholortID') != 0
+            && $this->query->value('NutzerID') != 0
         ) {
             return 'pickup';
         }
 
         if (
-            isset($data['AbholortID']) && $data['AbholortID'] == 0
-            && isset($data['aufruferfolgreich']) && $data['aufruferfolgreich'] != 0
-            && isset($data['NutzerID']) && $data['NutzerID'] != 0
+            $this->query->value('AbholortID') == 0
+            && $this->query->value('aufruferfolgreich') != 0
+            && $this->query->value('NutzerID') != 0
         ) {
             return 'processing';
         }
 
         if (
-            isset($data['aufrufzeit']) && $data['aufrufzeit'] != "00:00:00"
-            && isset($data['NutzerID']) && $data['NutzerID'] != 0
-            && isset($data['AbholortID']) && $data['AbholortID'] == 0
+            $this->query->value('aufrufzeit') != "00:00:00"
+            && $this->query->value('NutzerID') != 0
+            && $this->query->value('AbholortID') == 0
         ) {
             return 'called';
         }
 
-        if (isset($data['Uhrzeit']) && $data['Uhrzeit'] == "00:00:00") {
+        if ($this->query->value('Uhrzeit') == "00:00:00") {
             return 'queued';
         }
 
         if (
-            isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 0
-            && isset($data['bestaetigt']) && $data['bestaetigt'] == 0
+            $this->query->value('vorlaeufigeBuchung') == 0
+            && $this->query->value('bestaetigt') == 0
         ) {
             return 'preconfirmed';
         }
 
         if (
-            isset($data['vorlaeufigeBuchung']) && $data['vorlaeufigeBuchung'] == 0
-            && isset($data['bestaetigt']) && $data['bestaetigt'] == 1
+            $this->query->value('vorlaeufigeBuchung') == 0
+            && $this->query->value('bestaetigt') == 1
         ) {
             return 'confirmed';
         }
@@ -827,13 +827,15 @@ class Process extends Base implements MappingInterface
 
     public function addValues($values)
     {
-        $status = $this->calculateStatus($values);
+        $this->query->values($values);
+
+        $status = $this->calculateStatus();
 
         if (!empty($status)) {
             $values['status'] = $status;
+            $this->query->values($values);
         }
 
-        $this->query->values($values);
         return $this;
     }
 

@@ -57,10 +57,11 @@ class SessionHandler implements \SessionHandlerInterface
 
     public function read($sessionId, $params = [])
     {
+        $hashedSessionId = hash('sha256', $sessionId);
         $params['sync'] = static::$useSyncFlag;
         try {
             $session = $this->http->readGetResult(
-                '/session/' . $this->sessionName . '/' . $sessionId . '/',
+                '/session/' . $this->sessionName . '/' . $hashedSessionId . '/',
                 $params
             )
             ->getEntity();
@@ -81,8 +82,9 @@ class SessionHandler implements \SessionHandlerInterface
 
     public function write($sessionId, $sessionData, $params = [])
     {
+        $hashedSessionId = hash('sha256', $sessionId);
         $entity = new \BO\Zmsentities\Session();
-        $entity->id = $sessionId;
+        $entity->id = $hashedSessionId;
         $entity->name = $this->sessionName;
         $entity->content = unserialize($sessionData);
 
@@ -101,7 +103,8 @@ class SessionHandler implements \SessionHandlerInterface
 
     public function destroy($sessionId)
     {
-        $result = $this->http->readDeleteResult('/session/' . $this->sessionName . '/' . $sessionId . '/');
+        $hashedSessionId = hash('sha256', $sessionId);
+        $result = $this->http->readDeleteResult('/session/' . $this->sessionName . '/' . $hashedSessionId . '/');
         return ($result) ? true : false;
     }
 

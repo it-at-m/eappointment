@@ -132,6 +132,13 @@
       ],
       "description": "Service ID associated with the process"
     },
+    "serviceName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Service name associated with the process"
+    },
     "serviceCount": {
       "type": [
         "integer",

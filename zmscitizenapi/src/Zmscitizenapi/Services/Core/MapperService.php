@@ -82,6 +82,7 @@ class MapperService
                 slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
                 geo: isset($provider->data['geo']) ? $provider->data['geo'] : null,
                 disabledByServices: isset($provider->data['dontShowByServices']) ? $provider->data['dontShowByServices'] : [],
+                priority: isset($provider->data['prio']) ? $provider->data['prio'] : 1,
                 scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(
                     id: isset($providerScope->id) ? (int) $providerScope->id : 0,
                     provider: isset($providerScope->provider) ? $providerScope->provider : null,
@@ -245,6 +246,7 @@ class MapperService
 
         $subRequestCounts = [];
         $mainServiceId = null;
+        $mainServiceName = null;
         $mainServiceCount = 0;
         $requests = $myProcess->getRequests() ?? [];
         if ($requests) {
@@ -254,10 +256,14 @@ class MapperService
                 foreach ($requests as $request) {
                     if ($request->id === $mainServiceId) {
                         $mainServiceCount++;
+                        if (!$mainServiceName && isset($request->name)) {
+                            $mainServiceName = $request->name;
+                        }
                     } else {
                         if (!isset($subRequestCounts[$request->id])) {
                             $subRequestCounts[$request->id] = [
                                 'id' => (int) $request->id,
+                                'name'  => $request->name,
                                 'count' => 0,
                             ];
                         }
@@ -282,6 +288,7 @@ class MapperService
             scope: isset($myProcess->scope) ? self::scopeToThinnedScope($myProcess->scope) : null,
             subRequestCounts: isset($subRequestCounts) ? array_values($subRequestCounts) : [],
             serviceId: isset($mainServiceId) ? (int) $mainServiceId : 0,
+            serviceName: isset($mainServiceName) ? $mainServiceName : null,
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
             slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null
@@ -306,10 +313,12 @@ class MapperService
         $client->email = $thinnedProcess->email ?? null;
         $client->telephone = $thinnedProcess->telephone ?? null;
         $processEntity->clients = [$client];
+
         $appointment = new Appointment();
         $appointment->slotCount = $thinnedProcess->slotCount ?? null;
         $appointment->date = $thinnedProcess->timestamp ?? null;
         $processEntity->appointments = [$appointment];
+
         // Set scope with all required fields
         $scope = new Scope();
         if ($thinnedProcess->scope) {
@@ -352,12 +361,14 @@ class MapperService
         }
 
         $mainServiceId = $thinnedProcess->serviceId ?? null;
+        $mainServiceName = $thinnedProcess->serviceName ?? null;
         $mainServiceCount = $thinnedProcess->serviceCount ?? 0;
         $subRequestCounts = $thinnedProcess->subRequestCounts ?? [];
         $requests = [];
         for ($i = 0; $i < $mainServiceCount; $i++) {
             $request = new Request();
             $request->id = $mainServiceId;
+            $request->name = $mainServiceName;
             $request->source = \App::$source_name;
             $requests[] = $request;
         }
@@ -365,6 +376,7 @@ class MapperService
             for ($i = 0; $i < ($subRequest['count'] ?? 0); $i++) {
                 $request = new Request();
                 $request->id = $subRequest['id'];
+                $request->name = $subRequest['name'];
                 $request->source = \App::$source_name;
                 $requests[] = $request;
             }

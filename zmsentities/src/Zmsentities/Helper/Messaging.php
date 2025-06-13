@@ -26,8 +26,7 @@ class Messaging
 {
     public static $icsRequiredForStatus = [
         'confirmed',
-        'appointment',
-        'deleted'
+        'appointment'
     ];
 
     public static $allowEmptyProcesses = [
