@@ -84,6 +84,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'lat'=> null,
                     'lon'=> null,
                     'name'=> '',
+                    'displayame'=> '',
                     'source'=> 'dldb'
                 ],
                 "shortName" => '',

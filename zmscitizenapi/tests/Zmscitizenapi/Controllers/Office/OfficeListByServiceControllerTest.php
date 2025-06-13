@@ -55,6 +55,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "provider" => [
                             "id" => 9999999,
                             "name" => "Unittest Source Dienstleister 2",
+                            "displayName" => "Unittest 2",
                             "lat" => 48.12750898398659,
                             "lon" => 11.604317899956524,
                             "source" => "unittest",
@@ -125,6 +126,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "provider" => [
                             "id" => 9999998,
                             "name" => "Unittest Source Dienstleister",
+                            "displayName" => "Unittest",
                             "lat" => 48.12750898398659,
                             "lon" => 11.604317899956524,
                             "source" => "unittest",
@@ -172,6 +174,7 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "provider" => [
                             "id" => 9999999,
                             "name" => "Unittest Source Dienstleister 2",
+                            "displayName" => "Unittest 2",
                             "lat" => 48.12750898398659,
                             "lon" => 11.604317899956524,
                             "source" => "unittest",
