@@ -356,11 +356,17 @@ class MapperService
         if (isset($thinnedProcess->officeId)) {
             $scope->provider = new Provider();
             $scope->provider->id = $thinnedProcess->officeId;
-            $scope->provider->name = $thinnedProcess->scope->provider->name;
-            $scope->provider->displayName = $thinnedProcess->scope->provider->displayName;
-            $scope->provider->contact = new Contact();
-            $scope->provider->contact->street = $thinnedProcess->scope->provider->contact->street;
-            $scope->provider->contact->streetNumber = $thinnedProcess->scope->provider->contact->streetNumber;
+            if (isset($thinnedProcess->scope->provider)) {
+                $provider = $thinnedProcess->scope->provider;
+                $scope->provider->name  = $provider->name ?? null;
+                $scope->provider->displayName = $provider->displayName ?? null;
+        
+                if (isset($provider->contact)) {
+                    $scope->provider->contact = new Contact();
+                    $scope->provider->contact->street = $provider->contact->street ?? null;
+                    $scope->provider->contact->streetNumber = $provider->contact->streetNumber ?? null;
+                }
+            }
             $scope->provider->source = \App::$source_name;
         }
         $processEntity->scope = $scope;
