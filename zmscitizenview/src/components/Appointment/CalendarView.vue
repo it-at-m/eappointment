@@ -327,9 +327,9 @@
           >
             <b>{{ t("hint") }}</b>
             <br />
-            <p class="m-teaser-contained-contact__detail">
-              {{ selectedProvider.scope.displayInfo }}
-            </p>
+            <div
+              v-html="selectedProvider.scope.displayInfo"
+            ></div>
           </div>
         </template>
 
@@ -999,5 +999,15 @@ onMounted(() => {
 
 .float-right .m-button__icon {
   margin-left: 12px !important;
+}
+
+.m-callout__content ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+}
+
+.m-callout__content ul li {
+  list-style-type: disc !important;
+  padding-left: 0.5rem !important;
 }
 </style>
