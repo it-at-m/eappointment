@@ -324,7 +324,23 @@ class MapperService
         $appointment->date = $thinnedProcess->timestamp ?? null;
         $processEntity->appointments = [$appointment];
 
-        // Set scope with all required fields
+        $processEntity->scope = self::createScope($thinnedProcess);
+        $processEntity->requests = self::createRequests($thinnedProcess);
+
+        if (isset($thinnedProcess->status)) {
+            $processEntity->queue = new \stdClass();
+            $processEntity->queue->status = $thinnedProcess->status;
+            $processEntity->status = $thinnedProcess->status;
+        }
+        
+        $processEntity->lastChange = time();
+        $processEntity->createIP = ClientIpHelper::getClientIp();
+        $processEntity->createTimestamp = time();
+        return $processEntity;
+    }
+
+    private static function createScope(ThinnedProcess $thinnedProcess): Scope
+    {
         $scope = new Scope();
         if ($thinnedProcess->scope) {
             $scope->id = $thinnedProcess->scope->id;
@@ -369,18 +385,17 @@ class MapperService
             }
             $scope->provider->source = \App::$source_name;
         }
-        $processEntity->scope = $scope;
-        if (isset($thinnedProcess->status)) {
-            $processEntity->queue = new \stdClass();
-            $processEntity->queue->status = $thinnedProcess->status;
-            $processEntity->status = $thinnedProcess->status;
-        }
+        
+        return $scope;
+    }
 
+    private static function createRequests(ThinnedProcess $thinnedProcess): array
+    {
+        $requests = [];
         $mainServiceId = $thinnedProcess->serviceId ?? null;
         $mainServiceName = $thinnedProcess->serviceName ?? null;
         $mainServiceCount = $thinnedProcess->serviceCount ?? 0;
-        $subRequestCounts = $thinnedProcess->subRequestCounts ?? [];
-        $requests = [];
+
         for ($i = 0; $i < $mainServiceCount; $i++) {
             $request = new Request();
             $request->id = $mainServiceId;
@@ -388,7 +403,8 @@ class MapperService
             $request->source = \App::$source_name;
             $requests[] = $request;
         }
-        foreach ($subRequestCounts as $subRequest) {
+
+        foreach ($thinnedProcess->subRequestCounts ?? [] as $subRequest) {
             for ($i = 0; $i < ($subRequest['count'] ?? 0); $i++) {
                 $request = new Request();
                 $request->id = $subRequest['id'];
@@ -397,11 +413,8 @@ class MapperService
                 $requests[] = $request;
             }
         }
-        $processEntity->requests = $requests;
-        $processEntity->lastChange = time();
-        $processEntity->createIP = ClientIpHelper::getClientIp();
-        $processEntity->createTimestamp = time();
-        return $processEntity;
+
+        return $requests;
     }
 
     /**
