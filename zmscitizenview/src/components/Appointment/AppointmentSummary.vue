@@ -72,9 +72,10 @@
               <h3 tabindex="0">{{ t("hint") }}</h3>
             </div>
             <div class="m-content border-bottom">
-              <p tabindex="0">
-                {{ selectedProvider.scope.displayInfo }}
-              </p>
+              <div
+                tabindex="0"
+                v-html="selectedProvider.scope.displayInfo"
+              ></div>
             </div>
           </div>
           <div class="m-content">
