@@ -541,4 +541,96 @@ describe("CalendarView", () => {
       expect(wrapper.vm.allowedDates(new Date('2025-06-18'))).toBe(false);
     });
   });
+
+  describe('CalendarView checkbox behavior', () => {
+    it('prevents unchecking the last selected provider', async () => {
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      await nextTick();
+
+      // Initially both should be checked
+      expect(wrapper.vm.selectedProviders['1']).toBe(true);
+      expect(wrapper.vm.selectedProviders['2']).toBe(true);
+
+      // Uncheck first provider
+      await wrapper.vm.handleProviderCheckbox('1');
+      expect(wrapper.vm.selectedProviders['1']).toBe(false);
+      expect(wrapper.vm.selectedProviders['2']).toBe(true);
+
+      // Try to uncheck the last provider - should not work
+      await wrapper.vm.handleProviderCheckbox('2');
+      expect(wrapper.vm.selectedProviders['2']).toBe(true);
+    });
+
+    it('disables the last checked checkbox', async () => {
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      await nextTick();
+
+      // Initially both checked, so neither should be disabled
+      expect(wrapper.vm.isCheckboxDisabled('1')).toBe(false);
+      expect(wrapper.vm.isCheckboxDisabled('2')).toBe(false);
+
+      // Uncheck first provider
+      await wrapper.vm.handleProviderCheckbox('1');
+      
+      // Now only second provider is checked, so it should be disabled
+      expect(wrapper.vm.isCheckboxDisabled('1')).toBe(false);
+      expect(wrapper.vm.isCheckboxDisabled('2')).toBe(true);
+
+      // Check first provider again
+      await wrapper.vm.handleProviderCheckbox('1');
+      
+      // Both checked again, so neither should be disabled
+      expect(wrapper.vm.isCheckboxDisabled('1')).toBe(false);
+      expect(wrapper.vm.isCheckboxDisabled('2')).toBe(false);
+    });
+
+    it('renders disabled state correctly in the DOM', async () => {
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      await nextTick();
+
+      // Initially both checked, so neither should be disabled
+      let checkbox1 = wrapper.find('#checkbox-1').element as HTMLInputElement;
+      let checkbox2 = wrapper.find('#checkbox-2').element as HTMLInputElement;
+      expect(checkbox1.disabled).toBe(false);
+      expect(checkbox2.disabled).toBe(false);
+
+      // Uncheck first provider
+      await wrapper.vm.handleProviderCheckbox('1');
+      await nextTick();
+
+      // Now only second provider is checked, so it should be disabled
+      checkbox1 = wrapper.find('#checkbox-1').element as HTMLInputElement;
+      checkbox2 = wrapper.find('#checkbox-2').element as HTMLInputElement;
+      expect(checkbox1.disabled).toBe(false);
+      expect(checkbox2.disabled).toBe(true);
+
+      // Check first provider again
+      await wrapper.vm.handleProviderCheckbox('1');
+      await nextTick();
+
+      // Both checked again, so neither should be disabled
+      checkbox1 = wrapper.find('#checkbox-1').element as HTMLInputElement;
+      checkbox2 = wrapper.find('#checkbox-2').element as HTMLInputElement;
+      expect(checkbox1.disabled).toBe(false);
+      expect(checkbox2.disabled).toBe(false);
+    });
+  });
 });

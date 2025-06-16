@@ -9,12 +9,23 @@
         v-if="selectableProviders.length > 1"
       >
         <div v-for="provider in selectableProviders">
-          <muc-checkbox
-            :key="provider.id"
-            :id="provider.id"
-            :label="provider.name"
-            v-model="selectedProviders[provider.id]"
-          ></muc-checkbox>
+          <div class="m-checkboxes__item" :class="{ 'disabled': isCheckboxDisabled(provider.id) }">
+            <input
+              :id="'checkbox-' + provider.id"
+              class="m-checkboxes__input"
+              name="checkbox"
+              type="checkbox"
+              :checked="selectedProviders[provider.id]"
+              :disabled="isCheckboxDisabled(provider.id)"
+              @click="handleProviderCheckbox(provider.id)"
+            />
+            <label
+              class="m-label m-checkboxes__label"
+              :for="'checkbox-' + provider.id"
+            >
+              {{ provider.name }}
+            </label>
+          </div>
           <div class="provider-address">
             {{ provider.address.street }} {{ provider.address.house_number }}
           </div>
@@ -856,7 +867,21 @@ const handleProviderSelection = (id: number) => {
 };
 
 const handleProviderCheckbox = (id: string) => {
+  // Count how many providers are currently selected
+  const selectedCount = Object.values(selectedProviders.value).filter(Boolean).length;
+  
+  // If trying to uncheck the last selected provider, prevent it
+  if (selectedCount === 1 && selectedProviders.value[id]) {
+    return;
+  }
+  
   selectedProviders.value[id] = !selectedProviders.value[id];
+};
+
+const isCheckboxDisabled = (providerId: string) => {
+  const selectedCount = Object.values(selectedProviders.value).filter(Boolean).length;
+  // Disable if this is the only selected provider
+  return selectedCount === 1 && selectedProviders.value[providerId];
 };
 
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
@@ -1050,6 +1075,11 @@ onMounted(() => {
 .m-button--ghost:disabled {
   background: #fff;
   border-color: #fff;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>
 
