@@ -382,7 +382,7 @@ import {
   MucSlider,
   MucSliderItem,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
+import { computed, inject, nextTick, onMounted, ref, watch } from "@vue/runtime-core";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsByOfficeDTO } from "@/api/models/AvailableTimeSlotsByOfficeDTO";
@@ -445,6 +445,8 @@ const selectedProviders = ref<{ [id: string]: boolean }>({});
 
 let initialized = false;
 const availableDaysFetched = ref(false);
+
+const datesWithoutAppointments = ref(new Set<string>());
 
 watch(selectableProviders, (newVal) => {
   if (!initialized && newVal && newVal.length) {
@@ -541,7 +543,7 @@ const formatTime = (time: any) => {
 
 const timeSlotsInHours = computed(() => {
   const timesByHours = new Map<number, number[]>();
-  appointmentTimestamps.value.forEach((time) => {
+  appointmentTimestamps.value?.forEach((time) => {
     const berlinDate = new Date(time * 1000);
     const hour = parseInt(berlinHourFormatter.format(berlinDate));
     if (!timesByHours.has(hour)) {
@@ -728,17 +730,67 @@ const getAppointmentsOfDay = (date: string) => {
     props.baseUrl ?? undefined,
     props.captchaToken ?? undefined
   ).then((data) => {
-    if (data as AvailableTimeSlotsByOfficeDTO) {
+    if (data && (data as AvailableTimeSlotsByOfficeDTO)?.offices) {
       appointmentTimestampsByOffice.value = (
         data as AvailableTimeSlotsByOfficeDTO
       ).offices;
 
       appointmentsCount.value = data.offices.reduce(
-        (sum, office) => sum + office.appointments.length,
+        (sum, office) => sum + (office.appointments?.length ?? 0),
         0
       );
+      
+      // Track dates without appointments
+      if (appointmentsCount.value === 0) {
+        datesWithoutAppointments.value.add(date);
+      } else {
+        datesWithoutAppointments.value.delete(date);
+      }
+      
+      // Only show error if there are no appointments on any day
+      if (appointmentsCount.value === 0 && !hasAppointmentsForSelectedProviders()) {
+        error.value = true;
+      } else {
+        error.value = false;
+        
+        // If no appointments on current date but appointments exist on other days,
+        // select the first available date with appointments
+        if (appointmentsCount.value === 0 && availableDays.value?.length > 0) {
+          const firstAvailableDay = availableDays.value.find(day => {
+            const dayDate = new Date(day.time);
+            return dayDate > new Date(date) && 
+                   day.providerIDs.split(",").some(id => selectedProviders.value[id]);
+          });
+          
+          if (firstAvailableDay) {
+            selectedDay.value = new Date(firstAvailableDay.time);
+          }
+        }
+      }
     } else {
-      error.value = true;
+      // Track dates without appointments
+      datesWithoutAppointments.value.add(date);
+      
+      // Only show error if there are no appointments on any day
+      if (!hasAppointmentsForSelectedProviders()) {
+        error.value = true;
+      } else {
+        error.value = false;
+        
+        // If no appointments on current date but appointments exist on other days,
+        // select the first available date with appointments
+        if (availableDays.value?.length > 0) {
+          const firstAvailableDay = availableDays.value.find(day => {
+            const dayDate = new Date(day.time);
+            return dayDate > new Date(date) && 
+                   day.providerIDs.split(",").some(id => selectedProviders.value[id]);
+          });
+          
+          if (firstAvailableDay) {
+            selectedDay.value = new Date(firstAvailableDay.time);
+          }
+        }
+      }
     }
   });
 };
@@ -763,16 +815,27 @@ const allowedDates = (date: Date) => {
 
   const dateString = convertDateToString(date);
 
+  // Check if this date is known to have no appointments
+  if (datesWithoutAppointments.value.has(dateString)) {
+    return false;
+  }
+
   const dayEntry = availableDays.value?.find(
     (day) => convertDateToString(new Date(day.time)) === dateString
   );
 
   if (!dayEntry) return false;
 
-  return dayEntry.providerIDs
+  // Check if the date has appointments for the selected providers
+  const hasAppointments = dayEntry.providerIDs
     .split(",")
     .some((id) => selectedProviders.value[id]);
+
+  if (!hasAppointments) return false;
+
+  return true;
 };
+
 const hasAppointmentsForSelectedProviders = () => {
   return (
     availableDays?.value?.some((day) =>

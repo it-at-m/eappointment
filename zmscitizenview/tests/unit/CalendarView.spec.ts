@@ -434,4 +434,111 @@ describe("CalendarView", () => {
       expect.any(String)
     );
   });
+
+  describe('CalendarView date disabling and auto-selection', () => {
+    it('disables a date in availableDays if API returns no appointments for it', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-16', providerIDs: '10351880,10470' },
+          { time: '2025-06-17', providerIDs: '10351880,10470' },
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
+        if (date === '2025-06-16') {
+          return Promise.resolve({ offices: [] });
+        }
+        return Promise.resolve({
+          offices: [
+            { officeId: 10351880, appointments: [1750118400] },
+            { officeId: 10470, appointments: [1750118400] }
+          ]
+        });
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-16');
+      await nextTick();
+      expect(wrapper.vm.allowedDates(new Date('2025-06-16'))).toBe(false);
+      expect(wrapper.vm.allowedDates(new Date('2025-06-17'))).toBe(true);
+    });
+
+    it('auto-selects the next available date if the current date has no appointments', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-16', providerIDs: '10351880,10470' },
+          { time: '2025-06-17', providerIDs: '10351880,10470' },
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
+        if (date === '2025-06-16') {
+          return Promise.resolve({ offices: [] });
+        }
+        return Promise.resolve({
+          offices: [
+            { officeId: 10351880, appointments: [1750118400] },
+            { officeId: 10470, appointments: [1750118400] }
+          ]
+        });
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-16');
+      await nextTick();
+      // Should auto-select 2025-06-17
+      expect(wrapper.vm.selectedDay).toEqual(new Date('2025-06-17'));
+    });
+
+    it('enables a date in availableDays if API returns appointments for it', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '10351880,10470' },
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          { officeId: 10351880, appointments: [1750118400] },
+          { officeId: 10470, appointments: [1750118400] }
+        ]
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
+      await nextTick();
+      expect(wrapper.vm.allowedDates(new Date('2025-06-17'))).toBe(true);
+    });
+
+    it('disables a date not in availableDays', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-16', providerIDs: '10351880,10470' },
+        ]
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+      await nextTick();
+      expect(wrapper.vm.allowedDates(new Date('2025-06-18'))).toBe(false);
+    });
+  });
 });
