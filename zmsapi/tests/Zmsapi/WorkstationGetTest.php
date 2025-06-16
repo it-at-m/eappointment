@@ -13,7 +13,7 @@ class WorkstationGetTest extends Base
 
     public static $loginName = 'testadmin';
 
-    public static $authKey = 'vorschau'; 
+    public static $password = 'vorschau'; 
 
     public static $basicAuth = 'dGVzdGFkbWluOnZvcnNjaGF1';
 
@@ -36,11 +36,11 @@ class WorkstationGetTest extends Base
     public function testReadWorkstationByXAuthKey()
     {
         $workstation = (new \BO\Zmsdb\Workstation)
-            ->writeEntityLoginByName(static::$loginName, md5(static::$authKey), \App::getNow(), (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION), 1);
-        $logInHash = (new \BO\Zmsdb\Workstation)->readLoggedInHashByName($workstation->getUseraccount()->id);
+            ->writeEntityLoginByName(static::$loginName, md5(static::$password), \App::getNow(), (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION), 1);
+        $sessionId = $workstation->authkey;
         $response = $this->render([], [
             '__header' => [
-                'X-AuthKey' => $logInHash,
+                'X-AuthKey' => $sessionId,
             ],
             'resolveReferences' => 0
         ], []);
@@ -56,7 +56,7 @@ class WorkstationGetTest extends Base
             ],
             '__userinfo' => [
                 'username' => static::$loginName,
-                'password' => static::$authKey
+                'password' => static::$password
             ],
             'resolveReferences' => 0
         ], []);
