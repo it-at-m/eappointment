@@ -6,7 +6,23 @@ import { nextTick, ref } from "vue";
 import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue";
 
 describe("AppointmentSummary", () => {
-  const mockT = (key: string) => key;
+  const mockT = vi.fn((key: string) => {
+    switch (key) {
+      case "privacyCheckboxText":
+        return "Ich habe die Datenschutzerklärung zur Kenntnis genommen und akzeptiere die Speicherung und Verarbeitung meiner Daten zu meinem Termin.";
+      case "communicationCheckboxText":
+        return "Ich habe die Hinweise zur elektronischen Kommunikation zur Kenntnis genommen und stimme zu, über E-Mail zu meinem Termin benachrichtigt zu werden.";
+      case "termsOfUse":
+        return "Nutzungsbedingungen";
+      case "privacyCheckboxLabel":
+        return "Datenschutz und Datenverarbeitung";
+      case "communicationCheckboxLabel":
+        return "Elektronische Kommunikation";
+      default:
+        return key;
+    }
+  });
+
   const mockSelectedService = ref({
     id: "123",
     name: "Test Service",
@@ -43,6 +59,10 @@ describe("AppointmentSummary", () => {
     telephone: "1234567890",
     customTextfield: "Custom Value 1",
     customTextfield2: "Custom Value 2",
+  });
+
+  beforeEach(() => {
+    mockT.mockClear();
   });
 
   const createWrapper = (props = {}) => {
@@ -119,11 +139,6 @@ describe("AppointmentSummary", () => {
   });
 
   describe("Form Validation", () => {
-    it("disables book button when checkboxes are not checked", () => {
-      const wrapper = createWrapper();
-      const bookButton = wrapper.find('muc-button-stub[icon="check"]');
-      expect(bookButton.attributes("disabled")).toBe("true");
-    });
 
     it("enables book button when both checkboxes are checked", async () => {
       const wrapper = createWrapper();
@@ -131,6 +146,92 @@ describe("AppointmentSummary", () => {
       await wrapper.find('input[name="checkbox-electronic-communication"]').trigger("click");
       const bookButton = wrapper.find('muc-button-stub[icon="check"]');
       expect(bookButton.attributes("disabled")).toBe("false");
+      expect(mockT).toHaveBeenCalledWith("termsOfUse");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxText");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxText");
+    });
+
+    it("disables book button when checkboxes are not checked", () => {
+      const wrapper = createWrapper();
+      const bookButton = wrapper.find('muc-button-stub[icon="check"]');
+      expect(bookButton.attributes("disabled")).toBe("true");
+      expect(mockT).toHaveBeenCalledWith("termsOfUse");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxText");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxText");
+    });
+
+    it("disables book button when only privacy policy is checked", async () => {
+      const wrapper = createWrapper();
+      await wrapper.find('input[name="checkbox-privacy-policy"]').trigger("click");
+      const bookButton = wrapper.find('muc-button-stub[icon="check"]');
+      expect(bookButton.attributes("disabled")).toBe("true");
+      expect(mockT).toHaveBeenCalledWith("termsOfUse");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxText");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxText");
+    });
+
+    it("disables book button when only electronic communication is checked", async () => {
+      const wrapper = createWrapper();
+      await wrapper.find('input[name="checkbox-electronic-communication"]').trigger("click");
+      const bookButton = wrapper.find('muc-button-stub[icon="check"]');
+      expect(bookButton.attributes("disabled")).toBe("true");
+      expect(mockT).toHaveBeenCalledWith("termsOfUse");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxText");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxText");
+    });
+
+    it("disables book button when one checkbox is unchecked after both were checked", async () => {
+      const wrapper = createWrapper();
+      await wrapper.find('input[name="checkbox-privacy-policy"]').trigger("click");
+      await wrapper.find('input[name="checkbox-electronic-communication"]').trigger("click");
+      await wrapper.find('input[name="checkbox-privacy-policy"]').trigger("click");
+      const bookButton = wrapper.find('muc-button-stub[icon="check"]');
+      expect(bookButton.attributes("disabled")).toBe("true");
+      expect(mockT).toHaveBeenCalledWith("termsOfUse");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxText");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxText");
+    });
+
+    it("renders privacy policy checkbox with correct label and text", () => {
+      const wrapper = createWrapper();
+      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
+      const privacyLabel = wrapper.find('label[for="checkbox-privacy-policy"]');
+      expect(privacyCheckbox.exists()).toBe(true);
+      expect(privacyLabel.exists()).toBe(true);
+      expect(privacyLabel.text()).toContain("Datenschutzerklärung zur Kenntnis genommen");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("privacyCheckboxText");
+    });
+
+    it("renders electronic communication checkbox with correct label and text", () => {
+      const wrapper = createWrapper();
+      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      const communicationLabel = wrapper.find('label[for="checkbox-electronic-communication"]');
+      expect(communicationCheckbox.exists()).toBe(true);
+      expect(communicationLabel.exists()).toBe(true);
+      expect(communicationLabel.text()).toContain("Hinweise zur elektronischen Kommunikation");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxLabel");
+      expect(mockT).toHaveBeenCalledWith("communicationCheckboxText");
+    });
+
+    it("does not show consent checkboxes in rebookOrCancelDialog mode", () => {
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      expect(wrapper.find('input[name="checkbox-privacy-policy"]').exists()).toBe(false);
+      expect(wrapper.find('input[name="checkbox-electronic-communication"]').exists()).toBe(false);
+      expect(mockT).not.toHaveBeenCalledWith("privacyCheckboxLabel");
+      expect(mockT).not.toHaveBeenCalledWith("privacyCheckboxText");
+      expect(mockT).not.toHaveBeenCalledWith("communicationCheckboxLabel");
+      expect(mockT).not.toHaveBeenCalledWith("communicationCheckboxText");
     });
   });
 
