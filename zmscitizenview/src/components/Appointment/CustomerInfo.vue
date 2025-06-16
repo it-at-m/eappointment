@@ -114,11 +114,15 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const telephonPattern = /^\+?[0-9]\d{6,14}$/;
 
 const errorMessageFirstName = computed(() =>
-  customerData.value.firstName?.trim() ? undefined : props.t("errorMessageFirstName")
+  customerData.value.firstName?.trim()
+    ? undefined
+    : props.t("errorMessageFirstName")
 );
 
 const errorMessageLastName = computed(() =>
-  customerData.value.lastName?.trim() ? undefined : props.t("errorMessageLastName")
+  customerData.value.lastName?.trim()
+    ? undefined
+    : props.t("errorMessageLastName")
 );
 
 const errorMessageMailAddress = computed(() => {

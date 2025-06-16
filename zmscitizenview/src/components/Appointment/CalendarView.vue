@@ -9,7 +9,10 @@
         v-if="selectableProviders.length > 1"
       >
         <div v-for="provider in selectableProviders">
-          <div class="m-checkboxes__item" :class="{ 'disabled': isCheckboxDisabled(provider.id) }">
+          <div
+            class="m-checkboxes__item"
+            :class="{ disabled: isCheckboxDisabled(provider.id) }"
+          >
             <input
               :id="'checkbox-' + provider.id"
               class="m-checkboxes__input"
@@ -393,7 +396,14 @@ import {
   MucSlider,
   MucSliderItem,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, nextTick, onMounted, ref, watch } from "@vue/runtime-core";
+import {
+  computed,
+  inject,
+  nextTick,
+  onMounted,
+  ref,
+  watch,
+} from "@vue/runtime-core";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsByOfficeDTO } from "@/api/models/AvailableTimeSlotsByOfficeDTO";
@@ -750,29 +760,36 @@ const getAppointmentsOfDay = (date: string) => {
         (sum, office) => sum + (office.appointments?.length ?? 0),
         0
       );
-      
+
       // Track dates without appointments
       if (appointmentsCount.value === 0) {
         datesWithoutAppointments.value.add(date);
       } else {
         datesWithoutAppointments.value.delete(date);
       }
-      
+
       // Only show error if there are no appointments on any day
-      if (appointmentsCount.value === 0 && !hasAppointmentsForSelectedProviders()) {
+      if (
+        appointmentsCount.value === 0 &&
+        !hasAppointmentsForSelectedProviders()
+      ) {
         error.value = true;
       } else {
         error.value = false;
-        
+
         // If no appointments on current date but appointments exist on other days,
         // select the first available date with appointments
         if (appointmentsCount.value === 0 && availableDays.value?.length > 0) {
-          const firstAvailableDay = availableDays.value.find(day => {
+          const firstAvailableDay = availableDays.value.find((day) => {
             const dayDate = new Date(day.time);
-            return dayDate > new Date(date) && 
-                   day.providerIDs.split(",").some(id => selectedProviders.value[id]);
+            return (
+              dayDate > new Date(date) &&
+              day.providerIDs
+                .split(",")
+                .some((id) => selectedProviders.value[id])
+            );
           });
-          
+
           if (firstAvailableDay) {
             selectedDay.value = new Date(firstAvailableDay.time);
           }
@@ -781,22 +798,26 @@ const getAppointmentsOfDay = (date: string) => {
     } else {
       // Track dates without appointments
       datesWithoutAppointments.value.add(date);
-      
+
       // Only show error if there are no appointments on any day
       if (!hasAppointmentsForSelectedProviders()) {
         error.value = true;
       } else {
         error.value = false;
-        
+
         // If no appointments on current date but appointments exist on other days,
         // select the first available date with appointments
         if (availableDays.value?.length > 0) {
-          const firstAvailableDay = availableDays.value.find(day => {
+          const firstAvailableDay = availableDays.value.find((day) => {
             const dayDate = new Date(day.time);
-            return dayDate > new Date(date) && 
-                   day.providerIDs.split(",").some(id => selectedProviders.value[id]);
+            return (
+              dayDate > new Date(date) &&
+              day.providerIDs
+                .split(",")
+                .some((id) => selectedProviders.value[id])
+            );
           });
-          
+
           if (firstAvailableDay) {
             selectedDay.value = new Date(firstAvailableDay.time);
           }
@@ -868,18 +889,22 @@ const handleProviderSelection = (id: number) => {
 
 const handleProviderCheckbox = (id: string) => {
   // Count how many providers are currently selected
-  const selectedCount = Object.values(selectedProviders.value).filter(Boolean).length;
-  
+  const selectedCount = Object.values(selectedProviders.value).filter(
+    Boolean
+  ).length;
+
   // If trying to uncheck the last selected provider, prevent it
   if (selectedCount === 1 && selectedProviders.value[id]) {
     return;
   }
-  
+
   selectedProviders.value[id] = !selectedProviders.value[id];
 };
 
 const isCheckboxDisabled = (providerId: string) => {
-  const selectedCount = Object.values(selectedProviders.value).filter(Boolean).length;
+  const selectedCount = Object.values(selectedProviders.value).filter(
+    Boolean
+  ).length;
   // Disable if this is the only selected provider
   return selectedCount === 1 && selectedProviders.value[providerId];
 };

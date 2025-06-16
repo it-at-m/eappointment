@@ -229,14 +229,14 @@
 <script setup lang="ts">
 import { MucButton } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "@vue/runtime-core";
-import { OfficeImpl } from "@/types/OfficeImpl";
-import { SubService } from "@/types/SubService";
 
+import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
+import { SubService } from "@/types/SubService";
 
 defineProps<{
   isRebooking: boolean;

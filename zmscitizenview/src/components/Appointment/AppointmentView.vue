@@ -178,7 +178,14 @@
 
 <script setup lang="ts">
 import { MucCallout, MucStepper } from "@muenchen/muc-patternlab-vue";
-import { computed, nextTick, onMounted, provide, ref, watch } from "@vue/runtime-core";
+import {
+  computed,
+  nextTick,
+  onMounted,
+  provide,
+  ref,
+  watch,
+} from "@vue/runtime-core";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
@@ -259,7 +266,9 @@ const selectedServiceMap = ref<Map<string, number>>(new Map<string, number>());
 const selectedProvider = ref<OfficeImpl>();
 const selectedTimeslot = ref<number>(0);
 
-const customerData = ref<CustomerData>(new CustomerData("", "", "", "", "", ""));
+const customerData = ref<CustomerData>(
+  new CustomerData("", "", "", "", "", "")
+);
 const appointment = ref<AppointmentImpl>();
 const rebookedAppointment = ref<AppointmentImpl>();
 
@@ -514,7 +523,9 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
   relations.value.forEach((relation) => {
     if (relation.serviceId == serviceId) {
-      const office = offices.value.find((office) => office.id == relation.officeId);
+      const office = offices.value.find(
+        (office) => office.id == relation.officeId
+      );
       if (office) {
         console.log(office);
         const foundOffice: OfficeImpl = new OfficeImpl(
@@ -648,7 +659,10 @@ onMounted(() => {
                       getProviders(subRequest.id, null),
                       subRequestCount.count
                     );
-                    if (selectedService.value && !selectedService.value.subServices) {
+                    if (
+                      selectedService.value &&
+                      !selectedService.value.subServices
+                    ) {
                       selectedService.value.subServices = [];
                     }
                     selectedService.value?.subServices?.push(subService);

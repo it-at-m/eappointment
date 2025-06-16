@@ -281,9 +281,11 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
   relations.value.forEach((relation) => {
     if (relation.serviceId == serviceId) {
-      const office = offices.value.find((office) => office.id == relation.officeId);
+      const office = offices.value.find(
+        (office) => office.id == relation.officeId
+      );
       if (!office) return;
-      
+
       const foundOffice: OfficeImpl = new OfficeImpl(
         office.id,
         office.name,
