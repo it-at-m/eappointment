@@ -12,13 +12,11 @@ use Psr\Http\Message\ResponseInterface;
 
 class OverallCalendarLoadData extends BaseController
 {
-
     public function readResponse(
-        RequestInterface  $request,
+        RequestInterface $request,
         ResponseInterface $response,
-        array             $args
-    )
-    {
+        array $args
+    ) {
         $scopeIds = $_GET['scopeIds'] ?? null;
         $dateFrom = $_GET['dateFrom'] ?? null;
         $dateUntil = $_GET['dateUntil'] ?? null;

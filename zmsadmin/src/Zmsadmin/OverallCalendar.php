@@ -48,7 +48,7 @@ class OverallCalendar extends BaseController
                 'workstation' => $workstation,
                 'scopeList' => $departmentScopes,
                 'menuActive' => 'overallcalendar',
-                'hideNavigation'=> true,
+                'hideNavigation' => true,
             )
         );
     }

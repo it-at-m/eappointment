@@ -82,5 +82,4 @@ class OverallCalendar extends Base
            AND g.updated_at > :updatedAfter
          ORDER BY g.scope_id, g.time, g.seat
     ';
-
 }
