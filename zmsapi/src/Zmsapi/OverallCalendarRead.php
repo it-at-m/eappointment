@@ -27,14 +27,13 @@ class OverallCalendarRead extends BaseController
 
             $day['date']            = (new DateTimeImmutable($dateKey))->getTimestamp();
             $scope['id']            = $scopeKey;
-            $scope['name']          = '';
+            $scope['name']          = $row['scope_name'];
+            $scope['shortName']     = $row['scope_short'];
             $scope['maxSeats']      = max($scope['maxSeats'] ?? 0, $seatNo, $defaultSeats);
             $time[$seatNo]['init']  = true;
 
             if ($row['status'] === 'termin') {
-                if ($row['slots'] === null) {
-                    $time[$seatNo] = ['status' => 'skip'];
-                } else {
+                if ($row['slots'] !== null) {
                     $time[$seatNo] = [
                         'status'    => 'termin',
                         'processId' => (int)$row['process_id'],
@@ -44,12 +43,28 @@ class OverallCalendarRead extends BaseController
                         'processId' => (int)$row['process_id'],
                         'openSlots' => (int)$row['slots'] - 1,
                     ];
+                } else {
+                    $info = $lastSlotInfo["$scopeKey|$seatNo"] ?? null;
+                    if ($info && $info['openSlots'] > 0) {
+                        $time[$seatNo] = ['status' => 'skip'];
+                        $lastSlotInfo["$scopeKey|$seatNo"]['openSlots']--;
+
+                        if ($lastSlotInfo["$scopeKey|$seatNo"]['openSlots'] <= 0) {
+                            unset($lastSlotInfo["$scopeKey|$seatNo"]);
+                        }
+                    } else {
+                        $time[$seatNo] = ['status' => 'skip'];
+                    }
                 }
             } else {
                 $info = $lastSlotInfo["$scopeKey|$seatNo"] ?? null;
                 if ($info && $info['openSlots'] > 0) {
                     $time[$seatNo] = ['status' => 'skip'];
                     $lastSlotInfo["$scopeKey|$seatNo"]['openSlots']--;
+
+                    if ($lastSlotInfo["$scopeKey|$seatNo"]['openSlots'] <= 0) {
+                        unset($lastSlotInfo["$scopeKey|$seatNo"]);
+                    }
                 } else {
                     $time[$seatNo] = ['status' => 'open'];
                     unset($lastSlotInfo["$scopeKey|$seatNo"]);
