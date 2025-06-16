@@ -243,6 +243,23 @@ The branch name must match the following regular expression:
 - **chore(ZMSKVR-123): commit message**
 - **docs(ZMS-123): commit message**
 
+## Dependency Graph
+```mermaid
+%%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
+graph TD;
+    zmsapi --> zmsslim & zmsclient & zmsdldb & zmsdb & zmsentities;
+    zmsadmin --> mellon & zmsclient & zmsslim & zmsentities;
+    zmscalldisplay --> mellon & zmsclient & zmsentities & zmsslim;
+    zmsstatistic --> mellon & zmsentities & zmsslim & zmsclient;
+    zmsmessaging --> mellon & zmsclient & zmsentities & zmsslim;
+    
+    zmsdb --> zmsentities & zmsdldb & mellon;
+    zmsclient --> zmsentities & zmsslim & mellon;
+    zmsentities --> mellon;
+    zmsslim --> mellon;
+
+```
+
 ## Screenshot
 ![screenshot](https://github.com/user-attachments/assets/54d360e9-c47b-4f3c-b849-5966a8766af9)
 ![combined_image](https://github.com/user-attachments/assets/87902e60-fe90-48a0-bf60-c5edec210dc9)
