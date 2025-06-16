@@ -1,6 +1,6 @@
 request:
   method: GET
-  path: "/session/ZmsclientUnittest/0058pfv918e8ipmbadj05sm1e7/"
+  path: "/session/ZmsclientUnittest/f7d71a4203d8bf44ebfbbd9d7ebb548a3aa8fa49af8cb3a262d10916b140ff75/"
   headers:
     User-Agent:
     - ClientZMS
