@@ -598,6 +598,13 @@ describe("CalendarView", () => {
     });
 
     it('renders disabled state correctly in the DOM', async () => {
+      // Mock availableDays to include both providers
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '1,2' }
+        ]
+      });
+
       const wrapper = createWrapper({
         selectedService: { id: 'service1', providers: [
           { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
@@ -605,6 +612,10 @@ describe("CalendarView", () => {
         ] }
       });
 
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
 
       // Initially both checked, so neither should be disabled
@@ -676,6 +687,46 @@ describe("CalendarView", () => {
 
       // Should change to 2025-06-18 since that's the next date with appointments for provider 2
       expect(wrapper.vm.selectedDay).toEqual(new Date('2025-06-18'));
+    });
+
+    it('does not show locations without appointments in the checkbox list', async () => {
+      // Mock availableDays to include only three out of four providers
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '1,2,3' } // Note: provider '4' is not included
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } },
+          { name: 'Office C', id: '3', address: { street: 'Test', house_number: '3' } },
+          { name: 'Office D', id: '4', address: { street: 'Test', house_number: '4' } }
+        ] }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
+      await nextTick();
+
+      // Check that only providers with appointments are shown
+      const checkboxes = wrapper.findAll('.m-checkboxes__item input[type="checkbox"]');
+      expect(checkboxes.length).toBe(3); // Should only show 3 providers
+
+      // Verify the specific providers that should be shown
+      expect(wrapper.find('#checkbox-1').exists()).toBe(true);
+      expect(wrapper.find('#checkbox-2').exists()).toBe(true);
+      expect(wrapper.find('#checkbox-3').exists()).toBe(true);
+      expect(wrapper.find('#checkbox-4').exists()).toBe(false); // This provider should not be shown
+
+      // Verify the provider names are shown correctly
+      expect(wrapper.text()).toContain('Office A');
+      expect(wrapper.text()).toContain('Office B');
+      expect(wrapper.text()).toContain('Office C');
+      expect(wrapper.text()).not.toContain('Office D'); // This provider should not be shown
     });
   });
 });
