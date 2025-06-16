@@ -531,6 +531,130 @@ describe("CalendarView", () => {
       await nextTick();
       expect(wrapper.vm.allowedDates(new Date('2025-06-18'))).toBe(false);
     });
+
+    it('disables next month navigation when no appointments are available beyond current month', async () => {
+      // Mock availableDays to only include dates in the current month
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-16', providerIDs: '10351880,10470' },
+          { time: '2025-06-17', providerIDs: '10351880,10470' },
+          { time: '2025-06-30', providerIDs: '10351880,10470' } // Last day of June
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+
+      // Set current date to last day of June
+      wrapper.vm.selectedDay = new Date('2025-06-30');
+      await nextTick();
+
+      // Verify that next month navigation is disabled
+      const calendar = wrapper.findComponent({ name: 'muc-calendar' });
+      expect(calendar.exists()).toBe(true);
+      expect(calendar.props('max')).toEqual(new Date('2025-06-30'));
+    });
+
+    it('enables next month navigation when appointments are available in future months', async () => {
+      // Mock availableDays to include dates in both current and next month
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-16', providerIDs: '10351880,10470' },
+          { time: '2025-06-17', providerIDs: '10351880,10470' },
+          { time: '2025-07-01', providerIDs: '10351880,10470' } // First day of next month
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+
+      // Set current date to last day of June
+      wrapper.vm.selectedDay = new Date('2025-06-30');
+      await nextTick();
+
+      // Verify that next month navigation is enabled
+      const calendar = wrapper.findComponent({ name: 'muc-calendar' });
+      expect(calendar.exists()).toBe(true);
+      expect(calendar.props('max')).toEqual(new Date('2025-07-01'));
+    });
+
+    it('disables previous month navigation when no appointments are available before current month', async () => {
+      // Mock availableDays to only include dates in the current month
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-01', providerIDs: '10351880,10470' }, // First day of June
+          { time: '2025-06-17', providerIDs: '10351880,10470' },
+          { time: '2025-06-30', providerIDs: '10351880,10470' }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+
+      // Set current date to first day of June
+      wrapper.vm.selectedDay = new Date('2025-06-01');
+      await nextTick();
+
+      // Verify that previous month navigation is disabled
+      const calendar = wrapper.findComponent({ name: 'muc-calendar' });
+      expect(calendar.exists()).toBe(true);
+      expect(calendar.props('min')).toEqual(new Date('2025-06-01'));
+    });
+
+    it('enables previous month navigation when appointments are available in past months', async () => {
+      // Mock availableDays to include dates in both current and previous month
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-05-31', providerIDs: '10351880,10470' }, // Last day of May
+          { time: '2025-06-01', providerIDs: '10351880,10470' }, // First day of June
+          { time: '2025-06-17', providerIDs: '10351880,10470' }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+
+      // Set current date to first day of June
+      wrapper.vm.selectedDay = new Date('2025-06-01');
+      await nextTick();
+
+      // Verify that previous month navigation is enabled
+      const calendar = wrapper.findComponent({ name: 'muc-calendar' });
+      expect(calendar.exists()).toBe(true);
+      expect(calendar.props('min')).toEqual(new Date('2025-05-31'));
+    });
   });
 
   describe('CalendarView checkbox behavior', () => {
