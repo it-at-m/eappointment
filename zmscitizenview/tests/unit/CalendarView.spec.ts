@@ -655,6 +655,91 @@ describe("CalendarView", () => {
       expect(calendar.exists()).toBe(true);
       expect(calendar.props('min')).toEqual(new Date('2025-05-31'));
     });
+
+    it('updates navigation limits when providers are deselected', async () => {
+      // Mock availableDays with different date ranges for different providers
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          // Provider 10351880 has appointments until July
+          { time: '2025-06-16', providerIDs: '10351880' },
+          { time: '2025-06-17', providerIDs: '10351880' },
+          { time: '2025-07-01', providerIDs: '10351880' },
+          // Provider 10470 has appointments until August
+          { time: '2025-06-16', providerIDs: '10470' },
+          { time: '2025-06-17', providerIDs: '10470' },
+          { time: '2025-08-01', providerIDs: '10470' }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+
+      // Initially both providers are selected, so max date should be August 1st
+      const calendar = wrapper.findComponent({ name: 'muc-calendar' });
+      expect(calendar.exists()).toBe(true);
+      expect(calendar.props('max')).toEqual(new Date('2025-08-01'));
+
+      // Deselect provider 10470 (which had appointments until August)
+      await wrapper.vm.handleProviderCheckbox('10470');
+      await nextTick();
+
+      // Now only provider 10351880 is selected, so max date should be July 1st
+      expect(calendar.props('max')).toEqual(new Date('2025-07-01'));
+    });
+
+    it('updates navigation limits when providers are selected', async () => {
+      // Mock availableDays with different date ranges for different providers
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          // Provider 10351880 has appointments until July
+          { time: '2025-06-16', providerIDs: '10351880' },
+          { time: '2025-06-17', providerIDs: '10351880' },
+          { time: '2025-07-01', providerIDs: '10351880' },
+          // Provider 10470 has appointments until August
+          { time: '2025-06-16', providerIDs: '10470' },
+          { time: '2025-06-17', providerIDs: '10470' },
+          { time: '2025-08-01', providerIDs: '10470' }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office Y', id: 10470, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: 'Office X', id: 10351880, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+
+      // Initially both providers are selected, so max date should be August 1st
+      const calendar = wrapper.findComponent({ name: 'muc-calendar' });
+      expect(calendar.exists()).toBe(true);
+      expect(calendar.props('max')).toEqual(new Date('2025-08-01'));
+
+      // Deselect provider 10470
+      await wrapper.vm.handleProviderCheckbox('10470');
+      await nextTick();
+
+      // Now only provider 10351880 is selected, so max date should be July 1st
+      expect(calendar.props('max')).toEqual(new Date('2025-07-01'));
+
+      // Select provider 10470 again
+      await wrapper.vm.handleProviderCheckbox('10470');
+      await nextTick();
+
+      // Now both providers are selected again, so max date should be August 1st
+      expect(calendar.props('max')).toEqual(new Date('2025-08-01'));
+    });
   });
 
   describe('CalendarView checkbox behavior', () => {
@@ -924,6 +1009,64 @@ describe("CalendarView", () => {
 
       const locationTitles = wrapper.findAll('.location-title');
       expect(locationTitles.length).toBe(0);
+    });
+
+    it('updates calendar view when selected date changes due to provider deselection', async () => {
+      // Mock availableDays with dates in different months
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-08-15', providerIDs: '1,2' },
+          { time: '2025-09-01', providerIDs: '1' },
+          { time: '2025-09-15', providerIDs: '1' }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
+        if (date === '2025-08-15') {
+          return Promise.resolve({
+            offices: [
+              { officeId: 1, appointments: [1750118400] },
+              { officeId: 2, appointments: [1750118400] }
+            ]
+          });
+        }
+        return Promise.resolve({
+          offices: [{ officeId: 1, appointments: [1750118400] }]
+        });
+      });
+
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await flushPromises();
+
+      // Set initial date to September 1st
+      wrapper.vm.selectedDay = new Date('2025-09-01');
+      await nextTick();
+      await flushPromises();
+
+      // Uncheck provider 2 (which has appointments in August)
+      await wrapper.vm.handleProviderCheckbox('2');
+      await nextTick();
+      await flushPromises();
+
+      // Verify that the calendar view updates to show August
+      const calendar = wrapper.findComponent({ name: 'muc-calendar' });
+      expect(calendar.exists()).toBe(true);
+      
+      // Compare only year and month to avoid timezone issues
+      const actualDate = calendar.props('viewMonth');
+      console.log('Actual date:', actualDate);
+      console.log('Actual month:', actualDate.getMonth());
+      expect(actualDate.getFullYear()).toBe(2025);
+      expect(actualDate.getMonth()).toBe(5); // June is month 5
     });
   });
 });
