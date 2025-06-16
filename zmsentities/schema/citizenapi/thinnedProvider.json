@@ -17,6 +17,13 @@
             ],
             "description": "Provider name"
         },
+        "displayName": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Display provider name"
+        },
         "lat": {
             "type": [
                 "number",
