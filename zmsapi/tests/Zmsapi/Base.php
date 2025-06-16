@@ -62,6 +62,34 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         return User::$workstation;
     }
 
+    protected function setWorkstationSuperUser(
+        $workstationId = 138,
+        $loginname = "superuser",
+        $scopeId = 143,
+        $password = "vorschau"
+    ) {
+        User::$workstation = new Workstation([
+            'id' => $workstationId,
+            'useraccount' => new Useraccount([
+                'id' => $loginname,
+                'password' => md5($password),
+                'rights' => [
+                    'superuser' => 1,
+                ],
+            ]),
+            'scope' => new Scope([
+                'id' => $scopeId,
+                'preferences' => [
+                    'queue' => [
+                        'processingTimeAverage' => 10,
+                    ]
+                ]
+            ])
+        ]);
+        User::$workstationResolved = 2;
+        return User::$workstation;
+    }
+
     protected function setDepartment($departmentId)
     {
         $department = new \BO\Zmsentities\Department([

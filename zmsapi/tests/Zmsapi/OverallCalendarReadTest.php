@@ -19,7 +19,7 @@ class OverallCalendarReadTest extends Base
 
     public function testCalendarStructure(): void
     {
-        $this->setWorkstation(138, "superuser", 143, "vorschau");
+        $this->setWorkstationSuperUser();
 
         $response = $this->render([], self::VALID_PARAMS);
         $json = json_decode((string) $response->getBody(), true);
@@ -33,7 +33,7 @@ class OverallCalendarReadTest extends Base
 
     public function testRendering(): void
     {
-        $this->setWorkstation(138, "superuser", 143, "vorschau");
+        $this->setWorkstationSuperUser();
 
         $response = $this->render([], self::VALID_PARAMS);
         $this->assertEquals(200, $response->getStatusCode());
@@ -42,7 +42,7 @@ class OverallCalendarReadTest extends Base
 
     public function testValidationFailure(): void
     {
-        $this->setWorkstation(138, "superuser", 143, "vorschau");
+        $this->setWorkstationSuperUser();
 
         $this->expectException(Exception::class);
 
@@ -51,7 +51,7 @@ class OverallCalendarReadTest extends Base
 
     public function testResponseMatchesSchema(): void
     {
-        $this->setWorkstation(138, "superuser", 143, "vorschau");
+        $this->setWorkstationSuperUser();
 
         $response = $this->render([], self::VALID_PARAMS);
         $json     = json_decode((string) $response->getBody());
