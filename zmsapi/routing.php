@@ -3346,6 +3346,12 @@ use \Psr\Http\Message\ResponseInterface;
 )
     ->setName("ProcessFree");
 
+\App::$slim->post(
+    '/process/status/free/unique/',
+    '\BO\Zmsapi\ProcessFreeUnique'
+)
+    ->setName("ProcessFreeUnique");
+
 /**
  *  @swagger
  *  "/process/status/reserved/":

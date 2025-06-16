@@ -878,23 +878,30 @@ const hasAppointmentsForSelectedProviders = () => {
 
 // Add new computed property to filter providers with appointments
 const providersWithAppointments = computed(() => {
-  // In test environment, return all providers if availableDays is not set
-  if (!availableDays?.value) {
-    return selectableProviders.value || [];
+  // If no available days or empty available days, return empty array
+  if (!availableDays?.value || availableDays.value.length === 0) {
+    return [];
   }
   
-  return (selectableProviders.value || []).filter(provider => {
-    return availableDays.value.some(day => 
-      day.providerIDs.split(",").includes(provider.id.toString())
-    );
-  });
+  // Filter providers that have appointments and maintain their original order
+  return (selectableProviders.value || [])
+    .filter(provider => {
+      return availableDays.value.some(day => 
+        day.providerIDs.split(",").includes(provider.id.toString())
+      );
+    })
+    .sort((a, b) => {
+      const aPriority = a.priority ?? -Infinity;
+      const bPriority = b.priority ?? -Infinity;
+      return bPriority - aPriority;
+    });
 });
 
 // Add new computed property to track if any provider with appointments is selected
 const hasSelectedProviderWithAppointments = computed(() => {
-  // In test environment, return true if any provider is selected
-  if (!availableDays?.value) {
-    return Object.values(selectedProviders.value).some(Boolean);
+  // If no available days or empty available days, return false
+  if (!availableDays?.value || availableDays.value.length === 0) {
+    return false;
   }
   
   return Object.entries(selectedProviders.value).some(([id, isSelected]) => 
@@ -903,7 +910,7 @@ const hasSelectedProviderWithAppointments = computed(() => {
 });
 
 watch(providersWithAppointments, (newProviders) => {
-  // If no provider with appointments is selected, select the first available one
+  // If no provider with appointments is selected and we have providers with appointments, select the first one
   if (!hasSelectedProviderWithAppointments.value && newProviders.length > 0) {
     selectedProviders.value[newProviders[0].id] = true;
   }
@@ -921,10 +928,13 @@ const handleProviderSelection = (id: number) => {
 };
 
 const handleProviderCheckbox = async (id: string) => {
-  // Count how many providers are currently selected
-  const selectedCount = Object.values(selectedProviders.value).filter(Boolean).length;
+  // Count how many providers with appointments are currently selected
+  const selectedCount = Object.entries(selectedProviders.value).filter(
+    ([providerId, isSelected]) => 
+      isSelected && providersWithAppointments.value.some(p => p.id.toString() === providerId)
+  ).length;
 
-  // If trying to uncheck the last selected provider, prevent it
+  // If trying to uncheck the last selected provider with appointments, prevent it
   if (selectedCount === 1 && selectedProviders.value[id]) {
     return;
   }
@@ -967,10 +977,13 @@ const handleProviderCheckbox = async (id: string) => {
 };
 
 const isCheckboxDisabled = (providerId: string) => {
-  // Count how many providers are currently selected
-  const selectedCount = Object.values(selectedProviders.value).filter(Boolean).length;
+  // Count how many providers with appointments are currently selected
+  const selectedCount = Object.entries(selectedProviders.value).filter(
+    ([id, isSelected]) => 
+      isSelected && providersWithAppointments.value.some(p => p.id.toString() === id)
+  ).length;
   
-  // Disable if this is the only selected provider
+  // Disable if this is the only selected provider with appointments
   return selectedCount === 1 && selectedProviders.value[providerId];
 };
 
