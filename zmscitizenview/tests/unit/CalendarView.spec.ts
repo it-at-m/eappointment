@@ -1,10 +1,13 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+/// <reference types="vitest" />
+import { describe, it, expect, beforeEach, vi, type Mock } from "vitest";
 import { mount } from "@vue/test-utils";
-import CalendarView from "/src/components/Appointment/CalendarView.vue";
+// @ts-expect-error: Vue SFC import for test
+import CalendarView from "@/components/Appointment/CalendarView.vue";
 import { ref, nextTick } from "vue";
 import {
   fetchAvailableDays,
   fetchAvailableTimeSlots,
+// @ts-expect-error: API import for test
 } from "@/api/ZMSAppointmentAPI";
 
 const t = vi.fn((key: string) => key);
@@ -26,8 +29,14 @@ vi.mock('@/api/ZMSAppointmentAPI', () => ({
   fetchAvailableTimeSlots: vi.fn(),
 }));
 
+interface WrapperOverrides {
+  selectedService?: any;
+  selectedProvider?: any;
+  selectedTimeslot?: number;
+  props?: Record<string, any>;
+}
 
-const createWrapper = (overrides = {}) => {
+const createWrapper = (overrides: WrapperOverrides = {}) => {
   return mount(CalendarView, {
     global: {
       provide: {
@@ -50,7 +59,7 @@ const createWrapper = (overrides = {}) => {
 };
 
 describe("CalendarView", () => {
-  (fetchAvailableDays as vi.Mock).mockResolvedValue({
+  (fetchAvailableDays as Mock).mockResolvedValue({
     availableDays: [
       {
         time: '2025-05-14',
@@ -62,7 +71,7 @@ describe("CalendarView", () => {
       }]
   });
 
-  (fetchAvailableTimeSlots as vi.Mock).mockResolvedValue({
+  (fetchAvailableTimeSlots as Mock).mockResolvedValue({
     offices: [
       {
         officeId: 102522,
@@ -204,7 +213,7 @@ describe("CalendarView", () => {
   });
 
   it("shows appointments by hour", async () => {
-    (fetchAvailableTimeSlots as vi.Mock).mockResolvedValue({
+    (fetchAvailableTimeSlots as Mock).mockResolvedValue({
       offices: [
         {
           officeId: 102522,
@@ -322,7 +331,7 @@ describe("CalendarView", () => {
   });
 
   it("shows available day only by providers that have free appointments on that day", async () => {
-    (fetchAvailableDays as vi.Mock).mockResolvedValue({
+    (fetchAvailableDays as Mock).mockResolvedValue({
       availableDays: [
         {
           time: '2025-05-14',
@@ -392,7 +401,7 @@ describe("CalendarView", () => {
     wrapper.vm.appointmentTimestampsByOffice = ref([]);
     wrapper.vm.appointmentTimestamps = ref([]);
 
-    (fetchAvailableTimeSlots as vi.Mock).mockResolvedValue({
+    (fetchAvailableTimeSlots as Mock).mockResolvedValue({
       offices: [
         {
           officeId: 102522,
