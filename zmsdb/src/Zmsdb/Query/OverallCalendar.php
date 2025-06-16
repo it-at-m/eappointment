@@ -6,10 +6,10 @@ class OverallCalendar extends Base
 {
     const TABLE = 'gesamtkalender';
 
-    const INSERT = '
+    const INSERT_MULTI = '
         INSERT IGNORE INTO gesamtkalender
-               (scope_id, availability_id, time, seat, status)
-        VALUES (:scope_id, :availability_id, :time, :seat, :status)
+            (scope_id, availability_id, time, seat, status)
+        VALUES %s
     ';
 
     const DELETE_FREE_RANGE = '
@@ -63,19 +63,24 @@ class OverallCalendar extends Base
     ';
 
     const SELECT_RANGE = '
-        SELECT scope_id, time, availability_id, seat, status, process_id, slots, updated_at
-          FROM gesamtkalender
-         WHERE scope_id IN (%s)            
-           AND time BETWEEN :from AND :until
-         ORDER BY scope_id, time, seat
+        SELECT g.scope_id, g.time, g.availability_id, g.seat, g.status, g.process_id, g.slots, g.updated_at, 
+               s.Bezeichnung as scope_name, s.standortkuerzel as scope_short
+          FROM gesamtkalender g
+          JOIN standort s ON g.scope_id = s.StandortID
+         WHERE g.scope_id IN (%s)            
+           AND g.time BETWEEN :from AND :until
+         ORDER BY g.scope_id, g.time, g.seat
     ';
 
     const SELECT_RANGE_UPDATED = '
-        SELECT scope_id, time, availability_id, seat, status, process_id, slots, updated_at
-          FROM gesamtkalender
-         WHERE scope_id IN (%s)
-           AND time BETWEEN :from AND :until
-           AND updated_at > :updatedAfter
-         ORDER BY scope_id, time, seat
+        SELECT g.scope_id, g.time, g.availability_id, g.seat, g.status, g.process_id, g.slots, g.updated_at, 
+               s.Bezeichnung as scope_name, s.standortkuerzel as scope_short
+          FROM gesamtkalender g
+          JOIN standort s ON g.scope_id = s.StandortID
+         WHERE g.scope_id IN (%s)
+           AND g.time BETWEEN :from AND :until
+           AND g.updated_at > :updatedAfter
+         ORDER BY g.scope_id, g.time, g.seat
     ';
+
 }
