@@ -17,18 +17,41 @@ class OverallCalendarLoadData extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $scopeIds = $_GET['scopeIds'] ?? null;
-        $dateFrom = $_GET['dateFrom'] ?? null;
-        $dateUntil = $_GET['dateUntil'] ?? null;
+        $scopeIds    = $_GET['scopeIds']    ?? null;
+        $dateFrom    = $_GET['dateFrom']    ?? null;
+        $dateUntil   = $_GET['dateUntil']   ?? null;
         $updateAfter = $_GET['updateAfter'] ?? null;
 
-        if (!$scopeIds || !$dateFrom || !$dateUntil) {
-            throw new \Exception('Missing required parameters');
+        if ($scopeIds === null && $dateFrom === null && $dateUntil === null) {
+            $response->getBody()->write(json_encode([]));
+            return $response
+                ->withHeader('Content-Type', 'application/json');
+        }
+
+        $missing = [];
+        if (!$scopeIds) {
+            $missing[] = 'scopeIds';
+        }
+        if (!$dateFrom) {
+            $missing[] = 'dateFrom';
+        }
+        if (!$dateUntil) {
+            $missing[] = 'dateUntil';
+        }
+        if (!empty($missing)) {
+            $error = [
+                'error'   => true,
+                'message' => 'Missing required parameters: ' . implode(', ', $missing),
+            ];
+            $response->getBody()->write(json_encode($error));
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
         }
 
         $params = [
-            'scopeIds' => $scopeIds,
-            'dateFrom' => $dateFrom,
+            'scopeIds'  => $scopeIds,
+            'dateFrom'  => $dateFrom,
             'dateUntil' => $dateUntil,
         ];
         if ($updateAfter) {
@@ -36,10 +59,9 @@ class OverallCalendarLoadData extends BaseController
         }
 
         $apiResult = \App::$http->readGetResult('/overallcalendar/', $params);
+        $rawBody   = (string)$apiResult->getResponse()->getBody();
 
-        $body = (string)$apiResult->getResponse()->getBody();
-        $response->getBody()->write($body);
-
+        $response->getBody()->write($rawBody);
         return $response
             ->withHeader('Content-Type', 'application/json');
     }

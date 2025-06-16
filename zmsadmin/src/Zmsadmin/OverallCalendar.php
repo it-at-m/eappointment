@@ -26,19 +26,20 @@ class OverallCalendar extends BaseController
         }
         $scopeId = $workstation->scope->id ?? null;
 
-        $department = null;
+        $departmentScopes = [];
+
         if ($scopeId) {
             $departmentApiResult = \App::$http->readGetResult(
                 '/scope/' . $scopeId . '/department/',
                 ['resolveReferences' => 2]
             );
-            $data = $departmentApiResult ? $departmentApiResult->getEntity() : null;
 
+            $data = $departmentApiResult ? $departmentApiResult->getEntity() : null;
             if ($data) {
-                $department = new \BO\Zmsentities\Department($data);
+                $department = new DepartmentEntity($data);
+                $departmentScopes = $department->getScopeList();
             }
         }
-        $departmentScopes = $department->getScopeList();
 
         return \BO\Slim\Render::withHtml(
             $response,
