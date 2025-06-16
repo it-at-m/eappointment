@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { MucCounter } from "@muenchen/muc-patternlab-vue";
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch } from "@vue/runtime-core";
 
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SubService } from "@/types/SubService";
