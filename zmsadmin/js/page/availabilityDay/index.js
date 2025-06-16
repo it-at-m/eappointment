@@ -403,8 +403,9 @@ class AvailabilityPage extends Component {
                 stateChanged: true
             }
         ), () => {
-            this.getConflictList(),
-                this.getValidationList()
+            this.getConflictList();
+            this.getValidationList();
+            this.isCreatingExclusion = false;
         });
     }
 
