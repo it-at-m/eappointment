@@ -441,7 +441,7 @@ const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
 ) as SelectedTimeslotProvider;
 
 const selectableProviders = ref<OfficeImpl[]>();
-const availableDays = ref<Array<{time: string, providerIDs: string}>>();
+const availableDays = ref<Array<{ time: string; providerIDs: string }>>();
 const selectedHour = ref<number | null>(null);
 const selectedDayPart = ref<"am" | "pm" | null>(null);
 
@@ -779,7 +779,11 @@ const getAppointmentsOfDay = (date: string) => {
 
         // If no appointments on current date but appointments exist on other days,
         // select the first available date with appointments
-        if (appointmentsCount.value === 0 && availableDays.value && availableDays.value.length > 0) {
+        if (
+          appointmentsCount.value === 0 &&
+          availableDays.value &&
+          availableDays.value.length > 0
+        ) {
           const firstAvailableDay = availableDays.value.find((day) => {
             const dayDate = new Date(day.time);
             return (
@@ -882,11 +886,11 @@ const providersWithAppointments = computed(() => {
   if (!availableDays?.value || availableDays.value.length === 0) {
     return [];
   }
-  
+
   // Filter providers that have appointments and maintain their original order
   return (selectableProviders.value || [])
-    .filter(provider => {
-      return availableDays.value.some(day => 
+    .filter((provider) => {
+      return availableDays.value.some((day) =>
         day.providerIDs.split(",").includes(provider.id.toString())
       );
     })
@@ -903,9 +907,11 @@ const hasSelectedProviderWithAppointments = computed(() => {
   if (!availableDays?.value || availableDays.value.length === 0) {
     return false;
   }
-  
-  return Object.entries(selectedProviders.value).some(([id, isSelected]) => 
-    isSelected && providersWithAppointments.value.some(p => p.id.toString() === id)
+
+  return Object.entries(selectedProviders.value).some(
+    ([id, isSelected]) =>
+      isSelected &&
+      providersWithAppointments.value.some((p) => p.id.toString() === id)
   );
 });
 
@@ -930,8 +936,11 @@ const handleProviderSelection = (id: number) => {
 const handleProviderCheckbox = async (id: string) => {
   // Count how many providers with appointments are currently selected
   const selectedCount = Object.entries(selectedProviders.value).filter(
-    ([providerId, isSelected]) => 
-      isSelected && providersWithAppointments.value.some(p => p.id.toString() === providerId)
+    ([providerId, isSelected]) =>
+      isSelected &&
+      providersWithAppointments.value.some(
+        (p) => p.id.toString() === providerId
+      )
   ).length;
 
   // If trying to uncheck the last selected provider with appointments, prevent it
@@ -944,7 +953,7 @@ const handleProviderCheckbox = async (id: string) => {
   // If we just unchecked a provider, we need to check if the current date still has appointments
   if (!selectedProviders.value[id] && selectedDay.value) {
     const currentDate = convertDateToString(selectedDay.value);
-    
+
     // Check if current date has appointments for remaining selected providers
     const dayEntry = availableDays.value?.find(
       (day) => convertDateToString(new Date(day.time)) === currentDate
@@ -955,7 +964,11 @@ const handleProviderCheckbox = async (id: string) => {
       .some((providerId) => selectedProviders.value[providerId]);
 
     // If no appointments on current date, find next available date
-    if (!hasAppointments && availableDays.value && availableDays.value.length > 0) {
+    if (
+      !hasAppointments &&
+      availableDays.value &&
+      availableDays.value.length > 0
+    ) {
       const nextAvailableDay = availableDays.value.find((day) => {
         const dayDate = new Date(day.time);
         return (
@@ -979,10 +992,11 @@ const handleProviderCheckbox = async (id: string) => {
 const isCheckboxDisabled = (providerId: string) => {
   // Count how many providers with appointments are currently selected
   const selectedCount = Object.entries(selectedProviders.value).filter(
-    ([id, isSelected]) => 
-      isSelected && providersWithAppointments.value.some(p => p.id.toString() === id)
+    ([id, isSelected]) =>
+      isSelected &&
+      providersWithAppointments.value.some((p) => p.id.toString() === id)
   ).length;
-  
+
   // Disable if this is the only selected provider with appointments
   return selectedCount === 1 && selectedProviders.value[providerId];
 };

@@ -49,11 +49,11 @@ class ProcessStatusFreeUnique extends ProcessStatusFree
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $process = new Entity($item);
             $process->requests = $calendar->requests;
-            
+
             // Convert datetime string to timestamp and ensure it's a string
             $dateTime = new \DateTime($process->appointments->getFirst()->date);
             $process->appointments->getFirst()->date = (string)$dateTime->getTimestamp();
-            
+
             if (! isset($scopeList[$process->scope->id])) {
                 $scopeList[$process->scope->id] = $calendar->scopes->getEntity($process->scope->id);
                 // Ensure scope has all required fields
@@ -64,15 +64,15 @@ class ProcessStatusFreeUnique extends ProcessStatusFree
             $process->scope = $scopeList[$process->scope->id];
             $process->queue['withAppointment'] = 1;
             $process->appointments->getFirst()->scope = $process->scope;
-            
+
             // Set createTimestamp and lastChange to match original format as strings
             $process->createTimestamp = (string)time();
             $process->lastChange = (string)time();
-            
+
             $processList->addEntity($process);
         }
         $processData->closeCursor();
         unset($dayquery); // drop temporary scope list
         return $processList;
     }
-} 
+}

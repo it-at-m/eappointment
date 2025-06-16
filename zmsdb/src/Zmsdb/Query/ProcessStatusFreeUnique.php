@@ -69,4 +69,4 @@ class ProcessStatusFreeUnique extends Base
         }
         return $condition;
     }
-} 
+}

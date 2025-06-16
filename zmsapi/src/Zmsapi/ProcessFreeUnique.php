@@ -33,7 +33,7 @@ class ProcessFreeUnique extends BaseController
             $slotType = 'public';
         }
 
-        
+
 
         $calendarData = Validator::input()->isJson()->assertValid()->getValue();
         $calendar = new \BO\Zmsentities\Calendar($calendarData);
@@ -52,4 +52,4 @@ class ProcessFreeUnique extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, $message, 200);
     }
-} 
+}
