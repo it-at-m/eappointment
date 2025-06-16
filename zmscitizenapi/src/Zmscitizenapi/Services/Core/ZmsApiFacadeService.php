@@ -602,6 +602,9 @@ class ZmsApiFacadeService
         $appointmentTimestamps = array_reduce(iterator_to_array($freeSlots), function ($timestamps, $slot) use ($currentTimestamp) {
             if (isset($slot->appointments) && is_iterable($slot->appointments)) {
                 $providerId = (int) $slot->scope->provider->id;
+                if (!isset($timestamps[$providerId])) {
+                    $timestamps[$providerId] = [];
+                }
                 foreach ($slot->appointments as $appointment) {
                     if (isset($appointment->date)) {
                         $timestamp = (int) $appointment->date;
@@ -615,6 +618,7 @@ class ZmsApiFacadeService
         }, []);
 
         foreach ($appointmentTimestamps as $providerId => &$timestamps) {
+            $timestamps = array_values(array_unique($timestamps));
             asort($timestamps);
         }
 
