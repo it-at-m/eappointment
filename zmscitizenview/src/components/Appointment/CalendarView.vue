@@ -441,7 +441,7 @@ const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
 ) as SelectedTimeslotProvider;
 
 const selectableProviders = ref<OfficeImpl[]>();
-const availableDays = ref<string[]>();
+const availableDays = ref<Array<{time: string, providerIDs: string}>>();
 const selectedHour = ref<number | null>(null);
 const selectedDayPart = ref<"am" | "pm" | null>(null);
 
@@ -779,7 +779,7 @@ const getAppointmentsOfDay = (date: string) => {
 
         // If no appointments on current date but appointments exist on other days,
         // select the first available date with appointments
-        if (appointmentsCount.value === 0 && availableDays.value?.length > 0) {
+        if (appointmentsCount.value === 0 && availableDays.value && availableDays.value.length > 0) {
           const firstAvailableDay = availableDays.value.find((day) => {
             const dayDate = new Date(day.time);
             return (
@@ -807,7 +807,7 @@ const getAppointmentsOfDay = (date: string) => {
 
         // If no appointments on current date but appointments exist on other days,
         // select the first available date with appointments
-        if (availableDays.value?.length > 0) {
+        if (availableDays.value && availableDays.value.length > 0) {
           const firstAvailableDay = availableDays.value.find((day) => {
             const dayDate = new Date(day.time);
             return (
@@ -887,7 +887,7 @@ const handleProviderSelection = (id: number) => {
   showSelectionForProvider(selectableProviders.value[id]);
 };
 
-const handleProviderCheckbox = (id: string) => {
+const handleProviderCheckbox = async (id: string) => {
   // Count how many providers are currently selected
   const selectedCount = Object.values(selectedProviders.value).filter(
     Boolean
@@ -899,6 +899,40 @@ const handleProviderCheckbox = (id: string) => {
   }
 
   selectedProviders.value[id] = !selectedProviders.value[id];
+
+  // If we just unchecked a provider, we need to check if the current date still has appointments
+  if (!selectedProviders.value[id] && selectedDay.value) {
+    const currentDate = convertDateToString(selectedDay.value);
+    
+    // Check if current date has appointments for remaining selected providers
+    const dayEntry = availableDays.value?.find(
+      (day) => convertDateToString(new Date(day.time)) === currentDate
+    );
+
+    const hasAppointments = dayEntry?.providerIDs
+      .split(",")
+      .some((providerId) => selectedProviders.value[providerId]);
+
+    // If no appointments on current date, find next available date
+    if (!hasAppointments && availableDays.value && availableDays.value.length > 0) {
+      const nextAvailableDay = availableDays.value.find((day) => {
+        const dayDate = new Date(day.time);
+        return (
+          dayDate >= (selectedDay.value ?? new Date()) &&
+          day.providerIDs
+            .split(",")
+            .some((providerId) => selectedProviders.value[providerId])
+        );
+      });
+
+      if (nextAvailableDay) {
+        // Update the selected day and trigger the appointment fetch
+        selectedDay.value = new Date(nextAvailableDay.time);
+        await nextTick();
+        await getAppointmentsOfDay(nextAvailableDay.time);
+      }
+    }
+  }
 };
 
 const isCheckboxDisabled = (providerId: string) => {
