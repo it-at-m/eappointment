@@ -316,7 +316,7 @@
 			{% set successTitle = "Erfolgreiche Wiederaufnahme in Warteschlange" %}
 			{{ block('success_start') }}
 					<p>
-						Der Vorgang mit der Nummer {{ changedProcess.queue.number }}{% if changedProcess.clients|first.familyName %} (Name: {{ changedProcess.clients|first.familyName }}){% endif %} wurde erfolgreich zum Aufruf zurückgesetzt.
+						Der Vorgang mit der Nummer {{ changedProcess.queue.number }}{% if changedProcess.clients|first.familyName %} (Name: {{ changedProcess.clients|first.familyName|decodeEntities }}){% endif %} wurde erfolgreich zum Aufruf zurückgesetzt.
 					</p>
 			{{ block('success_end') }}
 		{% endblock %}
