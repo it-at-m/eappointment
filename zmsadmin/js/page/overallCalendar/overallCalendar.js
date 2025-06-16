@@ -332,7 +332,7 @@ function renderMultiDayCalendar(days) {
     const occupied = new Set();
 
     allTimes.forEach((time, timeIdx) => {
-        const gridRow = timeIdx + 3; // +3 wegen Datum- und Scope-Header
+        const gridRow = timeIdx + 3;
 
         addCell({
             text: time,
@@ -355,9 +355,9 @@ function renderMultiDayCalendar(days) {
                     }
 
                     const seat = timeObj.seats[seatIdx] || {};
-                    const cls  = seat.status ?? 'empty';
+                    const slotStatus  = seat.status ?? 'empty';
 
-                    if (cls === 'termin') {
+                    if (slotStatus === 'termin') {
                         const span = seat.slots || 1;
                         addCell({
                             text: seat.processId ?? '',
@@ -371,25 +371,25 @@ function renderMultiDayCalendar(days) {
                         for (let i = 0; i < span; i++) {
                             occupied.add(`${gridRow + i}-${col}`);
                         }
-                    } else if (cls !== 'skip') {
+                    } else if (slotStatus !== 'skip') {
                         addCell({
-                            className: `overall-calendar-seat overall-calendar-${cls}`,
+                            className: `overall-calendar-seat overall-calendar-${slotStatus}`,
                             row: gridRow,
                             col,
                             id: `cell-${dateKey}-${time}-${scope.id}-${seatIdx+1}`,
-                            dataStatus: cls
+                            dataStatus: slotStatus
                         });
                     }
                     col++;
                 }
 
                 if (scopeIdx < day.scopes.length - 1) {
-                    col++; // Skip separator column
+                    col++;
                 }
             });
 
             if (dayIdx < days.length - 1) {
-                col++; // Skip day separator column
+                col++;
             }
         });
     });
@@ -476,9 +476,9 @@ function renderCalendar(scopes, dateKey) {
                 if (occupied.has(key)) { col++; continue; }
 
                 const seat = timeObj.seats[seatIdx] || {};
-                const cls  = seat.status ?? 'empty';
+                const slotStatus  = seat.status ?? 'empty';
 
-                if (cls === 'termin') {
+                if (slotStatus === 'termin') {
                     const span = seat.slots || 1;
                     addCell({
                         text: seat.processId ?? '',
@@ -490,13 +490,13 @@ function renderCalendar(scopes, dateKey) {
                         dataStatus: 'termin'
                     });
                     for (let i = 0; i < span; i++) occupied.add(`${gridRow + i}-${col}`);
-                } else if (cls !== 'skip') {
+                } else if (slotStatus !== 'skip') {
                     addCell({
-                        className: `overall-calendar-seat overall-calendar-${cls}`,
+                        className: `overall-calendar-seat overall-calendar-${slotStatus}`,
                         row: gridRow,
                         col,
                         id: `cell-${dateKey}-${time}-${scope.id}-${seatIdx+1}`,
-                        dataStatus: cls
+                        dataStatus: slotStatus
                     });
                 }
                 col++;
