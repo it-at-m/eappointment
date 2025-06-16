@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref } from "@vue/runtime-core";
 
 import {
   CustomerDataProvider,
@@ -114,11 +114,11 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const telephonPattern = /^\+?[0-9]\d{6,14}$/;
 
 const errorMessageFirstName = computed(() =>
-  customerData.value.firstName ? undefined : props.t("errorMessageFirstName")
+  customerData.value.firstName?.trim() ? undefined : props.t("errorMessageFirstName")
 );
 
 const errorMessageLastName = computed(() =>
-  customerData.value.lastName ? undefined : props.t("errorMessageLastName")
+  customerData.value.lastName?.trim() ? undefined : props.t("errorMessageLastName")
 );
 
 const errorMessageMailAddress = computed(() => {

@@ -1,6 +1,5 @@
-/// <reference types="vitest" />
-import { describe, it, expect, beforeEach, vi, type Mock } from "vitest";
 import { mount } from "@vue/test-utils";
+import { describe, it, expect, vi, type Mock } from "vitest";
 // @ts-expect-error: Vue SFC import for test
 import CalendarView from "@/components/Appointment/CalendarView.vue";
 import { ref, nextTick } from "vue";
