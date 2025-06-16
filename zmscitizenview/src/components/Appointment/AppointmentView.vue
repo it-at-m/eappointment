@@ -530,7 +530,7 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
           office.scope,
           office.maxSlotsPerAppointment,
           undefined,
-          1
+          office.priority || 1
         );
 
         if (!providers || providers.includes(foundOffice.id.toString())) {
@@ -631,7 +631,7 @@ onMounted(() => {
                   foundOffice.scope,
                   foundOffice.maxSlotsPerAppointment,
                   undefined, // slots
-                  1 // default priority
+                  foundOffice.priority || 1
                 );
               }
 
