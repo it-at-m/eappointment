@@ -1,5 +1,6 @@
 import { mount } from "@vue/test-utils";
-import { describe, it, expect, vi, type Mock } from "vitest";
+import { describe, it, expect, vi, type Mock, beforeEach, afterEach } from "vitest";
+import { flushPromises } from '@vue/test-utils';
 // @ts-expect-error: Vue SFC import for test
 import CalendarView from "@/components/Appointment/CalendarView.vue";
 import { ref, nextTick } from "vue";
@@ -631,6 +632,50 @@ describe("CalendarView", () => {
       checkbox2 = wrapper.find('#checkbox-2').element as HTMLInputElement;
       expect(checkbox1.disabled).toBe(false);
       expect(checkbox2.disabled).toBe(false);
+    });
+
+    it('changes selected date when unchecking a provider that has appointments on current date', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '1' },
+          { time: '2025-06-18', providerIDs: '1,2' }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
+        if (date === '2025-06-17') {
+          return Promise.resolve({
+            offices: [{ officeId: 1, appointments: [1750118400] }]
+          });
+        }
+        return Promise.resolve({
+          offices: [
+            { officeId: 1, appointments: [1750204800] },
+            { officeId: 2, appointments: [1750204800] }
+          ]
+        });
+      });
+
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+
+      // Set initial date to 2025-06-17
+      wrapper.vm.selectedDay = new Date('2025-06-17');
+      await nextTick();
+
+      // Uncheck provider 1 (which has appointments on 2025-06-17)
+      await wrapper.vm.handleProviderCheckbox('1');
+      await nextTick();
+
+      // Should change to 2025-06-18 since that's the next date with appointments for provider 2
+      expect(wrapper.vm.selectedDay).toEqual(new Date('2025-06-18'));
     });
   });
 });
