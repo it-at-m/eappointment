@@ -351,4 +351,79 @@ describe("CalendarView", () => {
     expect(wrapper.vm.allowedDates(new Date('2025-05-16'))).toBeFalsy();
     expect(wrapper.vm.allowedDates(new Date('2025-05-17'))).toBeFalsy();
   });
+
+  it("formats dates correctly", () => {
+    const wrapper = createWrapper();
+    const date = new Date('2025-05-15');
+    expect(wrapper.vm.formatDay(date)).toBe('Donnerstag, 15.05.2025');
+  });
+
+  it("handles provider selection with checkboxes", async () => {
+    const wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+        { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
+        { name: "Office B", id: 2, address: { street: "Elm", house_number: "99" } }
+      ] }
+    });
+
+    await nextTick();
+
+    // Test initial state
+    expect(wrapper.vm.selectedProviders[1]).toBe(true);
+    expect(wrapper.vm.selectedProviders[2]).toBe(true);
+
+    // Test toggling selection
+    await wrapper.vm.handleProviderCheckbox("1");
+    expect(wrapper.vm.selectedProviders[1]).toBe(false);
+    expect(wrapper.vm.selectedProviders[2]).toBe(true);
+
+    // Test that appointments are refetched when selection changes
+    expect(fetchAvailableDays).toHaveBeenCalled();
+  });
+
+  it("handles calendar navigation correctly", async () => {
+    const wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+        { name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" } }
+      ] }
+    });
+
+    // Initialize required state
+    wrapper.vm.appointmentTimestampsByOffice = ref([]);
+    wrapper.vm.appointmentTimestamps = ref([]);
+
+    (fetchAvailableTimeSlots as vi.Mock).mockResolvedValue({
+      offices: [
+        {
+          officeId: 102522,
+          appointments: [1747223100]
+        }
+      ]
+    });
+
+    await wrapper.vm.showSelectionForProvider({ 
+      name: "Office AAA", 
+      id: 102522, 
+      address: { street: "Elm", house_number: "99" }
+    });
+    await nextTick();
+
+    // Set the selected day directly
+    wrapper.vm.selectedDay = new Date('2025-05-15');
+    await nextTick();
+
+    // Test navigation to next day
+    await wrapper.vm.getAppointmentsOfDay('2025-05-15');
+    await nextTick();
+
+    expect(wrapper.vm.selectedDay).toEqual(new Date('2025-05-15'));
+    expect(fetchAvailableTimeSlots).toHaveBeenCalledWith(
+      '2025-05-15',
+      expect.any(Array),
+      expect.any(Array),
+      expect.any(Array),
+      expect.any(String),
+      expect.any(String)
+    );
+  });
 });
