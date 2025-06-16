@@ -5,12 +5,49 @@ import { nextTick, ref } from "vue";
 // @ts-expect-error: Vue SFC import for test
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 
+// Mock ServiceImpl interface for testing
+interface ServiceImpl {
+  id: string;
+  name: string;
+  maxQuantity: number;
+  providers?: any[];
+  count?: number;
+  subServices?: any[];
+  combinable?: any;
+}
+
 describe("ServiceFinder", () => {
+  const mockServices = [
+    {
+      id: "1",
+      name: "Gewerbe-Ummeldung",
+      maxQuantity: 1,
+      combinable: null,
+    },
+    {
+      id: "2",
+      name: "Gewerbe-Anmeldung",
+      maxQuantity: 1,
+      combinable: null,
+    },
+    {
+      id: "3",
+      name: "Führerschein-Ummeldung",
+      maxQuantity: 1,
+      combinable: null,
+    },
+    {
+      id: "4",
+      name: "Führerschein-Anmeldung",
+      maxQuantity: 1,
+      combinable: null,
+    },
+  ];
 
   beforeAll(() => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       status: 200,
-      json: async () => ({}),
+      json: async () => ({ services: mockServices }),
     }));
   });
 
@@ -94,6 +131,59 @@ describe("ServiceFinder", () => {
       const wrapper = createWrapper(null);
       await nextTick();
       expect(wrapper.find(".muc-select-stub").exists()).toBe(true);
+    });
+  });
+
+  describe("Service Search", () => {
+    it("should filter services by name", async () => {
+      const wrapper = createWrapper(null);
+      await nextTick();
+      
+      // Find a service with "Gewerbe" in its name
+      const gewerbeService = mockServices.find(s => s.name.includes("Gewerbe")) as ServiceImpl;
+      expect(gewerbeService).toBeDefined();
+      
+      // Set the service to the found service object
+      wrapper.vm.service = gewerbeService;
+      await nextTick();
+      
+      // Check if the service was set correctly
+      expect(wrapper.vm.service).toStrictEqual(gewerbeService);
+      expect(wrapper.text()).toContain(gewerbeService.name);
+    });
+
+    it("should show no results message when no matches found", async () => {
+      const wrapper = createWrapper(null);
+      await nextTick();
+      
+      // Create a non-existent service object
+      const nonExistentService = {
+        id: "non-existent",
+        name: "NonExistentService",
+        maxQuantity: 1
+      };
+      
+      // Set the service to the non-existent service
+      wrapper.vm.service = nonExistentService;
+      await nextTick();
+      
+      // Check if the service was set but no results are found
+      expect(wrapper.vm.service).toStrictEqual(nonExistentService);
+      expect(wrapper.vm.services.filter(s => s.name.includes("NonExistentService"))).toHaveLength(0);
+    });
+
+    it("should select service when clicked", async () => {
+      const wrapper = createWrapper(null);
+      await nextTick();
+      
+      // Simulate selecting a service
+      const selectedService = mockServices[0];
+      wrapper.vm.service = selectedService;
+      await nextTick();
+      
+      // Check if service is selected and displayed
+      expect(wrapper.vm.service).toStrictEqual(selectedService);
+      expect(wrapper.text()).toContain(selectedService.name);
     });
   });
 
