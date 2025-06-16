@@ -38,7 +38,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     }
 
     protected function setWorkstation(
-        $workstationId = 138,
+        $workstationId = 137,
         $loginname = "testuser",
         $scopeId = 143,
         $password = "vorschau"
