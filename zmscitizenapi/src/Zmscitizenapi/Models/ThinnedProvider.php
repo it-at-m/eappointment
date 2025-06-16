@@ -16,6 +16,8 @@ class ThinnedProvider extends Entity implements JsonSerializable
 /** @var string|null */
     public ?string $name;
 /** @var string|null */
+    public ?string $displayName;
+/** @var string|null */
     public ?string $source;
 /** @var float|null */
     public ?float $lat;
@@ -23,10 +25,11 @@ class ThinnedProvider extends Entity implements JsonSerializable
     public ?float $lon;
 /** @var ThinnedContact|null */
     public ?ThinnedContact $contact;
-    public function __construct(?int $id = null, ?string $name = null, ?float $lat = null, ?float $lon = null, ?string $source = null, ?ThinnedContact $contact = null,)
+    public function __construct(?int $id = null, ?string $name = null, ?string $displayName = null, ?float $lat = null, ?float $lon = null, ?string $source = null, ?ThinnedContact $contact = null,)
     {
         $this->id = $id;
         $this->name = $name;
+        $this->displayName = $displayName;
         $this->lat = $lat;
         $this->lon = $lon;
         $this->source = $source;
@@ -51,6 +54,7 @@ class ThinnedProvider extends Entity implements JsonSerializable
         return [
             'id' => $this->id ?? null,
             'name' => $this->name ?? null,
+            'displayName' => $this->displayName ?? null,
             'lat' => $this->lat ?? null,
             'lon' => $this->lon ?? null,
             'source' => $this->source ?? null,

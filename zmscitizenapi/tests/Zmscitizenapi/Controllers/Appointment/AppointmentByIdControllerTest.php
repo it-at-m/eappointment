@@ -73,6 +73,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "provider" => [
                     "id" => 102522,
                     "name" => "Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)",
+                    "displayName" => "Bürgerbüro Orleansplatz DEV",
                     "lat" => null,
                     "lon" => null,
                     "source" => "dldb",
