@@ -620,7 +620,6 @@ onMounted(() => {
                 (office) => office.id == appointment.value?.officeId
               );
               if (foundOffice) {
-                console.log(foundOffice);
                 selectedProvider.value = new OfficeImpl(
                   foundOffice.id,
                   foundOffice.name,
