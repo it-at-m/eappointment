@@ -34,7 +34,6 @@ class ProcessFreeUnique extends BaseController
         }
 
         $calendarData = Validator::input()->isJson()->assertValid()->getValue();
-        error_log(json_encode($calendarData));
         $calendar = new \BO\Zmsentities\Calendar($calendarData);
         $message = Response\Message::create($request);
         $processList = (new Query())
