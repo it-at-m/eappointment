@@ -23,7 +23,7 @@
   "devDependencies": {
     "@babel/types": "^7.21.4",
     "@muenchen/prettier-codeformat": "^1.0.2",
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.15.32",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/eslint-config-prettier": "10.2.0",
