@@ -19,8 +19,9 @@ class OverallCalendarReadTest extends Base
 
     protected function initializeSuperUserWorkstation(): void
     {
-        $this->setWorkstation(137, "superuser", 143, "vorschau");
-        $this->setUserAccountRights(['superuser' => 1]);
+        $this->setWorkstation()
+            ->getUseraccount()
+            ->setRights('superuser');
     }
 
     public function testCalendarStructure(): void
