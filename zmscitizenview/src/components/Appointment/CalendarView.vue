@@ -518,7 +518,9 @@ const getProvider = (id: number): OfficeImpl | undefined => {
 };
 
 const officeName = (id: number | string): string | null => {
-  const office = (selectableProviders.value || []).find((p) => p.id === Number(id));
+  const office = (selectableProviders.value || []).find(
+    (p) => p.id === Number(id)
+  );
   return office?.name ?? null;
 };
 
@@ -582,7 +584,10 @@ const timeSlotsInHours = computed(() => {
 });
 
 const timeSlotsInHoursByOffice = computed(() => {
-  const offices = new Map<number, { officeId: number; appointments: Map<number, number[]> }>();
+  const offices = new Map<
+    number,
+    { officeId: number; appointments: Map<number, number[]> }
+  >();
 
   appointmentTimestampsByOffice.value.forEach((office) => {
     if (!selectedProviders.value[office.officeId]) return;
@@ -645,7 +650,10 @@ const currentHour = computed(() => {
 });
 
 const timeSlotsInDayPartByOffice = computed(() => {
-  const offices = new Map<number, { officeId: number; appointments: Map<string, number[]> }>();
+  const offices = new Map<
+    number,
+    { officeId: number; appointments: Map<string, number[]> }
+  >();
 
   appointmentTimestampsByOffice.value.forEach((office) => {
     if (!selectedProviders.value[office.officeId]) return;
@@ -962,11 +970,12 @@ const handleProviderCheckbox = async (id: string) => {
       .filter(([_, isSelected]) => isSelected)
       .map(([id]) => Number(id));
 
-    const availableDaysForSelectedProviders = (availableDays.value || []).filter(
-      (day) =>
-        day.providerIDs
-          .split(",")
-          .some((providerId) => selectedProviderIds.includes(Number(providerId)))
+    const availableDaysForSelectedProviders = (
+      availableDays.value || []
+    ).filter((day) =>
+      day.providerIDs
+        .split(",")
+        .some((providerId) => selectedProviderIds.includes(Number(providerId)))
     );
 
     if (availableDaysForSelectedProviders.length > 0) {
