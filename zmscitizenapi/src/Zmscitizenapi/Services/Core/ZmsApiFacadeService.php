@@ -599,31 +599,27 @@ class ZmsApiFacadeService
         }
 
         $currentTimestamp = time();
-        $appointmentTimestamps = array_reduce(iterator_to_array($freeSlots), function ($timestamps, $slot) use ($currentTimestamp) {
+        $timestamps = [];
+        foreach ($freeSlots as $slot) {
             if (isset($slot->appointments) && is_iterable($slot->appointments)) {
-                $providerId = (int) $slot->scope->provider->id;
                 foreach ($slot->appointments as $appointment) {
                     if (isset($appointment->date)) {
                         $timestamp = (int) $appointment->date;
                         if ($timestamp > $currentTimestamp) {
-                            $timestamps[$providerId][$timestamp] = true;
+                            $timestamps[] = $timestamp;
                         }
                     }
                 }
             }
-            return $timestamps;
-        }, []);
-        foreach ($appointmentTimestamps as $providerId => &$timestamps) {
-            $timestamps = array_keys($timestamps);
-            asort($timestamps);
         }
+        sort($timestamps);
 
-        $errors = ValidationService::validateGetProcessByIdTimestamps($appointmentTimestamps);
+        $errors = ValidationService::validateGetProcessByIdTimestamps($timestamps);
         if (is_array($errors) && !empty($errors['errors'])) {
             return $errors;
         }
 
-        return $appointmentTimestamps;
+        return $timestamps;
     }
 
     public static function getAvailableAppointments(
@@ -662,7 +658,7 @@ class ZmsApiFacadeService
             return new AvailableAppointmentsByOffice($timestamps);
         }
 
-        return new AvailableAppointments(reset($timestamps));
+        return new AvailableAppointments($timestamps);
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
