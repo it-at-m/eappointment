@@ -1063,8 +1063,6 @@ describe("CalendarView", () => {
       
       // Compare only year and month to avoid timezone issues
       const actualDate = calendar.props('viewMonth');
-      console.log('Actual date:', actualDate);
-      console.log('Actual month:', actualDate.getMonth());
       expect(actualDate.getFullYear()).toBe(2025);
       expect(actualDate.getMonth()).toBe(5); // June is month 5
     });

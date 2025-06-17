@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import type { AltchaWidget } from "@/types/AltchaTypes";
 
-import { nextTick, onMounted, onUnmounted, ref } from "@vue/runtime-core";
+import { nextTick, onMounted, onUnmounted, ref } from "vue";
 
 import {
   getAPIBaseURL,

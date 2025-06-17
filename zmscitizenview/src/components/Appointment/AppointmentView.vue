@@ -185,7 +185,7 @@ import {
   provide,
   ref,
   watch,
-} from "@vue/runtime-core";
+} from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";

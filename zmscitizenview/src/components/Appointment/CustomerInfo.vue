@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref } from "@vue/runtime-core";
+import { computed, inject, ref } from "vue";
 
 import {
   CustomerDataProvider,

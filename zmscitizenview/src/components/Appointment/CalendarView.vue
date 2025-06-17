@@ -405,7 +405,7 @@ import {
   onMounted,
   ref,
   watch,
-} from "@vue/runtime-core";
+} from "vue";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsByOfficeDTO } from "@/api/models/AvailableTimeSlotsByOfficeDTO";

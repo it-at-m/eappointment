@@ -228,7 +228,7 @@
 
 <script setup lang="ts">
 import { MucButton } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref } from "@vue/runtime-core";
+import { computed, inject, ref } from "vue";
 
 import { OfficeImpl } from "@/types/OfficeImpl";
 import {

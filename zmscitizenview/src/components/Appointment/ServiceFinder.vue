@@ -129,7 +129,7 @@
 
 <script setup lang="ts">
 import { MucButton, MucCounter, MucSelect } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, onMounted, ref, watch } from "@vue/runtime-core";
+import { computed, inject, onMounted, ref, watch } from "vue";
 
 import { Combinable } from "@/api/models/Combinable";
 import { Office } from "@/api/models/Office";
