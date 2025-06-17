@@ -513,12 +513,12 @@ const formatDay = (date: Date) => {
   }
 };
 
-const getProvider = (id: number): string => {
-  return selectableProviders.value?.find((p) => p.id === id);
+const getProvider = (id: number): OfficeImpl | undefined => {
+  return (selectableProviders.value || []).find((p) => p.id === Number(id));
 };
 
-const officeName = (id: number): string => {
-  const office = selectableProviders.value?.find((p) => p.id === id);
+const officeName = (id: number | string): string | null => {
+  const office = (selectableProviders.value || []).find((p) => p.id === Number(id));
   return office?.name ?? null;
 };
 
@@ -527,8 +527,9 @@ const laterAppointments = (type = "hour") => {
     selectedDayPart.value = "pm";
     return;
   }
-
-  selectedHour.value = currentHour.value + 1;
+  if (currentHour.value !== null) {
+    selectedHour.value = currentHour.value + 1;
+  }
 };
 
 const earlierAppointments = (type = "hour") => {
@@ -536,8 +537,9 @@ const earlierAppointments = (type = "hour") => {
     selectedDayPart.value = "am";
     return;
   }
-
-  selectedHour.value = currentHour.value - 1;
+  if (currentHour.value !== null) {
+    selectedHour.value = currentHour.value - 1;
+  }
 };
 
 const timeSlotsInDayPartBySelectedOffice = computed(() => {
@@ -580,7 +582,7 @@ const timeSlotsInHours = computed(() => {
 });
 
 const timeSlotsInHoursByOffice = computed(() => {
-  const offices = new Map<number, Object[]>();
+  const offices = new Map<number, { officeId: number; appointments: Map<number, number[]> }>();
 
   appointmentTimestampsByOffice.value.forEach((office) => {
     if (!selectedProviders.value[office.officeId]) return;
@@ -643,7 +645,7 @@ const currentHour = computed(() => {
 });
 
 const timeSlotsInDayPartByOffice = computed(() => {
-  const offices = new Map<number, Object[]>();
+  const offices = new Map<number, { officeId: number; appointments: Map<string, number[]> }>();
 
   appointmentTimestampsByOffice.value.forEach((office) => {
     if (!selectedProviders.value[office.officeId]) return;
@@ -705,7 +707,7 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
   error.value = false;
   selectedDay.value = undefined;
   selectedTimeslot.value = 0;
-  const providers = selectableProviders.value;
+  const providers = selectableProviders.value || [];
   const providerIds = providers.map((p) => p.id);
 
   fetchAvailableDays(
@@ -744,7 +746,7 @@ const handleError = (data: any): void => {
 const getAppointmentsOfDay = (date: string) => {
   appointmentTimestamps.value = [];
   appointmentTimestampsByOffice.value = [];
-  const providers = selectableProviders.value;
+  const providers = selectableProviders.value || [];
   const providerIds = providers.map((p) => p.id);
 
   fetchAvailableTimeSlots(
@@ -755,13 +757,13 @@ const getAppointmentsOfDay = (date: string) => {
     props.baseUrl ?? undefined,
     props.captchaToken ?? undefined
   ).then((data) => {
-    if (data && (data as AvailableTimeSlotsByOfficeDTO)?.offices) {
+    if (data && "offices" in data && Array.isArray((data as any).offices)) {
       appointmentTimestampsByOffice.value = (
         data as AvailableTimeSlotsByOfficeDTO
       ).offices;
 
-      appointmentsCount.value = data.offices.reduce(
-        (sum, office) => sum + (office.appointments?.length ?? 0),
+      appointmentsCount.value = (data as any).offices.reduce(
+        (sum: number, office: any) => sum + (office.appointments?.length ?? 0),
         0
       );
 
@@ -929,7 +931,7 @@ watch(providersWithAppointments, (newProviders) => {
 watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
   if (newDate) {
-    getAppointmentsOfDay(convertDateToString(selectedDay.value));
+    getAppointmentsOfDay(convertDateToString(selectedDay.value || new Date()));
   }
 });
 
@@ -958,13 +960,13 @@ const handleProviderCheckbox = async (id: string) => {
   if (availableDays.value) {
     const selectedProviderIds = Object.entries(selectedProviders.value)
       .filter(([_, isSelected]) => isSelected)
-      .map(([id]) => id);
+      .map(([id]) => Number(id));
 
-    const availableDaysForSelectedProviders = availableDays.value.filter(
+    const availableDaysForSelectedProviders = (availableDays.value || []).filter(
       (day) =>
         day.providerIDs
           .split(",")
-          .some((providerId) => selectedProviderIds.includes(providerId))
+          .some((providerId) => selectedProviderIds.includes(Number(providerId)))
     );
 
     if (availableDaysForSelectedProviders.length > 0) {
@@ -1234,6 +1236,35 @@ const handleDaySelection = async (day: Date) => {
     }
   }
 };
+
+watch(appointmentTimestampsByOffice, () => {
+  // Only reset if we are in hourly view and a day is selected
+  if (selectedDay.value && timeSlotsInHoursByOffice.value.size > 0) {
+    const allHours = Array.from(
+      timeSlotsInHoursByOffice.value.values()
+    ).flatMap((office) => {
+      const hours = Array.from((office as any).appointments.keys());
+      return hours.filter((hour) => typeof hour === "number" && hour > 0);
+    });
+    if (allHours.length > 0) {
+      selectedHour.value = Math.min(...(allHours as number[]));
+    }
+  }
+  // For am/pm view
+  else if (selectedDay.value && timeSlotsInDayPartByOffice.value.size > 0) {
+    const allDayParts = Array.from(
+      timeSlotsInDayPartByOffice.value.values()
+    ).flatMap((office) => {
+      const dayParts = Array.from((office as any).appointments.keys());
+      return dayParts.filter((part) => part === "am" || part === "pm");
+    });
+    if (allDayParts.includes("am")) {
+      selectedDayPart.value = "am";
+    } else if (allDayParts.includes("pm")) {
+      selectedDayPart.value = "pm";
+    }
+  }
+});
 </script>
 
 <style scoped>

@@ -606,15 +606,15 @@ class ZmsApiFacadeService
                     if (isset($appointment->date)) {
                         $timestamp = (int) $appointment->date;
                         if ($timestamp > $currentTimestamp) {
-                            $timestamps[$providerId][] = $timestamp;
+                            $timestamps[$providerId][$timestamp] = true;
                         }
                     }
                 }
             }
             return $timestamps;
         }, []);
-
         foreach ($appointmentTimestamps as $providerId => &$timestamps) {
+            $timestamps = array_keys($timestamps);
             asort($timestamps);
         }
 
