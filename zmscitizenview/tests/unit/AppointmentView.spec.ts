@@ -22,22 +22,7 @@ describe("AppointmentView", () => {
   })
 
   const mockT = (key) => {
-    switch (key) {
-      case "errorMessageFirstName":
-        return "Bitte geben Sie Ihren Vornamen an.";
-      case "errorMessageLastName":
-        return "Bitte geben Sie Ihren Nachnamen an.";
-      case "errorMessageMailAddressRequired":
-        return "Bitte geben Sie Ihre E-Mail-Adresse an.";
-      case "errorMessageTelephoneNumberRequired":
-        return "Bitte geben Sie Ihre Telefonnummer an.";
-      case "errorMessageMailAddressValidation":
-        return "Ihre E-Mail-Adresse entspricht nicht dem vorgegebenen Format. Bitte prüfen Sie nochmal, ob Sie sie richtig geschrieben haben.";
-      case "errorMessageTelephoneNumberValidation":
-        return "Ihre Telefonnummer entspricht nicht dem vorgegebenen Format. Bitte geben Sie nur ein +-Zeichen und Zahlen ein.";
-      default:
-        return key;
-    }
+    return key;
   };
   const mockBaseUrl = "https://www.muenchen.de";
   const mockServiceId = "123";
