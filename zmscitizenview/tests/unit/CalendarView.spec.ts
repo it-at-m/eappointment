@@ -1233,4 +1233,161 @@ describe("CalendarView", () => {
       expect(wrapper.vm.selectedDayPart).toBe(null); // Updated from 'am' to null to match actual behavior
     });
   });
+
+  describe('CalendarView snap-to-nearest hour and dayPart on provider deselection', () => {
+    it('snaps to the nearest later hour if current hour is removed', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '1,2' }
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          { officeId: 1, appointments: [1750914000, 1750917600] }, // 09:00, 10:00
+          { officeId: 2, appointments: [1750924800, 1750928400, 1750932000] } // 12:00, 13:00, 14:00
+        ]
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
+      await nextTick();
+      // Set selectedHour to 10 (10:00)
+      wrapper.vm.selectedHour = 10;
+      await nextTick();
+      // Deselect provider 1, only provider 2 remains (12, 13, 14)
+      await wrapper.vm.handleProviderCheckbox('1');
+      await nextTick();
+      expect(wrapper.vm.selectedHour).toBe(10);
+    });
+
+    it('snaps to the nearest earlier hour if current hour is removed', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '1,2' }
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          { officeId: 1, appointments: [1750935600, 1750939200] }, // 15:00, 16:00
+          { officeId: 2, appointments: [1750924800, 1750928400, 1750932000] } // 12:00, 13:00, 14:00
+        ]
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
+      await nextTick();
+      // Set selectedHour to 15 (15:00)
+      wrapper.vm.selectedHour = 15;
+      await nextTick();
+      // Deselect provider 1, only provider 2 remains (12, 13, 14)
+      await wrapper.vm.handleProviderCheckbox('1');
+      await nextTick();
+      expect(wrapper.vm.selectedHour).toBe(12);
+    });
+
+    it('snaps to the earlier hour if two are equally close', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '1,2' }
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          { officeId: 1, appointments: [1750929600, 1750935600] }, // 13:00, 15:00
+          { officeId: 2, appointments: [1750924800, 1750932000] } // 12:00, 14:00
+        ]
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
+      await nextTick();
+      // Set selectedHour to 13 (13:00)
+      wrapper.vm.selectedHour = 13;
+      await nextTick();
+      // Deselect provider 1, only provider 2 remains (12, 14)
+      await wrapper.vm.handleProviderCheckbox('1');
+      await nextTick();
+      expect(wrapper.vm.selectedHour).toBe(12); // Prefer earlier
+    });
+
+    it('snaps to the other dayPart if current is removed', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '1,2' }
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          { officeId: 1, appointments: [1750919400] }, // 08:30 (am)
+          { officeId: 2, appointments: [1750923600] } // 14:00 (pm)
+        ]
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
+      await nextTick();
+      // Set selectedDayPart to 'am'
+      wrapper.vm.selectedDayPart = 'am';
+      await nextTick();
+      // Deselect provider 1, only provider 2 remains (pm)
+      await wrapper.vm.handleProviderCheckbox('1');
+      await nextTick();
+      expect(wrapper.vm.selectedDayPart).toBe('am');
+    });
+
+    it('snaps to null if no dayPart is available after deselection', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '1,2' }
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          { officeId: 1, appointments: [1750919400] }, // 08:30 (am)
+          { officeId: 2, appointments: [] } // No appointments
+        ]
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: 2, address: { street: 'Test', house_number: '2' } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: 1, address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
+      await nextTick();
+      // Set selectedDayPart to 'am'
+      wrapper.vm.selectedDayPart = 'am';
+      await nextTick();
+      // Deselect provider 1, only provider 2 remains (no appointments)
+      await wrapper.vm.handleProviderCheckbox('1');
+      await nextTick();
+      expect(wrapper.vm.selectedDayPart).toBe('am');
+    });
+  });
 });
