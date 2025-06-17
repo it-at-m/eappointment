@@ -591,7 +591,10 @@ class ZmsApiFacadeService
         return ZmsApiClientService::getFreeTimeslots(new ProviderList([$office]), new RequestList($requests), $date, $date);
     }
 
-    private static function processFreeSlots(ProcessList $freeSlots): array
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     */
+    private static function processFreeSlots(ProcessList $freeSlots, bool $groupByOffice = false): array
     {
         $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
         if (is_array($errors) && !empty($errors['errors'])) {
@@ -599,31 +602,54 @@ class ZmsApiFacadeService
         }
 
         $currentTimestamp = time();
-        $appointmentTimestamps = array_reduce(iterator_to_array($freeSlots), function ($timestamps, $slot) use ($currentTimestamp) {
-            if (isset($slot->appointments) && is_iterable($slot->appointments)) {
-                $providerId = (int) $slot->scope->provider->id;
-                foreach ($slot->appointments as $appointment) {
-                    if (isset($appointment->date)) {
-                        $timestamp = (int) $appointment->date;
-                        if ($timestamp > $currentTimestamp) {
-                            $timestamps[$providerId][$timestamp] = true;
+        if ($groupByOffice) {
+            $grouped = [];
+            foreach ($freeSlots as $slot) {
+                $officeId = (string)($slot->scope->provider->id ?? '');
+                if (!isset($grouped[$officeId])) {
+                    $grouped[$officeId] = [];
+                }
+                if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                    foreach ($slot->appointments as $appointment) {
+                        if (isset($appointment->date)) {
+                            $timestamp = (int) $appointment->date;
+                            if ($timestamp > $currentTimestamp) {
+                                $grouped[$officeId][] = $timestamp;
+                            }
                         }
                     }
                 }
             }
+            // Sort each office's appointments
+            foreach ($grouped as &$arr) {
+                sort($arr);
+            }
+            unset($arr);
+            // Optionally validate grouped timestamps here if needed
+            return $grouped;
+        } else {
+            $timestamps = [];
+            foreach ($freeSlots as $slot) {
+                if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                    foreach ($slot->appointments as $appointment) {
+                        if (isset($appointment->date)) {
+                            $timestamp = (int) $appointment->date;
+                            if ($timestamp > $currentTimestamp) {
+                                $timestamps[] = $timestamp;
+                            }
+                        }
+                    }
+                }
+            }
+            sort($timestamps);
+
+            $errors = ValidationService::validateGetProcessByIdTimestamps($timestamps);
+            if (is_array($errors) && !empty($errors['errors'])) {
+                return $errors;
+            }
+
             return $timestamps;
-        }, []);
-        foreach ($appointmentTimestamps as $providerId => &$timestamps) {
-            $timestamps = array_keys($timestamps);
-            asort($timestamps);
         }
-
-        $errors = ValidationService::validateGetProcessByIdTimestamps($appointmentTimestamps);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        return $appointmentTimestamps;
     }
 
     public static function getAvailableAppointments(
@@ -653,16 +679,16 @@ class ZmsApiFacadeService
         }
 
         $freeSlots = ZmsApiClientService::getFreeTimeslots(new ProviderList($providers), new RequestList($requests), DateTimeFormatHelper::getInternalDateFromISO($date), DateTimeFormatHelper::getInternalDateFromISO($date)) ?? new ProcessList();
-        $timestamps = self::processFreeSlots($freeSlots);
-        if (isset($timestamps['errors']) && !empty($timestamps['errors'])) {
-            return $timestamps;
+        $result = self::processFreeSlots($freeSlots, $groupByOffice);
+        if (isset($result['errors']) && !empty($result['errors'])) {
+            return $result;
         }
 
         if ($groupByOffice) {
-            return new AvailableAppointmentsByOffice($timestamps);
+            return new AvailableAppointmentsByOffice($result);
         }
 
-        return new AvailableAppointments(reset($timestamps));
+        return new AvailableAppointments($result);
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
