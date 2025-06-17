@@ -55,7 +55,6 @@ describe("ServiceFinder", () => {
     vi.unstubAllGlobals();
   })
 
-  const mockT = (key: string) => key;
   const mockProvider = {
     id: "1",
     name: "Test Provider",
@@ -89,7 +88,7 @@ describe("ServiceFinder", () => {
         preselectedServiceId: undefined,
         preselectedOfficeId: undefined,
         exclusiveLocation: undefined,
-        t: mockT,
+        t: (key: string) => key,
       },
       global: {
         provide: {

@@ -6,7 +6,6 @@ import { nextTick, ref } from "vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 
 describe("CustomerInfo", () => {
-  const mockT = (key: string) => key;
   let mockCustomerData;
   let mockSelectedProvider;
 
@@ -34,7 +33,7 @@ describe("CustomerInfo", () => {
   const createWrapper = () => {
     return mount(CustomerInfo, {
       props: {
-        t: mockT,
+        t: (key: string) => key,
       },
       global: {
         provide: {
