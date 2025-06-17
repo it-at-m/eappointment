@@ -1067,6 +1067,64 @@ const handleProviderCheckbox = async (id: string) => {
       }
     }
   }
+
+  // --- SNAP BACK LOGIC FOR HOURLY AND DAYPART VIEWS ---
+  await nextTick(); // Ensure computed properties are updated
+
+  // Hourly view: snap selectedHour to the nearest available hour if current is not available
+  if (timeSlotsInHoursByOffice.value.size > 0) {
+    const availableHours = Array.from(timeSlotsInHoursByOffice.value.values())
+      .flatMap((office) => Array.from((office as any).appointments.keys()))
+      .filter((hour): hour is number => typeof hour === "number");
+    if (
+      selectedHour.value === null ||
+      !availableHours.includes(selectedHour.value as number)
+    ) {
+      if (availableHours.length > 0) {
+        // Snap to the nearest available hour
+        const prevHour = selectedHour.value;
+        let nearest = availableHours[0];
+        let minDiff = Math.abs((prevHour ?? nearest) - nearest);
+        for (const hour of availableHours) {
+          const diff = Math.abs((prevHour ?? hour) - hour);
+          if (diff < minDiff || (diff === minDiff && hour < nearest)) {
+            nearest = hour;
+            minDiff = diff;
+          }
+        }
+        selectedHour.value = nearest;
+      } else {
+        selectedHour.value = null;
+      }
+    }
+  }
+
+  // DayPart view: snap selectedDayPart to the other part if current is not available
+  else if (timeSlotsInDayPartByOffice.value.size > 0) {
+    const availableDayParts = Array.from(
+      timeSlotsInDayPartByOffice.value.values()
+    )
+      .flatMap((office) => Array.from((office as any).appointments.keys()))
+      .filter((part): part is "am" | "pm" => part === "am" || part === "pm");
+    if (
+      selectedDayPart.value === null ||
+      !availableDayParts.includes(selectedDayPart.value as "am" | "pm")
+    ) {
+      // Prefer the other part if available
+      if (selectedDayPart.value === "am" && availableDayParts.includes("pm")) {
+        selectedDayPart.value = "pm";
+      } else if (
+        selectedDayPart.value === "pm" &&
+        availableDayParts.includes("am")
+      ) {
+        selectedDayPart.value = "am";
+      } else if (availableDayParts.length > 0) {
+        selectedDayPart.value = availableDayParts[0];
+      } else {
+        selectedDayPart.value = null;
+      }
+    }
+  }
 };
 
 const isCheckboxDisabled = (providerId: string) => {
