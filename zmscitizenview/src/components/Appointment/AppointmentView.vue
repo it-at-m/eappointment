@@ -520,7 +520,6 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
         (office) => office.id == relation.officeId
       );
       if (office) {
-        console.log(office);
         const foundOffice: OfficeImpl = new OfficeImpl(
           office.id,
           office.name,
