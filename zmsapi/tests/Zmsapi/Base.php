@@ -62,17 +62,6 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         return User::$workstation;
     }
 
-    protected function setUserAccountRights(array $rights = []): void
-    {
-        if (User::$workstation && User::$workstation->getUseraccount()) {
-            User::$workstation->getUseraccount()->rights = array_merge(
-                User::$workstation->getUseraccount()->rights ?? [],
-                $rights
-            );
-        }
-    }
-
-
     protected function setDepartment($departmentId)
     {
         $department = new \BO\Zmsentities\Department([
