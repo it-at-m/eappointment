@@ -1068,5 +1068,66 @@ describe("CalendarView", () => {
       expect(actualDate.getFullYear()).toBe(2025);
       expect(actualDate.getMonth()).toBe(5); // June is month 5
     });
+
+    it('resets to earliest hour when selecting a new day in the calendar', async () => {
+      // Mock availableDays with two different dates
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: '2025-06-17', providerIDs: '1' },
+          { time: '2025-06-18', providerIDs: '1' }
+        ]
+      });
+
+      // Mock availableTimeSlots with different hours for each date
+      (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
+        if (date === '2025-06-17') {
+          return Promise.resolve({
+            offices: [{
+              officeId: 1,
+              appointments: [
+                1750919400, // 08:30
+                1750919700, // 08:35
+                1750920000  // 08:40
+              ]
+            }]
+          });
+        }
+        return Promise.resolve({
+          offices: [{
+            officeId: 1,
+            appointments: [
+              1747224600, // 13:50
+              1747224900, // 13:55
+              1747225200  // 14:00
+            ]
+          }]
+        });
+      });
+
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } }
+        ] }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
+      await nextTick();
+      await flushPromises();
+
+      // Set initial date and hour
+      wrapper.vm.selectedDay = new Date('2025-06-17');
+      wrapper.vm.selectedHour = 13; // Set to 13:00
+      await nextTick();
+      await flushPromises();
+
+      // Select new date
+      await wrapper.vm.handleDaySelection(new Date('2025-06-18'));
+      await nextTick();
+      await flushPromises();
+
+      // Verify that hour is reset to earliest available hour (14)
+      expect(wrapper.vm.selectedHour).toBe(8);
+    });
   });
 });

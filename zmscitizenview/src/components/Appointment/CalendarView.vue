@@ -102,13 +102,15 @@
     </div>
     <div class="m-component">
       <muc-calendar
-        v-model="selectedDay"
+        :key="calendarKey"
+        :model-value="selectedDay"
+        @update:model-value="handleDaySelection"
         disable-view-change
         variant="single"
         :allowed-dates="allowedDates"
         :min="minDate"
         :max="maxDate"
-        :view-month="minDate"
+        :view-month="viewMonth"
       />
     </div>
 
@@ -460,7 +462,9 @@ const showErrorKey = computed(() =>
 const selectedDay = ref<Date>();
 const minDate = ref<Date>();
 const maxDate = ref<Date>();
+const viewMonth = ref<Date>(new Date());
 const officeOrder = ref<Map<number, number>>(new Map());
+const calendarKey = ref(0);
 
 const selectedProviders = ref<{ [id: string]: boolean }>({});
 
@@ -950,6 +954,71 @@ const handleProviderCheckbox = async (id: string) => {
 
   selectedProviders.value[id] = !selectedProviders.value[id];
 
+  // Update min and max dates based on selected providers
+  if (availableDays.value) {
+    const selectedProviderIds = Object.entries(selectedProviders.value)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([id]) => id);
+
+    const availableDaysForSelectedProviders = availableDays.value.filter(
+      (day) =>
+        day.providerIDs
+          .split(",")
+          .some((providerId) => selectedProviderIds.includes(providerId))
+    );
+
+    if (availableDaysForSelectedProviders.length > 0) {
+      minDate.value = new Date(availableDaysForSelectedProviders[0].time);
+      maxDate.value = new Date(
+        availableDaysForSelectedProviders[
+          availableDaysForSelectedProviders.length - 1
+        ].time
+      );
+
+      // If current date is no longer available, find the next available date
+      if (selectedDay.value) {
+        const currentDate = convertDateToString(selectedDay.value);
+        const isCurrentDateAvailable = availableDaysForSelectedProviders.some(
+          (day) => convertDateToString(new Date(day.time)) === currentDate
+        );
+
+        if (!isCurrentDateAvailable) {
+          // First try to find a date after the current date
+          let nextAvailableDay = availableDaysForSelectedProviders.find(
+            (day) => {
+              const dayDate = new Date(day.time);
+              return dayDate >= (selectedDay.value ?? new Date());
+            }
+          );
+
+          // If no future date is available, find the closest date before the current date
+          if (!nextAvailableDay) {
+            nextAvailableDay = [...availableDaysForSelectedProviders]
+              .reverse()
+              .find((day) => {
+                const dayDate = new Date(day.time);
+                return dayDate <= (selectedDay.value ?? new Date());
+              });
+          }
+
+          if (nextAvailableDay) {
+            const newDate = new Date(nextAvailableDay.time);
+            selectedDay.value = newDate;
+            // Set viewMonth to the first day of the month containing the new date
+            viewMonth.value = new Date(
+              newDate.getFullYear(),
+              newDate.getMonth(),
+              1
+            );
+            calendarKey.value++;
+            await nextTick();
+            await getAppointmentsOfDay(nextAvailableDay.time);
+          }
+        }
+      }
+    }
+  }
+
   // If we just unchecked a provider, we need to check if the current date still has appointments
   if (!selectedProviders.value[id] && selectedDay.value) {
     const currentDate = convertDateToString(selectedDay.value);
@@ -1131,6 +1200,40 @@ onMounted(() => {
     showSelectionForProvider(offices[0]);
   }
 });
+
+const handleDaySelection = async (day: Date) => {
+  selectedDay.value = day;
+  selectedTimeslot.value = 0;
+  selectedHour.value = null;
+  selectedDayPart.value = null;
+
+  // Reset to earliest available appointment
+  if (timeSlotsInHoursByOffice.value.size > 0) {
+    // For hourly view
+    const allHours = Array.from(
+      timeSlotsInHoursByOffice.value.values()
+    ).flatMap((office) => {
+      const hours = Array.from((office as any).appointments.keys());
+      return hours.filter((hour) => typeof hour === "number" && hour > 0);
+    });
+    if (allHours.length > 0) {
+      selectedHour.value = Math.min(...(allHours as number[]));
+    }
+  } else if (timeSlotsInDayPartByOffice.value.size > 0) {
+    // For am/pm view
+    const allDayParts = Array.from(
+      timeSlotsInDayPartByOffice.value.values()
+    ).flatMap((office) => {
+      const dayParts = Array.from((office as any).appointments.keys());
+      return dayParts.filter((part) => part === "am" || part === "pm");
+    });
+    if (allDayParts.includes("am")) {
+      selectedDayPart.value = "am";
+    } else if (allDayParts.includes("pm")) {
+      selectedDayPart.value = "pm";
+    }
+  }
+};
 </script>
 
 <style scoped>
