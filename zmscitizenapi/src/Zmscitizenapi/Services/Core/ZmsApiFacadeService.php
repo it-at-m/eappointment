@@ -591,6 +591,9 @@ class ZmsApiFacadeService
         return ZmsApiClientService::getFreeTimeslots(new ProviderList([$office]), new RequestList($requests), $date, $date);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     */
     private static function processFreeSlots(ProcessList $freeSlots, bool $groupByOffice = false): array
     {
         $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
