@@ -622,6 +622,9 @@ class ZmsApiFacadeService
         return $timestamps;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getAvailableAppointments(
         string $date,
         array $officeIds,
