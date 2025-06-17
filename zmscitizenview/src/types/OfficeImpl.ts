@@ -27,6 +27,8 @@ export class OfficeImpl implements Office {
 
   slots?: number;
 
+  priority: number;
+
   constructor(
     id: string,
     name: string,
@@ -39,7 +41,8 @@ export class OfficeImpl implements Office {
     disabledByServices: string[] | undefined,
     scope: Scope | undefined,
     maxSlotsPerAppointment: string | undefined,
-    slots: number | undefined
+    slots: number | undefined,
+    priority: number = 1
   ) {
     this.id = id;
     this.name = name;
@@ -53,5 +56,6 @@ export class OfficeImpl implements Office {
     this.scope = scope;
     this.maxSlotsPerAppointment = maxSlotsPerAppointment;
     this.slots = slots;
+    this.priority = priority;
   }
 }

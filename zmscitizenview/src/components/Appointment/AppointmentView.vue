@@ -259,7 +259,9 @@ const selectedServiceMap = ref<Map<string, number>>(new Map<string, number>());
 const selectedProvider = ref<OfficeImpl>();
 const selectedTimeslot = ref<number>(0);
 
-const customerData = ref<CustomerData>(new CustomerData("", "", "", "", ""));
+const customerData = ref<CustomerData>(
+  new CustomerData("", "", "", "", "", "")
+);
 const appointment = ref<AppointmentImpl>();
 const rebookedAppointment = ref<AppointmentImpl>();
 
@@ -269,7 +271,7 @@ const offices = ref<Office[]>([]);
 
 const rebookOrCanelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
-const captchaToken = ref<string | null>(null);
+const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
 
 const bookingErrorKey = computed(() => {
@@ -385,9 +387,9 @@ const nextReserveAppointment = () => {
     selectedTimeslot.value,
     Array.from(selectedServiceMap.value.keys()),
     Array.from(selectedServiceMap.value.values()),
-    selectedProvider.value.id,
+    selectedProvider.value?.id ?? "",
     props.baseUrl ?? undefined,
-    captchaToken.value
+    captchaToken.value ?? undefined
   ).then((data) => {
     if ((data as AppointmentDTO).processId !== undefined) {
       if (appointment.value && !isRebooking.value) {
@@ -514,13 +516,30 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
   relations.value.forEach((relation) => {
     if (relation.serviceId == serviceId) {
-      const foundOffice: OfficeImpl = offices.value.filter((office) => {
-        return office.id == relation.officeId;
-      })[0];
+      const office = offices.value.find(
+        (office) => office.id == relation.officeId
+      );
+      if (office) {
+        const foundOffice: OfficeImpl = new OfficeImpl(
+          office.id,
+          office.name,
+          office.address,
+          office.showAlternativeLocations,
+          office.displayNameAlternatives,
+          office.organization,
+          office.organizationUnit,
+          office.slotTimeInMinutes,
+          undefined,
+          office.scope,
+          office.maxSlotsPerAppointment,
+          undefined,
+          office.priority || 1
+        );
 
-      if (!providers || providers.includes(foundOffice.id.toString())) {
-        foundOffice.slots = relation.slots;
-        officesAtService.push(foundOffice);
+        if (!providers || providers.includes(foundOffice.id.toString())) {
+          foundOffice.slots = relation.slots;
+          officesAtService.push(foundOffice);
+        }
       }
     }
   });
@@ -583,11 +602,11 @@ onMounted(() => {
         (data) => {
           if ((data as AppointmentDTO).processId != undefined) {
             if ("captchaToken" in data && data.captchaToken) {
-              captchaToken.value = data.captchaToken;
+              captchaToken.value = data.captchaToken as string;
             }
             appointment.value = data as AppointmentDTO;
             selectedService.value = services.value.find(
-              (service) => service.id == appointment.value.serviceId
+              (service) => service.id == appointment.value?.serviceId
             );
             if (selectedService.value) {
               selectedService.value.count = appointment.value.serviceCount;
@@ -597,16 +616,33 @@ onMounted(() => {
               );
 
               preselectedLocationId.value = appointment.value.officeId;
-              selectedProvider.value = offices.value.find(
+              const foundOffice = offices.value.find(
                 (office) => office.id == appointment.value?.officeId
               );
+              if (foundOffice) {
+                selectedProvider.value = new OfficeImpl(
+                  foundOffice.id,
+                  foundOffice.name,
+                  foundOffice.address,
+                  foundOffice.showAlternativeLocations,
+                  foundOffice.displayNameAlternatives,
+                  foundOffice.organization,
+                  foundOffice.organizationUnit,
+                  foundOffice.slotTimeInMinutes,
+                  undefined, // disabledByServices
+                  foundOffice.scope,
+                  foundOffice.maxSlotsPerAppointment,
+                  undefined, // slots
+                  foundOffice.priority || 1
+                );
+              }
 
               if (appointment.value.subRequestCounts.length > 0) {
                 appointment.value.subRequestCounts.forEach(
                   (subRequestCount) => {
-                    const subRequest: Service = services.value.find(
+                    const subRequest = services.value.find(
                       (service) => service.id == subRequestCount.id
-                    );
+                    ) as Service;
                     const subService = new SubService(
                       subRequest.id,
                       subRequest.name,
@@ -614,10 +650,13 @@ onMounted(() => {
                       getProviders(subRequest.id, null),
                       subRequestCount.count
                     );
-                    if (!selectedService.value.subServices) {
+                    if (
+                      selectedService.value &&
+                      !selectedService.value.subServices
+                    ) {
                       selectedService.value.subServices = [];
                     }
-                    selectedService.value.subServices.push(subService);
+                    selectedService.value?.subServices?.push(subService);
                   }
                 );
               }
