@@ -60,7 +60,6 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
 
 describe("CalendarView", () => {
   beforeEach(() => {
-    // Reset mocks before each test
     vi.clearAllMocks();
   });
 

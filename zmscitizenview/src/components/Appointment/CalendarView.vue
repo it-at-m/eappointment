@@ -398,14 +398,7 @@ import {
   MucSlider,
   MucSliderItem,
 } from "@muenchen/muc-patternlab-vue";
-import {
-  computed,
-  inject,
-  nextTick,
-  onMounted,
-  ref,
-  watch,
-} from "vue";
+import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsByOfficeDTO } from "@/api/models/AvailableTimeSlotsByOfficeDTO";

@@ -178,14 +178,7 @@
 
 <script setup lang="ts">
 import { MucCallout, MucStepper } from "@muenchen/muc-patternlab-vue";
-import {
-  computed,
-  nextTick,
-  onMounted,
-  provide,
-  ref,
-  watch,
-} from "vue";
+import { computed, nextTick, onMounted, provide, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
