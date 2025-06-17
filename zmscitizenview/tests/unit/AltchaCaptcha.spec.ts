@@ -9,14 +9,13 @@ import AltchaCaptcha from "@/components/Appointment/AltchaCaptcha.vue";
 globalThis.scrollTo = vi.fn();
 
 describe("AltchaCaptcha", () => {
-  const mockT = (key: string) => key;
   const mockBaseUrl = "https://www.muenchen.de";
 
   const createWrapper = (props = {}) => {
     return mount(AltchaCaptcha, {
       props: {
         baseUrl: mockBaseUrl,
-        t: mockT,
+        t: (key: string) => key,
         ...props,
       },
       global: {

@@ -1,12 +1,11 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it, beforeEach, vi } from "vitest";
+import { describe, expect, it, beforeEach } from "vitest";
 import { nextTick, ref } from "vue";
 
 // @ts-expect-error: Vue SFC import for test
 import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue";
 
 describe("AppointmentSummary", () => {
-  const mockT = (key: string) => key;
   const mockSelectedService = ref({
     id: "123",
     name: "Test Service",
@@ -48,9 +47,9 @@ describe("AppointmentSummary", () => {
   const createWrapper = (props = {}) => {
     return mount(AppointmentSummary, {
       props: {
-        t: mockT,
         isRebooking: false,
         rebookOrCancelDialog: false,
+        t: (key: string) => key,
         ...props,
       },
       global: {
@@ -119,7 +118,7 @@ describe("AppointmentSummary", () => {
   });
 
   describe("Form Validation", () => {
-    it("disables book button when checkboxes are not checked", () => {
+    it("disables book button when both checkboxes are not checked", () => {
       const wrapper = createWrapper();
       const bookButton = wrapper.find('muc-button-stub[icon="check"]');
       expect(bookButton.attributes("disabled")).toBe("true");
@@ -127,10 +126,62 @@ describe("AppointmentSummary", () => {
 
     it("enables book button when both checkboxes are checked", async () => {
       const wrapper = createWrapper();
-      await wrapper.find('input[name="checkbox-privacy-policy"]').trigger("click");
-      await wrapper.find('input[name="checkbox-electronic-communication"]').trigger("click");
+      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
+      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      await privacyCheckbox.trigger("click");
+      await communicationCheckbox.trigger("click");
+      await nextTick();
       const bookButton = wrapper.find('muc-button-stub[icon="check"]');
       expect(bookButton.attributes("disabled")).toBe("false");
+    });
+
+    it("disables book button when only privacy policy is checked", async () => {
+      const wrapper = createWrapper();
+      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
+      await privacyCheckbox.trigger("click");
+      await nextTick();
+      const bookButton = wrapper.find('muc-button-stub[icon="check"]');
+      expect(bookButton.attributes("disabled")).toBe("true");
+    });
+
+    it("disables book button when only electronic communication is checked", async () => {
+      const wrapper = createWrapper();
+      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      await communicationCheckbox.trigger("click");
+      await nextTick();
+      const bookButton = wrapper.find('muc-button-stub[icon="check"]');
+      expect(bookButton.attributes("disabled")).toBe("true");
+    });
+
+    it("disables book button when one checkbox is unchecked after both were checked", async () => {
+      const wrapper = createWrapper();
+      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
+      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      await privacyCheckbox.trigger("click");
+      await communicationCheckbox.trigger("click");
+      await nextTick();
+      await privacyCheckbox.trigger("click");
+      await nextTick();
+      const bookButton = wrapper.find('muc-button-stub[icon="check"]');
+      expect(bookButton.attributes("disabled")).toBe("true");
+    });
+
+    it("renders consent checkboxes with correct labels", () => {
+      const wrapper = createWrapper();
+      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
+      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      expect(privacyCheckbox.exists()).toBe(true);
+      expect(communicationCheckbox.exists()).toBe(true);
+      expect(wrapper.find('label[for="checkbox-privacy-policy"]').exists()).toBe(true);
+      expect(wrapper.find('label[for="checkbox-electronic-communication"]').exists()).toBe(true);
+    });
+
+    it("does not show consent checkboxes in rebookOrCancelDialog mode", () => {
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
+      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      expect(privacyCheckbox.exists()).toBe(false);
+      expect(communicationCheckbox.exists()).toBe(false);
     });
   });
 

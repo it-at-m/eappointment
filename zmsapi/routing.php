@@ -3345,6 +3345,64 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\ProcessFree'
 )
     ->setName("ProcessFree");
+/**
+ *  @swagger
+ *  "/process/status/free/unique/":
+ *      post:
+ *          summary: Get a list of unique free processes for a given day
+ *          tags:
+ *              - calendar
+ *              - process
+ *          parameters:
+ *              -   name: calendar
+ *                  description: data for finding unique available processes, try to restrict data to one day, if possible
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/calendar.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: keepLessData
+ *                  description: "Parameter for withLessData method to keep given values in response data"
+ *                  in: query
+ *                  type: array
+ *                  items:
+ *                      type: string
+ *              -   name: groupData
+ *                  description: "Set this parameter if you want to automatically group appointments by time and scope. Be aware, that this parameters reduces the number of appointments, there is no information of the original count left. The value for this parameter sets a threshold to set grouping a step further. Giving a value of 200 means, that on a result with 200 or more appointments, the grouping is not by exact time, instead the hour of the appointment is used to group the results, so that for every hour an scope, at least an available appointment is shown."
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of available processes
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: if no unique process found, return empty list
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->post(
+    '/process/status/free/unique/',
+    '\BO\Zmsapi\ProcessFreeUnique'
+)
+    ->setName("ProcessFreeUnique");
 
 /**
  *  @swagger
