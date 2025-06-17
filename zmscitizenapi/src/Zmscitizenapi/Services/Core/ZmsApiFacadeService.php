@@ -655,7 +655,30 @@ class ZmsApiFacadeService
         }
 
         if ($groupByOffice) {
-            return new AvailableAppointmentsByOffice($timestamps);
+            // Group timestamps by officeId
+            $grouped = [];
+            $currentTimestamp = time();
+            foreach ($freeSlots as $slot) {
+                $officeId = (string)($slot->scope->provider->id ?? '');
+                if (!isset($grouped[$officeId])) {
+                    $grouped[$officeId] = [];
+                }
+                if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                    foreach ($slot->appointments as $appointment) {
+                        if (isset($appointment->date)) {
+                            $timestamp = (int) $appointment->date;
+                            if ($timestamp > $currentTimestamp) {
+                                $grouped[$officeId][] = $timestamp;
+                            }
+                        }
+                    }
+                }
+            }
+            // Sort each office's appointments
+            foreach ($grouped as &$arr) {
+                sort($arr);
+            }
+            return new AvailableAppointmentsByOffice($grouped);
         }
 
         return new AvailableAppointments($timestamps);
