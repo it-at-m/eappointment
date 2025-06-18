@@ -41,6 +41,7 @@ class ZmsApiFacadeService
     private const CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
     private const CACHE_KEY_OFFICES_BY_SERVICE_PREFIX = 'processed_offices_by_service_';
     private const CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
+    private const CACHE_KEY_SERVICES_BY_OFFICE_MAPPING = 'services_by_office_mapping';
 
     private static ?string $currentLanguage = null;
     public static function setLanguageContext(?string $language): void
@@ -480,36 +481,30 @@ class ZmsApiFacadeService
 
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
     {
-        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-        $requestRelationArray = [];
-        foreach ($requestRelationList as $relation) {
-            $requestRelationArray[] = $relation;
+        $cacheKey = self::CACHE_KEY_SERVICES_BY_OFFICE_MAPPING;
+        if (\App::$cache && ($mapping = \App::$cache->get($cacheKey))) {
+            return $mapping[$officeId] ?? new RequestList();
         }
 
-        $serviceIds = array_filter($requestRelationArray, function ($relation) use ($officeId) {
-
-            return $relation->provider->id === $officeId || (string) $relation->provider->id === (string) $officeId;
-        });
-        $serviceIds = array_map(function ($relation) {
-
-            return $relation->request->id;
-        }, $serviceIds);
+        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $requestArray = [];
         foreach ($requestList as $request) {
-            $requestArray[] = $request;
+            $requestArray[$request->id] = $request;
         }
-
-        $filteredRequests = array_filter($requestArray, function ($request) use ($serviceIds) {
-
-            return in_array($request->id, $serviceIds);
-        });
-        $resultRequestList = new RequestList();
-        foreach ($filteredRequests as $request) {
-            $resultRequestList->addEntity($request);
+        $mapping = [];
+        foreach ($requestRelationList as $relation) {
+            $oid = (int)$relation->provider->id;
+            $rid = $relation->request->id;
+            if (!isset($mapping[$oid])) {
+                $mapping[$oid] = new RequestList();
+            }
+            if (isset($requestArray[$rid])) {
+                $mapping[(string)$oid]->addEntity($requestArray[$rid]);
+            }
         }
-
-        return $resultRequestList;
+        self::setMappedCache($cacheKey, $mapping);
+        return $mapping[$officeId] ?? new RequestList();
     }
 
     public static function getBookableFreeDays(
