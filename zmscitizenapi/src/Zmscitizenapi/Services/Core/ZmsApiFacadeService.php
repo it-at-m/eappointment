@@ -41,6 +41,7 @@ class ZmsApiFacadeService
     private const CACHE_KEY_OFFICES_AND_SERVICES = 'processed_offices_and_services';
     private const CACHE_KEY_OFFICES_BY_SERVICE_PREFIX = 'processed_offices_by_service_';
     private const CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
+    private const CACHE_KEY_SERVICES_BY_OFFICE_MAPPING = 'services_by_office_mapping';
 
     private static ?string $currentLanguage = null;
     public static function setLanguageContext(?string $language): void
@@ -480,7 +481,7 @@ class ZmsApiFacadeService
 
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
     {
-        $cacheKey = 'services_by_office_mapping';
+        $cacheKey = self::CACHE_KEY_SERVICES_BY_OFFICE_MAPPING;
         $ttl = \App::$SOURCE_CACHE_TTL;
         // Try persistent cache first
         if (\App::$cache && ($mapping = \App::$cache->get($cacheKey))) {
