@@ -494,13 +494,13 @@ class ZmsApiFacadeService
         }
         $mapping = [];
         foreach ($requestRelationList as $relation) {
-            $oid = (string)$relation->provider->id;
+            $oid = (int)$relation->provider->id;
             $rid = $relation->request->id;
             if (!isset($mapping[$oid])) {
                 $mapping[$oid] = new RequestList();
             }
             if (isset($requestArray[$rid])) {
-                $mapping[$oid]->addEntity($requestArray[$rid]);
+                $mapping[(string)$oid]->addEntity($requestArray[$rid]);
             }
         }
         self::setMappedCache($cacheKey, $mapping);
