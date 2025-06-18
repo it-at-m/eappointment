@@ -480,36 +480,41 @@ class ZmsApiFacadeService
 
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
     {
-        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-        $requestRelationArray = [];
-        foreach ($requestRelationList as $relation) {
-            $requestRelationArray[] = $relation;
+        $cacheKey = 'services_by_office_mapping';
+        $ttl = \App::$SOURCE_CACHE_TTL;
+        // Try persistent cache first
+        if (\App::$cache && ($mapping = \App::$cache->get($cacheKey))) {
+            return $mapping[$officeId] ?? new RequestList();
         }
 
-        $serviceIds = array_filter($requestRelationArray, function ($relation) use ($officeId) {
-
-            return $relation->provider->id === $officeId || (string) $relation->provider->id === (string) $officeId;
-        });
-        $serviceIds = array_map(function ($relation) {
-
-            return $relation->request->id;
-        }, $serviceIds);
+        // Build mapping: officeId => RequestList
+        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $requestArray = [];
         foreach ($requestList as $request) {
-            $requestArray[] = $request;
+            $requestArray[$request->id] = $request;
         }
-
-        $filteredRequests = array_filter($requestArray, function ($request) use ($serviceIds) {
-
-            return in_array($request->id, $serviceIds);
-        });
-        $resultRequestList = new RequestList();
-        foreach ($filteredRequests as $request) {
-            $resultRequestList->addEntity($request);
+        $mapping = [];
+        foreach ($requestRelationList as $relation) {
+            $oid = (string)$relation->provider->id;
+            $rid = $relation->request->id;
+            if (!isset($mapping[$oid])) {
+                $mapping[$oid] = new RequestList();
+            }
+            if (isset($requestArray[$rid])) {
+                $mapping[$oid]->addEntity($requestArray[$rid]);
+            }
         }
-
-        return $resultRequestList;
+        // Store in persistent cache
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $mapping, $ttl);
+            \BO\Zmscitizenapi\Services\Core\LoggerService::logInfo('Cache set', [
+                'key' => $cacheKey,
+                'ttl' => $ttl,
+                'entity_type' => 'officeId=>RequestList mapping'
+            ]);
+        }
+        return $mapping[$officeId] ?? new RequestList();
     }
 
     public static function getBookableFreeDays(
