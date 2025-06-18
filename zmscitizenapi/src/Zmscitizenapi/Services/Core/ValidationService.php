@@ -70,6 +70,8 @@ class ValidationService
 
     public static function validateServiceLocationCombination(int $officeId, array $serviceIds): array
     {
+        static $officeServicesCache = [];
+
         if ($officeId <= 0) {
             return ['errors' => [self::getError('invalidOfficeId')]];
         }
@@ -78,7 +80,11 @@ class ValidationService
             return ['errors' => [self::getError('invalidServiceId')]];
         }
 
-        $availableServices = ZmsApiFacadeService::getServicesProvidedAtOffice($officeId);
+        if (!isset($officeServicesCache[$officeId])) {
+            $officeServicesCache[$officeId] = ZmsApiFacadeService::getServicesProvidedAtOffice($officeId);
+        }
+        $availableServices = $officeServicesCache[$officeId];
+
         $availableServiceIds = [];
         foreach ($availableServices as $service) {
             $availableServiceIds[] = $service->id;
@@ -88,7 +94,7 @@ class ValidationService
         return empty($invalidServiceIds)
             ? []
             : ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
-    }
+    } 
 
     private static function validateCaptcha(bool $captchaRequired, ?string $captchaToken, ?TokenValidationService $tokenValidator): array
     {
