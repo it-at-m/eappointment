@@ -1,0 +1,79 @@
+{% extends "layout/main.twig" %}
+{% from 'element/helper/snippets.twig' import headline1 %}
+
+{% block headline %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="headline1 mb-0">
+            <i class="fas fa-calendar-alt me-2" aria-hidden="true"></i>
+            Wochenkalender
+        </h1>
+        <a href="../counter/" id="back-button" class="btn button--positive">
+            <i class="fas fa-arrow-left me-2" aria-hidden="true"></i>
+            Zurück
+        </a>
+    </div>
+    <script>
+    document.getElementById('back-button').addEventListener('click', function(e) {
+        if (document.referrer && document.referrer !== window.location.href) {
+            e.preventDefault();
+            window.location.href = document.referrer;
+        }
+    });
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% set scopeOptions = [] %}
+    {% for scope in scopeList %}
+        {% set scopeOptions = scopeOptions|merge([{
+            'value': scope.id,
+            'name': scope.contact.name ~ ' ' ~ scope.shortName
+        }]) %}
+    {% endfor %}
+
+    <form id="overall-calendar-form" class="form--base panel--heavy">
+        {% include 'block/overallCalendar/locationSelector.twig' with {
+            scopeOptions: scopeOptions,
+            advancedData: advancedData,
+            selectedScopeIds: selectedScopeIds
+        } %}
+
+        <div class="overall-calendar-daterange">
+            <div class="overall-calendar-datefield">
+                <label for="calendar-date-from" class="form-label">Von</label>
+                <input type="date" id="calendar-date-from" name="calendarDateFrom" class="form-control" value="{{ "now"|date("Y-m-d") }}">
+            </div>
+            <div class="overall-calendar-datefield">
+                <label for="calendar-date-until" class="form-label">Bis</label>
+                <input type="date" id="calendar-date-until" name="calendarDateUntil" class="form-control">
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <button type="submit" class="btn btn-primary">Übernehmen</button>
+            <span id="scope-error"
+                  class="overall-calendar-error"
+                  role="alert"
+                  aria-live="polite"
+                  style="display:none;">
+                <span class="msg"></span>
+            </span>
+        </div>
+    </form>
+
+    <div class="overall-calendar-wrapper">
+        <div id="overall-calendar" class="overall-calendar"></div>
+    </div>
+    <button
+        id="calendar-fullscreen"
+        class="overall-fullscreen-btn btn-light shadow-lg"
+        type="button"
+        aria-label="Kalender im Vollbildmodus anzeigen"
+        data-bs-toggle="tooltip"
+        data-bs-placement="left"
+        title="Vollbild">
+        <i class="fas fa-expand"></i>
+    </button>
+{% endblock %}
+
+

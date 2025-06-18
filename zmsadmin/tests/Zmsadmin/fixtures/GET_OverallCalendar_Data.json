@@ -1,0 +1,56 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2025-01-20T10:30:36+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "days": {
+            "2025-01-20": {
+                "scopes": {
+                    "141": {
+                        "name": "Bürgeramt Heerstraße",
+                        "shortName": "BH",
+                        "times": {
+                            "08:00": {
+                                "1": {"status": "open", "text": "5"},
+                                "2": {"status": "termin", "text": "Termin", "process": "12345", "rowspan": 2}
+                            },
+                            "08:05": {
+                                "1": {"status": "open", "text": "5"},
+                                "2": {"status": "skip"}
+                            }
+                        }
+                    },
+                    "142": {
+                        "name": "Bürgeramt Spandau",
+                        "shortName": "BS",
+                        "times": {
+                            "08:00": {
+                                "1": {"status": "closed", "text": ""},
+                                "2": {"status": "empty", "text": ""}
+                            }
+                        }
+                    }
+                }
+            },
+            "2025-01-21": {
+                "scopes": {
+                    "141": {
+                        "name": "Bürgeramt Heerstraße",
+                        "shortName": "BH",
+                        "times": {
+                            "08:00": {
+                                "1": {"status": "open", "text": "3"},
+                                "2": {"status": "empty", "text": ""}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "lastUpdate": "2025-01-20 10:30:36"
+    }
+}
