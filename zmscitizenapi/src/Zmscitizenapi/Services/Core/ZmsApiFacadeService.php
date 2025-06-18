@@ -506,15 +506,8 @@ class ZmsApiFacadeService
                 $mapping[$oid]->addEntity($requestArray[$rid]);
             }
         }
-        // Store in persistent cache
-        if (\App::$cache) {
-            \App::$cache->set($cacheKey, $mapping, $ttl);
-            \BO\Zmscitizenapi\Services\Core\LoggerService::logInfo('Cache set', [
-                'key' => $cacheKey,
-                'ttl' => $ttl,
-                'entity_type' => 'officeId=>RequestList mapping'
-            ]);
-        }
+        // Store in persistent cache using setMappedCache
+        self::setMappedCache($cacheKey, $mapping);
         return $mapping[$officeId] ?? new RequestList();
     }
 
