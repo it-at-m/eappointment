@@ -1,6 +1,5 @@
 {% block navigation %}
     {% set rights = workstation.useraccount.rights %}
-
     <ul class="nav__list">
     {% if workstation %}
         <li class="nav__block">
@@ -39,6 +38,15 @@
                                 <a title="{% trans %}Standortauswahlseite der Wartenummernausgabe{% endtrans %}" href="{{ urlGet('ticketprinter', {}, {}) }}" {{ menuActive == 'ticketprinter'? ' aria-current="page"' }}>Wartenummern</a>
                             </li>
                         {% endif %}
+                    {% endif %}
+                    {% if workstation.useraccount.rights.superuser %}
+                    <li class="nav__link{{ menuActive == 'overallcalendar'? ' active' }}">
+                        <a title="{% trans %}Wochenkalender mit allen Terminen{% endtrans %}"
+                           href="{{ urlGet('overallcalendar', {}, {}) }}"
+                           {{ menuActive == 'overallcalendar'? ' aria-current=\"page\"' }}>
+                            Wochenkalender
+                        </a>
+                    </li>
                     {% endif %}
                 </ul>
             </nav>
