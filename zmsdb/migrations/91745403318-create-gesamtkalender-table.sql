@@ -11,6 +11,7 @@ CREATE TABLE `gesamtkalender` (
     `updated_at` TIMESTAMP             NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (`id`),
+    FOREIGN KEY (`scope_id`) REFERENCES `standort`(`StandortID`) ON DELETE CASCADE ON UPDATE CASCADE,
     UNIQUE KEY `uk_scope_time` (`scope_id`, `time`, `seat`, `availability_id`),
 
     KEY `idx_status`    (`status`),
