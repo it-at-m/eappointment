@@ -482,7 +482,6 @@ class ZmsApiFacadeService
     public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
     {
         $cacheKey = self::CACHE_KEY_SERVICES_BY_OFFICE_MAPPING;
-        // Try persistent cache first
         if (\App::$cache && ($mapping = \App::$cache->get($cacheKey))) {
             return $mapping[$officeId] ?? new RequestList();
         }
