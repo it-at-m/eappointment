@@ -483,12 +483,10 @@ class ZmsApiFacadeService
     {
         $cacheKey = self::CACHE_KEY_SERVICES_BY_OFFICE_MAPPING;
         $ttl = \App::$SOURCE_CACHE_TTL;
-        // Try persistent cache first
         if (\App::$cache && ($mapping = \App::$cache->get($cacheKey))) {
             return $mapping[$officeId] ?? new RequestList();
         }
 
-        // Build mapping: officeId => RequestList
         $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
         $requestList = ZmsApiClientService::getServices() ?? new RequestList();
         $requestArray = [];
@@ -506,7 +504,6 @@ class ZmsApiFacadeService
                 $mapping[$oid]->addEntity($requestArray[$rid]);
             }
         }
-        // Store in persistent cache using setMappedCache
         self::setMappedCache($cacheKey, $mapping);
         return $mapping[$officeId] ?? new RequestList();
     }
