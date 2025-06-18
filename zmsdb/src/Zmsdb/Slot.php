@@ -295,19 +295,22 @@ class Slot extends Base
             $status = $writeStatus ? $writeStatus : $status;
 
             if ($writeStatus) {
-                $slotDateTime = new \DateTimeImmutable(
+                $slotStart = new \DateTimeImmutable(
                     $time->format('Y-m-d') . ' ' . $slot->getTimeString(),
                     $timeZone
                 );
+                $slotDurationMinutes = (int) $availability->getSlotTimeInMinutes();
+                $slotEnd = $slotStart->modify('+' . $slotDurationMinutes . ' minutes');
+
+                $bulkRows = [];
                 for ($seat = 1; $seat <= $maxSeat; $seat++) {
-                    $calendar->insertSlot(
-                        $scopeId,
-                        $availabilityId,
-                        $slotDateTime,
-                        $seat,
-                        'free'
-                    );
+                    $cursor = clone $slotStart;
+                    while ($cursor < $slotEnd) {
+                        $bulkRows[] = [$scopeId, $availabilityId, $cursor, $seat, 'free'];
+                        $cursor = $cursor->modify('+5 minutes');
+                    }
                 }
+                $calendar->insertSlotsBulk($bulkRows);
             }
         }
         if ($hasAddedSlots) {

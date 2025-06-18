@@ -43,6 +43,16 @@ use Slim\Routing\RouteCollectorProxy;
  \App::$slim->get('/calendar/{year:\d\d\d\d}/{weeknr:\d{1,2}}/', \BO\Zmsadmin\CalendarWeek::class)
      ->setName("calendar_week");
 
+/*
+* ---------------------------------------------------------------------------
+* Overall-Calendar
+* -------------------------------------------------------------------------
+*/
+\App::$slim->get('/overallcalendar/', \BO\Zmsadmin\OverallCalendar::class)
+    ->setName("overallcalendar");
+
+\App::$slim->get('/overallcalendar/overallcalendarData/', \BO\Zmsadmin\OverallCalendarLoadData::class)
+    ->setName("overallCalendarLoadData");
 
  /*
   * ---------------------------------------------------------------------------
