@@ -94,7 +94,7 @@ class ValidationService
         return empty($invalidServiceIds)
             ? []
             : ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
-    } 
+    }
 
     private static function validateCaptcha(bool $captchaRequired, ?string $captchaToken, ?TokenValidationService $tokenValidator): array
     {
