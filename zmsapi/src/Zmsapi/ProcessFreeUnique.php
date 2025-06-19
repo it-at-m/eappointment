@@ -37,9 +37,7 @@ class ProcessFreeUnique extends BaseController
         $calendar = new \BO\Zmsentities\Calendar($calendarData);
         $message = Response\Message::create($request);
         $processList = (new Query())
-            ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired, $groupData ? true : false)
-            ->withLessData($keepLessData)
-        ;
+            ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired, $groupData ? true : false);
 
         // Deduplicate processes with same provider (office) and appointment date
         $uniqueProcesses = [];
