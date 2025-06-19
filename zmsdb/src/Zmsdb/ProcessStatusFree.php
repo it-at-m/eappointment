@@ -10,6 +10,83 @@ use BO\Zmsentities\Collection\ProcessList as Collection;
  */
 class ProcessStatusFree extends Process
 {
+    public function readFreeProcessesDeduplicatedOptimized(
+        \BO\Zmsentities\Calendar $calendar,
+        \DateTimeInterface $now,
+        $slotType = 'public',
+        $slotsRequired = null,
+        $groupData = false,
+        $keepArray = []
+    ) {
+        $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
+        $dayquery = new Day();
+        $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
+        $selectedDate = $calendar->getFirstDay();
+        $days = [$selectedDate];
+        $scopeList = [];
+
+        if ($calendar->getLastDay(false)) {
+            $days = [];
+            while ($selectedDate <= $calendar->getLastDay(false)) {
+                $days[] = $selectedDate;
+                $selectedDate = $selectedDate->modify('+1 day');
+            }
+        }
+
+        $processData = $this->fetchHandle(
+            sprintf(
+                Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS,
+                Query\ProcessStatusFree::buildDaysCondition($days)
+            )
+            . ($groupData ? Query\ProcessStatusFree::GROUPBY_SELECT_PROCESSLIST_DAY : ''),
+            [
+                'slotType' => $slotType,
+                'forceRequiredSlots' =>
+                    ($slotsRequired === null || $slotsRequired < 1) ? 1 : intval($slotsRequired),
+            ]
+        );
+
+        $unique = [];
+        while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
+            $scopeId = $item['scope__id'] ?? null;
+            $dateString = $item['appointments__0__date'] ?? null;
+            $date = $dateString ? strtotime($dateString) : null;
+            $scope = $scopeId ? $calendar->scopes->getEntity($scopeId) : null;
+            $providerId = $scope ? $scope->getProviderId() : null;
+
+            if ($providerId && $date) {
+                $key = $providerId . '_' . $date;
+                if (!isset($unique[$key])) {
+                    $minimal = [
+                        '$schema' => 'https://schema.berlin.de/queuemanagement/process.json',
+                        'scope' => [
+                            'id' => $scopeId,
+                            'provider' => [
+                                'id' => $providerId
+                            ]
+                        ],
+                        'appointments' => [
+                            [
+                                'date' => (string)$date,
+                                'scope' => [
+                                    'id' => $scopeId,
+                                    'provider' => [
+                                        'id' => $providerId
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ];
+                    $unique[$key] = $minimal;
+                }
+            }
+        }
+        $processData->closeCursor();
+        unset($dayquery);
+        return array_values($unique);
+    }
+
+
     public function readFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
