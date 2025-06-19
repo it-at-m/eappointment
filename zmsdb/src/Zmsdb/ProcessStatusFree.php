@@ -15,15 +15,13 @@ class ProcessStatusFree extends Process
         \DateTimeInterface $now,
         $slotType = 'public',
         $slotsRequired = null,
-        $groupData = false,
-        $keepArray = []
+        $groupData = false
     ) {
         $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new Day();
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
         $selectedDate = $calendar->getFirstDay();
         $days = [$selectedDate];
-        $scopeList = [];
 
         if ($calendar->getLastDay(false)) {
             $days = [];
@@ -100,7 +98,6 @@ class ProcessStatusFree extends Process
         $selectedDate = $calendar->getFirstDay();
         $processList = new Collection();
         $days = [$selectedDate];
-        $scopeList = [];
 
         if ($calendar->getLastDay(false)) {
             $days = [];
