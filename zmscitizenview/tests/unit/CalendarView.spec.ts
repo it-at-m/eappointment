@@ -1388,3 +1388,59 @@ describe("CalendarView", () => {
     });
   });
 });
+
+describe("CalendarView Spinner Progress", () => {
+  let wrapper: any;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+        { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+      ]}
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    wrapper.unmount();
+  });
+
+  it("shows the spinner when loading", async () => {
+    wrapper.vm.isLoadingAppointments = true;
+    await nextTick();
+    expect(wrapper.findComponent({ name: "MucPercentageSpinner" }).exists()).toBe(true);
+  });
+
+  it("increments the spinner percentage while loading", async () => {
+    wrapper.vm.isLoadingAppointments = true;
+    await nextTick();
+    expect(wrapper.vm.loadingPercentage).toBe(0);
+
+    vi.advanceTimersByTime(25); // +20
+    expect(wrapper.vm.loadingPercentage).toBe(20);
+
+    vi.advanceTimersByTime(25); // +20
+    expect(wrapper.vm.loadingPercentage).toBe(40);
+
+    vi.advanceTimersByTime(100); // +80
+    expect(wrapper.vm.loadingPercentage).toBe(100);
+
+    // Should not exceed 100 while loading
+    vi.advanceTimersByTime(1000);
+    expect(wrapper.vm.loadingPercentage).toBe(100);
+  });
+
+  it("jumps to 100% and resets after loading completes", async () => {
+    wrapper.vm.isLoadingAppointments = true;
+    await nextTick();
+    vi.advanceTimersByTime(125); // get to 100
+    wrapper.vm.isLoadingAppointments = false;
+    await nextTick();
+    expect(wrapper.vm.loadingPercentage).toBe(100);
+
+    // After 300ms, should reset to 0
+    vi.advanceTimersByTime(300);
+    expect(wrapper.vm.loadingPercentage).toBe(0);
+  });
+});

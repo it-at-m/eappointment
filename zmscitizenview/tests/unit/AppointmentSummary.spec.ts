@@ -118,13 +118,13 @@ describe("AppointmentSummary", () => {
   });
 
   describe("Form Validation", () => {
-    it("disables book button when both checkboxes are not checked", () => {
+    it("disables preconfirm button when both checkboxes are not checked", () => {
       const wrapper = createWrapper();
       const bookButton = wrapper.find('muc-button-stub[icon="check"]');
       expect(bookButton.attributes("disabled")).toBe("true");
     });
 
-    it("enables book button when both checkboxes are checked", async () => {
+    it("enables preconfirm button when both checkboxes are checked", async () => {
       const wrapper = createWrapper();
       const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
@@ -135,7 +135,7 @@ describe("AppointmentSummary", () => {
       expect(bookButton.attributes("disabled")).toBe("false");
     });
 
-    it("disables book button when only privacy policy is checked", async () => {
+    it("disables preconfirm button when only privacy policy is checked", async () => {
       const wrapper = createWrapper();
       const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
       await privacyCheckbox.trigger("click");
@@ -144,7 +144,7 @@ describe("AppointmentSummary", () => {
       expect(bookButton.attributes("disabled")).toBe("true");
     });
 
-    it("disables book button when only electronic communication is checked", async () => {
+    it("disables preconfirm button when only electronic communication is checked", async () => {
       const wrapper = createWrapper();
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
       await communicationCheckbox.trigger("click");
@@ -153,7 +153,7 @@ describe("AppointmentSummary", () => {
       expect(bookButton.attributes("disabled")).toBe("true");
     });
 
-    it("disables book button when one checkbox is unchecked after both were checked", async () => {
+    it("disables preconfirm button when one checkbox is unchecked after both were checked", async () => {
       const wrapper = createWrapper();
       const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
@@ -192,7 +192,7 @@ describe("AppointmentSummary", () => {
       expect(wrapper.emitted("back")).toBeTruthy();
     });
 
-    it("emits bookAppointment event when book button is clicked", async () => {
+    it("emits bookAppointment event when preconfirm button is clicked", async () => {
       const wrapper = createWrapper();
       await wrapper.find('input[name="checkbox-privacy-policy"]').trigger("click");
       await wrapper.find('input[name="checkbox-electronic-communication"]').trigger("click");
