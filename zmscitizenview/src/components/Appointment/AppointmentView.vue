@@ -22,7 +22,7 @@
                 :exclusive-location="exclusiveLocation"
                 :t="t"
                 @next="setServices"
-                @captchaTokenChanged="captchaToken = $event"
+                @captchaTokenChanged="captchaToken = $event ?? undefined"
               />
             </div>
 
@@ -33,7 +33,7 @@
                 :exclusive-location="exclusiveLocation"
                 :preselected-office-id="preselectedLocationId"
                 :selected-service-map="selectedServiceMap"
-                :captcha-token="captchaToken"
+                :captcha-token="captchaToken ?? null"
                 :t="t"
                 :booking-error="captchaError || appointmentNotAvailableError"
                 :booking-error-key="bookingErrorKey"
@@ -592,7 +592,7 @@ onMounted(() => {
       relations.value = data.relations;
       offices.value = data.offices;
 
-      const appointmentData = parseAppointmentHash(props.appointmentHash);
+      const appointmentData = parseAppointmentHash(props.appointmentHash ?? "");
       if (!appointmentData) {
         appointmentNotFoundError.value = true;
         return;

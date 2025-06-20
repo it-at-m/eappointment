@@ -10,7 +10,10 @@
             <h3 tabindex="0">{{ t("service") }}</h3>
           </div>
           <div class="m-content border-bottom">
-            <p tabindex="0">
+            <p
+              v-if="selectedService"
+              tabindex="0"
+            >
               {{ selectedService.count }}x {{ selectedService.name }}
               <br />
             </p>
@@ -92,7 +95,12 @@
               {{ appointment.telephone }}<br />
             </p>
             <div
-              v-if="appointment.customTextfield"
+              v-if="
+                appointment &&
+                selectedProvider &&
+                selectedProvider.scope &&
+                appointment.customTextfield
+              "
               tabindex="0"
             >
               <strong>{{ selectedProvider.scope.customTextfieldLabel }}</strong
@@ -101,7 +109,12 @@
               <br />
             </div>
             <div
-              v-if="appointment.customTextfield2"
+              v-if="
+                appointment &&
+                selectedProvider &&
+                selectedProvider.scope &&
+                appointment.customTextfield2
+              "
               tabindex="0"
             >
               <strong>{{ selectedProvider.scope.customTextfield2Label }}</strong
