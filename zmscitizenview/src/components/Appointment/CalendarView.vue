@@ -140,7 +140,7 @@
       </div>
 
       <div
-        v-if="isLoadingAppointments"
+        v-if="isLoadingAppointments || isLoadingComplete"
         class="m-content"
         style="
           display: flex;
@@ -272,7 +272,7 @@
       </div>
 
       <div
-        v-if="isLoadingAppointments"
+        v-if="isLoadingAppointments || isLoadingComplete"
         class="m-content"
         style="
           display: flex;
@@ -534,25 +534,29 @@ const isLoadingAppointments = ref(false);
 const datesWithoutAppointments = ref(new Set<string>());
 
 const loadingPercentage = ref(0);
+const isLoadingComplete = ref(false);
 let progressInterval: NodeJS.Timeout | null = null;
 
 watch(isLoadingAppointments, (loading) => {
   if (loading) {
     loadingPercentage.value = 0;
+    isLoadingComplete.value = false;
     progressInterval = setInterval(() => {
       if (loadingPercentage.value < 90) {
-        loadingPercentage.value += 20;
+        loadingPercentage.value += 10;
       }
-    }, 25);
+    }, 50);
   } else {
     loadingPercentage.value = 100;
+    isLoadingComplete.value = true;
     if (progressInterval) {
       clearInterval(progressInterval);
       progressInterval = null;
     }
     setTimeout(() => {
       loadingPercentage.value = 0;
-    }, 300);
+      isLoadingComplete.value = false;
+    }, 100);
   }
 });
 

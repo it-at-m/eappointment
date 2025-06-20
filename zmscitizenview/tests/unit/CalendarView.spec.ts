@@ -208,6 +208,9 @@ describe("CalendarView", () => {
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
+    // Wait for loading to complete and spinner to disappear
+    await flushPromises();
+    await new Promise(resolve => setTimeout(resolve, 150)); // Wait for 100ms timeout + buffer
 
     const locationTitles = wrapper.findAll('.location-title');
     const officeAAA = locationTitles.find(location => location.text().includes('Office AAA'));
@@ -258,6 +261,9 @@ describe("CalendarView", () => {
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
+    // Wait for loading to complete and spinner to disappear
+    await flushPromises();
+    await new Promise(resolve => setTimeout(resolve, 150)); // Wait for 100ms timeout + buffer
 
     const locationTitles = wrapper.findAll('.location-title');
     const officeAAA = locationTitles.find(location => location.text().includes('Office AAA'));
@@ -309,6 +315,9 @@ describe("CalendarView", () => {
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
+    // Wait for loading to complete and spinner to disappear
+    await flushPromises();
+    await new Promise(resolve => setTimeout(resolve, 150)); // Wait for 100ms timeout + buffer
 
     const locationTitles = wrapper.findAll('.location-title');
     const officeAAA = locationTitles.find(location => location.text().includes('Office AAA'));
@@ -1417,30 +1426,30 @@ describe("CalendarView Spinner Progress", () => {
     await nextTick();
     expect(wrapper.vm.loadingPercentage).toBe(0);
 
-    vi.advanceTimersByTime(25); // +20
+    vi.advanceTimersByTime(50); // +10
+    expect(wrapper.vm.loadingPercentage).toBe(10);
+
+    vi.advanceTimersByTime(50); // +10
     expect(wrapper.vm.loadingPercentage).toBe(20);
 
-    vi.advanceTimersByTime(25); // +20
-    expect(wrapper.vm.loadingPercentage).toBe(40);
+    vi.advanceTimersByTime(400); // +80
+    expect(wrapper.vm.loadingPercentage).toBe(90);
 
-    vi.advanceTimersByTime(100); // +80
-    expect(wrapper.vm.loadingPercentage).toBe(100);
-
-    // Should not exceed 100 while loading
+    // Should not exceed 90 while loading
     vi.advanceTimersByTime(1000);
-    expect(wrapper.vm.loadingPercentage).toBe(100);
+    expect(wrapper.vm.loadingPercentage).toBe(90);
   });
 
   it("jumps to 100% and resets after loading completes", async () => {
     wrapper.vm.isLoadingAppointments = true;
     await nextTick();
-    vi.advanceTimersByTime(125); // get to 100
+    vi.advanceTimersByTime(500); // get to 100
     wrapper.vm.isLoadingAppointments = false;
     await nextTick();
     expect(wrapper.vm.loadingPercentage).toBe(100);
 
-    // After 300ms, should reset to 0
-    vi.advanceTimersByTime(300);
+    // After 100ms, should reset to 0
+    vi.advanceTimersByTime(100);
     expect(wrapper.vm.loadingPercentage).toBe(0);
   });
 });
