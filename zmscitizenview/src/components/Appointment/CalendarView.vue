@@ -1379,9 +1379,15 @@ onMounted(() => {
 
 const handleDaySelection = async (day: any) => {
   if (!(day instanceof Date)) {
-    selectedDay.value = undefined;
+    // Don't allow deselection - if day is not a Date, ignore the selection
     return;
   }
+
+  // If the same date is already selected, don't do anything
+  if (selectedDay.value && selectedDay.value.getTime() === day.getTime()) {
+    return;
+  }
+
   selectedDay.value = day;
   selectedTimeslot.value = 0;
   selectedHour.value = null;

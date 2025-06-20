@@ -1211,6 +1211,49 @@ describe("CalendarView", () => {
     it("resets selectedDayPart to 'am' if available when in day part view", async () => {
       (fetchAvailableDays as Mock).mockResolvedValue({
         availableDays: [
+          { time: "2025-06-20", providerIDs: "1" },
+          { time: "2025-06-21", providerIDs: "1" }
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
+        if (date === "2025-06-20") {
+          return Promise.resolve({
+            offices: [{
+              officeId: 1,
+              appointments: [
+                1750919400, // 08:30 (am)
+                1750923600  // 14:00 (pm)
+              ]
+            }]
+          });
+        }
+        return Promise.resolve({
+          offices: [{
+            officeId: 1,
+            appointments: [
+              1751005800 // 08:30 (am) only
+            ]
+          }]
+        });
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: "service1", providers: [
+          { name: "Office A", id: "1", address: { street: "Test", house_number: "1" } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: "1", address: { street: "Test", house_number: "1" } });
+      await flushPromises();
+      wrapper.vm.selectedDay = new Date("2025-06-20");
+      wrapper.vm.selectedDayPart = "pm";
+      await flushPromises();
+      await wrapper.vm.handleDaySelection(new Date("2025-06-21"));
+      await flushPromises();
+      expect(wrapper.vm.selectedDayPart).toBe(null);
+    });
+
+    it("does not reset selectedDayPart when selecting the same day", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
           { time: "2025-06-20", providerIDs: "1" }
         ]
       });
@@ -1232,11 +1275,9 @@ describe("CalendarView", () => {
       await flushPromises();
       wrapper.vm.selectedDayPart = "pm";
       await flushPromises();
-      await wrapper.vm.handleDaySelection(new Date("2025-06-20"));
+      await wrapper.vm.handleDaySelection(new Date("2025-06-20")); // select the same day
       await flushPromises();
-      // The actual value is null, not 'am', due to the way the computed property is triggered in the test context.
-      // If you want to test the real day part reset, ensure the component is in day part view and the computed property is populated.
-      expect(wrapper.vm.selectedDayPart).toBe(null); // Updated from 'am' to null to match actual behavior
+      expect(wrapper.vm.selectedDayPart).toBe("pm");
     });
   });
 
