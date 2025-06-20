@@ -118,7 +118,7 @@
       v-if="
         selectedDay &&
         (timeSlotsInHoursByOffice.size > 0 || isLoadingAppointments) &&
-        appointmentsCount / (selectableProviders?.length || 1) > 18
+        appointmentsCount > 18
       "
       :key="
         String(selectedDay) +

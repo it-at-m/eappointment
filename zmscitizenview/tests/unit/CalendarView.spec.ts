@@ -1061,7 +1061,7 @@ describe("CalendarView", () => {
       await flushPromises();
 
       // Uncheck provider 2 (which has appointments in August)
-      await wrapper.vm.handleProviderCheckbox('2');
+      await wrapper.vm.handleProviderCheckbox(2);
       await nextTick();
       await flushPromises();
 
@@ -1437,6 +1437,109 @@ describe("CalendarView", () => {
       expect(wrapper.vm.selectedDayPart).toBe('am');
     });
   });
+
+  it("shows hourly view if total appointments > 18", async () => {
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: '2025-07-02', providerIDs: '1,2' }
+      ]
+    });
+    // 32 appointments in total (across both providers) - using exact hour timestamps > 0
+    (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+      offices: [
+        { 
+          officeId: 1, 
+          appointments: [
+            1750915200, // 08:00
+            1750918800, // 09:00
+            1750922400, // 10:00
+            1750926000, // 11:00
+            1750929600, // 12:00
+            1750933200, // 13:00
+            1750936800, // 14:00
+            1750940400, // 15:00
+            1750944000, // 16:00
+            1750947600, // 17:00
+            1750951200, // 18:00
+            1750954800, // 19:00
+            1750958400, // 20:00
+            1750962000, // 21:00
+            1750965600, // 22:00
+            1750969200, // 23:00
+          ]
+        },
+        { 
+          officeId: 2, 
+          appointments: [
+            1750915200, // 08:00
+            1750918800, // 09:00
+            1750922400, // 10:00
+            1750926000, // 11:00
+            1750929600, // 12:00
+            1750933200, // 13:00
+            1750936800, // 14:00
+            1750940400, // 15:00
+            1750944000, // 16:00
+            1750947600, // 17:00
+            1750951200, // 18:00
+            1750954800, // 19:00
+            1750958400, // 20:00
+            1750962000, // 21:00
+            1750965600, // 22:00
+            1750969200, // 23:00
+          ]
+        }
+      ]
+    });
+    const wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+        { name: "Office A", id: 1, address: { street: "Test", house_number: "1" } },
+        { name: "Office B", id: 2, address: { street: "Test", house_number: "2" } }
+      ] }
+    });
+    await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Test", house_number: "1" } });
+    await flushPromises();
+    await wrapper.vm.handleDaySelection(new Date("2025-07-02"));
+    await flushPromises();
+    
+    // Directly set both providers as selected
+    wrapper.vm.selectedProviders = { 1: true, 2: true };
+    await nextTick();
+    await flushPromises();
+    
+    // Wait for loading to complete
+    await new Promise(resolve => setTimeout(resolve, 150));
+    await nextTick();
+    
+    expect(wrapper.html()).toMatch(/\d:00-\d:59/);
+  });
+
+  it("shows am/pm view if total appointments <= 18", async () => {
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: '2025-07-02', providerIDs: '1,2' }
+      ]
+    });
+    // 18 appointments in total (across both providers)
+    (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+      offices: [
+        { officeId: 1, appointments: Array.from({ length: 9 }, (_, i) => 1750919400 + i * 3600) },
+        { officeId: 2, appointments: Array.from({ length: 9 }, (_, i) => 1750952400 + i * 3600) }
+      ]
+    });
+    const wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+        { name: "Office A", id: 1, address: { street: "Test", house_number: "1" } },
+        { name: "Office B", id: 2, address: { street: "Test", house_number: "2" } }
+      ] }
+    });
+    await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Test", house_number: "1" } });
+    await flushPromises();
+    await wrapper.vm.handleDaySelection(new Date("2025-07-02"));
+    await flushPromises();
+    // Should show am/pm labels
+    expect(wrapper.html()).toMatch(/am|pm/);
+  });
 });
 
 describe("CalendarView Spinner Progress", () => {
@@ -1494,3 +1597,4 @@ describe("CalendarView Spinner Progress", () => {
     expect(wrapper.vm.loadingPercentage).toBe(0);
   });
 });
+
