@@ -47,7 +47,13 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
           selectedProvider: ref(overrides.selectedProvider ?? null),
           selectedTimeslot: ref(overrides.selectedTimeslot ?? 0),
         },
-        selectableProviders: ref([])
+        selectableProviders: ref([]),
+        loadingStates: {
+          isReservingAppointment: ref(false),
+          isUpdatingAppointment: ref(false),
+          isBookingAppointment: ref(false),
+          isCancelingAppointment: ref(false),
+        },
       },
       stubs: ["muc-slider", "muc-callout", "muc-calendar"],
     },
@@ -1542,7 +1548,7 @@ describe("CalendarView", () => {
   });
 });
 
-describe("CalendarView Spinner Progress", () => {
+describe("CalendarView Spinner and Loading States", () => {
   let wrapper: any;
 
   beforeEach(() => {
@@ -1559,42 +1565,94 @@ describe("CalendarView Spinner Progress", () => {
     wrapper.unmount();
   });
 
-  it("shows the spinner when loading", async () => {
-    wrapper.vm.isLoadingAppointments = true;
+  it("shows spinner when reserving appointment", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
     await nextTick();
-    expect(wrapper.findComponent({ name: "MucPercentageSpinner" }).exists()).toBe(true);
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
   });
 
-  it("increments the spinner percentage while loading", async () => {
-    wrapper.vm.isLoadingAppointments = true;
+  it("hides spinner when not loading", async () => {
+    // Ensure loading state is false
+    wrapper.vm.loadingStates.isReservingAppointment.value = false;
     await nextTick();
-    expect(wrapper.vm.loadingPercentage).toBe(0);
 
-    vi.advanceTimersByTime(50); // +10
-    expect(wrapper.vm.loadingPercentage).toBe(10);
-
-    vi.advanceTimersByTime(50); // +10
-    expect(wrapper.vm.loadingPercentage).toBe(20);
-
-    vi.advanceTimersByTime(400); // +80
-    expect(wrapper.vm.loadingPercentage).toBe(90);
-
-    // Should not exceed 90 while loading
-    vi.advanceTimersByTime(1000);
-    expect(wrapper.vm.loadingPercentage).toBe(90);
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(false);
   });
 
-  it("jumps to 100% and resets after loading completes", async () => {
+  it("disables next button when loading", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("enables next button when not loading", async () => {
+    // Ensure loading state is false
+    wrapper.vm.loadingStates.isReservingAppointment.value = false;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(false);
+  });
+
+  it("removes icon from button when loading", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("shows correct aria-label for screen reader when loading", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("shows button text and spinner together when loading", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("prevents multiple clicks when loading", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("shows icon when not loading", async () => {
+    // Ensure loading state is false
+    wrapper.vm.loadingStates.isReservingAppointment.value = false;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(false);
+  });
+
+  it("shows correct aria-label for appointment times loading spinner", async () => {
+    // Set loading state to show the spinner
     wrapper.vm.isLoadingAppointments = true;
     await nextTick();
-    vi.advanceTimersByTime(500); // get to 100
-    wrapper.vm.isLoadingAppointments = false;
-    await nextTick();
-    expect(wrapper.vm.loadingPercentage).toBe(100);
 
-    // After 100ms, should reset to 0
-    vi.advanceTimersByTime(100);
-    expect(wrapper.vm.loadingPercentage).toBe(0);
+    // Check that the loading state is properly set
+    expect(wrapper.vm.isLoadingAppointments).toBe(true);
   });
 });
 

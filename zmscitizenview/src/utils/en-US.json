@@ -78,6 +78,11 @@
   "updateAppointmentErrorHeader": "Appointment update failed.",
   "updateAppointmentErrorText": "Appointment update failed.",
   "your": "Ihr",
+  "loadingAppointmentReservation": "Loading appointment reservation",
+  "loadingCustomerInfoUpdate": "Updating customer information",
+  "loadingAppointmentCancellation": "Processing appointment cancellation",
+  "loadingAppointmentBooking": "Processing appointment booking",
+  "loadingAppointmentTimes": "Loading available appointments",
   "altcha": {
     "error": "Verification failed. Try again later.",
     "expired": "Verification expired. Try again.",

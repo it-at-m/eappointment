@@ -290,6 +290,12 @@ const confirmAppointmentError = ref<boolean>(false);
 const cancelAppointmentSuccess = ref<boolean>(false);
 const cancelAppointmentError = ref<boolean>(false);
 
+// Add loading state variables
+const isReservingAppointment = ref<boolean>(false);
+const isUpdatingAppointment = ref<boolean>(false);
+const isBookingAppointment = ref<boolean>(false);
+const isCancelingAppointment = ref<boolean>(false);
+
 const preselectedLocationId = ref<string | undefined>(props.locationId);
 
 provide<SelectedServiceProvider>("selectedServiceProvider", {
@@ -309,6 +315,14 @@ provide<CustomerDataProvider>("customerData", {
 provide<SelectedAppointmentProvider>("appointment", {
   appointment,
 } as SelectedAppointmentProvider);
+
+// Provide loading states to child components
+provide("loadingStates", {
+  isReservingAppointment,
+  isUpdatingAppointment,
+  isBookingAppointment,
+  isCancelingAppointment,
+});
 
 const increaseCurrentView = () => currentView.value++;
 
@@ -379,6 +393,12 @@ const setRebookData = () => {
 };
 
 const nextReserveAppointment = () => {
+  // Prevent multiple rapid requests
+  if (isReservingAppointment.value) {
+    return;
+  }
+
+  isReservingAppointment.value = true;
   appointmentNotAvailableError.value = false;
   captchaError.value = false;
   rebookOrCanelDialog.value = false;
@@ -390,34 +410,44 @@ const nextReserveAppointment = () => {
     selectedProvider.value?.id ?? "",
     props.baseUrl ?? undefined,
     captchaToken.value ?? undefined
-  ).then((data) => {
-    if ((data as AppointmentDTO).processId !== undefined) {
-      if (appointment.value && !isRebooking.value) {
-        cancelAppointment(appointment.value, props.baseUrl ?? undefined);
-      }
-      appointment.value = data as AppointmentDTO;
-      if (isRebooking.value) {
-        setRebookData();
+  )
+    .then((data) => {
+      if ((data as AppointmentDTO).processId !== undefined) {
+        if (appointment.value && !isRebooking.value) {
+          cancelAppointment(appointment.value, props.baseUrl ?? undefined);
+        }
+        appointment.value = data as AppointmentDTO;
+        if (isRebooking.value) {
+          setRebookData();
+        } else {
+          increaseCurrentView();
+        }
       } else {
-        increaseCurrentView();
+        const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+        if (firstErrorCode === "appointmentNotAvailable") {
+          appointmentNotAvailableError.value = true;
+        } else if (
+          ["captchaMissing", "captchaExpired", "captchaInvalid"].includes(
+            firstErrorCode
+          )
+        ) {
+          captchaError.value = true;
+        }
       }
-    } else {
-      const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
-      if (firstErrorCode === "appointmentNotAvailable") {
-        appointmentNotAvailableError.value = true;
-      } else if (
-        ["captchaMissing", "captchaExpired", "captchaInvalid"].includes(
-          firstErrorCode
-        )
-      ) {
-        captchaError.value = true;
-      }
-    }
-  });
+    })
+    .finally(() => {
+      isReservingAppointment.value = false;
+    });
 };
 
 const nextUpdateAppointment = () => {
+  // Prevent multiple rapid requests
+  if (isUpdatingAppointment.value) {
+    return;
+  }
+
   if (appointment.value) {
+    isUpdatingAppointment.value = true;
     appointment.value.familyName =
       customerData.value.firstName + " " + customerData.value.lastName;
     appointment.value.email = customerData.value.mailAddress;
@@ -431,8 +461,8 @@ const nextUpdateAppointment = () => {
       ? customerData.value.customTextfield2
       : undefined;
 
-    updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
-      (data) => {
+    updateAppointment(appointment.value, props.baseUrl ?? undefined)
+      .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
@@ -445,15 +475,23 @@ const nextUpdateAppointment = () => {
           }
         }
         increaseCurrentView();
-      }
-    );
+      })
+      .finally(() => {
+        isUpdatingAppointment.value = false;
+      });
   }
 };
 
 const nextBookAppointment = () => {
+  // Prevent multiple rapid requests
+  if (isBookingAppointment.value) {
+    return;
+  }
+
   if (appointment.value) {
-    preconfirmAppointment(appointment.value, props.baseUrl ?? undefined).then(
-      (data) => {
+    isBookingAppointment.value = true;
+    preconfirmAppointment(appointment.value, props.baseUrl ?? undefined)
+      .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
           if (isRebooking.value && rebookedAppointment.value) {
@@ -464,23 +502,33 @@ const nextBookAppointment = () => {
           }
           increaseCurrentView();
         }
-      }
-    );
+      })
+      .finally(() => {
+        isBookingAppointment.value = false;
+      });
   }
 };
 
 const nextCancelAppointment = () => {
+  // Prevent multiple rapid requests
+  if (isCancelingAppointment.value) {
+    return;
+  }
+
   if (appointment.value) {
-    cancelAppointment(appointment.value, props.baseUrl ?? undefined).then(
-      (data) => {
+    isCancelingAppointment.value = true;
+    cancelAppointment(appointment.value, props.baseUrl ?? undefined)
+      .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           cancelAppointmentSuccess.value = true;
         } else {
           cancelAppointmentError.value = true;
         }
         increaseCurrentView();
-      }
-    );
+      })
+      .finally(() => {
+        isCancelingAppointment.value = false;
+      });
   }
 };
 

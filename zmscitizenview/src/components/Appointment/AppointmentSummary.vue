@@ -191,11 +191,21 @@
       <template #default>{{ t("rescheduleAppointment") }}</template>
     </muc-button>
     <muc-button
-      icon="close"
+      :disabled="loadingStates.isCancelingAppointment.value"
+      :icon="loadingStates.isCancelingAppointment.value ? undefined : 'close'"
       variant="secondary"
       @click="cancelAppointment"
     >
-      <template #default>{{ t("cancelAppointment") }}</template>
+      <template #default>
+        <span>{{ t("cancelAppointment") }}</span>
+        <MucPercentageSpinner
+          v-if="loadingStates.isCancelingAppointment.value"
+          style="margin-left: 12px"
+          size="18px"
+          color="white"
+          :aria-label="t('loadingAppointmentCancellation')"
+        />
+      </template>
     </muc-button>
   </div>
   <div
@@ -203,11 +213,20 @@
     class="m-button-group"
   >
     <muc-button
-      :disabled="!validForm"
-      icon="check"
+      :disabled="!validForm || loadingStates.isBookingAppointment.value"
+      :icon="loadingStates.isBookingAppointment.value ? undefined : 'check'"
       @click="bookAppointment"
     >
-      <template #default>{{ t("rescheduleAppointment") }}</template>
+      <template #default>
+        <span>{{ t("rescheduleAppointment") }}</span>
+        <MucPercentageSpinner
+          v-if="loadingStates.isBookingAppointment.value"
+          style="margin-left: 12px"
+          size="18px"
+          color="white"
+          :aria-label="t('loadingAppointmentBooking')"
+        />
+      </template>
     </muc-button>
     <muc-button
       icon="close"
@@ -230,17 +249,28 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      :disabled="!validForm"
-      icon="check"
+      :disabled="!validForm || loadingStates.isBookingAppointment.value"
+      :icon="loadingStates.isBookingAppointment.value ? undefined : 'check'"
       @click="bookAppointment"
     >
-      <template #default>{{ t("bookAppointment") }}</template>
+      <template #default>
+        <span>{{ t("bookAppointment") }}</span>
+        <MucPercentageSpinner
+          v-if="loadingStates.isBookingAppointment.value"
+          style="margin-left: 12px"
+          size="18px"
+          color="white"
+          :aria-label="t('loadingAppointmentBooking')"
+        />
+      </template>
     </muc-button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { MucButton } from "@muenchen/muc-patternlab-vue";
+import type { Ref } from "vue";
+
+import { MucButton, MucPercentageSpinner } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -280,6 +310,19 @@ const { selectedProvider } = inject<SelectedTimeslotProvider>(
 const { appointment } = inject<SelectedAppointmentProvider>(
   "appointment"
 ) as SelectedAppointmentProvider;
+
+// Inject loading states
+const loadingStates = inject("loadingStates", {
+  isReservingAppointment: ref(false),
+  isUpdatingAppointment: ref(false),
+  isBookingAppointment: ref(false),
+  isCancelingAppointment: ref(false),
+}) as {
+  isReservingAppointment: Ref<boolean>;
+  isUpdatingAppointment: Ref<boolean>;
+  isBookingAppointment: Ref<boolean>;
+  isCancelingAppointment: Ref<boolean>;
+};
 
 const privacyPolicy = ref<boolean>(false);
 const electronicCommunication = ref<boolean>(false);

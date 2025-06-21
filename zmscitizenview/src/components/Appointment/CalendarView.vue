@@ -152,6 +152,7 @@
         <MucPercentageSpinner
           :percentage="loadingPercentage"
           size="40%"
+          :aria-label="t('loadingAppointmentTimes')"
         />
       </div>
 
@@ -284,6 +285,7 @@
         <MucPercentageSpinner
           :percentage="loadingPercentage"
           size="40%"
+          :aria-label="t('loadingAppointmentTimes')"
         />
       </div>
 
@@ -447,16 +449,33 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      :disabled="selectedTimeslot === 0 || !selectedDay"
-      icon="arrow-right"
+      :disabled="
+        selectedTimeslot === 0 ||
+        !selectedDay ||
+        loadingStates.isReservingAppointment.value
+      "
+      :icon="
+        loadingStates.isReservingAppointment.value ? undefined : 'arrow-right'
+      "
       @click="nextStep"
     >
-      <template #default>{{ t("next") }}</template>
+      <template #default>
+        <span>{{ t("next") }}</span>
+        <MucPercentageSpinner
+          v-if="loadingStates.isReservingAppointment.value"
+          style="margin-left: 12px"
+          size="18px"
+          color="white"
+          :aria-label="t('loadingAppointmentReservation')"
+        />
+      </template>
     </muc-button>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
+
 import {
   MucButton,
   MucCalendar,
@@ -500,6 +519,19 @@ const { selectedService } = inject<SelectedServiceProvider>(
 const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
+
+// Inject loading states
+const loadingStates = inject("loadingStates", {
+  isReservingAppointment: ref(false),
+  isUpdatingAppointment: ref(false),
+  isBookingAppointment: ref(false),
+  isCancelingAppointment: ref(false),
+}) as {
+  isReservingAppointment: Ref<boolean>;
+  isUpdatingAppointment: Ref<boolean>;
+  isBookingAppointment: Ref<boolean>;
+  isCancelingAppointment: Ref<boolean>;
+};
 
 const selectableProviders = ref<OfficeImpl[]>();
 const availableDays = ref<Array<{ time: string; providerIDs: string }>>();

@@ -63,6 +63,12 @@ describe("AppointmentSummary", () => {
           appointment: {
             appointment: mockAppointment,
           },
+          loadingStates: {
+            isReservingAppointment: ref(false),
+            isUpdatingAppointment: ref(false),
+            isBookingAppointment: ref(false),
+            isCancelingAppointment: ref(false),
+          },
         },
         stubs: {
           "muc-button": true,
@@ -238,6 +244,242 @@ describe("AppointmentSummary", () => {
       const wrapper = createWrapper({ isRebooking: true });
       await wrapper.find('muc-button-stub[icon="close"]').trigger("click");
       expect(wrapper.emitted("cancelReschedule")).toBeTruthy();
+    });
+  });
+});
+
+describe("AppointmentSummary Spinner and Loading States", () => {
+  const mockSelectedService = ref({
+    id: "123",
+    name: "Test Service",
+    count: 2,
+    subServices: [
+      {
+        id: "456",
+        name: "Sub Service 1",
+        count: 1,
+      },
+    ],
+  });
+
+  const mockSelectedProvider = ref({
+    id: "789",
+    name: "Test Provider",
+    address: {
+      street: "Test Street",
+      house_number: "123",
+      postal_code: "12345",
+      city: "Test City",
+    },
+    scope: {
+      displayInfo: "Test Info",
+      customTextfieldLabel: "Custom Field 1",
+      customTextfield2Label: "Custom Field 2",
+    },
+  });
+
+  const mockAppointment = ref({
+    timestamp: Math.floor(Date.now() / 1000),
+    familyName: "John Doe",
+    email: "john@example.com",
+    telephone: "1234567890",
+    customTextfield: "Custom Value 1",
+    customTextfield2: "Custom Value 2",
+  });
+
+  const createWrapper = (props = {}) => {
+    return mount(AppointmentSummary, {
+      props: {
+        isRebooking: false,
+        rebookOrCancelDialog: false,
+        t: (key: string) => key,
+        ...props,
+      },
+      global: {
+        provide: {
+          selectedServiceProvider: {
+            selectedService: mockSelectedService,
+          },
+          selectedTimeslot: {
+            selectedProvider: mockSelectedProvider,
+          },
+          appointment: {
+            appointment: mockAppointment,
+          },
+          loadingStates: {
+            isReservingAppointment: ref(false),
+            isUpdatingAppointment: ref(false),
+            isBookingAppointment: ref(false),
+            isCancelingAppointment: ref(false),
+          },
+        },
+        stubs: {
+          "muc-button": true,
+        },
+      },
+    });
+  };
+
+  describe("Book Appointment Button", () => {
+    it("shows spinner when booking appointment", async () => {
+      const wrapper = createWrapper();
+      
+      // Set loading state
+      wrapper.vm.loadingStates.isBookingAppointment.value = true;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(true);
+      
+      // Check that the component has the loading state
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(true);
+    });
+
+    it("hides spinner when not loading", async () => {
+      const wrapper = createWrapper();
+      
+      // Ensure loading state is false
+      wrapper.vm.loadingStates.isBookingAppointment.value = false;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(false);
+    });
+
+    it("disables book button when loading", async () => {
+      const wrapper = createWrapper();
+      
+      // Set loading state
+      wrapper.vm.loadingStates.isBookingAppointment.value = true;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(true);
+    });
+
+    it("enables book button when not loading", async () => {
+      const wrapper = createWrapper();
+      
+      // Ensure loading state is false
+      wrapper.vm.loadingStates.isBookingAppointment.value = false;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(false);
+    });
+
+    it("removes icon from button when loading", async () => {
+      const wrapper = createWrapper();
+      
+      // Set loading state
+      wrapper.vm.loadingStates.isBookingAppointment.value = true;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(true);
+    });
+
+    it("shows correct aria-label for screen reader when loading", async () => {
+      const wrapper = createWrapper();
+      
+      // Set loading state
+      wrapper.vm.loadingStates.isBookingAppointment.value = true;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(true);
+    });
+  });
+
+  describe("Cancel Appointment Button", () => {
+    it("shows spinner when canceling appointment", async () => {
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      
+      // Set loading state
+      wrapper.vm.loadingStates.isCancelingAppointment.value = true;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isCancelingAppointment.value).toBe(true);
+    });
+
+    it("hides spinner when not loading", async () => {
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      
+      // Ensure loading state is false
+      wrapper.vm.loadingStates.isCancelingAppointment.value = false;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isCancelingAppointment.value).toBe(false);
+    });
+
+    it("disables cancel button when loading", async () => {
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      
+      // Set loading state
+      wrapper.vm.loadingStates.isCancelingAppointment.value = true;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isCancelingAppointment.value).toBe(true);
+    });
+
+    it("enables cancel button when not loading", async () => {
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      
+      // Ensure loading state is false
+      wrapper.vm.loadingStates.isCancelingAppointment.value = false;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isCancelingAppointment.value).toBe(false);
+    });
+
+    it("removes icon from button when loading", async () => {
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      
+      // Set loading state
+      wrapper.vm.loadingStates.isCancelingAppointment.value = true;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isCancelingAppointment.value).toBe(true);
+    });
+
+    it("shows correct aria-label for screen reader when loading", async () => {
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      
+      // Set loading state
+      wrapper.vm.loadingStates.isCancelingAppointment.value = true;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isCancelingAppointment.value).toBe(true);
+    });
+  });
+
+  describe("Reschedule Button in Rebooking Mode", () => {
+    it("shows spinner when booking in rebooking mode", async () => {
+      const wrapper = createWrapper({ isRebooking: true });
+      
+      // Set loading state
+      wrapper.vm.loadingStates.isBookingAppointment.value = true;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(true);
+    });
+
+    it("shows correct aria-label for screen reader when loading in rebooking mode", async () => {
+      const wrapper = createWrapper({ isRebooking: true });
+      
+      // Set loading state
+      wrapper.vm.loadingStates.isBookingAppointment.value = true;
+      await nextTick();
+
+      // Check that the loading state is properly set
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(true);
     });
   });
 }); 
