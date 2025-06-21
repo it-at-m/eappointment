@@ -77,16 +77,35 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      icon="arrow-right"
+      :disabled="loadingStates.isUpdatingAppointment.value"
+      :icon="
+        loadingStates.isUpdatingAppointment.value ? undefined : 'arrow-right'
+      "
       @click="nextStep"
     >
-      <template #default>{{ t("next") }}</template>
+      <template #default>
+        <span>{{ t("next") }}</span>
+        <MucPercentageSpinner
+          v-if="loadingStates.isUpdatingAppointment.value"
+          style="margin-left: 12px"
+          size="18px"
+          color="white"
+          :aria-label="t('loadingCustomerInfoUpdate')"
+        />
+      </template>
     </muc-button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
+import type { Ref } from "vue";
+
+import {
+  MucButton,
+  MucInput,
+  MucPercentageSpinner,
+  MucTextArea,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import {
@@ -107,6 +126,19 @@ const { customerData } = inject<CustomerDataProvider>(
 const { selectedProvider } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
+
+// Inject loading states
+const loadingStates = inject("loadingStates", {
+  isReservingAppointment: ref(false),
+  isUpdatingAppointment: ref(false),
+  isBookingAppointment: ref(false),
+  isCancelingAppointment: ref(false),
+}) as {
+  isReservingAppointment: Ref<boolean>;
+  isUpdatingAppointment: Ref<boolean>;
+  isBookingAppointment: Ref<boolean>;
+  isCancelingAppointment: Ref<boolean>;
+};
 
 const showErrorMessage = ref<boolean>(false);
 

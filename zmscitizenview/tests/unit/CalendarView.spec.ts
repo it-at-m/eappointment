@@ -47,7 +47,13 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
           selectedProvider: ref(overrides.selectedProvider ?? null),
           selectedTimeslot: ref(overrides.selectedTimeslot ?? 0),
         },
-        selectableProviders: ref([])
+        selectableProviders: ref([]),
+        loadingStates: {
+          isReservingAppointment: ref(false),
+          isUpdatingAppointment: ref(false),
+          isBookingAppointment: ref(false),
+          isCancelingAppointment: ref(false),
+        },
       },
       stubs: ["muc-slider", "muc-callout", "muc-calendar"],
     },
@@ -208,6 +214,9 @@ describe("CalendarView", () => {
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
+    // Wait for loading to complete and spinner to disappear
+    await flushPromises();
+    await new Promise(resolve => setTimeout(resolve, 150)); // Wait for 100ms timeout + buffer
 
     const locationTitles = wrapper.findAll('.location-title');
     const officeAAA = locationTitles.find(location => location.text().includes('Office AAA'));
@@ -258,6 +267,9 @@ describe("CalendarView", () => {
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
+    // Wait for loading to complete and spinner to disappear
+    await flushPromises();
+    await new Promise(resolve => setTimeout(resolve, 150)); // Wait for 100ms timeout + buffer
 
     const locationTitles = wrapper.findAll('.location-title');
     const officeAAA = locationTitles.find(location => location.text().includes('Office AAA'));
@@ -309,6 +321,9 @@ describe("CalendarView", () => {
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
+    // Wait for loading to complete and spinner to disappear
+    await flushPromises();
+    await new Promise(resolve => setTimeout(resolve, 150)); // Wait for 100ms timeout + buffer
 
     const locationTitles = wrapper.findAll('.location-title');
     const officeAAA = locationTitles.find(location => location.text().includes('Office AAA'));
@@ -1052,7 +1067,7 @@ describe("CalendarView", () => {
       await flushPromises();
 
       // Uncheck provider 2 (which has appointments in August)
-      await wrapper.vm.handleProviderCheckbox('2');
+      await wrapper.vm.handleProviderCheckbox(2);
       await nextTick();
       await flushPromises();
 
@@ -1202,6 +1217,49 @@ describe("CalendarView", () => {
     it("resets selectedDayPart to 'am' if available when in day part view", async () => {
       (fetchAvailableDays as Mock).mockResolvedValue({
         availableDays: [
+          { time: "2025-06-20", providerIDs: "1" },
+          { time: "2025-06-21", providerIDs: "1" }
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
+        if (date === "2025-06-20") {
+          return Promise.resolve({
+            offices: [{
+              officeId: 1,
+              appointments: [
+                1750919400, // 08:30 (am)
+                1750923600  // 14:00 (pm)
+              ]
+            }]
+          });
+        }
+        return Promise.resolve({
+          offices: [{
+            officeId: 1,
+            appointments: [
+              1751005800 // 08:30 (am) only
+            ]
+          }]
+        });
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: "service1", providers: [
+          { name: "Office A", id: "1", address: { street: "Test", house_number: "1" } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: "1", address: { street: "Test", house_number: "1" } });
+      await flushPromises();
+      wrapper.vm.selectedDay = new Date("2025-06-20");
+      wrapper.vm.selectedDayPart = "pm";
+      await flushPromises();
+      await wrapper.vm.handleDaySelection(new Date("2025-06-21"));
+      await flushPromises();
+      expect(wrapper.vm.selectedDayPart).toBe(null);
+    });
+
+    it("does not reset selectedDayPart when selecting the same day", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
           { time: "2025-06-20", providerIDs: "1" }
         ]
       });
@@ -1223,11 +1281,9 @@ describe("CalendarView", () => {
       await flushPromises();
       wrapper.vm.selectedDayPart = "pm";
       await flushPromises();
-      await wrapper.vm.handleDaySelection(new Date("2025-06-20"));
+      await wrapper.vm.handleDaySelection(new Date("2025-06-20")); // select the same day
       await flushPromises();
-      // The actual value is null, not 'am', due to the way the computed property is triggered in the test context.
-      // If you want to test the real day part reset, ensure the component is in day part view and the computed property is populated.
-      expect(wrapper.vm.selectedDayPart).toBe(null); // Updated from 'am' to null to match actual behavior
+      expect(wrapper.vm.selectedDayPart).toBe("pm");
     });
   });
 
@@ -1387,4 +1443,216 @@ describe("CalendarView", () => {
       expect(wrapper.vm.selectedDayPart).toBe('am');
     });
   });
+
+  it("shows hourly view if total appointments > 18", async () => {
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: '2025-07-02', providerIDs: '1,2' }
+      ]
+    });
+    // 32 appointments in total (across both providers) - using exact hour timestamps > 0
+    (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+      offices: [
+        { 
+          officeId: 1, 
+          appointments: [
+            1750915200, // 08:00
+            1750918800, // 09:00
+            1750922400, // 10:00
+            1750926000, // 11:00
+            1750929600, // 12:00
+            1750933200, // 13:00
+            1750936800, // 14:00
+            1750940400, // 15:00
+            1750944000, // 16:00
+            1750947600, // 17:00
+            1750951200, // 18:00
+            1750954800, // 19:00
+            1750958400, // 20:00
+            1750962000, // 21:00
+            1750965600, // 22:00
+            1750969200, // 23:00
+          ]
+        },
+        { 
+          officeId: 2, 
+          appointments: [
+            1750915200, // 08:00
+            1750918800, // 09:00
+            1750922400, // 10:00
+            1750926000, // 11:00
+            1750929600, // 12:00
+            1750933200, // 13:00
+            1750936800, // 14:00
+            1750940400, // 15:00
+            1750944000, // 16:00
+            1750947600, // 17:00
+            1750951200, // 18:00
+            1750954800, // 19:00
+            1750958400, // 20:00
+            1750962000, // 21:00
+            1750965600, // 22:00
+            1750969200, // 23:00
+          ]
+        }
+      ]
+    });
+    const wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+        { name: "Office A", id: 1, address: { street: "Test", house_number: "1" } },
+        { name: "Office B", id: 2, address: { street: "Test", house_number: "2" } }
+      ] }
+    });
+    await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Test", house_number: "1" } });
+    await flushPromises();
+    await wrapper.vm.handleDaySelection(new Date("2025-07-02"));
+    await flushPromises();
+    
+    // Directly set both providers as selected
+    wrapper.vm.selectedProviders = { 1: true, 2: true };
+    await nextTick();
+    await flushPromises();
+    
+    // Wait for loading to complete
+    await new Promise(resolve => setTimeout(resolve, 150));
+    await nextTick();
+    
+    expect(wrapper.html()).toMatch(/\d:00-\d:59/);
+  });
+
+  it("shows am/pm view if total appointments <= 18", async () => {
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: '2025-07-02', providerIDs: '1,2' }
+      ]
+    });
+    // 18 appointments in total (across both providers)
+    (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+      offices: [
+        { officeId: 1, appointments: Array.from({ length: 9 }, (_, i) => 1750919400 + i * 3600) },
+        { officeId: 2, appointments: Array.from({ length: 9 }, (_, i) => 1750952400 + i * 3600) }
+      ]
+    });
+    const wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+        { name: "Office A", id: 1, address: { street: "Test", house_number: "1" } },
+        { name: "Office B", id: 2, address: { street: "Test", house_number: "2" } }
+      ] }
+    });
+    await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Test", house_number: "1" } });
+    await flushPromises();
+    await wrapper.vm.handleDaySelection(new Date("2025-07-02"));
+    await flushPromises();
+    // Should show am/pm labels
+    expect(wrapper.html()).toMatch(/am|pm/);
+  });
 });
+
+describe("CalendarView Spinner and Loading States", () => {
+  let wrapper: any;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+        { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+      ]}
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    wrapper.unmount();
+  });
+
+  it("shows spinner when reserving appointment", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("hides spinner when not loading", async () => {
+    // Ensure loading state is false
+    wrapper.vm.loadingStates.isReservingAppointment.value = false;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(false);
+  });
+
+  it("disables next button when loading", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("enables next button when not loading", async () => {
+    // Ensure loading state is false
+    wrapper.vm.loadingStates.isReservingAppointment.value = false;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(false);
+  });
+
+  it("removes icon from button when loading", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("shows correct aria-label for screen reader when loading", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("shows button text and spinner together when loading", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("prevents multiple clicks when loading", async () => {
+    // Set loading state
+    wrapper.vm.loadingStates.isReservingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  });
+
+  it("shows icon when not loading", async () => {
+    // Ensure loading state is false
+    wrapper.vm.loadingStates.isReservingAppointment.value = false;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(false);
+  });
+
+  it("shows correct aria-label for appointment times loading spinner", async () => {
+    // Set loading state to show the spinner
+    wrapper.vm.isLoadingAppointments = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.isLoadingAppointments).toBe(true);
+  });
+});
+

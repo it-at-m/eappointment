@@ -78,6 +78,11 @@
   "updateAppointmentErrorHeader": "Terminupdate fehlgeschlagen",
   "updateAppointmentErrorText": "Terminupdate fehlgeschlagen.",
   "your": "Ihr",
+  "loadingAppointmentReservation": "Terminreservierung wird geladen",
+  "loadingCustomerInfoUpdate": "Kundendaten werden aktualisiert",
+  "loadingAppointmentCancellation": "Terminabsage wird verarbeitet",
+  "loadingAppointmentBooking": "Terminbuchung wird verarbeitet",
+  "loadingAppointmentTimes": "Verfügbare Termine werden geladen",
   "altcha": {
     "error": "Verifizierung fehlgeschlagen. Versuche es später noch einmal.",
     "expired": "Verifizierung abgelaufen. Versuche es erneut.",

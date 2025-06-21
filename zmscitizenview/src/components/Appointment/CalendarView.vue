@@ -117,10 +117,14 @@
     <div
       v-if="
         selectedDay &&
-        timeSlotsInHoursByOffice.size > 0 &&
-        appointmentsCount / selectableProviders.length > 18
+        (timeSlotsInHoursByOffice.size > 0 || isLoadingAppointments) &&
+        appointmentsCount > 18
       "
-      :key="selectedDay && selectableProviders && timeSlotsInHoursByOffice"
+      :key="
+        String(selectedDay) +
+        String(selectableProviders) +
+        String(timeSlotsInHoursByOffice)
+      "
       class="m-component"
     >
       <div class="m-content">
@@ -136,18 +140,38 @@
       </div>
 
       <div
+        v-if="isLoadingAppointments || isLoadingComplete"
+        class="m-content"
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 80px;
+        "
+      >
+        <MucPercentageSpinner
+          :percentage="loadingPercentage"
+          size="40%"
+          :aria-label="t('loadingAppointmentTimes')"
+        />
+      </div>
+
+      <div
+        v-else
         v-for="[officeId, office] in timeSlotsInHoursByOffice"
-        :key="officeId + selectedProviders[officeId]"
+        :key="String(officeId) + String(selectedProviders[officeId])"
       >
         <div
           v-if="
-            selectedProviders[officeId] && office.appointments.get(currentHour)
+            selectedProviders[officeId] &&
+            currentHour !== null &&
+            office.appointments.get(currentHour)
           "
         >
           <div>
             <div
               class="ml-4 location-title"
-              v-if="selectableProviders.length > 1"
+              v-if="(selectableProviders?.length || 0) > 1"
             >
               <svg
                 aria-hidden="true"
@@ -166,7 +190,7 @@
               class="wrapper"
               v-if="timeslot == currentHour"
             >
-              <div v-if="firstHour > 0">
+              <div v-if="firstHour !== null && firstHour > 0">
                 <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
               </div>
               <div class="grid">
@@ -190,24 +214,34 @@
       </div>
       <div class="wrapper m-button-group">
         <muc-button
-          :key="currentHour"
+          :key="currentHour ?? 0"
           icon="chevron-left"
           icon-shown-left
           variant="ghost"
           @click="earlierAppointments"
-          :disabled="currentHour <= firstHour"
+          :disabled="
+            currentHour === null ||
+            firstHour === null ||
+            currentHour <= firstHour ||
+            isLoadingAppointments
+          "
         >
           <template #default>{{ t("earlier") }}</template>
         </muc-button>
 
         <muc-button
-          :key="currentHour"
+          :key="currentHour ?? 0"
           class="float-right"
           icon="chevron-right"
           icon-shown-right
           variant="ghost"
           @click="laterAppointments"
-          :disabled="currentHour >= lastHour"
+          :disabled="
+            currentHour === null ||
+            lastHour === null ||
+            currentHour >= lastHour ||
+            isLoadingAppointments
+          "
         >
           <template #default>{{ t("later") }}</template>
         </muc-button>
@@ -215,8 +249,15 @@
     </div>
 
     <div
-      v-else-if="selectedDay && timeSlotsInDayPartByOffice.size > 0"
-      :key="selectedDay && selectableProviders && timeSlotsInDayPartByOffice"
+      v-else-if="
+        selectedDay &&
+        (timeSlotsInDayPartByOffice.size > 0 || isLoadingAppointments)
+      "
+      :key="
+        String(selectedDay) +
+        String(selectableProviders) +
+        String(timeSlotsInDayPartByOffice)
+      "
       class="m-component"
     >
       <div class="m-content">
@@ -231,7 +272,27 @@
         <b tabindex="0">{{ formatDay(selectedDay) }}</b>
       </div>
 
-      <div v-for="[officeId, office] in timeSlotsInDayPartByOffice">
+      <div
+        v-if="isLoadingAppointments || isLoadingComplete"
+        class="m-content"
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 80px;
+        "
+      >
+        <MucPercentageSpinner
+          :percentage="loadingPercentage"
+          size="40%"
+          :aria-label="t('loadingAppointmentTimes')"
+        />
+      </div>
+
+      <div
+        v-else
+        v-for="[officeId, office] in timeSlotsInDayPartByOffice"
+      >
         <div
           v-if="
             selectedProviders[officeId] &&
@@ -241,7 +302,7 @@
           <div>
             <div
               class="ml-4 location-title"
-              v-if="selectableProviders.length > 1"
+              v-if="(selectableProviders?.length || 0) > 1"
             >
               <svg
                 aria-hidden="true"
@@ -291,7 +352,11 @@
           icon-shown-left
           variant="ghost"
           @click="earlierAppointments('dayPart')"
-          :disabled="currentDayPart === 'am' || firstDayPart === 'pm'"
+          :disabled="
+            currentDayPart === 'am' ||
+            firstDayPart === 'pm' ||
+            isLoadingAppointments
+          "
         >
           <template #default>{{ t("earlier") }}</template>
         </muc-button>
@@ -302,7 +367,11 @@
           icon-shown-right
           variant="ghost"
           @click="laterAppointments('dayPart')"
-          :disabled="currentDayPart === 'pm' || lastDayPart === 'am'"
+          :disabled="
+            currentDayPart === 'pm' ||
+            lastDayPart === 'am' ||
+            isLoadingAppointments
+          "
         >
           <template #default>{{ t("later") }}</template>
         </muc-button>
@@ -380,23 +449,39 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      :disabled="selectedTimeslot === 0 || !selectedDay"
-      icon="arrow-right"
+      :disabled="
+        selectedTimeslot === 0 ||
+        !selectedDay ||
+        loadingStates.isReservingAppointment.value
+      "
+      :icon="
+        loadingStates.isReservingAppointment.value ? undefined : 'arrow-right'
+      "
       @click="nextStep"
     >
-      <template #default>{{ t("next") }}</template>
+      <template #default>
+        <span>{{ t("next") }}</span>
+        <MucPercentageSpinner
+          v-if="loadingStates.isReservingAppointment.value"
+          style="margin-left: 12px"
+          size="18px"
+          color="white"
+          :aria-label="t('loadingAppointmentReservation')"
+        />
+      </template>
     </muc-button>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
+
 import {
   MucButton,
   MucCalendar,
   MucCallout,
-  MucCheckbox,
-  MucSlider,
-  MucSliderItem,
+  MucCheckbox, // Todo: Use MucCheckbox once disabled boxes are available in the patternlab-vue package
+  MucPercentageSpinner,
 } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
 
@@ -435,6 +520,19 @@ const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
 
+// Inject loading states
+const loadingStates = inject("loadingStates", {
+  isReservingAppointment: ref(false),
+  isUpdatingAppointment: ref(false),
+  isBookingAppointment: ref(false),
+  isCancelingAppointment: ref(false),
+}) as {
+  isReservingAppointment: Ref<boolean>;
+  isUpdatingAppointment: Ref<boolean>;
+  isBookingAppointment: Ref<boolean>;
+  isCancelingAppointment: Ref<boolean>;
+};
+
 const selectableProviders = ref<OfficeImpl[]>();
 const availableDays = ref<Array<{ time: string; providerIDs: string }>>();
 const selectedHour = ref<number | null>(null);
@@ -463,8 +561,36 @@ const selectedProviders = ref<{ [id: string]: boolean }>({});
 
 let initialized = false;
 const availableDaysFetched = ref(false);
+const isLoadingAppointments = ref(false);
 
 const datesWithoutAppointments = ref(new Set<string>());
+
+const loadingPercentage = ref(0);
+const isLoadingComplete = ref(false);
+let progressInterval: NodeJS.Timeout | null = null;
+
+watch(isLoadingAppointments, (loading) => {
+  if (loading) {
+    loadingPercentage.value = 0;
+    isLoadingComplete.value = false;
+    progressInterval = setInterval(() => {
+      if (loadingPercentage.value < 90) {
+        loadingPercentage.value += 10;
+      }
+    }, 50);
+  } else {
+    loadingPercentage.value = 100;
+    isLoadingComplete.value = true;
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      progressInterval = null;
+    }
+    setTimeout(() => {
+      loadingPercentage.value = 0;
+      isLoadingComplete.value = false;
+    }, 100);
+  }
+});
 
 watch(selectableProviders, (newVal) => {
   if (!initialized && newVal && newVal.length) {
@@ -506,13 +632,15 @@ const formatDay = (date: Date) => {
   }
 };
 
-const getProvider = (id: number): OfficeImpl | undefined => {
-  return (selectableProviders.value || []).find((p) => p.id === Number(id));
+const getProvider = (id: number | string): OfficeImpl | undefined => {
+  return (selectableProviders.value || []).find(
+    (p) => String(p.id) === String(id)
+  );
 };
 
 const officeName = (id: number | string): string | null => {
   const office = (selectableProviders.value || []).find(
-    (p) => p.id === Number(id)
+    (p) => String(p.id) === String(id)
   );
   return office?.name ?? null;
 };
@@ -712,19 +840,29 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
   const providerIds = providers.map((p) => p.id);
 
   fetchAvailableDays(
-    providerIds,
+    providerIds.map(Number),
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
     props.baseUrl ?? undefined,
     props.captchaToken ?? undefined
   ).then((data) => {
     const days = (data as AvailableDaysDTO)?.availableDays;
-    if (Array.isArray(days) && days.length > 0) {
-      availableDays.value = days;
-      selectedDay.value = new Date(days[0].time);
+    if (
+      Array.isArray(days) &&
+      days.length > 0 &&
+      days.every(
+        (d) =>
+          typeof d === "object" &&
+          d !== null &&
+          "time" in d &&
+          "providerIDs" in d
+      )
+    ) {
+      availableDays.value = days as { time: string; providerIDs: string }[];
+      selectedDay.value = new Date((days[0] as any).time);
       availableDaysFetched.value = true;
-      minDate.value = new Date(days[0].time);
-      maxDate.value = new Date(days[days.length - 1].time);
+      minDate.value = new Date((days[0] as any).time);
+      maxDate.value = new Date((days[days.length - 1] as any).time);
       error.value = false;
       errorKey.value = "";
     } else {
@@ -745,6 +883,7 @@ const handleError = (data: any): void => {
 };
 
 const getAppointmentsOfDay = (date: string) => {
+  isLoadingAppointments.value = true;
   appointmentTimestamps.value = [];
   appointmentTimestampsByOffice.value = [];
   const providers = selectableProviders.value || [];
@@ -752,90 +891,96 @@ const getAppointmentsOfDay = (date: string) => {
 
   fetchAvailableTimeSlots(
     date,
-    providerIds,
+    providerIds.map(Number),
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
     props.baseUrl ?? undefined,
     props.captchaToken ?? undefined
-  ).then((data) => {
-    if (data && "offices" in data && Array.isArray((data as any).offices)) {
-      appointmentTimestampsByOffice.value = (
-        data as AvailableTimeSlotsByOfficeDTO
-      ).offices;
+  )
+    .then((data) => {
+      if (data && "offices" in data && Array.isArray((data as any).offices)) {
+        appointmentTimestampsByOffice.value = (
+          data as AvailableTimeSlotsByOfficeDTO
+        ).offices;
 
-      appointmentsCount.value = (data as any).offices.reduce(
-        (sum: number, office: any) => sum + (office.appointments?.length ?? 0),
-        0
-      );
+        appointmentsCount.value = (data as any).offices.reduce(
+          (sum: number, office: any) =>
+            sum + (office.appointments?.length ?? 0),
+          0
+        );
 
-      // Track dates without appointments
-      if (appointmentsCount.value === 0) {
-        datesWithoutAppointments.value.add(date);
-      } else {
-        datesWithoutAppointments.value.delete(date);
-      }
+        // Track dates without appointments
+        if (appointmentsCount.value === 0) {
+          datesWithoutAppointments.value.add(date);
+        } else {
+          datesWithoutAppointments.value.delete(date);
+        }
 
-      // Only show error if there are no appointments on any day
-      if (
-        appointmentsCount.value === 0 &&
-        !hasAppointmentsForSelectedProviders()
-      ) {
-        error.value = true;
-      } else {
-        error.value = false;
-
-        // If no appointments on current date but appointments exist on other days,
-        // select the first available date with appointments
+        // Only show error if there are no appointments on any day
         if (
           appointmentsCount.value === 0 &&
-          availableDays.value &&
-          availableDays.value.length > 0
+          !hasAppointmentsForSelectedProviders()
         ) {
-          const firstAvailableDay = availableDays.value.find((day) => {
-            const dayDate = new Date(day.time);
-            return (
-              dayDate > new Date(date) &&
-              day.providerIDs
-                .split(",")
-                .some((id) => selectedProviders.value[id])
-            );
-          });
+          error.value = true;
+        } else {
+          error.value = false;
 
-          if (firstAvailableDay) {
-            selectedDay.value = new Date(firstAvailableDay.time);
+          // If no appointments on current date but appointments exist on other days,
+          // select the first available date with appointments
+          if (
+            appointmentsCount.value === 0 &&
+            availableDays.value &&
+            availableDays.value.length > 0
+          ) {
+            const firstAvailableDay = availableDays.value.find((day) => {
+              const dayDate = new Date(day.time);
+              return (
+                dayDate > new Date(date) &&
+                day.providerIDs
+                  .split(",")
+                  .some((id) => selectedProviders.value[id])
+              );
+            });
+
+            if (firstAvailableDay) {
+              selectedDay.value = new Date(firstAvailableDay.time);
+            }
           }
         }
-      }
-    } else {
-      // Track dates without appointments
-      datesWithoutAppointments.value.add(date);
-
-      // Only show error if there are no appointments on any day
-      if (!hasAppointmentsForSelectedProviders()) {
-        error.value = true;
       } else {
-        error.value = false;
+        // Track dates without appointments
+        datesWithoutAppointments.value.add(date);
 
-        // If no appointments on current date but appointments exist on other days,
-        // select the first available date with appointments
-        if (availableDays.value && availableDays.value.length > 0) {
-          const firstAvailableDay = availableDays.value.find((day) => {
-            const dayDate = new Date(day.time);
-            return (
-              dayDate > new Date(date) &&
-              day.providerIDs
-                .split(",")
-                .some((id) => selectedProviders.value[id])
-            );
-          });
+        // Only show error if there are no appointments on any day
+        if (!hasAppointmentsForSelectedProviders()) {
+          error.value = true;
+        } else {
+          error.value = false;
 
-          if (firstAvailableDay) {
-            selectedDay.value = new Date(firstAvailableDay.time);
+          // If no appointments on current date but appointments exist on other days,
+          // select the first available date with appointments
+          if (availableDays.value && availableDays.value.length > 0) {
+            const firstAvailableDay = availableDays.value.find((day) => {
+              const dayDate = new Date(day.time);
+              return (
+                dayDate > new Date(date) &&
+                day.providerIDs
+                  .split(",")
+                  .some((id) => selectedProviders.value[id])
+              );
+            });
+
+            if (firstAvailableDay) {
+              selectedDay.value = new Date(firstAvailableDay.time);
+            }
           }
         }
       }
-    }
-  });
+      isLoadingAppointments.value = false;
+    })
+    .catch(() => {
+      isLoadingAppointments.value = false;
+    });
 };
 
 const convertDateToString = (date: Date) => {
@@ -897,7 +1042,7 @@ const providersWithAppointments = computed(() => {
   // Filter providers that have appointments and maintain their original order
   return (selectableProviders.value || [])
     .filter((provider) => {
-      return availableDays.value.some((day) =>
+      return (availableDays.value ?? []).some((day) =>
         day.providerIDs.split(",").includes(provider.id.toString())
       );
     })
@@ -935,10 +1080,6 @@ watch(selectedDay, (newDate) => {
     getAppointmentsOfDay(convertDateToString(selectedDay.value || new Date()));
   }
 });
-
-const handleProviderSelection = (id: number) => {
-  showSelectionForProvider(selectableProviders.value[id]);
-};
 
 const handleProviderCheckbox = async (id: string) => {
   // Count how many providers with appointments are currently selected
@@ -1200,9 +1341,11 @@ onMounted(() => {
         ) {
           return true;
         }
-        const allDisabled = selectedIds.every((svcId) =>
-          provider.disabledByServices.includes(svcId)
-        );
+        const allDisabled =
+          provider.disabledByServices &&
+          selectedIds.every((svcId) =>
+            provider.disabledByServices!.includes(svcId)
+          );
         return !allDisabled;
       }
     );
@@ -1256,14 +1399,27 @@ onMounted(() => {
     }
 
     officeOrder.value = new Map(
-      selectableProviders.value.map((office, index) => [office.id, index])
+      selectableProviders.value.map((office, index) => [
+        Number(office.id),
+        index,
+      ])
     );
 
     showSelectionForProvider(offices[0]);
   }
 });
 
-const handleDaySelection = async (day: Date) => {
+const handleDaySelection = async (day: any) => {
+  if (!(day instanceof Date)) {
+    // Don't allow deselection - if day is not a Date, ignore the selection
+    return;
+  }
+
+  // If the same date is already selected, don't do anything
+  if (selectedDay.value && selectedDay.value.getTime() === day.getTime()) {
+    return;
+  }
+
   selectedDay.value = day;
   selectedTimeslot.value = 0;
   selectedHour.value = null;

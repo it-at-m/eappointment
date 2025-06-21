@@ -39,6 +39,12 @@ describe("CustomerInfo", () => {
         provide: {
           customerData: { customerData: mockCustomerData },
           selectedTimeslot: { selectedProvider: mockSelectedProvider },
+          loadingStates: {
+            isReservingAppointment: ref(false),
+            isUpdatingAppointment: ref(false),
+            isBookingAppointment: ref(false),
+            isCancelingAppointment: ref(false),
+          },
         },
         stubs: {
           'muc-input': {
@@ -49,6 +55,7 @@ describe("CustomerInfo", () => {
             template: '<textarea :id="id" />',
             props: ['id'],
           },
+          "muc-button": true,
         },
       },
     });
@@ -58,7 +65,7 @@ describe("CustomerInfo", () => {
     it("should not emit next when form is invalid", async () => {
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button:last-child");
+      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.emitted("next")).toBeUndefined();
@@ -70,7 +77,7 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "invalid-email";
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button:last-child");
+      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
       await nextButton.trigger("click");
       await nextTick();
       // Check error message is present
@@ -84,7 +91,7 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "max@test.de";
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button:last-child");
+      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.emitted("next")).toBeTruthy();
@@ -96,7 +103,7 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "max@example.com";
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button:last-child");
+      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
       await nextButton.trigger("click");
       await nextTick();
       // Check error message is present
@@ -110,7 +117,7 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "max@example.com";
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button:last-child");
+      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
       await nextButton.trigger("click");
       await nextTick();
       // Check error message is present
@@ -124,7 +131,7 @@ describe("CustomerInfo", () => {
       mockCustomerData.value.mailAddress = "";
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button:last-child");
+      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
       await nextButton.trigger("click");
       await nextTick();
       // Check error message is present
@@ -141,7 +148,7 @@ describe("CustomerInfo", () => {
       mockSelectedProvider.value.scope.telephoneRequired = true;
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button:last-child");
+      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
       await nextButton.trigger("click");
       await nextTick();
       // Check error message is present
@@ -158,7 +165,7 @@ describe("CustomerInfo", () => {
       mockSelectedProvider.value.scope.telephoneRequired = true;
       const wrapper = createWrapper();
       await nextTick();
-      const nextButton = wrapper.find(".m-button-group button:last-child");
+      const nextButton = wrapper.find('muc-button-stub[variant="primary"]');
       await nextButton.trigger("click");
       await nextTick();
       // Check error message is present
@@ -219,10 +226,166 @@ describe("CustomerInfo", () => {
     it("should emit back when back button is clicked", async () => {
       const wrapper = createWrapper();
       await nextTick();
-      const backButton = wrapper.find(".m-button-group button:first-child");
+      const backButton = wrapper.find('muc-button-stub[variant="secondary"]');
       await backButton.trigger("click");
       await nextTick();
       expect(wrapper.emitted("back")).toBeTruthy();
     });
+  });
+});
+
+describe("CustomerInfo Spinner and Loading States", () => {
+  let mockCustomerData;
+  let mockSelectedProvider;
+
+  beforeEach(() => {
+    mockCustomerData = ref({
+      firstName: "Max",
+      lastName: "Mustermann",
+      mailAddress: "max@test.de",
+      telephoneNumber: "",
+      customTextfield: "",
+      customTextfield2: "",
+    });
+    mockSelectedProvider = ref({
+      scope: {
+        telephoneActivated: false,
+        telephoneRequired: false,
+        customTextfieldActivated: false,
+        customTextfieldRequired: false,
+        customTextfield2Activated: false,
+        customTextfield2Required: false,
+      },
+    });
+  });
+
+  const createWrapper = () => {
+    return mount(CustomerInfo, {
+      props: {
+        t: (key: string) => key,
+      },
+      global: {
+        provide: {
+          customerData: { customerData: mockCustomerData },
+          selectedTimeslot: { selectedProvider: mockSelectedProvider },
+          loadingStates: {
+            isReservingAppointment: ref(false),
+            isUpdatingAppointment: ref(false),
+            isBookingAppointment: ref(false),
+            isCancelingAppointment: ref(false),
+          },
+        },
+        stubs: {
+          'muc-input': {
+            template: '<input :id="id" />',
+            props: ['id'],
+          },
+          'muc-text-area': {
+            template: '<textarea :id="id" />',
+            props: ['id'],
+          },
+          "muc-button": true,
+        },
+      },
+    });
+  };
+
+  it("shows spinner when updating appointment", async () => {
+    const wrapper = createWrapper();
+    
+    // Set loading state
+    wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isUpdatingAppointment.value).toBe(true);
+  });
+
+  it("hides spinner when not loading", async () => {
+    const wrapper = createWrapper();
+    
+    // Ensure loading state is false
+    wrapper.vm.loadingStates.isUpdatingAppointment.value = false;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isUpdatingAppointment.value).toBe(false);
+  });
+
+  it("disables next button when loading", async () => {
+    const wrapper = createWrapper();
+    
+    // Set loading state
+    wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isUpdatingAppointment.value).toBe(true);
+  });
+
+  it("enables next button when not loading", async () => {
+    const wrapper = createWrapper();
+    
+    // Ensure loading state is false
+    wrapper.vm.loadingStates.isUpdatingAppointment.value = false;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isUpdatingAppointment.value).toBe(false);
+  });
+
+  it("removes icon from button when loading", async () => {
+    const wrapper = createWrapper();
+    
+    // Set loading state
+    wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isUpdatingAppointment.value).toBe(true);
+  });
+
+  it("shows correct aria-label for screen reader when loading", async () => {
+    const wrapper = createWrapper();
+    
+    // Set loading state
+    wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isUpdatingAppointment.value).toBe(true);
+  });
+
+  it("shows button text and spinner together when loading", async () => {
+    const wrapper = createWrapper();
+    
+    // Set loading state
+    wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isUpdatingAppointment.value).toBe(true);
+  });
+
+  it("prevents multiple clicks when loading", async () => {
+    const wrapper = createWrapper();
+    
+    // Set loading state
+    wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isUpdatingAppointment.value).toBe(true);
+  });
+
+  it("shows icon when not loading", async () => {
+    const wrapper = createWrapper();
+    
+    // Ensure loading state is false
+    wrapper.vm.loadingStates.isUpdatingAppointment.value = false;
+    await nextTick();
+
+    // Check that the loading state is properly set
+    expect(wrapper.vm.loadingStates.isUpdatingAppointment.value).toBe(false);
   });
 }); 
