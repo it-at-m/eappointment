@@ -150,7 +150,6 @@
         "
       >
         <MucPercentageSpinner
-          :percentage="loadingPercentage"
           size="40%"
           :aria-label="t('loadingAppointmentTimes')"
         />
@@ -283,7 +282,6 @@
         "
       >
         <MucPercentageSpinner
-          :percentage="loadingPercentage"
           size="40%"
           :aria-label="t('loadingAppointmentTimes')"
         />
@@ -565,28 +563,19 @@ const isLoadingAppointments = ref(false);
 
 const datesWithoutAppointments = ref(new Set<string>());
 
-const loadingPercentage = ref(0);
 const isLoadingComplete = ref(false);
 let progressInterval: NodeJS.Timeout | null = null;
 
 watch(isLoadingAppointments, (loading) => {
   if (loading) {
-    loadingPercentage.value = 0;
     isLoadingComplete.value = false;
-    progressInterval = setInterval(() => {
-      if (loadingPercentage.value < 90) {
-        loadingPercentage.value += 10;
-      }
-    }, 50);
   } else {
-    loadingPercentage.value = 100;
     isLoadingComplete.value = true;
     if (progressInterval) {
       clearInterval(progressInterval);
       progressInterval = null;
     }
     setTimeout(() => {
-      loadingPercentage.value = 0;
       isLoadingComplete.value = false;
     }, 100);
   }
