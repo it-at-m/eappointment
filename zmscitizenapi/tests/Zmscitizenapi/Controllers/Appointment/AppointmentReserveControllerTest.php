@@ -34,7 +34,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 ],
                 [
                     'function' => 'readPostResult',
-                    'url' => '/process/status/free/unique/',
+                    'url' => '/process/status/free/',
                     'response' => $this->readFixture("GET_appointments_free.json")
                 ],
                 [
@@ -130,7 +130,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 ],
                 [
                     'function' => 'readPostResult',
-                    'url' => '/process/status/free/unique/',
+                    'url' => '/process/status/free/',
                     'response' => $this->readFixture("GET_appointments_free.json")
                 ]
             ]
@@ -430,7 +430,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             ],
             [
                 'function' => 'readPostResult',
-                'url' => '/process/status/free/unique/',
+                'url' => '/process/status/free/',
                 'response' => $this->readFixture("GET_appointments_free.json")
             ],
             [
@@ -473,7 +473,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             ],
             [
                 'function' => 'readPostResult',
-                'url' => '/process/status/free/unique/',
+                'url' => '/process/status/free/',
                 'response' => $this->readFixture("GET_appointments_free.json")
             ],
             [

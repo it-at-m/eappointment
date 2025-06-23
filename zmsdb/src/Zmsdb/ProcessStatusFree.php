@@ -50,55 +50,6 @@ class ProcessStatusFree extends Process
         );
     }
 
-    public function readFreeProcessesMinimalDeduplicated(
-        \BO\Zmsentities\Calendar $calendar,
-        \DateTimeInterface $now,
-        $slotType = 'public',
-        $slotsRequired = null,
-        $groupData = false
-    ) {
-        list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
-        $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
-        $unique = [];
-        while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
-            $scopeId = $item['scope__id'] ?? null;
-            $dateString = $item['appointments__0__date'] ?? null;
-            $date = $dateString ? strtotime($dateString) : null;
-            $scope = $scopeId ? $calendar->scopes->getEntity($scopeId) : null;
-            $providerId = $scope ? $scope->getProviderId() : null;
-
-            if ($providerId && $date) {
-                $key = $providerId . '_' . $date;
-                if (!isset($unique[$key])) {
-                    $minimal = [
-                        '$schema' => 'https://schema.berlin.de/queuemanagement/process.json',
-                        'scope' => [
-                            'id' => $scopeId,
-                            'provider' => [
-                                'id' => $providerId
-                            ]
-                        ],
-                        'appointments' => [
-                            [
-                                'date' => (string)$date,
-                                'scope' => [
-                                    'id' => $scopeId,
-                                    'provider' => [
-                                        'id' => $providerId
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ];
-                    $unique[$key] = $minimal;
-                }
-            }
-        }
-        $processData->closeCursor();
-        unset($dayquery);
-        return array_values($unique);
-    }
-
     public function readFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
