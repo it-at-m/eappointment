@@ -138,7 +138,7 @@ class ZmsApiClientService
             $calendar->lastDay = $lastDay;
             $calendar->providers = $providers;
             $calendar->requests = $requests;
-            $result = \App::$http->readPostResult('/process/status/free/unique/', $calendar);
+            $result = \App::$http->readPostResult('/process/status/free/', $calendar);
             $collection = $result?->getCollection();
             if (!$collection instanceof ProcessList) {
                 return new ProcessList();
