@@ -466,7 +466,7 @@ class ZmsApiClientServiceTest extends TestCase
 
         $this->httpMock->expects($this->once())
             ->method('readPostResult')
-            ->with('/process/status/free/unique/', $this->isInstanceOf(Calendar::class))
+            ->with('/process/status/free/', $this->isInstanceOf(Calendar::class))
             ->willReturn($result);
 
         $result = ZmsApiClientService::getFreeTimeslots($providers, $requests, $firstDay, $lastDay);
