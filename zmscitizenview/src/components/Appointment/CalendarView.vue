@@ -149,10 +149,10 @@
           min-height: 80px;
         "
       >
-        <MucPercentageSpinner
+        <!--<MucPercentageSpinner
           size="40%"
           :aria-label="t('loadingAppointmentTimes')"
-        />
+        />-->
       </div>
 
       <div
@@ -211,7 +211,10 @@
           </div>
         </div>
       </div>
-      <div class="wrapper m-button-group">
+      <div
+        class="wrapper m-button-group"
+        v-if="!isLoadingAppointments"
+      >
         <muc-button
           :key="currentHour ?? 0"
           icon="chevron-left"
@@ -281,10 +284,10 @@
           min-height: 80px;
         "
       >
-        <MucPercentageSpinner
+        <!--<MucPercentageSpinner
           size="40%"
           :aria-label="t('loadingAppointmentTimes')"
-        />
+        />-->
       </div>
 
       <div
@@ -344,7 +347,10 @@
           </div>
         </div>
       </div>
-      <div class="wrapper m-button-group">
+      <div
+        class="wrapper m-button-group"
+        v-if="!isLoadingAppointments"
+      >
         <muc-button
           icon="chevron-left"
           icon-shown-left
@@ -452,20 +458,11 @@
         !selectedDay ||
         loadingStates.isReservingAppointment.value
       "
-      :icon="
-        loadingStates.isReservingAppointment.value ? undefined : 'arrow-right'
-      "
+      :icon="'arrow-right'"
       @click="nextStep"
     >
       <template #default>
         <span>{{ t("next") }}</span>
-        <MucPercentageSpinner
-          v-if="loadingStates.isReservingAppointment.value"
-          style="margin-left: 12px"
-          size="18px"
-          color="white"
-          :aria-label="t('loadingAppointmentReservation')"
-        />
       </template>
     </muc-button>
   </div>

@@ -78,20 +78,11 @@
     </muc-button>
     <muc-button
       :disabled="loadingStates.isUpdatingAppointment.value"
-      :icon="
-        loadingStates.isUpdatingAppointment.value ? undefined : 'arrow-right'
-      "
+      :icon="'arrow-right'"
       @click="nextStep"
     >
       <template #default>
         <span>{{ t("next") }}</span>
-        <MucPercentageSpinner
-          v-if="loadingStates.isUpdatingAppointment.value"
-          style="margin-left: 12px"
-          size="18px"
-          color="white"
-          :aria-label="t('loadingCustomerInfoUpdate')"
-        />
       </template>
     </muc-button>
   </div>
