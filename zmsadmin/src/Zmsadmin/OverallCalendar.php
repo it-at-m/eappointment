@@ -21,9 +21,9 @@ class OverallCalendar extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
-//        if (!$workstation->hasSuperUseraccount()) {
-//            throw new Exception\NotAllowed();
-//        }
+        if (!$workstation->getUseraccount()->hasRights(['scope'])) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,
