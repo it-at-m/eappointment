@@ -149,10 +149,10 @@
           min-height: 80px;
         "
       >
-        <!--<MucPercentageSpinner
+        <MucPercentageSpinner
           size="40%"
           :aria-label="t('loadingAppointmentTimes')"
-        />-->
+        />
       </div>
 
       <div
@@ -284,10 +284,10 @@
           min-height: 80px;
         "
       >
-        <!--<MucPercentageSpinner
+        <MucPercentageSpinner
           size="40%"
           :aria-label="t('loadingAppointmentTimes')"
-        />-->
+        />
       </div>
 
       <div
