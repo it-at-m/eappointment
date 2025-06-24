@@ -539,8 +539,6 @@ const isLoadingComplete = ref(false);
 watch(isLoadingAppointments, (loading) => {
   if (loading) {
     isLoadingComplete.value = false;
-  } else {
-    isLoadingComplete.value = false;
   }
 });
 
