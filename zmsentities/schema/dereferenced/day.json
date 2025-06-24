@@ -5,6 +5,7 @@
         "year": 2015,
         "month": 11,
         "day": 19,
+        "scopeIDs": "141",
         "freeAppointments": {
             "callcenter": 0,
             "intern": 3,
@@ -42,6 +43,10 @@
         },
         "day": {
             "type": "number"
+        },
+        "scopeIDs": {
+            "type": "string",
+            "description": "Comma separated scope IDs"
         },
         "freeAppointments": {
             "type": "object",

@@ -1,0 +1,36 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2025-01-20T10:30:36+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/workstation.json",
+        "useraccount": {
+            "rights": {
+                "availability": "1",
+                "basic": "1",
+                "cluster": "1",
+                "department": "1",
+                "organisation": "1",
+                "scope": "1",
+                "audit": "1",
+                "sms": "1",
+                "superuser": "1",
+                "ticketprinter": "1",
+                "useraccount": "1"
+            },
+            "departments": [],
+            "id": "testadmin",
+            "email": "test@example.com",
+            "lastLogin": 1459461600
+        },
+        "authkey": "31f8b6c3991bdf3e0b905e5fa0ad31427cc5fa85",
+        "queue": {
+            "appointmentsOnly": "0",
+            "clusterEnabled": "0"
+        }
+    }
+}

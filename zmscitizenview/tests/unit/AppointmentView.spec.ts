@@ -21,7 +21,6 @@ describe("AppointmentView", () => {
     vi.unstubAllGlobals();
   })
 
-  const mockT = (key: string) => key;
   const mockBaseUrl = "https://www.muenchen.de";
   const mockServiceId = "123";
   const mockLocationId = "456";
@@ -67,7 +66,7 @@ describe("AppointmentView", () => {
         locationId: mockLocationId,
         exclusiveLocation: mockExclusiveLocation,
         appointmentHash: mockAppointmentHash,
-        t: mockT,
+        t: (key: string) => key,
         ...props,
       },
       global: {

@@ -154,14 +154,16 @@ class ProcessReserve extends BaseController
 
     public static function writeReservedProcess($input, $process)
     {
-        $process = \App::$http
+        $response = \App::$http
             ->readPostResult('/process/status/reserved/', $process, [
                 'slotType' => 'intern',
                 'clientkey' => \App::CLIENTKEY,
                 'slotsRequired' => (isset($input['slotCount']) && 1 < $input['slotCount']) ? $input['slotCount'] : 0
-            ])
-            ->getEntity();
-        return $process;
+            ]);
+        if (!$response) {
+            throw new \RuntimeException('Failed to reserve process - no response from API');
+        }
+        return $response->getEntity();
     }
 
     public static function writeConfirmedProcess($input, $process)

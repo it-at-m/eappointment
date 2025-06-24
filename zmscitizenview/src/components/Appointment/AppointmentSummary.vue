@@ -55,7 +55,8 @@
             class="m-content border-bottom"
           >
             <p tabindex="0">
-              {{ formatTime(appointment.timestamp) }} <br />
+              {{ formatTime(appointment.timestamp) }}
+              {{ t("timeStampSuffix") }} <br />
               {{ t("estimatedDuration") }} {{ estimatedDuration() }}
               {{ t("minutes") }}<br />
             </p>
@@ -71,9 +72,10 @@
               <h3 tabindex="0">{{ t("hint") }}</h3>
             </div>
             <div class="m-content border-bottom">
-              <p tabindex="0">
-                {{ selectedProvider.scope.displayInfo }}
-              </p>
+              <div
+                tabindex="0"
+                v-html="selectedProvider.scope.displayInfo"
+              ></div>
             </div>
           </div>
           <div class="m-content">
@@ -228,11 +230,13 @@
 import { MucButton } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
+import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   SelectedAppointmentProvider,
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
+import { SubService } from "@/types/SubService";
 
 defineProps<{
   isRebooking: boolean;
@@ -308,7 +312,7 @@ const rescheduleAppointment = () => emit("rescheduleAppointment");
 const estimatedDuration = () => {
   let time = 0;
   const serviceProvider = selectedService.value?.providers?.find(
-    (provider) => provider.id == selectedProvider.value?.id
+    (provider: OfficeImpl) => provider.id == selectedProvider.value?.id
   );
   if (
     serviceProvider &&
@@ -323,9 +327,9 @@ const estimatedDuration = () => {
   }
 
   if (selectedService.value?.subServices) {
-    selectedService.value.subServices.forEach((subservice) => {
+    selectedService.value.subServices.forEach((subservice: SubService) => {
       const subserviceProvider = subservice.providers?.find(
-        (provider) => provider.id == selectedProvider.value?.id
+        (provider: OfficeImpl) => provider.id == selectedProvider.value?.id
       );
       if (subserviceProvider && subservice.count && subserviceProvider.slots) {
         time +=

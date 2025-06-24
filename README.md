@@ -146,6 +146,11 @@ To run Checks locally in your local docker container:
 4. Run PHPMD (using the phpmd.rules.xml in the project root):
 - `vendor/bin/phpmd src/ text ../phpmd.rules.xml`
 
+We use `prettier-codeformat` for checking and formatting code style in zmscitizenview. You can use format function to fix 
+code style (lint) problems:
+1. Go to `zmscitizenview`
+2. Run: `npm run format`
+
 ## Unit Testing
 To run unit tests locally refer to the [Github Workflows](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/unit-tests.yaml) and in your local docker container run:
 
@@ -237,6 +242,23 @@ The branch name must match the following regular expression:
 - **clean(ZMS-123): commit message**
 - **chore(ZMSKVR-123): commit message**
 - **docs(ZMS-123): commit message**
+
+## Dependency Graph
+```mermaid
+%%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
+graph TD;
+    zmsapi --> zmsslim & zmsclient & zmsdldb & zmsdb & zmsentities;
+    zmsadmin --> mellon & zmsclient & zmsslim & zmsentities;
+    zmscalldisplay --> mellon & zmsclient & zmsentities & zmsslim;
+    zmsstatistic --> mellon & zmsentities & zmsslim & zmsclient;
+    zmsmessaging --> mellon & zmsclient & zmsentities & zmsslim;
+    
+    zmsdb --> zmsentities & zmsdldb & mellon;
+    zmsclient --> zmsentities & zmsslim & mellon;
+    zmsentities --> mellon;
+    zmsslim --> mellon;
+
+```
 
 ## Screenshot
 ![screenshot](https://github.com/user-attachments/assets/54d360e9-c47b-4f3c-b849-5966a8766af9)

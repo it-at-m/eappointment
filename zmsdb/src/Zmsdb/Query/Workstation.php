@@ -17,7 +17,7 @@ class Workstation extends Base implements MappingInterface
         UPDATE
             ' . self::TABLE . '
         SET
-            `SessionID`=?,
+            `SessionID`=SHA2(?, 256),
             `sessionExpiry`=?,
             `Datum`=?,
             `lastUpdate`=?,
@@ -33,7 +33,7 @@ class Workstation extends Base implements MappingInterface
         UPDATE
             ' . self::TABLE . '
         SET
-            `SessionID`=?,
+            `SessionID`=SHA2(?, 256),
             `sessionExpiry`=?,
             `Datum`=?,
             `Arbeitsplatznr`="",
@@ -81,7 +81,7 @@ class Workstation extends Base implements MappingInterface
         UPDATE
             ' . self::TABLE . '
         SET
-            `SessionID`=?,
+            `SessionID`=SHA2(?, 256),
             `sessionExpiry`=?
         WHERE
             `Name`= ?  AND

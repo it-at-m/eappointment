@@ -108,7 +108,7 @@ jobs:
       matrix:
         include:
           - module: mellon
-            php_version: "8.0"        
+            php_version: "8.3"      
           - module: zmsadmin
             php_version: "8.0"
           - module: zmscalldisplay

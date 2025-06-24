@@ -6,7 +6,6 @@ import { nextTick, ref } from "vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
 
 describe("CustomerInfo", () => {
-  const mockT = (key: string) => key;
   let mockCustomerData;
   let mockSelectedProvider;
 
@@ -34,7 +33,7 @@ describe("CustomerInfo", () => {
   const createWrapper = () => {
     return mount(CustomerInfo, {
       props: {
-        t: mockT,
+        t: (key: string) => key,
       },
       global: {
         provide: {
@@ -89,6 +88,82 @@ describe("CustomerInfo", () => {
       await nextButton.trigger("click");
       await nextTick();
       expect(wrapper.emitted("next")).toBeTruthy();
+    });
+
+    it("should show error message for blank firstName", async () => {
+      mockCustomerData.value.firstName = "";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@example.com";
+      const wrapper = createWrapper();
+      await nextTick();
+      const nextButton = wrapper.find(".m-button-group button:last-child");
+      await nextButton.trigger("click");
+      await nextTick();
+      // Check error message is present
+      expect(wrapper.html()).toContain("errorMessageFirstName");
+      expect(wrapper.emitted("next")).toBeUndefined();
+    });
+
+    it("should show error message for blank lastName", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "";
+      mockCustomerData.value.mailAddress = "max@example.com";
+      const wrapper = createWrapper();
+      await nextTick();
+      const nextButton = wrapper.find(".m-button-group button:last-child");
+      await nextButton.trigger("click");
+      await nextTick();
+      // Check error message is present
+      expect(wrapper.html()).toContain("errorMessageLastName");
+      expect(wrapper.emitted("next")).toBeUndefined();
+    });
+
+    it("should show error message for blank mailAddress", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "";
+      const wrapper = createWrapper();
+      await nextTick();
+      const nextButton = wrapper.find(".m-button-group button:last-child");
+      await nextButton.trigger("click");
+      await nextTick();
+      // Check error message is present
+      expect(wrapper.html()).toContain("errorMessageMailAddressRequired");
+      expect(wrapper.emitted("next")).toBeUndefined();
+    });
+
+    it("should show error message for blank telephoneNumber", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@example.com";
+      mockCustomerData.value.telephoneNumber = "";
+      mockSelectedProvider.value.scope.telephoneActivated = true;
+      mockSelectedProvider.value.scope.telephoneRequired = true;
+      const wrapper = createWrapper();
+      await nextTick();
+      const nextButton = wrapper.find(".m-button-group button:last-child");
+      await nextButton.trigger("click");
+      await nextTick();
+      // Check error message is present
+      expect(wrapper.html()).toContain("errorMessageTelephoneNumberRequired");
+      expect(wrapper.emitted("next")).toBeUndefined();
+    });
+
+    it("should show error message for invalid telephoneNumber", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@example.com";
+      mockCustomerData.value.telephoneNumber = "invalid-phone";
+      mockSelectedProvider.value.scope.telephoneActivated = true;
+      mockSelectedProvider.value.scope.telephoneRequired = true;
+      const wrapper = createWrapper();
+      await nextTick();
+      const nextButton = wrapper.find(".m-button-group button:last-child");
+      await nextButton.trigger("click");
+      await nextTick();
+      // Check error message is present
+      expect(wrapper.html()).toContain("errorMessageTelephoneNumberValidation");
+      expect(wrapper.emitted("next")).toBeUndefined();
     });
   });
 
