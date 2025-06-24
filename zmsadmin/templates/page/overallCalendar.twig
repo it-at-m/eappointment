@@ -1,5 +1,6 @@
 {% extends "layout/main.twig" %}
 {% from 'element/helper/snippets.twig' import headline1 %}
+{% from 'element/helper/form.twig' import providername %}
 
 {% block headline %}
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -24,11 +25,17 @@
 
 {% block content %}
     {% set scopeOptions = [] %}
-    {% for scope in scopeList %}
-        {% set scopeOptions = scopeOptions|merge([{
-            'value': scope.id,
-            'name': scope.contact.name ~ ' ' ~ scope.shortName
-        }]) %}
+    {% for department in workstation.useraccount.departments %}
+        {% set scopeOptionsGroupOptions = [] %}
+        {% for scope in department.scopes %}
+            {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+        {% endfor %}
+        {% for cluster in department.clusters %}
+            {% for scope in cluster.scopes %}
+                {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+            {% endfor %}
+        {% endfor %}
+        {% set scopeOptions = scopeOptions|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}
     {% endfor %}
 
     <form id="overall-calendar-form" class="form--base panel--heavy">

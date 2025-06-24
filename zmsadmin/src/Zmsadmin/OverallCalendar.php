@@ -19,27 +19,11 @@ class OverallCalendar extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
-        if (!$workstation->hasSuperUseraccount()) {
-            throw new Exception\NotAllowed();
-        }
-        $scopeId = $workstation->scope->id ?? null;
-
-        $departmentScopes = [];
-
-        if ($scopeId) {
-            $departmentApiResult = \App::$http->readGetResult(
-                '/scope/' . $scopeId . '/department/',
-                ['resolveReferences' => 2]
-            );
-
-            $data = $departmentApiResult ? $departmentApiResult->getEntity() : null;
-            if ($data) {
-                $department = new DepartmentEntity($data);
-                $departmentScopes = $department->getScopeList();
-            }
-        }
+//        if (!$workstation->hasSuperUseraccount()) {
+//            throw new Exception\NotAllowed();
+//        }
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -47,7 +31,6 @@ class OverallCalendar extends BaseController
             array(
                 'title' => 'Wochenkalender',
                 'workstation' => $workstation,
-                'scopeList' => $departmentScopes,
                 'menuActive' => 'overallcalendar',
                 'hideNavigation' => true,
             )
