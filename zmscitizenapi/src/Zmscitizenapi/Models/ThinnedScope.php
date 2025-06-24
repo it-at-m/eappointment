@@ -28,8 +28,9 @@ class ThinnedScope extends Entity implements JsonSerializable
     public ?bool $captchaActivatedRequired;
     public ?string $displayInfo;
     public ?string $slotsPerAppointment;
+    public ?string $appointmentsPerMail;
 
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null, ?string $slotsPerAppointment = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null)
     {
         $this->id = $id;
         $this->provider = $provider;
@@ -47,6 +48,7 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->captchaActivatedRequired = $captchaActivatedRequired;
         $this->displayInfo = $displayInfo;
         $this->slotsPerAppointment = $slotsPerAppointment;
+        $this->appointmentsPerMail = $appointmentsPerMail;
         $this->ensureValid();
     }
 
@@ -131,6 +133,11 @@ class ThinnedScope extends Entity implements JsonSerializable
     {
         return $this->slotsPerAppointment;
     }
+    
+    public function getAppointmentsPerMail(): ?string
+    {
+        return $this->appointmentsPerMail;
+    }
 
     public function toArray(): array
     {
@@ -151,6 +158,7 @@ class ThinnedScope extends Entity implements JsonSerializable
             'captchaActivatedRequired' => $this->captchaActivatedRequired,
             'displayInfo' => $this->displayInfo,
             'slotsPerAppointment' => $this->slotsPerAppointment,
+            'appointmentsPerMail' => $this->appointmentsPerMail,
         ];
     }
 
