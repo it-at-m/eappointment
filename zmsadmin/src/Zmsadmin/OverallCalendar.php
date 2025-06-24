@@ -19,7 +19,7 @@ class OverallCalendar extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
 
         if (!$workstation->getUseraccount()->hasRights(['scope'])) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
