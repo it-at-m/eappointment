@@ -31,6 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const fromInput  = document.getElementById('calendar-date-from');
     const untilInput = document.getElementById('calendar-date-until');
+    const today = new Date().toISOString().slice(0, 10);
+
+    if (fromInput) {
+        fromInput.min = today;
+        if (!fromInput.value) fromInput.value = today;
+    }
+    if (untilInput) {
+        untilInput.min = today;
+    }
 
     if (fromInput && !fromInput.value) {
         const today = new Date();
