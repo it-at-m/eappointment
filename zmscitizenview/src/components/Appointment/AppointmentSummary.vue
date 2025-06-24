@@ -249,7 +249,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { MucButton, MucPercentageSpinner } from "@muenchen/muc-patternlab-vue";
+import { MucButton } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import { OfficeImpl } from "@/types/OfficeImpl";

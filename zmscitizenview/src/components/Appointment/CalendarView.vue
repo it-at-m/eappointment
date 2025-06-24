@@ -9,26 +9,12 @@
         v-if="providersWithAppointments.length > 1"
       >
         <div v-for="provider in providersWithAppointments">
-          <div
-            class="m-checkboxes__item"
-            :class="{ disabled: isCheckboxDisabled(provider.id) }"
-          >
-            <input
-              :id="'checkbox-' + provider.id"
-              class="m-checkboxes__input"
-              name="checkbox"
-              type="checkbox"
-              :checked="selectedProviders[provider.id]"
-              :disabled="isCheckboxDisabled(provider.id)"
-              @click="handleProviderCheckbox(provider.id)"
-            />
-            <label
-              class="m-label m-checkboxes__label"
-              :for="'checkbox-' + provider.id"
-            >
-              {{ provider.name }}
-            </label>
-          </div>
+          <muc-checkbox
+            :key="provider.id"
+            :id="'checkbox-' + provider.id"
+            :label="provider.name"
+            v-model="selectedProviders[provider.id]"
+          ></muc-checkbox>
           <div class="provider-address">
             {{ provider.address.street }} {{ provider.address.house_number }}
           </div>
@@ -148,12 +134,7 @@
           align-items: center;
           min-height: 80px;
         "
-      >
-        <!--<MucPercentageSpinner
-          size="40%"
-          :aria-label="t('loadingAppointmentTimes')"
-        />-->
-      </div>
+      ></div>
 
       <div
         v-else
@@ -283,12 +264,7 @@
           align-items: center;
           min-height: 80px;
         "
-      >
-        <!--<MucPercentageSpinner
-          size="40%"
-          :aria-label="t('loadingAppointmentTimes')"
-        />-->
-      </div>
+      ></div>
 
       <div
         v-else
@@ -476,7 +452,6 @@ import {
   MucCalendar,
   MucCallout,
   MucCheckbox, // Todo: Use MucCheckbox once disabled boxes are available in the patternlab-vue package
-  MucPercentageSpinner,
 } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
 
@@ -561,20 +536,12 @@ const isLoadingAppointments = ref(false);
 const datesWithoutAppointments = ref(new Set<string>());
 
 const isLoadingComplete = ref(false);
-let progressInterval: NodeJS.Timeout | null = null;
 
 watch(isLoadingAppointments, (loading) => {
   if (loading) {
     isLoadingComplete.value = false;
   } else {
-    isLoadingComplete.value = true;
-    if (progressInterval) {
-      clearInterval(progressInterval);
-      progressInterval = null;
-    }
-    setTimeout(() => {
-      isLoadingComplete.value = false;
-    }, 100);
+    isLoadingComplete.value = false;
   }
 });
 
@@ -631,13 +598,32 @@ const officeName = (id: number | string): string | null => {
   return office?.name ?? null;
 };
 
+const getAvailableHours = () => {
+  // Only include hours where at least one selected provider has appointments
+  const hourSet = new Set<number>();
+  for (const [officeId, office] of timeSlotsInHoursByOffice.value) {
+    if (selectedProviders.value[officeId]) {
+      for (const hour of office.appointments.keys()) {
+        if ((office.appointments.get(hour) || []).length > 0) {
+          hourSet.add(hour);
+        }
+      }
+    }
+  }
+  return Array.from(hourSet).sort((a, b) => a - b);
+};
+
 const laterAppointments = (type = "hour") => {
   if (type === "dayPart" && currentDayPart.value === "am") {
     selectedDayPart.value = "pm";
     return;
   }
   if (currentHour.value !== null) {
-    selectedHour.value = currentHour.value + 1;
+    const availableHours = getAvailableHours();
+    const idx = availableHours.indexOf(currentHour.value);
+    if (idx !== -1 && idx < availableHours.length - 1) {
+      selectedHour.value = availableHours[idx + 1];
+    }
   }
 };
 
@@ -647,7 +633,11 @@ const earlierAppointments = (type = "hour") => {
     return;
   }
   if (currentHour.value !== null) {
-    selectedHour.value = currentHour.value - 1;
+    const availableHours = getAvailableHours();
+    const idx = availableHours.indexOf(currentHour.value);
+    if (idx > 0) {
+      selectedHour.value = availableHours[idx - 1];
+    }
   }
 };
 
@@ -1067,198 +1057,6 @@ watch(selectedDay, (newDate) => {
   }
 });
 
-const handleProviderCheckbox = async (id: string) => {
-  // Count how many providers with appointments are currently selected
-  const selectedCount = Object.entries(selectedProviders.value).filter(
-    ([providerId, isSelected]) =>
-      isSelected &&
-      providersWithAppointments.value.some(
-        (p) => p.id.toString() === providerId
-      )
-  ).length;
-
-  // If trying to uncheck the last selected provider with appointments, prevent it
-  if (selectedCount === 1 && selectedProviders.value[id]) {
-    return;
-  }
-
-  selectedProviders.value[id] = !selectedProviders.value[id];
-
-  // Update min and max dates based on selected providers
-  if (availableDays.value) {
-    const selectedProviderIds = Object.entries(selectedProviders.value)
-      .filter(([_, isSelected]) => isSelected)
-      .map(([id]) => Number(id));
-
-    const availableDaysForSelectedProviders = (
-      availableDays.value || []
-    ).filter((day) =>
-      day.providerIDs
-        .split(",")
-        .some((providerId) => selectedProviderIds.includes(Number(providerId)))
-    );
-
-    if (availableDaysForSelectedProviders.length > 0) {
-      minDate.value = new Date(availableDaysForSelectedProviders[0].time);
-      maxDate.value = new Date(
-        availableDaysForSelectedProviders[
-          availableDaysForSelectedProviders.length - 1
-        ].time
-      );
-
-      // If current date is no longer available, find the next available date
-      if (selectedDay.value) {
-        const currentDate = convertDateToString(selectedDay.value);
-        const isCurrentDateAvailable = availableDaysForSelectedProviders.some(
-          (day) => convertDateToString(new Date(day.time)) === currentDate
-        );
-
-        if (!isCurrentDateAvailable) {
-          // First try to find a date after the current date
-          let nextAvailableDay = availableDaysForSelectedProviders.find(
-            (day) => {
-              const dayDate = new Date(day.time);
-              return dayDate >= (selectedDay.value ?? new Date());
-            }
-          );
-
-          // If no future date is available, find the closest date before the current date
-          if (!nextAvailableDay) {
-            nextAvailableDay = [...availableDaysForSelectedProviders]
-              .reverse()
-              .find((day) => {
-                const dayDate = new Date(day.time);
-                return dayDate <= (selectedDay.value ?? new Date());
-              });
-          }
-
-          if (nextAvailableDay) {
-            const newDate = new Date(nextAvailableDay.time);
-            selectedDay.value = newDate;
-            // Set viewMonth to the first day of the month containing the new date
-            viewMonth.value = new Date(
-              newDate.getFullYear(),
-              newDate.getMonth(),
-              1
-            );
-            calendarKey.value++;
-            await nextTick();
-            await getAppointmentsOfDay(nextAvailableDay.time);
-          }
-        }
-      }
-    }
-  }
-
-  // If we just unchecked a provider, we need to check if the current date still has appointments
-  if (!selectedProviders.value[id] && selectedDay.value) {
-    const currentDate = convertDateToString(selectedDay.value);
-
-    // Check if current date has appointments for remaining selected providers
-    const dayEntry = availableDays.value?.find(
-      (day) => convertDateToString(new Date(day.time)) === currentDate
-    );
-
-    const hasAppointments = dayEntry?.providerIDs
-      .split(",")
-      .some((providerId) => selectedProviders.value[providerId]);
-
-    // If no appointments on current date, find next available date
-    if (
-      !hasAppointments &&
-      availableDays.value &&
-      availableDays.value.length > 0
-    ) {
-      const nextAvailableDay = availableDays.value.find((day) => {
-        const dayDate = new Date(day.time);
-        return (
-          dayDate >= (selectedDay.value ?? new Date()) &&
-          day.providerIDs
-            .split(",")
-            .some((providerId) => selectedProviders.value[providerId])
-        );
-      });
-
-      if (nextAvailableDay) {
-        // Update the selected day and trigger the appointment fetch
-        selectedDay.value = new Date(nextAvailableDay.time);
-        await nextTick();
-        await getAppointmentsOfDay(nextAvailableDay.time);
-      }
-    }
-  }
-
-  // --- SNAP BACK LOGIC FOR HOURLY AND DAYPART VIEWS ---
-  await nextTick(); // Ensure computed properties are updated
-
-  // Hourly view: snap selectedHour to the nearest available hour if current is not available
-  if (timeSlotsInHoursByOffice.value.size > 0) {
-    const availableHours = Array.from(timeSlotsInHoursByOffice.value.values())
-      .flatMap((office) => Array.from((office as any).appointments.keys()))
-      .filter((hour): hour is number => typeof hour === "number");
-    if (
-      selectedHour.value === null ||
-      !availableHours.includes(selectedHour.value as number)
-    ) {
-      if (availableHours.length > 0) {
-        // Snap to the nearest available hour
-        const prevHour = selectedHour.value;
-        let nearest = availableHours[0];
-        let minDiff = Math.abs((prevHour ?? nearest) - nearest);
-        for (const hour of availableHours) {
-          const diff = Math.abs((prevHour ?? hour) - hour);
-          if (diff < minDiff || (diff === minDiff && hour < nearest)) {
-            nearest = hour;
-            minDiff = diff;
-          }
-        }
-        selectedHour.value = nearest;
-      } else {
-        selectedHour.value = null;
-      }
-    }
-  }
-
-  // DayPart view: snap selectedDayPart to the other part if current is not available
-  else if (timeSlotsInDayPartByOffice.value.size > 0) {
-    const availableDayParts = Array.from(
-      timeSlotsInDayPartByOffice.value.values()
-    )
-      .flatMap((office) => Array.from((office as any).appointments.keys()))
-      .filter((part): part is "am" | "pm" => part === "am" || part === "pm");
-    if (
-      selectedDayPart.value === null ||
-      !availableDayParts.includes(selectedDayPart.value as "am" | "pm")
-    ) {
-      // Prefer the other part if available
-      if (selectedDayPart.value === "am" && availableDayParts.includes("pm")) {
-        selectedDayPart.value = "pm";
-      } else if (
-        selectedDayPart.value === "pm" &&
-        availableDayParts.includes("am")
-      ) {
-        selectedDayPart.value = "am";
-      } else if (availableDayParts.length > 0) {
-        selectedDayPart.value = availableDayParts[0];
-      } else {
-        selectedDayPart.value = null;
-      }
-    }
-  }
-};
-
-const isCheckboxDisabled = (providerId: string) => {
-  // Count how many providers with appointments are currently selected
-  const selectedCount = Object.entries(selectedProviders.value).filter(
-    ([id, isSelected]) =>
-      isSelected &&
-      providersWithAppointments.value.some((p) => p.id.toString() === id)
-  ).length;
-
-  // Disable if this is the only selected provider with appointments
-  return selectedCount === 1 && selectedProviders.value[providerId];
-};
-
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
   selectedProvider.value = getProvider(officeId);
@@ -1467,6 +1265,179 @@ watch(appointmentTimestampsByOffice, () => {
     }
   }
 });
+
+watch(
+  selectedProviders,
+  async (newVal, oldVal) => {
+    // Update min and max dates based on selected providers
+    if (availableDays.value) {
+      const selectedProviderIds = Object.entries(selectedProviders.value)
+        .filter(([_, isSelected]) => isSelected)
+        .map(([id]) => Number(id));
+
+      const availableDaysForSelectedProviders = (
+        availableDays.value || []
+      ).filter((day) =>
+        day.providerIDs
+          .split(",")
+          .some((providerId) =>
+            selectedProviderIds.includes(Number(providerId))
+          )
+      );
+
+      if (availableDaysForSelectedProviders.length > 0) {
+        minDate.value = new Date(availableDaysForSelectedProviders[0].time);
+        maxDate.value = new Date(
+          availableDaysForSelectedProviders[
+            availableDaysForSelectedProviders.length - 1
+          ].time
+        );
+
+        // If current date is no longer available, find the next available date
+        if (selectedDay.value) {
+          const currentDate = convertDateToString(selectedDay.value);
+          const isCurrentDateAvailable = availableDaysForSelectedProviders.some(
+            (day) => convertDateToString(new Date(day.time)) === currentDate
+          );
+
+          if (!isCurrentDateAvailable) {
+            // First try to find a date after the current date
+            let nextAvailableDay = availableDaysForSelectedProviders.find(
+              (day) => {
+                const dayDate = new Date(day.time);
+                return dayDate >= (selectedDay.value ?? new Date());
+              }
+            );
+
+            // If no future date is available, find the closest date before the current date
+            if (!nextAvailableDay) {
+              nextAvailableDay = [...availableDaysForSelectedProviders]
+                .reverse()
+                .find((day) => {
+                  const dayDate = new Date(day.time);
+                  return dayDate <= (selectedDay.value ?? new Date());
+                });
+            }
+
+            if (nextAvailableDay) {
+              const newDate = new Date(nextAvailableDay.time);
+              selectedDay.value = newDate;
+              // Set viewMonth to the first day of the month containing the new date
+              viewMonth.value = new Date(
+                newDate.getFullYear(),
+                newDate.getMonth(),
+                1
+              );
+              calendarKey.value++;
+              await nextTick();
+              await getAppointmentsOfDay(nextAvailableDay.time);
+            }
+          }
+        }
+      }
+    }
+
+    // If we just unchecked a provider, we need to check if the current date still has appointments
+    if (selectedDay.value) {
+      const currentDate = convertDateToString(selectedDay.value);
+
+      // Check if current date has appointments for remaining selected providers
+      const dayEntry = availableDays.value?.find(
+        (day) => convertDateToString(new Date(day.time)) === currentDate
+      );
+
+      const hasAppointments = dayEntry?.providerIDs
+        .split(",")
+        .some((providerId) => selectedProviders.value[providerId]);
+
+      // If no appointments on current date, find next available date
+      if (
+        !hasAppointments &&
+        availableDays.value &&
+        availableDays.value.length > 0
+      ) {
+        const nextAvailableDay = availableDays.value.find((day) => {
+          const dayDate = new Date(day.time);
+          return (
+            dayDate >= (selectedDay.value ?? new Date()) &&
+            day.providerIDs
+              .split(",")
+              .some((providerId) => selectedProviders.value[providerId])
+          );
+        });
+
+        if (nextAvailableDay) {
+          // Update the selected day and trigger the appointment fetch
+          selectedDay.value = new Date(nextAvailableDay.time);
+          await nextTick();
+          await getAppointmentsOfDay(nextAvailableDay.time);
+        }
+      }
+    }
+
+    // --- SNAP BACK LOGIC FOR HOURLY AND DAYPART VIEWS ---
+    await nextTick(); // Ensure computed properties are updated
+
+    // Hourly view: snap selectedHour to the nearest available hour if current is not available
+    if (timeSlotsInHoursByOffice.value.size > 0) {
+      const availableHours = Array.from(timeSlotsInHoursByOffice.value.values())
+        .flatMap((office) => Array.from((office as any).appointments.keys()))
+        .filter((hour): hour is number => typeof hour === "number");
+      if (
+        selectedHour.value === null ||
+        !availableHours.includes(selectedHour.value as number)
+      ) {
+        if (availableHours.length > 0) {
+          // Snap to the nearest available hour, prefer earlier if equally close
+          const prevHour = selectedHour.value;
+          let nearest = availableHours[0];
+          let minDiff = Math.abs((prevHour ?? nearest) - nearest);
+          for (const hour of availableHours) {
+            const diff = Math.abs((prevHour ?? hour) - hour);
+            if (diff < minDiff || (diff === minDiff && hour < nearest)) {
+              nearest = hour;
+              minDiff = diff;
+            }
+          }
+          selectedHour.value = nearest;
+        } else {
+          selectedHour.value = null;
+        }
+      }
+    }
+
+    // DayPart view: snap selectedDayPart to the other part if current is not available
+    else if (timeSlotsInDayPartByOffice.value.size > 0) {
+      const availableDayParts = Array.from(
+        timeSlotsInDayPartByOffice.value.values()
+      )
+        .flatMap((office) => Array.from((office as any).appointments.keys()))
+        .filter((part): part is "am" | "pm" => part === "am" || part === "pm");
+      if (
+        selectedDayPart.value === null ||
+        !availableDayParts.includes(selectedDayPart.value as "am" | "pm")
+      ) {
+        // Prefer the other part if available
+        if (
+          selectedDayPart.value === "am" &&
+          availableDayParts.includes("pm")
+        ) {
+          selectedDayPart.value = "pm";
+        } else if (
+          selectedDayPart.value === "pm" &&
+          availableDayParts.includes("am")
+        ) {
+          selectedDayPart.value = "am";
+        } else if (availableDayParts.length > 0) {
+          selectedDayPart.value = availableDayParts[0];
+        } else {
+          selectedDayPart.value = null;
+        }
+      }
+    }
+  },
+  { deep: true }
+);
 </script>
 
 <style scoped>
