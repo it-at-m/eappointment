@@ -38,6 +38,13 @@ class AppointmentUpdateService
             return $reservedProcess;
         }
 
+        // $thinnedProcess = ZmsApiFacadeService::getThinnedProcessById($data->processId, $data->authKey);
+        // $appointmentsPerMail = $thinnedProcess->scope->appointmentsPerMail;
+        // $process = MapperService::thinnedProcessToProcess($thinnedProcess);
+        // // error_log(json_encode($process, JSON_PRETTY_PRINT));
+
+        // $appointmentsPerMailErrors = ValidationService::validateAppointmentsPerMail($process);
+        
         $fieldErrors = ValidationService::validateAppointmentUpdateFields(
             $data->familyName,
             $data->email,
