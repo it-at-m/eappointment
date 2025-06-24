@@ -63,6 +63,12 @@ describe("AppointmentSummary", () => {
           appointment: {
             appointment: mockAppointment,
           },
+          loadingStates: {
+            isReservingAppointment: ref(false),
+            isUpdatingAppointment: ref(false),
+            isBookingAppointment: ref(false),
+            isCancelingAppointment: ref(false),
+          },
         },
         stubs: {
           "muc-button": true,
@@ -118,13 +124,13 @@ describe("AppointmentSummary", () => {
   });
 
   describe("Form Validation", () => {
-    it("disables book button when both checkboxes are not checked", () => {
+    it("disables preconfirm button when both checkboxes are not checked", () => {
       const wrapper = createWrapper();
       const bookButton = wrapper.find('muc-button-stub[icon="check"]');
       expect(bookButton.attributes("disabled")).toBe("true");
     });
 
-    it("enables book button when both checkboxes are checked", async () => {
+    it("enables preconfirm button when both checkboxes are checked", async () => {
       const wrapper = createWrapper();
       const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
@@ -135,7 +141,7 @@ describe("AppointmentSummary", () => {
       expect(bookButton.attributes("disabled")).toBe("false");
     });
 
-    it("disables book button when only privacy policy is checked", async () => {
+    it("disables preconfirm button when only privacy policy is checked", async () => {
       const wrapper = createWrapper();
       const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
       await privacyCheckbox.trigger("click");
@@ -144,7 +150,7 @@ describe("AppointmentSummary", () => {
       expect(bookButton.attributes("disabled")).toBe("true");
     });
 
-    it("disables book button when only electronic communication is checked", async () => {
+    it("disables preconfirm button when only electronic communication is checked", async () => {
       const wrapper = createWrapper();
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
       await communicationCheckbox.trigger("click");
@@ -153,7 +159,7 @@ describe("AppointmentSummary", () => {
       expect(bookButton.attributes("disabled")).toBe("true");
     });
 
-    it("disables book button when one checkbox is unchecked after both were checked", async () => {
+    it("disables preconfirm button when one checkbox is unchecked after both were checked", async () => {
       const wrapper = createWrapper();
       const privacyCheckbox = wrapper.find('input[name="checkbox-privacy-policy"]');
       const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
@@ -192,7 +198,7 @@ describe("AppointmentSummary", () => {
       expect(wrapper.emitted("back")).toBeTruthy();
     });
 
-    it("emits bookAppointment event when book button is clicked", async () => {
+    it("emits bookAppointment event when preconfirm button is clicked", async () => {
       const wrapper = createWrapper();
       await wrapper.find('input[name="checkbox-privacy-policy"]').trigger("click");
       await wrapper.find('input[name="checkbox-electronic-communication"]').trigger("click");
@@ -238,6 +244,49 @@ describe("AppointmentSummary", () => {
       const wrapper = createWrapper({ isRebooking: true });
       await wrapper.find('muc-button-stub[icon="close"]').trigger("click");
       expect(wrapper.emitted("cancelReschedule")).toBeTruthy();
+    });
+  });
+
+  describe("Test submission loading state", () => {
+    it("test loading state when booking appointment", async () => {
+      const wrapper = createWrapper();
+
+      // Set loading state
+      wrapper.vm.loadingStates.isBookingAppointment.value = true;
+      await nextTick();
+
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(true);
+
+      wrapper.vm.loadingStates.isBookingAppointment.value = false;
+      await nextTick();
+
+      expect(wrapper.vm.loadingStates.isBookingAppointment.value).toBe(false);
+    });
+
+    it("enables the book button when form is valid and not loading, disables it during booking, and re-enables after booking", async () => {
+      const wrapper = createWrapper();
+      // Simulate both checkboxes checked
+      await wrapper.find('input[name="checkbox-privacy-policy"]').trigger('click');
+      await wrapper.find('input[name="checkbox-electronic-communication"]').trigger('click');
+      await nextTick();
+      let bookButton = wrapper.findAll('muc-button-stub').find(btn => btn.attributes('icon') === 'check');
+      if (!bookButton) throw new Error('Book button not found');
+      // Should be enabled when form is valid and not loading
+      expect(bookButton.attributes('disabled')).toBe('false');
+
+      // Set loading state
+      wrapper.vm.loadingStates.isBookingAppointment.value = true;
+      await nextTick();
+      bookButton = wrapper.findAll('muc-button-stub').find(btn => btn.attributes('icon') === 'check');
+      if (!bookButton) throw new Error('Book button not found');
+      expect(bookButton.attributes('disabled')).toBe('true');
+
+      // Reset loading state
+      wrapper.vm.loadingStates.isBookingAppointment.value = false;
+      await nextTick();
+      bookButton = wrapper.findAll('muc-button-stub').find(btn => btn.attributes('icon') === 'check');
+      if (!bookButton) throw new Error('Book button not found');
+      expect(bookButton.attributes('disabled')).toBe('false');
     });
   });
 }); 
