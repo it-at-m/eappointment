@@ -192,19 +192,12 @@
     </muc-button>
     <muc-button
       :disabled="loadingStates.isCancelingAppointment.value"
-      :icon="loadingStates.isCancelingAppointment.value ? undefined : 'close'"
+      :icon="'close'"
       variant="secondary"
       @click="cancelAppointment"
     >
       <template #default>
         <span>{{ t("cancelAppointment") }}</span>
-        <MucPercentageSpinner
-          v-if="loadingStates.isCancelingAppointment.value"
-          style="margin-left: 12px"
-          size="18px"
-          color="white"
-          :aria-label="t('loadingAppointmentCancellation')"
-        />
       </template>
     </muc-button>
   </div>
@@ -214,18 +207,11 @@
   >
     <muc-button
       :disabled="!validForm || loadingStates.isBookingAppointment.value"
-      :icon="loadingStates.isBookingAppointment.value ? undefined : 'check'"
+      :icon="'check'"
       @click="bookAppointment"
     >
       <template #default>
         <span>{{ t("rescheduleAppointment") }}</span>
-        <MucPercentageSpinner
-          v-if="loadingStates.isBookingAppointment.value"
-          style="margin-left: 12px"
-          size="18px"
-          color="white"
-          :aria-label="t('loadingAppointmentBooking')"
-        />
       </template>
     </muc-button>
     <muc-button
@@ -250,18 +236,11 @@
     </muc-button>
     <muc-button
       :disabled="!validForm || loadingStates.isBookingAppointment.value"
-      :icon="loadingStates.isBookingAppointment.value ? undefined : 'check'"
+      :icon="'check'"
       @click="bookAppointment"
     >
       <template #default>
         <span>{{ t("bookAppointment") }}</span>
-        <MucPercentageSpinner
-          v-if="loadingStates.isBookingAppointment.value"
-          style="margin-left: 12px"
-          size="18px"
-          color="white"
-          :aria-label="t('loadingAppointmentBooking')"
-        />
       </template>
     </muc-button>
   </div>
@@ -270,7 +249,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { MucButton, MucPercentageSpinner } from "@muenchen/muc-patternlab-vue";
+import { MucButton } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -311,7 +290,6 @@ const { appointment } = inject<SelectedAppointmentProvider>(
   "appointment"
 ) as SelectedAppointmentProvider;
 
-// Inject loading states
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
   isUpdatingAppointment: ref(false),
