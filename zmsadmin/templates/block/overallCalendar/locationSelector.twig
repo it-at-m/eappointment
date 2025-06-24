@@ -62,10 +62,13 @@
 </fieldset>
 
 <script>
-document.getElementById('select-all-scopes').addEventListener('click', function() {
-  const select = document.getElementById('scope-select');
+const selectAllBtn = document.getElementById('select-all-scopes');
+const select = document.getElementById('scope-select');
+
+selectAllBtn.addEventListener('click', function() {
+  const allSelected = Array.from(select.options).every(opt => opt.selected);
   for (let option of select.options) {
-    option.selected = true;
+    option.selected = !allSelected;
   }
 });
 </script>
