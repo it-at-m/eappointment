@@ -490,7 +490,6 @@ const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
 
-// Inject loading states
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
   isUpdatingAppointment: ref(false),

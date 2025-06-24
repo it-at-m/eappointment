@@ -290,7 +290,6 @@ const confirmAppointmentError = ref<boolean>(false);
 const cancelAppointmentSuccess = ref<boolean>(false);
 const cancelAppointmentError = ref<boolean>(false);
 
-// Add loading state variables
 const isReservingAppointment = ref<boolean>(false);
 const isUpdatingAppointment = ref<boolean>(false);
 const isBookingAppointment = ref<boolean>(false);
@@ -316,7 +315,6 @@ provide<SelectedAppointmentProvider>("appointment", {
   appointment,
 } as SelectedAppointmentProvider);
 
-// Provide loading states to child components
 provide("loadingStates", {
   isReservingAppointment,
   isUpdatingAppointment,
@@ -393,7 +391,6 @@ const setRebookData = () => {
 };
 
 const nextReserveAppointment = () => {
-  // Prevent multiple rapid requests
   if (isReservingAppointment.value) {
     return;
   }
@@ -441,7 +438,6 @@ const nextReserveAppointment = () => {
 };
 
 const nextUpdateAppointment = () => {
-  // Prevent multiple rapid requests
   if (isUpdatingAppointment.value) {
     return;
   }
@@ -483,7 +479,6 @@ const nextUpdateAppointment = () => {
 };
 
 const nextBookAppointment = () => {
-  // Prevent multiple rapid requests
   if (isBookingAppointment.value) {
     return;
   }
@@ -510,7 +505,6 @@ const nextBookAppointment = () => {
 };
 
 const nextCancelAppointment = () => {
-  // Prevent multiple rapid requests
   if (isCancelingAppointment.value) {
     return;
   }
