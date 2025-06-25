@@ -1111,7 +1111,7 @@ onMounted(() => {
     const chosenSubservices = (selectedService.value.subServices || []).filter(
       (subservice) => subservice.count > 0
     );
-    const selectedIds = [mainId, ...chosenSubservices.map((s) => s.id)];
+    const selectedIds = [mainId, ...chosenSubservices.map((s) => s.id)].map(String);
 
     // Filter out any provider that is disabled by all of the selected IDs
     let availableProviders = selectedService.value.providers.filter(
