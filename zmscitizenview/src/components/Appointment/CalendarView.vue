@@ -1111,7 +1111,9 @@ onMounted(() => {
     const chosenSubservices = (selectedService.value.subServices || []).filter(
       (subservice) => subservice.count > 0
     );
-    const selectedIds = [mainId, ...chosenSubservices.map((s) => s.id)].map(Number);
+    const selectedIds = [mainId, ...chosenSubservices.map((s) => s.id)].map(
+      Number
+    );
 
     // Filter out any provider that is disabled by all of the selected IDs
     const providerMap = new Map<string, OfficeImpl>();
@@ -1119,7 +1121,8 @@ onMounted(() => {
     for (const provider of selectedService.value.providers as OfficeImpl[]) {
       const disabledIds = (provider.disabledByServices || []).map(Number);
 
-      const isDisabled = disabledIds.length > 0 &&
+      const isDisabled =
+        disabledIds.length > 0 &&
         selectedIds.every((id) => disabledIds.includes(id));
 
       if (!isDisabled && !providerMap.has(provider.name)) {
