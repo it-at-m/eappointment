@@ -126,68 +126,6 @@ class ApplicationTest extends TestCase
         $this->assertNotNull(Application::$cache);
     }
 
-    /*
-    public function testInitializeMiddleware(): void
-    {
-        // Test rate limiting config
-        putenv('RATE_LIMIT_MAX_REQUESTS=100');
-        putenv('RATE_LIMIT_CACHE_TTL=300');
-        putenv('RATE_LIMIT_MAX_RETRIES=4');
-        putenv('RATE_LIMIT_BACKOFF_MIN=20');
-        putenv('RATE_LIMIT_BACKOFF_MAX=100');
-        putenv('RATE_LIMIT_LOCK_TIMEOUT=2');
-
-        Application::initialize();
-        $rateLimit = Application::getRateLimit();
-
-        $this->assertEquals(100, $rateLimit['maxRequests']);
-        $this->assertEquals(300, $rateLimit['cacheExpiry']);
-        $this->assertEquals(4, $rateLimit['maxRetries']);
-        $this->assertEquals(20, $rateLimit['backoffMin']);
-        $this->assertEquals(100, $rateLimit['backoffMax']);
-        $this->assertEquals(2, $rateLimit['lockTimeout']);
-
-        // Test request limits
-        putenv('MAX_REQUEST_SIZE=20971520');
-        putenv('MAX_STRING_LENGTH=65536');
-        putenv('MAX_RECURSION_DEPTH=20');
-
-        Application::initialize();
-        $requestLimits = Application::getRequestLimits();
-
-        $this->assertEquals(20971520, $requestLimits['maxSize']);
-        $this->assertEquals(65536, $requestLimits['maxStringLength']);
-        $this->assertEquals(20, $requestLimits['maxRecursionDepth']);
-
-        // Test CSRF config
-        putenv('CSRF_TOKEN_LENGTH=64');
-        putenv('CSRF_SESSION_KEY=custom_csrf_key');
-
-        Application::initialize();
-        $csrfConfig = Application::getCsrfConfig();
-
-        $this->assertEquals(64, $csrfConfig['tokenLength']);
-        $this->assertEquals('custom_csrf_key', $csrfConfig['sessionKey']);
-    }
-    */
-
-    /*
-    public function testGetCorsAllowedOrigins(): void
-    {
-        putenv('CORS=https://example.com,https://test.com');
-        Application::initialize();
-        
-        $origins = Application::getCorsAllowedOrigins();
-        $this->assertCount(2, $origins);
-        $this->assertEquals(['https://example.com', 'https://test.com'], $origins);
-
-        // Test empty CORS
-        putenv('CORS=');
-        Application::initialize();
-        $this->assertEmpty(Application::getCorsAllowedOrigins());
-    }
-    */
-
     public function testGetIpBlacklist(): void
     {
         putenv('IP_BLACKLIST=192.168.1.1,10.0.0.1');
@@ -237,9 +175,6 @@ class ApplicationTest extends TestCase
         putenv('MAX_REQUEST_SIZE');
         putenv('MAX_STRING_LENGTH');
         putenv('MAX_RECURSION_DEPTH');
-        putenv('CSRF_TOKEN_LENGTH');
-        putenv('CSRF_SESSION_KEY');
-        putenv('CORS');
         putenv('IP_BLACKLIST');
     }
 

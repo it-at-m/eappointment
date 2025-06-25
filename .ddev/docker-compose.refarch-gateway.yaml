@@ -1,0 +1,13 @@
+version: '3.6'
+services:
+  refarch-gateway:
+    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.4.4
+    container_name: ddev-${DDEV_SITENAME}-refarch-gateway
+    ports:
+      - "8084:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=no-security
+      - WEBCOMPONENT_URI=http://localhost:8080
+    volumes:
+      - /Users/thomasafink/Desktop/eappointment/.ddev/local-gateway-application.yml:/deployments/application.yml:ro
+    restart: unless-stopped 
