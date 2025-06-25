@@ -57,6 +57,12 @@ export interface Office {
   slotTimeInMinutes: number;
   /**
    *
+   * @type {string}
+   * @memberof Office
+   */
+  disabledByServices?: string[];
+  /**
+   *
    * @type {Scope}
    * @memberof Office
    */
@@ -67,6 +73,12 @@ export interface Office {
    * @memberof Office
    */
   maxSlotsPerAppointment?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof Office
+   */
+  slots?: number;
   /**
    *
    * @type {number}
