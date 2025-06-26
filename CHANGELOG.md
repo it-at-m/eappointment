@@ -1,3 +1,42 @@
+## Release Muc-26 (25.06.2025)
+                            
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-400'>ZMSKVR-400</a>] -          PROD Absagemail vor Terminstatus &quot;preconfirmed&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-403'>ZMSKVR-403</a>] -         PROD Absagemail: unvollständiger Inhalt (Dienstleistungen, Standort)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-408'>ZMSKVR-408</a>] -         Daily Cronjob Fehler: Slots in writeMaintenanceQueries werden nicht mehr vollständig berechnet
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-465'>ZMSKVR-465</a>] -         Überbuchung von Terminen am Orleansplatz an Dienstagen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-467'>ZMSKVR-467</a>] -         ZMS-Admin: Textfeldeingabe wird in Warteschlange HTML-&quot;interpretiert&quot; 
+</li>
+</ul>
+                                                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-82'>ZMSKVR-82</a>] -         Zeitauswahl Kalenderansicht, mehrere Orte
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-204'>ZMSKVR-204</a>] -         mellon: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-270'>ZMSKVR-270</a>] -         Keine ICS Datei bei den Absage Mails verschicken
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-430'>ZMSKVR-430</a>] -         Bürgerfrontend2: Testumgebung mit auf lhm-i.muenchen.swm.de Seite mit WAF Angebunden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-446'>ZMSKVR-446</a>] -         SessionID darf in der DB nicht im Klartext gespeichert werden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-474'>ZMSKVR-474</a>] -         Wochenkalender FrontEnd MVP
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-510'>ZMSKVR-510</a>] -         Schritt 2: Termin – Daten als Überschriften codieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-522'>ZMSKVR-522</a>] -         Schritt 3: Übersicht – &quot;Uhr&quot; bei Uhrzeit ergänzen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-523'>ZMSKVR-523</a>] -         Schritt 3: Übersicht – Konkrete Datenschutzerklärung verlinken
+</li>
+</ul>
 
 ## Release Muc-25 (04.06.2025)
                        
