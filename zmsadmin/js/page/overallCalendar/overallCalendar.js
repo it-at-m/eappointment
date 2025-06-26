@@ -23,112 +23,85 @@ function isSameRequest(a, b) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('overall-calendar-form');
-    if (form) {
-        form.addEventListener('submit', handleSubmit);
-    }
-});
+    if (form) form.addEventListener('submit', handleSubmit);
 
-document.addEventListener('DOMContentLoaded', () => {
     const fromInput  = document.getElementById('calendar-date-from');
     const untilInput = document.getElementById('calendar-date-until');
-    const today = new Date().toISOString().slice(0, 10);
+    const todayIso   = new Date().toISOString().slice(0, 10);
 
     if (fromInput) {
-        fromInput.min = today;
-        if (!fromInput.value) fromInput.value = today;
+        fromInput.min = todayIso;
+        if (!fromInput.value) fromInput.value = todayIso;
     }
-    if (untilInput) {
-        untilInput.min = today;
-    }
-
-    if (fromInput && !fromInput.value) {
-        const today = new Date();
-        fromInput.value = today.toISOString().slice(0, 10);
-    }
+    if (untilInput) untilInput.min = todayIso;
 
     if (fromInput && untilInput) {
         fromInput.addEventListener('change', setUntilLimits);
         setUntilLimits();
+    }
 
-        function setUntilLimits() {
-            if (fromInput.value) {
-                let fromDate = new Date(fromInput.value);
-                let maxDate  = new Date(fromDate);
-                let daysAdded = 0;
-                while (daysAdded < 4) {
-                    maxDate.setDate(maxDate.getDate() + 1);
-                    if (maxDate.getDay() !== 0 && maxDate.getDay() !== 6) {
-                        daysAdded++;
-                    }
-                }
-                untilInput.min = fromInput.value;
-                untilInput.max = maxDate.toISOString().slice(0, 10);
-
-                if (untilInput.value < untilInput.min || untilInput.value > untilInput.max) {
-                    untilInput.value = untilInput.min;
-                }
-            } else {
-                untilInput.min = '';
-                untilInput.max = '';
-            }
+    function setUntilLimits() {
+        if (!fromInput.value) { untilInput.min = untilInput.max = ''; return; }
+        const fromDate = new Date(fromInput.value);
+        const maxDate  = new Date(fromDate);
+        let workdays   = 0;
+        while (workdays < 4) {
+            maxDate.setDate(maxDate.getDate() + 1);
+            if (![0, 6].includes(maxDate.getDay())) workdays++;
+        }
+        untilInput.min = fromInput.value;
+        untilInput.max = maxDate.toISOString().slice(0, 10);
+        if (untilInput.value < untilInput.min || untilInput.value > untilInput.max) {
+            untilInput.value = untilInput.min;
         }
     }
-});
 
-document.addEventListener('DOMContentLoaded', () => {
     const btn     = document.getElementById('calendar-fullscreen');
     const wrapper = document.querySelector('.overall-calendar-wrapper');
 
-    btn.addEventListener('click', () => {
-        const isFull = wrapper.classList.toggle('fullscreen');
-        btn.classList.toggle('is-active', isFull);
-        btn.title = isFull ? 'Vollbild schließen' : 'Vollbild';
+    if (btn && wrapper) {
+        btn.addEventListener('click', () => {
+            const isFull = wrapper.classList.toggle('fullscreen');
+            btn.classList.toggle('is-active', isFull);
+            btn.title = isFull ? 'Vollbild schließen' : 'Vollbild';
+            togglePageScroll(isFull);
+            if (isFull) btn.focus();
+        });
 
-        if (isFull) btn.focus();
-        togglePageScroll(isFull);
-    });
-
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && wrapper.classList.contains('fullscreen')) {
-            wrapper.classList.remove('fullscreen');
-            btn.classList.remove('is-active');
-            btn.title = 'Vollbild';
-            togglePageScroll(false);
-            btn.focus();
-        }
-    });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && wrapper.classList.contains('fullscreen')) {
+                wrapper.classList.remove('fullscreen');
+                btn.classList.remove('is-active');
+                btn.title = 'Vollbild';
+                togglePageScroll(false);
+                btn.focus();
+            }
+        });
+    }
 });
 
 async function handleSubmit(event) {
     event.preventDefault();
 
-    const select   = event.target.querySelector('select[name="scopes[]"]');
+    const select = event.target.querySelector('select[name="scopes[]"]');
     const scopeIds = Array.from(select.selectedOptions).map(o => o.value);
+    const dateFrom = event.target.querySelector('input[name="calendarDateFrom"]').value;
+    const dateUntil = event.target.querySelector('input[name="calendarDateUntil"]').value;
     const errorBox = document.getElementById('scope-error');
     const errorMsg = errorBox.querySelector('.msg');
 
-    if (scopeIds.length === 0) {
+    if (!scopeIds.length) {
         errorMsg.textContent = 'Bitte mindestens einen Standort auswählen';
         errorBox.style.display = 'inline-flex';
         return;
-    } else {
-        errorBox.style.display = 'none';
-        errorMsg.textContent = '';
     }
-
-    const dateFromInput  = event.target.querySelector('input[name="calendarDateFrom"]');
-    const dateUntilInput = event.target.querySelector('input[name="calendarDateUntil"]');
-    const dateFrom  = dateFromInput.value;
-    const dateUntil = dateUntilInput.value;
+    errorBox.style.display = 'none';
+    errorMsg.textContent = '';
 
     if (dateFrom && dateUntil) {
-        let from  = new Date(dateFrom);
-        let until = new Date(dateUntil);
-        let workdays = 0;
-        let current = new Date(from);
+        let current = new Date(dateFrom), until = new Date(dateUntil), workdays = 0;
         while (current <= until) {
-            const day = current.getDay();
-            if (day !== 0 && day !== 6) { workdays++; }
+            if (![0, 6].includes(current.getDay())) workdays++;
             current.setDate(current.getDate() + 1);
         }
         if (workdays > 5) {
@@ -137,11 +110,11 @@ async function handleSubmit(event) {
         }
     }
 
-    const newRequest = { scopeIds, dateFrom, dateUntil };
+    const newRequest = {scopeIds, dateFrom, dateUntil};
     const incremental = isSameRequest(newRequest, currentRequest);
 
     const paramsObj = {
-        scopeIds : scopeIds.join(','),
+        scopeIds: scopeIds.join(','),
         dateFrom,
         dateUntil
     };
@@ -149,7 +122,6 @@ async function handleSubmit(event) {
         paramsObj.updateAfter = lastUpdateAfter;
     }
     const params = new URLSearchParams(paramsObj);
-
     const res = await fetch(`overallcalendarData/?${params.toString()}`);
     if (!res.ok) {
         alert('Fehler beim Laden des Kalenders!');
@@ -165,7 +137,7 @@ async function handleSubmit(event) {
         lastUpdateAfter = serverTs;
     } else {
         renderMultiDayCalendar(data.data.days);
-        currentRequest  = newRequest;
+        currentRequest = newRequest;
         lastUpdateAfter = serverTs;
         startAutoRefresh();
     }
@@ -173,25 +145,30 @@ async function handleSubmit(event) {
 
 function startAutoRefresh() {
     if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-    autoRefreshTimer = setInterval(fetchIncrementalUpdate, 60_000);
+    let countdown = 60;
+    autoRefreshTimer = setInterval(() => {
+        if (--countdown <= 0) {
+            countdown = 60;
+            fetchIncrementalUpdate();
+        }
+    }, 1000);
 }
+
 
 async function fetchIncrementalUpdate() {
     if (!currentRequest || !lastUpdateAfter) return;
-
-    const { scopeIds, dateFrom, dateUntil } = currentRequest;
+    const {scopeIds, dateFrom, dateUntil} = currentRequest;
     const params = new URLSearchParams({
-        scopeIds : scopeIds.join(','),
+        scopeIds: scopeIds.join(','),
         dateFrom,
         dateUntil,
-        updateAfter : lastUpdateAfter,
+        updateAfter: lastUpdateAfter
     });
 
     const res = await fetch(`overallcalendarData/?${params.toString()}`);
     if (!res.ok) return;
 
     lastUpdateAfter = toMysql(res.headers.get('Last-Modified') || new Date());
-
     const json = await res.json();
     const changes = json?.data?.days ?? [];
     if (changes.length) applyChanges(changes);
@@ -200,32 +177,19 @@ async function fetchIncrementalUpdate() {
 function applyChanges(days) {
     days.forEach(day => {
         const dateKey = new Date(day.date * 1000).toISOString().slice(0, 10);
-
         day.scopes.forEach(scope => {
-            const scopeId = scope.id;
-
             scope.times.forEach(time => {
-                const timeKey = time.name;
-
                 time.seats.forEach((seat, idx) => {
                     const seatNo = idx + 1;
-                    const cellId = `cell-${dateKey}-${timeKey}-${scopeId}-${seatNo}`;
-                    const cell   = document.getElementById(cellId);
-                    if (!cell) return;
+                    const cellId = `cell-${dateKey}-${time.name}-${scope.id}-${seatNo}`;
+                    const cell = document.getElementById(cellId);
+                    if (!cell || cell.dataset.status === seat.status) return;
 
-                    if (cell.dataset.status === seat.status) return;
                     cell.dataset.status = seat.status;
-
                     cell.className = `overall-calendar-seat overall-calendar-${seat.status}`;
-                    if (seat.status === 'termin') {
-                        cell.textContent = seat.processId ?? '';
-                    } else {
-                        cell.textContent = '';
-                    }
-
-                    const rowStart = cell.dataset.row;
-                    const span = (seat.status === 'termin') ? (seat.slots || 1) : 1;
-                    cell.style.gridRow = `${rowStart} / span ${span}`;
+                    cell.textContent = seat.status === 'termin' ? (seat.processId ?? '') : '';
+                    const span = seat.status === 'termin' ? (seat.slots || 1) : 1;
+                    cell.style.gridRow = `${cell.dataset.row} / span ${span}`;
                 });
             });
         });
@@ -235,61 +199,43 @@ function applyChanges(days) {
 function renderMultiDayCalendar(days) {
     const container = document.getElementById('overall-calendar');
     container.innerHTML = '';
-
-    if (days.length === 0) {
+    if (!days.length) {
         container.innerHTML = '<p>Keine Daten verfügbar.</p>';
         return;
     }
 
-    if (days.length === 1) {
-        const dateKey = new Date(days[0].date * 1000).toISOString().slice(0, 10);
-        renderCalendar(days[0].scopes, dateKey);
-        return;
-    }
-
-    const allTimes = Array.from(
-        new Set(days.flatMap(day =>
-            day.scopes.flatMap(s => s.times.map(t => t.name))
-        ))
-    ).sort();
+    const allTimes = [...new Set(
+        days.flatMap(day =>
+            day.scopes.flatMap(scope => scope.times.map(t => t.name))
+        )
+    )].sort();
 
     const templateCols = ['max-content'];
-
     days.forEach((day, dayIdx) => {
         day.scopes.forEach((scope, scopeIdx) => {
             templateCols.push(`repeat(${scope.maxSeats}, minmax(32px, 1fr))`);
-            if (scopeIdx < day.scopes.length - 1) {
-                templateCols.push('2px');
-            }
+            if (scopeIdx < day.scopes.length - 1) templateCols.push('2px');
         });
-        if (dayIdx < days.length - 1) {
-            templateCols.push('4px');
-        }
+        if (dayIdx < days.length - 1) templateCols.push('4px');
     });
 
     container.style.display = 'grid';
     container.style.gridTemplateColumns = templateCols.join(' ');
     container.style.minWidth = 'fit-content';
 
-    const totalRows = allTimes.length + 2;
-
-    addCell({
-        text: 'Datum',
-        className: 'overall-calendar-head overall-calendar-day-header',
-        row: 1,
-        col: 1
-    });
+    addCell({text: 'Datum', className: 'overall-calendar-head overall-calendar-day-header', row: 1, col: 1});
 
     let colCursor = 2;
+    const totalRows = allTimes.length + 2;
+
     days.forEach((day, dayIdx) => {
-        const dayScopes = day.scopes;
-        const totalSeatsForDay = dayScopes.reduce((sum, scope) => sum + scope.maxSeats, 0);
-        const separatorsInDay = Math.max(0, dayScopes.length - 1);
+        const totalSeatsForDay = day.scopes.reduce((sum, scope) => sum + scope.maxSeats, 0);
+        const separatorsInDay = Math.max(0, day.scopes.length - 1);
         const daySpan = totalSeatsForDay + separatorsInDay;
 
         const date = new Date(day.date * 1000);
-        const dayName = date.toLocaleDateString('de-DE', { weekday: 'short' });
-        const dayDate = date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+        const dayName = date.toLocaleDateString('de-DE', {weekday: 'short'});
+        const dayDate = date.toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit'});
 
         addCell({
             text: `${dayName} ${dayDate}`,
@@ -358,19 +304,19 @@ function renderMultiDayCalendar(days) {
 
         let col = 2;
         days.forEach((day, dayIdx) => {
-            const dateKey = new Date(day.date * 1000).toISOString().slice(0,10);
+            const dateKey = new Date(day.date * 1000).toISOString().slice(0, 10);
             day.scopes.forEach((scope, scopeIdx) => {
-                const timeObj = scope.times.find(t => t.name === time) || { seats: [] };
+                const timeObj = scope.times.find(t => t.name === time) || {seats: []};
 
                 for (let seatIdx = 0; seatIdx < scope.maxSeats; seatIdx++) {
-                    const key = `${gridRow}-${col}`;
-                    if (occupied.has(key)) {
+                    if (occupied.has(`${gridRow}-${col}`)) {
                         col++;
                         continue;
                     }
 
                     const seat = timeObj.seats[seatIdx] || {};
-                    const slotStatus  = seat.status ?? 'empty';
+                    const slotStatus = seat.status ?? 'empty';
+                    const cellId = `cell-${dateKey}-${time}-${scope.id}-${seatIdx + 1}`;
 
                     if (slotStatus === 'termin') {
                         const span = seat.slots || 1;
@@ -380,161 +326,36 @@ function renderMultiDayCalendar(days) {
                             row: gridRow,
                             col,
                             rowSpan: span,
-                            id: `cell-${dateKey}-${time}-${scope.id}-${seatIdx+1}`,
+                            id: cellId,
                             dataStatus: 'termin'
                         });
-                        for (let i = 0; i < span; i++) {
-                            occupied.add(`${gridRow + i}-${col}`);
-                        }
+                        for (let i = 0; i < span; i++) occupied.add(`${gridRow + i}-${col}`);
                     } else if (slotStatus !== 'skip') {
                         addCell({
                             className: `overall-calendar-seat overall-calendar-${slotStatus}`,
                             row: gridRow,
                             col,
-                            id: `cell-${dateKey}-${time}-${scope.id}-${seatIdx+1}`,
+                            id: cellId,
                             dataStatus: slotStatus
                         });
                     }
                     col++;
                 }
 
-                if (scopeIdx < day.scopes.length - 1) {
-                    col++;
-                }
+                if (scopeIdx < day.scopes.length - 1) col++;
             });
 
-            if (dayIdx < days.length - 1) {
-                col++;
-            }
+            if (dayIdx < days.length - 1) col++;
         });
     });
 
-    function addCell({ text = '', className = '', row, col, rowSpan = 1, colSpan = 1, id = null, dataStatus = null }) {
+    function addCell({text = '', className = '', row, col, rowSpan = 1, colSpan = 1, id = null, dataStatus = null}) {
         const div = document.createElement('div');
         div.textContent = text;
-        div.className   = className;
-        div.style.gridRow    = `${row} / span ${rowSpan}`;
+        div.className = className;
+        div.style.gridRow = `${row} / span ${rowSpan}`;
         div.style.gridColumn = `${col} / span ${colSpan}`;
-        if (id)         div.id            = id;
-        if (dataStatus) div.dataset.status = dataStatus;
-        div.dataset.row = row;
-        container.appendChild(div);
-    }
-
-    showFullscreenButton();
-}
-
-function renderCalendar(scopes, dateKey) {
-    const container = document.getElementById('overall-calendar');
-    container.innerHTML = '';
-
-    const allTimes = Array.from(
-        new Set(scopes.flatMap(s => s.times.map(t => t.name)))
-    ).sort();
-
-    const templateCols = ['max-content'];
-    scopes.forEach((scope, idx) => {
-        templateCols.push(`repeat(${scope.maxSeats}, minmax(32px, 1fr))`);
-        if (idx < scopes.length - 1) templateCols.push('2px');
-    });
-    container.style.display = 'grid';
-    container.style.gridTemplateColumns = templateCols.join(' ');
-    container.style.minWidth = 'fit-content';
-
-    addCell({
-        text: 'Zeit',
-        className: 'overall-calendar-head',
-        row: 1,
-        col: 1
-    });
-
-    let colCursor = 2;
-    scopes.forEach((scope, idx) => {
-        addCell({
-            text: scope.shortName || scope.name || `Scope ${scope.id}`,
-            className: 'overall-calendar-head',
-            row: 1,
-            col: colCursor,
-            colSpan: scope.maxSeats
-        });
-        colCursor += scope.maxSeats;
-
-        if (idx < scopes.length - 1) {
-            addCell({
-                className: 'overall-calendar-separator',
-                row: 1,
-                col: colCursor,
-                rowSpan: allTimes.length + 1
-            });
-            colCursor += 1;
-        }
-    });
-
-    const occupied = new Set();
-
-    allTimes.forEach((time, rowIdx) => {
-        const gridRow = rowIdx + 2;
-
-        addCell({
-            text: time,
-            className: 'overall-calendar-time',
-            row: gridRow,
-            col: 1
-        });
-
-        let col = 2;
-        scopes.forEach((scope, scopeIdx) => {
-            const timeObj = scope.times.find(t => t.name === time) || { seats: [] };
-
-            for (let seatIdx = 0; seatIdx < scope.maxSeats; seatIdx++) {
-                const key = `${gridRow}-${col}`;
-                if (occupied.has(key)) { col++; continue; }
-
-                const seat = timeObj.seats[seatIdx] || {};
-                const slotStatus  = seat.status ?? 'empty';
-
-                if (slotStatus === 'termin') {
-                    const span = seat.slots || 1;
-                    addCell({
-                        text: seat.processId ?? '',
-                        className: 'overall-calendar-seat overall-calendar-termin',
-                        row: gridRow,
-                        col,
-                        rowSpan: span,
-                        id: `cell-${dateKey}-${time}-${scope.id}-${seatIdx+1}`,
-                        dataStatus: 'termin'
-                    });
-                    for (let i = 0; i < span; i++) occupied.add(`${gridRow + i}-${col}`);
-                } else if (slotStatus !== 'skip') {
-                    addCell({
-                        className: `overall-calendar-seat overall-calendar-${slotStatus}`,
-                        row: gridRow,
-                        col,
-                        id: `cell-${dateKey}-${time}-${scope.id}-${seatIdx+1}`,
-                        dataStatus: slotStatus
-                    });
-                }
-                col++;
-            }
-
-            if (scopeIdx < scopes.length - 1) {
-                addCell({
-                    className: 'overall-calendar-separator',
-                    row: gridRow,
-                    col
-                });
-                col++;
-            }
-        });
-    });
-
-    function addCell({ text = '', className = '', row, col, rowSpan = 1, colSpan = 1, id = null, dataStatus = null }) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        div.className   = className;
-        div.style.gridRow    = `${row} / span ${rowSpan}`;
-        div.style.gridColumn = `${col} / span ${colSpan}`;
-        if (id)         div.id            = id;
+        if (id) div.id = id;
         if (dataStatus) div.dataset.status = dataStatus;
         div.dataset.row = row;
         container.appendChild(div);
@@ -546,9 +367,7 @@ function renderCalendar(scopes, dateKey) {
 function showFullscreenButton() {
     const fullscreenBtn = document.getElementById('calendar-fullscreen');
     const calendar = document.getElementById('overall-calendar');
-    if (fullscreenBtn && calendar && calendar.children.length > 0) {
-        fullscreenBtn.style.display = 'inline-block';
-    }
+    if (fullscreenBtn && calendar && calendar.children.length) fullscreenBtn.style.display = 'inline-block';
 }
 
 function togglePageScroll(disable) {
