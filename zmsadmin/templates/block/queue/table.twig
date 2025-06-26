@@ -156,12 +156,12 @@
 								<td>Dieser Kunde ist geparkt</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<td>
-										{{ item.customTextfield }}
+										{{ item.customTextfield|decodeEntities }}
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
 									<td>
-										{{ item.customTextfield2 }}
+										{{ item.customTextfield2|decodeEntities }}
 									</td>
 								{% endif %}
 								<td class="nowrap">
@@ -347,11 +347,11 @@
 										{% if item.queue.status == "reserved" %}
 											Reservierung
 										{% elseif item.queue.status == "preconfirmed" %}
-											{{ item.clients|first.familyName }}
+											{{ item.clients|first.familyName|decodeEntities }}
 										{% elseif item.queue.status == "deleted" %}
-											{{ item.clients|first.familyName }}
+											{{ item.clients|first.familyName|decodeEntities }}
 										{% else %}
-											{% set familyName = item.clients|first.familyName %}
+											{% set familyName = item.clients|first.familyName|decodeEntities %}
 											{% set currentTime = "now"|date('U') %}
 											{% set timeoutTime = item.timeoutTime|date('U') %}
 											{% set fiveMinutes = 300 %}
@@ -408,7 +408,7 @@
 										{% endif %}
 									</td>
 									<td>
-										{{ item.amendment }}
+										{{ item.amendment|decodeEntities }}
 										<p class="queue-table-amendment-time">
 											{% if item.queue.status == "reserved" %}
 												{% trans %}reserviert am{% endtrans %}
@@ -424,12 +424,12 @@
 									</td>
 									{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 										<td>
-											{{ item.customTextfield }}
+											{{ item.customTextfield|decodeEntities }}
 										</td>
 									{% endif %}
 									{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
 										<td>
-											{{ item.customTextfield2 }}
+											{{ item.customTextfield2|decodeEntities }}
 										</td>
 									{% endif %}
 									<td class="nowrap">
@@ -449,7 +449,7 @@
 									</td>
 									{% if item.queue.status != "reserved" and item.queue.status != "preconfirmed" and item.queue.status != "deleted" %}
 										<td class="center">
-											<a data-id="{{ item.id }}" data-name="{{ item.queue.withAppointment ? item.clients|first.familyName : ('Wartenummer ' ~ item.queue.number) }}" href="#" class="icon process-delete" title="Löschen">
+											<a data-id="{{ item.id }}" data-name="{{ item.queue.withAppointment ? item.clients|first.familyName|decodeEntities : ('Wartenummer ' ~ item.queue.number) }}" href="#" class="icon process-delete" title="Löschen">
 												<i class="far fa-trash-alt" aria-hidden="true"></i>
 												<span class="aural">Löschen</span>
 											</a>
@@ -563,12 +563,12 @@
 								<td>Dieser Kunde ist nicht erschienen</td>
 								{% if workstation.scope.preferences.client.customTextfieldActivated|default(0) == 1 %}
 									<td>
-										{{ item.customTextfield }}
+										{{ item.customTextfield|decodeEntities }}
 									</td>
 								{% endif %}
 								{% if workstation.scope.preferences.client.customTextfield2Activated|default(0) == 1 %}
 									<td>
-										{{ item.customTextfield2 }}
+										{{ item.customTextfield2|decodeEntities }}
 									</td>
 								{% endif %}
 								<td class="nowrap">

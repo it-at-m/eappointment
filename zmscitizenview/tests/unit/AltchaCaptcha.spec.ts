@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 
 // @ts-expect-error: Vue SFC import for test
@@ -9,14 +9,13 @@ import AltchaCaptcha from "@/components/Appointment/AltchaCaptcha.vue";
 globalThis.scrollTo = vi.fn();
 
 describe("AltchaCaptcha", () => {
-  const mockT = (key: string) => key;
-  const mockBaseUrl = "http://test.com";
+  const mockBaseUrl = "https://www.muenchen.de";
 
   const createWrapper = (props = {}) => {
     return mount(AltchaCaptcha, {
       props: {
         baseUrl: mockBaseUrl,
-        t: mockT,
+        t: (key: string) => key,
         ...props,
       },
       global: {
@@ -80,4 +79,4 @@ describe("AltchaCaptcha", () => {
       expect(wrapper.vm.captchaEnabled).toBe(false);
     });
   });
-}); 
+});

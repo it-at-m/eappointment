@@ -295,19 +295,22 @@ class Slot extends Base
             $status = $writeStatus ? $writeStatus : $status;
 
             if ($writeStatus) {
-                $slotDateTime = new \DateTimeImmutable(
+                $slotStart = new \DateTimeImmutable(
                     $time->format('Y-m-d') . ' ' . $slot->getTimeString(),
                     $timeZone
                 );
+                $slotDurationMinutes = (int) $availability->getSlotTimeInMinutes();
+                $slotEnd = $slotStart->modify('+' . $slotDurationMinutes . ' minutes');
+
+                $bulkRows = [];
                 for ($seat = 1; $seat <= $maxSeat; $seat++) {
-                    $calendar->insertSlot(
-                        $scopeId,
-                        $availabilityId,
-                        $slotDateTime,
-                        $seat,
-                        'free'
-                    );
+                    $cursor = clone $slotStart;
+                    while ($cursor < $slotEnd) {
+                        $bulkRows[] = [$scopeId, $availabilityId, $cursor, $seat, 'free'];
+                        $cursor = $cursor->modify('+5 minutes');
+                    }
                 }
+                $calendar->insertSlotsBulk($bulkRows);
             }
         }
         if ($hasAddedSlots) {
@@ -495,11 +498,24 @@ class Slot extends Base
 
     public function writeOptimizedSlotTables()
     {
+        $queries = [
+            Query\Slot::QUERY_OPTIMIZE_SLOT,
+            Query\Slot::QUERY_OPTIMIZE_SLOT_HIERA,
+            Query\Slot::QUERY_OPTIMIZE_SLOT_PROCESS,
+            Query\Slot::QUERY_OPTIMIZE_PROCESS,
+        ];
+
         $status = true;
-        $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_SLOT));
-        $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_SLOT_HIERA));
-        $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_SLOT_PROCESS));
-        $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_PROCESS));
+        foreach ($queries as $query) {
+            try {
+                $status = $status && $this->perform($query);
+            } catch (\PDOException $e) {
+                \App::$log->error("Failed to optimize table with query: $query. Error: " . $e->getMessage(), []);
+
+                return false;
+            }
+        }
+
         return $status;
     }
 

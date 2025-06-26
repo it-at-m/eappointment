@@ -10,21 +10,16 @@ use BO\Zmsentities\Collection\ProcessList as Collection;
  */
 class ProcessStatusFree extends Process
 {
-    public function readFreeProcesses(
+    private function prepareCalendarAndDays(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
-        $slotType = 'public',
-        $slotsRequired = null,
-        $groupData = false
+        $slotsRequired = null
     ) {
         $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
         $dayquery = new Day();
         $dayquery->writeTemporaryScopeList($calendar, $slotsRequired);
         $selectedDate = $calendar->getFirstDay();
-        $processList = new Collection();
         $days = [$selectedDate];
-        $scopeList = [];
-
         if ($calendar->getLastDay(false)) {
             $days = [];
             while ($selectedDate <= $calendar->getLastDay(false)) {
@@ -32,8 +27,16 @@ class ProcessStatusFree extends Process
                 $selectedDate = $selectedDate->modify('+1 day');
             }
         }
+        return [$calendar, $dayquery, $days];
+    }
 
-        $processData = $this->fetchHandle(
+    private function getProcessDataHandle(
+        array $days,
+        $slotType,
+        $slotsRequired,
+        $groupData
+    ) {
+        return $this->fetchHandle(
             sprintf(
                 Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS,
                 Query\ProcessStatusFree::buildDaysCondition($days)
@@ -45,7 +48,19 @@ class ProcessStatusFree extends Process
                     ($slotsRequired === null || $slotsRequired < 1) ? 1 : intval($slotsRequired),
             ]
         );
+    }
 
+    public function readFreeProcesses(
+        \BO\Zmsentities\Calendar $calendar,
+        \DateTimeInterface $now,
+        $slotType = 'public',
+        $slotsRequired = null,
+        $groupData = false
+    ) {
+        list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
+        $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
+        $processList = new Collection();
+        $scopeList = [];
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $process = new \BO\Zmsentities\Process($item);
             $process->requests = $calendar->requests;
@@ -64,10 +79,9 @@ class ProcessStatusFree extends Process
             $processList->addEntity($process);
         }
         $processData->closeCursor();
-        unset($dayquery); // drop temporary scope list
+        unset($dayquery);
         return $processList;
     }
-
 
     public function readReservedProcesses($resolveReferences = 2)
     {

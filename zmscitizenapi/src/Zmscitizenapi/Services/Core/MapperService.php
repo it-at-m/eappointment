@@ -82,6 +82,7 @@ class MapperService
                 slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
                 geo: isset($provider->data['geo']) ? $provider->data['geo'] : null,
                 disabledByServices: isset($provider->data['dontShowByServices']) ? $provider->data['dontShowByServices'] : [],
+                priority: isset($provider->data['prio']) ? $provider->data['prio'] : 1,
                 scope: isset($providerScope) && !isset($providerScope['errors']) ? new ThinnedScope(
                     id: isset($providerScope->id) ? (int) $providerScope->id : 0,
                     provider: isset($providerScope->provider) ? $providerScope->provider : null,
@@ -206,7 +207,13 @@ class MapperService
             if (isset($scope->provider)) {
                 $provider = $scope->provider;
                 $contact = $provider->contact ?? null;
-                $thinnedProvider = new ThinnedProvider(id: isset($provider->id) ? (int) $provider->id : null, name: $provider->name ?? null, source: $provider->source ?? null, contact: $contact ? self::contactToThinnedContact($contact) : null);
+                $thinnedProvider = new ThinnedProvider(
+                    id: isset($provider->id) ? (int)$provider->id : null,
+                    name: $provider->name ?? null,
+                    displayName: $provider->displayName ?? null,
+                    source: $provider->source ?? null,
+                    contact: $contact ? self::contactToThinnedContact($contact) : null
+                );
             }
         } catch (\BO\Zmsentities\Exception\ScopeMissingProvider $e) {
             $thinnedProvider = null;
@@ -317,8 +324,23 @@ class MapperService
         $appointment->slotCount = $thinnedProcess->slotCount ?? null;
         $appointment->date = $thinnedProcess->timestamp ?? null;
         $processEntity->appointments = [$appointment];
+        $processEntity->scope = self::createScope($thinnedProcess);
+        $processEntity->requests = self::createRequests($thinnedProcess);
 
-        // Set scope with all required fields
+        if (isset($thinnedProcess->status)) {
+            $processEntity->queue = new \stdClass();
+            $processEntity->queue->status = $thinnedProcess->status;
+            $processEntity->status = $thinnedProcess->status;
+        }
+
+        $processEntity->lastChange = time();
+        $processEntity->createIP = ClientIpHelper::getClientIp();
+        $processEntity->createTimestamp = time();
+        return $processEntity;
+    }
+
+    private static function createScope(ThinnedProcess $thinnedProcess): Scope
+    {
         $scope = new Scope();
         if ($thinnedProcess->scope) {
             $scope->id = $thinnedProcess->scope->id;
@@ -350,20 +372,30 @@ class MapperService
         if (isset($thinnedProcess->officeId)) {
             $scope->provider = new Provider();
             $scope->provider->id = $thinnedProcess->officeId;
+            if (isset($thinnedProcess->scope->provider)) {
+                $provider = $thinnedProcess->scope->provider;
+                $scope->provider->name  = $provider->name ?? null;
+                $scope->provider->displayName = $provider->displayName ?? null;
+
+                if (isset($provider->contact)) {
+                    $scope->provider->contact = new Contact();
+                    $scope->provider->contact->street = $provider->contact->street ?? null;
+                    $scope->provider->contact->streetNumber = $provider->contact->streetNumber ?? null;
+                }
+            }
             $scope->provider->source = \App::$source_name;
         }
-        $processEntity->scope = $scope;
-        if (isset($thinnedProcess->status)) {
-            $processEntity->queue = new \stdClass();
-            $processEntity->queue->status = $thinnedProcess->status;
-            $processEntity->status = $thinnedProcess->status;
-        }
 
+        return $scope;
+    }
+
+    private static function createRequests(ThinnedProcess $thinnedProcess): array
+    {
+        $requests = [];
         $mainServiceId = $thinnedProcess->serviceId ?? null;
         $mainServiceName = $thinnedProcess->serviceName ?? null;
         $mainServiceCount = $thinnedProcess->serviceCount ?? 0;
-        $subRequestCounts = $thinnedProcess->subRequestCounts ?? [];
-        $requests = [];
+
         for ($i = 0; $i < $mainServiceCount; $i++) {
             $request = new Request();
             $request->id = $mainServiceId;
@@ -371,7 +403,8 @@ class MapperService
             $request->source = \App::$source_name;
             $requests[] = $request;
         }
-        foreach ($subRequestCounts as $subRequest) {
+
+        foreach ($thinnedProcess->subRequestCounts ?? [] as $subRequest) {
             for ($i = 0; $i < ($subRequest['count'] ?? 0); $i++) {
                 $request = new Request();
                 $request->id = $subRequest['id'];
@@ -380,11 +413,8 @@ class MapperService
                 $requests[] = $request;
             }
         }
-        $processEntity->requests = $requests;
-        $processEntity->lastChange = time();
-        $processEntity->createIP = ClientIpHelper::getClientIp();
-        $processEntity->createTimestamp = time();
-        return $processEntity;
+
+        return $requests;
     }
 
     /**
@@ -396,10 +426,26 @@ class MapperService
     public static function contactToThinnedContact($contact): ThinnedContact
     {
         if (is_array($contact)) {
-            return new ThinnedContact(city: $contact['city'] ?? null, country: $contact['country'] ?? null, name: $contact['name'] ?? null, postalCode: $contact['postalCode'] ?? null, region: $contact['region'] ?? null, street: $contact['street'] ?? null, streetNumber: $contact['streetNumber'] ?? null);
+            return new ThinnedContact(
+                city: $contact['city'] ?? null,
+                country: $contact['country'] ?? null,
+                name: $contact['name'] ?? null,
+                postalCode: $contact['postalCode'] ?? null,
+                region: $contact['region'] ?? null,
+                street: $contact['street'] ?? null,
+                streetNumber: $contact['streetNumber'] ?? null
+            );
         }
 
-        return new ThinnedContact(city: $contact->city ?? null, country: $contact->country ?? null, name: $contact->name ?? null, postalCode: $contact->postalCode ?? null, region: $contact->region ?? null, street: $contact->street ?? null, streetNumber: $contact->streetNumber ?? null);
+        return new ThinnedContact(
+            city: $contact->city ?? null,
+            country: $contact->country ?? null,
+            name: $contact->name ?? null,
+            postalCode: $contact->postalCode ?? null,
+            region: $contact->region ?? null,
+            street: $contact->street ?? null,
+            streetNumber: $contact->streetNumber ?? null
+        );
     }
 
     /**
@@ -410,6 +456,14 @@ class MapperService
      */
     public static function providerToThinnedProvider(Provider $provider): ThinnedProvider
     {
-        return new ThinnedProvider(id: isset($provider->id) ? (int) $provider->id : null, name: isset($provider->name) ? $provider->name : null, source: isset($provider->source) ? $provider->source : null, lon: isset($provider->data['geo']['lon']) ? (float) $provider->data['geo']['lon'] : null, lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null, contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null);
+        return new ThinnedProvider(
+            id: isset($provider->id) ? (int) $provider->id : null,
+            name: isset($provider->name) ? $provider->name : null,
+            displayName: isset($provider->displayName) ? $provider->displayName : null,
+            source: isset($provider->source) ? $provider->source : null,
+            lon: isset($provider->data['geo']['lon']) ? (float) $provider->data['geo']['lon'] : null,
+            lat: isset($provider->data['geo']['lat']) ? (float) $provider->data['geo']['lat'] : null,
+            contact: isset($provider->contact) ? self::contactToThinnedContact($provider->contact) : null
+        );
     }
 }

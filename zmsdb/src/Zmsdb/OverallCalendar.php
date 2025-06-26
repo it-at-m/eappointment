@@ -9,20 +9,23 @@ use DateTimeInterface;
 
 class OverallCalendar extends Base
 {
-    public function insertSlot(
-        int $scopeId,
-        int $availabilityId,
-        DateTimeInterface $time,
-        int $seat,
-        string $status = 'free'
-    ): void {
-        $this->perform(Calender::INSERT, [
-            'scope_id' => $scopeId,
-            'availability_id' => $availabilityId,
-            'time' => $time->format('Y-m-d H:i:s'),
-            'seat' => $seat,
-            'status' => $status,
-        ]);
+    public function insertSlotsBulk(array $rows): void
+    {
+        if (!$rows) {
+            return;
+        }
+        $placeholders = rtrim(str_repeat('(?,?,?,?,?),', count($rows)), ',');
+        $sql = sprintf(Calender::INSERT_MULTI, $placeholders);
+
+        $params = [];
+        foreach ($rows as $r) {
+            $params[] = $r[0];
+            $params[] = $r[1];
+            $params[] = $r[2]->format('Y-m-d H:i:s');
+            $params[] = $r[3];
+            $params[] = $r[4];
+        }
+        $this->perform($sql, $params);
     }
 
     public function deleteFreeRange(
@@ -96,6 +99,7 @@ class OverallCalendar extends Base
         }
 
         $in_list = implode(',', array_map('intval', $scopeIds));
+        $until = (new \DateTime($until))->modify('+1 day')->format('Y-m-d');
 
         if ($updatedAfter === null) {
             $sql = sprintf(Calender::SELECT_RANGE, $in_list);

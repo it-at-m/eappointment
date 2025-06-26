@@ -88,6 +88,7 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                     'lat'=> null,
                     'lon'=> null,
                     'name'=> '',
+                    'displayName'=> '',
                     'source'=> 'dldb'
                 ],
                 'shortName' => null,

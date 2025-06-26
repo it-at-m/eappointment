@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/" # Adjust this if your package.json is in a subdirectory
+    schedule:
+      interval: "weekly"
+    target-branch: "next"
+
+  - package-ecosystem: "composer"
+    directory: "/" # Adjust if your composer.json is in a subdirectory
+    schedule:
+      interval: "weekly"
+    target-branch: "next"

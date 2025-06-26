@@ -1,0 +1,71 @@
+{% from 'element/helper/form.twig' import formgroup %}
+
+<style>
+.overall-calendar-location-selector {
+  max-width: 95rem;
+}
+.overall-calendar-location-selector .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.overall-calendar-location-selector .header label {
+  margin: 0;
+  font-weight: bold;
+}
+.overall-calendar-location-selector .btn-icon {
+  background: transparent;
+  border: 1px solid #000;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.overall-calendar-location-selector .btn-icon:hover {
+  background: rgba(0,123,255,0.1);
+}
+</style>
+
+<fieldset class="overall-calendar-location-selector">
+  <div class="header">
+    <label for="scope-select">Standortauswahl</label>
+    <button type="button"
+            id="select-all-scopes"
+            class="btn-icon"
+            aria-label="Alle auswählen"
+            title="Alle Standorte auswählen">
+      <i class="fas fa-check-double"></i>
+    </button>
+  </div>
+
+  {{ formgroup(
+      {
+        "label": false,
+        "errors": advancedData.scope.messages,
+        "description": "Halten Sie <strong>Strg</strong> gedrückt für Mehrfachauswahl."
+      },
+      [{
+        "type": "select",
+        "parameter": {
+          "name": "scopes[]",
+          "multiple": true,
+          "size": 4,
+          "value": selectedScopeIds,
+          "accesskey": "s",
+          "options": scopeOptions,
+          "id": "scope-select",
+          "style": "width:100%;"
+        }
+      }]
+  ) }}
+</fieldset>
+
+<script>
+document.getElementById('select-all-scopes').addEventListener('click', function() {
+  const select = document.getElementById('scope-select');
+  for (let option of select.options) {
+    option.selected = true;
+  }
+});
+</script>

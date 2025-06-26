@@ -50,6 +50,9 @@ import infotext from 'bo-layout-admin-js/behavior/form-infotext-flyin';
 import metanavi from 'bo-layout-admin-js/behavior/header-metanavi-popup';
 import formalerts from 'bo-layout-admin-js/behavior/formalerts-flyin';
 
+// Import overall-calendar from ./page/overallCalendar
+import './page/overallCalendar/overallCalendar.js';
+
 // load patternlab JS
 function loadResources() {
     accordion();

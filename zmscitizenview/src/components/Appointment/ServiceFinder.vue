@@ -108,7 +108,7 @@
       <AltchaCaptcha
         :t="t"
         :base-url="baseUrl"
-        @validationResult="(valid) => (isCaptchaValid = valid)"
+        @validationResult="(valid: boolean) => (isCaptchaValid = valid)"
         @tokenChanged="
           (token: string | null) => emit('captchaTokenChanged', token)
         "
@@ -281,9 +281,26 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
   relations.value.forEach((relation) => {
     if (relation.serviceId == serviceId) {
-      const foundOffice: OfficeImpl = offices.value.filter((office) => {
-        return office.id == relation.officeId;
-      })[0];
+      const office = offices.value.find(
+        (office) => office.id == relation.officeId
+      );
+      if (!office) return;
+
+      const foundOffice: OfficeImpl = new OfficeImpl(
+        office.id,
+        office.name,
+        office.address,
+        office.showAlternativeLocations,
+        office.displayNameAlternatives,
+        office.organization,
+        office.organizationUnit,
+        office.slotTimeInMinutes,
+        undefined,
+        office.scope,
+        office.maxSlotsPerAppointment,
+        undefined,
+        office.priority || 1
+      );
 
       if (
         !providers ||

@@ -76,6 +76,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 "provider" => [
                     "id" => 10546,
                     "name" => "Gewerbeamt (KVR-III/21)",
+                    "displayName" => "Gewerbeamt",
                     "lat" => null,
                     "lon" => null,
                     "source" => "dldb",

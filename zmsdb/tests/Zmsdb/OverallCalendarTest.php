@@ -6,7 +6,7 @@ use DateTimeImmutable;
 
 class OverallCalendarTest extends Base
 {
-    private const SCOPE = 1300;
+    private const SCOPE = 101;
 
     public function testBookAndConflict(): void
     {

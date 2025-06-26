@@ -67,4 +67,10 @@ export interface Office {
    * @memberof Office
    */
   maxSlotsPerAppointment?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof Office
+   */
+  priority?: number;
 }

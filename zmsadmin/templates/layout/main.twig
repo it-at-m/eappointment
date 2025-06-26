@@ -30,6 +30,7 @@
                 {{ parent() }}
             {%- endblock %}
             <div class="grid">
+                {% if not hideNavigation %}
                 <div class="grid__item one-sixth">
                     {% include "block/emergency/emergency.twig" %}
                     <nav class="navigation-primary" aria-labelledby="navigation-primary-title">
@@ -49,7 +50,8 @@
                         
                     </nav>
                 </div>
-                <div class="grid__item five-sixths">
+                {% endif %}
+                <div class="grid__item {{ hideNavigation ? 'one-whole' : 'five-sixths' }}">
                     <section role="main" id="main-content">
                         {% block headline %}
                             {% if headline is defined and headline|trim is not empty %}

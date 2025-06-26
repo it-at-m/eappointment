@@ -1,0 +1,31 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2025-01-20T10:35:36+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "days": {
+            "2025-01-20": {
+                "scopes": {
+                    "141": {
+                        "name": "Bürgeramt Heerstraße",
+                        "shortName": "BH",
+                        "times": {
+                            "08:00": {
+                                "1": {"status": "open", "text": "4"}
+                            },
+                            "08:05": {
+                                "1": {"status": "open", "text": "4"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "lastUpdate": "2025-01-20 10:35:36",
+        "incremental": true
+    }
+}
