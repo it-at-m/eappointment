@@ -91,7 +91,9 @@ class OverallCalendarRead extends BaseController
             }
             $day['scopes'] = array_values($day['scopes']);
         }
-
+        uksort($calendar, function ($a, $b) {
+            return strcmp($a, $b);
+        });
         return ['days' => array_values($calendar)];
     }
 
