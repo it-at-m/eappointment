@@ -1115,22 +1115,35 @@ onMounted(() => {
       Number
     );
 
-    // Filter out any provider that is disabled by all of the selected IDs
-    const providerMap = new Map<string, OfficeImpl>();
+    // PASSPORT CALENDAR
+    // clean = passport provider
+    // restricted = default provider (hidden by passport related services)
+    const providers: OfficeImpl[] = selectedService.value.providers;
 
-    for (const provider of selectedService.value.providers as OfficeImpl[]) {
-      const disabledIds = (provider.disabledByServices || []).map(Number);
-
-      const isDisabled =
-        disabledIds.length > 0 &&
-        selectedIds.every((id) => disabledIds.includes(id));
-
-      if (!isDisabled && !providerMap.has(provider.name)) {
-        providerMap.set(provider.name, provider);
+    const availableProviders = Object.values(
+      providers.reduce<Record<string, OfficeImpl[]>>((grouped, provider) => {
+        (grouped[provider.name] ||= []).push(provider);
+        return grouped;
+      }, {})
+    ).map(group => {
+      if (group.length === 1) {
+        return group[0];
       }
-    }
 
-    const availableProviders: OfficeImpl[] = Array.from(providerMap.values());
+      const [clean, restricted] = [
+        group.find(p => (p.disabledByServices ?? []).length === 0)!,
+        group.find(p => (p.disabledByServices ?? []).length > 0)!
+      ];
+
+      const restrictedDisabled = (restricted.disabledByServices ?? [])
+        .map(id => Number(id));
+
+      const allDisabled = selectedIds.every(id =>
+        restrictedDisabled.includes(id)
+      );
+
+      return allDisabled ? clean : restricted;
+    });
 
     // Checks whether there are restrictions on the providers due to the subservices.
     if (selectedService.value.subServices) {
