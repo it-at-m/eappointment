@@ -57,7 +57,7 @@ export interface Office {
   slotTimeInMinutes: number;
   /**
    *
-   * @type {string}
+   * @type {string[]}
    * @memberof Office
    */
   disabledByServices?: string[];
