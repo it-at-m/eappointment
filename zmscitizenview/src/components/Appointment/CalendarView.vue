@@ -1114,37 +1114,10 @@ onMounted(() => {
     const selectedIds = [mainId, ...chosenSubservices.map((s) => s.id)].map(
       Number
     );
-
-    // PASSPORT CALENDAR
-    // clean = passport provider
-    // restricted = default provider (hidden by passport related services)
     const providers: OfficeImpl[] = selectedService.value.providers;
 
-    const availableProviders = Object.values(
-      providers.reduce<Record<string, OfficeImpl[]>>((grouped, provider) => {
-        (grouped[provider.name] ||= []).push(provider);
-        return grouped;
-      }, {})
-    ).map((group) => {
-      if (group.length === 1) {
-        return group[0];
-      }
-
-      const [clean, restricted] = [
-        group.find((p) => (p.disabledByServices ?? []).length === 0)!,
-        group.find((p) => (p.disabledByServices ?? []).length > 0)!,
-      ];
-
-      const restrictedDisabled = (restricted.disabledByServices ?? []).map(
-        (id) => Number(id)
-      );
-
-      const allDisabled = selectedIds.every((id) =>
-        restrictedDisabled.includes(id)
-      );
-
-      return allDisabled ? clean : restricted;
-    });
+    // Passport calendar functionality
+    const availableProviders = getAvailableProviders(providers, selectedIds);
 
     // Checks whether there are restrictions on the providers due to the subservices.
     if (selectedService.value.subServices) {
@@ -1204,6 +1177,36 @@ onMounted(() => {
     showSelectionForProvider(offices[0]);
   }
 });
+
+function getAvailableProviders(
+  providers: OfficeImpl[],
+  selectedIds: number[]
+): OfficeImpl[] {
+  return Object.values(
+    providers.reduce<Record<string, OfficeImpl[]>>((grouped, provider) => {
+      (grouped[provider.name] ||= []).push(provider);
+      return grouped;
+    }, {})
+  ).map((group) => {
+    if (group.length === 1) return group[0];
+
+    // clean = passport provider
+    // restricted = default provider (hidden by passport related services)
+    const [clean, restricted] = [
+      group.find((p) => (p.disabledByServices ?? []).length === 0)!,
+      group.find((p) => (p.disabledByServices ?? []).length > 0)!,
+    ];
+
+    const restrictedDisabled = (restricted.disabledByServices ?? []).map(
+      Number
+    );
+    const allDisabled = selectedIds.every((id) =>
+      restrictedDisabled.includes(id)
+    );
+
+    return allDisabled ? clean : restricted;
+  });
+}
 
 const handleDaySelection = async (day: any) => {
   if (!(day instanceof Date)) {
