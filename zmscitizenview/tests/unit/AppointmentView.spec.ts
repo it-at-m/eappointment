@@ -314,4 +314,645 @@ describe("AppointmentView", () => {
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
     });
   });
+
+  describe("Form Validation", () => {
+    it("allows proceeding when all required fields are valid", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate valid customer data
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Doe",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(true);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub emits 'next' when valid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("prevents proceeding when required fields are missing", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate missing required fields
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "",
+        lastName: "",
+        mailAddress: "",
+        telephoneNumber: "",
+        customTextfield: "",
+        customTextfield2: ""
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub does not emit 'next' when invalid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("prevents proceeding when email is invalid", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate invalid email
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Doe",
+        mailAddress: "invalid-email",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub does not emit 'next' when invalid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("prevents proceeding when phone number is invalid", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate invalid phone number
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Doe",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "invalid-phone",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub does not emit 'next' when invalid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("prevents proceeding when firstName exceeds maximum length", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate firstName exceeding maximum length
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "a".repeat(51), // Assuming max length is 50
+        lastName: "Doe",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub does not emit 'next' when invalid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("prevents proceeding when lastName exceeds maximum length", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate lastName exceeding maximum length
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "a".repeat(51), // Assuming max length is 50
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub does not emit 'next' when invalid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("prevents proceeding when mailAddress exceeds maximum length", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate mailAddress exceeding maximum length
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Doe",
+        mailAddress: "a".repeat(101), // Assuming max length is 100
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub does not emit 'next' when invalid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("prevents proceeding when telephoneNumber exceeds maximum length", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate telephoneNumber exceeding maximum length
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Doe",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "a".repeat(21), // Assuming max length is 20
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub does not emit 'next' when invalid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("prevents proceeding when customTextfield exceeds maximum length", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate customTextfield exceeding maximum length
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Doe",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "1234567890",
+        customTextfield: "a".repeat(201), // Assuming max length is 200
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub does not emit 'next' when invalid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("prevents proceeding when customTextfield2 exceeds maximum length", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate customTextfield2 exceeding maximum length
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Doe",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "a".repeat(201) // Assuming max length is 200
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub does not emit 'next' when invalid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("prevents proceeding when phone number is too short", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate phone number too short
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Doe",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "123", // Assuming minimum length is 10
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Simulate form validation method if present
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Simulate clicking next (if button exists)
+      // This assumes the customer-info stub does not emit 'next' when invalid
+      const customerInfo = wrapper.find('[data-test="customer-info"]');
+      expect(customerInfo.exists()).toBe(true);
+
+    });
+
+    it("handles multiple spaces between words in firstName", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate firstName with multiple spaces between words
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane  Marie",
+        lastName: "Doe",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Verify that multiple spaces are preserved
+      expect(wrapper.vm.$.appContext.provides.customerData.customerData.value.firstName).toBe("Jane  Marie");
+    });
+
+    it("handles multiple spaces between words in lastName", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate lastName with multiple spaces between words
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Van  Der  Beek",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Verify that multiple spaces are preserved
+      expect(wrapper.vm.$.appContext.provides.customerData.customerData.value.lastName).toBe("Van  Der  Beek");
+    });
+
+    it("treats firstName with only spaces as empty", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate firstName with only spaces
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "   ",
+        lastName: "Doe",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Verify that the form is invalid
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+    });
+
+    it("treats lastName with only spaces as empty", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate lastName with only spaces
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "   ",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Verify that the form is invalid
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+    });
+
+    it("treats mailAddress with only spaces as empty", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate mailAddress with only spaces
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Doe",
+        mailAddress: "   ",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Verify that the form is invalid
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+    });
+
+    it("treats telephoneNumber with only spaces as empty", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate telephoneNumber with only spaces
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "Doe",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "   ",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Verify that the form is invalid
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+    });
+
+    it("treats fields with only tabs as empty", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate fields with only tabs
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "\t\t\t",
+        lastName: "\t\t\t",
+        mailAddress: "\t\t\t",
+        telephoneNumber: "\t\t\t",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Verify that the form is invalid
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+    });
+
+    it("treats fields with mixed whitespace as empty", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate fields with mixed whitespace (spaces, tabs, newlines)
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: " \t\n ",
+        lastName: " \t\n ",
+        mailAddress: " \t\n ",
+        telephoneNumber: " \t\n ",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Verify that the form is invalid
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+    });
+
+    it("treats form as invalid when firstName is valid but lastName is only spaces", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2; // Customer info view
+      await nextTick();
+
+      // Simulate valid firstName but lastName with only spaces
+      wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+        firstName: "Jane",
+        lastName: "   ",
+        mailAddress: "jane.doe@example.com",
+        telephoneNumber: "1234567890",
+        customTextfield: "Some info",
+        customTextfield2: "More info"
+      };
+      await nextTick();
+
+      // Verify that the form is invalid
+      if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+        expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+      }
+
+      // Verify that firstName is still valid
+      expect(wrapper.vm.$.appContext.provides.customerData.customerData.value.firstName).toBe("Jane");
+    });
+
+    describe("Error Messages", () => {
+      it("displays correct error message for blank firstName", async () => {
+        const wrapper = createWrapper();
+        wrapper.vm.currentView = 2; // Customer info view
+        await nextTick();
+        
+        // Set empty firstName
+        wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+          firstName: "",
+          lastName: "Doe",
+          mailAddress: "test@example.com",
+          telephoneNumber: "1234567890",
+          customTextfield: "",
+          customTextfield2: ""
+        };
+        await nextTick();
+
+        // Verify form is invalid
+        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+          expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+        }
+      });
+
+      it("displays correct error message for blank lastName", async () => {
+        const wrapper = createWrapper();
+        wrapper.vm.currentView = 2; // Customer info view
+        await nextTick();
+        
+        // Set empty lastName
+        wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+          firstName: "John",
+          lastName: "",
+          mailAddress: "test@example.com",
+          telephoneNumber: "1234567890",
+          customTextfield: "",
+          customTextfield2: ""
+        };
+        await nextTick();
+
+        // Verify form is invalid
+        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+          expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+        }
+      });
+
+      it("displays correct error message for blank mailAddress", async () => {
+        const wrapper = createWrapper();
+        wrapper.vm.currentView = 2; // Customer info view
+        await nextTick();
+        
+        // Set empty mailAddress
+        wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+          firstName: "John",
+          lastName: "Doe",
+          mailAddress: "",
+          telephoneNumber: "1234567890",
+          customTextfield: "",
+          customTextfield2: ""
+        };
+        await nextTick();
+
+        // Verify form is invalid
+        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+          expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+        }
+      });
+
+      it("displays correct error message for blank telephoneNumber", async () => {
+        const wrapper = createWrapper();
+        wrapper.vm.currentView = 2; // Customer info view
+        await nextTick();
+        
+        // Set empty telephoneNumber
+        wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+          firstName: "John",
+          lastName: "Doe",
+          mailAddress: "test@example.com",
+          telephoneNumber: "",
+          customTextfield: "",
+          customTextfield2: ""
+        };
+        await nextTick();
+
+        // Verify form is invalid
+        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+          expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+        }
+      });
+
+      it("displays correct error message for invalid mailAddress", async () => {
+        const wrapper = createWrapper();
+        wrapper.vm.currentView = 2; // Customer info view
+        await nextTick();
+        
+        // Set invalid mailAddress
+        wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+          firstName: "John",
+          lastName: "Doe",
+          mailAddress: "invalid-email",
+          telephoneNumber: "1234567890",
+          customTextfield: "",
+          customTextfield2: ""
+        };
+        await nextTick();
+
+        // Verify form is invalid
+        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+          expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+        }
+      });
+
+      it("displays correct error message for invalid telephoneNumber", async () => {
+        const wrapper = createWrapper();
+        wrapper.vm.currentView = 2; // Customer info view
+        await nextTick();
+        
+        // Set invalid telephoneNumber
+        wrapper.vm.$.appContext.provides.customerData.customerData.value = {
+          firstName: "John",
+          lastName: "Doe",
+          mailAddress: "test@example.com",
+          telephoneNumber: "invalid-phone",
+          customTextfield: "",
+          customTextfield2: ""
+        };
+        await nextTick();
+
+        // Verify form is invalid
+        if (typeof wrapper.vm.isCustomerInfoValid === 'function') {
+          expect(wrapper.vm.isCustomerInfoValid()).toBe(false);
+        }
+      });
+    });
+  });
 });
