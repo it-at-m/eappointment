@@ -1,6 +1,6 @@
-let lastUpdateAfter  = null;
+let lastUpdateAfter = null;
 let autoRefreshTimer = null;
-let currentRequest   = null;
+let currentRequest = null;
 
 function toMysql(date) {
     const d = (date instanceof Date) ? date : new Date(date);
