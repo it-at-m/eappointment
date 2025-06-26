@@ -1125,20 +1125,21 @@ onMounted(() => {
         (grouped[provider.name] ||= []).push(provider);
         return grouped;
       }, {})
-    ).map(group => {
+    ).map((group) => {
       if (group.length === 1) {
         return group[0];
       }
 
       const [clean, restricted] = [
-        group.find(p => (p.disabledByServices ?? []).length === 0)!,
-        group.find(p => (p.disabledByServices ?? []).length > 0)!
+        group.find((p) => (p.disabledByServices ?? []).length === 0)!,
+        group.find((p) => (p.disabledByServices ?? []).length > 0)!,
       ];
 
-      const restrictedDisabled = (restricted.disabledByServices ?? [])
-        .map(id => Number(id));
+      const restrictedDisabled = (restricted.disabledByServices ?? []).map(
+        (id) => Number(id)
+      );
 
-      const allDisabled = selectedIds.every(id =>
+      const allDisabled = selectedIds.every((id) =>
         restrictedDisabled.includes(id)
       );
 
