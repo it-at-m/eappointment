@@ -13,7 +13,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.0"
+            "php": "8.0.2"
         },
         "allow-plugins": {
             "php-http/discovery": true
@@ -35,7 +35,9 @@
         "monolog/monolog": "1.*",
         "roave/security-advisories": "dev-master",
         "twig/twig": "3.*",
-        "twig/intl-extra": "^3.4"
+        "twig/intl-extra": "^3.4",
+        "symfony/cache": "^6.0",
+        "psr/simple-cache": "^3.0"
     },
     "bin": [],
     "autoload": {

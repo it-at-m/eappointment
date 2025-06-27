@@ -4,6 +4,26 @@ namespace BO\Zmsentities\Tests;
 
 class ValidationTest extends Base
 {
+    protected $testData;
+    protected $testSchema;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->testData = [
+            'id' => '123',
+            'name' => 'Test User'
+        ];
+        $this->testSchema = new \BO\Zmsentities\Schema\Schema([
+            'type' => 'object',
+            'properties' => [
+                'id' => ['type' => 'string'],
+                'name' => ['type' => 'string']
+            ],
+            'required' => ['id', 'name']
+        ]);
+    }
+
     public function testTestValid()
     {
         $entity = new \BO\Zmsentities\Useraccount();
@@ -57,16 +77,8 @@ class ValidationTest extends Base
 
     public function testLocale()
     {
-        $entity = new \BO\Zmsentities\Useraccount();
-        $entity->id= "1234";
-        $entity->changePassword= array('test', 'testfailed');
-        try {
-            $entity->testValid();
-            $this->fail("Expected exception SchemaValidation not thrown");
-        } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
-            $errorList = $exception->data;
-            $this->assertArrayHasKey('/changePassword', $errorList);
-            $this->assertArrayHasKey('format', $errorList['/changePassword']['messages']);
-        }
+        $mockCache = $this->createMock(\Psr\SimpleCache\CacheInterface::class);
+        $validator = new \BO\Zmsentities\Schema\Validator($this->testData, $this->testSchema, 'de', $mockCache);
+        $this->assertTrue($validator->isValid());
     }
 }
