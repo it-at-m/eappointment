@@ -101,20 +101,7 @@ class ProcessUpdate extends BaseController
 
     protected function testProcessData($entity, bool $checkMailLimit = true)
     {
-        error_log("---------------------------- SCOPE --------------------------------------");
-        error_log(json_encode($entity->scope, JSON_PRETTY_PRINT));
-        // error_log(json_encode($entity->scope->preferences, JSON_PRETTY_PRINT));
-        error_log("----------------------------- ENDE ---------------------------------------");
-        
-        // error_log("------------------------ CHECKMAILLIMIT ----------------------------------");
-        // error_log($checkMailLimit);
-        // error_log("----------------------------- ENDE ---------------------------------------");
-
         $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
-
-        $isAllowedWithSameMail = (new Process())->isAppointmentAllowedWithSameMail($entity);
-        error_log("IS ALLOWED?");
-        error_log($isAllowedWithSameMail);
 
         if ($checkMailLimit && ! (new Process())->isAppointmentAllowedWithSameMail($entity)) {
             throw new Exception\Process\MoreThanAllowedAppointmentsPerMail();
