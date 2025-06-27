@@ -143,6 +143,15 @@
         {{ self.ariaDescribedBy(args, fieldId, groupargs) }}
         {{ self.eventHandler(args, fieldId, groupargs) }}
     >
+    {% if 'charcounter' in args.class %}
+        <div class="formgroup__help maxcharsleft" style="margin-top: 0.4rem;">
+            <span>0</span>
+            {% if args.maxlength %}
+                /{{ args.maxlength }}
+            {% endif %}
+            {% trans %}Zeichen{% endtrans %}
+        </div>
+    {% endif %}
 {% endmacro %}
 
 

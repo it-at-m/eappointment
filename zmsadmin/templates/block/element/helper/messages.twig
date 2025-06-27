@@ -234,7 +234,7 @@
 			{% set successTitle = "Termin erfolgreich eingetragen" %}
 			{{ block('success_start') }}
 				<dl>
-					{% if selectedprocess.queue.number < 10000 %}<dt>Die Wartenummer {% else %}<dt>Die Vorgangsnummer {% endif %}{% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|raw }}"{% endif %} lautet: {{ selectedprocess.queue.number }}&nbsp;</dt>
+					{% if selectedprocess.queue.number < 10000 %}<dt>Die Wartenummer {% else %}<dt>Die Vorgangsnummer {% endif %}{% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|decodeEntities }}"{% endif %} lautet: {{ selectedprocess.queue.number }}&nbsp;</dt>
 					<dt>Standort: {{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}&nbsp;</dt>
 					{% if selectedprocess.scope.hint %}<dt>Info: {{ selectedprocess.scope.hint }}&nbsp;</dt>{% endif %}
 				</dl>
@@ -292,7 +292,7 @@
 			{% set successTitle = "Wartenummer wurde hinzugefügt" %}
 			{{ block('success_start') }}
 				<dl>
-					<dt>Die Wartenummer {% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|raw }}"{% endif %} lautet: {{ selectedprocess.queue.number }}&nbsp;</dt>
+					<dt>Die Wartenummer {% if selectedprocess.clients|first.familyName %}für "{{ selectedprocess.clients|first.familyName|decodeEntities }}"{% endif %} lautet: {{ selectedprocess.queue.number }}&nbsp;</dt>
 					<dt>Standort: {{ selectedprocess.scope.contact.name }} {{ selectedprocess.scope.shortName }}&nbsp;</dt>
 					{% if selectedprocess.scope.hint %}<dt>Info: {{ selectedprocess.scope.hint }}&nbsp;</dt>{% endif %}
 				</dl>
@@ -308,7 +308,7 @@
 			{% set successTitle = "Erfolgreiche Wiederaufnahme in Warteschlange" %}
 			{{ block('success_start') }}
 					<p>
-						Der Vorgang mit der Nummer {{ changedProcess.queue.number }}{% if changedProcess.clients|first.familyName  %} (Name: {{ changedProcess.clients|first.familyName|raw }}){% endif %} wurde erfolgreich zum Aufruf zurückgesetzt.
+						Der Vorgang mit der Nummer {{ changedProcess.queue.number }}{% if changedProcess.clients|first.familyName  %} (Name: {{ changedProcess.clients|first.familyName|decodeEntities }}){% endif %} wurde erfolgreich zum Aufruf zurückgesetzt.
 					</p>
 			{{ block('success_end') }}
 		{% endblock %}

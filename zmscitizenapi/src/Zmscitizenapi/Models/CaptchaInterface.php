@@ -12,12 +12,21 @@ interface CaptchaInterface
      * @return array
      */
     public function getCaptchaDetails(): array;
-/**
+
+    /**
+     * Fordert eine neue Captcha-Challenge an.
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function createChallenge(): array;
+
+    /**
      * Überprüft die Captcha-Lösung.
      *
-     * @param string $solution
+     * @param string $payload
      * @return mixed
      * @throws \Exception
      */
-    public function verifyCaptcha(string $solution): bool;
+    public function verifySolution(string $payload): array;
 }

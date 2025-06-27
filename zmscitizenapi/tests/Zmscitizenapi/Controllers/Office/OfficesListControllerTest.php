@@ -39,7 +39,7 @@ class OfficesListControllerTest extends ControllerTestCase
             "offices" => [
                 [
                     "id" => 9999998,
-                    "name" => "Unittest Source Dienstleister",
+                    "name" => "Unittest",
                     "address" => null,
                     "showAlternativeLocations" => false,
                     "displayNameAlternatives" => [],
@@ -50,11 +50,14 @@ class OfficesListControllerTest extends ControllerTestCase
                         "lat" => "48.12750898398659",
                         "lon" => "11.604317899956524"
                     ],
+                    "disabledByServices" => [],
+                    "priority" => 1,
                     "scope" => [
                         "id" => 1,
                         "provider" => [
                             "id" => 9999998,
                             "name" => "Unittest Source Dienstleister",
+                            "displayName" => "Unittest",
                             "lat" => 48.12750898398659,
                             "lon" => 11.604317899956524,
                             "source" => "unittest",
@@ -76,13 +79,18 @@ class OfficesListControllerTest extends ControllerTestCase
                         "customTextfieldActivated" => true,
                         "customTextfieldRequired" => false,
                         "customTextfieldLabel" => "Custom Label",
-                        "captchaActivatedRequired" => true,
-                        "displayInfo" => null
-                    ]
+                        "customTextfield2Activated" => true,
+                        "customTextfield2Required" => false,
+                        "customTextfield2Label" => "Second Custom Label",
+                        "captchaActivatedRequired" => false,
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ],
                 [
                     "id" => 9999999,
-                    "name" => "Unittest Source Dienstleister 2",
+                    "name" => "Unittest 2",
                     "address" => null,
                     "showAlternativeLocations" => true,
                     "displayNameAlternatives" => [],
@@ -93,11 +101,14 @@ class OfficesListControllerTest extends ControllerTestCase
                         "lat" => "48.12750898398659",
                         "lon" => "11.604317899956524"
                     ],
+                    "disabledByServices" => [],
+                    "priority" => 1,
                     "scope" => [
                         "id" => 2,
                         "provider" => [
                             "id" => 9999999,
                             "name" => "Unittest Source Dienstleister 2",
+                            "displayName" => "Unittest 2",
                             "lat" => 48.12750898398659,
                             "lon" => 11.604317899956524,
                             "source" => "unittest",
@@ -119,9 +130,14 @@ class OfficesListControllerTest extends ControllerTestCase
                         "customTextfieldActivated" => false,
                         "customTextfieldRequired" => true,
                         "customTextfieldLabel" => "",
+                        "customTextfield2Activated" => false,
+                        "customTextfield2Required" => true,
+                        "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
-                    ]
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ]
             ]
         ];

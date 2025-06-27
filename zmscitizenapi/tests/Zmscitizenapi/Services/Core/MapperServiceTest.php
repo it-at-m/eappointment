@@ -166,6 +166,7 @@ class MapperServiceTest extends TestCase
             ]
         ];
         $process->customTextfield = 'Custom Text';
+        $process->customTextfield2 = 'Another Custom Text';
         $process->scope = new Scope();
         $process->scope->contact = new Contact();
         $process->scope->contact->name = 'Test Office';
@@ -180,6 +181,7 @@ class MapperServiceTest extends TestCase
         $this->assertEquals('test-key', $result->authKey);
         $this->assertEquals('Doe', $result->familyName);
         $this->assertEquals('Custom Text', $result->customTextfield);
+        $this->assertEquals('Another Custom Text', $result->customTextfield2);
         $this->assertEquals('john@example.com', $result->email);
         $this->assertEquals('123456789', $result->telephone);
         $this->assertEquals('Test Office', $result->officeName);
@@ -195,6 +197,7 @@ class MapperServiceTest extends TestCase
             'authKey' => '',
             'familyName' => null,
             'customTextfield' => '',
+            'customTextfield2' => '',
             'email' => null,
             'telephone' => null,
             'officeName' => null,
@@ -210,8 +213,12 @@ class MapperServiceTest extends TestCase
                 'customTextfieldActivated' => null,
                 'customTextfieldRequired' => null,
                 'customTextfieldLabel' => null,
+                'customTextfield2Activated' => null,
+                'customTextfield2Required' => null,
+                'customTextfield2Label' => null,
                 'captchaActivatedRequired' => null,
-                'displayInfo' => null
+                'displayInfo' => null,
+                'slotsPerAppointment' => null
             ],
             'subRequestCounts' => [],
             'serviceId' => 0,
@@ -228,6 +235,7 @@ class MapperServiceTest extends TestCase
         $this->assertEquals($expectedResponse['authKey'], $result->authKey);
         $this->assertEquals($expectedResponse['familyName'], $result->familyName);
         $this->assertEquals($expectedResponse['customTextfield'], $result->customTextfield);
+        $this->assertEquals($expectedResponse['customTextfield2'], $result->customTextfield2);
         $this->assertEquals($expectedResponse['email'], $result->email);
         $this->assertEquals($expectedResponse['telephone'], $result->telephone);
         $this->assertEquals($expectedResponse['officeName'], $result->officeName);
@@ -243,8 +251,12 @@ class MapperServiceTest extends TestCase
         $this->assertEquals($scope['customTextfieldActivated'], $result->scope->customTextfieldActivated);
         $this->assertEquals($scope['customTextfieldRequired'], $result->scope->customTextfieldRequired);
         $this->assertEquals($scope['customTextfieldLabel'], $result->scope->customTextfieldLabel);
+        $this->assertEquals($scope['customTextfield2Activated'], $result->scope->customTextfield2Activated);
+        $this->assertEquals($scope['customTextfield2Required'], $result->scope->customTextfield2Required);
+        $this->assertEquals($scope['customTextfield2Label'], $result->scope->customTextfield2Label);
         $this->assertEquals($scope['captchaActivatedRequired'], $result->scope->captchaActivatedRequired);
         $this->assertEquals($scope['displayInfo'], $result->scope->displayInfo);
+        $this->assertEquals($scope['slotsPerAppointment'], $result->scope->slotsPerAppointment);
         $this->assertEquals($expectedResponse['subRequestCounts'], $result->subRequestCounts);
         $this->assertEquals($expectedResponse['serviceId'], $result->serviceId);
         $this->assertEquals($expectedResponse['serviceCount'], $result->serviceCount);
@@ -260,6 +272,7 @@ class MapperServiceTest extends TestCase
             authKey: 'test-key',
             familyName: 'Doe',
             customTextfield: 'Custom Text',
+            customTextfield2: 'Another Custom Text',
             email: 'john@example.com',
             telephone: '123456789',
             officeName: 'Test Office',
@@ -277,6 +290,7 @@ class MapperServiceTest extends TestCase
         $this->assertEquals('john@example.com', $result->clients[0]->email);
         $this->assertEquals('123456789', $result->clients[0]->telephone);
         $this->assertEquals('Custom Text', $result->customTextfield);
+        $this->assertEquals('Another Custom Text', $result->customTextfield2);
         $this->assertEquals('1724907600', $result->appointments[0]->date);
         $this->assertEquals('Test Office', $result->scope->contact->name);
         $this->assertEquals(100, $result->scope->provider->id);
@@ -292,6 +306,7 @@ class MapperServiceTest extends TestCase
             '$schema' => 'https://schema.berlin.de/queuemanagement/process.json',
             'amendment' => '',
             'customTextfield' => '',
+            'customTextfield2' => '',
             'apiclient' => [
                 'shortname' => 'default'
             ],
@@ -325,6 +340,7 @@ class MapperServiceTest extends TestCase
 
         $this->assertEquals($expectedResponse['amendment'], $result->amendment);
         $this->assertEquals($expectedResponse['customTextfield'], $result->customTextfield);
+        $this->assertEquals($expectedResponse['customTextfield2'], $result->customTextfield2);
         $this->assertEquals($expectedResponse['apiclient']['shortname'], $result->apiclient->shortname);
         $this->assertEquals($expectedResponse['authKey'], $result->authKey);
         $this->assertEquals($expectedResponse['createIP'], $result->createIP);
@@ -473,6 +489,9 @@ class MapperServiceTest extends TestCase
             'customTextfieldActivated' => true,
             'customTextfieldRequired' => false,
             'customTextfieldLabel' => 'Test Label',
+            'customTextfield2Activated' => true,
+            'customTextfield2Required' => false,
+            'customTextfield2Label' => 'Test Label2',
             'captchaActivatedRequired' => false
         ];
 
@@ -638,8 +657,12 @@ class MapperServiceTest extends TestCase
         $this->assertNull($result->customTextfieldActivated);
         $this->assertNull($result->customTextfieldRequired);
         $this->assertNull($result->customTextfieldLabel);
+        $this->assertNull($result->customTextfield2Activated);
+        $this->assertNull($result->customTextfield2Required);
+        $this->assertNull($result->customTextfield2Label);
         $this->assertNull($result->captchaActivatedRequired);
         $this->assertNull($result->displayInfo);
+        $this->assertNull($result->slotsPerAppointment);
     }
 
 }

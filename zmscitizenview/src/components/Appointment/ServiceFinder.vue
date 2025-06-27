@@ -48,7 +48,7 @@
         :label="service.name"
         :link="getServiceBaseURL() + service.id"
         :max="maxValueOfService"
-        min="1"
+        :min="1"
       />
     </div>
     <div v-if="service.subServices && service.subServices.length > 0">
@@ -63,7 +63,7 @@
       <div class="m-listing">
         <ul class="m-listing__list">
           <template
-            v-for="subService in service.subServices"
+            v-for="subService in filteredSubServices"
             :key="subService.id"
           >
             <subservice-list-item
@@ -74,6 +74,18 @@
             />
           </template>
         </ul>
+      </div>
+      <div
+        v-if="shouldShowMoreButton"
+        class="m-button-group m-button-group--secondary"
+      >
+        <muc-button
+          icon="chevron-down"
+          variant="secondary"
+          @click="showAllServices = true"
+        >
+          <template #default>{{ t("showAllServices") }}</template>
+        </muc-button>
       </div>
     </div>
     <div class="m-component">
@@ -89,10 +101,24 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="showCaptcha"
+      style="margin: 2rem 0 2rem 0"
+    >
+      <AltchaCaptcha
+        :t="t"
+        :base-url="baseUrl"
+        @validationResult="(valid: boolean) => (isCaptchaValid = valid)"
+        @tokenChanged="
+          (token: string | null) => emit('captchaTokenChanged', token)
+        "
+      />
+    </div>
   </div>
   <div class="m-button-group">
     <muc-button
       v-if="service"
+      :disabled="showCaptcha && !isCaptchaValid"
       icon="arrow-right"
       @click="nextStep"
     >
@@ -105,10 +131,12 @@
 import { MucButton, MucCounter, MucSelect } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, onMounted, ref, watch } from "vue";
 
+import { Combinable } from "@/api/models/Combinable";
 import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
+import AltchaCaptcha from "@/components/Appointment/AltchaCaptcha.vue";
 import ClockSvg from "@/components/Appointment/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -120,6 +148,8 @@ import {
   OFTEN_SEARCHED_SERVICES,
 } from "@/utils/Constants";
 
+const isCaptchaValid = ref<boolean>(false);
+
 const props = defineProps<{
   baseUrl: string | undefined;
   preselectedServiceId: string | undefined;
@@ -128,7 +158,10 @@ const props = defineProps<{
   t: (key: string) => string;
 }>();
 
-const emit = defineEmits<(e: "next") => void>();
+const emit = defineEmits<{
+  (e: "next"): void;
+  (e: "captchaTokenChanged", token: string | null): void;
+}>();
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
@@ -138,19 +171,32 @@ const { selectedService, updateSelectedService } =
   inject<SelectedServiceProvider>(
     "selectedServiceProvider"
   ) as SelectedServiceProvider;
-const service = ref<ServiceImpl>(selectedService.value);
+const service = ref<ServiceImpl | undefined>(selectedService.value);
 const maxSlotsPerAppointment = ref<number>(25);
 const currentSlots = ref<number>(0);
-
-/**
- * Count of the selected service
- */
+const showAllServices = ref<boolean>(false);
 const countOfService = ref<number>(1);
 
-/**
- * Reference to the duration info.
- * If a screen reader user wants to skip the subservices, the focus is placed on the duration info.
- */
+const filteredSubServices = computed(() => {
+  if (!service.value?.subServices) return [];
+
+  if (service.value.subServices.length <= 5) {
+    return service.value.subServices;
+  }
+
+  return showAllServices.value
+    ? service.value.subServices
+    : service.value.subServices.slice(0, 3);
+});
+
+const shouldShowMoreButton = computed(() => {
+  return (
+    service.value?.subServices &&
+    service.value.subServices.length > 5 &&
+    !showAllServices.value
+  );
+});
+
 const durationInfo = ref<HTMLElement | null>(null);
 
 watch(service, (newService) => {
@@ -165,53 +211,65 @@ watch(service, (newService) => {
  * Calculation of the currently required slots by changing the count of the selected service.
  */
 watch(countOfService, (newCountOfService) => {
-  if (service.value.count < newCountOfService) {
-    currentSlots.value += getMinSlotOfProvider(service.value.providers);
-  } else if (service.value.count > newCountOfService) {
-    currentSlots.value -= getMinSlotOfProvider(service.value.providers);
+  if (!service.value) return;
+  if ((service.value.count || 0) < newCountOfService) {
+    currentSlots.value += getMinSlotOfProvider(service.value.providers || []);
+  } else if ((service.value.count || 0) > newCountOfService) {
+    currentSlots.value -= getMinSlotOfProvider(service.value.providers || []);
   }
   service.value.count = newCountOfService;
 });
 
 const setServiceData = (selectedService: ServiceImpl) => {
-  service.value.providers = getProviders(selectedService.id, null);
-  service.value.count = 1;
-  currentSlots.value = getMinSlotOfProvider(service.value.providers);
+  service.value!.providers = getProviders(selectedService.id, null);
+  service.value!.count = 1;
+  currentSlots.value = getMinSlotOfProvider(service.value!.providers);
 
   if (selectedService.combinable) {
     const combinable = selectedService.combinable;
-    if (typeof combinable[parseInt(selectedService.id)] !== "undefined") {
-      delete combinable[parseInt(selectedService.id)];
+    const selfEntry = Object.entries(combinable).find(
+      ([_, serviceObj]) =>
+        Object.keys(serviceObj)[0] === selectedService.id.toString()
+    );
+    if (selfEntry) {
+      const combinableServices = combinable as unknown as Combinable;
+      Object.keys(combinableServices).forEach((key: string) => {
+        const serviceObj = combinableServices[key];
+        const serviceId = Object.keys(serviceObj)[0];
+        if (serviceId === selectedService.id.toString()) {
+          delete combinableServices[key];
+        }
+      });
     }
 
-    service.value.subServices = Object.entries(combinable)
-      .map(([subServiceId, providers]) => {
+    service.value!.subServices = Object.entries(combinable)
+      .map(([_, serviceObj]) => {
+        const [[subServiceId, providers]] = Object.entries(serviceObj);
         const subService = services.value.filter(
           (subService) => parseInt(subService.id) == parseInt(subServiceId)
         );
         if (subService && subService.length === 1) {
           return {
-            id: parseInt(subServiceId),
+            id: subServiceId,
             name: subService[0].name,
             maxQuantity: subService[0].maxQuantity,
-            providers: getProviders(subServiceId, providers),
+            providers: getProviders(subServiceId, providers.map(String)),
             count: 0,
           };
         }
       })
-      .filter((subService) => {
-        if (subService === undefined) return false;
-        if (props.preselectedOfficeId) {
-          return subService.providers.some(
-            (provider) => provider.id == props.preselectedOfficeId
-          );
-        }
-        return true;
-      });
+      .filter(
+        (service): service is NonNullable<typeof service> =>
+          service !== undefined &&
+          (!props.preselectedOfficeId ||
+            service.providers.some(
+              (provider) => provider.id == props.preselectedOfficeId
+            ))
+      );
   }
 
   const maxSlotsOfProvider = getMaxSlotsPerAppointementOfProvider(
-    service.value.providers
+    service.value!.providers
   );
   maxSlotsPerAppointment.value =
     maxSlotsOfProvider > 0
@@ -223,9 +281,26 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
   const officesAtService = new Array<OfficeImpl>();
   relations.value.forEach((relation) => {
     if (relation.serviceId == serviceId) {
-      const foundOffice: OfficeImpl = offices.value.filter((office) => {
-        return office.id == relation.officeId;
-      })[0];
+      const office = offices.value.find(
+        (office) => office.id == relation.officeId
+      );
+      if (!office) return;
+
+      const foundOffice: OfficeImpl = new OfficeImpl(
+        office.id,
+        office.name,
+        office.address,
+        office.showAlternativeLocations,
+        office.displayNameAlternatives,
+        office.organization,
+        office.organizationUnit,
+        office.slotTimeInMinutes,
+        office.disabledByServices,
+        office.scope,
+        office.maxSlotsPerAppointment,
+        office.slots,
+        office.priority || 1
+      );
 
       if (
         !providers ||
@@ -244,7 +319,7 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
  * Calculation of the currently required slots by changing the count of a subservice.
  */
 const changeAppointmentCountOfSubservice = (id: string, count: number) => {
-  const subservice = service.value.subServices?.find(
+  const subservice = service.value?.subServices?.find(
     (subService) => subService.id == id
   );
 
@@ -259,7 +334,7 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
 };
 
 const estimatedDuration = computed(() => {
-  return service.value.providers
+  return service.value?.providers?.[0]?.slotTimeInMinutes
     ? service.value.providers[0].slotTimeInMinutes * currentSlots.value
     : 0;
 });
@@ -268,14 +343,15 @@ const estimatedDuration = computed(() => {
  * Calculates whether the count of selected service may be increased, depending on the maxQuantity of the service and the maxSlotsPerAppointment.
  */
 const maxValueOfService = computed(() => {
+  if (!service.value) return 0;
   return checkPlusEndabled.value
     ? service.value.maxQuantity
-    : service.value.count;
+    : service.value.count || 0;
 });
 
 const checkPlusEndabled = computed(
   () =>
-    currentSlots.value + getMinSlotOfProvider(service.value.providers) <=
+    currentSlots.value + getMinSlotOfProvider(service.value!.providers || []) <=
     maxSlotsPerAppointment.value
 );
 
@@ -303,7 +379,18 @@ const getMaxSlotsPerAppointementOfProvider = (provider: OfficeImpl[]) => {
 };
 
 const setOftenSearchedService = (serviceId: string) => {
-  service.value = services.value.find((service) => service.id == serviceId);
+  const foundService = services.value.find(
+    (service) => service.id == serviceId
+  );
+  if (foundService) {
+    service.value = {
+      ...foundService,
+      providers: [] as OfficeImpl[],
+      count: 0,
+      subServices: [],
+      combinable: foundService.combinable as unknown as Combinable,
+    } as ServiceImpl;
+  }
 };
 
 const nextStep = () => emit("next");
@@ -312,14 +399,34 @@ const skipSubservices = () => {
   if (durationInfo.value) durationInfo.value.focus();
 };
 
+/**
+ * Determines whether the captcha component should be shown.
+ * It checks if the currently selected service is associated with
+ * at least one office that has `captchaActivatedRequired` set to true.
+ */
+const showCaptcha = computed(() => {
+  if (!service.value || !relations.value || !offices.value) return false;
+
+  const relatedOfficeIds = relations.value
+    .filter((relation) => relation.serviceId === service.value?.id)
+    .map((relation) => relation.officeId);
+
+  return offices.value.some(
+    (office) =>
+      relatedOfficeIds.includes(office.id) &&
+      office.scope?.captchaActivatedRequired === true
+  );
+});
+
 onMounted(() => {
-  //If a selected service already exists, the variables required for the calculation are calculated and initialized with the existing values.
   if (service.value) {
     let slots = 0;
     countOfService.value = service.value.count
       ? service.value.count
       : countOfService.value;
-    slots = getMinSlotOfProvider(service.value.providers) * service.value.count;
+    slots =
+      getMinSlotOfProvider(service.value.providers || []) *
+      (service.value.count || 0);
     if (service.value.subServices) {
       service.value.subServices.forEach((subservice) => {
         if (subservice.count > 0) {
@@ -341,9 +448,18 @@ onMounted(() => {
       offices.value = data.offices;
 
       if (props.preselectedServiceId) {
-        service.value = services.value.find(
+        const foundService = services.value.find(
           (service) => service.id == props.preselectedServiceId
         );
+        if (foundService) {
+          service.value = {
+            ...foundService,
+            providers: [] as OfficeImpl[],
+            count: 0,
+            subServices: [],
+            combinable: foundService.combinable as unknown as Combinable,
+          } as ServiceImpl;
+        }
       }
     });
   }
@@ -357,5 +473,9 @@ onMounted(() => {
 
 .wrapper > * {
   margin: 0 8px;
+}
+
+.m-button-group--secondary {
+  margin-top: 1rem;
 }
 </style>

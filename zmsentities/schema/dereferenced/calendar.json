@@ -638,6 +638,7 @@
                         }
                     ],
                     "authKey": "abcd",
+                    "captchaToken": "eyJ0e...",
                     "clients": [
                         {
                             "familyName": "Max Mustermann",
@@ -704,6 +705,13 @@
                         "description": "additional information for this process from the client",
                         "default": ""
                     },
+                    "customTextfield2": {
+                        "type": [
+                            "string"
+                        ],
+                        "description": "additional information for this process from the client",
+                        "default": ""
+                    },
                     "apiclient": {
                         "$ref": "apiclient.json"
                     },
@@ -721,6 +729,10 @@
                         "type": "string",
                         "description": "key for client to delete or change process"
                     },
+                    "captchaToken": {
+                        "type": ["null", "string"],
+                        "description": "Token used for captcha validation"
+                      },
                     "clients": {
                         "type": "array",
                         "items": {
@@ -822,6 +834,7 @@
                             "whitelistedMails": "",
                             "amendmentLabel": "Zusatzinformationen zum Anliegen",
                             "customTextfieldLabel": "Zusatzfeld zum Anliegen",
+                            "customTextfield2Label": "Zweites Zusatzfeld zum Anliegen",
                             "emailRequired": false,
                             "emailConfirmationActivated": true,
                             "adminMailOnAppointment": false,
@@ -1037,6 +1050,19 @@
                                             "number"
                                         ],
                                         "description": "true if an custom textfield is activated",
+                                        "default": false
+                                    },
+                                    "customTextfield2Label": {
+                                        "type": "string",
+                                        "description": "label for the second form field to enter additional informations to a process",
+                                        "default": ""
+                                    },
+                                    "customTextfield2Activated": {
+                                        "type": [
+                                            "boolean",
+                                            "number"
+                                        ],
+                                        "description": "true if a second custom textfield is activated",
                                         "default": false
                                     },
                                     "emailFrom": {

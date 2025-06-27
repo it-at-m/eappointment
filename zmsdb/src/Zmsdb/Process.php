@@ -31,6 +31,16 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
         $process = $this->fetchOne($query, new Entity());
         $process = $this->readResolvedReferences($process, $resolveReferences);
+
+        if (!isset($process->dbstatus) || $process->dbstatus !== $process->status) {
+            \App::$log->info('STATUS DIFF', [
+                'status' => $process->status,
+                'status DB' => $process->dbstatus ?? '',
+                'processId' => $process->id,
+                'stacktrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)
+            ]);
+        }
+
         return $process;
     }
 
@@ -65,6 +75,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $processEntity = $process;
         $query = new Query\Process(Query\Base::UPDATE);
+        $query->addValuesScopeData($process);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
         $query->addValuesUpdateProcess($process, $now, 0, $previousStatus);
@@ -650,6 +661,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $amendment = $process->toDerefencedAmendment();
         $customTextfield = $process->toDerefencedcustomTextfield();
+        $customTextfield2 = $process->toDerefencedcustomTextfield2();
         if (!isset($process->queue['status'])) {
             $process->queue['status'] = $process->status;
         }
@@ -658,6 +670,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $status = $this->perform($query, array(
             $amendment,
             $customTextfield,
+            $customTextfield2,
             $process->id,
             $process->authKey,
             $process->id

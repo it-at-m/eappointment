@@ -65,6 +65,21 @@
             ],
             "description": "Label for the custom textfield"
         },
+        "customTextfield2Activated": {
+            "type": "boolean",
+            "description": "Whether a custom textfield is activated"
+        },
+        "customTextfield2Required": {
+            "type": "boolean",
+            "description": "Whether a custom textfield is required"
+        },
+        "customTextfield2Label": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Label for the second custom textfield"
+        },
         "captchaActivatedRequired": {
             "type": "boolean",
             "description": "Whether captcha is activated and required"
@@ -75,6 +90,13 @@
                 "null"
             ],
             "description": "Additional display information"
+        },
+        "slotsPerAppointment": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Number of slots that can be booked per appointment"
         }
     }
 }

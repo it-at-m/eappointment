@@ -9,6 +9,7 @@ use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Models\AvailableAppointmentsByOffice;
 use BO\Zmscitizenapi\Models\AvailableDays;
 use BO\Zmscitizenapi\Models\AvailableAppointments;
+use BO\Zmscitizenapi\Models\AvailableDaysByOffice;
 use BO\Zmscitizenapi\Models\Office;
 use BO\Zmscitizenapi\Models\Service;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
@@ -63,6 +64,9 @@ class ZmsApiFacadeService
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getOffices(bool $showUnpublished = false): OfficeList
     {
         $cacheKey = self::CACHE_KEY_OFFICES . ($showUnpublished ? '_unpublished' : '');
@@ -108,9 +112,14 @@ class ZmsApiFacadeService
                     customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
                     customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
                     customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
+                    customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated(),
+                    customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
+                    customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
-                    displayInfo: $matchingScope->getDisplayInfo()
-                ) : null
+                    displayInfo: $matchingScope->getDisplayInfo(),
+                    slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment())
+                ) : null,
+                maxSlotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
             );
         }
 
@@ -156,8 +165,12 @@ class ZmsApiFacadeService
                     customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated(),
                     customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired(),
                     customTextfieldLabel: $matchingScope->getCustomTextfieldLabel(),
+                    customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated(),
+                    customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
+                    customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
-                    displayInfo: $matchingScope->getDisplayInfo()
+                    displayInfo: $matchingScope->getDisplayInfo(),
+                    slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment())
                 );
             }
         }
@@ -263,8 +276,12 @@ class ZmsApiFacadeService
             'customTextfieldActivated' => (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
             'customTextfieldRequired' => (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
             'customTextfieldLabel' => $matchingScope->getCustomTextfieldLabel() ?? null,
+            'customTextfield2Activated' => (bool) $matchingScope->getCustomTextfield2Activated() ?? null,
+            'customTextfield2Required' => (bool) $matchingScope->getCustomTextfield2Required() ?? null,
+            'customTextfield2Label' => $matchingScope->getCustomTextfield2Label() ?? null,
             'captchaActivatedRequired' => (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
             'displayInfo' => $matchingScope->getDisplayInfo() ?? null,
+            'slotsPerAppointment' => ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null
         ];
         return new ThinnedScope(
             id: (int) $result['id'],
@@ -277,8 +294,12 @@ class ZmsApiFacadeService
             customTextfieldActivated: $result['customTextfieldActivated'],
             customTextfieldRequired: $result['customTextfieldRequired'],
             customTextfieldLabel: $result['customTextfieldLabel'],
+            customTextfield2Activated: $result['customTextfield2Activated'],
+            customTextfield2Required: $result['customTextfield2Required'],
+            customTextfield2Label: $result['customTextfield2Label'],
             captchaActivatedRequired: $result['captchaActivatedRequired'],
-            displayInfo: $result['displayInfo']
+            displayInfo: $result['displayInfo'],
+            slotsPerAppointment: $result['slotsPerAppointment']
         );
     }
 
@@ -327,7 +348,19 @@ class ZmsApiFacadeService
                     $scope = $scopeData;
                 }
 
-                $offices[] = new Office(id: (int) $provider->id, name: $provider->name, showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null, displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [], organization: $provider->data['organization'] ?? null, organizationUnit: $provider->data['organizationUnit'] ?? null, slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null, address: $provider->address ?? null, geo: $provider->geo ?? null, scope: $scope);
+                $offices[] = new Office(
+                    id: (int) $provider->id,
+                    name: $provider->name,
+                    showAlternativeLocations: $provider->data['showAlternativeLocations'] ?? null,
+                    displayNameAlternatives: $provider->data['displayNameAlternatives'] ?? [],
+                    organization: $provider->data['organization'] ?? null,
+                    organizationUnit: $provider->data['organizationUnit'] ?? null,
+                    slotTimeInMinutes: $provider->data['slotTimeInMinutes'] ?? null,
+                    address: $provider->address ?? null,
+                    geo: $provider->geo ?? null,
+                    scope: $scope,
+                    maxSlotsPerAppointment: $scope ? ((string) $scope->getSlotsPerAppointment() === '' ? null : (string) $scope->getSlotsPerAppointment()) : null
+                );
             }
         }
 
@@ -343,6 +376,9 @@ class ZmsApiFacadeService
         return $result;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getScopeById(?int $scopeId): ThinnedScope|array
     {
         $scopeList = ZmsApiClientService::getScopes() ?? new ScopeList();
@@ -386,8 +422,12 @@ class ZmsApiFacadeService
             customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
             customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
             customTextfieldLabel: $matchingScope->getCustomTextfieldLabel() ?? null,
+            customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated() ?? null,
+            customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required() ?? null,
+            customTextfield2Label: $matchingScope->getCustomTextfield2Label() ?? null,
             captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
-            displayInfo: $matchingScope->getDisplayInfo() ?? null
+            displayInfo: $matchingScope->getDisplayInfo() ?? null,
+            slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null
         );
     }
 
@@ -472,8 +512,14 @@ class ZmsApiFacadeService
         return $resultRequestList;
     }
 
-    public static function getBookableFreeDays(array $officeIds, array $serviceIds, array $serviceCounts, string $startDate, string $endDate): AvailableDays|array
-    {
+    public static function getBookableFreeDays(
+        array $officeIds,
+        array $serviceIds,
+        array $serviceCounts,
+        string $startDate,
+        string $endDate,
+        ?bool $groupByOffice = false
+    ): AvailableDays|AvailableDaysByOffice|array {
         $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
         $lastDay = DateTimeFormatHelper::getInternalDateFromISO($endDate);
         $services = [];
@@ -495,11 +541,23 @@ class ZmsApiFacadeService
             ];
         }
 
-        $freeDays = ZmsApiClientService::getFreeDays(new ProviderList($providers), new RequestList($services), $firstDay, $lastDay,) ?? new Calendar();
+        $freeDays = ZmsApiClientService::getFreeDays(new ProviderList($providers), new RequestList($services), $firstDay, $lastDay) ?? new Calendar();
         $daysCollection = $freeDays->days;
         $formattedDays = [];
+        $scopeToProvider = [];
+
+        foreach ($freeDays->scopes as $scope) {
+            $scopeToProvider[$scope['id']] = $scope['provider']['id'];
+        }
+
         foreach ($daysCollection as $day) {
-            $formattedDays[] = sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day);
+            $day = [
+                'time' => sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day),
+                'providerIDs' => isset($day->scopeIDs) ? implode(',', array_map(function ($scopeId) use ($scopeToProvider) {
+                    return $scopeToProvider[$scopeId];
+                }, explode(',', $day->scopeIDs))) : ''
+            ];
+            $formattedDays[] = $day;
         }
 
         $errors = ValidationService::validateAppointmentDaysNotFound($formattedDays);
@@ -507,7 +565,11 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        return new AvailableDays($formattedDays);
+        if ($groupByOffice) {
+            return new AvailableDaysByOffice($formattedDays);
+        }
+
+        return new AvailableDays(array_column($formattedDays, 'time'));
     }
 
     public static function getFreeAppointments(int $officeId, array $serviceIds, array $serviceCounts, array $date): ProcessList|array
@@ -529,7 +591,10 @@ class ZmsApiFacadeService
         return ZmsApiClientService::getFreeTimeslots(new ProviderList([$office]), new RequestList($requests), $date, $date);
     }
 
-    private static function processFreeSlots(ProcessList $freeSlots): array
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     */
+    private static function processFreeSlots(ProcessList $freeSlots, bool $groupByOffice = false): array
     {
         $errors = ValidationService::validateGetProcessFreeSlots($freeSlots);
         if (is_array($errors) && !empty($errors['errors'])) {
@@ -537,34 +602,63 @@ class ZmsApiFacadeService
         }
 
         $currentTimestamp = time();
-        $allTimestamps = [];
-
-        foreach ($freeSlots as $slot) {
-            if (isset($slot->appointments) && is_iterable($slot->appointments)) {
-                foreach ($slot->appointments as $appointment) {
-                    if (isset($appointment->date)) {
-                        $timestamp = (int) $appointment->date;
-                        if ($timestamp > $currentTimestamp) {
-                            $allTimestamps[] = $timestamp;
+        if ($groupByOffice) {
+            $grouped = [];
+            foreach ($freeSlots as $slot) {
+                $officeId = (string)($slot->scope->provider->id ?? '');
+                if (!isset($grouped[$officeId])) {
+                    $grouped[$officeId] = [];
+                }
+                if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                    foreach ($slot->appointments as $appointment) {
+                        if (isset($appointment->date)) {
+                            $timestamp = (int) $appointment->date;
+                            if ($timestamp > $currentTimestamp) {
+                                $grouped[$officeId][] = $timestamp;
+                            }
                         }
                     }
                 }
             }
+            // Sort each office's appointments
+            foreach ($grouped as &$arr) {
+                sort($arr);
+            }
+            unset($arr);
+            // Optionally validate grouped timestamps here if needed
+            return $grouped;
+        } else {
+            $timestamps = [];
+            foreach ($freeSlots as $slot) {
+                if (isset($slot->appointments) && is_iterable($slot->appointments)) {
+                    foreach ($slot->appointments as $appointment) {
+                        if (isset($appointment->date)) {
+                            $timestamp = (int) $appointment->date;
+                            if ($timestamp > $currentTimestamp) {
+                                $timestamps[] = $timestamp;
+                            }
+                        }
+                    }
+                }
+            }
+            sort($timestamps);
+
+            $errors = ValidationService::validateGetProcessByIdTimestamps($timestamps);
+            if (is_array($errors) && !empty($errors['errors'])) {
+                return $errors;
+            }
+
+            return $timestamps;
         }
-
-        $uniqueTimestamps = array_values(array_unique($allTimestamps));
-        sort($uniqueTimestamps);
-
-        $errors = ValidationService::validateGetProcessByIdTimestamps($uniqueTimestamps);
-        if (is_array($errors) && !empty($errors['errors'])) {
-            return $errors;
-        }
-
-        return $uniqueTimestamps;
     }
 
-    public static function getAvailableAppointments(string $date, array $officeIds, array $serviceIds, array $serviceCounts, ?bool $groupByOffice = false): AvailableAppointments|AvailableAppointmentsByOffice|array
-    {
+    public static function getAvailableAppointments(
+        string $date,
+        array $officeIds,
+        array $serviceIds,
+        array $serviceCounts,
+        ?bool $groupByOffice = false
+    ): AvailableAppointments|AvailableAppointmentsByOffice|array {
         $requests = [];
         $providers = [];
         foreach ($serviceIds as $index => $serviceId) {
@@ -585,16 +679,16 @@ class ZmsApiFacadeService
         }
 
         $freeSlots = ZmsApiClientService::getFreeTimeslots(new ProviderList($providers), new RequestList($requests), DateTimeFormatHelper::getInternalDateFromISO($date), DateTimeFormatHelper::getInternalDateFromISO($date)) ?? new ProcessList();
-        $timestamps = self::processFreeSlots($freeSlots);
-        if (isset($timestamps['errors']) && !empty($timestamps['errors'])) {
-            return $timestamps;
+        $result = self::processFreeSlots($freeSlots, $groupByOffice);
+        if (isset($result['errors']) && !empty($result['errors'])) {
+            return $result;
         }
 
         if ($groupByOffice) {
-            return new AvailableAppointmentsByOffice(['appointmentTimestamps' => $timestamps]);
+            return new AvailableAppointmentsByOffice($result);
         }
 
-        return new AvailableAppointments($timestamps);
+        return new AvailableAppointments($result);
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
@@ -641,8 +735,12 @@ class ZmsApiFacadeService
                 customTextfieldActivated: (bool) $process->scope->getCustomTextfieldActivated() ?? false,
                 customTextfieldRequired: (bool) $process->scope->getCustomTextfieldRequired() ?? false,
                 customTextfieldLabel: $process->scope->getCustomTextfieldLabel() ?? null,
+                customTextfield2Activated: (bool) $process->scope->getCustomTextfield2Activated() ?? false,
+                customTextfield2Required: (bool) $process->scope->getCustomTextfield2Required() ?? false,
+                customTextfield2Label: $process->scope->getCustomTextfield2Label() ?? null,
                 captchaActivatedRequired: (bool) $process->scope->getCaptchaActivatedRequired() ?? false,
-                displayInfo: $process->scope->getDisplayInfo() ?? null
+                displayInfo: $process->scope->getDisplayInfo() ?? null,
+                slotsPerAppointment: ((string) $process->scope->getSlotsPerAppointment() === '' ? null : (string) $process->scope->getSlotsPerAppointment()) ?? null
             );
         }
 

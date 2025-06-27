@@ -144,7 +144,23 @@ class ZmsApiClientService
                 return new ProcessList();
             }
 
-            return $collection;
+            $uniqueProcesses = new ProcessList();
+            $seenKeys = [];
+            foreach ($collection as $process) {
+                $appointment = $process->appointments->getFirst();
+                $providerId = isset($process->scope->provider->id) ? $process->scope->provider->id : null;
+                if ($appointment && $providerId) {
+                    $key = $providerId . '_' . $appointment->date;
+                    if (!isset($seenKeys[$key])) {
+                        $uniqueProcesses->addEntity($process);
+                        $seenKeys[$key] = true;
+                    }
+                } else {
+                    $uniqueProcesses->addEntity($process);
+                }
+            }
+
+            return $uniqueProcesses;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
         }

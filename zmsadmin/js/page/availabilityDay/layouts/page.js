@@ -11,6 +11,7 @@ const PageLayout = (props) => {
             {props.timeTable}
             {props.saveBar}
             {props.accordion}
+            {props.saveBar}
         </div>
     )
 }

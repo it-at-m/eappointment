@@ -18,6 +18,7 @@
         "id": "9999998",
         "link": "https://www.berlinonline.de",
         "name": "Unittest Source Dienstleister",
+        "displayName": "Unittest",
         "source": "unittest",
         "data": {
           "json": "data",
@@ -41,6 +42,7 @@
         "id": "9999999",
         "link": "https://www.berlinonline.de",
         "name": "Unittest Source Dienstleister 2",
+        "displayName": "Unittest 2",
         "source": "unittest",
         "data": {
           "json": "data",
@@ -110,7 +112,10 @@
             "customTextfieldActivated": "1",
             "customTextfieldRequired": "0",
             "customTextfieldLabel": "Custom Label",
-            "captchaActivatedRequired": "1",
+            "customTextfield2Activated": "1",
+            "customTextfield2Required": "0",
+            "customTextfield2Label": "Second Custom Label",
+            "captchaActivatedRequired": "0",
             "displayInfo": "Infos zum Standort."
           }
         }
@@ -138,6 +143,9 @@
             "customTextfieldActivated": "0",
             "customTextfieldRequired": "1",
             "customTextfieldLabel": "",
+            "customTextfield2Activated": "0",
+            "customTextfield2Required": "1",
+            "customTextfield2Label": "",
             "captchaActivatedRequired": "0",
             "displayInfo": "Infos zum Standort."
           }

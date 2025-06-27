@@ -17,6 +17,7 @@ class Process extends Base implements MappingInterface
         SET
             process.Anmerkung = ?,
             process.custom_text_field = ?,
+            process.custom_text_field2 = ?,
             process.StandortID = 0,
             process.AbholortID = 0,
             process.Abholer = 0,
@@ -141,6 +142,86 @@ class Process extends Base implements MappingInterface
         return $joinQuery;
     }
 
+    protected function calculateStatus()
+    {
+        if ($this->query->value('Name') === '(abgesagt)') {
+            return 'deleted';
+        }
+
+        if (
+            $this->query->value('StandortID') == 0
+            && $this->query->value('AbholortID') == 0
+        ) {
+            return 'blocked';
+        }
+
+        if (
+            $this->query->value('vorlaeufigeBuchung') == 1
+            && $this->query->value('bestaetigt') == 0
+        ) {
+            return 'reserved';
+        }
+
+        if ($this->query->value('nicht_erschienen') != 0) {
+            return 'missed';
+        }
+
+        if ($this->query->value('parked') != 0) {
+            return 'parked';
+        }
+
+        if (
+            $this->query->value('Abholer') != 0
+            && $this->query->value('AbholortID') != 0
+            && $this->query->value('NutzerID') == 0
+        ) {
+            return 'pending';
+        }
+
+        if (
+            $this->query->value('AbholortID') != 0
+            && $this->query->value('NutzerID') != 0
+        ) {
+            return 'pickup';
+        }
+
+        if (
+            $this->query->value('AbholortID') == 0
+            && $this->query->value('aufruferfolgreich') != 0
+            && $this->query->value('NutzerID') != 0
+        ) {
+            return 'processing';
+        }
+
+        if (
+            $this->query->value('aufrufzeit') != "00:00:00"
+            && $this->query->value('NutzerID') != 0
+            && $this->query->value('AbholortID') == 0
+        ) {
+            return 'called';
+        }
+
+        if ($this->query->value('Uhrzeit') == "00:00:00") {
+            return 'queued';
+        }
+
+        if (
+            $this->query->value('vorlaeufigeBuchung') == 0
+            && $this->query->value('bestaetigt') == 0
+        ) {
+            return 'preconfirmed';
+        }
+
+        if (
+            $this->query->value('vorlaeufigeBuchung') == 0
+            && $this->query->value('bestaetigt') == 1
+        ) {
+            return 'confirmed';
+        }
+
+        return null;
+    }
+
     public function getEntityMapping()
     {
         $status_expression = self::expression(
@@ -200,6 +281,7 @@ class Process extends Base implements MappingInterface
                 )'
             ),
             'customTextfield' => 'process.custom_text_field',
+            'customTextfield2' => 'process.custom_text_field2',
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
@@ -207,6 +289,7 @@ class Process extends Base implements MappingInterface
             'processingTime' => 'process.processingTime',
             'timeoutTime' => 'process.timeoutTime',
             'finishTime' => 'process.finishTime',
+            'dbstatus' => 'process.status',
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
@@ -613,6 +696,20 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionCustomTextfield2($customText2, $exactMatching = false)
+    {
+        if ($exactMatching) {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText2) {
+                $query->andWith('process.custom_text_field2', '=', $customText2);
+            });
+        } else {
+            $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($customText2) {
+                $query->andWith('process.custom_text_field2', 'LIKE', "%$customText2%");
+            });
+        }
+        return $this;
+    }
+
     public function addConditionAmendment($amendment)
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($amendment) {
@@ -728,6 +825,20 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
+    public function addValues($values)
+    {
+        $this->query->values($values);
+
+        $status = $this->calculateStatus();
+
+        if (!empty($status)) {
+            $values['status'] = $status;
+            $this->query->values($values);
+        }
+
+        return $this;
+    }
+
     public function addValuesStatusData($process, \DateTimeInterface $dateTime)
     {
         $data = array();
@@ -801,6 +912,9 @@ class Process extends Base implements MappingInterface
         }
         if ($process->getCustomTextfield()) {
             $data['custom_text_field'] = $process->getCustomTextfield();
+        }
+        if ($process->getCustomTextfield2()) {
+            $data['custom_text_field2'] = $process->getCustomTextfield2();
         }
         $data['zustimmung_kundenbefragung'] = ($client->surveyAccepted) ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();

@@ -2,23 +2,24 @@
  * Endpoints
  */
 export const VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT =
-  "/api/citizen/offices-and-services/";
-export const VUE_APP_ZMS_API_CALENDAR_ENDPOINT = "/api/citizen/available-days/";
+  "/offices-and-services/";
+export const VUE_APP_ZMS_API_CALENDAR_ENDPOINT = "/available-days-by-office/";
 export const VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT =
-  "/api/citizen/available-appointments/";
+  "/available-appointments-by-office/";
 export const VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT =
-  "/api/citizen/reserve-appointment/";
-export const VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT = "/api/citizen/appointment/";
+  "/reserve-appointment/";
+export const VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT = "/appointment/";
 export const VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT =
-  "/api/citizen/update-appointment/";
+  "/update-appointment/";
 export const VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT =
-  "/api/citizen/confirm-appointment/";
+  "/confirm-appointment/";
 export const VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT =
-  "/api/citizen/cancel-appointment/";
+  "/cancel-appointment/";
 export const VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT =
-  "/api/citizen/preconfirm-appointment/";
-export const VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT =
-  "/api/citizen/captcha-details/";
+  "/preconfirm-appointment/";
+export const VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT = "/captcha-details/";
+export const VUE_APP_ZMS_API_CAPTCHA_CHALLENGE_ENDPOINT = "/captcha-challenge/";
+export const VUE_APP_ZMS_API_CAPTCHA_VERIFY_ENDPOINT = "/captcha-verify/";
 
 export function getServiceBaseURL(): string {
   return import.meta.env.VITE_VUE_APP_SERVICE_BASE_URL;

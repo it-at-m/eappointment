@@ -11,6 +11,11 @@ export default defineConfig({
     vue({
       features: {
         customElement: true
+      },
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.startsWith('altcha-')
+        }
       }
     })
   ],

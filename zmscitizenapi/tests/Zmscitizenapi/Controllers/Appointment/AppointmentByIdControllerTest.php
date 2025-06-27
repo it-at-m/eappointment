@@ -49,12 +49,20 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         ];
         $response = $this->render([], $parameters, []);
         $responseBody = json_decode((string) $response->getBody(), true);
+
+        if($responseBody['captchaToken']) {
+            $this->assertArrayHasKey('captchaToken', $responseBody);
+            $this->assertIsString($responseBody['captchaToken']);
+            unset($responseBody['captchaToken']);
+        }
+
         $expectedResponse = [
             "processId" => 101002,
             "timestamp" => "1724907600",
             "authKey" => "fb43",
             "familyName" => "Doe",
             "customTextfield" => "",
+            "customTextfield2" => "",
             "email" => "johndoe@example.com",
             "telephone" => "0123456789",
             "officeName" => "Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)",
@@ -65,6 +73,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "provider" => [
                     "id" => 102522,
                     "name" => "Bürgerbüro Orleansplatz DEV (KVR-II/231 DEV)",
+                    "displayName" => "Bürgerbüro Orleansplatz DEV",
                     "lat" => null,
                     "lon" => null,
                     "source" => "dldb",
@@ -86,13 +95,20 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "customTextfieldActivated" => true,
                 "customTextfieldRequired" => true,
                 "customTextfieldLabel" => "Nachname des Kindes",
+                "customTextfield2Activated" => true,
+                "customTextfield2Required" => true,
+                "customTextfield2Label" => "Zusätzliche Bemerkung",
                 "captchaActivatedRequired" => false,
-                "displayInfo" => null
+                "displayInfo" => null,
+                "slotsPerAppointment" => null
             ],
             "subRequestCounts" => [],
             "serviceId" => 1063424,
-            "serviceCount" => 1
-        ];        
+            "serviceName" => "Gewerbe anmelden",
+            "serviceCount" => 1,
+            "slotCount" => 1
+        ];
+
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }

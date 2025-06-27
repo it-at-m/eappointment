@@ -48,11 +48,14 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                     "organizationUnit" => null,
                     "slotTimeInMinutes" => null,
                     "geo" => null,
+                    "disabledByServices" => [],
+                    "priority" => 1,
                     "scope" => [
                         "id" => 2,
                         "provider" => [
                             "id" => 9999999,
                             "name" => "Unittest Source Dienstleister 2",
+                            "displayName" => "Unittest 2",
                             "lat" => 48.12750898398659,
                             "lon" => 11.604317899956524,
                             "source" => "unittest",
@@ -74,9 +77,14 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "customTextfieldActivated" => false,
                         "customTextfieldRequired" => true,
                         "customTextfieldLabel" => "",
+                        "customTextfield2Activated" => false,
+                        "customTextfield2Required" => true,
+                        "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
-                    ]
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ]
             ]
         ];            
@@ -111,11 +119,14 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                     "organizationUnit" => null,
                     "slotTimeInMinutes" => null,
                     "geo" => null,
+                    "disabledByServices" => [],
+                    "priority" => 1,
                     "scope" => [
                         "id" => 1,
                         "provider" => [
                             "id" => 9999998,
                             "name" => "Unittest Source Dienstleister",
+                            "displayName" => "Unittest",
                             "lat" => 48.12750898398659,
                             "lon" => 11.604317899956524,
                             "source" => "unittest",
@@ -137,9 +148,14 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "customTextfieldActivated" => true,
                         "customTextfieldRequired" => false,
                         "customTextfieldLabel" => "Custom Label",
-                        "captchaActivatedRequired" => true,
-                        "displayInfo" => null
-                    ]
+                        "customTextfield2Activated" => true,
+                        "customTextfield2Required" => false,
+                        "customTextfield2Label" => "Second Custom Label",
+                        "captchaActivatedRequired" => false,
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ],
                 [
                     "id" => 9999999,
@@ -151,11 +167,14 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                     "organizationUnit" => null,
                     "slotTimeInMinutes" => null,
                     "geo" => null,
+                    "disabledByServices" => [],
+                    "priority" => 1,
                     "scope" => [
                         "id" => 2,
                         "provider" => [
                             "id" => 9999999,
                             "name" => "Unittest Source Dienstleister 2",
+                            "displayName" => "Unittest 2",
                             "lat" => 48.12750898398659,
                             "lon" => 11.604317899956524,
                             "source" => "unittest",
@@ -177,9 +196,14 @@ class OfficeListByServiceControllerTest extends ControllerTestCase
                         "customTextfieldActivated" => false,
                         "customTextfieldRequired" => true,
                         "customTextfieldLabel" => "",
+                        "customTextfield2Activated" => false,
+                        "customTextfield2Required" => true,
+                        "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null
-                    ]
+                        "displayInfo" => null,
+                        "slotsPerAppointment" => null
+                    ],
+                    "maxSlotsPerAppointment" => null
                 ]
             ]
         ];

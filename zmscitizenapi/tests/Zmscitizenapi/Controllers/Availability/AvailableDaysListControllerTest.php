@@ -25,6 +25,14 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $this->setApiCalls(
             [
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
                     'response' => $this->readFixture("GET_calendar.json")
@@ -75,6 +83,14 @@ class AvailableDaysListControllerTest extends ControllerTestCase
     {
         $this->setApiCalls(
             [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/unittest/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture("GET_SourceGet_dldb.json")
+                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
@@ -596,6 +612,14 @@ class AvailableDaysListControllerTest extends ControllerTestCase
 
         $this->setApiCalls([
             [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
                 'function' => 'readPostResult',
                 'url' => '/calendar/',
                 'exception' => $exception
@@ -605,8 +629,8 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $parameters = [
             'startDate' => '2024-08-29',
             'endDate' => '2024-09-04',
-            'officeId' => '102522',
-            'serviceId' => '1063424',
+            'officeId' => '9999998',
+            'serviceId' => '1',
             'serviceCount' => '1',
         ];
 

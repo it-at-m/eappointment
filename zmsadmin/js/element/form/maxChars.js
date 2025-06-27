@@ -1,11 +1,11 @@
 import $ from "jquery";
 
 const maxChars = (element) => {
-    const $textarea = $(element)
-    if ($textarea.is(':visible')) {
-        initChars($textarea);
+    const $element = $(element)
+    if ($element.is(':visible')) {
+        initChars($element);
     }
-    $textarea.on('keyup', (ev) => {
+    $element.on('input keyup', (ev) => {
         initChars($(ev.target));
     });
 }

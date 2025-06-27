@@ -36,9 +36,11 @@ class Process extends Schema\Entity
         return [
             'amendment' => '',
             'customTextfield' => '',
+            'customTextfield2' => '',
             'appointments' => new Collection\AppointmentList(),
             'apiclient' => new Apiclient(),
             'authKey' => '',
+            'captchaToken' => '',
             'clients' => new Collection\ClientList(),
             'createIP' => '',
             'createTimestamp' => time(),
@@ -172,6 +174,7 @@ class Process extends Schema\Entity
         $this->addReminderTimestamp($requestData, $dateTime);
         $this->addAmendment($requestData, $notice);
         $this->addCustomTextfield($requestData, $notice);
+        $this->addCustomTextfield2($requestData, $notice);
         return $this;
     }
 
@@ -385,6 +388,21 @@ class Process extends Schema\Entity
             isset($input['customTextfield']) && $input['customTextfield']
         ) ? $input['customTextfield'] : '';
         trim($this->customTextfield);
+        return $this;
+    }
+
+    public function getCustomTextfield2()
+    {
+        return $this->toProperty()->customTextfield2->get();
+    }
+
+    public function addCustomTextfield2($input, $notice = '')
+    {
+        $this->customTextfield2 = $notice;
+        $this->customTextfield2 .= (
+            isset($input['customTextfield2']) && $input['customTextfield2']
+        ) ? $input['customTextfield2'] : '';
+        trim($this->customTextfield2);
         return $this;
     }
 
@@ -656,6 +674,18 @@ class Process extends Schema\Entity
             ), 1);
     }
 
+    public function toDerefencedCustomTextfield2()
+    {
+        $lastChange = (new \DateTimeImmutable())->setTimestamp($this->createTimestamp)->format('c');
+        return var_export(array(
+                'BuergerID' => $this->id,
+                'StandortID' => $this->scope['id'],
+                'CustomTextfield2' => null,
+                'IPTimeStamp' => $this->createTimestamp,
+                'LastChange' => $lastChange,
+            ), 1);
+    }
+
     public function __toString()
     {
         $string = "process#";
@@ -672,6 +702,7 @@ class Process extends Schema\Entity
         $string .= " scope." . $this['scope']['id'];
         $string .= " ~" . base_convert($this['lastChange'], 10, 35);
         $string .= " client:" . $this['apiclient']['shortname'];
+        $string .= " token:" . ($this['captchaToken'] ?? '(none)');
         return $string;
     }
 }

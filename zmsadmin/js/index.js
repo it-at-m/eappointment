@@ -50,6 +50,9 @@ import infotext from 'bo-layout-admin-js/behavior/form-infotext-flyin';
 import metanavi from 'bo-layout-admin-js/behavior/header-metanavi-popup';
 import formalerts from 'bo-layout-admin-js/behavior/formalerts-flyin';
 
+// Import overall-calendar from ./page/overallCalendar
+import './page/overallCalendar/overallCalendar.js';
+
 // load patternlab JS
 function loadResources() {
     accordion();
@@ -138,6 +141,10 @@ $('textarea.maxchars').each(function () {
     maxChars(this);
 })
 
+$('input.charcounter').each(function () {
+    maxChars(this);
+})
+
 printScopeAppointmentsByDay();
 printWaitingNumber();
 DialogHandler.hideMessages();
@@ -151,5 +158,3 @@ console.log("Welcome to the ZMS admin interface...");
 //bindReact('[data-department-daysoff]', DepartmentDaysOffView)
 //bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
 //bindReact('[data-calldisplay-config]', CallDisplayConfigView)
-
-

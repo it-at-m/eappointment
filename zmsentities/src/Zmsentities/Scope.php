@@ -71,6 +71,21 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->getPreference('client', 'customTextfieldLabel', '');
     }
 
+    public function getCustomTextfield2Activated()
+    {
+        return $this->getPreference('client', 'customTextfield2Activated', null);
+    }
+
+    public function getCustomTextfield2Required()
+    {
+        return $this->getPreference('client', 'customTextfield2Required', null);
+    }
+
+    public function getCustomTextfield2Label()
+    {
+        return $this->getPreference('client', 'customTextfield2Label', '');
+    }
+
     public function getCaptchaActivatedRequired()
     {
         return $this->getPreference('client', 'captchaActivatedRequired', null);
@@ -79,6 +94,11 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getDisplayInfo()
     {
         return $this->getPreference('appointment', 'infoForAppointment', null);
+    }
+
+    public function getSlotsPerAppointment()
+    {
+        return $this->getPreference('client', 'slotsPerAppointment', null);
     }
 
     public function getProvider()
@@ -193,13 +213,6 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         $appointmentsPerMail = $this->toProperty()->preferences->client->appointmentsPerMail->get();
 
         return ($appointmentsPerMail) ? $appointmentsPerMail : null;
-    }
-
-    public function getSlotsPerAppointment()
-    {
-        $slotsPerAppointment = $this->toProperty()->preferences->client->slotsPerAppointment->get();
-
-        return ($slotsPerAppointment) ? $slotsPerAppointment : null;
     }
 
     public function getWhitelistedMails()

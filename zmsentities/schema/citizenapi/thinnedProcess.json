@@ -20,6 +20,13 @@
       ],
       "description": "Authentication key for the process"
     },
+    "captchaToken": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Token used for captcha validation"
+    },
     "timestamp": {
       "type": [
         "string",
@@ -35,6 +42,13 @@
       "description": "Family name associated with the process"
     },
     "customTextfield": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Custom text field for the process"
+    },
+    "customTextfield2": {
       "type": [
         "string",
         "null"
@@ -118,12 +132,26 @@
       ],
       "description": "Service ID associated with the process"
     },
+    "serviceName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Service name associated with the process"
+    },
     "serviceCount": {
       "type": [
         "integer",
         "null"
       ],
       "description": "Count of services in the process"
+    },
+    "slotCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Count of slots in the process"
     }
   },
   "required": [

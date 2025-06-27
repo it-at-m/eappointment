@@ -13,12 +13,12 @@
                 <dd>
                     {{ workstation.process.clients|first.familyName }} <br>(Wartenr. {{ workstation.process.queue.number }})
                 </dd>
-                {% if process.requests %}
+                {% if workstation.process.requests %}
                 <dt>
                     Anliegen
                 </dt>
                 <dd>
-                    {{ namelist(process.requests) }}
+                   {{ namelist(process.requests|default(workstation.process.requests)) }}
                 </dd>
                 {% endif %}
                 {% if workstation.process.amendment %}
@@ -52,7 +52,15 @@
                 <dd>
                     {{ workstation.process.customTextfield }}
                 </dd>
-                {% endif %}    
+                {% endif %}
+                {% if workstation.process.customTextfield2 %}
+                <dt>
+                    {{workstation.scope.preferences.client.customTextfield2Label}}
+                </dt>
+                <dd>
+                    {{ workstation.process.customTextfield2 }}
+                </dd>
+                {% endif %}
                 <dt>
                     Wartezeit (Std.:Min.:Sek.)
                 </dt>

@@ -64,13 +64,18 @@ class AppointmentCancelControllerTest extends ControllerTestCase
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
-        
+
+        $this->assertArrayHasKey('captchaToken', $responseBody);
+        $this->assertIsString($responseBody['captchaToken']);
+        unset($responseBody['captchaToken']);
+
         $expectedResponse = [
             'processId' => 101002,
             'timestamp' => '1727865900',
             'authKey' => 'fb43',
             'familyName' => 'TEST_USER',
             'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
             'email' => 'test@muenchen.de',
             'telephone' => '123456789',
             'officeName' => null,
@@ -83,6 +88,7 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                     'lat'=> null,
                     'lon'=> null,
                     'name'=> '',
+                    'displayName'=> '',
                     'source'=> 'dldb'
                 ],
                 'shortName' => null,
@@ -93,15 +99,21 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                 'customTextfieldActivated' => null,
                 'customTextfieldRequired' => null,
                 'customTextfieldLabel' => null,
+                'customTextfield2Activated' => null,
+                'customTextfield2Required' => null,
+                'customTextfield2Label' => null,
                 'captchaActivatedRequired' => null,
-                'displayInfo' => null
+                'displayInfo' => null,
+                'slotsPerAppointment' => null
             ],
             'subRequestCounts' => [],
             'serviceId' => 10242339,
+            'serviceName' => 'Adressänderung Personalausweis, Reisepass, eAT',
             'serviceCount' => 1,
-            'status' => 'deleted'
+            'status' => 'deleted',
+            'slotCount' => 1
         ];
-    
+
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($expectedResponse, $responseBody);
     }

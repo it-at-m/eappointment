@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Services\Core;
 use BO\Zmscitizenapi\Localization\ErrorMessages;
 use BO\Zmscitizenapi\Models\ThinnedScope;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
+use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Collection\ScopeList;
@@ -69,6 +70,8 @@ class ValidationService
 
     public static function validateServiceLocationCombination(int $officeId, array $serviceIds): array
     {
+        static $officeServicesCache = [];
+
         if ($officeId <= 0) {
             return ['errors' => [self::getError('invalidOfficeId')]];
         }
@@ -77,23 +80,60 @@ class ValidationService
             return ['errors' => [self::getError('invalidServiceId')]];
         }
 
-        $availableServices = ZmsApiFacadeService::getServicesProvidedAtOffice($officeId);
-        $availableServiceIds = [];
-        foreach ($availableServices as $service) {
-            $availableServiceIds[] = $service->id;
+        if (!isset($officeServicesCache[$officeId])) {
+            $serviceList = ZmsApiFacadeService::getServicesByOfficeId($officeId);
+            $ids = [];
+            if (is_array($serviceList) && isset($serviceList['errors'])) {
+                $officeServicesCache[$officeId] = [];
+            } else {
+                foreach ($serviceList->services as $service) {
+                    $ids[] = (string)$service->id;
+                }
+                $officeServicesCache[$officeId] = $ids;
+            }
         }
+        $availableServiceIds = $officeServicesCache[$officeId];
 
-        $invalidServiceIds = array_diff($serviceIds, $availableServiceIds);
+        $serviceIdsStr = array_map('strval', $serviceIds);
+        $invalidServiceIds = array_diff($serviceIdsStr, $availableServiceIds);
         return empty($invalidServiceIds)
             ? []
             : ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
+    }
+
+    private static function validateCaptcha(bool $captchaRequired, ?string $captchaToken, ?TokenValidationService $tokenValidator): array
+    {
+        $errors = [];
+
+        if ($captchaRequired) {
+            if (!$tokenValidator) {
+                $status = TokenValidationService::TOKEN_MISSING;
+            } else {
+                $status = $tokenValidator->validateCaptchaToken($captchaToken);
+            }
+
+            if ($status !== TokenValidationService::TOKEN_VALID) {
+                switch ($status) {
+                    case TokenValidationService::TOKEN_MISSING:
+                        $errors[] = self::getError('captchaMissing');
+                        break;
+                    case TokenValidationService::TOKEN_EXPIRED:
+                        $errors[] = self::getError('captchaExpired');
+                        break;
+                    default:
+                        $errors[] = self::getError('captchaInvalid');
+                }
+            }
+        }
+
+        return $errors;
     }
 
     /**
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract validation rules into separate rule objects using the specification pattern
      */
-    public static function validateGetBookableFreeDays(?array $officeIds, ?array $serviceIds, ?string $startDate, ?string $endDate, ?array $serviceCounts): array
+    public static function validateGetBookableFreeDays(?array $officeIds, ?array $serviceIds, ?string $startDate, ?string $endDate, ?array $serviceCounts, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
     {
         $errors = [];
         if (!self::isValidOfficeIds($officeIds)) {
@@ -126,6 +166,8 @@ class ValidationService
             $errors[] = self::getError('invalidServiceCount');
         }
 
+        $errors = array_merge($errors, self::validateCaptcha($captchaRequired, $captchaToken, $tokenValidator));
+
         return ['errors' => $errors];
     }
 
@@ -143,7 +185,7 @@ class ValidationService
         return ['errors' => $errors];
     }
 
-    public static function validateGetAvailableAppointments(?string $date, ?array $officeIds, ?array $serviceIds, ?array $serviceCounts): array
+    public static function validateGetAvailableAppointments(?string $date, ?array $officeIds, ?array $serviceIds, ?array $serviceCounts, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
     {
         $errors = [];
         if (!$date || !self::isValidDate($date)) {
@@ -162,10 +204,12 @@ class ValidationService
             $errors[] = self::getError('invalidServiceCount');
         }
 
+        $errors = array_merge($errors, self::validateCaptcha($captchaRequired, $captchaToken, $tokenValidator));
+
         return ['errors' => $errors];
     }
 
-    public static function validatePostAppointmentReserve(?int $officeId, ?array $serviceIds, ?array $serviceCounts, ?int $timestamp): array
+    public static function validatePostAppointmentReserve(?int $officeId, ?array $serviceIds, ?array $serviceCounts, ?int $timestamp, ?bool $captchaRequired = false, ?string $captchaToken = null, ?TokenValidationService $tokenValidator = null): array
     {
         $errors = [];
         if (!self::isValidOfficeId($officeId)) {
@@ -184,6 +228,8 @@ class ValidationService
             $errors[] = self::getError('invalidServiceCount');
         }
 
+        $errors = array_merge($errors, self::validateCaptcha($captchaRequired, $captchaToken, $tokenValidator));
+
         return ['errors' => $errors];
     }
 
@@ -192,6 +238,7 @@ class ValidationService
         ?string $email,
         ?string $telephone,
         ?string $customTextfield,
+        ?string $customTextfield2,
         ?ThinnedScope $scope
     ): array {
         $errors = [];
@@ -199,7 +246,8 @@ class ValidationService
         self::validateFamilyNameField($familyName, $errors);
         self::validateEmailField($email, $scope, $errors);
         self::validateTelephoneField($telephone, $scope, $errors);
-        self::validateCustomTextField($customTextfield, $scope, $errors);
+        self::validateCustomTextField($customTextfield, $scope?->customTextfieldActivated, $scope?->customTextfieldRequired, 'invalidCustomTextfield', $errors);
+        self::validateCustomTextField($customTextfield2, $scope?->customTextfield2Activated, $scope?->customTextfield2Required, 'invalidCustomTextfield2', $errors);
 
         return ['errors' => $errors];
     }
@@ -232,17 +280,17 @@ class ValidationService
         }
     }
 
-    private static function validateCustomTextField(?string $customTextfield, ?ThinnedScope $scope, array &$errors): void
+    private static function validateCustomTextField(?string $fieldValue, ?bool $fieldActivated, ?bool $fieldRequired, string $errorKey, array &$errors): void
     {
-        if (!$scope || !$scope->customTextfieldActivated) {
+        if (!$fieldActivated) {
             return;
         }
 
         if (
-            ($scope->customTextfieldRequired && ($customTextfield === "" || !self::isValidCustomTextfield($customTextfield))) ||
-            ($customTextfield !== null && $customTextfield !== "" && !self::isValidCustomTextfield($customTextfield))
+            ($fieldRequired && ($fieldValue === "" || !self::isValidCustomTextfield($fieldValue))) ||
+            ($fieldValue !== null && $fieldValue !== "" && !self::isValidCustomTextfield($fieldValue))
         ) {
-            $errors[] = self::getError('invalidCustomTextfield');
+            $errors[] = self::getError($errorKey);
         }
     }
 

@@ -56,15 +56,22 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
             'email' => "test@muenchen.de",
             'telephone' => '123456789',
             'customTextfield' => "Some custom text",
+            'customTextfield2' => "Another custom text",
         ];
         $response = $this->render([], $parameters, [], 'POST');
         $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertArrayHasKey('captchaToken', $responseBody);
+        $this->assertIsString($responseBody['captchaToken']);
+        unset($responseBody['captchaToken']);
+
         $expectedResponse = [
             "processId" => 101002,
             "timestamp" => "1727865900",
             "authKey" => "fb43",
             "familyName" => "TEST_USER",
             "customTextfield" => "Some custom text",
+            'customTextfield2' => "Another custom text",
             "email" => "test@muenchen.de",
             "telephone" => "123456789",
             "officeName" => null,
@@ -77,6 +84,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'lat'=> null,
                     'lon'=> null,
                     'name'=> '',
+                    'displayame'=> '',
                     'source'=> 'dldb'
                 ],
                 "shortName" => '',
@@ -87,14 +95,21 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 "customTextfieldActivated" => null,
                 "customTextfieldRequired" => null,
                 "customTextfieldLabel" => null,
+                "customTextfield2Activated" => null,
+                "customTextfield2Required" => null,
+                "customTextfield2Label" => null,
                 "captchaActivatedRequired" => null,
-                "displayInfo" => null
+                "displayInfo" => null,
+                "slotsPerAppointment" => null
             ],
             "status" => "reserved",
             "subRequestCounts" => [],
             "serviceId" => 10242339,
-            "serviceCount" => 1
+            "serviceName" => "Adressänderung Personalausweis, Reisepass, eAT",
+            "serviceCount" => 1,
+            "slotCount" => 1
         ];
+
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }

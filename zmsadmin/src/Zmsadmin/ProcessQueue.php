@@ -104,6 +104,10 @@ class ProcessQueue extends BaseController
                 $validator->getParameter('customTextfield'),
                 $delegatedProcess->setter('customTextfield')
             )
+            ->validateText(
+                $validator->getParameter('customTextfield2'),
+                $delegatedProcess->setter('customTextfield2')
+            )
             ->validateReminderTimestamp(
                 $validator->getParameter('headsUpTime'),
                 $delegatedProcess->setter('reminderTimestamp'),
@@ -188,7 +192,7 @@ class ProcessQueue extends BaseController
             $templateProvider = new MailTemplateArrayProvider();
             $templateProvider->setTemplates($templates);
 
-            $config = new \BO\Zmsentities\Config();
+            $config = \App::$http->readGetResult('/config/')->getEntity();
 
             $mail = (new \BO\Zmsentities\Mail())
                 ->setTemplateProvider($templateProvider)

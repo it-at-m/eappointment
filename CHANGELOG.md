@@ -1,3 +1,151 @@
+## Release Muc-26 (25.06.2025)
+                            
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-400'>ZMSKVR-400</a>] -          PROD Absagemail vor Terminstatus &quot;preconfirmed&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-403'>ZMSKVR-403</a>] -         PROD Absagemail: unvollständiger Inhalt (Dienstleistungen, Standort)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-408'>ZMSKVR-408</a>] -         Daily Cronjob Fehler: Slots in writeMaintenanceQueries werden nicht mehr vollständig berechnet
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-465'>ZMSKVR-465</a>] -         Überbuchung von Terminen am Orleansplatz an Dienstagen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-467'>ZMSKVR-467</a>] -         ZMS-Admin: Textfeldeingabe wird in Warteschlange HTML-&quot;interpretiert&quot; 
+</li>
+</ul>
+                                                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-82'>ZMSKVR-82</a>] -         Zeitauswahl Kalenderansicht, mehrere Orte
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-204'>ZMSKVR-204</a>] -         mellon: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-270'>ZMSKVR-270</a>] -         Keine ICS Datei bei den Absage Mails verschicken
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-430'>ZMSKVR-430</a>] -         Bürgerfrontend2: Testumgebung mit auf lhm-i.muenchen.swm.de Seite mit WAF Angebunden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-446'>ZMSKVR-446</a>] -         SessionID darf in der DB nicht im Klartext gespeichert werden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-474'>ZMSKVR-474</a>] -         Wochenkalender FrontEnd MVP
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-510'>ZMSKVR-510</a>] -         Schritt 2: Termin – Daten als Überschriften codieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-522'>ZMSKVR-522</a>] -         Schritt 3: Übersicht – &quot;Uhr&quot; bei Uhrzeit ergänzen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-523'>ZMSKVR-523</a>] -         Schritt 3: Übersicht – Konkrete Datenschutzerklärung verlinken
+</li>
+</ul>
+
+## Release Muc-25 (04.06.2025)
+                       
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-222'>ZMSKVR-222</a>] -         Terminaufruf: Details zum aufgerufenen Termin verschwinden aus &quot;Kundeninformationen&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-453'>ZMSKVR-453</a>] -         Fehlermeldung beim Emailnotiz versenden
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-466'>ZMSKVR-466</a>] -         Fehler beim Anlegen neuer leerer Öffnungszeiten ohne Stacktrace im Backend
+</li>
+</ul>
+                                                    
+<h2>        Spike
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-379'>ZMSKVR-379</a>] -         Terminvarianten
+</li>
+</ul>
+                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-321'>ZMSKVR-321</a>] -         Frontend: verbesserte Ansicht der häufig kombinierten Leistungen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-324'>ZMSKVR-324</a>] -         Backend: verbesserte Ansicht der kombinierbaren Leistungen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-327'>ZMSKVR-327</a>] -         Erstellung neuer Datenbanktabelle und Speichern der Daten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-328'>ZMSKVR-328</a>] -         Erstellung des API-Endpunkts für die Datenbank zur Gesamtübersicht mehrere Standorte
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-351'>ZMSKVR-351</a>] -         Validierung der Start- und Endwerte für die Terminvergabe durch Terminadministratoren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-363'>ZMSKVR-363</a>] -         Zusätzliches Freitextfeld
+</li>
+</ul>
+                                                        
+## Release Muc-24 (09.05.2025)
+                            
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-152'>ZMSKVR-152</a>] -         &quot;Termin drucken&quot; Template beinhaltet die umbuchen Links von Berliner System
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-371'>ZMSKVR-371</a>] -         Double CORS Problem in zmscitizenapi
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-389'>ZMSKVR-389</a>] -         CitizenAPI - Kombination von Dienstleistungen nicht möglich
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-399'>ZMSKVR-399</a>] -         Entfernen des Passworts aus PDO-Verbindungs-Stacktraces in Logs
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-413'>ZMSKVR-413</a>] -         Closure Fehler Öffnungszeiten lassen sich teilweise nicht speichern
+</li>
+</ul>
+                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-123'>ZMSKVR-123</a>] -         Slot-Graf Öffnungszeiten: Satz entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-213'>ZMSKVR-213</a>] -         Bürgeransicht/API Call Optimierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-327'>ZMSKVR-327</a>] -         Erstellung neuer Datenbanktabelle und Speichern der Daten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-366'>ZMSKVR-366</a>] -         Cookiespeicherung auf 8 Stunden erhöhen 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-404'>ZMSKVR-404</a>] -         Absicherung der citizenapi-Endpunkte durch JWT nach Captcha-Verifizierung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-433'>ZMSKVR-433</a>] -         Verbessertes Session Logging
+</li>
+</ul>
+                                                        
+
+## Release Muc-23 (23.04.2025)
+                  
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-345'>ZMSKVR-345</a>] -         Standortkonfiguration nicht speicherbar bei aktivierter Öffnungszeitensperre
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-346'>ZMSKVR-346</a>] -          Automatischer ungewollter Aufruf 
+</li>
+</ul>
+                                                                                                                                                                                                        
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-71'>ZMSKVR-71</a>] -         Berechtigungen zur Generierung von Auswertungen auf Behördenebene für Fachlichen Administratoren erweitern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-143'>ZMSKVR-143</a>] -         League/json-guard ausbauen und durch opis/json-schema ersetzen für PHP 8.1 Upgrade
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-145'>ZMSKVR-145</a>] -         Wartezeit Statistik - Kunde erscheint nicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-150'>ZMSKVR-150</a>] -         Ausnahmenserien farblich kennzeichnen 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-169'>ZMSKVR-169</a>] -         Solution10/sql Direkte Integration in Zmsdb
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-304'>ZMSKVR-304</a>] -         ZMSAPI libphonenumber update für Bürgerfrontend
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-307'>ZMSKVR-307</a>] -         Iconbeschriftung:   &quot;Offener Aufruf&quot; / &quot;In Bearbeitung&quot; 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-310'>ZMSKVR-310</a>] -         Anzeige der Dienstleistungen &quot;Führungszeugnis&quot; und &quot;Meldebescheinigung&quot; im Hauptkalender für interne Buchungen im Bürgerbüro
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-318'>ZMSKVR-318</a>] -         Fehlerhafte Fehlermeldung bei API-Abfrage für verfügbare Termine
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-309'>ZMSKVR-309</a>] -         Separater Kalender für Dienstleistungen im Bürgerbüro bei hoher Nachfrage nach Reisepässen
+</li>
+</ul>
+
 ## Release Muc-22 (28.03.2025)
                        
 <h2>        Bug

@@ -23,6 +23,8 @@ class ThinnedProcess extends Entity implements JsonSerializable
 /** @var string|null */
     public ?string $customTextfield;
 /** @var string|null */
+    public ?string $customTextfield2;
+/** @var string|null */
     public ?string $email;
 /** @var string|null */
     public ?string $telephone;
@@ -36,17 +38,25 @@ class ThinnedProcess extends Entity implements JsonSerializable
     public array $subRequestCounts;
 /** @var int|null */
     public ?int $serviceId;
+/** @var string|null */
+    public ?string $serviceName;
 /** @var int */
     public int $serviceCount;
 /** @var string|null */
     public ?string $status;
-    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, int $serviceCount = 0, ?string $status = null)
+/** @var string|null */
+    public ?string $captchaToken;
+/** @var int|null */
+    public ?int $slotCount;
+
+    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $customTextfield2 = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, ?string $serviceName = null, int $serviceCount = 0, ?string $status = null, ?string $captchaToken = null, ?int $slotCount = null)
     {
         $this->processId = $processId;
         $this->timestamp = $timestamp;
         $this->authKey = $authKey;
         $this->familyName = $familyName;
         $this->customTextfield = $customTextfield;
+        $this->customTextfield2 = $customTextfield2;
         $this->email = $email;
         $this->telephone = $telephone;
         $this->officeName = $officeName;
@@ -54,8 +64,11 @@ class ThinnedProcess extends Entity implements JsonSerializable
         $this->scope = $scope;
         $this->subRequestCounts = $subRequestCounts;
         $this->serviceId = $serviceId;
+        $this->serviceName = $serviceName;
         $this->serviceCount = $serviceCount;
         $this->status = $status;
+        $this->captchaToken = $captchaToken;
+        $this->slotCount = $slotCount;
         $this->ensureValid();
     }
 
@@ -72,6 +85,7 @@ class ThinnedProcess extends Entity implements JsonSerializable
             'authKey' => $this->authKey ?? null,
             'familyName' => $this->familyName ?? null,
             'customTextfield' => $this->customTextfield ?? null,
+            'customTextfield2' => $this->customTextfield2 ?? null,
             'email' => $this->email ?? null,
             'telephone' => $this->telephone ?? null,
             'officeName' => $this->officeName ?? null,
@@ -79,9 +93,22 @@ class ThinnedProcess extends Entity implements JsonSerializable
             'scope' => $this->scope ?? null,
             'subRequestCounts' => $this->subRequestCounts,
             'serviceId' => $this->serviceId ?? null,
+            'serviceName' => $this->serviceName ?? null,
             'serviceCount' => $this->serviceCount,
             'status' => $this->status ?? null,
+            'captchaToken' => $this->captchaToken ?? null,
+            'slotCount' => $this->slotCount ?? null
         ];
+    }
+
+    public function setCaptchaToken(string $token): void
+    {
+        $this->captchaToken = $token;
+    }
+
+    public function getCaptchaToken(): ?string
+    {
+        return $this->captchaToken;
     }
 
     private function ensureValid()

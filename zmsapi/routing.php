@@ -197,51 +197,10 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post(
     '/availability/',
-    '\BO\Zmsapi\AvailabilityAdd'
+    '\BO\Zmsapi\AvailabilityListUpdate'
 )
-    ->setName("AvailabilityAdd");
+    ->setName("AvailabilityListUpdate");
 
-/**
- *  @swagger
- *  "/availability/{id}/":
- *      post:
- *          summary: Update an availability
- *          tags:
- *              - availability
- *          parameters:
- *              -   name: id
- *                  description: availability number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: availability
- *                  description: availability data to update
- *                  in: body
- *                  schema:
- *                      $ref: "schema/availability.json"
- *              -   name: X-Authkey
- *                  required: true
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/availability.json"
- *              404:
- *                  description: "availability id does not exists"
- */
-\App::$slim->post(
-    '/availability/{id:\d{1,11}}/',
-    '\BO\Zmsapi\AvailabilityUpdate'
-)
-    ->setName("AvailabilityUpdate");
 
 /**
  *  @swagger
@@ -6486,6 +6445,55 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\WorkstationProcessParked'
 )
     ->setName("WorkstationProcessParked");
+
+/**
+ *  @swagger
+ *  "/overallcalendar/":
+ *      get:
+ *          summary: Returns slot information from the overall calendar
+ *          description: |
+ *              Returns all slot rows (or only those changed after *updateAfter*)
+ *              aggregated by day, scope, time and seat.
+ *          tags:
+ *              - overallcalendar
+ *          parameters:
+ *              - name: scopeIds
+ *                in: query
+ *                required: true
+ *                description: CSV list of scope IDs, e.g. `58,60`
+ *                schema:
+ *                  type: string
+ *              - name: dateFrom
+ *                in: query
+ *                required: true
+ *                description: First day (YYYY-MM-DD)
+ *                schema:
+ *                  type: string
+ *              - name: dateUntil
+ *                in: query
+ *                required: true
+ *                description: Last day (YYYY-MM-DD)
+ *                schema:
+ *                  type: string
+ *              - name: updateAfter
+ *                in: query
+ *                required: false
+ *                description: Only rows with `updated_at` &gt; this ISO timestamp
+ *                schema:
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: List of days with slot information
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: "schema/overallCalendar.json"
+ */
+\App::$slim->get(
+    '/overallcalendar/',
+    '\BO\Zmsapi\OverallCalendarRead'
+)->setName('OverallCalendarRead');
+
 
 /* ---------------------------------------------------------------------------
  * maintenance

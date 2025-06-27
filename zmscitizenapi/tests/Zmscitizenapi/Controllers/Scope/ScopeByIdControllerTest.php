@@ -41,6 +41,7 @@ class ScopeByIdControllerTest extends ControllerTestCase
             "provider" => [
                 "id" => 9999998,
                 "name" => "Unittest Source Dienstleister",
+                "displayName" => "Unittest",
                 "lat" => 48.12750898398659,
                 "lon" => 11.604317899956524,
                 "source" => "unittest",
@@ -62,8 +63,12 @@ class ScopeByIdControllerTest extends ControllerTestCase
             "customTextfieldActivated" => true,
             "customTextfieldRequired" => false,
             "customTextfieldLabel" => "Custom Label",
-            "captchaActivatedRequired" => true,
-            "displayInfo" => null
+            "customTextfield2Activated" => true,
+            "customTextfield2Required" => false,
+            "customTextfield2Label" => "Second Custom Label",
+            "captchaActivatedRequired" => false,
+            "displayInfo" => null,
+            "slotsPerAppointment" => null
         ];               
         $responseBody = json_decode((string)$response->getBody(), true);
         $this->assertEquals(200, $response->getStatusCode());

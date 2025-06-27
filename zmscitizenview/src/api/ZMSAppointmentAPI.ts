@@ -1,6 +1,7 @@
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsDTO } from "@/api/models/AvailableTimeSlotsDTO";
+import { CaptchaDetailsDTO } from "@/api/models/CaptchaDetailsDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
@@ -11,6 +12,7 @@ import {
   VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
   VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
   VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT,
+  VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT,
   VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT,
   VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT,
@@ -43,17 +45,19 @@ export function fetchServicesAndProviders(
 }
 
 export function fetchAvailableDays(
-  provider: OfficeImpl,
+  providerIds: number[],
   serviceIds: string[],
   serviceCounts: number[],
-  baseUrl?: string
+  baseUrl?: string,
+  captchaToken?: string
 ): Promise<AvailableDaysDTO | ErrorDTO> {
   const params: Record<string, any> = {
     startDate: convertDateToString(TODAY),
     endDate: convertDateToString(MAXDATE),
-    officeId: provider.id,
+    officeId: providerIds,
     serviceId: serviceIds,
     serviceCount: serviceCounts,
+    ...(captchaToken && { captchaToken }),
   };
 
   return fetch(
@@ -68,16 +72,18 @@ export function fetchAvailableDays(
 
 export function fetchAvailableTimeSlots(
   date: string,
-  provider: OfficeImpl,
+  providerIds: number[],
   serviceIds: string[],
   serviceCounts: number[],
-  baseUrl?: string
+  baseUrl?: string,
+  captchaToken?: string
 ): Promise<AvailableTimeSlotsDTO | ErrorDTO> {
   const params: Record<string, any> = {
     date: date,
-    officeId: provider.id,
+    officeId: providerIds,
     serviceId: serviceIds,
     serviceCount: serviceCounts,
+    ...(captchaToken && { captchaToken }),
   };
 
   return fetch(
@@ -102,14 +108,15 @@ export function reserveAppointment(
   serviceIds: string[],
   serviceCount: number[],
   providerId: string,
-  baseUrl?: string
+  baseUrl?: string,
+  captchaToken?: string
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     timestamp: timeSlot,
     serviceCount: serviceCount,
     officeId: providerId,
     serviceId: serviceIds,
-    captchaSolution: null,
+    ...(captchaToken && { captchaToken }),
   };
 
   return fetch(
@@ -136,6 +143,7 @@ export function updateAppointment(
     email: appointment.email,
     telephone: appointment.telephone,
     customTextfield: appointment.customTextfield,
+    customTextfield2: appointment.customTextfield2,
   };
 
   return fetch(
@@ -158,7 +166,6 @@ export function preconfirmAppointment(
     processId: appointment.processId,
     authKey: appointment.authKey,
     scope: appointment.scope,
-    captchaSolution: null,
   };
 
   return fetch(
@@ -232,6 +239,16 @@ export function cancelAppointment(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody),
     }
+  ).then((response) => {
+    return response.json();
+  });
+}
+
+export function fetchCaptchaDetails(
+  baseUrl?: string
+): Promise<CaptchaDetailsDTO | ErrorDTO> {
+  return fetch(
+    getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT
   ).then((response) => {
     return response.json();
   });

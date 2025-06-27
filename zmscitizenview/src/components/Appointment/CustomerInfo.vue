@@ -54,6 +54,18 @@
       :label="selectedProvider.scope.customTextfieldLabel"
       :required="selectedProvider.scope.customTextfieldRequired"
     />
+    <muc-text-area
+      v-if="
+        selectedProvider &&
+        selectedProvider.scope &&
+        selectedProvider.scope.customTextfield2Activated
+      "
+      id="remarks2"
+      v-model="customerData.customTextfield2"
+      :error-msg="showErrorMessage ? errorMessageCustomTextfield2 : undefined"
+      :label="selectedProvider.scope.customTextfield2Label"
+      :required="selectedProvider.scope.customTextfield2Required"
+    />
   </form>
   <div class="m-button-group">
     <muc-button
@@ -65,15 +77,20 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      icon="arrow-right"
+      :disabled="loadingStates.isUpdatingAppointment.value"
+      :icon="'arrow-right'"
       @click="nextStep"
     >
-      <template #default>{{ t("next") }}</template>
+      <template #default>
+        <span>{{ t("next") }}</span>
+      </template>
     </muc-button>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
+
 import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
@@ -96,17 +113,33 @@ const { selectedProvider } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
 
+const loadingStates = inject("loadingStates", {
+  isReservingAppointment: ref(false),
+  isUpdatingAppointment: ref(false),
+  isBookingAppointment: ref(false),
+  isCancelingAppointment: ref(false),
+}) as {
+  isReservingAppointment: Ref<boolean>;
+  isUpdatingAppointment: Ref<boolean>;
+  isBookingAppointment: Ref<boolean>;
+  isCancelingAppointment: Ref<boolean>;
+};
+
 const showErrorMessage = ref<boolean>(false);
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const telephonPattern = /^\+?[0-9]\d{6,14}$/;
 
 const errorMessageFirstName = computed(() =>
-  customerData.value.firstName ? undefined : props.t("errorMessageFirstName")
+  customerData.value.firstName?.trim()
+    ? undefined
+    : props.t("errorMessageFirstName")
 );
 
 const errorMessageLastName = computed(() =>
-  customerData.value.lastName ? undefined : props.t("errorMessageLastName")
+  customerData.value.lastName?.trim()
+    ? undefined
+    : props.t("errorMessageLastName")
 );
 
 const errorMessageMailAddress = computed(() => {
@@ -150,13 +183,27 @@ const errorMessageCustomTextfield = computed(() => {
   }
 });
 
+const errorMessageCustomTextfield2 = computed(() => {
+  if (
+    !customerData.value.customTextfield2 &&
+    selectedProvider.value &&
+    selectedProvider.value.scope &&
+    selectedProvider.value.scope.customTextfield2Required
+  ) {
+    return props.t("errorMessageCustomTextfield2");
+  } else {
+    return undefined;
+  }
+});
+
 const validForm = computed(
   () =>
     !errorMessageFirstName.value &&
     !errorMessageLastName.value &&
     !errorMessageMailAddress.value &&
     !errorMessageTelephoneNumber.value &&
-    !errorMessageCustomTextfield.value
+    !errorMessageCustomTextfield.value &&
+    !errorMessageCustomTextfield2.value
 );
 
 const nextStep = () => {
