@@ -54,7 +54,7 @@ jobs:
           - module: zmsmessaging
             php_version: "8.0"
           - module: zmsslim
-            php_version: "8.0"
+            php_version: "8.3"
           - module: zmsstatistic
             php_version: "8.0"
           - module: zmsticketprinter
