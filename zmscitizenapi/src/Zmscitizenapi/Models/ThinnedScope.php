@@ -135,7 +135,7 @@ class ThinnedScope extends Entity implements JsonSerializable
     {
         return $this->slotsPerAppointment;
     }
-    
+
     public function getAppointmentsPerMail(): ?string
     {
         return $this->appointmentsPerMail;

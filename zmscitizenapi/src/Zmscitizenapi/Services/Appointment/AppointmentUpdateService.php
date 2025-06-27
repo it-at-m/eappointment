@@ -37,7 +37,7 @@ class AppointmentUpdateService
         if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
             return $reservedProcess;
         }
-        
+
         $fieldErrors = ValidationService::validateAppointmentUpdateFields(
             $data->familyName,
             $data->email,
