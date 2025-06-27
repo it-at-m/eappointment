@@ -83,6 +83,93 @@ class ProcessStatusFree extends Process
         return $processList;
     }
 
+    public function readFreeProcessesMinimalDeduplicated(
+        \BO\Zmsentities\Calendar $calendar,
+        \DateTimeInterface $now,
+        string $slotType = 'public',
+        ?int $slotsRequired = null,
+        bool $groupData = false
+    ): array {
+        list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
+        $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
+
+        $unique = [];
+        while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
+            $processInfo = $this->extractProcessInfo($item, $calendar);
+            if ($processInfo) {
+                $key = $this->generateUniqueKey($processInfo['providerId'], $processInfo['date']);
+                if (!isset($unique[$key])) {
+                    $unique[$key] = $this->createMinimalProcess($processInfo);
+                }
+            }
+        }
+
+        $processData->closeCursor();
+        unset($dayquery);
+
+        return array_values($unique);
+    }
+
+    private function extractProcessInfo(array $item, \BO\Zmsentities\Calendar $calendar): ?array
+    {
+        $scopeId = $item['scope__id'] ?? null;
+        $dateString = $item['appointments__0__date'] ?? null;
+
+        if (!$scopeId || !$dateString) {
+            return null;
+        }
+
+        $date = strtotime($dateString);
+        if (!$date) {
+            return null;
+        }
+
+        $scope = $calendar->scopes->getEntity($scopeId);
+        if (!$scope) {
+            return null;
+        }
+
+        $providerId = $scope->getProviderId();
+        if (!$providerId) {
+            return null;
+        }
+
+        return [
+            'scopeId' => $scopeId,
+            'providerId' => $providerId,
+            'date' => $date
+        ];
+    }
+
+    private function generateUniqueKey(string $providerId, int $date): string
+    {
+        return $providerId . '_' . $date;
+    }
+
+    private function createMinimalProcess(array $processInfo): array
+    {
+        return [
+            '$schema' => 'https://schema.berlin.de/queuemanagement/process.json',
+            'scope' => [
+                'id' => $processInfo['scopeId'],
+                'provider' => [
+                    'id' => $processInfo['providerId']
+                ]
+            ],
+            'appointments' => [
+                [
+                    'date' => (string)$processInfo['date'],
+                    'scope' => [
+                        'id' => $processInfo['scopeId'],
+                        'provider' => [
+                            'id' => $processInfo['providerId']
+                        ]
+                    ]
+                ]
+            ]
+        ];
+    }
+
     public function readReservedProcesses($resolveReferences = 2)
     {
         $processList = new Collection();

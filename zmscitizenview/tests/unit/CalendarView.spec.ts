@@ -251,6 +251,9 @@ describe("CalendarView", () => {
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
+    // Wait for loading to complete and spinner to disappear
+    await flushPromises();
+    await new Promise(resolve => setTimeout(resolve, 150)); // Wait for 100ms timeout + buffer
 
     const locationTitles = wrapper.findAll('.location-title');
     const officeAAA = locationTitles.find(location => location.text().includes('Office AAA'));
@@ -301,6 +304,9 @@ describe("CalendarView", () => {
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
+    // Wait for loading to complete and spinner to disappear
+    await flushPromises();
+    await new Promise(resolve => setTimeout(resolve, 150)); // Wait for 100ms timeout + buffer
 
     const locationTitles = wrapper.findAll('.location-title');
     const officeAAA = locationTitles.find(location => location.text().includes('Office AAA'));
@@ -352,6 +358,9 @@ describe("CalendarView", () => {
     await nextTick();
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
+    // Wait for loading to complete and spinner to disappear
+    await flushPromises();
+    await new Promise(resolve => setTimeout(resolve, 150)); // Wait for 100ms timeout + buffer
 
     const locationTitles = wrapper.findAll('.location-title');
     const officeAAA = locationTitles.find(location => location.text().includes('Office AAA'));

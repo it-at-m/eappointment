@@ -478,40 +478,6 @@ class ZmsApiFacadeService
         return $result;
     }
 
-    public static function getServicesProvidedAtOffice(int $officeId): RequestList|array
-    {
-        $requestRelationList = ZmsApiClientService::getRequestRelationList() ?? new RequestRelationList();
-        $requestRelationArray = [];
-        foreach ($requestRelationList as $relation) {
-            $requestRelationArray[] = $relation;
-        }
-
-        $serviceIds = array_filter($requestRelationArray, function ($relation) use ($officeId) {
-
-            return $relation->provider->id === $officeId || (string) $relation->provider->id === (string) $officeId;
-        });
-        $serviceIds = array_map(function ($relation) {
-
-            return $relation->request->id;
-        }, $serviceIds);
-        $requestList = ZmsApiClientService::getServices() ?? new RequestList();
-        $requestArray = [];
-        foreach ($requestList as $request) {
-            $requestArray[] = $request;
-        }
-
-        $filteredRequests = array_filter($requestArray, function ($request) use ($serviceIds) {
-
-            return in_array($request->id, $serviceIds);
-        });
-        $resultRequestList = new RequestList();
-        foreach ($filteredRequests as $request) {
-            $resultRequestList->addEntity($request);
-        }
-
-        return $resultRequestList;
-    }
-
     public static function getBookableFreeDays(
         array $officeIds,
         array $serviceIds,
