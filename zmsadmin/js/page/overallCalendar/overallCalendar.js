@@ -1,6 +1,21 @@
 let lastUpdateAfter = null;
 let autoRefreshTimer = null;
-let currentRequest = null;
+let currentRequest   = null;
+
+function buildScopeColorMap(days) {
+    const ids = [...new Set(
+        days.flatMap(d => d.scopes.map(s => s.id))
+    )];
+
+    const total = ids.length;
+    const colorMap = Object.create(null);
+
+    ids.forEach((id, idx) => {
+        const round = Math.round(((idx * 137.508) % 360));
+        colorMap[id] = `hsl(${round} 60% 85%)`;
+    });
+    return colorMap;
+}
 
 function toMysql(date) {
     const d = (date instanceof Date) ? date : new Date(date);
@@ -12,13 +27,10 @@ function toMysql(date) {
     const seconds = String(d.getSeconds()).padStart(2, '0');
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
-
 function isSameRequest(a, b) {
     if (!a || !b) return false;
     if (a.dateFrom !== b.dateFrom || a.dateUntil !== b.dateUntil) return false;
-    const x = [...a.scopeIds].sort().join(',');
-    const y = [...b.scopeIds].sort().join(',');
-    return x === y;
+    return [...a.scopeIds].sort().join(',') === [...b.scopeIds].sort().join(',');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -154,7 +166,6 @@ function startAutoRefresh() {
     }, 1000);
 }
 
-
 async function fetchIncrementalUpdate() {
     if (!currentRequest || !lastUpdateAfter) return;
     const {scopeIds, dateFrom, dateUntil} = currentRequest;
@@ -164,8 +175,7 @@ async function fetchIncrementalUpdate() {
         dateUntil,
         updateAfter: lastUpdateAfter
     });
-
-    const res = await fetch(`overallcalendarData/?${params.toString()}`);
+    const res = await fetch(`overallcalendarData/?${params}`);
     if (!res.ok) return;
 
     lastUpdateAfter = toMysql(res.headers.get('Last-Modified') || new Date());
@@ -204,6 +214,7 @@ function renderMultiDayCalendar(days) {
         return;
     }
 
+    const SCOPE_COLORS = buildScopeColorMap(days);
     const allTimes = [...new Set(
         days.flatMap(day =>
             day.scopes.flatMap(scope => scope.times.map(t => t.name))
@@ -223,7 +234,11 @@ function renderMultiDayCalendar(days) {
     container.style.gridTemplateColumns = templateCols.join(' ');
     container.style.minWidth = 'fit-content';
 
-    addCell({text: 'Datum', className: 'overall-calendar-head overall-calendar-day-header', row: 1, col: 1});
+    addCell({
+        text: 'Datum',
+        className: 'overall-calendar-head overall-calendar-day-header ' + 'overall-calendar-sticky-corner',
+        row: 1, col: 1
+    });
 
     let colCursor = 2;
     const totalRows = allTimes.length + 2;
@@ -239,7 +254,8 @@ function renderMultiDayCalendar(days) {
 
         addCell({
             text: `${dayName} ${dayDate}`,
-            className: 'overall-calendar-head overall-calendar-day-header',
+            className: 'overall-calendar-head overall-calendar-day-header ' +
+                'overall-calendar-stick-top',
             row: 1,
             col: colCursor,
             colSpan: daySpan
@@ -251,7 +267,8 @@ function renderMultiDayCalendar(days) {
 
     addCell({
         text: 'Zeit',
-        className: 'overall-calendar-head overall-calendar-scope-header',
+        className: 'overall-calendar-head overall-calendar-scope-header ' +
+            'overall-calendar-stick-left',
         row: 2,
         col: 1
     });
@@ -259,13 +276,26 @@ function renderMultiDayCalendar(days) {
     colCursor = 2;
     days.forEach((day, dayIdx) => {
         day.scopes.forEach((scope, scopeIdx) => {
+            const scopeStartCol = colCursor;
+
             addCell({
                 text: scope.shortName || scope.name || `Scope ${scope.id}`,
-                className: 'overall-calendar-head overall-calendar-scope-header',
+                className: 'overall-calendar-head overall-calendar-scope-header ' +
+                    'overall-calendar-stick-top',
                 row: 2,
-                col: colCursor,
+                col: scopeStartCol,
                 colSpan: scope.maxSeats
             });
+
+            const stripeCell = addCell({
+                className: 'overall-calendar-scope-stripe',
+                row   : 3,
+                col   : scopeStartCol,
+                rowSpan: allTimes.length,
+                colSpan: scope.maxSeats
+            });
+            stripeCell.style.background = SCOPE_COLORS[scope.id];
+
             colCursor += scope.maxSeats;
 
             if (scopeIdx < day.scopes.length - 1) {
@@ -297,7 +327,7 @@ function renderMultiDayCalendar(days) {
 
         addCell({
             text: time,
-            className: 'overall-calendar-time',
+            className: 'overall-calendar-time overall-calendar-stick-left',
             row: gridRow,
             col: 1
         });
@@ -309,16 +339,13 @@ function renderMultiDayCalendar(days) {
                 const timeObj = scope.times.find(t => t.name === time) || {seats: []};
 
                 for (let seatIdx = 0; seatIdx < scope.maxSeats; seatIdx++) {
-                    if (occupied.has(`${gridRow}-${col}`)) {
-                        col++;
-                        continue;
-                    }
+                    if (occupied.has(`${gridRow}-${col}`)) { col++; continue; }
 
-                    const seat = timeObj.seats[seatIdx] || {};
-                    const slotStatus = seat.status ?? 'empty';
-                    const cellId = `cell-${dateKey}-${time}-${scope.id}-${seatIdx + 1}`;
+                    const seat= timeObj.seats[seatIdx] || {};
+                    const status= seat.status ?? 'empty';
+                    const cellId= `cell-${dateKey}-${time}-${scope.id}-${seatIdx + 1}`;
 
-                    if (slotStatus === 'termin') {
+                    if (status === 'termin') {
                         const span = seat.slots || 1;
                         addCell({
                             text: seat.processId ?? '',
@@ -330,46 +357,45 @@ function renderMultiDayCalendar(days) {
                             dataStatus: 'termin'
                         });
                         for (let i = 0; i < span; i++) occupied.add(`${gridRow + i}-${col}`);
-                    } else if (slotStatus !== 'skip') {
+                    } else if (status !== 'skip') {
                         addCell({
-                            className: `overall-calendar-seat overall-calendar-${slotStatus}`,
+                            className: `overall-calendar-seat overall-calendar-${status}`,
                             row: gridRow,
                             col,
                             id: cellId,
-                            dataStatus: slotStatus
+                            dataStatus: status
                         });
                     }
                     col++;
                 }
-
                 if (scopeIdx < day.scopes.length - 1) col++;
             });
-
             if (dayIdx < days.length - 1) col++;
         });
     });
 
-    function addCell({text = '', className = '', row, col, rowSpan = 1, colSpan = 1, id = null, dataStatus = null}) {
+    showFullscreenButton();
+
+    function addCell({ text = '', className = '', row, col,
+                         rowSpan = 1, colSpan = 1, id = null, dataStatus = null }) {
         const div = document.createElement('div');
         div.textContent = text;
-        div.className = className;
-        div.style.gridRow = `${row} / span ${rowSpan}`;
+        div.className= className;
+        div.style.gridRow= `${row} / span ${rowSpan}`;
         div.style.gridColumn = `${col} / span ${colSpan}`;
         if (id) div.id = id;
         if (dataStatus) div.dataset.status = dataStatus;
         div.dataset.row = row;
         container.appendChild(div);
+        return div;
     }
-
-    showFullscreenButton();
 }
 
 function showFullscreenButton() {
-    const fullscreenBtn = document.getElementById('calendar-fullscreen');
-    const calendar = document.getElementById('overall-calendar');
-    if (fullscreenBtn && calendar && calendar.children.length) fullscreenBtn.style.display = 'inline-block';
+    const btn  = document.getElementById('calendar-fullscreen');
+    const cal  = document.getElementById('overall-calendar');
+    if (btn && cal && cal.children.length) btn.style.display = 'inline-block';
 }
-
 function togglePageScroll(disable) {
     document.documentElement.classList.toggle('no-page-scroll', disable);
     document.body.classList.toggle('no-page-scroll', disable);
