@@ -104,6 +104,13 @@
                 "null"
             ],
             "description": "Number of allowed appointments per e-mail address"
+        },
+        "whitelistedMails": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "E-mail addresses that have no limitation on appointments countss"
         }
     }
 }
