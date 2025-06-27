@@ -571,10 +571,10 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
           office.organization,
           office.organizationUnit,
           office.slotTimeInMinutes,
-          undefined,
+          office.disabledByServices,
           office.scope,
           office.maxSlotsPerAppointment,
-          undefined,
+          office.slots,
           office.priority || 1
         );
 

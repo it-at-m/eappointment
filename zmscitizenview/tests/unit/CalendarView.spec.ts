@@ -130,6 +130,50 @@ describe("CalendarView", () => {
     expect(wrapper.text()).toContain('Office B');
   });
 
+  it("filters providers correctly based on disabledByServices", async () => {
+    const testProviders = [
+      { id: 102522, name: 'Bürgerbüro Orleansplatz', disabledByServices: [] },
+      { id: 102523, name: 'Bürgerbüro Leonrodstraße', disabledByServices: [] },
+      { id: 102524, name: 'Bürgerbüro Riesenfeldstraße', disabledByServices: [] },
+      { id: 102526, name: 'Bürgerbüro Forstenrieder Allee', disabledByServices: [] },
+      { id: 10489, name: 'Bürgerbüro Ruppertstraße', disabledByServices: ['1063453', '1063441', '1080582'] },
+      { id: 10502, name: 'Bürgerbüro Ruppertstraße', disabledByServices: [] },
+      { id: 54261, name: 'Bürgerbüro Pasing', disabledByServices: [] },
+    ];
+
+    const runTest = async (selectedServiceIds: number[], expectedIds: number[]) => {
+      const wrapper = createWrapper({
+        selectedService: {
+          id: selectedServiceIds[0],
+          subServices: selectedServiceIds.slice(1).map(id => ({
+            id,
+            count: 1,
+            providers: testProviders
+          })),
+          providers: testProviders
+        }
+      });
+
+      await nextTick(); // Wait for onMounted to run
+      const renderedProviders = wrapper.vm.selectableProviders as typeof testProviders;
+      const resultIds = renderedProviders.map(p => p.id).sort();
+      expect(resultIds).toEqual(expectedIds.sort());
+    };
+
+    // 1. service 1063453 disables 10489
+    await runTest([1063453], [102522, 102523, 102524, 102526, 10502, 54261]);
+
+    // 2. service 1234567 doesn't disable 10489
+    await runTest([1234567], [102522, 102523, 102524, 102526, 10489, 54261]);
+
+    // 3. services 1063453 + 1063441 fully match disabledByServices of 10489
+    await runTest([1063453, 1063441], [102522, 102523, 102524, 102526, 10502, 54261]);
+
+    // 4. services 1063453 + 1234567 don't fully match disabledByServices of 10489
+    await runTest([1063453, 1234567], [102522, 102523, 102524, 102526, 10489, 54261]);
+  });
+
+
   it("shows providers in correct prio", async () => {
     // Mock availableDays to include both providers
     (fetchAvailableDays as Mock).mockResolvedValue({
@@ -407,9 +451,9 @@ describe("CalendarView", () => {
       ]
     });
 
-    await wrapper.vm.showSelectionForProvider({ 
-      name: "Office AAA", 
-      id: 102522, 
+    await wrapper.vm.showSelectionForProvider({
+      name: "Office AAA",
+      id: 102522,
       address: { street: "Elm", house_number: "99" }
     });
     await nextTick();
@@ -934,7 +978,7 @@ describe("CalendarView", () => {
       // Verify that the calendar view updates to show August
       const calendar = wrapper.findComponent({ name: 'muc-calendar' });
       expect(calendar.exists()).toBe(true);
-      
+
       // Compare only year and month to avoid timezone issues
       const actualDate = calendar.props('viewMonth');
       expect(actualDate.getFullYear()).toBe(2025);
@@ -1310,8 +1354,8 @@ describe("CalendarView", () => {
     // 32 appointments in total (across both providers) - using exact hour timestamps > 0
     (fetchAvailableTimeSlots as Mock).mockResolvedValue({
       offices: [
-        { 
-          officeId: 1, 
+        {
+          officeId: 1,
           appointments: [
             1750915200, // 08:00
             1750918800, // 09:00
@@ -1331,8 +1375,8 @@ describe("CalendarView", () => {
             1750969200, // 23:00
           ]
         },
-        { 
-          officeId: 2, 
+        {
+          officeId: 2,
           appointments: [
             1750915200, // 08:00
             1750918800, // 09:00
@@ -1364,16 +1408,16 @@ describe("CalendarView", () => {
     await flushPromises();
     await wrapper.vm.handleDaySelection(new Date("2025-07-02"));
     await flushPromises();
-    
+
     // Directly set both providers as selected
     wrapper.vm.selectedProviders = { 1: true, 2: true };
     await nextTick();
     await flushPromises();
-    
+
     // Wait for loading to complete
     await new Promise(resolve => setTimeout(resolve, 150));
     await nextTick();
-    
+
     expect(wrapper.html()).toMatch(/\d:00-\d:59/);
   });
 
@@ -1446,50 +1490,50 @@ describe("CalendarView", () => {
     afterEach(() => {
       wrapper.unmount();
     });
-  
+
     it("test loading state when reserving appointment", async () => {
         wrapper.vm.loadingStates.isReservingAppointment.value = true;
         await nextTick();
-  
+
         expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
-  
+
         wrapper.vm.loadingStates.isReservingAppointment.value = false;
         await nextTick();
-  
+
         expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(false);
     });
-  
+
     it('enables the next button after selecting an appointment and disables it after reservation starts', async () => {
       // Simulate selecting an appointment
       selectedTimeslotRef.value = 1234567890;
       await nextTick();
       let nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
       expect(nextButton && !nextButton.props('disabled')).toBe(true);
-  
+
       // Simulate reservation (loading state)
       loadingStates.isReservingAppointment.value = true;
       await nextTick();
       nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
       expect(nextButton && nextButton.props('disabled')).toBe(true);
     });
-  
+
     it('disables next button during reservation and re-enables after reservation completes', async () => {
       selectedTimeslotRef.value = 1234567890;
       await nextTick();
       let nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
       expect(nextButton && !nextButton.props('disabled')).toBe(true);
-  
+
       loadingStates.isReservingAppointment.value = true;
       await nextTick();
       nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
       expect(nextButton && nextButton.props('disabled')).toBe(true);
-  
+
       loadingStates.isReservingAppointment.value = false;
       await nextTick();
       nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
       expect(nextButton && !nextButton.props('disabled')).toBe(true);
     });
-  
+
   });
 });
 
