@@ -69,7 +69,9 @@ class ScopesListControllerTest extends ControllerTestCase
                     "customTextfield2Label" => "Second Custom Label",
                     "captchaActivatedRequired" => false,
                     "displayInfo" => null,
-                    "slotsPerAppointment" => null
+                    "slotsPerAppointment" => null,
+                    "appointmentsPerMail" => null,
+                    "whitelistedMails" => null
                 ],
                 [
                     "id" => 2,
@@ -103,8 +105,10 @@ class ScopesListControllerTest extends ControllerTestCase
                     "customTextfield2Label" => "",
                     "captchaActivatedRequired" => false,
                     "displayInfo" => null,
-                    "slotsPerAppointment" => null
-                ]
+                    "slotsPerAppointment" => null,
+                    "appointmentsPerMail" => null,
+                    "whitelistedMails" => null
+                    ]
             ]
         ];
 

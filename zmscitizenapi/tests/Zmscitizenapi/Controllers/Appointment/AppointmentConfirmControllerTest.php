@@ -101,7 +101,9 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                 'customTextfield2Label' => null,
                 'captchaActivatedRequired' => null,
                 'displayInfo' => null,
-                'slotsPerAppointment' => null
+                'slotsPerAppointment' => null,
+                "appointmentsPerMail" => null,
+                "whitelistedMails" => null
             ],
             'subRequestCounts' => [],
             'serviceId' => 10242339,
