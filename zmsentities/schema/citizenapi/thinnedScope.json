@@ -110,7 +110,7 @@
                 "string",
                 "null"
             ],
-            "description": "E-mail addresses that have no limitation on appointments countss"
+            "description": "E-mail addresses that have no limitation on appointments count"
         }
     }
 }
