@@ -10,11 +10,11 @@
     ],
     "config": {
         "platform": {
-            "php": "8.0"
+            "php": "8.3"
         }
     },
     "require": {
-        "php": ">=7.3.0",
+        "php": "^8.3",
         "ext-json": "*",
         "ext-posix": "*",
         "slim/slim": "4.*",
