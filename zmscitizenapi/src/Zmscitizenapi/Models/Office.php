@@ -21,7 +21,7 @@ class Office extends Entity implements JsonSerializable
     public ?string $organizationUnit = null;
     public ?int $slotTimeInMinutes = null;
     public ?array $geo = null;
-    public ?array $disabledByServices = null;
+    public ?array $disabledByServices = [];
     public int $priority = 1;
     public ?ThinnedScope $scope = null;
     public ?string $maxSlotsPerAppointment = null;
