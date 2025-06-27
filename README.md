@@ -184,7 +184,7 @@ bin/importTestData --commit
 
 ### Common Errors
 
-- If you encounter `Too many levels of symbolic links`, remove the `<exclude>` rule for the vendor directory in the module’s phpunit.xml.
+- If you encounter `Too many levels of symbolic links`, remove the `<exclude>` rule for the vendor directory in the module's phpunit.xml.
 - If you get `No data path given in /var/www/html/zmsdb/src/Zmsdb/Source/Dldb.php:29`, make sure your zmsdb/config.php contains the following line:
   ```php
   \BO\Zmsdb\Source\Dldb::$importPath = realpath(dirname(__FILE__) . '/tests/Zmsdb/fixtures/');
@@ -257,6 +257,23 @@ graph TD;
     zmsclient --> zmsentities & zmsslim & mellon;
     zmsentities --> mellon;
     zmsslim --> mellon;
+
+    %% zmscitizenapi dependencies
+    zmscitizenapi --> mellon & zmsslim & zmsclient & zmsentities;
+    
+    %% Build dependencies (dashed lines)
+    zmscitizenapi -.-> zmsapi;
+    refarch-gateway -.-> zmscitizenapi;
+    zmscitizenview -.-> refarch-gateway;
+
+    %% Styling for the three modules
+    classDef citizenapi fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef gateway fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef citizenview fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px;
+    
+    class zmscitizenapi citizenapi;
+    class refarch-gateway gateway;
+    class zmscitizenview citizenview;
 
 ```
 
