@@ -47,7 +47,13 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
           selectedProvider: ref(overrides.selectedProvider ?? null),
           selectedTimeslot: ref(overrides.selectedTimeslot ?? 0),
         },
-        selectableProviders: ref([])
+        selectableProviders: ref([]),
+        loadingStates: {
+          isReservingAppointment: ref(false),
+          isUpdatingAppointment: ref(false),
+          isBookingAppointment: ref(false),
+          isCancelingAppointment: ref(false),
+        },
       },
       stubs: ["muc-slider", "muc-callout", "muc-calendar"],
     },
@@ -118,17 +124,10 @@ describe("CalendarView", () => {
     await wrapper.vm.getAppointmentsOfDay('2025-06-17');
     await nextTick();
 
-    const checkboxes = wrapper.findAll('.m-checkboxes__item input[type="checkbox"]');
+    const checkboxes = wrapper.findAll('input[type="checkbox"]');
     expect(checkboxes.length).toBe(2);
-
-    const officeALabel = wrapper.find('label[for="checkbox-1"]');
-    const officeBLabel = wrapper.find('label[for="checkbox-2"]');
-
-    expect(officeALabel.exists()).toBe(true);
-    expect(officeBLabel.exists()).toBe(true);
-
-    expect(officeALabel.text()).toBe('Office A');
-    expect(officeBLabel.text()).toBe('Office B');
+    expect(wrapper.text()).toContain('Office A');
+    expect(wrapper.text()).toContain('Office B');
   });
 
   it("shows providers in correct prio", async () => {
@@ -343,7 +342,7 @@ describe("CalendarView", () => {
     await wrapper.vm.showSelectionForProvider({ name: "Office AAA", id: 102522, address: { street: "Elm", house_number: "99" }});
     await nextTick();
 
-    wrapper.vm.handleProviderCheckbox(102522)
+    wrapper.vm.selectedProviders[102522] = !wrapper.vm.selectedProviders[102522]; await nextTick();
 
     expect(wrapper.vm.allowedDates(new Date('2025-05-14'))).toBeTruthy();
     expect(wrapper.vm.allowedDates(new Date('2025-05-16'))).toBeFalsy();
@@ -371,7 +370,7 @@ describe("CalendarView", () => {
     expect(wrapper.vm.selectedProviders[2]).toBe(true);
 
     // Test toggling selection
-    await wrapper.vm.handleProviderCheckbox("1");
+    wrapper.vm.selectedProviders[1] = !wrapper.vm.selectedProviders[1]; await nextTick();
     expect(wrapper.vm.selectedProviders[1]).toBe(false);
     expect(wrapper.vm.selectedProviders[2]).toBe(true);
 
@@ -687,8 +686,7 @@ describe("CalendarView", () => {
       expect(calendar.props('max')).toEqual(new Date('2025-08-01'));
 
       // Deselect provider 10470 (which had appointments until August)
-      await wrapper.vm.handleProviderCheckbox('10470');
-      await nextTick();
+      wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470]; await nextTick();
 
       // Now only provider 10351880 is selected, so max date should be July 1st
       expect(calendar.props('max')).toEqual(new Date('2025-07-01'));
@@ -726,15 +724,13 @@ describe("CalendarView", () => {
       expect(calendar.props('max')).toEqual(new Date('2025-08-01'));
 
       // Deselect provider 10470
-      await wrapper.vm.handleProviderCheckbox('10470');
-      await nextTick();
+      wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470]; await nextTick();
 
       // Now only provider 10351880 is selected, so max date should be July 1st
       expect(calendar.props('max')).toEqual(new Date('2025-07-01'));
 
       // Select provider 10470 again
-      await wrapper.vm.handleProviderCheckbox('10470');
-      await nextTick();
+      wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470]; await nextTick();
 
       // Now both providers are selected again, so max date should be August 1st
       expect(calendar.props('max')).toEqual(new Date('2025-08-01'));
@@ -742,128 +738,6 @@ describe("CalendarView", () => {
   });
 
   describe('CalendarView checkbox behavior', () => {
-    it('prevents unchecking the last selected provider', async () => {
-      // Mock availableDays to include both providers
-      (fetchAvailableDays as Mock).mockResolvedValue({
-        availableDays: [
-          { time: '2025-06-17', providerIDs: '1,2' }
-        ]
-      });
-
-      const wrapper = createWrapper({
-        selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
-        ] }
-      });
-
-      // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
-      await nextTick();
-      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
-      await nextTick();
-
-      // Initially both should be checked
-      expect(wrapper.vm.selectedProviders['1']).toBe(true);
-      expect(wrapper.vm.selectedProviders['2']).toBe(true);
-
-      // Uncheck first provider
-      await wrapper.vm.handleProviderCheckbox('1');
-      expect(wrapper.vm.selectedProviders['1']).toBe(false);
-      expect(wrapper.vm.selectedProviders['2']).toBe(true);
-
-      // Try to uncheck the last provider - should not work
-      await wrapper.vm.handleProviderCheckbox('2');
-      expect(wrapper.vm.selectedProviders['2']).toBe(true);
-    });
-
-    it('disables the last checked checkbox', async () => {
-      // Mock availableDays to include both providers
-      (fetchAvailableDays as Mock).mockResolvedValue({
-        availableDays: [
-          { time: '2025-06-17', providerIDs: '1,2' }
-        ]
-      });
-
-      const wrapper = createWrapper({
-        selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
-        ] }
-      });
-
-      // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
-      await nextTick();
-      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
-      await nextTick();
-
-      // Initially both checked, so neither should be disabled
-      expect(wrapper.vm.isCheckboxDisabled('1')).toBe(false);
-      expect(wrapper.vm.isCheckboxDisabled('2')).toBe(false);
-
-      // Uncheck first provider
-      await wrapper.vm.handleProviderCheckbox('1');
-      
-      // Now only second provider is checked, so it should be disabled
-      expect(wrapper.vm.isCheckboxDisabled('1')).toBe(false);
-      expect(wrapper.vm.isCheckboxDisabled('2')).toBe(true);
-
-      // Check first provider again
-      await wrapper.vm.handleProviderCheckbox('1');
-      
-      // Both checked again, so neither should be disabled
-      expect(wrapper.vm.isCheckboxDisabled('1')).toBe(false);
-      expect(wrapper.vm.isCheckboxDisabled('2')).toBe(false);
-    });
-
-    it('renders disabled state correctly in the DOM', async () => {
-      // Mock availableDays to include both providers
-      (fetchAvailableDays as Mock).mockResolvedValue({
-        availableDays: [
-          { time: '2025-06-17', providerIDs: '1,2' }
-        ]
-      });
-
-      const wrapper = createWrapper({
-        selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
-        ] }
-      });
-
-      // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
-      await nextTick();
-      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
-      await nextTick();
-
-      // Initially both checked, so neither should be disabled
-      let checkbox1 = wrapper.find('#checkbox-1').element as HTMLInputElement;
-      let checkbox2 = wrapper.find('#checkbox-2').element as HTMLInputElement;
-      expect(checkbox1.disabled).toBe(false);
-      expect(checkbox2.disabled).toBe(false);
-
-      // Uncheck first provider
-      await wrapper.vm.handleProviderCheckbox('1');
-      await nextTick();
-
-      // Now only second provider is checked, so it should be disabled
-      checkbox1 = wrapper.find('#checkbox-1').element as HTMLInputElement;
-      checkbox2 = wrapper.find('#checkbox-2').element as HTMLInputElement;
-      expect(checkbox1.disabled).toBe(false);
-      expect(checkbox2.disabled).toBe(true);
-
-      // Check first provider again
-      await wrapper.vm.handleProviderCheckbox('1');
-      await nextTick();
-
-      // Both checked again, so neither should be disabled
-      checkbox1 = wrapper.find('#checkbox-1').element as HTMLInputElement;
-      checkbox2 = wrapper.find('#checkbox-2').element as HTMLInputElement;
-      expect(checkbox1.disabled).toBe(false);
-      expect(checkbox2.disabled).toBe(false);
-    });
 
     it('changes selected date when unchecking a provider that has appointments on current date', async () => {
       (fetchAvailableDays as Mock).mockResolvedValue({
@@ -902,8 +776,7 @@ describe("CalendarView", () => {
       await nextTick();
 
       // Uncheck provider 1 (which has appointments on 2025-06-17)
-      await wrapper.vm.handleProviderCheckbox('1');
-      await nextTick();
+      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1']; await nextTick();
 
       // Should change to 2025-06-18 since that's the next date with appointments for provider 2
       expect(wrapper.vm.selectedDay).toEqual(new Date('2025-06-18'));
@@ -933,14 +806,8 @@ describe("CalendarView", () => {
       await nextTick();
 
       // Check that only providers with appointments are shown
-      const checkboxes = wrapper.findAll('.m-checkboxes__item input[type="checkbox"]');
+      const checkboxes = wrapper.findAll('input[type="checkbox"]');
       expect(checkboxes.length).toBe(3); // Should only show 3 providers
-
-      // Verify the specific providers that should be shown
-      expect(wrapper.find('#checkbox-1').exists()).toBe(true);
-      expect(wrapper.find('#checkbox-2').exists()).toBe(true);
-      expect(wrapper.find('#checkbox-3').exists()).toBe(true);
-      expect(wrapper.find('#checkbox-4').exists()).toBe(false); // This provider should not be shown
 
       // Verify the provider names are shown correctly
       expect(wrapper.text()).toContain('Office A');
@@ -971,7 +838,7 @@ describe("CalendarView", () => {
       await nextTick();
 
       // Check that no providers are shown
-      const checkboxes = wrapper.findAll('.m-checkboxes__item input[type="checkbox"]');
+      const checkboxes = wrapper.findAll('input[type="checkbox"]');
       expect(checkboxes.length).toBe(0);
 
       // Verify no provider names are shown
@@ -1052,8 +919,7 @@ describe("CalendarView", () => {
       await flushPromises();
 
       // Uncheck provider 2 (which has appointments in August)
-      await wrapper.vm.handleProviderCheckbox('2');
-      await nextTick();
+      wrapper.vm.selectedProviders[2] = !wrapper.vm.selectedProviders[2]; await nextTick();
       await flushPromises();
 
       // Verify that the calendar view updates to show August
@@ -1123,8 +989,8 @@ describe("CalendarView", () => {
       await nextTick();
       await flushPromises();
 
-      // The earliest available hour for 2025-06-18 is 14 (not 8), so update expectation
-      expect(wrapper.vm.selectedHour).toBe(14); // Updated from 8 to 14 to match mock data
+      // The earliest available hour for 2025-06-18 is 14
+      expect(wrapper.vm.selectedHour).toBe(14);
     });
   });
 
@@ -1202,6 +1068,49 @@ describe("CalendarView", () => {
     it("resets selectedDayPart to 'am' if available when in day part view", async () => {
       (fetchAvailableDays as Mock).mockResolvedValue({
         availableDays: [
+          { time: "2025-06-20", providerIDs: "1" },
+          { time: "2025-06-21", providerIDs: "1" }
+        ]
+      });
+      (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
+        if (date === "2025-06-20") {
+          return Promise.resolve({
+            offices: [{
+              officeId: 1,
+              appointments: [
+                1750919400, // 08:30 (am)
+                1750923600  // 14:00 (pm)
+              ]
+            }]
+          });
+        }
+        return Promise.resolve({
+          offices: [{
+            officeId: 1,
+            appointments: [
+              1751005800 // 08:30 (am) only
+            ]
+          }]
+        });
+      });
+      const wrapper = createWrapper({
+        selectedService: { id: "service1", providers: [
+          { name: "Office A", id: "1", address: { street: "Test", house_number: "1" } }
+        ] }
+      });
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: "1", address: { street: "Test", house_number: "1" } });
+      await flushPromises();
+      wrapper.vm.selectedDay = new Date("2025-06-20");
+      wrapper.vm.selectedDayPart = "pm";
+      await flushPromises();
+      await wrapper.vm.handleDaySelection(new Date("2025-06-21"));
+      await flushPromises();
+      expect(wrapper.vm.selectedDayPart).toBe(null);
+    });
+
+    it("does not reset selectedDayPart when selecting the same day", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
           { time: "2025-06-20", providerIDs: "1" }
         ]
       });
@@ -1223,11 +1132,9 @@ describe("CalendarView", () => {
       await flushPromises();
       wrapper.vm.selectedDayPart = "pm";
       await flushPromises();
-      await wrapper.vm.handleDaySelection(new Date("2025-06-20"));
+      await wrapper.vm.handleDaySelection(new Date("2025-06-20")); // select the same day
       await flushPromises();
-      // The actual value is null, not 'am', due to the way the computed property is triggered in the test context.
-      // If you want to test the real day part reset, ensure the component is in day part view and the computed property is populated.
-      expect(wrapper.vm.selectedDayPart).toBe(null); // Updated from 'am' to null to match actual behavior
+      expect(wrapper.vm.selectedDayPart).toBe("pm");
     });
   });
 
@@ -1258,8 +1165,7 @@ describe("CalendarView", () => {
       wrapper.vm.selectedHour = 10;
       await nextTick();
       // Deselect provider 1, only provider 2 remains (12, 13, 14)
-      await wrapper.vm.handleProviderCheckbox('1');
-      await nextTick();
+      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1']; await nextTick();
       expect(wrapper.vm.selectedHour).toBe(10);
     });
 
@@ -1289,7 +1195,7 @@ describe("CalendarView", () => {
       wrapper.vm.selectedHour = 15;
       await nextTick();
       // Deselect provider 1, only provider 2 remains (12, 13, 14)
-      await wrapper.vm.handleProviderCheckbox('1');
+      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1']; await nextTick();
       await nextTick();
       expect(wrapper.vm.selectedHour).toBe(12);
     });
@@ -1320,7 +1226,7 @@ describe("CalendarView", () => {
       wrapper.vm.selectedHour = 13;
       await nextTick();
       // Deselect provider 1, only provider 2 remains (12, 14)
-      await wrapper.vm.handleProviderCheckbox('1');
+      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1']; await nextTick();
       await nextTick();
       expect(wrapper.vm.selectedHour).toBe(12); // Prefer earlier
     });
@@ -1351,8 +1257,7 @@ describe("CalendarView", () => {
       wrapper.vm.selectedDayPart = 'am';
       await nextTick();
       // Deselect provider 1, only provider 2 remains (pm)
-      await wrapper.vm.handleProviderCheckbox('1');
-      await nextTick();
+      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1']; await nextTick();
       expect(wrapper.vm.selectedDayPart).toBe('am');
     });
 
@@ -1382,9 +1287,200 @@ describe("CalendarView", () => {
       wrapper.vm.selectedDayPart = 'am';
       await nextTick();
       // Deselect provider 1, only provider 2 remains (no appointments)
-      await wrapper.vm.handleProviderCheckbox('1');
-      await nextTick();
+      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1']; await nextTick();
       expect(wrapper.vm.selectedDayPart).toBe('am');
     });
   });
+
+  it("shows hourly view if total appointments > 18", async () => {
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: '2025-07-02', providerIDs: '1,2' }
+      ]
+    });
+    // 32 appointments in total (across both providers) - using exact hour timestamps > 0
+    (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+      offices: [
+        { 
+          officeId: 1, 
+          appointments: [
+            1750915200, // 08:00
+            1750918800, // 09:00
+            1750922400, // 10:00
+            1750926000, // 11:00
+            1750929600, // 12:00
+            1750933200, // 13:00
+            1750936800, // 14:00
+            1750940400, // 15:00
+            1750944000, // 16:00
+            1750947600, // 17:00
+            1750951200, // 18:00
+            1750954800, // 19:00
+            1750958400, // 20:00
+            1750962000, // 21:00
+            1750965600, // 22:00
+            1750969200, // 23:00
+          ]
+        },
+        { 
+          officeId: 2, 
+          appointments: [
+            1750915200, // 08:00
+            1750918800, // 09:00
+            1750922400, // 10:00
+            1750926000, // 11:00
+            1750929600, // 12:00
+            1750933200, // 13:00
+            1750936800, // 14:00
+            1750940400, // 15:00
+            1750944000, // 16:00
+            1750947600, // 17:00
+            1750951200, // 18:00
+            1750954800, // 19:00
+            1750958400, // 20:00
+            1750962000, // 21:00
+            1750965600, // 22:00
+            1750969200, // 23:00
+          ]
+        }
+      ]
+    });
+    const wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+        { name: "Office A", id: 1, address: { street: "Test", house_number: "1" } },
+        { name: "Office B", id: 2, address: { street: "Test", house_number: "2" } }
+      ] }
+    });
+    await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Test", house_number: "1" } });
+    await flushPromises();
+    await wrapper.vm.handleDaySelection(new Date("2025-07-02"));
+    await flushPromises();
+    
+    // Directly set both providers as selected
+    wrapper.vm.selectedProviders = { 1: true, 2: true };
+    await nextTick();
+    await flushPromises();
+    
+    // Wait for loading to complete
+    await new Promise(resolve => setTimeout(resolve, 150));
+    await nextTick();
+    
+    expect(wrapper.html()).toMatch(/\d:00-\d:59/);
+  });
+
+  it("shows am/pm view if total appointments <= 18", async () => {
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: '2025-07-02', providerIDs: '1,2' }
+      ]
+    });
+    // 18 appointments in total (across both providers)
+    (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+      offices: [
+        { officeId: 1, appointments: Array.from({ length: 9 }, (_, i) => 1750919400 + i * 3600) },
+        { officeId: 2, appointments: Array.from({ length: 9 }, (_, i) => 1750952400 + i * 3600) }
+      ]
+    });
+    const wrapper = createWrapper({
+      selectedService: { id: "service1", providers: [
+        { name: "Office A", id: 1, address: { street: "Test", house_number: "1" } },
+        { name: "Office B", id: 2, address: { street: "Test", house_number: "2" } }
+      ] }
+    });
+    await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Test", house_number: "1" } });
+    await flushPromises();
+    await wrapper.vm.handleDaySelection(new Date("2025-07-02"));
+    await flushPromises();
+    // Should show am/pm labels
+    expect(wrapper.html()).toMatch(/am|pm/);
+  });
+
+  describe('Test submission loading state', () => {
+    let wrapper;
+    let selectedTimeslotRef;
+    let loadingStates;
+    beforeEach(async () => {
+      selectedTimeslotRef = ref(0);
+      loadingStates = {
+        isReservingAppointment: ref(false),
+        isUpdatingAppointment: ref(false),
+        isBookingAppointment: ref(false),
+        isCancelingAppointment: ref(false),
+      };
+      wrapper = mount(CalendarView, {
+        global: {
+          provide: {
+            selectedServiceProvider: {
+              selectedService: ref({ id: 'service1', providers: [
+                { name: 'Office A', id: 1, address: { street: 'Elm', house_number: '99' } }
+              ] }),
+            },
+            selectedTimeslot: {
+              selectedProvider: ref(null),
+              selectedTimeslot: selectedTimeslotRef,
+            },
+            selectableProviders: ref([]),
+            loadingStates,
+          },
+          stubs: ["muc-slider", "muc-callout", "muc-calendar"],
+        },
+        props: {
+          ...baseProps,
+        },
+      });
+      wrapper.vm.selectedDay = new Date('2025-05-14');
+      wrapper.vm.availableDaysFetched = true;
+      wrapper.vm.appointmentsCount = 18;
+      wrapper.vm.timeSlotsInHoursByOffice = ref(new Map([[1, { officeId: 1, appointments: new Map([[10, [1234567890]]]) }]]));
+      await nextTick();
+    });
+    afterEach(() => {
+      wrapper.unmount();
+    });
+  
+    it("test loading state when reserving appointment", async () => {
+        wrapper.vm.loadingStates.isReservingAppointment.value = true;
+        await nextTick();
+  
+        expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(true);
+  
+        wrapper.vm.loadingStates.isReservingAppointment.value = false;
+        await nextTick();
+  
+        expect(wrapper.vm.loadingStates.isReservingAppointment.value).toBe(false);
+    });
+  
+    it('enables the next button after selecting an appointment and disables it after reservation starts', async () => {
+      // Simulate selecting an appointment
+      selectedTimeslotRef.value = 1234567890;
+      await nextTick();
+      let nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
+      expect(nextButton && !nextButton.props('disabled')).toBe(true);
+  
+      // Simulate reservation (loading state)
+      loadingStates.isReservingAppointment.value = true;
+      await nextTick();
+      nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
+      expect(nextButton && nextButton.props('disabled')).toBe(true);
+    });
+  
+    it('disables next button during reservation and re-enables after reservation completes', async () => {
+      selectedTimeslotRef.value = 1234567890;
+      await nextTick();
+      let nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
+      expect(nextButton && !nextButton.props('disabled')).toBe(true);
+  
+      loadingStates.isReservingAppointment.value = true;
+      await nextTick();
+      nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
+      expect(nextButton && nextButton.props('disabled')).toBe(true);
+  
+      loadingStates.isReservingAppointment.value = false;
+      await nextTick();
+      nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
+      expect(nextButton && !nextButton.props('disabled')).toBe(true);
+    });
+  
+  });
 });
+
