@@ -10,7 +10,10 @@
             <h3 tabindex="0">{{ t("service") }}</h3>
           </div>
           <div class="m-content border-bottom">
-            <p tabindex="0">
+            <p
+              v-if="selectedService"
+              tabindex="0"
+            >
               {{ selectedService.count }}x {{ selectedService.name }}
               <br />
             </p>
@@ -92,7 +95,12 @@
               {{ appointment.telephone }}<br />
             </p>
             <div
-              v-if="appointment.customTextfield"
+              v-if="
+                appointment &&
+                selectedProvider &&
+                selectedProvider.scope &&
+                appointment.customTextfield
+              "
               tabindex="0"
             >
               <strong>{{ selectedProvider.scope.customTextfieldLabel }}</strong
@@ -101,7 +109,12 @@
               <br />
             </div>
             <div
-              v-if="appointment.customTextfield2"
+              v-if="
+                appointment &&
+                selectedProvider &&
+                selectedProvider.scope &&
+                appointment.customTextfield2
+              "
               tabindex="0"
             >
               <strong>{{ selectedProvider.scope.customTextfield2Label }}</strong
@@ -178,11 +191,14 @@
       <template #default>{{ t("rescheduleAppointment") }}</template>
     </muc-button>
     <muc-button
-      icon="close"
+      :disabled="loadingStates.isCancelingAppointment.value"
+      :icon="'close'"
       variant="secondary"
       @click="cancelAppointment"
     >
-      <template #default>{{ t("cancelAppointment") }}</template>
+      <template #default>
+        <span>{{ t("cancelAppointment") }}</span>
+      </template>
     </muc-button>
   </div>
   <div
@@ -190,11 +206,13 @@
     class="m-button-group"
   >
     <muc-button
-      :disabled="!validForm"
-      icon="check"
+      :disabled="!validForm || loadingStates.isBookingAppointment.value"
+      :icon="'check'"
       @click="bookAppointment"
     >
-      <template #default>{{ t("rescheduleAppointment") }}</template>
+      <template #default>
+        <span>{{ t("rescheduleAppointment") }}</span>
+      </template>
     </muc-button>
     <muc-button
       icon="close"
@@ -217,16 +235,20 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      :disabled="!validForm"
-      icon="check"
+      :disabled="!validForm || loadingStates.isBookingAppointment.value"
+      :icon="'check'"
       @click="bookAppointment"
     >
-      <template #default>{{ t("bookAppointment") }}</template>
+      <template #default>
+        <span>{{ t("bookAppointment") }}</span>
+      </template>
     </muc-button>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
+
 import { MucButton } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
@@ -267,6 +289,18 @@ const { selectedProvider } = inject<SelectedTimeslotProvider>(
 const { appointment } = inject<SelectedAppointmentProvider>(
   "appointment"
 ) as SelectedAppointmentProvider;
+
+const loadingStates = inject("loadingStates", {
+  isReservingAppointment: ref(false),
+  isUpdatingAppointment: ref(false),
+  isBookingAppointment: ref(false),
+  isCancelingAppointment: ref(false),
+}) as {
+  isReservingAppointment: Ref<boolean>;
+  isUpdatingAppointment: Ref<boolean>;
+  isBookingAppointment: Ref<boolean>;
+  isCancelingAppointment: Ref<boolean>;
+};
 
 const privacyPolicy = ref<boolean>(false);
 const electronicCommunication = ref<boolean>(false);
