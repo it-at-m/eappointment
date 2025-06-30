@@ -1,20 +1,16 @@
 let lastUpdateAfter = null;
 let autoRefreshTimer = null;
 let currentRequest   = null;
+let SCOPE_COLORS     = {};
 
 function buildScopeColorMap(days) {
-    const ids = [...new Set(
-        days.flatMap(d => d.scopes.map(s => s.id))
-    )];
-
-    const total = ids.length;
-    const colorMap = Object.create(null);
-
+    const ids = [...new Set(days.flatMap(d => d.scopes.map(s => s.id)))];
+    const map = Object.create(null);
     ids.forEach((id, idx) => {
-        const round = Math.round(((idx * 137.508) % 360));
-        colorMap[id] = `hsl(${round} 60% 85%)`;
+        const hue = Math.round((idx * 137.508) % 360);
+        map[id]= `hsl(${hue} 60% 85%)`;
     });
-    return colorMap;
+    return map;
 }
 
 function toMysql(date) {
@@ -200,6 +196,11 @@ function applyChanges(days) {
                     cell.textContent = seat.status === 'termin' ? (seat.processId ?? '') : '';
                     const span = seat.status === 'termin' ? (seat.slots || 1) : 1;
                     cell.style.gridRow = `${cell.dataset.row} / span ${span}`;
+                    if (seat.status === 'termin') {
+                        cell.style.background = SCOPE_COLORS[scope.id];
+                    } else {
+                        cell.style.background = '';
+                    }
                 });
             });
         });
@@ -214,7 +215,7 @@ function renderMultiDayCalendar(days) {
         return;
     }
 
-    const SCOPE_COLORS = buildScopeColorMap(days);
+    SCOPE_COLORS = buildScopeColorMap(days);
     const allTimes = [...new Set(
         days.flatMap(day =>
             day.scopes.flatMap(scope => scope.times.map(t => t.name))
@@ -236,7 +237,7 @@ function renderMultiDayCalendar(days) {
 
     addCell({
         text: 'Datum',
-        className: 'overall-calendar-head overall-calendar-day-header ' + 'overall-calendar-sticky-corner',
+        className: 'overall-calendar-head overall-calendar-day-header overall-calendar-sticky-corner',
         row: 1, col: 1
     });
 
@@ -254,8 +255,7 @@ function renderMultiDayCalendar(days) {
 
         addCell({
             text: `${dayName} ${dayDate}`,
-            className: 'overall-calendar-head overall-calendar-day-header ' +
-                'overall-calendar-stick-top',
+            className: 'overall-calendar-head overall-calendar-day-header overall-calendar-stick-top',
             row: 1,
             col: colCursor,
             colSpan: daySpan
@@ -267,8 +267,7 @@ function renderMultiDayCalendar(days) {
 
     addCell({
         text: 'Zeit',
-        className: 'overall-calendar-head overall-calendar-scope-header ' +
-            'overall-calendar-stick-left',
+        className: 'overall-calendar-head overall-calendar-scope-header overall-calendar-stick-left',
         row: 2,
         col: 1
     });
@@ -278,23 +277,14 @@ function renderMultiDayCalendar(days) {
         day.scopes.forEach((scope, scopeIdx) => {
             const scopeStartCol = colCursor;
 
-            addCell({
+            const head= addCell({
                 text: scope.shortName || scope.name || `Scope ${scope.id}`,
-                className: 'overall-calendar-head overall-calendar-scope-header ' +
-                    'overall-calendar-stick-top',
+                className: 'overall-calendar-head overall-calendar-scope-header overall-calendar-stick-top',
                 row: 2,
                 col: scopeStartCol,
                 colSpan: scope.maxSeats
             });
-
-            const stripeCell = addCell({
-                className: 'overall-calendar-scope-stripe',
-                row   : 3,
-                col   : scopeStartCol,
-                rowSpan: allTimes.length,
-                colSpan: scope.maxSeats
-            });
-            stripeCell.style.background = SCOPE_COLORS[scope.id];
+            head.style.background = SCOPE_COLORS[scope.id];
 
             colCursor += scope.maxSeats;
 
@@ -347,7 +337,7 @@ function renderMultiDayCalendar(days) {
 
                     if (status === 'termin') {
                         const span = seat.slots || 1;
-                        addCell({
+                        const cell = addCell({
                             text: seat.processId ?? '',
                             className: 'overall-calendar-seat overall-calendar-termin',
                             row: gridRow,
@@ -356,6 +346,7 @@ function renderMultiDayCalendar(days) {
                             id: cellId,
                             dataStatus: 'termin'
                         });
+                        cell.style.background = SCOPE_COLORS[scope.id];
                         for (let i = 0; i < span; i++) occupied.add(`${gridRow + i}-${col}`);
                     } else if (status !== 'skip') {
                         addCell({
@@ -380,8 +371,8 @@ function renderMultiDayCalendar(days) {
                          rowSpan = 1, colSpan = 1, id = null, dataStatus = null }) {
         const div = document.createElement('div');
         div.textContent = text;
-        div.className= className;
-        div.style.gridRow= `${row} / span ${rowSpan}`;
+        div.className = className;
+        div.style.gridRow = `${row} / span ${rowSpan}`;
         div.style.gridColumn = `${col} / span ${colSpan}`;
         if (id) div.id = id;
         if (dataStatus) div.dataset.status = dataStatus;
