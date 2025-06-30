@@ -498,7 +498,13 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionStatus($status, $scopeId = 0)
+    public function addConditionStatus($status)
+    {
+        $this->query->where('process.status', '=', $status);
+        return $this;
+    }
+
+    public function addConditionOldStatus($status, $scopeId = 0)
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($status, $scopeId) {
             if ('deleted' == $status) {
