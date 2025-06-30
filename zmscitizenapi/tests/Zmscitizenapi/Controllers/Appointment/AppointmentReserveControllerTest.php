@@ -103,7 +103,9 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 'customTextfield2Label' => "",
                 "captchaActivatedRequired" => false,
                 "displayInfo" => null,
-                "slotsPerAppointment" => null
+                "slotsPerAppointment" => null,
+                "appointmentsPerMail" => null,
+                "whitelistedMails" => null
             ],
             "subRequestCounts" => [],
             "serviceId" => 0,
