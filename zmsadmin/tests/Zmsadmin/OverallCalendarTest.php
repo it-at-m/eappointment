@@ -2,7 +2,7 @@
 
 namespace BO\Zmsadmin\Tests;
 
-use BO\Zmsadmin\Exception\NotAllowed;
+use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 class OverallCalendarTest extends Base
 {
@@ -17,14 +17,8 @@ class OverallCalendarTest extends Base
                 [
                     'function'  => 'readGetResult',
                     'url'       => '/workstation/',
-                    'parameters'=> ['resolveReferences' => 1],
+                    'parameters'=> ['resolveReferences' => 3],
                     'response'  => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function'  => 'readGetResult',
-                    'url'       => '/scope/141/department/',
-                    'parameters'=> ['resolveReferences' => 2],
-                    'response'  => $this->readFixture("GET_department_74.json")
                 ]
             ]
         );
@@ -36,21 +30,20 @@ class OverallCalendarTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testSuperuserRequired()
+    public function testScopeRequired()
     {
         $this->setApiCalls(
             [
                 [
                     'function'  => 'readGetResult',
                     'url'       => '/workstation/',
-                    'parameters'=> ['resolveReferences' => 1],
-                    'response'  => $this->readFixture("GET_Workstation_Resolved1.json")
+                    'parameters'=> ['resolveReferences' => 3],
+                    'response'  => $this->readFixture("GET_workstation_basic.json")
                 ]
             ]
         );
 
-        $this->expectException(NotAllowed::class);
-
+        $this->expectException(\BO\Zmsentities\Exception\UserAccountMissingRights::class);
         $this->render([], [], []);
     }
 
@@ -61,7 +54,7 @@ class OverallCalendarTest extends Base
                 [
                     'function'  => 'readGetResult',
                     'url'       => '/workstation/',
-                    'parameters'=> ['resolveReferences' => 1],
+                    'parameters'=> ['resolveReferences' => 3],
                     'response'  => $this->readFixture("GET_Workstation_NoScope.json")
                 ]
             ]
@@ -80,14 +73,8 @@ class OverallCalendarTest extends Base
                 [
                     'function'  => 'readGetResult',
                     'url'       => '/workstation/',
-                    'parameters'=> ['resolveReferences' => 1],
+                    'parameters'=> ['resolveReferences' => 3],
                     'response'  => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function'  => 'readGetResult',
-                    'url'       => '/scope/141/department/',
-                    'parameters'=> ['resolveReferences' => 2],
-                    'response'  => null
                 ]
             ]
         );
