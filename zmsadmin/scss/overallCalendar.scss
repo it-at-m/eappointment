@@ -11,7 +11,7 @@
 #overall-calendar,
 .overall-calendar {
   display: grid;
-  gap: 2px;
+  gap: 0px;
   font: 12px/1.2 system-ui, sans-serif;
   min-width: max-content;
   overflow-x: visible !important;
@@ -25,7 +25,7 @@
 .overall-calendar-time {
   @extend %sticky;
   left: 0;
-  z-index: 10;
+  z-index: 2 !important;
   text-align: center;
   white-space: nowrap;
   padding: 1px 2px;
@@ -80,7 +80,7 @@ $day-h: 2.2rem;
 }
 .overall-calendar-open   { background: transparent;  border: 1px dashed #bbb; }
 .overall-calendar-empty  { background: transparent; }
-.overall-calendar-termin { background: #d2266c; color: #fff; border: none; }
+.overall-calendar-termin { background: #d2266c; color: #fff; border: 1px solid #bbb; }
 
 .overall-calendar-separator        { background:#ddd;   width:2px; }
 .overall-calendar-day-separator    { background:#6c757d; width:4px; }
@@ -152,3 +152,32 @@ body.no-page-scroll {
   overflow: hidden !important;
 }
 
+.overall-calendar-scope-stripe {
+  pointer-events: none;
+  opacity: .6;
+  z-index: 0;
+}
+
+.overall-calendar-stick-top {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 4;
+}
+
+.overall-calendar-stick-left {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 5;
+  border-right: 1px solid #ccc;
+}
+
+.overall-calendar-sticky-corner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  background: #fff;
+  z-index: 6;
+  border-right: 1px solid #ccc;
+}

@@ -91,7 +91,9 @@ class OverallCalendarRead extends BaseController
             }
             $day['scopes'] = array_values($day['scopes']);
         }
-
+        uksort($calendar, function ($a, $b) {
+            return strcmp($a, $b);
+        });
         return ['days' => array_values($calendar)];
     }
 
@@ -100,7 +102,7 @@ class OverallCalendarRead extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        (new Helper\User($request))->checkRights('scope');
         $scopeIdCsv = Validator::param('scopeIds')
             ->isString()->isMatchOf('/^\d+(,\d+)*$/')->assertValid()->getValue();
         $scopeIds   = array_map('intval', explode(',', $scopeIdCsv));
