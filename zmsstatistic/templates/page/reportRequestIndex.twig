@@ -31,6 +31,7 @@
         {% endembed %}
 
         {% embed "block/report/board.twig" with {'source':source, 'class': 'board--spaceless', "selected": period} %}
+        {% import "element/helper/snippets.twig" as timeutils %}
         {% block board_body %}
         {% if selected %}
             {% if exchangeRequest.period == "day" %}
@@ -78,7 +79,7 @@
 
                             {% if exchangeRequest.period == "day" %}
                                 <td class="report-board--summary">
-                                    {{ exchangeRequest.data.average_processingtime[name]|default("-") }}
+                                    {{ timeutils.formatMinutesToTime(exchangeRequest.data.average_processingtime[name]) }}
                                 </td>
                             {% endif %}
 
