@@ -184,7 +184,7 @@ bin/importTestData --commit
 
 ### Common Errors
 
-- If you encounter `Too many levels of symbolic links`, remove the `<exclude>` rule for the vendor directory in the module’s phpunit.xml.
+- If you encounter `Too many levels of symbolic links`, remove the `<exclude>` rule for the vendor directory in the module's phpunit.xml.
 - If you get `No data path given in /var/www/html/zmsdb/src/Zmsdb/Source/Dldb.php:29`, make sure your zmsdb/config.php contains the following line:
   ```php
   \BO\Zmsdb\Source\Dldb::$importPath = realpath(dirname(__FILE__) . '/tests/Zmsdb/fixtures/');
@@ -243,21 +243,102 @@ The branch name must match the following regular expression:
 - **chore(ZMSKVR-123): commit message**
 - **docs(ZMS-123): commit message**
 
+```mermaid
+---
+config:
+  gitGraph:
+    parallelCommits: true
+---
+
+gitGraph LR:
+  commit tag: "2.25.00-muc1"
+  branch next order: 30
+  commit
+  
+  checkout main
+  branch hotfix-1 order: 5
+  commit
+  checkout main
+  merge hotfix-1 tag: "2.25.00-muc1-hotfix1"
+
+  checkout next
+  merge main id: "Merge-back"
+  commit
+
+  branch feature1 order: 40
+  commit id: "Feature für Sprint 1"
+  commit type: HIGHLIGHT id: "Erste Überprüfung"
+
+  checkout next
+  merge feature1
+
+
+  checkout next
+  commit type: HIGHLIGHT id: "Tests Sprint 1"
+  commit type: HIGHLIGHT id: "Sprint 1 fertiggestellt"
+
+  checkout main
+  merge next
+  commit type: HIGHLIGHT id: "Abnahme Tests"
+  commit tag: "2.25.00-muc2" 
+```
 ## Dependency Graph
+`zmscitizenview` and `refarch-gateway` are built on top of `zmscitizenapi`, but they do not directly pull dependencies from it. Similarly, while `zmscitizenapi` sends requests to `zmsapi`, `zmsapi` is not a direct dependency of `zmscitizenapi`.
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
 graph TD;
+    %% Main ZMS module dependencies
     zmsapi --> zmsslim & zmsclient & zmsdldb & zmsdb & zmsentities;
     zmsadmin --> mellon & zmsclient & zmsslim & zmsentities;
     zmscalldisplay --> mellon & zmsclient & zmsentities & zmsslim;
     zmsstatistic --> mellon & zmsentities & zmsslim & zmsclient;
     zmsmessaging --> mellon & zmsclient & zmsentities & zmsslim;
-    
+
     zmsdb --> zmsentities & zmsdldb & mellon;
     zmsclient --> zmsentities & zmsslim & mellon;
     zmsentities --> mellon;
     zmsslim --> mellon;
 
+    %% zmscitizenapi dependencies
+    zmscitizenapi --> mellon & zmsslim & zmsclient & zmsentities;
+
+    %% Build dependencies (dashed lines)
+    zmscitizenapi -.-> zmsapi;
+    refarch-gateway -.-> zmscitizenapi;
+    zmscitizenview -.-> refarch-gateway;
+
+    %% Group refarch-gateway and zmscitizenview into a subgraph
+    subgraph refarch [refarch]
+        style refarch stroke-dasharray: 5
+        refarch-gateway
+        zmscitizenview
+    end
+
+    %% Group remaining modules into dashed PHP-style subgraph
+    subgraph zms_modules [ZMS PHP Modules]
+        style zms_modules stroke-dasharray: 5, 5, 1, 5
+        zmsapi
+        zmsadmin
+        zmscalldisplay
+        zmsstatistic
+        zmsmessaging
+        zmsdb
+        zmsclient
+        zmsentities
+        zmsslim
+        zmsdldb
+        mellon
+        zmscitizenapi
+    end
+
+    %% Styling for the three modules
+    classDef citizenapi fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef gateway fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef citizenview fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px;
+
+    class zmscitizenapi citizenapi;
+    class refarch-gateway gateway;
+    class zmscitizenview citizenview;
 ```
 
 ## Screenshot
