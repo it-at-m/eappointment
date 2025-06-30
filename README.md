@@ -243,6 +243,7 @@ The branch name must match the following regular expression:
 - **chore(ZMSKVR-123): commit message**
 - **docs(ZMS-123): commit message**
 
+Please only branch features and bugfixes from the integration branch `next`. Hotfixes may be branched from `main`.
 ```mermaid
 ---
 config:
