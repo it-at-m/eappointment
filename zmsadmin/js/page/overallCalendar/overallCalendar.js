@@ -337,7 +337,7 @@ function renderMultiDayCalendar(days) {
 
                     if (status === 'termin') {
                         const span = seat.slots || 1;
-                        addCell({
+                        const cell = addCell({
                             text: seat.processId ?? '',
                             className: 'overall-calendar-seat overall-calendar-termin',
                             row: gridRow,
@@ -346,6 +346,7 @@ function renderMultiDayCalendar(days) {
                             id: cellId,
                             dataStatus: 'termin'
                         });
+                        cell.style.background = SCOPE_COLORS[scope.id];
                         for (let i = 0; i < span; i++) occupied.add(`${gridRow + i}-${col}`);
                     } else if (status !== 'skip') {
                         addCell({
