@@ -189,6 +189,9 @@ class SessionData implements SessionInterface
         return empty($this->data);
     }
 
+    // TODO: Review the use of `mixed` return type. 
+    // This method delegates to getSession()->jsonSerialize(), which may return various types.
+    // Consider adding stricter return typing if getSession() can be more precisely typed.
     public function jsonSerialize(): mixed
     {
         return json_encode($this->data);

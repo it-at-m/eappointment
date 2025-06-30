@@ -70,6 +70,9 @@ class SessionContainer implements SessionInterface
         return $this->getSession()->isEmpty();
     }
 
+    // TODO: Review the use of `mixed` return type. 
+    // This method delegates to getSession()->jsonSerialize(), which may return various types.
+    // Consider adding stricter return typing if getSession() can be more precisely typed.
     public function jsonSerialize(): mixed
     {
         return $this->getSession()->jsonSerialize();
