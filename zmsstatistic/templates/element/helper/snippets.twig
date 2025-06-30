@@ -79,3 +79,14 @@
 {% macro getValue(value) %}
 	{{ value }}
 {% endmacro %}
+
+{% macro formatMinutesToTime(minutesRaw) %}
+    {% set totalMinutes = (minutesRaw|replace({',': '.'})) %}
+    {% if totalMinutes %}
+        {% set minutes = totalMinutes|round(0, 'floor') %}
+        {% set seconds = ((totalMinutes - minutes) * 60)|round(0, 'floor') %}
+        {{ '%d:%02d'|format(minutes, seconds) }}
+    {% else %}
+        -
+    {% endif %}
+{% endmacro %}
