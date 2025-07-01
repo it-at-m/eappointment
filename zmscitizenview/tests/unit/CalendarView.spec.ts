@@ -923,29 +923,34 @@ describe("CalendarView", () => {
 
     it('updates calendar view when selected date changes due to provider deselection', async () => {
       const today = new Date();
-      const august = new Date(today.getFullYear(), today.getMonth() + 1, 15);
-      const september = new Date(today.getFullYear(), today.getMonth() + 2, 1);
 
-      if (today.getMonth() >= 10) { // November or December
-        august.setFullYear(today.getFullYear() + 1);
-        september.setFullYear(today.getFullYear() + 1);
-        august.setMonth((today.getMonth() + 1) % 12);
-        september.setMonth((today.getMonth() + 2) % 12);
+      // Calculate dates for two providers: one 1 month ahead, one 2 months ahead
+      const dateForProvider1 = new Date(today.getFullYear(), today.getMonth() + 1, 15);
+      const dateForProvider2 = new Date(today.getFullYear(), today.getMonth() + 2, 1);
+
+      // Handle year rollover if month > 11
+      if (dateForProvider1.getMonth() < today.getMonth()) {
+        dateForProvider1.setFullYear(dateForProvider1.getFullYear() + 1);
+      }
+      if (dateForProvider2.getMonth() < today.getMonth()) {
+        dateForProvider2.setFullYear(dateForProvider2.getFullYear() + 1);
       }
 
       const toIsoDate = (date: Date) => date.toISOString().split('T')[0];
-      const augustDate = toIsoDate(august);
-      const septemberDate = toIsoDate(september);
+      const provider1DateIso = toIsoDate(dateForProvider1);
+      const provider2DateIso = toIsoDate(dateForProvider2);
 
+      // Mock available days — provider 1 only on first date, provider 2 only on second
       (fetchAvailableDays as Mock).mockResolvedValue({
         availableDays: [
-          { time: augustDate, providerIDs: '1' },
-          { time: septemberDate, providerIDs: '2' }
+          { time: provider1DateIso, providerIDs: '1' },
+          { time: provider2DateIso, providerIDs: '2' }
         ]
       });
 
+      // Mock time slots accordingly
       (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
-        if (date === septemberDate) {
+        if (date === provider2DateIso) {
           return Promise.resolve({
             offices: [{ officeId: 2, appointments: [1750118400] }]
           });
@@ -965,18 +970,19 @@ describe("CalendarView", () => {
         }
       });
 
+      // Simulate selecting provider 2 initially
       await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } });
       await nextTick();
       await flushPromises();
 
-      // Select a day that only provider 2 supports
-      wrapper.vm.selectedDay = new Date(septemberDate);
+      // Select the date supported only by provider 2
+      wrapper.vm.selectedDay = new Date(provider2DateIso);
       wrapper.vm.selectedProviders['2'] = true;
       wrapper.vm.selectedProviders['1'] = true;
       await nextTick();
       await flushPromises();
 
-      // Now remove provider 2 – should fallback to provider 1's day in August
+      // Now remove provider 2 — calendar should fallback to provider 1's date
       wrapper.vm.selectedProviders['2'] = false;
       await nextTick();
       await flushPromises();
@@ -985,10 +991,10 @@ describe("CalendarView", () => {
       expect(calendar.exists()).toBe(true);
 
       const actualDate = calendar.props('viewMonth');
-      console.log('Expected:', august.getMonth(), 'Actual:', actualDate.getMonth());
+      console.log('Expected month:', dateForProvider1.getMonth(), 'Actual month:', actualDate.getMonth());
 
-      expect(actualDate.getFullYear()).toBe(august.getFullYear());
-      expect(actualDate.getMonth()).toBe(august.getMonth()); // expect August
+      expect(actualDate.getFullYear()).toBe(dateForProvider1.getFullYear());
+      expect(actualDate.getMonth()).toBe(dateForProvider1.getMonth());
     });
 
     it('resets to earliest hour when selecting a new day in the calendar', async () => {
