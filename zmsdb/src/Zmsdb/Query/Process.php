@@ -809,7 +809,7 @@ class Process extends Base implements MappingInterface
 
         $status = $this->calculateStatus();
 
-        if (!empty($status) && !empty($values['status'])) {
+        if (!empty($status) && empty($values['status'])) {
             $values['status'] = $status;
             $this->query->values($values);
         }
