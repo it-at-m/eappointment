@@ -24,7 +24,7 @@ class OverallCalendar extends BaseController
             throw new \Exception('Unable to retrieve workstation data');
         }
         $workstation = $result->getEntity();
-        if (!$workstation->getUseraccount()->hasRights(['scope'])) {
+        if (!$workstation->getUseraccount()->hasRights(['superuser'])) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingRights();
         }
 
