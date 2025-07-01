@@ -29,7 +29,8 @@ class Process extends Base implements MappingInterface
             process.bestaetigt = 1,
             process.absagecode = 'deref!0',
             process.EMail = '',
-            process.NutzerID = 0
+            process.NutzerID = 0,
+            process.status = 'blocked'
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
             OR process.istFolgeterminvon = ?
@@ -48,6 +49,7 @@ class Process extends Base implements MappingInterface
                 process.IPTimeStamp = :canceledTimestamp + (IFNULL(s.loeschdauer, 15) * 60),
                 process.NutzerID = 0,
                 process.vorlaeufigeBuchung = 1,
+                process.status = 'deleted',
                 process.absagecode = RIGHT(MD5(CONCAT(process.absagecode, 'QUERY_CANCELED')), 4)
             WHERE
                 (process.BuergerID = :processId AND process.absagecode = :authKey)
