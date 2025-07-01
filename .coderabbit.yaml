@@ -8,11 +8,12 @@ reviews:
   path_instructions:
     - path: "**/*.php"
       instructions: |
-        Flag any usage of error_log() as it should be replaced with proper logging mechanisms:
-        1. For error handling: Use a proper logging framework with error levels (PSR-3 LoggerInterface)
-        2. For debugging: Use a dedicated debug logger or remove debug statements
-        3. For CLI output: Use a CLI output handler or symfony/console
-        4. For application events: Use structured logging with proper log levels
+        Flag any usage of error_log() as it should be replaced with proper Monolog logging mechanisms provided by [zmsslim](https://github.com/it-at-m/eappointment/blob/b52b5d59c5013615d7fbfeaf595f3fdc047017d1/zmsslim/src/Slim/Bootstrap.php#L76) which should be setup in the App/Application of each module:
+        1. For error handling: Use the proper Monolog logging framework with error levels
+        2. For application info logs: Use the proper Monolog logging framework with info levels
+        3. For debugging: Use a dedicated debug logger or remove debug statements
+        4. For CLI output: Use a CLI output handler or symfony/console
+        5. The application [log levels](https://github.com/it-at-m/eappointment/blob/b52b5d59c5013615d7fbfeaf595f3fdc047017d1/zmsslim/src/Slim/Bootstrap.php#L60) are as follows DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, and EMERGENCY
 
         Example replacement:
         ```php
@@ -20,15 +21,14 @@ reviews:
         error_log("Import failed - " . $e->getMessage());
         
         // Use:
-        $logger->error("Import failed", ['error' => $e->getMessage()]);
+        $log->error("Import failed", ['error' => $e->getMessage()]);
         ```
     - path: "**/*.{js,jsx,ts,tsx}"
       instructions: |
-        Flag any usage of console.log() as it should be replaced with proper logging:
-        1. For development: Use proper debug tools or logging libraries
+        Flag any usage of console.log() as it should be replaced with proper logging or removed:
+        1. For development: console.debug()
         2. For production: Remove console.log() statements or use structured logging
-        3. For errors: Use error tracking services (e.g., Sentry)
-        4. For debugging: Consider using debug libraries that can be enabled/disabled
+        3. For errors: Use error console.error()
 
         Example replacement:
         ```javascript
@@ -36,9 +36,7 @@ reviews:
         console.log('User data:', userData);
         
         // Use:
-        logger.debug('Processing user data', { userData });
+        console.debug('Processing user data', { userData });
         // or for development only:
-        if (process.env.NODE_ENV === 'development') {
-          debug('User data:', userData);
-        }
+        Remove the console.log entirely
         ```
