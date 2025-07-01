@@ -39,7 +39,7 @@
                             </li>
                         {% endif %}
                     {% endif %}
-                    {% if workstation.useraccount.rights.superuser  %}
+                    {% if workstation.useraccount.rights.useraccount  %}
                     <li class="nav__link{{ menuActive == 'overallcalendar'? ' active' }}">
                         <a title="{% trans %}Wochenkalender mit allen Terminen{% endtrans %}"
                            href="{{ urlGet('overallcalendar', {}, {}) }}"
