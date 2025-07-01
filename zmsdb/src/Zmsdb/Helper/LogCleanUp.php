@@ -32,12 +32,18 @@ class LogCleanUp
 
     public static function startProcessing($commit = false)
     {
+        error_log("Starting log cleanup process...");
+
         $config = (new ConfigRepository())->readEntity();
         $olderThan = $config->getPreference('log', 'deleteOlderThanDays') ?? 90;
+        $olderThanDate = (new \DateTime())->modify('-' . $olderThan . ' days');
+        error_log("Config loaded, older than: $olderThan days (Datum: " . $olderThanDate->format('Y-m-d H:i:s') . ")");
 
-        $logRepo  = new Log();
+        $logRepo = new Log();
         if ($commit) {
-            $logRepo->clearDataOlderThan((int) $olderThan);
+            error_log("Executing cleanup with commit...");
+            $result = $logRepo->clearLogsOlderThan((int) $olderThan);
+            error_log("Cleanup completed. Result: " . ($result ? "success" : "failed"));
         }
     }
 }

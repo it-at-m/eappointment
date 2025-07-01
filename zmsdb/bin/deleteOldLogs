@@ -15,9 +15,11 @@ EOS;
 
 $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
 $commit = preg_grep('#^--commit$#', $argv);
-$job = new \BO\Zmsdb\Helper\LogCleanUp($verbose);
-$job->startProcessing($commit);
 
 if (!$commit) {
     error_log("Use with --commit to delete entries.");
+    exit(0);
 }
+
+$job = new \BO\Zmsdb\Helper\LogCleanUp($verbose);
+$job->startProcessing($commit);
