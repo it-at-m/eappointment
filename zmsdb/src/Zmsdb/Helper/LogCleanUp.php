@@ -42,7 +42,7 @@ class LogCleanUp
         $logRepo = new Log();
         if ($commit) {
             error_log("Executing cleanup with commit...");
-            $result = $logRepo->clearDataOlderThan((int) $olderThan);
+            $result = $logRepo->clearLogsOlderThan((int) $olderThan);
             error_log("Cleanup completed. Result: " . ($result ? "success" : "failed"));
         }
     }
