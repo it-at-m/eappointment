@@ -922,22 +922,25 @@ describe("CalendarView", () => {
     });
 
     it('updates calendar view when selected date changes due to provider deselection', async () => {
-      // Mock availableDays with dates in different months
+      const today = new Date();
+      const august = new Date(today.getFullYear(), today.getMonth() + 1, 15);
+      const september = new Date(today.getFullYear(), today.getMonth() + 2, 1);
+
+      const toIsoDate = (date: Date) => date.toISOString().split('T')[0];
+      const augustDate = toIsoDate(august);
+      const septemberDate = toIsoDate(september);
+
       (fetchAvailableDays as Mock).mockResolvedValue({
         availableDays: [
-          { time: '2025-08-15', providerIDs: '1,2' },
-          { time: '2025-09-01', providerIDs: '1' },
-          { time: '2025-09-15', providerIDs: '1' }
+          { time: augustDate, providerIDs: '1' },
+          { time: septemberDate, providerIDs: '2' }
         ]
       });
 
       (fetchAvailableTimeSlots as Mock).mockImplementation((date) => {
-        if (date === '2025-08-15') {
+        if (date === septemberDate) {
           return Promise.resolve({
-            offices: [
-              { officeId: 1, appointments: [1750118400] },
-              { officeId: 2, appointments: [1750118400] }
-            ]
+            offices: [{ officeId: 2, appointments: [1750118400] }]
           });
         }
         return Promise.resolve({
@@ -946,34 +949,39 @@ describe("CalendarView", () => {
       });
 
       const wrapper = createWrapper({
-        selectedService: { id: 'service1', providers: [
-          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
-          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
-        ] }
+        selectedService: {
+          id: 'service1',
+          providers: [
+            { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
+            { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } }
+          ]
+        }
       });
 
-      // Wait for availableDays to be loaded
-      await wrapper.vm.showSelectionForProvider({ name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } });
+      await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } });
       await nextTick();
       await flushPromises();
 
-      // Set initial date to September 1st
-      wrapper.vm.selectedDay = new Date('2025-09-01');
+      // Select a day that only provider 2 supports
+      wrapper.vm.selectedDay = new Date(septemberDate);
+      wrapper.vm.selectedProviders['2'] = true;
+      wrapper.vm.selectedProviders['1'] = true;
       await nextTick();
       await flushPromises();
 
-      // Uncheck provider 2 (which has appointments in August)
-      wrapper.vm.selectedProviders[2] = !wrapper.vm.selectedProviders[2]; await nextTick();
+      // Now remove provider 2 – should fallback to provider 1's day in August
+      wrapper.vm.selectedProviders['2'] = false;
+      await nextTick();
       await flushPromises();
 
-      // Verify that the calendar view updates to show August
       const calendar = wrapper.findComponent({ name: 'muc-calendar' });
       expect(calendar.exists()).toBe(true);
 
-      // Compare only year and month to avoid timezone issues
       const actualDate = calendar.props('viewMonth');
-      expect(actualDate.getFullYear()).toBe(2025);
-      expect(actualDate.getMonth()).toBe(5); // June is month 5
+      console.log('Expected:', august.getMonth(), 'Actual:', actualDate.getMonth());
+
+      expect(actualDate.getFullYear()).toBe(august.getFullYear());
+      expect(actualDate.getMonth()).toBe(august.getMonth()); // expect August
     });
 
     it('resets to earliest hour when selecting a new day in the calendar', async () => {
