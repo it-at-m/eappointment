@@ -9,6 +9,7 @@ namespace BO\Zmsstatistic\Download;
 
 use BO\Zmsentities\Exchange as ReportEntity;
 use BO\Zmsstatistic\Helper\Download;
+use BO\Zmsstatistic\Helper\ReportHelper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -97,7 +98,7 @@ class RequestReport extends Base
                 $rowData[] = $name;
                 $rowData[] = isset($report->data['average_processingtime'][$name])
                     && is_numeric($report->data['average_processingtime'][$name])
-                    ? (string)$report->data['average_processingtime'][$name]
+                    ? ReportHelper::formatTimeValue($report->data['average_processingtime'][$name])
                     : "0";
                 $rowData[] = $report->data['sum'][$name];
 
