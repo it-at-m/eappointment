@@ -31,9 +31,9 @@ jobs:
           - module: zmsticketprinter
             php_version: "8.0"
           - module: zmsdldb
-            php_version: "8.0"
-          - module: zmsentities
             php_version: "8.3"
+          - module: zmsentities
+            php_version: "8.0"
           - module: zmsslim
             php_version: "8.0"
           - module: zmsdb
