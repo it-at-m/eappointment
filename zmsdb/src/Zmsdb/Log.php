@@ -144,16 +144,19 @@ class Log extends Base
         return $short;
     }
 
-    public function clearDataOlderThan(int $olderThan)
+    public function clearLogsOlderThan(int $olderThan): bool
     {
-        $olderThanDate = (new \DateTime())->modify('-' . $olderThan . ' days');
+        try {
+            $olderThanDate = (new \DateTime())->modify('-' . $olderThan . ' days');
 
-        $query = new Query\Log(Query\Base::UPDATE);
-        $query->addConditionOlderThan($olderThanDate);
-        $query->addValues([
-            'data' => null
-        ]);
+            $query = new Query\Log(Query\Base::DELETE);
+            $query->addConditionOlderThan($olderThanDate);
 
-        $this->writeItem($query);
+            $result = $this->writeItem($query);
+            return $result !== false;
+        } catch (\Exception $e) {
+            error_log("Error during log cleanup: " . $e->getMessage());
+            return false;
+        }
     }
 }
