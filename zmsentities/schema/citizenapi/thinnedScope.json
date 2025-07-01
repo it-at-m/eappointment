@@ -97,6 +97,20 @@
                 "null"
             ],
             "description": "Number of slots that can be booked per appointment"
+        },
+        "appointmentsPerMail": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Number of allowed appointments per e-mail address"
+        },
+        "whitelistedMails": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "E-mail addresses that have no limitation on appointments count"
         }
     }
 }
