@@ -30,7 +30,7 @@ class OverallCalendarTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testSuperuserRequired()
+    public function testUseraccountRightRequired()
     {
         $this->setApiCalls(
             [
@@ -38,7 +38,7 @@ class OverallCalendarTest extends Base
                     'function'  => 'readGetResult',
                     'url'       => '/workstation/',
                     'parameters'=> ['resolveReferences' => 3],
-                    'response'  => $this->readFixture("GET_Workstation_Resolved1.json")
+                    'response'  => $this->readFixture("GET_workstationlist_department_74.json")
                 ]
             ]
         );
