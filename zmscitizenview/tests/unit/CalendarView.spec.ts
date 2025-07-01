@@ -926,6 +926,13 @@ describe("CalendarView", () => {
       const august = new Date(today.getFullYear(), today.getMonth() + 1, 15);
       const september = new Date(today.getFullYear(), today.getMonth() + 2, 1);
 
+      if (today.getMonth() >= 10) { // November or December
+        august.setFullYear(today.getFullYear() + 1);
+        september.setFullYear(today.getFullYear() + 1);
+        august.setMonth((today.getMonth() + 1) % 12);
+        september.setMonth((today.getMonth() + 2) % 12);
+      }
+
       const toIsoDate = (date: Date) => date.toISOString().split('T')[0];
       const augustDate = toIsoDate(august);
       const septemberDate = toIsoDate(september);
