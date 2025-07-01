@@ -117,6 +117,7 @@ class WaitingReport extends Base
         $totals = $entity->data['max'];
         unset($entity->data['max']);
         $reportData['headline'] = ['Zeitabschnitte',$headline];
+        $formatAsTime = strpos($rangeName, 'waitingcount') === false;
         foreach ($entity->data as $entry) {
             foreach ($entry as $hour => $item) {
                 if (5 < $hour && 22 > $hour) {
@@ -127,10 +128,14 @@ class WaitingReport extends Base
                     if (! in_array($range, $reportData[$hour])) {
                         $reportData[$hour][] = $range;
                         $totalValue = $totals[$hour][$rangeName];
-                        $reportData[$hour][] = ReportHelper::formatTimeValue($totalValue, $rangeName);
+                        $reportData[$hour][] = $formatAsTime
+                            ? ReportHelper::formatTimeValue($totalValue)
+                            : $totalValue;
                     }
                     $value = $item[$rangeName] ?? '-';
-                    $reportData[$hour][] = ReportHelper::formatTimeValue($value, $rangeName);
+                    $reportData[$hour][] = $formatAsTime
+                        ? ReportHelper::formatTimeValue($value)
+                        : $value;
                 }
             }
         }

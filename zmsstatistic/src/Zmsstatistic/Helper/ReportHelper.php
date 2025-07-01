@@ -27,11 +27,8 @@ class ReportHelper
         return $entity;
     }
 
-    public static function formatTimeValue($value, $rangeName = null)
+    public static function formatTimeValue($value)
     {
-        if ($rangeName !== null && strpos($rangeName, 'waitingcount') !== false) {
-            return $value;
-        }
         if (!is_numeric($value)) {
             return $value;
         }
