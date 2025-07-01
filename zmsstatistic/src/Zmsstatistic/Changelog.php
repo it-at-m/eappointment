@@ -10,6 +10,7 @@ namespace BO\Zmsstatistic;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use BO\Zmsstatistic\Helper\ChangelogHelper;
 
 class Changelog extends BaseController
 {
@@ -23,12 +24,16 @@ class Changelog extends BaseController
         ResponseInterface $response,
         array $args
     ) {
+        $changelogHelper = new ChangelogHelper();
+        $changelogContent = $changelogHelper->getChangelogHtml();
+
         return Render::withHtml(
             $response,
             'page/changelog.twig',
             array(
                 'title' => 'Changelog',
-                'menuActive' => 'changelog'
+                'menuActive' => 'changelog',
+                'changelogContent' => $changelogContent
             )
         );
     }
