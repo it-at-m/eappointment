@@ -467,6 +467,7 @@ import {
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
+import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -1069,36 +1070,10 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
  * The provider is queried for the service and each subservice because the slots for the respective service are stored in this provider.
  */
 const estimatedDuration = () => {
-  let time = 0;
-  const serviceProvider = selectedService.value?.providers?.find(
-    (provider) => provider.id == selectedProvider.value?.id
+  return calculateEstimatedDuration(
+    selectedService.value,
+    selectedProvider.value
   );
-  if (
-    serviceProvider &&
-    serviceProvider.slots &&
-    selectedService.value &&
-    selectedService.value.count
-  ) {
-    time =
-      selectedService.value.count *
-      serviceProvider.slots *
-      serviceProvider.slotTimeInMinutes;
-  }
-
-  if (selectedService.value?.subServices) {
-    selectedService.value.subServices.forEach((subservice) => {
-      const subserviceProvider = subservice.providers?.find(
-        (provider) => provider.id == selectedProvider.value?.id
-      );
-      if (subserviceProvider && subservice.count && subserviceProvider.slots) {
-        time +=
-          subservice.count *
-          subserviceProvider.slots *
-          subserviceProvider.slotTimeInMinutes;
-      }
-    });
-  }
-  return time;
 };
 
 const nextStep = () => emit("next");

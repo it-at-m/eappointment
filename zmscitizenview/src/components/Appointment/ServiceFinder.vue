@@ -142,6 +142,7 @@ import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue"
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
+import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
   MAX_SLOTS,
@@ -334,9 +335,8 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
 };
 
 const estimatedDuration = computed(() => {
-  return service.value?.providers?.[0]?.slotTimeInMinutes
-    ? service.value.providers[0].slotTimeInMinutes * currentSlots.value
-    : 0;
+  const provider = service.value?.providers?.[0];
+  return calculateEstimatedDuration(service.value, provider);
 });
 
 /**
