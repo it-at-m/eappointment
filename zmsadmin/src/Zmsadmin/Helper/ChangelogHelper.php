@@ -29,7 +29,7 @@ class ChangelogHelper
      */
     private function fetchChangelogFromLocal(): string
     {
-        $localFile = __DIR__ . '/../../changelog_build.md';
+        $localFile = __DIR__ . '/../../../changelog_build.md';
         if (!file_exists($localFile)) {
             throw new \Exception('Local changelog file not found: ' . $localFile);
         }
