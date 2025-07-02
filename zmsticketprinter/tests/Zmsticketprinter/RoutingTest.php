@@ -42,4 +42,17 @@ class RoutingTest extends Base
             (string)$response->getBody()
         );
     }
+
+    public function testNeutralErrorPageRendering()
+    {
+        $request = static::createBasicRequest('GET', '/');
+        $exception = new \Exception('Simulierter Fehler');
+        $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
+        $errorHandler = $errorMiddleware->getDefaultErrorHandler();
+        $response = $errorHandler($request, $exception, true, true, true);
+
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Entschuldigung, es ist ein Fehler aufgetreten.', $body);
+        $this->assertStringContainsString('https://it-services.muenchen.de', $body);
+    }
 }
