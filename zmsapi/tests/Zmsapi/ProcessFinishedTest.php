@@ -32,7 +32,7 @@ class ProcessFinishedTest extends Base
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation['queue']['clusterEnabled'] = 1;
 
-        $process = json_decode($this->readFixture("GetProcess_10031.json"));
+        $process = json_decode($this->readFixture("GetProcess_10068.json"));
         $process->status = 'pending';
         $response = $this->render([], [
             '__body' => json_encode($process)
