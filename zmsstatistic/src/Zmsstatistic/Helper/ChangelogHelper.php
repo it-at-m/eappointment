@@ -66,19 +66,19 @@ class ChangelogHelper
                     $html .= "</ul>\n";
                     $inList = false;
                 }
-                $html .= '<h3>' . $this->escapeHtml($matches[1]) . '</h3>' . "\n";
+                $html .= $this->renderHeaderWithDate('h3', $matches[1]) . "\n";
             } elseif (preg_match('/^## (.+)$/', $line, $matches)) {
                 if ($inList) {
                     $html .= "</ul>\n";
                     $inList = false;
                 }
-                $html .= '<h2>' . $this->escapeHtml($matches[1]) . '</h2>' . "\n";
+                $html .= $this->renderHeaderWithDate('h2', $matches[1]) . "\n";
             } elseif (preg_match('/^# (.+)$/', $line, $matches)) {
                 if ($inList) {
                     $html .= "</ul>\n";
                     $inList = false;
                 }
-                $html .= '<h1>' . $this->escapeHtml($matches[1]) . '</h1>' . "\n";
+                $html .= $this->renderHeaderWithDate('h1', $matches[1]) . "\n";
             } elseif (preg_match('/^- (.+)$/', $line, $matches)) {
                 if (!$inList) {
                     $html .= '<ul>' . "\n";
@@ -140,5 +140,24 @@ class ChangelogHelper
     private function escapeHtml(string $text): string
     {
         return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
+     * Render a header and extract date in parentheses as <small>
+     *
+     * @param string $tag
+     * @param string $text
+     * @return string
+     */
+    private function renderHeaderWithDate(string $tag, string $text): string
+    {
+        // Match: Title (date)
+        if (preg_match('/^(.*)\\((\\d{2}\\.\\d{2}\\.\\d{4})\\)$/', trim($text), $matches)) {
+            $title = trim($matches[1]);
+            $date = $matches[2];
+            return "<{$tag}>" . $this->escapeHtml($title) . " <small>" . $this->escapeHtml($date) . "</small></{$tag}>";
+        } else {
+            return "<{$tag}>" . $this->escapeHtml($text) . "</{$tag}>";
+        }
     }
 }
