@@ -4,86 +4,36 @@ namespace BO\Zmsstatistic\Helper;
 
 class ChangelogHelper
 {
-    private const GITHUB_API_URL = 'https://api.github.com/repos/it-at-m/eappointment/contents/CHANGELOG.md';
-
     /**
-     * Fetch changelog content from GitHub and convert to HTML
+     * Fetch changelog content from local file and convert to HTML
      *
      * @return string HTML content of the changelog
      */
     public function getChangelogHtml(): string
     {
-        $cacheFile = sys_get_temp_dir() . '/eappointment_changelog_cache.json';
-
-        // Check cache first
-        if (file_exists($cacheFile)) {
-            $cache = json_decode(file_get_contents($cacheFile), true);
-            if ($cache && isset($cache['content'])) {
-                return $cache['content'];
-            }
-        }
-
         try {
-            $markdown = $this->fetchChangelogFromGitHub();
+            $markdown = $this->fetchChangelogFromLocal();
             $html = $this->convertMarkdownToHtml($markdown);
-
-            // Cache the result
-            file_put_contents($cacheFile, json_encode([
-                'content' => $html
-            ]));
-
             return $html;
         } catch (\Exception $e) {
-            // Return empty string or fallback content on error
             error_log('Failed to fetch changelog: ' . $e->getMessage());
             return '';
         }
     }
 
     /**
-     * Fetch CHANGELOG.md content from GitHub API
+     * Fetch CHANGELOG.md content from local file
      *
      * @return string
      * @throws \Exception
      */
-    private function fetchChangelogFromGitHub(): string
+    private function fetchChangelogFromLocal(): string
     {
-        $ch = curl_init();
-
-        curl_setopt_array($ch, [
-            CURLOPT_URL => self::GITHUB_API_URL,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 10,
-            CURLOPT_USERAGENT => 'eappointment-changelog-fetcher',
-            CURLOPT_HTTPHEADER => [
-                'Accept: application/vnd.github.v3+json'
-            ]
-        ]);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
-
-        if ($error) {
-            throw new \Exception('cURL error: ' . $error);
+        $localFile = __DIR__ . '/../changelog_build.md';
+        if (!file_exists($localFile)) {
+            throw new \Exception('Local changelog file not found: ' . $localFile);
         }
-
-        if ($httpCode !== 200) {
-            throw new \Exception('HTTP error: ' . $httpCode);
-        }
-
-        $data = json_decode($response, true);
-
-        if (!isset($data['content']) || !isset($data['encoding'])) {
-            throw new \Exception('Invalid response from GitHub API');
-        }
-
-        if ($data['encoding'] !== 'base64') {
-            throw new \Exception('Unexpected encoding from GitHub API');
-        }
-
-        return base64_decode($data['content']);
+        return file_get_contents($localFile);
     }
 
     /**
