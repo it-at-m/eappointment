@@ -33,7 +33,6 @@ class ChangelogHelper
         if (!file_exists($localFile)) {
             throw new \Exception('Local changelog file not found: ' . $localFile);
         }
-        error_log('ChangelogHelper: __DIR__ is ' . __DIR__);
         return file_get_contents($localFile);
     }
 
