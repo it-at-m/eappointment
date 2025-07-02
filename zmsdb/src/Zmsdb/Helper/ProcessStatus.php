@@ -93,6 +93,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
 
     protected function setStatusConfirmed($process)
     {
+        $process->status = $process::STATUS_CONFIRMED;
         $process['status'] = $process::STATUS_CONFIRMED;
         return $process;
     }
