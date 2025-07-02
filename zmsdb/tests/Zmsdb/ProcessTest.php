@@ -131,6 +131,7 @@ class ProcessTest extends Base
         self::assertLessThanOrEqual(time(), $process->lastChange - self::DB_OPERATION_SECONDS_DEFAULT);
         $this->assertEquals(151, $process->getScopeId());
 
+        var_dump('UPDATE CONFIRMED');
         $process = $query->updateProcessStatus($process, 'confirmed', $now);
         $this->assertEquals('confirmed', $process->getStatus());
         $this->assertEquals(1464339600, $process->queue['arrivalTime']);

@@ -808,7 +808,7 @@ class Process extends Base implements MappingInterface
         $this->query->values($values);
 
         $status = $this->calculateStatus();
-        var_dump('calculated status: ' . $status . ' status: ' . !empty(empty($values['status'])) ? empty($values['status']) : '');
+        var_dump('calculated status: ' . $status . ' status: ' . !empty($values['status']) ? $values['status'] : '');
 
         if (!empty($status) && empty($values['status'])) {
             $values['status'] = $status;
