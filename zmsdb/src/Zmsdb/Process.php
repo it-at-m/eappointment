@@ -66,7 +66,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $processEntity = $process;
         $query = new Query\Process(Query\Base::UPDATE);
-        //$query->addValuesScopeData($process);
+        $query->addValuesScopeData($process);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
         $query->addValuesUpdateProcess($process, $now, 0, $previousStatus);
