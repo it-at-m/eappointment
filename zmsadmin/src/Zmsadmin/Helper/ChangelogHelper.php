@@ -129,25 +129,19 @@ class ChangelogHelper
                     $inList = false;
                 }
                 $html .= '<h1>' . $this->escapeHtml($matches[1]) . '</h1>' . "\n";
-            }
-            // Handle lists
-            elseif (preg_match('/^- (.+)$/', $line, $matches)) {
+            } elseif (preg_match('/^- (.+)$/', $line, $matches)) {
                 if (!$inList) {
                     $html .= '<ul>' . "\n";
                     $inList = true;
                 }
                 $html .= '<li>' . $this->processInlineMarkdown($matches[1]) . '</li>' . "\n";
-            }
-            // Handle horizontal rule
-            elseif (preg_match('/^---$/', $line)) {
+            } elseif (preg_match('/^---$/', $line)) {
                 if ($inList) {
                     $html .= "</ul>\n";
                     $inList = false;
                 }
                 $html .= '<hr />' . "\n";
-            }
-            // Handle regular text
-            else {
+            } else {
                 if ($inList) {
                     $html .= "</ul>\n";
                     $inList = false;
