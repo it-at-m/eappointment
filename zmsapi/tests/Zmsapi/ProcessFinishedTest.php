@@ -42,7 +42,7 @@ class ProcessFinishedTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
 
         sleep(10);
-        
+
         $entity = (new \BO\Zmsdb\Process)->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth);
         $this->assertEquals('pending', $entity->status);
     }
