@@ -16,8 +16,13 @@ jobs:
       - name: Download CHANGELOG.md for zmsadmin and zmsstatistic
         if: matrix.module == 'zmsadmin' || matrix.module == 'zmsstatistic'
         run: |
-          mkdir -p src/Zms${{ matrix.module^ }}
-          curl -sSL -o src/Zms${{ matrix.module^ }}/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md
+          if [ "${{ matrix.module }}" = "zmsadmin" ]; then
+            DIR=Zmsadmin
+          else
+            DIR=Zmsstatistic
+          fi
+          mkdir -p src/$DIR
+          curl -sSL -o src/$DIR/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
