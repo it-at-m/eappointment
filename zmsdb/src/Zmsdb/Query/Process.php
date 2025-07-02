@@ -808,6 +808,8 @@ class Process extends Base implements MappingInterface
         $this->query->values($values);
 
         $status = $this->calculateStatus();
+        var_dump('calculated status: ' . $status);
+        var_dump('status: ' . $values['status']);
 
         if (!empty($status) && empty($values['status'])) {
             $values['status'] = $status;
@@ -861,6 +863,8 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'preconfirmed') {
             $data['bestaetigt'] = 0;
         }
+        var_dump('process->status: ' . $process->status);
+        var_dump('process[status]: ' . $process['status']);
         $data['status'] = $process->status;
 
         $this->addValues($data);
