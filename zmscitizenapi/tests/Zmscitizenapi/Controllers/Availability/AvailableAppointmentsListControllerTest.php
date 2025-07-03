@@ -34,7 +34,7 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
                 ],
                 [
                     'function' => 'readPostResult',
-                    'url' => '/process/status/free/',
+                    'url' => '/process/status/free/unique/',
                     'response' => $this->readFixture("GET_appointments.json")
                 ]
             ]
@@ -71,7 +71,7 @@ class AvailableAppointmentsListControllerTest extends ControllerTestCase
                 ],
                 [
                     'function' => 'readPostResult',
-                    'url' => '/process/status/free/',
+                    'url' => '/process/status/free/unique/',
                     'response' => $this->readFixture("GET_appointments_empty.json")
                 ]
             ]
