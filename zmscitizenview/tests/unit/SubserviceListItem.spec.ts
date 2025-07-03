@@ -127,5 +127,37 @@ describe("SubserviceListItem", () => {
         expect(changeEvent[0]).toEqual([mockSubService.id, 3]);
       }
     });
+
+    it("disables subservice when adding it would exceed maxSlotsPerAppointment", () => {
+      // Simulate a scenario where current slots + subservice slots > maxSlotsPerAppointment
+      const wrapper = createWrapper({
+        currentSlots: 8, // Current slots used
+        maxSlotsPerAppointment: 10, // Maximum allowed
+        subService: { 
+          ...mockSubService, 
+          providers: [{ slots: 3 }] // This subservice needs 3 slots
+        },
+      });
+      
+      // 8 + 3 = 11, which exceeds maxSlotsPerAppointment of 10
+      expect(wrapper.vm.checkPlusEndabled).toBe(false);
+      expect(wrapper.vm.disabled).toBe(true); // Should be disabled when count is 0
+    });
+
+    it("enables subservice when adding it would not exceed maxSlotsPerAppointment", () => {
+      // Simulate a scenario where current slots + subservice slots <= maxSlotsPerAppointment
+      const wrapper = createWrapper({
+        currentSlots: 7, // Current slots used
+        maxSlotsPerAppointment: 10, // Maximum allowed
+        subService: { 
+          ...mockSubService, 
+          providers: [{ slots: 3 }] // This subservice needs 3 slots
+        },
+      });
+      
+      // 7 + 3 = 10, which equals maxSlotsPerAppointment of 10
+      expect(wrapper.vm.checkPlusEndabled).toBe(true);
+      expect(wrapper.vm.disabled).toBe(false); // Should be enabled when count is 0
+    });
   });
 }); 
