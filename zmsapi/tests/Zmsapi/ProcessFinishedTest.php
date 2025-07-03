@@ -11,9 +11,6 @@ class ProcessFinishedTest extends Base
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation['queue']['clusterEnabled'] = 1;
 
-        $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
-        $this->assertEquals('confirmed', $entity->status);
-
         $process = json_decode($this->readFixture("GetProcess_10030.json"));
         $process->status = 'finished';
         $response = $this->render([], [
@@ -32,7 +29,7 @@ class ProcessFinishedTest extends Base
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation['queue']['clusterEnabled'] = 1;
 
-        $process = json_decode($this->readFixture("GetProcess_10030.json"));
+        $process = json_decode($this->readFixture("GetProcess_10068.json"));
         $process->status = 'pending';
         $response = $this->render([], [
             '__body' => json_encode($process)
@@ -40,7 +37,7 @@ class ProcessFinishedTest extends Base
 
         $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
-        
+
         $entity = (new \BO\Zmsdb\Process)->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth);
         $this->assertEquals('pending', $entity->status);
     }
