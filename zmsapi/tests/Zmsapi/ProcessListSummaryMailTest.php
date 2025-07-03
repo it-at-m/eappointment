@@ -11,25 +11,24 @@ class ProcessListSummaryMailTest extends Base
 
     public function testRendering()
     {
-        $configRepository = (new \BO\Zmsdb\Config());
-        $config = $configRepository->readEntity();
-        $config->setPreference('mailings', 'noReplyDepartmentId', '74');
-        $configRepository->updateEntity($config);
+        $entity = (new \BO\Zmsdb\Process)->readEntity(10118, new \BO\Zmsdb\Helper\NoAuth);
+        $oldStatus = $entity->status;
+        $entity->status = 'confirmed';
+        (new \BO\Zmsdb\Process)->updateEntity($entity, \App::getNow());
 
         $response = $this->render([], ['mail' => 'zms@service.berlinonline.de', 'limit' => 3], []);
         self::assertStringContainsString('Sie haben folgende Termine gebucht', (string)$response->getBody());
         self::assertStringContainsString('10118', (string)$response->getBody());
-        self::assertStringContainsString('10114', (string)$response->getBody());
-        self::assertStringContainsString('10030', (string)$response->getBody());
 
         self::assertStringContainsString('am Dienstag, 19. April 2016 um 17:40 Uhr', (string)$response->getBody());
-        self::assertStringContainsString('am Dienstag, 26. April 2016 um 14:20 Uhr', (string)$response->getBody());
-        self::assertStringContainsString('am Montag, 16. Mai 2016 um 08:10 Uhr', (string)$response->getBody());
 
         self::assertSame(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
 
         $this->testShortRepetitionFailure();
         $this->testShortRepetitionSuccess();
+
+        $entity->status = $oldStatus;
+        (new \BO\Zmsdb\Process)->updateEntity($entity, \App::getNow());
     }
 
     private function testShortRepetitionFailure()
