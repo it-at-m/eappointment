@@ -116,13 +116,6 @@ class ZmsApiClientService
             if (!$entity instanceof Calendar) {
                 return new Calendar();
             }
-            $bookableDays = new DayList();
-            foreach ($entity->days as $day) {
-                if (isset($day['status']) && $day['status'] === 'bookable') {
-                    $bookableDays->addEntity($day);
-                }
-            }
-            $entity->days = $bookableDays;
 
             return $entity;
         } catch (\Exception $e) {
@@ -138,29 +131,13 @@ class ZmsApiClientService
             $calendar->lastDay = $lastDay;
             $calendar->providers = $providers;
             $calendar->requests = $requests;
-            $result = \App::$http->readPostResult('/process/status/free/', $calendar);
+            $result = \App::$http->readPostResult('/process/status/free/unique/', $calendar);
             $collection = $result?->getCollection();
             if (!$collection instanceof ProcessList) {
                 return new ProcessList();
             }
 
-            $uniqueProcesses = new ProcessList();
-            $seenKeys = [];
-            foreach ($collection as $process) {
-                $appointment = $process->appointments->getFirst();
-                $providerId = isset($process->scope->provider->id) ? $process->scope->provider->id : null;
-                if ($appointment && $providerId) {
-                    $key = $providerId . '_' . $appointment->date;
-                    if (!isset($seenKeys[$key])) {
-                        $uniqueProcesses->addEntity($process);
-                        $seenKeys[$key] = true;
-                    }
-                } else {
-                    $uniqueProcesses->addEntity($process);
-                }
-            }
-
-            return $uniqueProcesses;
+            return $collection;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
         }
