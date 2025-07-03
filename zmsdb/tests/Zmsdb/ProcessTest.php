@@ -138,8 +138,9 @@ class ProcessTest extends Base
         $this->assertEquals('Unbekannt', $process->getClients()->getLast()->familyName);
 
         $processList = $query->readEntityList($process->id);
-        $processItem = $processList->getFirst();
-        $this->assertNotEquals('reserved', $processItem->status);
+        foreach ($processList as $processItem) {
+            $this->assertNotEquals('reserved', $processItem->status);
+        }
 
         $process = $query->deleteEntity($process->id, $process->authKey);
 
