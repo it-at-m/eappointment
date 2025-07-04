@@ -61,7 +61,7 @@ class ProcessDelete extends BaseController
 
     protected function writeMails($request, $process)
     {
-        if ($process->hasScopeAdmin() && $process->sendAdminMailOnDeleted()) {
+        if ($process->hasScopeAdmin() && $process->sendAdminMailOnDeleted() && $process->getStatus() !== 'blocked') {
             $authority = $request->getUri()->getAuthority();
             $validator = $request->getAttribute('validator');
             $initiator = $validator->getParameter('initiator')
