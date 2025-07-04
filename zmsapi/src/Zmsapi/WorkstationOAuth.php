@@ -36,7 +36,7 @@ class WorkstationOAuth extends BaseController
         if ((new Useraccount())->readIsUserExisting($entity->getId())) {
             $workstation = $this->getLoggedInWorkstationByOidc($request, $entity, $resolveReferences);
         } else {
-            $workstation = $this->writeOAuthWorkstation($entity, $state, $resolveReferences);
+            throw new \BO\Zmsapi\Exception\Useraccount\UseraccountNotFound();
         }
         \BO\Zmsdb\Connection\Select::writeCommit();
 
@@ -65,48 +65,4 @@ class WorkstationOAuth extends BaseController
         );
         return $workstation;
     }
-
-    protected function writeOAuthWorkstation(UseraccountEntity $entity, $state, $resolveReferences)
-    {
-        $useraccount = (new Useraccount())->writeEntity($entity);
-        $query = new Workstation();
-        $workstation = $query->writeEntityLoginByName(
-            $useraccount->getId(),
-            $entity->password,
-            \App::getNow(),
-            (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION),
-            $resolveReferences
-        );
-        $workstation = $query->updateEntityAuthkey(
-            $useraccount->getId(),
-            $entity->password,
-            $state,
-            (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION),
-            $resolveReferences
-        );
-        return $workstation;
-    }
-
-    /*
-    private function writeNewUseraccount(UseraccountEntity $entity, $resolveReferences)
-    {
-        Helper\User::checkRights('useraccount');
-        Helper\User::testWorkstationAccessRights($entity);
-        $useraccount = (new Useraccount)->writeEntity($entity);
-        return $useraccount;
-    }
-
-    private function loginSuperuser($resolveReferences){
-        Helper\User::$workstation = (new Workstation)->writeEntityLoginByName(
-            \App::ZMS_AUTHORIZATION_SUPERUSER_USERNAME,
-            \App::ZMS_AUTHORIZATION_SUPERUSER_PASSWORD,
-            \App::getNow(),
-            $resolveReferences
-        );
-    }
-
-    private function logoutSuperuser(){
-        (new Workstation)->writeEntityLogoutByName(\App::ZMS_AUTHORIZATION_SUPERUSER_USERNAME);
-    }
-    */
 }
