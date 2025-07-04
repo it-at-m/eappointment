@@ -9,7 +9,7 @@
     <muc-input
       id="firstname"
       :modelValue="customerData.firstName"
-      @update:modelValue="val => customerData.firstName = val.slice(0, 50)"
+      @update:modelValue="(val) => (customerData.firstName = val.slice(0, 50))"
       :error-msg="showErrorMessage ? errorMessageFirstName : undefined"
       :label="t('firstName')"
       max="50"
@@ -51,7 +51,7 @@
       "
       class="textarea-wrapper"
     >
-      <muc-text-area      
+      <muc-text-area
         id="remarks"
         v-model="customerData.customTextfield"
         :error-msg="showErrorMessage ? errorMessageCustomTextfield : undefined"
@@ -59,9 +59,7 @@
         :required="selectedProvider.scope.customTextfieldRequired"
         max="100"
       />
-      <span class="char-counter">
-        {{ customTextfieldCount }}/100
-      </span>
+      <span class="char-counter"> {{ customTextfieldCount }}/100 </span>
     </div>
     <div
       v-if="
@@ -71,7 +69,7 @@
       "
       class="textarea-wrapper"
     >
-      <muc-text-area      
+      <muc-text-area
         id="remarks2"
         v-model="customerData.customTextfield2"
         :error-msg="showErrorMessage ? errorMessageCustomTextfield2 : undefined"
@@ -79,9 +77,7 @@
         :required="selectedProvider.scope.customTextfield2Required"
         max="100"
       />
-      <span class="char-counter">
-        {{ customTextfield2Count }}/100
-      </span>
+      <span class="char-counter"> {{ customTextfield2Count }}/100 </span>
     </div>
   </form>
   <div class="m-button-group">
@@ -106,10 +102,8 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, watch } from "vue";
-
 import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref } from "vue";
+import { computed, inject, Ref, ref, watch } from "vue";
 
 import {
   CustomerDataProvider,
@@ -213,8 +207,12 @@ const errorMessageCustomTextfield2 = computed(() => {
   }
 });
 
-const customTextfieldCount = computed(() => customerData.value.customTextfield?.length || 0);
-const customTextfield2Count = computed(() => customerData.value.customTextfield2?.length || 0);
+const customTextfieldCount = computed(
+  () => customerData.value.customTextfield?.length || 0
+);
+const customTextfield2Count = computed(
+  () => customerData.value.customTextfield2?.length || 0
+);
 
 const validForm = computed(
   () =>
@@ -247,16 +245,15 @@ const lastNameComputed = computed({
   get: () => customerData.value.lastName,
   set: (val: string) => {
     customerData.value.lastName = val.slice(0, 50);
-  }
+  },
 });
 
 const mailAddressComputed = computed({
   get: () => customerData.value.mailAddress,
   set: (val: string) => {
     customerData.value.mailAddress = val.slice(0, 50);
-  }
+  },
 });
-
 </script>
 
 <style scoped>
