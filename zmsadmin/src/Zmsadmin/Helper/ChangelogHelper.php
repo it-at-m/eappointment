@@ -8,11 +8,6 @@ use HTMLPurifier_Config;
 
 class ChangelogHelper
 {
-    /**
-     * Fetch changelog content from local file and convert to HTML
-     *
-     * @return string HTML content of the changelog
-     */
     public function getChangelogHtml(): string
     {
         try {
@@ -31,17 +26,12 @@ class ChangelogHelper
             $safeHtml = $purifier->purify($unsafeHtml);
             return $safeHtml;
         } catch (\Exception $e) {
-            error_log('Failed to fetch changelog: ' . $e->getMessage());
+            if (isset(\App::$log)) {
+                \App::$log->error('Failed to fetch changelog: ' . $e->getMessage());
+            }
             return '';
         }
     }
-
-    /**
-     * Fetch CHANGELOG.md content from local file
-     *
-     * @return string
-     * @throws \Exception
-     */
     private function fetchChangelogFromLocal(): string
     {
         $localFile = __DIR__ . '/../../../changelog_build.md';
