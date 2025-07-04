@@ -114,7 +114,7 @@ class UserAuth
         $xAuthKey = $request->getHeaderLine('X-AuthKey');
         if (! $xAuthKey) {
             $cookies = $request->getCookieParams();
-            $xAuthKey = (array_key_exists('Zmsclient', $cookies)) ? $cookies['Zmsclient'] : null;
+            $xAuthKey = (array_key_exists('X-AuthKey', $cookies)) ? $cookies['X-AuthKey'] : null;
         }
         return ($xAuthKey) ? $xAuthKey : false;
     }
