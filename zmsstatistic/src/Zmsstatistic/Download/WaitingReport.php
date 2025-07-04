@@ -9,6 +9,7 @@ namespace BO\Zmsstatistic\Download;
 
 use BO\Zmsentities\Exchange as ReportEntity;
 use BO\Zmsstatistic\Helper\Download;
+use BO\Zmsstatistic\Helper\ReportHelper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -86,26 +87,26 @@ class WaitingReport extends Base
         $reportTotal['max'][] = 'Tagesmaximum Spontankunden der gemessenen Zeit';
         $reportTotal['average'][] = 'Tagesdurchschnitt Spontankunden der gemessenen Zeit';
         $reportTotal['average_waytime'][] = 'Tagesdurchschnitt Wegezeit Spontankunden';
-        $reportTotal['max'][] = $totals['max_waitingtime'];
-        $reportTotal['average'][] = $totals['average_waitingtime'];
-        $reportTotal['average_waytime'][] = $totals['average_waytime'];
+        $reportTotal['max'][] = ReportHelper::formatTimeValue($totals['max_waitingtime']);
+        $reportTotal['average'][] = ReportHelper::formatTimeValue($totals['average_waitingtime']);
+        $reportTotal['average_waytime'][] = ReportHelper::formatTimeValue($totals['average_waytime']);
         foreach ($entity->data as $entry) {
-            $reportTotal['max'][] = $entry['max_waitingtime'];
-            $reportTotal['average'][] = $entry['average_waitingtime'];
-            $reportTotal['average_waytime'][] = $entry['average_waytime'];
+            $reportTotal['max'][] = ReportHelper::formatTimeValue($entry['max_waitingtime']);
+            $reportTotal['average'][] = ReportHelper::formatTimeValue($entry['average_waitingtime']);
+            $reportTotal['average_waytime'][] = ReportHelper::formatTimeValue($entry['average_waytime']);
         }
         $sheet->fromArray($reportTotal, null, 'A' . ($sheet->getHighestRow() + 1));
 
         $reportTotal2['max'][] = 'Tagesmaximum Terminkunden der gemessenen Zeit';
         $reportTotal2['average'][] = 'Tagesdurchschnitt Terminkunden der gemessenen Zeit';
         $reportTotal2['average_waytime'][] = 'Tagesdurchschnitt Wegezeit Terminkunden';
-        $reportTotal2['max'][] = $totals['max_waitingtime_termin'];
-        $reportTotal2['average'][] = $totals['average_waitingtime_termin'];
-        $reportTotal2['average_waytime'][] = $totals['average_waytime_termin'];
+        $reportTotal2['max'][] = ReportHelper::formatTimeValue($totals['max_waitingtime_termin']);
+        $reportTotal2['average'][] = ReportHelper::formatTimeValue($totals['average_waitingtime_termin']);
+        $reportTotal2['average_waytime'][] = ReportHelper::formatTimeValue($totals['average_waytime_termin']);
         foreach ($entity->data as $entry) {
-            $reportTotal2['max'][] = $entry['max_waitingtime_termin'];
-            $reportTotal2['average'][] = $entry['average_waitingtime_termin'];
-            $reportTotal2['average_waytime'][] = $entry['average_waytime_termin'];
+            $reportTotal2['max'][] = ReportHelper::formatTimeValue($entry['max_waitingtime_termin']);
+            $reportTotal2['average'][] = ReportHelper::formatTimeValue($entry['average_waitingtime_termin']);
+            $reportTotal2['average_waytime'][] = ReportHelper::formatTimeValue($entry['average_waytime_termin']);
         }
         $sheet->fromArray($reportTotal2, null, 'A' . ($sheet->getHighestRow() + 1));
     }
@@ -116,6 +117,7 @@ class WaitingReport extends Base
         $totals = $entity->data['max'];
         unset($entity->data['max']);
         $reportData['headline'] = ['Zeitabschnitte',$headline];
+        $formatAsTime = strpos($rangeName, 'waitingcount') === false;
         foreach ($entity->data as $entry) {
             foreach ($entry as $hour => $item) {
                 if (5 < $hour && 22 > $hour) {
@@ -125,9 +127,15 @@ class WaitingReport extends Base
                     $range = $hour . '-' . ($hour + 1) . ' Uhr';
                     if (! in_array($range, $reportData[$hour])) {
                         $reportData[$hour][] = $range;
-                        $reportData[$hour][] = $totals[$hour][$rangeName];
+                        $totalValue = $totals[$hour][$rangeName];
+                        $reportData[$hour][] = $formatAsTime
+                            ? ReportHelper::formatTimeValue($totalValue)
+                            : $totalValue;
                     }
-                    $reportData[$hour][] = $item[$rangeName] ?? '-';
+                    $value = $item[$rangeName] ?? '-';
+                    $reportData[$hour][] = $formatAsTime
+                        ? ReportHelper::formatTimeValue($value)
+                        : $value;
                 }
             }
         }

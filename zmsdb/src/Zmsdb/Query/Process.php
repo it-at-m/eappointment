@@ -825,20 +825,6 @@ class Process extends Base implements MappingInterface
         $this->addValues($data);
     }
 
-    public function addValues($values)
-    {
-        $this->query->values($values);
-
-        $status = $this->calculateStatus();
-
-        if (!empty($status)) {
-            $values['status'] = $status;
-            $this->query->values($values);
-        }
-
-        return $this;
-    }
-
     public function addValuesStatusData($process, \DateTimeInterface $dateTime)
     {
         $data = array();
@@ -883,6 +869,7 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'preconfirmed') {
             $data['bestaetigt'] = 0;
         }
+        $data['status'] = $process->status;
 
         $this->addValues($data);
     }

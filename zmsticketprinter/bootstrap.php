@@ -39,3 +39,9 @@ require(APP_PATH . '/config.php');
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
+
+// Register error handler for all errors (Slim v4 style)
+if (\App::$slim->getContainer()->has('errorMiddleware')) {
+    $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
+    $errorMiddleware->setDefaultErrorHandler(new \BO\Zmsticketprinter\Helper\TwigExceptionHandler());
+}
