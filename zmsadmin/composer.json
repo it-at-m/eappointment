@@ -46,7 +46,9 @@
         "container-interop/container-interop": "^1.2",
         "twig/intl-extra": "^3.4",
         "twig/twig": "3.*",
-        "symfony/polyfill-intl-icu": "^1.21"
+        "symfony/polyfill-intl-icu": "^1.21",
+        "ezyang/htmlpurifier": "^4.18",
+        "league/commonmark": "^2.7"
     },
     "bin": [],
     "autoload": {
