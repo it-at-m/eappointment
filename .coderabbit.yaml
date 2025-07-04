@@ -116,13 +116,54 @@ reviews:
         $log->error("Import failed", ['error' => $e->getMessage()]);
         ```
 
-        Flag any debug code that should be removed:
-        1. var_dump(), print_r(), die(), exit() statements
-        2. Debug constants like DEBUG = true
-        3. Debug logging that should be removed in production
-        4. Commented debug code that should be cleaned up
+        Flag specific logging violations:
+        1. error_log(), var_dump(), print_r(), die(), exit() usage (except proper error logging in catch blocks)
+        2. Any debug output that should use proper Monolog logging
+        3. Debug constants like DEBUG = true
+        4. Debug logging that should be removed in production
+        5. Commented debug code that should be cleaned up
 
-        Example replacement:
+        Example replacements:
+        ```php
+        // Instead of:
+        error_log("Error occurred");
+        var_dump($data);
+        die('debug point');
+        
+        // Use:
+        $log->error("Error occurred", ['context' => 'processing']);
+        $log->debug('Data dump', ['data' => $data]);
+        // Remove die() statements entirely
+        ```
+
+        Exception handling should use proper logging:
+        ```php
+        // Instead of:
+        try {
+            $result = $this->process();
+        } catch (Exception $e) {
+            error_log("Processing failed: " . $e->getMessage());
+        }
+        
+        // Use:
+        try {
+            $result = $this->process();
+        } catch (Exception $e) {
+            $log->error("Processing failed", ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+        }
+        ```
+
+        Use appropriate log levels:
+        ```php
+        // Instead of:
+        error_log("User logged in");
+        error_log("Processing data...");
+        
+        // Use:
+        $log->info("User logged in", ['user_id' => $userId, 'ip' => $ipAddress]);
+        $log->debug("Processing data", ['data_size' => count($data), 'processor' => 'batch']);
+        ```
+        Use appropriate log levels:
         ```php
         // Instead of:
         var_dump($data);
@@ -398,6 +439,26 @@ reviews:
         console.debug('Processing user data', { userData });
         // or for development only:
         Remove the console.log entirely
+        ```
+
+        Flag specific logging violations:
+        1. console.log(), console.debug(), console.warn() usage (except console.error in catch blocks)
+        2. Any debug output that should use proper logging frameworks
+
+        Example replacements:
+        ```javascript
+        // Instead of:
+        console.log('User data:', userData);
+        console.debug('Processing...');
+        
+        // Use:
+        // Remove console.log entirely or use proper logging
+        // Only console.error in catch blocks is acceptable
+        try {
+          processData(userData);
+        } catch (error) {
+          console.error('Processing failed:', error);
+        }
         ```
 
         Flag JavaScript security and UX issues:
