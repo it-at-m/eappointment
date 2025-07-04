@@ -31,6 +31,10 @@ class WorkstationLogin extends BaseController
         $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Useraccount($input);
+        error_log("---------------------------------------------------------");
+        error_log("USERACCOUNT:");
+        error_log(json_encode($entity, JSON_PRETTY_PRINT));
+        error_log("---------------------------------------------------------");
         $entity->testValid();
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
