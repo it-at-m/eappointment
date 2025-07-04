@@ -46,7 +46,9 @@
         "twig/twig": "3.*",
         "firebase/php-jwt": "v6.11.0",
         "twig/intl-extra": "^3.4",
-        "ext-intl": "*"
+        "ext-intl": "*",
+        "ezyang/htmlpurifier": "^4.18",
+        "league/commonmark": "^2.7"
     },
     "bin": [],
     "autoload": {

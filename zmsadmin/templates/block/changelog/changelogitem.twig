@@ -6,7 +6,7 @@
 <div class="{{ showList }}">
 
 {% if changelogContent is defined and changelogContent %}
-{{ changelogContent|raw }}
+{{ changelogContent|sanitize_html }}
 {% else %}
 <h2> Release Muc-16 <small>(08.11.2024)</small></h2>
 
