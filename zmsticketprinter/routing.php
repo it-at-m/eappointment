@@ -69,8 +69,3 @@ use \Psr\Http\Message\ResponseInterface;
         return \BO\Slim\Render::withHtml($response, '404.twig');
     };
 });
-
-\App::$slim->getContainer()->offsetSet(
-    'errorHandler',
-    new \BO\Zmsticketprinter\Helper\TwigExceptionHandler()
-);
