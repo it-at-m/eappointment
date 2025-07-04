@@ -106,6 +106,7 @@ class UserAuth
 
     /**
      * Get XAuthKey from header
+     * Falls back to X-AuthKey cookie if header is not present
      *
      * @return array $useraccount
     */
