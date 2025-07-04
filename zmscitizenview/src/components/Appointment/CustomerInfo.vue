@@ -14,7 +14,7 @@
       max="50"
       required
     />
-    
+
     <muc-input
       id="lastname"
       v-model="customerData.lastName"
@@ -23,7 +23,7 @@
       max="50"
       required
     />
-    
+
     <muc-input
       id="mailaddress"
       v-model="customerData.mailAddress"
@@ -32,7 +32,7 @@
       max="50"
       required
     />
-    
+
     <muc-input
       v-if="
         selectedProvider &&
@@ -252,12 +252,30 @@ function limitLength(refVal: Ref<string | undefined>, max: number) {
   );
 }
 
-limitLength(computed(() => customerData.value.firstName), 50);
-limitLength(computed(() => customerData.value.lastName), 50);
-limitLength(computed(() => customerData.value.mailAddress), 50);
-limitLength(computed(() => customerData.value.telephoneNumber), 50);
-limitLength(computed(() => customerData.value.customTextfield), 100);
-limitLength(computed(() => customerData.value.customTextfield2), 100);
+limitLength(
+  computed(() => customerData.value.firstName),
+  50
+);
+limitLength(
+  computed(() => customerData.value.lastName),
+  50
+);
+limitLength(
+  computed(() => customerData.value.mailAddress),
+  50
+);
+limitLength(
+  computed(() => customerData.value.telephoneNumber),
+  50
+);
+limitLength(
+  computed(() => customerData.value.customTextfield),
+  100
+);
+limitLength(
+  computed(() => customerData.value.customTextfield2),
+  100
+);
 
 const errorMessageWithLengthCheck = (
   baseError: ComputedRef<string | undefined>,
@@ -271,12 +289,36 @@ const errorMessageWithLengthCheck = (
     return showErrorMessage.value ? baseError.value : undefined;
   });
 
-const errorFirstNameWithLength = errorMessageWithLengthCheck(errorMessageFirstName, computed(() => customerData.value.firstName), 50);
-const errorLastNameWithLength = errorMessageWithLengthCheck(errorMessageLastName, computed(() => customerData.value.lastName), 50);
-const errorMailAddressWithLength = errorMessageWithLengthCheck(errorMessageMailAddress, computed(() => customerData.value.mailAddress), 50);
-const errorTelephoneWithLength = errorMessageWithLengthCheck(errorMessageTelephoneNumber, computed(() => customerData.value.telephoneNumber), 50);
-const errorCustomTextfieldWithLength = errorMessageWithLengthCheck(errorMessageCustomTextfield, computed(() => customerData.value.customTextfield), 100);
-const errorCustomTextfield2WithLength = errorMessageWithLengthCheck(errorMessageCustomTextfield2, computed(() => customerData.value.customTextfield2), 100);
+const errorFirstNameWithLength = errorMessageWithLengthCheck(
+  errorMessageFirstName,
+  computed(() => customerData.value.firstName),
+  50
+);
+const errorLastNameWithLength = errorMessageWithLengthCheck(
+  errorMessageLastName,
+  computed(() => customerData.value.lastName),
+  50
+);
+const errorMailAddressWithLength = errorMessageWithLengthCheck(
+  errorMessageMailAddress,
+  computed(() => customerData.value.mailAddress),
+  50
+);
+const errorTelephoneWithLength = errorMessageWithLengthCheck(
+  errorMessageTelephoneNumber,
+  computed(() => customerData.value.telephoneNumber),
+  50
+);
+const errorCustomTextfieldWithLength = errorMessageWithLengthCheck(
+  errorMessageCustomTextfield,
+  computed(() => customerData.value.customTextfield),
+  100
+);
+const errorCustomTextfield2WithLength = errorMessageWithLengthCheck(
+  errorMessageCustomTextfield2,
+  computed(() => customerData.value.customTextfield2),
+  100
+);
 </script>
 
 <style scoped>
