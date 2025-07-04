@@ -8,23 +8,24 @@
   <form class="m-form m-form--default">
     <muc-input
       id="firstname"
-      v-model="customerData.firstName"
+      :modelValue="customerData.firstName"
+      @update:modelValue="val => customerData.firstName = val.slice(0, 50)"
       :error-msg="showErrorMessage ? errorMessageFirstName : undefined"
       :label="t('firstName')"
-      max="60"
+      max="50"
       required
     />
     <muc-input
       id="lastname"
-      v-model="customerData.lastName"
+      v-model="lastNameComputed"
       :error-msg="showErrorMessage ? errorMessageLastName : undefined"
       :label="t('lastName')"
-      max="60"
+      max="50"
       required
     />
     <muc-input
       id="mailaddress"
-      v-model="customerData.mailAddress"
+      v-model="mailAddressComputed"
       :error-msg="showErrorMessage ? errorMessageMailAddress : undefined"
       :label="t('mailAddress')"
       required
@@ -42,30 +43,46 @@
       :required="selectedProvider.scope.telephoneRequired"
       placeholder="+491511234567"
     />
-    <muc-text-area
+    <div
       v-if="
         selectedProvider &&
         selectedProvider.scope &&
         selectedProvider.scope.customTextfieldActivated
       "
-      id="remarks"
-      v-model="customerData.customTextfield"
-      :error-msg="showErrorMessage ? errorMessageCustomTextfield : undefined"
-      :label="selectedProvider.scope.customTextfieldLabel"
-      :required="selectedProvider.scope.customTextfieldRequired"
-    />
-    <muc-text-area
+      class="textarea-wrapper"
+    >
+      <muc-text-area      
+        id="remarks"
+        v-model="customerData.customTextfield"
+        :error-msg="showErrorMessage ? errorMessageCustomTextfield : undefined"
+        :label="selectedProvider.scope.customTextfieldLabel"
+        :required="selectedProvider.scope.customTextfieldRequired"
+        max="100"
+      />
+      <span class="char-counter">
+        {{ customTextfieldCount }}/100
+      </span>
+    </div>
+    <div
       v-if="
         selectedProvider &&
         selectedProvider.scope &&
         selectedProvider.scope.customTextfield2Activated
       "
-      id="remarks2"
-      v-model="customerData.customTextfield2"
-      :error-msg="showErrorMessage ? errorMessageCustomTextfield2 : undefined"
-      :label="selectedProvider.scope.customTextfield2Label"
-      :required="selectedProvider.scope.customTextfield2Required"
-    />
+      class="textarea-wrapper"
+    >
+      <muc-text-area      
+        id="remarks2"
+        v-model="customerData.customTextfield2"
+        :error-msg="showErrorMessage ? errorMessageCustomTextfield2 : undefined"
+        :label="selectedProvider.scope.customTextfield2Label"
+        :required="selectedProvider.scope.customTextfield2Required"
+        max="100"
+      />
+      <span class="char-counter">
+        {{ customTextfield2Count }}/100
+      </span>
+    </div>
   </form>
   <div class="m-button-group">
     <muc-button
@@ -89,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Ref } from "vue";
+import { Ref, watch } from "vue";
 
 import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
@@ -196,6 +213,9 @@ const errorMessageCustomTextfield2 = computed(() => {
   }
 });
 
+const customTextfieldCount = computed(() => customerData.value.customTextfield?.length || 0);
+const customTextfield2Count = computed(() => customerData.value.customTextfield2?.length || 0);
+
 const validForm = computed(
   () =>
     !errorMessageFirstName.value &&
@@ -213,6 +233,45 @@ const nextStep = () => {
   }
 };
 const previousStep = () => emit("back");
+
+watch(
+  () => customerData.value.firstName,
+  (newValue) => {
+    if (newValue && newValue.length > 50) {
+      customerData.value.firstName = newValue.slice(0, 50);
+    }
+  }
+);
+
+const lastNameComputed = computed({
+  get: () => customerData.value.lastName,
+  set: (val: string) => {
+    customerData.value.lastName = val.slice(0, 50);
+  }
+});
+
+const mailAddressComputed = computed({
+  get: () => customerData.value.mailAddress,
+  set: (val: string) => {
+    customerData.value.mailAddress = val.slice(0, 50);
+  }
+});
+
 </script>
 
-<style scoped></style>
+<style scoped>
+.textarea-wrapper {
+  position: relative;
+}
+
+.char-counter {
+  position: absolute;
+  bottom: 0.2rem;
+  right: 0.2rem;
+  font-size: 1rem;
+  color: #617586;
+  padding: 0 0.25rem;
+  pointer-events: none;
+  z-index: 10;
+}
+</style>
