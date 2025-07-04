@@ -175,4 +175,40 @@ class UseraccountTest extends EntityCommonTests
         $this->assertEquals('unittest2', $entity->password);
         $this->assertEquals(2, count($entity->changePassword));
     }
+
+    public function testCreateFromOpenidData()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $input = [
+            'username' => 'johndoe',
+            'email' => 'johndoe@muenchen.de',
+        ];
+        $entity->createFromOpenidData($input);
+        $this->assertInstanceOf($this->entityclass, $entity);
+        $this->assertEquals('johndoe', $entity->id);
+        $this->assertEquals('johndoe@muenchen.de', $entity->email);
+        $this->assertTrue($entity->hasDepartment(72), 'Department with ID 72 should be added');
+        $this->assertNotEmpty($entity->password, 'Password hash should not be empty');
+        $this->assertIsString($entity->password, 'Password hash should be a string');
+    }
+
+    public function testGetOidcProviderFromName()
+    {
+        $entity = (new $this->entityclass())->getExample();
+
+        $entity->id = 'johndoe@muenchen.de';
+        $this->assertEquals('muenchen.de', $entity->getOidcProviderFromName());
+
+        $entity->id = 'johndoe';
+        $this->assertNull($entity->getOidcProviderFromName());
+
+        $entity->id = 'johndoe@';
+        $this->assertNull($entity->getOidcProviderFromName());
+
+        $entity->id = 'john@doe@muenchen.de';
+        $this->assertEquals('doe@muenchen.de', $entity->getOidcProviderFromName());
+
+        $entity->id = '';
+        $this->assertNull($entity->getOidcProviderFromName());
+    }
 }
