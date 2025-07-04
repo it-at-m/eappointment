@@ -62,12 +62,6 @@ class TwigExtensionsAndFilter extends TwigExtension
         return (new \ReflectionClass($object))->getShortName();
     }
 
-    /**
-     * Sanitize HTML using HTMLPurifier
-     *
-     * @param string $html
-     * @return string
-     */
     public function sanitizeHtml($html)
     {
         static $purifier = null;

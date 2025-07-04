@@ -2,9 +2,6 @@
 
 namespace BO\Zmsadmin\Helper;
 
-use League\CommonMark\CommonMarkConverter;
-use HTMLPurifier;
-use HTMLPurifier_Config;
 use BO\Slim\Helper\BaseChangelogHelper;
 
 class ChangelogHelper extends BaseChangelogHelper
