@@ -8,28 +8,31 @@
   <form class="m-form m-form--default">
     <muc-input
       id="firstname"
-      v-model="firstNameComputed"
-      :error-msg="showErrorMessage ? errorMessageFirstName : undefined"
+      v-model="customerData.firstName"
+      :error-msg="errorFirstNameWithLength"
       :label="t('firstName')"
       max="50"
       required
     />
+    
     <muc-input
       id="lastname"
-      v-model="lastNameComputed"
-      :error-msg="showErrorMessage ? errorMessageLastName : undefined"
+      v-model="customerData.lastName"
+      :error-msg="errorLastNameWithLength"
       :label="t('lastName')"
       max="50"
       required
     />
+    
     <muc-input
       id="mailaddress"
-      v-model="mailAddressComputed"
-      :error-msg="showErrorMessage ? errorMessageMailAddress : undefined"
+      v-model="customerData.mailAddress"
+      :error-msg="errorMailAddressWithLength"
       :label="t('mailAddress')"
       max="50"
       required
     />
+    
     <muc-input
       v-if="
         selectedProvider &&
@@ -37,13 +40,14 @@
         selectedProvider.scope.telephoneActivated
       "
       id="telephonenumber"
-      v-model="telephoneNumberComputed"
-      :error-msg="showErrorMessage ? errorMessageTelephoneNumber : undefined"
+      v-model="customerData.telephoneNumber"
+      :error-msg="errorTelephoneWithLength"
       :label="t('telephoneNumber')"
       :required="selectedProvider.scope.telephoneRequired"
       max="50"
       placeholder="+491511234567"
     />
+
     <div
       v-if="
         selectedProvider &&
@@ -54,14 +58,15 @@
     >
       <muc-text-area
         id="remarks"
-        v-model="customTextfieldComputed"
-        :error-msg="showErrorMessage ? errorMessageCustomTextfield : undefined"
+        v-model="customerData.customTextfield"
+        :error-msg="errorCustomTextfieldWithLength"
         :label="selectedProvider.scope.customTextfieldLabel"
         :required="selectedProvider.scope.customTextfieldRequired"
         max="100"
       />
       <span class="char-counter"> {{ customTextfieldCount }}/100 </span>
     </div>
+
     <div
       v-if="
         selectedProvider &&
@@ -72,11 +77,11 @@
     >
       <muc-text-area
         id="remarks2"
-        v-model="customTextfield2Computed"
-        :error-msg="showErrorMessage ? errorMessageCustomTextfield2 : undefined"
+        v-model="customerData.customTextfield2"
+        :error-msg="errorCustomTextfield2WithLength"
         :label="selectedProvider.scope.customTextfield2Label"
         :required="selectedProvider.scope.customTextfield2Required"
-        max="100"
+        maxlength="100"
       />
       <span class="char-counter"> {{ customTextfield2Count }}/100 </span>
     </div>
@@ -103,10 +108,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Ref } from "vue";
+import type { ComputedRef, Ref } from "vue";
 
 import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, watch } from "vue";
 
 import {
   CustomerDataProvider,
@@ -235,24 +240,43 @@ const customTextfield2Count = computed(
   () => customerData.value.customTextfield2?.length || 0
 );
 
-function useLimitedComputed(
-  fieldName: keyof typeof customerData.value,
-  maxLength: number
-) {
-  return computed<string>({
-    get: () => customerData.value[fieldName] || "",
-    set: (val: string) => {
-      customerData.value[fieldName] = val.slice(0, maxLength);
+function limitLength(refVal: Ref<string | undefined>, max: number) {
+  watch(
+    refVal,
+    (newVal) => {
+      if (newVal && newVal.length > max) {
+        refVal.value = newVal.slice(0, max);
+      }
     },
-  });
+    { immediate: true }
+  );
 }
 
-const firstNameComputed = useLimitedComputed("firstName", 50);
-const lastNameComputed = useLimitedComputed("lastName", 50);
-const mailAddressComputed = useLimitedComputed("mailAddress", 50);
-const telephoneNumberComputed = useLimitedComputed("telephoneNumber", 50);
-const customTextfieldComputed = useLimitedComputed("customTextfield", 100);
-const customTextfield2Computed = useLimitedComputed("customTextfield2", 100);
+limitLength(computed(() => customerData.value.firstName), 50);
+limitLength(computed(() => customerData.value.lastName), 50);
+limitLength(computed(() => customerData.value.mailAddress), 50);
+limitLength(computed(() => customerData.value.telephoneNumber), 50);
+limitLength(computed(() => customerData.value.customTextfield), 100);
+limitLength(computed(() => customerData.value.customTextfield2), 100);
+
+const errorMessageWithLengthCheck = (
+  baseError: ComputedRef<string | undefined>,
+  field: ComputedRef<string | undefined>,
+  max: number
+) =>
+  computed(() => {
+    if (field.value?.length === max) {
+      return props.t("maxCharHint");
+    }
+    return showErrorMessage.value ? baseError.value : undefined;
+  });
+
+const errorFirstNameWithLength = errorMessageWithLengthCheck(errorMessageFirstName, computed(() => customerData.value.firstName), 50);
+const errorLastNameWithLength = errorMessageWithLengthCheck(errorMessageLastName, computed(() => customerData.value.lastName), 50);
+const errorMailAddressWithLength = errorMessageWithLengthCheck(errorMessageMailAddress, computed(() => customerData.value.mailAddress), 50);
+const errorTelephoneWithLength = errorMessageWithLengthCheck(errorMessageTelephoneNumber, computed(() => customerData.value.telephoneNumber), 50);
+const errorCustomTextfieldWithLength = errorMessageWithLengthCheck(errorMessageCustomTextfield, computed(() => customerData.value.customTextfield), 100);
+const errorCustomTextfield2WithLength = errorMessageWithLengthCheck(errorMessageCustomTextfield2, computed(() => customerData.value.customTextfield2), 100);
 </script>
 
 <style scoped>
@@ -262,11 +286,10 @@ const customTextfield2Computed = useLimitedComputed("customTextfield2", 100);
 
 .char-counter {
   position: absolute;
-  bottom: 0.2rem;
-  right: 0.2rem;
+  bottom: 0.5rem;
+  right: 0.5rem;
   font-size: 1rem;
   color: #617586;
-  padding: 0 0.25rem;
   pointer-events: none;
   z-index: 10;
 }

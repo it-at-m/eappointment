@@ -40,6 +40,7 @@
   "lastName": "Nachname",
   "location": "Ort",
   "mailAddress": "E-Mail-Adresse",
+  "maxCharHint": "Die maximale Zeichenanzahl wurde erreicht!",
   "minutes": "Minuten",
   "next": "Weiter",
   "noAppointmentsAvailableHeader": "Aktuell ist kein Termin verfügbar.",
