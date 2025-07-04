@@ -27,10 +27,6 @@ class WorkstationOAuth extends BaseController
         $state  = $validator->getParameter('state')->isString()->isSmallerThan(40)->isBiggerThan(30)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = (new UseraccountEntity())->createFromOpenIdData($input);
-        error_log("---------------------------------------------------------");
-        error_log("OIDC USERACCOUNT ENTITY");
-        error_log(json_encode($entity, JSON_PRETTY_PRINT));
-        error_log("---------------------------------------------------------");
         $entity->testValid();
 
         if (null === $state || $request->getHeaderLine('X-Authkey') !== $state) {
@@ -38,10 +34,8 @@ class WorkstationOAuth extends BaseController
         }
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         if ((new Useraccount())->readIsUserExisting($entity->getId())) {
-            error_log("OIDC USER IS EXISTING");
             $workstation = $this->getLoggedInWorkstationByOidc($request, $entity, $resolveReferences);
         } else {
-            error_log("OIDC USER IS NOT EXISTING");
             throw new \BO\Zmsapi\Exception\Useraccount\UseraccountNotFound();
         }
         \BO\Zmsdb\Connection\Select::writeCommit();
