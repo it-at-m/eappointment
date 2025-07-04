@@ -126,12 +126,12 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
+                "reference": "a6ec5f9bce167fded44a9f3ffb53779e5938ffee"
             },
             "require": {
                 "ext-json": ">=0",
                 "ext-pcre": ">=0",
-                "php": ">=7.0.0"
+                "php": ">=8.0"
             },
             "require-dev": {
                 "phpmd/phpmd": "^2.8.0",
@@ -232,7 +232,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
+                "reference": "852f28a922ce9ba0705010c8b4712de094ed3741"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -242,6 +242,7 @@
                 "ext-pcre": ">=0",
                 "giggsey/libphonenumber-for-php": "^8.13.55",
                 "league/html-to-markdown": "^5.0",
+                "opis/json-schema": "^2.4",
                 "php": ">=7.3.0",
                 "symfony/translation": "^5.4",
                 "symfony/twig-bridge": "^5.4",
@@ -252,7 +253,7 @@
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.6",
-                "squizlabs/php_codesniffer": "^3.5.8"
+                "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
             "autoload": {
@@ -287,14 +288,14 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
+                "reference": "8e810743d49ebaee2d5e518651944feb96ea4a57"
             },
             "require": {
                 "eappointment/mellon": "@dev",
                 "ext-json": "*",
                 "ext-posix": "*",
                 "monolog/monolog": "1.*",
-                "php": ">=7.3.0",
+                "php": "^8.0",
                 "slim/http-cache": "1.*",
                 "slim/psr7": "^1.5",
                 "slim/slim": "4.*",
@@ -5620,22 +5621,22 @@
         },
         {
             "name": "phpspec/prophecy-phpunit",
-            "version": "v2.3.0",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy-phpunit.git",
-                "reference": "8819516c1b489ecee4c60db5f5432fac1ea8ac6f"
+                "reference": "d3c28041d9390c9bca325a08c5b2993ac855bded"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy-phpunit/zipball/8819516c1b489ecee4c60db5f5432fac1ea8ac6f",
-                "reference": "8819516c1b489ecee4c60db5f5432fac1ea8ac6f",
+                "url": "https://api.github.com/repos/phpspec/prophecy-phpunit/zipball/d3c28041d9390c9bca325a08c5b2993ac855bded",
+                "reference": "d3c28041d9390c9bca325a08c5b2993ac855bded",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.3 || ^8",
                 "phpspec/prophecy": "^1.18",
-                "phpunit/phpunit": "^9.1 || ^10.1 || ^11.0"
+                "phpunit/phpunit": "^9.1 || ^10.1 || ^11.0 || ^12.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "^1.10"
@@ -5669,9 +5670,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy-phpunit/issues",
-                "source": "https://github.com/phpspec/prophecy-phpunit/tree/v2.3.0"
+                "source": "https://github.com/phpspec/prophecy-phpunit/tree/v2.4.0"
             },
-            "time": "2024-11-19T13:24:17+00:00"
+            "time": "2025-05-13T13:52:32+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
