@@ -55,11 +55,6 @@ class Application extends \BO\Slim\Application
     public static int $MAX_REQUEST_SIZE;
     public static int $MAX_STRING_LENGTH;
     public static int $MAX_RECURSION_DEPTH;
-    // CSRF config
-    public static int $CSRF_TOKEN_LENGTH;
-    public static string $CSRF_SESSION_KEY;
-    // CORS config
-    public static string $CORS_ALLOWED_ORIGINS;
     // IP Filter config
     public static string $IP_BLACKLIST;
 
@@ -138,11 +133,6 @@ class Application extends \BO\Slim\Application
         self::$MAX_STRING_LENGTH = (int) (getenv('MAX_STRING_LENGTH') ?: 32768);
         // 32KB
         self::$MAX_RECURSION_DEPTH = (int) (getenv('MAX_RECURSION_DEPTH') ?: 10);
-        // CSRF
-        //self::$CSRF_TOKEN_LENGTH = (int) (getenv('CSRF_TOKEN_LENGTH') ?: 32);
-        //self::$CSRF_SESSION_KEY = getenv('CSRF_SESSION_KEY') ?: 'csrf_token';
-        // CORS
-        self::$CORS_ALLOWED_ORIGINS = getenv('CORS') ?: '';
         // IP Filter
         self::$IP_BLACKLIST = getenv('IP_BLACKLIST') ?: '';
 
@@ -205,19 +195,6 @@ class Application extends \BO\Slim\Application
             'maxStringLength' => self::$MAX_STRING_LENGTH,
             'maxRecursionDepth' => self::$MAX_RECURSION_DEPTH
         ];
-    }
-
-    public static function getCsrfConfig(): array
-    {
-        return [
-            'tokenLength' => self::$CSRF_TOKEN_LENGTH,
-            'sessionKey' => self::$CSRF_SESSION_KEY
-        ];
-    }
-
-    public static function getCorsAllowedOrigins(): array
-    {
-        return array_filter(explode(',', self::$CORS_ALLOWED_ORIGINS));
     }
 
     public static function getIpBlacklist(): string
