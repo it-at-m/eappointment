@@ -8,8 +8,7 @@
   <form class="m-form m-form--default">
     <muc-input
       id="firstname"
-      :modelValue="customerData.firstName"
-      @update:modelValue="(val) => (customerData.firstName = val.slice(0, 50))"
+      v-model="firstNameComputed"
       :error-msg="showErrorMessage ? errorMessageFirstName : undefined"
       :label="t('firstName')"
       max="50"
@@ -28,6 +27,7 @@
       v-model="mailAddressComputed"
       :error-msg="showErrorMessage ? errorMessageMailAddress : undefined"
       :label="t('mailAddress')"
+      max="50"
       required
     />
     <muc-input
@@ -37,10 +37,11 @@
         selectedProvider.scope.telephoneActivated
       "
       id="telephonenumber"
-      v-model="customerData.telephoneNumber"
+      v-model="telephoneNumberComputed"
       :error-msg="showErrorMessage ? errorMessageTelephoneNumber : undefined"
       :label="t('telephoneNumber')"
       :required="selectedProvider.scope.telephoneRequired"
+      max="50"
       placeholder="+491511234567"
     />
     <div
@@ -53,7 +54,7 @@
     >
       <muc-text-area
         id="remarks"
-        v-model="customerData.customTextfield"
+        v-model="customTextfieldComputed"
         :error-msg="showErrorMessage ? errorMessageCustomTextfield : undefined"
         :label="selectedProvider.scope.customTextfieldLabel"
         :required="selectedProvider.scope.customTextfieldRequired"
@@ -71,7 +72,7 @@
     >
       <muc-text-area
         id="remarks2"
-        v-model="customerData.customTextfield2"
+        v-model="customTextfield2Computed"
         :error-msg="showErrorMessage ? errorMessageCustomTextfield2 : undefined"
         :label="selectedProvider.scope.customTextfield2Label"
         :required="selectedProvider.scope.customTextfield2Required"
@@ -102,8 +103,10 @@
 </template>
 
 <script setup lang="ts">
+import type { Ref } from "vue";
+
 import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, Ref, ref, watch } from "vue";
+import { computed, inject, ref } from "vue";
 
 import {
   CustomerDataProvider,
@@ -207,13 +210,6 @@ const errorMessageCustomTextfield2 = computed(() => {
   }
 });
 
-const customTextfieldCount = computed(
-  () => customerData.value.customTextfield?.length || 0
-);
-const customTextfield2Count = computed(
-  () => customerData.value.customTextfield2?.length || 0
-);
-
 const validForm = computed(
   () =>
     !errorMessageFirstName.value &&
@@ -232,28 +228,31 @@ const nextStep = () => {
 };
 const previousStep = () => emit("back");
 
-watch(
-  () => customerData.value.firstName,
-  (newValue) => {
-    if (newValue && newValue.length > 50) {
-      customerData.value.firstName = newValue.slice(0, 50);
-    }
-  }
+const customTextfieldCount = computed(
+  () => customerData.value.customTextfield?.length || 0
+);
+const customTextfield2Count = computed(
+  () => customerData.value.customTextfield2?.length || 0
 );
 
-const lastNameComputed = computed({
-  get: () => customerData.value.lastName,
-  set: (val: string) => {
-    customerData.value.lastName = val.slice(0, 50);
-  },
-});
+function useLimitedComputed(
+  fieldName: keyof typeof customerData.value,
+  maxLength: number
+) {
+  return computed<string>({
+    get: () => customerData.value[fieldName] || "",
+    set: (val: string) => {
+      customerData.value[fieldName] = val.slice(0, maxLength);
+    },
+  });
+}
 
-const mailAddressComputed = computed({
-  get: () => customerData.value.mailAddress,
-  set: (val: string) => {
-    customerData.value.mailAddress = val.slice(0, 50);
-  },
-});
+const firstNameComputed = useLimitedComputed("firstName", 50);
+const lastNameComputed = useLimitedComputed("lastName", 50);
+const mailAddressComputed = useLimitedComputed("mailAddress", 50);
+const telephoneNumberComputed = useLimitedComputed("telephoneNumber", 50);
+const customTextfieldComputed = useLimitedComputed("customTextfield", 100);
+const customTextfield2Computed = useLimitedComputed("customTextfield2", 100);
 </script>
 
 <style scoped>
