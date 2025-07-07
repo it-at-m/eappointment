@@ -29,8 +29,7 @@ class WorkstationOAuth extends BaseController
         $entity = (new UseraccountEntity())->createFromOpenIdData($input);
         $entity->testValid();
 
-        $log = \App::getContainer()->get('log');
-        $log->debug("OIDC AUTH DEBUG", [
+        \App::$log->info("OIDC AUTH DEBUG", [
             'state' => $state,
             'X-Authkey' => $request->getHeaderLine('X-Authkey'),
             'entity_id' => $entity->getId()
