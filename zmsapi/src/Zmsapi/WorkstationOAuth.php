@@ -28,6 +28,13 @@ class WorkstationOAuth extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = (new UseraccountEntity())->createFromOpenIdData($input);
         $entity->testValid();
+        
+        $log = \App::getContainer()->get('log');
+        $log->debug("OIDC AUTH DEBUG", [
+            'state' => $state,
+            'X-Authkey' => $request->getHeaderLine('X-Authkey'),
+            'entity_id' => $entity->getId()
+        ]);
 
         if (null === $state || $request->getHeaderLine('X-Authkey') !== $state) {
             throw new \BO\Zmsapi\Exception\Workstation\WorkstationAuthFailed();
