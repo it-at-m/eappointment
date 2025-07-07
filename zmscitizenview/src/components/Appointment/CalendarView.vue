@@ -13,7 +13,9 @@
             :key="provider.id"
             :id="'checkbox-' + provider.id"
             :label="provider.name"
-            :hint="provider.address.street +  ' '  +  provider.address.house_number "
+            :hint="
+              provider.address.street + ' ' + provider.address.house_number
+            "
             v-model="selectedProviders[provider.id]"
           ></muc-checkbox>
         </div>
