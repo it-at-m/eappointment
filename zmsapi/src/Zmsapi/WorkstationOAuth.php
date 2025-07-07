@@ -28,7 +28,7 @@ class WorkstationOAuth extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = (new UseraccountEntity())->createFromOpenIdData($input);
         $entity->testValid();
-        
+
         $log = \App::getContainer()->get('log');
         $log->debug("OIDC AUTH DEBUG", [
             'state' => $state,
