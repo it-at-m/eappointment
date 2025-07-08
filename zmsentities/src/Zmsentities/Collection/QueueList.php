@@ -127,12 +127,24 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     public function withSortedArrival()
     {
         $queueList = clone $this;
+
         $queueList->uasort(function ($first, $second) {
-            $firstSort = sprintf("%011d%011d", $first['arrivalTime'], $first['number']);
+            $firstPriority = ($first['withAppointment'] ? 2 : (int) $first['priority']);
+            $secondPriority = ($second['withAppointment'] ? 2 :  (int) $second['priority']);
+
+            //var_dump($second['number']);
+            //var_dump($secondPriority);
+
+            $firstSort = sprintf("%01d%011d%011d", $firstPriority, $first['arrivalTime'], $first['number']);
             //error_log($firstSort);
-            $secondSort = sprintf("%011d%011d", $second['arrivalTime'], $second['number']);
+            $secondSort = sprintf("%01d%011d%011d", $secondPriority, $second['arrivalTime'], $second['number']);
+
+            //var_dump($secondSort);
+            //var_dump('----');
+
             return strcmp($firstSort, $secondSort);
         });
+        //exit;
         return $queueList;
     }
 

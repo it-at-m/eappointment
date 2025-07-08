@@ -51,8 +51,21 @@ class QueueTable extends BaseController
 
         // data refinement
         $queueList = $processList->toQueueList(\App::$now);
-        $queueList->uasort(function ($queueA, $queueB) {
-            return $queueA->arrivalTime - $queueB->arrivalTime;
+        $queueList->uasort(function ($first, $second) {
+            $firstPriority = ($first['withAppointment'] ? 2 : (int) $first['priority']);
+            $secondPriority = ($second['withAppointment'] ? 2 :  (int) $second['priority']);
+
+            //var_dump($second['number']);
+            //var_dump($secondPriority);
+
+            $firstSort = sprintf("%01d%011d%011d", $firstPriority, $first['arrivalTime'], $first['number']);
+            //error_log($firstSort);
+            $secondSort = sprintf("%01d%011d%011d", $secondPriority, $second['arrivalTime'], $second['number']);
+
+            //var_dump($secondSort);
+            //var_dump('----');
+
+            return strcmp($firstSort, $secondSort);
         });
         $queueListVisible = $queueList->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted']);
         $queueListMissed = $queueList->withStatus(['missed']);
