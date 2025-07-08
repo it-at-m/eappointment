@@ -1473,11 +1473,6 @@ watch(
   padding-top: 30px;
 }
 
-.provider-address {
-  margin-top: -20px;
-  margin-bottom: 20px;
-  margin-left: 34px;
-}
 
 .m-button--ghost.disabled,
 .m-button--ghost:disabled {
