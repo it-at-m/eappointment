@@ -21,6 +21,10 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public const STATUS_FAKE = ['fake'];
 
+    public const DEFAULT_PRIORITY_WITHOUT_APPOINTMENT = 3;
+
+    public const DEFAULT_PRIORITY_WITH_APPOINTMENT = 2;
+
     protected $processTimeAverage;
 
     protected $workstationCount;
@@ -112,6 +116,19 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueWithWaitingTime;
     }
 
+    private function getSortPriority($queue): int
+    {
+        $priority = self::DEFAULT_PRIORITY_WITHOUT_APPOINTMENT;
+        if (empty($queue['priority']) && $queue['withAppointment']) {
+            $priority = self::DEFAULT_PRIORITY_WITH_APPOINTMENT;
+        }
+        if (!empty($queue['priority'])) {
+            $priority = (int) $queue['priority'];
+        }
+
+        return $priority;
+    }
+
     public function withWaitingTime(\DateTimeInterface $dateTime)
     {
         $queueList = clone $this;
@@ -127,24 +144,15 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     public function withSortedArrival()
     {
         $queueList = clone $this;
-
         $queueList->uasort(function ($first, $second) {
-            $firstPriority = ($first['withAppointment'] ? 2 : (int) $first['priority']);
-            $secondPriority = ($second['withAppointment'] ? 2 :  (int) $second['priority']);
-
-            //var_dump($second['number']);
-            //var_dump($secondPriority);
+            $firstPriority = $this->getSortPriority($first);
+            $secondPriority = $this->getSortPriority($second);
 
             $firstSort = sprintf("%01d%011d%011d", $firstPriority, $first['arrivalTime'], $first['number']);
-            //error_log($firstSort);
             $secondSort = sprintf("%01d%011d%011d", $secondPriority, $second['arrivalTime'], $second['number']);
-
-            //var_dump($secondSort);
-            //var_dump('----');
 
             return strcmp($firstSort, $secondSort);
         });
-        //exit;
         return $queueList;
     }
 
