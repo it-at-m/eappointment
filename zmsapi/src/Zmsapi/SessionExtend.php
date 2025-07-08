@@ -7,7 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class SessionExtend
 {
-    public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
+    public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
         // Get the X-AuthKey from header or cookie
         $authKey = $request->getHeaderLine('X-AuthKey');
