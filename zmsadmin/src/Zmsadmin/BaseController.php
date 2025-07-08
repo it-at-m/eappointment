@@ -20,7 +20,6 @@ abstract class BaseController extends \BO\Slim\Controller
     {
         $request = $this->initRequest($request);
         $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
-
         return $this->readResponse($request, $noCacheResponse, $args);
     }
 
