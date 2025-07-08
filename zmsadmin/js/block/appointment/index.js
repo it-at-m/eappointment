@@ -256,8 +256,10 @@ class View extends RequestView {
         if (hasFreeAppointments) {
             this.$.find('select[name=priority]').val('');
             this.$.find('#priority').hide();
+            this.$.find('select[name=priority][value=""]').hide();
         } else {
             this.$.find('#priority').show();
+            this.$.find('select[name=priority][value=""]').show();
         }
         this.$main.data('selected-time', this.selectedTime);
         new FormButtons(this.$main.find('[data-form-buttons]'), {
