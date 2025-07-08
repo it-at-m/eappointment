@@ -18,11 +18,11 @@ class WaitingReport extends Base
 {
     protected $reportParts = [
         'waitingcount' => 'Wartende Spontankunden',
-        'waitingtime' => 'gemessene Wartezeit Spontankunden',
+        'waitingtime' => 'Durchschnittliche Wartezeit in Min. (Spontankunden)',
         'waitingcount_termin' => 'Wartende Terminkunden',
-        'waitingtime_termin' => 'gemessene Wartezeit Terminkunden',
-        'waytime' => 'gemessene Wegezeit Spontankunden',
-        'waytime_termin' => 'gemessene Wegezeit Terminkunden',
+        'waitingtime_termin' => 'Durchschnittliche Wartezeit in Min. (Terminkunden)',
+        'waytime' => 'Durchschnittliche Wegezeit in Min. (Spontankunden)',
+        'waytime_termin' => 'Durchschnittliche Wegezeit in Min. (Terminkunden)',
     ];
 
     /**
@@ -84,9 +84,9 @@ class WaitingReport extends Base
     {
         $entity = clone $report;
         $totals = array_pop($entity->data);
-        $reportTotal['max'][] = 'Tagesmaximum Spontankunden der gemessenen Zeit';
-        $reportTotal['average'][] = 'Tagesdurchschnitt Spontankunden der gemessenen Zeit';
-        $reportTotal['average_waytime'][] = 'Tagesdurchschnitt Wegezeit Spontankunden';
+        $reportTotal['max'][] = 'Tagesmaximum der Wartezeit in Min. (Spontankunden)';
+        $reportTotal['average'][] = 'Tagesdurchschnitt der Wartezeit in Min. (Spontankunden)';
+        $reportTotal['average_waytime'][] = 'Tagesdurchschnitt der Wegezeit in Min. (Spontankunden)';
         $reportTotal['max'][] = ReportHelper::formatTimeValue($totals['max_waitingtime']);
         $reportTotal['average'][] = ReportHelper::formatTimeValue($totals['average_waitingtime']);
         $reportTotal['average_waytime'][] = ReportHelper::formatTimeValue($totals['average_waytime']);
@@ -97,9 +97,9 @@ class WaitingReport extends Base
         }
         $sheet->fromArray($reportTotal, null, 'A' . ($sheet->getHighestRow() + 1));
 
-        $reportTotal2['max'][] = 'Tagesmaximum Terminkunden der gemessenen Zeit';
-        $reportTotal2['average'][] = 'Tagesdurchschnitt Terminkunden der gemessenen Zeit';
-        $reportTotal2['average_waytime'][] = 'Tagesdurchschnitt Wegezeit Terminkunden';
+        $reportTotal2['max'][] = 'Tagesmaximum der Wartezeit in Min. (Terminkunden)';
+        $reportTotal2['average'][] = 'Tagesdurchschnitt der Wartezeit in Min. (Terminkunden)';
+        $reportTotal2['average_waytime'][] = 'Tagesdurchschnitt der Wegezeit in Min. (Terminkunden)';
         $reportTotal2['max'][] = ReportHelper::formatTimeValue($totals['max_waitingtime_termin']);
         $reportTotal2['average'][] = ReportHelper::formatTimeValue($totals['average_waitingtime_termin']);
         $reportTotal2['average_waytime'][] = ReportHelper::formatTimeValue($totals['average_waytime_termin']);
