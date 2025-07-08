@@ -266,9 +266,9 @@
 			{% set successTitle = "Vorgang gelöscht" %}
 			{{ block('success_start') }}
 				Der Vorgang mit der Nummer {{ selectedprocess.queue.number }} wurde erfolgreich entfernt.
-                <div class="form-actions">
-                    <button type="button" onclick="location.href = '{{ includeUrl() }}/counter';" data-action-ok class="button button-ok btn right">OK</button>
-                </div>
+				<div class="form-actions">
+					<button type="button" onclick="location.href = '{{ includeUrl() }}/workstation/';" data-action-ok class="button button-ok btn right">OK</button>
+				</div>
 	        {{ block('success_end') }}
     	{% endblock %}
 
