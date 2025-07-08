@@ -1473,7 +1473,6 @@ watch(
   padding-top: 30px;
 }
 
-
 .m-button--ghost.disabled,
 .m-button--ghost:disabled {
   background: #fff;
