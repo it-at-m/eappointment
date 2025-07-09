@@ -20,14 +20,13 @@ class WorkstationCache
         $cacheKey = self::generateCacheKey($loginName, $resolveReferences);
 
         // Try to get from cache first
-        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+        if (class_exists('\App') && property_exists('\App', 'cache') && \App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
             // Log cache hit
             if (isset(\App::$log)) {
                 \App::$log->info('Workstation cache hit', [
                     'key' => $cacheKey,
                     'user_id' => $loginName,
-                    'resolve_references' => $resolveReferences,
-                    'workstation_id' => $cachedData->id ?? 'unknown'
+                    'resolve_references' => $resolveReferences
                 ]);
             }
             return $cachedData;
@@ -51,18 +50,21 @@ class WorkstationCache
      */
     private static function setCachedWorkstation(string $cacheKey, Workstation $workstation): void
     {
-        if (\App::$cache) {
-            \App::$cache->set($cacheKey, $workstation, \App::$PSR16_CACHE_TTL_ZMSAPI);
+        // Check if cache exists and is accessible
+        if (!class_exists('\App') || !property_exists('\App', 'cache') || !\App::$cache) {
+            return;
+        }
 
-            // Log cache set
-            if (isset(\App::$log)) {
-                \App::$log->info('Workstation cache set', [
-                    'key' => $cacheKey,
-                    'user_id' => $workstation->useraccount['id'] ?? 'unknown',
-                    'ttl' => \App::$PSR16_CACHE_TTL_ZMSAPI,
-                    'workstation_id' => $workstation->id ?? 'unknown'
-                ]);
-            }
+        \App::$cache->set($cacheKey, $workstation, \App::$PSR16_CACHE_TTL_ZMSAPI);
+
+        // Log cache set
+        if (isset(\App::$log)) {
+            \App::$log->info('Workstation cache set', [
+                'key' => $cacheKey,
+                'user_id' => $workstation->useraccount['id'] ?? 'unknown',
+                'ttl' => \App::$PSR16_CACHE_TTL_ZMSAPI,
+                'workstation_id' => $workstation->id ?? 'unknown'
+            ]);
         }
     }
 
@@ -79,7 +81,8 @@ class WorkstationCache
      */
     public static function clearUserCache(string $loginName): void
     {
-        if (!\App::$cache) {
+        // Check if cache exists and is accessible
+        if (!class_exists('\App') || !property_exists('\App', 'cache') || !\App::$cache) {
             return;
         }
 
@@ -103,13 +106,16 @@ class WorkstationCache
      */
     public static function clearAllCache(): void
     {
-        if (\App::$cache) {
-            \App::$cache->clear();
+        // Check if cache exists and is accessible
+        if (!class_exists('\App') || !property_exists('\App', 'cache') || !\App::$cache) {
+            return;
+        }
 
-            // Log cache clear
-            if (isset(\App::$log)) {
-                \App::$log->info('All workstation cache cleared');
-            }
+        \App::$cache->clear();
+
+        // Log cache clear
+        if (isset(\App::$log)) {
+            \App::$log->info('All workstation cache cleared');
         }
     }
 }
