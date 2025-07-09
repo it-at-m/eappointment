@@ -17,7 +17,13 @@ class WorkstationCache
      */
     public static function getWorkstation(string $loginName, int $resolveReferences = 0): ?Workstation
     {
-        $cacheKey = self::generateCacheKey($loginName, $resolveReferences);
+        // First, get the user account to extract rights for cache key
+        $useraccount = null;
+        if (class_exists('\BO\Zmsdb\Useraccount')) {
+            $useraccount = (new \BO\Zmsdb\Useraccount())->readEntity($loginName, 0);
+        }
+
+        $cacheKey = self::generateCacheKey($loginName, $resolveReferences, $useraccount);
 
         // Try to get from cache first
         if (class_exists('\App') && property_exists('\App', 'cache') && \App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
@@ -71,9 +77,15 @@ class WorkstationCache
     /**
      * Generate cache key for workstation
      */
-    private static function generateCacheKey(string $loginName, int $resolveReferences): string
+    private static function generateCacheKey(string $loginName, int $resolveReferences, $useraccount = null): string
     {
-        return self::CACHE_KEY_PREFIX . md5($loginName . '_' . $resolveReferences);
+        $rightsHash = '';
+        if ($useraccount && isset($useraccount->rights)) {
+            // Create a hash of the user rights to include in cache key
+            $rightsHash = '_' . md5(serialize($useraccount->rights));
+        }
+
+        return self::CACHE_KEY_PREFIX . md5($loginName . '_' . $resolveReferences . $rightsHash);
     }
 
     /**
@@ -86,9 +98,15 @@ class WorkstationCache
             return;
         }
 
-        // Clear cache for all resolve levels (0, 1, 2)
-        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
-            $cacheKey = self::generateCacheKey($loginName, $resolveReferences);
+        // Get current user account to clear cache for current rights
+        $useraccount = null;
+        if (class_exists('\BO\Zmsdb\Useraccount')) {
+            $useraccount = (new \BO\Zmsdb\Useraccount())->readEntity($loginName, 0);
+        }
+
+        // Clear cache for all resolve levels (0, 1, 2, 3, 4) with current rights
+        for ($resolveReferences = 0; $resolveReferences <= 4; $resolveReferences++) {
+            $cacheKey = self::generateCacheKey($loginName, $resolveReferences, $useraccount);
             \App::$cache->delete($cacheKey);
         }
 
@@ -96,7 +114,8 @@ class WorkstationCache
         if (isset(\App::$log)) {
             \App::$log->info('Workstation cache cleared for user', [
                 'user_id' => $loginName,
-                'resolve_levels' => [0, 1, 2]
+                'resolve_levels' => [0, 1, 2, 3, 4],
+                'rights_included' => $useraccount ? 'yes' : 'no'
             ]);
         }
     }
