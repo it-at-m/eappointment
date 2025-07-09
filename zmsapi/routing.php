@@ -6563,3 +6563,21 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\Healthcheck'
 )
     ->setName("healthcheck");
+
+/**
+ *  @swagger
+ *  "/session/extend":
+ *      post:
+ *          summary: Extend the current session expiry
+ *          tags:
+ *              - session
+ *          responses:
+ *              200:
+ *                  description: "Session expiry extended"
+ *              401:
+ *                  description: "Unauthorized"
+ */
+\App::$slim->post(
+    '/session/extend',
+    '\\BO\\Zmsapi\\SessionExtend'
+)->setName("SessionExtend");

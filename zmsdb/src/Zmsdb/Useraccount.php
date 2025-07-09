@@ -302,4 +302,20 @@ class Useraccount extends Base
         $statement = $this->fetchStatement($query);
         return $this->readListStatement($statement, $resolveReferences);
     }
+
+    /**
+     * Update session expiry for a given auth key
+     *
+     * @param string $authKey The session auth key
+     * @param \DateTimeInterface $newExpiry The new expiry time
+     * @return bool Success status
+     */
+    public function updateSessionExpiry($authKey, \DateTimeInterface $newExpiry)
+    {
+        $hashedAuthKey = hash('sha256', $authKey);
+        $query = new Query\Useraccount(Query\Base::UPDATE);
+        $query->addConditionXauthKey($hashedAuthKey);
+        $query->addValues(['SessionExpiry' => $newExpiry->format('Y-m-d H:i:s')]);
+        return $this->writeItem($query);
+    }
 }

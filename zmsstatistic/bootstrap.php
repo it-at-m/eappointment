@@ -31,5 +31,8 @@ require(APP_PATH . '/config.php');
 $errorMiddleware = \App::$slim->getContainer()->get('errorMiddleware');
 $errorMiddleware->setDefaultErrorHandler(new \BO\Zmsstatistic\Helper\TwigExceptionHandler());
 
+// Add session extension middleware
+\App::$slim->add(new \BO\Slim\Middleware\SessionExtensionMiddleware());
+
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
