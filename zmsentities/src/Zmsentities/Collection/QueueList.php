@@ -89,7 +89,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $pessimisticTime += $timeSlot;
         $waitingTimePes = (int)floor(($pessimisticTime - $dateTime->getTimestamp()) / 60);
         while ($nextWithAppointment || $nextNoAppointment) {
-            if ($nextNoAppointment && $nextNoAppointment->priority === 1) {
+            if ($nextNoAppointment && (int) $nextNoAppointment->priority === 1) {
                 $nextNoAppointment->waitingTimeEstimate = $waitingTimePes;
                 $nextNoAppointment->waitingTimeOptimistic = $waitingTimeOpt;
                 $queueWithWaitingTime->addEntity($nextNoAppointment);
