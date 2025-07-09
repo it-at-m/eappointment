@@ -32,7 +32,7 @@ class ConfigGet extends BaseController
             }
         }
 
-        $config = (new Query())->readEntity();
+        $config = Helper\ConfigCache::getConfig();
 
         $message = Response\Message::create($request);
         $message->data = $config;
