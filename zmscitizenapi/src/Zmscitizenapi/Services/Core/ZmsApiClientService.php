@@ -35,10 +35,10 @@ class ZmsApiClientService
         }
 
         if (\App::$cache) {
-            \App::$cache->set($cacheKey, $entity, \App::$SOURCE_CACHE_TTL);
+            \App::$cache->set($cacheKey, $entity, \App::$PSR16_CACHE_TTL_ZMSCITIZENAPI);
             LoggerService::logInfo('Cache set', [
                 'key' => $cacheKey,
-                'ttl' => \App::$SOURCE_CACHE_TTL,
+                'ttl' => \App::$PSR16_CACHE_TTL_ZMSCITIZENAPI,
                 'entity_type' => get_class($entity)
             ]);
         }

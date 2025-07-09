@@ -32,8 +32,9 @@ class User
         if (! static::$workstation) {
             $useraccount = UserAuth::getUseraccountByAuthMethod($request);
             if ($useraccount && $useraccount->hasId()) {
-                static::$workstation = (new Workstation())->readEntity($useraccount->id, $resolveReferences);
-                if ($resolveReferences < 1) {
+                // Use cache for workstation data
+                static::$workstation = WorkstationCache::getWorkstation($useraccount->id, $resolveReferences);
+                if (static::$workstation && $resolveReferences < 1) {
                     static::$workstation->useraccount = $useraccount;
                 }
                 static::$workstationResolved = $resolveReferences;
@@ -42,6 +43,7 @@ class User
             }
         }
         if ($resolveReferences > static::$workstationResolved && static::$workstation->hasId()) {
+            // For higher resolve levels, we need to fetch fresh data as it might include dynamic content
             static::$workstation = (new Workstation())
                 ->readResolvedReferences(static::$workstation, $resolveReferences);
         }

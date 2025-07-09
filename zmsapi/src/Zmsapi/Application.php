@@ -7,6 +7,10 @@
 
 namespace BO\Zmsapi;
 
+use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
+
 class Application extends \BO\Slim\Application
 {
     /**
@@ -68,6 +72,13 @@ class Application extends \BO\Slim\Application
     const SECURE_TOKEN = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';
 
     /**
+     * Cache configuration
+     */
+    public static ?CacheInterface $cache = null;
+    public static string $PSR16_CACHE_DIR_ZMSAPI;
+    public static int $PSR16_CACHE_TTL_ZMSAPI;
+
+    /**
      * language preferences
      */
 
@@ -98,5 +109,38 @@ class Application extends \BO\Slim\Application
             return self::$now;
         }
         return new \DateTimeImmutable();
+    }
+
+    /**
+     * Initialize cache
+     */
+    public static function initialize(): void
+    {
+        self::initializeCache();
+    }
+
+    private static function initializeCache(): void
+    {
+        self::$PSR16_CACHE_DIR_ZMSAPI = getenv('PSR16_CACHE_DIR_ZMSAPI') ?: dirname(dirname(dirname(__DIR__))) . '/cache_psr16';
+        self::$PSR16_CACHE_TTL_ZMSAPI = (int) (getenv('PSR16_CACHE_TTL_ZMSAPI') ?: 3600);
+        self::validateCacheDirectory();
+        self::setupCache();
+    }
+
+    private static function validateCacheDirectory(): void
+    {
+        if (!is_dir(self::$PSR16_CACHE_DIR_ZMSAPI) && !mkdir(self::$PSR16_CACHE_DIR_ZMSAPI, 0750, true)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$PSR16_CACHE_DIR_ZMSAPI));
+        }
+
+        if (!is_writable(self::$PSR16_CACHE_DIR_ZMSAPI)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$PSR16_CACHE_DIR_ZMSAPI));
+        }
+    }
+
+    private static function setupCache(): void
+    {
+        $psr16 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$PSR16_CACHE_TTL_ZMSAPI, directory: self::$PSR16_CACHE_DIR_ZMSAPI);
+        self::$cache = new Psr16Cache($psr16);
     }
 }

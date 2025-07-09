@@ -47,8 +47,8 @@ sequenceDiagram
 | **Core Configuration** |
 | ZMS_API_URL | Backend API URL | https://localhost/terminvereinbarung/api/2 |
 | **Cache & Maintenance** |
-| CACHE_DIR | Cache storage directory | /cache |
-| SOURCE_CACHE_TTL | Cache lifetime in seconds | 3600 |
+| PSR16_CACHE_DIR_ZMSCITIZENAPI | Cache storage directory | /cache |
+| PSR16_CACHE_TTL_ZMSCITIZENAPI | Cache lifetime in seconds | 3600 |
 | MAINTENANCE_MODE_ENABLED | Enable maintenance mode | false |
 | **Logger Configuration** |
 | LOGGER_MAX_REQUESTS | Maximum log requests per minute | 1000 |
