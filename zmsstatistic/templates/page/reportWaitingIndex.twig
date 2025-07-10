@@ -55,7 +55,7 @@
                                     </span>
                                 </th>
                                 {% if exchangeWaiting.period == "day" %}
-                                <th class="statistik">{{ startDate|format_date(pattern="LLL") }} (Max.)</th>
+                                <th class="statistik">{{ startDate|format_date(pattern="LLL") }} </th>
                                 {% elseif exchangeWaiting.period == "month" %}
                                 <th class="statistik">{{ startDate|date('Y') }}</th>
                                 {% endif %}
@@ -73,7 +73,7 @@
                                 <th class="statistik">
                                     <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesmaximum der<br>Wartezeit in Min.{% endtrans %}</p><br>
                                     <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>Wartezeit in Min.{% endtrans %}</p><br>
-                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>gemessenen Wegezeit in Min.{% endtrans %}</p>
+                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>Wegezeit in Min.{% endtrans %}</p>
                                 </th>
                                 <td class="statistik" style="text-align: right;">
                                     <br>
@@ -210,7 +210,7 @@
                                     <br>
                                     <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>Wartezeit in Min.{% endtrans %}</p>
                                     <br>
-                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>gemessenen Wegezeit in Min.{% endtrans %}</p>
+                                    <p style="white-space: nowrap; margin: 0px 0px;">{% trans %}Tagesdurchschnitt der<br>Wegezeit in Min.{% endtrans %}</p>
                                 </th>
                                 <td class="statistik" style="text-align: right;">
                                     <br>
