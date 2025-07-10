@@ -13,11 +13,11 @@
             :key="provider.id"
             :id="'checkbox-' + provider.id"
             :label="provider.name"
+            :hint="
+              provider.address.street + ' ' + provider.address.house_number
+            "
             v-model="selectedProviders[provider.id]"
           ></muc-checkbox>
-          <div class="provider-address">
-            {{ provider.address.street }} {{ provider.address.house_number }}
-          </div>
         </div>
       </div>
     </div>
@@ -1471,12 +1471,6 @@ watch(
   margin-bottom: 20px;
   padding-bottom: 0;
   padding-top: 30px;
-}
-
-.provider-address {
-  margin-top: -20px;
-  margin-bottom: 20px;
-  margin-left: 34px;
 }
 
 .m-button--ghost.disabled,

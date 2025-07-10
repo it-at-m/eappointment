@@ -32,15 +32,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         $process = $this->fetchOne($query, new Entity());
         $process = $this->readResolvedReferences($process, $resolveReferences);
 
-        if (!isset($process->dbstatus) || $process->dbstatus !== $process->status) {
-            \App::$log->info('STATUS DIFF', [
-                'status' => $process->status,
-                'status DB' => $process->dbstatus ?? '',
-                'processId' => $process->id,
-                'stacktrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)
-            ]);
-        }
-
         return $process;
     }
 
@@ -75,7 +66,6 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $processEntity = $process;
         $query = new Query\Process(Query\Base::UPDATE);
-        $query->addValuesScopeData($process);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
         $query->addValuesUpdateProcess($process, $now, 0, $previousStatus);
@@ -428,7 +418,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
             ->addConditionScopeId($scopeId) //removed because of dismatching scope and pickup scope
-            ->addConditionStatus($status, $scopeId)
+            ->addConditionStatus($status)
             ->addLimit($limit, $offset);
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);

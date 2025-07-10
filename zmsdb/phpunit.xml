@@ -30,7 +30,6 @@
             <directory>../migrations</directory>
             <directory>../public</directory>
             <directory>../bin</directory>
-            <directory>./vendor</directory>
             <directory>./tests</directory>
         </exclude>
         <report>
