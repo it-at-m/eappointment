@@ -18,21 +18,13 @@ require_once(VENDOR_PATH . '/autoload.php');
 // initialize the static \App singleton
 require_once(APP_PATH . '/config.php');
 
-// Initialize cache
-// Initialize application
-\App::initialize();
+\BO\Slim\Bootstrap::init();
 
 // Initialize cache
 $cache = new \Symfony\Component\Cache\Psr16Cache(
-    new \Symfony\Component\Cache\Adapter\FilesystemAdapter(
-        namespace: \App::MODULE_NAME,
-        defaultLifetime: \App::$PSR16_CACHE_TTL_ZMSAPI,
-        directory: \App::$PSR16_CACHE_DIR_ZMSAPI
-    )
+    new \Symfony\Component\Cache\Adapter\FilesystemAdapter()
 );
 \App::$cache = $cache;
-
-\BO\Slim\Bootstrap::init();
 
 // Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
