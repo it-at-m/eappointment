@@ -260,7 +260,11 @@ class View extends RequestView {
         } else {
             this.$.find('#priority').show();
             this.$.find('select[name=priority][value=""]').show();
-            this.$.find('select[name=priority]').val(3);
+            if (!this.$.find('input[name=selected_process_priority]').val()) {
+                this.$.find('select[name=priority]').val(3);
+            } else {
+                this.$.find('select[name=priority]').val(this.$.find('input[name=selected_process_priority]').val());
+            }
         }
         this.$main.data('selected-time', this.selectedTime);
         new FormButtons(this.$main.find('[data-form-buttons]'), {
