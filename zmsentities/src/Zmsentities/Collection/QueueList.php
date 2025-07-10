@@ -94,7 +94,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
                 $nextNoAppointment->waitingTimeOptimistic = $waitingTimeOpt;
                 $queueWithWaitingTime->addEntity($nextNoAppointment);
                 $nextNoAppointment = array_shift($listNoAppointment);
-            } elseif ($nextNoAppointment
+            } elseif (
+                $nextNoAppointment
                 && $nextWithAppointment
                 && (int) $nextNoAppointment->priority === 2
                 && $nextNoAppointment->arrivalTime < $nextWithAppointment->arrivalTime
