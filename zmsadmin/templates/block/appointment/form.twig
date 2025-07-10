@@ -404,13 +404,13 @@
 
                             <div id="priority" style="margin-top: 20px;">
                                 {% set priorityOptions = [
-                                    {"value": 1, "name": "Höchste", "selected": selectedProcess.priority == 1 ? "selected" : ""},
-                                    {"value": 2, "name": "Normale", "selected": selectedProcess.priority == 2 ? "selected" : ""},
-                                    {"value": 3, "name": "Niedrigste", "selected": selectedProcess.priority == 3 or selectedProcess.priority == null ? "selected" : ""}
+                                    {"value": 1, "name": "Hoch", "selected": selectedProcess.priority == 1 ? "selected" : ""},
+                                    {"value": 2, "name": "Mittel", "selected": selectedProcess.priority == 2 ? "selected" : ""},
+                                    {"value": 3, "name": "Niedrig", "selected": selectedProcess.priority == 3 or selectedProcess.priority == null ? "selected" : ""}
                                 ] %}
 
                                 {{ formgroup(
-                                    {"label": "Priorität"},
+                                    {"label": "Prio"},
                                     [{
                                         "type":"select",
                                         "parameter": {

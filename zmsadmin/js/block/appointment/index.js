@@ -260,6 +260,7 @@ class View extends RequestView {
         } else {
             this.$.find('#priority').show();
             this.$.find('select[name=priority][value=""]').show();
+            this.$.find('select[name=priority]').val(3);
         }
         this.$main.data('selected-time', this.selectedTime);
         new FormButtons(this.$main.find('[data-form-buttons]'), {
