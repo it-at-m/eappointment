@@ -1,8 +1,8 @@
 {
   "address": "Adresse",
   "appointment": "Termin",
-  "appointmentBookingErrorHeader": "Aktivierung fehlgeschlagen.",
-  "appointmentBookingErrorText": "Aktivierung fehlgeschlagen.",
+  "appointmentBookingErrorHeader": "Ihr Termin kann nicht mehr aktiviert werden.",
+  "appointmentBookingErrorText": "Leider ist die Zeit für die Aktivierung Ihres Termins abgelaufen. Bitte vereinbaren Sie den Termin erneut.",
   "appointmentNotFoundErrorHeader": "Wir konnten Ihren Termin nicht finden.",
   "appointmentNotFoundErrorText": "Vielleicht haben Sie Ihren Termin bereits abgesagt? Andernfalls überprüfen Sie bitte, ob Sie den richtigen Link verwendet haben.",
   "appointmentSuccessfullyBookedHeader": "Ihr Termin wurde reserviert.",
