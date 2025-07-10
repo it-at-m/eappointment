@@ -117,7 +117,7 @@ class ProcessValidator
         if ($length || $this->getProcess()->isWithAppointment()) {
             $valid
                 ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
-                ->isSmallerThan(50, "Der Name sollte 50 Zeichen nicht überschreiten");
+                ->isSmallerThan(101, "Der Name sollte 101 Zeichen nicht überschreiten");
         }
         $this->getCollection()->validatedAction($valid, $setter);
         return $this;

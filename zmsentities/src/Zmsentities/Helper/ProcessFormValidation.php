@@ -158,7 +158,7 @@ class ProcessFormValidation
         if ($length || $withAppointment) {
             $collection['familyName'] = Validator::param('familyName')->isString()
                 ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
-                ->isSmallerThan(50, "Der Name sollte 50 Zeichen nicht überschreiten");
+                ->isSmallerThan(101, "Der Name sollte 101 Zeichen nicht überschreiten");
         }
         return $collection;
     }
