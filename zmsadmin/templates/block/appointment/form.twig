@@ -403,6 +403,7 @@
                             <button type="button" class="link clear-list" name="clear-list" accesskey="l">Liste leeren</button>
 
                             <div id="priority" style="margin-top: 20px;">
+                                <input type="hidden" name="selected_process_priority" value="{{ selectedProcess.priority }}">
                                 {% set priorityOptions = [
                                     {"value": 1, "name": "Hoch", "selected": selectedProcess.priority == 1 ? "selected" : ""},
                                     {"value": 2, "name": "Mittel", "selected": selectedProcess.priority == 2 ? "selected" : ""},
