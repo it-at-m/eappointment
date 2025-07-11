@@ -43,6 +43,12 @@ class Config extends Base
                 $result = $this->writeItem($query);
             }
         }
+
+        // Clear config cache if update was successful
+        if ($result && isset(\App::$cache)) {
+            \BO\Zmsapi\Helper\ConfigCache::clearCache();
+        }
+
         return ($result) ? $this->readEntity() : null;
     }
 
@@ -57,10 +63,17 @@ class Config extends Base
 
     public function replaceProperty($property, $value)
     {
-        return $this->perform(Query\Config::QUERY_REPLACE_PROPERTY, [
+        $result = $this->perform(Query\Config::QUERY_REPLACE_PROPERTY, [
             'property' => $property,
             'value' => $value,
         ]);
+
+        // Clear config cache if update was successful
+        if ($result && isset(\App::$cache)) {
+            \BO\Zmsapi\Helper\ConfigCache::clearCache();
+        }
+
+        return $result;
     }
 
     /**
@@ -73,7 +86,14 @@ class Config extends Base
     {
         $query = new Query\Config(Query\Base::DELETE);
         $query->addConditionName($property);
-        return $this->deleteItem($query);
+        $result = $this->deleteItem($query);
+
+        // Clear config cache if delete was successful
+        if ($result && isset(\App::$cache)) {
+            \BO\Zmsapi\Helper\ConfigCache::clearCache();
+        }
+
+        return $result;
     }
 
     protected function fetchData($querySql)
