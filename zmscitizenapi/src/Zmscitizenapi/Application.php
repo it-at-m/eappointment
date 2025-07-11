@@ -22,8 +22,8 @@ class Application extends \BO\Slim\Application
     public static array $http_curl_config = [];
     public static ?CacheInterface $cache = null;
     // Cache config
-    public static string $CACHE_DIR;
-    public static int $SOURCE_CACHE_TTL;
+    public static string $PSR16_CACHE_DIR_ZMSCITIZENAPI;
+    public static int $PSR16_CACHE_TTL_ZMSCITIZENAPI;
     public static bool $MAINTENANCE_MODE_ENABLED;
     // Logger config
 
@@ -108,8 +108,8 @@ class Application extends \BO\Slim\Application
 
     private static function initializeCache(): void
     {
-        self::$CACHE_DIR = getenv('CACHE_DIR') ?: __DIR__ . '/cache';
-        self::$SOURCE_CACHE_TTL = (int) (getenv('SOURCE_CACHE_TTL') ?: 3600);
+        self::$PSR16_CACHE_DIR_ZMSCITIZENAPI = getenv('PSR16_CACHE_DIR_ZMSCITIZENAPI') ?: dirname(dirname(dirname(__DIR__))) . '/cache_psr16';
+        self::$PSR16_CACHE_TTL_ZMSCITIZENAPI = (int) (getenv('PSR16_CACHE_TTL_ZMSCITIZENAPI') ?: 3600);
         self::validateCacheDirectory();
         self::setupCache();
     }
@@ -144,21 +144,22 @@ class Application extends \BO\Slim\Application
         self::initializeMiddleware();
     }
 
+
     private static function validateCacheDirectory(): void
     {
-        if (!is_dir(self::$CACHE_DIR) && !mkdir(self::$CACHE_DIR, 0750, true)) {
-            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$CACHE_DIR));
+        if (!is_dir(self::$PSR16_CACHE_DIR_ZMSCITIZENAPI) && !mkdir(self::$PSR16_CACHE_DIR_ZMSCITIZENAPI, 0750, true)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', self::$PSR16_CACHE_DIR_ZMSCITIZENAPI));
         }
 
-        if (!is_writable(self::$CACHE_DIR)) {
-            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$CACHE_DIR));
+        if (!is_writable(self::$PSR16_CACHE_DIR_ZMSCITIZENAPI)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', self::$PSR16_CACHE_DIR_ZMSCITIZENAPI));
         }
     }
 
     private static function setupCache(): void
     {
-        $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$SOURCE_CACHE_TTL, directory: self::$CACHE_DIR);
-        self::$cache = new Psr16Cache($psr6);
+        $psr16 = new FilesystemAdapter(namespace: '', defaultLifetime: self::$PSR16_CACHE_TTL_ZMSCITIZENAPI, directory: self::$PSR16_CACHE_DIR_ZMSCITIZENAPI);
+        self::$cache = new Psr16Cache($psr16);
     }
 
     public static function getLoggerConfig(): array

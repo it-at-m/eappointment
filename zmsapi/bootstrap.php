@@ -20,6 +20,12 @@ require_once(APP_PATH . '/config.php');
 
 \BO\Slim\Bootstrap::init();
 
+// Initialize cache
+$cache = new \Symfony\Component\Cache\Psr16Cache(
+    new \Symfony\Component\Cache\Adapter\FilesystemAdapter()
+);
+\App::$cache = $cache;
+
 // Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
 \BO\Zmsdb\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
