@@ -174,9 +174,7 @@ class Workstation extends Base
                 $workstation->authkey = $authKey;
                 $query = Query\Workstation::QUERY_PROCESS_RESET;
                 $this->perform($query, [$workstation->id]);
-
-                // Clear cache for this user
-                \BO\Zmsapi\Helper\WorkstationCache::clearUserCache($loginName);
+                // Cache invalidation no longer needed
             }
         } else {
             throw new Exception\Useraccount\InvalidCredentials();
@@ -191,7 +189,7 @@ class Workstation extends Base
         $workstation = $this->readEntity($loginName, $resolveReferences);
 
         // Clear cache for this user
-        \BO\Zmsapi\Helper\WorkstationCache::clearUserCache($loginName);
+        // \BO\Zmsapi\Helper\WorkstationCache::clearUserCache($loginName);
 
         return ($result) ? $workstation : null;
     }
@@ -286,7 +284,7 @@ class Workstation extends Base
 
         // Clear cache for this user
         if (isset($entity->useraccount['id'])) {
-            \BO\Zmsapi\Helper\WorkstationCache::clearUserCache($entity->useraccount['id']);
+            // \BO\Zmsapi\Helper\WorkstationCache::clearUserCache($entity->useraccount['id']);
         }
 
         return $this->readEntity($entity->useraccount['id'], $resolveReferences);
@@ -317,7 +315,7 @@ class Workstation extends Base
             $workstation->authkey = $authKey;
 
             // Clear cache for this user
-            \BO\Zmsapi\Helper\WorkstationCache::clearUserCache($loginName);
+            // \BO\Zmsapi\Helper\WorkstationCache::clearUserCache($loginName);
         }
         return $workstation;
     }
