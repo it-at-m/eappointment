@@ -123,7 +123,7 @@ class ZmsApiClientService
                 }
             }
             $entity->days = $bookableDays;
-            
+
             return $entity;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
