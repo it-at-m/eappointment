@@ -11,6 +11,7 @@ use BO\Slim\Render;
 use BO\Mellon\Validator;
 use BO\Zmsdb\Workstation;
 use BO\Zmsdb\Process as Query;
+use BO\Zmsentities\Process;
 
 class WorkstationProcessDelete extends BaseController
 {
@@ -29,6 +30,7 @@ class WorkstationProcessDelete extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
+        $process->status = Process::STATUS_QUEUED;
         if ('called' == $workstation->process->status && $workstation->process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')) {
             $process->setWasMissed(true);
         }
