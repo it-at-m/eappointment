@@ -30,7 +30,7 @@ class Process extends Base implements MappingInterface
             process.absagecode = 'deref!0',
             process.EMail = '',
             process.NutzerID = 0,
-            process.priority = null
+            process.priority = null,
             process.status = 'blocked'
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
