@@ -64,7 +64,26 @@ class ProcessStatus extends \BO\Zmsdb\Process
             '
         );
 
-        return $processData['status'];
+        $statusList = [
+            'free' => true,
+            'reserved' => $this->isReservedProcess($processData),
+            'confirmed' => $this->isConfirmedProcess($processData),
+            'preconfirmed' => $this->isPreconfirmedProcess($processData),
+            'queued' => $this->isQueuedProcess($processData),
+            'called' => $this->isCalledProcess($processData),
+            'processing' => $this->isProcessingProcess($processData),
+            'pending' => $this->isPendingProcess($processData),
+            'missed' => $this->isMissedProcess($processData),
+            'parked' => $this->isParkedProcess($processData),
+            'blocked' => $this->isBlockedProcess($processData),
+            'deleted' => $this->isDeletedProcess($processData),
+        ];
+        foreach ($statusList as $statusType => $statusCheck) {
+            if ($statusCheck) {
+                $status = $statusType;
+            }
+        }
+        return $status;
     }
 
     protected function setStatusPreconfirmed($process)
