@@ -11,6 +11,7 @@ use BO\Slim\Render;
 use BO\Mellon\Validator;
 use BO\Zmsdb\Workstation;
 use BO\Zmsdb\Process as Query;
+use BO\Zmsentities\Process;
 
 class WorkstationProcessParked extends BaseController
 {
@@ -31,6 +32,7 @@ class WorkstationProcessParked extends BaseController
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
         $previousStatus = $process->status;
         $workstation->process->setStatus("parked");
+        $process->status = Process::STATUS_PARKED;
         $workstation->process->setStatusBySettings();
         $process = (new Query())->updateEntity(
             $process,
