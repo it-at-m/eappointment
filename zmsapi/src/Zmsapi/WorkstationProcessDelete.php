@@ -30,10 +30,10 @@ class WorkstationProcessDelete extends BaseController
             throw new Exception\Process\ProcessNotFound();
         }
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
+        $process->status = Process::STATUS_QUEUED;
         if ('called' == $workstation->process->status && $workstation->process->queue['callCount'] > $workstation->scope->getPreference('queue', 'callCountMax')) {
             $process->setWasMissed(true);
         }
-        $process->status = Process::STATUS_MISSED;
         $process = (new Query())->updateEntity(
             $process,
             \App::$now,
