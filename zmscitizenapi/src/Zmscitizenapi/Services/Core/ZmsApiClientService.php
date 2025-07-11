@@ -116,7 +116,14 @@ class ZmsApiClientService
             if (!$entity instanceof Calendar) {
                 return new Calendar();
             }
-
+            $bookableDays = new DayList();
+            foreach ($entity->days as $day) {
+                if (isset($day['status']) && $day['status'] === 'bookable') {
+                    $bookableDays->addEntity($day);
+                }
+            }
+            $entity->days = $bookableDays;
+            
             return $entity;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
