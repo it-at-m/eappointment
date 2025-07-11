@@ -25,6 +25,7 @@ class ProcessNextByScope extends BaseController
     ) {
         (new Helper\User($request))->checkRights();
         $query = new Query();
+
         $selectedDate = Validator::param('date')->isString()->getValue();
         $exclude = Validator::param('exclude')->isString()->getValue();
         $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;

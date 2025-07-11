@@ -356,6 +356,11 @@
       "type": ["null", "string"],
       "description": "key for client to delete or change process"
     },
+    "priority": {
+      "type": ["number", "string", "null"],
+      "description": "Process priority number. 1 is biggest prio, 3 is lowest",
+      "default": 3
+    },
     "captchaToken": {
       "type": ["null", "string"],
       "description": "Token used for captcha validation"
