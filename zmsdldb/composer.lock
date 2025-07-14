@@ -180,11 +180,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-198-zmsentities-php-upgrade-from-80-to-83",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "c7cde851072fec8def49a8179b640c5821a720b4"
+                "reference": "c1e4d51c568fcd698d5536f151ca95cf0f600d3e"
             },
             "require": {
                 "ext-json": ">=0",
@@ -228,11 +228,11 @@
         },
         {
             "name": "eappointment/zmsapi",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-198-zmsentities-php-upgrade-from-80-to-83",
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "c7cde851072fec8def49a8179b640c5821a720b4"
+                "reference": "c1e4d51c568fcd698d5536f151ca95cf0f600d3e"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -303,7 +303,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-198-zmsentities-php-upgrade-from-80-to-83",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -361,11 +361,11 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-198-zmsentities-php-upgrade-from-80-to-83",
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "c7cde851072fec8def49a8179b640c5821a720b4"
+                "reference": "c1e4d51c568fcd698d5536f151ca95cf0f600d3e"
             },
             "require": {
                 "aura/sql": "^4",
@@ -444,11 +444,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-198-zmsentities-php-upgrade-from-80-to-83",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "c7cde851072fec8def49a8179b640c5821a720b4"
+                "reference": "c1e4d51c568fcd698d5536f151ca95cf0f600d3e"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -500,11 +500,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-next",
+            "version": "dev-chore-zmskvr-198-zmsentities-php-upgrade-from-80-to-83",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "c7cde851072fec8def49a8179b640c5821a720b4"
+                "reference": "c1e4d51c568fcd698d5536f151ca95cf0f600d3e"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -6562,11 +6562,11 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "eappointment/mellon": 20,
-        "eappointment/zmsentities": 20,
-        "eappointment/zmsdb": 20,
-        "eappointment/zmsslim": 20,
-        "eappointment/zmsclient": 20,
         "eappointment/zmsapi": 20,
+        "eappointment/zmsclient": 20,
+        "eappointment/zmsdb": 20,
+        "eappointment/zmsentities": 20,
+        "eappointment/zmsslim": 20,
         "phpmd/phpmd": 0
     },
     "prefer-stable": false,
@@ -6578,6 +6578,6 @@
         "ext-json": ">=1.0",
         "ext-pcre": ">=0"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

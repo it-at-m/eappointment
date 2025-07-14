@@ -12,6 +12,7 @@ use BO\Slim\Factory\ServerRequestFactory;
 use Slim\Views\Twig;
 use Twig\Extension\DebugExtension;
 use Twig\Loader\FilesystemLoader;
+use Psr\Log\LoggerInterface;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -75,7 +76,7 @@ class Bootstrap
 
     protected function configureLogger(string $level, string $identifier): void
     {
-        App::$log = new Logger($identifier);
+        App::$log = new Logger($identifier); // Monolog\Logger implements LoggerInterface
         $level = $this->parseDebugLevel($level);
         $handler = new StreamHandler('php://stderr', $level);
 
@@ -88,8 +89,8 @@ class Bootstrap
                 'client_ip' => $_SERVER['REMOTE_ADDR'] ?? '',
                 'remote_addr' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '',
                 'remote_user' => '',
-                'application' => defined('\App::IDENTIFIER') ? App::IDENTIFIER : 'zms',
-                'module' => defined('\App::MODULE_NAME') ? App::MODULE_NAME : 'zmsslim',
+                'application' => defined('\\App::IDENTIFIER') ? App::IDENTIFIER : 'zms',
+                'module' => defined('\\App::MODULE_NAME') ? App::MODULE_NAME : 'zmsslim',
                 'message' => $record['message'],
                 'level' => $record['level_name'],
                 'context' => $record['context'],
@@ -99,6 +100,9 @@ class Bootstrap
 
         $handler->setFormatter($formatter);
         App::$log->pushHandler($handler);
+        // Ensure App::$log is typed as LoggerInterface
+        /** @var LoggerInterface */
+        App::$log = App::$log;
     }
 
     protected function configureSlim()
