@@ -120,7 +120,16 @@ class Http
         if (self::$logEnabled) {
             self::$log[] = $request;
             self::$log[] = $response;
-            $responseSizeKb = round(strlen($response->getBody()->getContents()) / 1024);
+            // Get response size for logging without consuming the stream
+            $bodyStream = $response->getBody();
+            if ($bodyStream->isSeekable()) {
+                $bodyStream->rewind();
+                $bodyContent = $bodyStream->getContents();
+                $responseSizeKb = round(strlen($bodyContent) / 1024);
+                $bodyStream->rewind(); // Rewind again for the Result class to read
+            } else {
+                $responseSizeKb = round(($bodyStream->getSize() ?: 0) / 1024);
+            }
             self::$log[] = "Response ($responseSizeKb kb) time in s: " . round(microtime(true) - $startTime, 3);
         }
         return $response;
