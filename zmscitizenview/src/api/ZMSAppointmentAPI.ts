@@ -35,8 +35,17 @@ export function fetchServicesAndProviders(
   let apiUrl =
     getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT;
 
-  if (serviceId && locationId) {
-    apiUrl += `?serviceId=${serviceId}&locationId=${locationId}`;
+  const queryParams: string[] = [];
+  if (serviceId) {
+    queryParams.push(`serviceId=${serviceId}`);
+  }
+
+  if (locationId) {
+    queryParams.push(`locationId=${locationId}`);
+  }
+
+  if (queryParams.length > 0) {
+    apiUrl += "?" + queryParams.join("&");
   }
 
   return fetch(apiUrl).then((response) => {
