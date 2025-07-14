@@ -13,7 +13,11 @@ describe("AppointmentView", () => {
   beforeAll(() => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       status: 200,
-      json: async () => ({}),
+      json: async () => ({
+        services: [],
+        relations: [],
+        offices: [],
+      }),
     }));
   });
 
