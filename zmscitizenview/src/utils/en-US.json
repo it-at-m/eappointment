@@ -41,7 +41,6 @@
   "lastName": "Last name",
   "location": "Location",
   "mailAddress": "e-mail address",
-  "maxCharHint": "The maximum number of characters has been reached!",
   "minutes": "minutes",
   "next": "Next",
   "noAppointmentsAvailableHeader": "No date is currently available",
