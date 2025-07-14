@@ -11,36 +11,43 @@ class OverallCalendar extends Base
 {
     public function insertSlotsBulk(array $rows): void
     {
-        if (!$rows) {
-            return;
-        }
+        if (!$rows) return;
+
         $placeholders = rtrim(str_repeat('(?,?,?,?,?),', count($rows)), ',');
-        $sql = sprintf(Calender::INSERT_MULTI, $placeholders);
+        $sql = sprintf(Query\OverallCalendar::UPSERT_MULTI, $placeholders);
 
         $params = [];
         foreach ($rows as $r) {
             $params[] = $r[0];
             $params[] = $r[1];
             $params[] = $r[2]->format('Y-m-d H:i:s');
-            $params[] = $r[3];
-            $params[] = $r[4];
+            $params[] = (int)$r[3];
+            $params[] = $r[4] ?? 'free';
         }
         $this->perform($sql, $params);
     }
 
-    public function deleteFreeRange(
-        int $scopeId,
-        int $availabilityId,
-        DateTimeInterface $begin,
-        DateTimeInterface $finish
-    ): void {
-        $this->perform(Calender::DELETE_FREE_RANGE, [
-            'scope_id' => $scopeId,
-            'availability_id' => $availabilityId,
-            'begin' => $begin->format('Y-m-d H:i:s'),
-            'finish' => $finish->format('Y-m-d H:i:s'),
+    public function cancelAvailability(int $scopeId, int $availabilityId): void
+    {
+        $this->perform(Calender::CANCEL_AVAILABILITY, [
+            'scope_id'=> $scopeId,
+            'availability_id'=> $availabilityId,
         ]);
     }
+
+    public function purgeMissingAvailabilityByScope(
+        \DateTimeInterface $dateTime,
+        int $scopeId
+    ): bool {
+        return (bool) $this->perform(
+            Query\OverallCalendar::PURGE_MISSING_AVAIL_BY_SCOPE,
+            [
+                'dateString' => $dateTime->format('Y-m-d'),
+                'scopeID'    => $scopeId,
+            ]
+        );
+    }
+
 
     public function deleteOlderThan(DateTimeInterface $date): bool
     {
