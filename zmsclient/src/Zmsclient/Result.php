@@ -58,6 +58,14 @@ class Result
         // Get the body content - handle PHP 8.3 stream issues
         $bodyStream = $response->getBody();
 
+        // DEBUG: Add temporary logging
+        $streamClass = get_class($bodyStream);
+        $streamSize = $bodyStream->getSize();
+        $streamSeekable = $bodyStream->isSeekable();
+        $streamTell = $bodyStream->isSeekable() ? $bodyStream->tell() : 'N/A';
+
+        error_log("DEBUG: Stream class: $streamClass, Size: $streamSize, Seekable: " . ($streamSeekable ? 'yes' : 'no') . ", Position: $streamTell");
+
         // Try different approaches to read the stream content
         $bodyContent = '';
 
@@ -68,30 +76,42 @@ class Result
             if ($size === 0) {
                 // Empty response - let the JSON validator handle it
                 $bodyContent = '';
+                error_log("DEBUG: Empty response (size=0)");
             } else {
                 // Try to rewind if seekable
                 if ($bodyStream->isSeekable()) {
                     $bodyStream->rewind();
+                    error_log("DEBUG: Rewound stream to position: " . $bodyStream->tell());
                 }
 
                 // Read the content
                 $bodyContent = $bodyStream->getContents();
+                $contentLength = strlen($bodyContent);
+                error_log("DEBUG: Read content length: $contentLength, First 100 chars: " . substr($bodyContent, 0, 100));
 
                 // If we got empty content but size was > 0, try to rewind and read again
                 if (empty($bodyContent) && $size > 0 && $bodyStream->isSeekable()) {
+                    error_log("DEBUG: Empty content but size > 0, trying rewind+read again");
                     $bodyStream->rewind();
                     $bodyContent = $bodyStream->getContents();
+                    $contentLength = strlen($bodyContent);
+                    error_log("DEBUG: Second read content length: $contentLength, First 100 chars: " . substr($bodyContent, 0, 100));
                 }
             }
         } catch (\Exception $e) {
+            error_log("DEBUG: Exception reading stream: " . $e->getMessage());
             // If stream reading fails, try to cast to string
             try {
                 $bodyContent = (string) $bodyStream;
+                error_log("DEBUG: String cast result length: " . strlen($bodyContent));
             } catch (\Exception $e2) {
+                error_log("DEBUG: String cast also failed: " . $e2->getMessage());
                 // Last resort - empty content
                 $bodyContent = '';
             }
         }
+
+        error_log("DEBUG: Final body content length: " . strlen($bodyContent) . ", Content: " . substr($bodyContent, 0, 200));
 
         $body = Validator::value($bodyContent)->isJson();
         $this->testMeta($body, $response, $bodyContent);
