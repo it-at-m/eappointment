@@ -58,18 +58,39 @@ class Result
         // Get the body content - handle PHP 8.3 stream issues
         $bodyStream = $response->getBody();
 
-        // Try to get the size first
-        $size = $bodyStream->getSize();
+        // Try different approaches to read the stream content
+        $bodyContent = '';
 
-        if ($size === 0) {
-            // Empty response - let the JSON validator handle it
-            $bodyContent = '';
-        } else {
-            // Try to rewind if seekable
-            if ($bodyStream->isSeekable()) {
-                $bodyStream->rewind();
+        try {
+            // First try to get size
+            $size = $bodyStream->getSize();
+
+            if ($size === 0) {
+                // Empty response - let the JSON validator handle it
+                $bodyContent = '';
+            } else {
+                // Try to rewind if seekable
+                if ($bodyStream->isSeekable()) {
+                    $bodyStream->rewind();
+                }
+
+                // Read the content
+                $bodyContent = $bodyStream->getContents();
+
+                // If we got empty content but size was > 0, try to rewind and read again
+                if (empty($bodyContent) && $size > 0 && $bodyStream->isSeekable()) {
+                    $bodyStream->rewind();
+                    $bodyContent = $bodyStream->getContents();
+                }
             }
-            $bodyContent = $bodyStream->getContents();
+        } catch (\Exception $e) {
+            // If stream reading fails, try to cast to string
+            try {
+                $bodyContent = (string) $bodyStream;
+            } catch (\Exception $e2) {
+                // Last resort - empty content
+                $bodyContent = '';
+            }
         }
 
         $body = Validator::value($bodyContent)->isJson();
