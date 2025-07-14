@@ -222,7 +222,7 @@
                         "description": "unix timestamp"
                     },
                     "lastChange": {
-                        "type": "number",
+                        "type": ["null", "number"],
                         "description": "unix timestamp of the last change on this dayoff"
                     },
                     "name": {
@@ -252,7 +252,7 @@
                     ]
                 },
                 "lastChange": {
-                    "type": "number",
+                    "type": ["null", "number"],
                     "description": "unix timestamp of the last change on this closure"
                 },
                 "year": {
@@ -304,7 +304,7 @@
             "description": "source of provider to resolve reference id"
         },
         "lastChange": {
-            "type": "number",
+            "type": ["null", "number"],
             "description": "unix timestamp of the last change on this scope"
         },
         "preferences": {
@@ -371,7 +371,7 @@
                             "default": ""
                         },
                         "appointmentsPerMail": {
-                            "type": "string",
+                            "type": ["string", "null", "integer"],
                             "description": "allowed appointments per e-mail address",
                             "default": ""
                         },

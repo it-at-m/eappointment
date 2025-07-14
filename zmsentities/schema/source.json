@@ -68,6 +68,10 @@
                 {
                     "type": "string",
                     "pattern": "^[01]$"
+                },
+                {
+                    "type": "integer",
+                    "enum": [0, 1]
                 }
             ],
             "default": true

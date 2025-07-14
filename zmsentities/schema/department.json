@@ -83,8 +83,10 @@
             "$ref": "contact.json"
         },
         "clusters": {
-            "type": ["array", "null"],
-            "items": {"anyOf": [{"$ref": "cluster.json"}, {"type": "null"}]}
+            "type": "array",
+            "items": {
+                "$ref": "cluster.json"
+            }
         },
         "dayoff": {
             "type": "array",

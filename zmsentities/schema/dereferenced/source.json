@@ -131,7 +131,7 @@
         },
         "editable": {
             "description": "if this is true, a user might upload an update of the source, on false, this source is updated via automated scripts",
-            "type": "boolean",
+            "type": ["boolean", "integer", "string"],
             "default": true
         },
         "label": {
