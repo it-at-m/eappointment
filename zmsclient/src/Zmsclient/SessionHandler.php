@@ -41,7 +41,9 @@ class SessionHandler implements \SessionHandlerInterface
         $this->http = $http;
     }
 
-    // Update method signatures for PHP 8.3 compatibility
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function open(string $save_path, string $name): bool
     {
         $this->sessionName = $name;
@@ -106,9 +108,18 @@ class SessionHandler implements \SessionHandlerInterface
         return ($result) ? true : false;
     }
 
-    public function gc(int $maxlifetime): int|false
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function garbageCollect(int $maxlifetime): int|false
     {
         // No-op for now
         return 0;
+    }
+
+    // Proxy for interface compatibility
+    public function gc(int $maxlifetime): int|false
+    {
+        return $this->garbageCollect($maxlifetime);
     }
 }
