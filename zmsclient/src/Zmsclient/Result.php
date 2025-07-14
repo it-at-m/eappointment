@@ -55,8 +55,19 @@ class Result
      */
     public function setResponse(ResponseInterface $response)
     {
-        $body = Validator::value((string) $response->getBody())->isJson();
-        $this->testMeta($body, $response);
+        // Safely read the response body content for PHP 8.3 compatibility
+        $bodyStream = $response->getBody();
+        $bodyContent = '';
+
+        // Try to rewind the stream if it's seekable
+        if ($bodyStream->isSeekable()) {
+            $bodyStream->rewind();
+        }
+
+        $bodyContent = $bodyStream->getContents();
+
+        $body = Validator::value($bodyContent)->isJson();
+        $this->testMeta($body, $response, $bodyContent);
         $result = $body->getValue();
         if (array_key_exists("data", $result)) {
             $this->setData($result['data']);
@@ -69,15 +80,15 @@ class Result
      *
      * @param Valid $body
      * @param ResponseInterface $response
+     * @param string $bodyContent
      * @throws Exception
      */
-    protected function testMeta($body, ResponseInterface $response)
+    protected function testMeta($body, ResponseInterface $response, $bodyContent = '')
     {
         if ($body->hasFailed()) {
-            $content = (string) $response->getBody();
             throw new Exception\ApiFailed(
                 'API-Call failed, JSON parsing with error: ' . $body->getMessages()
-                . ' - Snippet: ' . substr(\strip_tags($content), 0, 2000) . '[...]',
+                . ' - Snippet: ' . substr(\strip_tags($bodyContent), 0, 2000) . '[...]',
                 $response,
                 $this->request
             );
