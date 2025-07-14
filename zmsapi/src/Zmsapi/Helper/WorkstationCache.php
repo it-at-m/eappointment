@@ -7,6 +7,16 @@ use BO\Zmsdb\Workstation as WorkstationQuery;
 
 /**
  * Helper class for caching workstation data
+ *
+ * Caching Strategy:
+ * - Cache key is generated from workstation data excluding dynamic timestamp fields
+ * - This prevents cache misses due to frequently changing timestamps while still
+ *   ensuring cache invalidation when actual data changes
+ * - Excluded fields from cache key generation:
+ *   - useraccount.lastLogin: changes on every login
+ *   - scope.lastChange: changes when scope data is modified
+ *   - scope.status.queue.lastGivenNumberTimestamp: changes when new queue numbers are given
+ * - The complete workstation data (including timestamps) is still cached and returned
  */
 class WorkstationCache
 {
@@ -23,9 +33,10 @@ class WorkstationCache
             return null;
         }
 
-        // Generate cache key as hash of the serialized workstation response
-        $serialized = json_encode($workstation);
-        $cacheKey = self::CACHE_KEY_PREFIX . md5($serialized);
+        // Generate cache key based on workstation data excluding lastLogin field
+        // This prevents cache misses due to changing lastLogin timestamps
+        $workstationData = self::getWorkstationDataForCacheKey($workstation);
+        $cacheKey = self::CACHE_KEY_PREFIX . md5($workstationData);
 
         // Try to get from cache first
         if (class_exists('\App') && property_exists('\App', 'cache') && \App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
@@ -44,6 +55,32 @@ class WorkstationCache
         self::setCachedWorkstation($cacheKey, $workstation);
 
         return $workstation;
+    }
+
+    /**
+     * Get workstation data for cache key generation, excluding dynamic fields
+     */
+    private static function getWorkstationDataForCacheKey(Workstation $workstation): string
+    {
+        // Convert workstation to array
+        $workstationArray = $workstation->getArrayCopy();
+
+        // Remove lastLogin from useraccount to prevent cache misses due to timestamp changes
+        if (isset($workstationArray['useraccount']['lastLogin'])) {
+            unset($workstationArray['useraccount']['lastLogin']);
+        }
+
+        // Remove lastChange from scope to prevent cache misses due to timestamp changes
+        if (isset($workstationArray['scope']['lastChange'])) {
+            unset($workstationArray['scope']['lastChange']);
+        }
+
+        // Remove lastGivenNumberTimestamp from scope status to prevent cache misses due to timestamp changes
+        if (isset($workstationArray['scope']['status']['queue']['lastGivenNumberTimestamp'])) {
+            unset($workstationArray['scope']['status']['queue']['lastGivenNumberTimestamp']);
+        }
+
+        return json_encode($workstationArray);
     }
 
     /**
