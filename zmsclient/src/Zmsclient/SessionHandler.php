@@ -4,6 +4,7 @@ namespace BO\Zmsclient;
 
 /**
  * Session handler for mysql
+ * @SuppressWarnings(PHPMD.ShortMethodName)
  */
 class SessionHandler implements \SessionHandlerInterface
 {
@@ -110,16 +111,11 @@ class SessionHandler implements \SessionHandlerInterface
 
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings(PHPMD.ShortMethodName)
      */
-    public function garbageCollect(int $maxlifetime): int|false
+    public function gc(int $maxlifetime): int|false
     {
         // No-op for now
         return 0;
-    }
-
-    // Proxy for interface compatibility
-    public function gc(int $maxlifetime): int|false
-    {
-        return $this->garbageCollect($maxlifetime);
     }
 }
