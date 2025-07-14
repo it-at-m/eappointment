@@ -113,6 +113,12 @@ class Result
 
         error_log("DEBUG: Final body content length: " . strlen($bodyContent) . ", Content: " . substr($bodyContent, 0, 200));
 
+        // Handle empty responses - treat as empty JSON object
+        if (empty($bodyContent)) {
+            $bodyContent = '{}';
+            error_log("DEBUG: Empty body content, using '{}' as fallback");
+        }
+
         $body = Validator::value($bodyContent)->isJson();
         $this->testMeta($body, $response, $bodyContent);
         $result = $body->getValue();
