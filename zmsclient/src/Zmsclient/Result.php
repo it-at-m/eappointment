@@ -55,73 +55,14 @@ class Result
      */
     public function setResponse(ResponseInterface $response)
     {
-        // Get the body content - handle PHP 8.3 stream issues
-        $bodyStream = $response->getBody();
-
-        // DEBUG: Add temporary logging
-        $streamClass = get_class($bodyStream);
-        $streamSize = $bodyStream->getSize();
-        $streamSeekable = $bodyStream->isSeekable();
-        $streamTell = $bodyStream->isSeekable() ? $bodyStream->tell() : 'N/A';
-
-        error_log("DEBUG: Stream class: $streamClass, Size: $streamSize, Seekable: " . ($streamSeekable ? 'yes' : 'no') . ", Position: $streamTell");
-
-        // Try different approaches to read the stream content
-        $bodyContent = '';
-
-        try {
-            // First try to get size
-            $size = $bodyStream->getSize();
-
-            if ($size === 0) {
-                // Empty response - let the JSON validator handle it
-                $bodyContent = '';
-                error_log("DEBUG: Empty response (size=0)");
-            } else {
-                // Try to rewind if seekable
-                if ($bodyStream->isSeekable()) {
-                    $bodyStream->rewind();
-                    error_log("DEBUG: Rewound stream to position: " . $bodyStream->tell());
-                }
-
-                // Read the content
-                $bodyContent = $bodyStream->getContents();
-                $contentLength = strlen($bodyContent);
-                error_log("DEBUG: Read content length: $contentLength, First 100 chars: " . substr($bodyContent, 0, 100));
-
-                // If we got empty content but size was > 0, try to rewind and read again
-                if (empty($bodyContent) && $size > 0 && $bodyStream->isSeekable()) {
-                    error_log("DEBUG: Empty content but size > 0, trying rewind+read again");
-                    $bodyStream->rewind();
-                    $bodyContent = $bodyStream->getContents();
-                    $contentLength = strlen($bodyContent);
-                    error_log("DEBUG: Second read content length: $contentLength, First 100 chars: " . substr($bodyContent, 0, 100));
-                }
-            }
-        } catch (\Exception $e) {
-            error_log("DEBUG: Exception reading stream: " . $e->getMessage());
-            // If stream reading fails, try to cast to string
-            try {
-                $bodyContent = (string) $bodyStream;
-                error_log("DEBUG: String cast result length: " . strlen($bodyContent));
-            } catch (\Exception $e2) {
-                error_log("DEBUG: String cast also failed: " . $e2->getMessage());
-                // Last resort - empty content
-                $bodyContent = '';
-            }
-        }
-
-        error_log("DEBUG: Final body content length: " . strlen($bodyContent) . ", Content: " . substr($bodyContent, 0, 200));
-
-        // Handle empty responses - treat as empty JSON object
-        if (empty($bodyContent)) {
-            $bodyContent = '{}';
+        $body = Validator::value((string) $response->getBody())->isJson();
+        $this->testMeta($body, $response);
+        $result = $body->getValue();
+        error_log("DEBUG: Result: " . json_encode($result));
+        if (empty($result)) {
+            $result = '{}';
             error_log("DEBUG: Empty body content, using '{}' as fallback");
         }
-
-        $body = Validator::value($bodyContent)->isJson();
-        $this->testMeta($body, $response, $bodyContent);
-        $result = $body->getValue();
         if (array_key_exists("data", $result)) {
             $this->setData($result['data']);
         }
@@ -133,17 +74,15 @@ class Result
      *
      * @param Valid $body
      * @param ResponseInterface $response
-     * @param string $bodyContent
      * @throws Exception
      */
-    protected function testMeta($body, ResponseInterface $response, $bodyContent = '')
+    protected function testMeta($body, ResponseInterface $response)
     {
         if ($body->hasFailed()) {
-            error_log("DEBUG: testMeta() - JSON validation failed, body content length: " . strlen($bodyContent) . ", content: '" . $bodyContent . "'");
-            error_log("DEBUG: testMeta() - Validation messages: " . $body->getMessages());
+            $content = (string) $response->getBody();
             throw new Exception\ApiFailed(
                 'API-Call failed, JSON parsing with error: ' . $body->getMessages()
-                . ' - Snippet: ' . substr(\strip_tags($bodyContent), 0, 2000) . '[...]',
+                . ' - Snippet: ' . substr(\strip_tags($content), 0, 2000) . '[...]',
                 $response,
                 $this->request
             );
@@ -250,7 +189,6 @@ class Result
     public function getData()
     {
         if (null === $this->data) {
-            error_log("DEBUG: getData() calling setResponse, response class: " . get_class($this->response));
             $this->setResponse($this->response);
         }
         return $this->data;
