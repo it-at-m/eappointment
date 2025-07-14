@@ -22,3 +22,4 @@ public/_css/admin.css.map
 .cache
 .phpunit.*
 coverage
+changelog_build.md

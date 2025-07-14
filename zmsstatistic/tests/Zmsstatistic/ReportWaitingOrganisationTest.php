@@ -188,7 +188,7 @@ class ReportWaitingOrganisationTest extends Base
 
         $this->assertStringContainsString('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertStringContainsString(
-            '"Tagesmaximum Spontankunden der gemessenen Zeit";"532";"414";"280";"160";"256";"437";"455";"202";"532";"359";"384";"417";"148";"375";"343";',
+            '"Tagesmaximum der Wartezeit in Min. (Spontankunden)";"532:00";"414:00";"280:00";"160:00";"256:00";"437:00";"455:00";"202:00";"532:00";"359:00";"384:00";"417:00";"148:00";"375:00";"343:00";',
             (string) $response->getBody()
         );
     }

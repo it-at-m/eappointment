@@ -5,6 +5,9 @@
 
 <div class="{{ showList }}">
 
+{% if changelogContent is defined and changelogContent %}
+{{ changelogContent|sanitize_html }}
+{% else %}
 <h2> Release Muc-16 <small>(08.11.2024)</small></h2>
 
 <h3>        Aufgabe</h3>
@@ -515,7 +518,7 @@ a
 	<li>[<a href='https://jira.muenchen.de/browse/ZMS-347'>ZMS-347</a>] -         Beschreibung der fachlichen Use Cases (SOZ)</li>
 	<li>[<a href='https://jira.muenchen.de/browse/ZMS-348'>ZMS-348</a>] -         Beschreibung der fachlichen Use Cases für Personalrat und Datenschutz</li>
 </ul>
-
+{% endif %}
 <hr />
 
     <div class="last-changelog-items">

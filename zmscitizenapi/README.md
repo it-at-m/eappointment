@@ -33,7 +33,6 @@ sequenceDiagram
 
 | File | Change Summary |
 |------|----------------|
-| `.ddev/.env.template` | Added `CORS` environment variable with multiple localhost and domain origins |
 | `.ddev/config.yaml` | Updated host HTTPS and web server ports from `59002`/`59001` to `8091`/`8090` |
 | `.github/workflows/build-images.yaml` | Added `zmscitizenapi` module with PHP 8.0 |
 | `.github/workflows/unit-tests.yaml` | Added `zmscitizenapi` module to matrix configuration |
@@ -81,9 +80,6 @@ sequenceDiagram
 | MAX_STRING_LENGTH | Maximum string length in bytes | 32768 (32KB) |
 | MAX_RECURSION_DEPTH | Maximum recursion depth | 10 |
 | **Security Configuration** |
-| CSRF_TOKEN_LENGTH | CSRF token length in bytes | 32 |
-| CSRF_SESSION_KEY | CSRF session key name | csrf_token |
-| CORS | Allowed CORS origins (comma-separated) | http://localhost:8080,... |
 | IP_BLACKLIST | Blacklisted IPs/CIDR ranges (comma-separated) | "" |
 
 
@@ -454,21 +450,6 @@ classDiagram
         +process()
     }
 
-    class CorsMiddleware {
-        -whitelist: array
-        -logger: LoggerService
-        +process()
-        -isOriginAllowed(origin: string): bool
-    }
-
-    class CsrfMiddleware {
-        -TOKEN_LENGTH: int
-        -logger: LoggerService
-        +process()
-        +getToken(): string
-        -validateToken(token: string): bool
-    }
-
     class RateLimitingMiddleware {
         -MAX_REQUESTS: int
         -TIME_WINDOW: int
@@ -505,8 +486,6 @@ classDiagram
     RequestHandlerInterface <|.. MaintenanceMiddleware
     MiddlewareInterface <|.. RequestLoggingMiddleware
     MiddlewareInterface <|.. SecurityHeadersMiddleware
-    MiddlewareInterface <|.. CorsMiddleware
-    MiddlewareInterface <|.. CsrfMiddleware
     MiddlewareInterface <|.. RateLimitingMiddleware
     MiddlewareInterface <|.. RequestSanitizerMiddleware
     MiddlewareInterface <|.. RequestSizeLimitMiddleware
@@ -514,8 +493,6 @@ classDiagram
 
     RequestLoggingMiddleware --> LoggerService
     SecurityHeadersMiddleware --> LoggerService
-    CorsMiddleware --> LoggerService
-    CsrfMiddleware --> LoggerService
     RateLimitingMiddleware --> LoggerService
     RequestSanitizerMiddleware --> LoggerService
     RequestSizeLimitMiddleware --> LoggerService
@@ -526,8 +503,6 @@ classDiagram
     MaintenanceMiddleware ..> ErrorMessages
     RequestLoggingMiddleware ..> ErrorMessages
     SecurityHeadersMiddleware ..> ErrorMessages
-    CorsMiddleware ..> ErrorMessages
-    CsrfMiddleware ..> ErrorMessages
     RateLimitingMiddleware ..> ErrorMessages
     RequestSizeLimitMiddleware ..> ErrorMessages
     IpFilterMiddleware ..> ErrorMessages
@@ -552,10 +527,8 @@ sequenceDiagram
         note right of M: Security Middleware
         M->>M: 1. IP Filter Check
         M->>M: 2. Request Size Check
-        M->>M: 3. CORS Check
-        M->>M: 4. CSRF Check
-        M->>M: 5. Rate Limit Check
-        M->>M: 6. Request Sanitization
+        M->>M: 3. Rate Limit Check
+        M->>M: 4. Request Sanitization
     end
     
     alt Security Check Failed

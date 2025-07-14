@@ -309,21 +309,6 @@ class ErrorMessages
             'statusCode' => self::HTTP_FORBIDDEN,
             'errorMessage' => 'Access denied - IP address is blacklisted.'
         ],
-        'corsOriginNotAllowed' => [
-            'errorCode' => 'corsOriginNotAllowed',
-            'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'Origin not allowed by CORS policy.'
-        ],
-        'csrfTokenMissing' => [
-            'errorCode' => 'csrfTokenMissing',
-            'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'CSRF token is missing.'
-        ],
-        'csrfTokenInvalid' => [
-            'errorCode' => 'csrfTokenInvalid',
-            'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'Invalid CSRF token.'
-        ],
         'rateLimitExceeded' => [
             'errorCode' => 'rateLimitExceeded',
             'statusCode' => self::HTTP_TOO_MANY_REQUESTS,
@@ -612,21 +597,6 @@ class ErrorMessages
             'statusCode' => self::HTTP_FORBIDDEN,
             'errorMessage' => 'Zugriff verweigert - IP-Adresse ist auf der schwarzen Liste.'
         ],
-        'corsOriginNotAllowed' => [
-            'errorCode' => 'corsOriginNotAllowed',
-            'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'Ursprung durch CORS-Richtlinie nicht erlaubt.'  // DE: 'Ursprung durch CORS-Richtlinie nicht erlaubt.'
-        ],
-        'csrfTokenMissing' => [
-            'errorCode' => 'csrfTokenMissing',
-            'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'CSRF-Token fehlt.'  // DE: 'CSRF-Token fehlt.'
-        ],
-        'csrfTokenInvalid' => [
-            'errorCode' => 'csrfTokenInvalid',
-            'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'Ungültiger CSRF-Token.'  // DE: 'Ungültiger CSRF-Token.'
-        ],
         'rateLimitExceeded' => [
             'errorCode' => 'rateLimitExceeded',
             'statusCode' => self::HTTP_TOO_MANY_REQUESTS,
@@ -909,21 +879,6 @@ class ErrorMessages
             'errorCode' => 'IP_BLACKLISTED',
             'statusCode' => self::HTTP_FORBIDDEN,
             'errorMessage' => 'Доступ заборонено - IP-адресу заблоковано.'
-        ],
-        'corsOriginNotAllowed' => [
-            'errorCode' => 'corsOriginNotAllowed',
-            'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'Джерело не дозволено політикою CORS.'
-        ],
-        'csrfTokenMissing' => [
-            'errorCode' => 'csrfTokenMissing',
-            'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'Відсутній CSRF токен.'
-        ],
-        'csrfTokenInvalid' => [
-            'errorCode' => 'csrfTokenInvalid',
-            'statusCode' => self::HTTP_FORBIDDEN,
-            'errorMessage' => 'Недійсний CSRF токен.'
         ],
         'rateLimitExceeded' => [
             'errorCode' => 'rateLimitExceeded',

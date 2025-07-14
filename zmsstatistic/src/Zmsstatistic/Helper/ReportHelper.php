@@ -26,4 +26,18 @@ class ReportHelper
         }
         return $entity;
     }
+
+    public static function formatTimeValue($value)
+    {
+        if (!is_numeric($value)) {
+            return $value;
+        }
+        $minutes = floor($value);
+        $seconds = round(($value - $minutes) * 60);
+        if ($seconds >= 60) {
+            $minutes += 1;
+            $seconds = 0;
+        }
+        return sprintf('%02d:%02d', $minutes, $seconds);
+    }
 }

@@ -4,7 +4,7 @@
   "example": {
     "lastLogin": 1447926465,
     "id": "johndoe",
-    "email": "johndoe@berlinonline.de",
+    "email": "johndoe@muenchen.de",
     "password": "secret",
     "rights": {
       "scope": true,
