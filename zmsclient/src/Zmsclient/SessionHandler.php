@@ -4,7 +4,6 @@ namespace BO\Zmsclient;
 
 /**
  * Session handler for mysql
- * @SuppressWarnings(PHPMD.ShortMethodName)
  */
 class SessionHandler implements \SessionHandlerInterface
 {
@@ -32,20 +31,20 @@ class SessionHandler implements \SessionHandlerInterface
         static::$lastInstance = $this;
     }
 
-    public static function getLastInstance()
+    public static function getLastInstance(): ?self
     {
         return static::$lastInstance;
     }
 
-    public function setHttpHandler(Http $http)
+    public function setHttpHandler(Http $http): void
     {
         $this->http = $http;
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings(UnusedFormalParameter)
      */
-    public function open(string $save_path, string $name): bool
+    public function open($save_path, $name): bool
     {
         $this->sessionName = $name;
         return true;
@@ -56,7 +55,7 @@ class SessionHandler implements \SessionHandlerInterface
         return true;
     }
 
-    public function read(string $sessionId): string
+    public function read($sessionId, $params = []): string
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $params['sync'] = static::$useSyncFlag;
@@ -81,7 +80,7 @@ class SessionHandler implements \SessionHandlerInterface
         return ($session && isset($session['content'])) ? serialize($session->getContent()) : '';
     }
 
-    public function write(string $sessionId, string $sessionData): bool
+    public function write($sessionId, $sessionData, $params = []): bool
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $entity = new \BO\Zmsentities\Session();
@@ -90,7 +89,7 @@ class SessionHandler implements \SessionHandlerInterface
         $entity->content = unserialize($sessionData);
 
         try {
-            $session = $this->http->readPostResult('/session/', $entity)
+            $session = $this->http->readPostResult('/session/', $entity, $params)
                 ->getEntity();
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
@@ -102,7 +101,7 @@ class SessionHandler implements \SessionHandlerInterface
         return (null !== $session) ? true : false;
     }
 
-    public function destroy(string $sessionId): bool
+    public function destroy($sessionId): bool
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $result = $this->http->readDeleteResult('/session/' . $this->sessionName . '/' . $hashedSessionId . '/');
@@ -110,12 +109,27 @@ class SessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @SuppressWarnings(PHPMD.ShortMethodName)
+     * @SuppressWarnings(UnusedFormalParameter)
+     * @SuppressWarnings(ShortMethodName)
+     * @codeCoverageIgnore
      */
-    public function gc(int $maxlifetime): int|false
+    public function gc(int $max_lifetime): int|false
     {
-        // No-op for now
-        return 0;
+        /*
+         * $compareTs = time() - $max_lifetime;
+         * $query = '
+         * DELETE FROM
+         * sessiondata
+         * WHERE
+         * UNIX_TIMESTAMP(`ts`) < ? AND
+         * sessionname=?
+         * ';
+         * $statement = $this->getWriter()->prepare($query);
+         * return $statement->execute(array(
+         * $compareTs,
+         * $this->sessionName
+         * ));
+         */
+        return 1; // Return number of deleted sessions (1 for success, as per PHP 8.3 interface)
     }
 }
