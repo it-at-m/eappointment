@@ -277,6 +277,9 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
 
+      - name: Install Python dependencies
+        run: pip3 install gitpython colorama click
+
       - name: Reference local modules and libraries
         run: python3 ./cli modules reference-libraries --no-symlink
 
