@@ -55,7 +55,16 @@ class Result
      */
     public function setResponse(ResponseInterface $response)
     {
-        $body = Validator::value((string) $response->getBody())->isJson();
+        $bodyString = (string) $response->getBody();
+        if ($bodyString === '' || $bodyString === null) {
+            // Option 1: treat as empty data
+            $this->data = [];
+            $this->meta = null;
+            return $this;
+            // Option 2: throw a more specific error
+            // throw new Exception\ApiFailed('API-Call failed, empty response body', $response, $this->request);
+        }
+        $body = Validator::value($bodyString)->isJson();
         $this->testMeta($body, $response);
         $result = $body->getValue();
         if (array_key_exists("data", $result)) {
