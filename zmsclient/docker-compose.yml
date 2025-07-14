@@ -26,6 +26,9 @@ services:
       - type: bind
         source: "../zmsentities"
         target: "/zmsentities"
+      - type: bind
+        source: "../mellon"
+        target: "/mellon"
     environment:
       ZMS_API_URL: http://mockup:8083
     working_dir: /app
