@@ -295,6 +295,7 @@ EOS;
     customTextfield
     customTextfield2
     authKey
+    priority
     id
     status
     createTimestamp

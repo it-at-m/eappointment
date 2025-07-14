@@ -21,6 +21,10 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public const STATUS_FAKE = ['fake'];
 
+    public const DEFAULT_PRIORITY_WITHOUT_APPOINTMENT = 3;
+
+    public const DEFAULT_PRIORITY_WITH_APPOINTMENT = 2;
+
     protected $processTimeAverage;
 
     protected $workstationCount;
@@ -85,7 +89,22 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $pessimisticTime += $timeSlot;
         $waitingTimePes = (int)floor(($pessimisticTime - $dateTime->getTimestamp()) / 60);
         while ($nextWithAppointment || $nextNoAppointment) {
-            if ($nextWithAppointment && $currentTime >= $nextWithAppointment->arrivalTime) {
+            if ($nextNoAppointment && (int) $nextNoAppointment->priority === 1) {
+                $nextNoAppointment->waitingTimeEstimate = $waitingTimePes;
+                $nextNoAppointment->waitingTimeOptimistic = $waitingTimeOpt;
+                $queueWithWaitingTime->addEntity($nextNoAppointment);
+                $nextNoAppointment = array_shift($listNoAppointment);
+            } elseif (
+                $nextNoAppointment
+                && $nextWithAppointment
+                && (int) $nextNoAppointment->priority === 2
+                && $nextNoAppointment->arrivalTime < $nextWithAppointment->arrivalTime
+            ) {
+                $nextNoAppointment->waitingTimeEstimate = $waitingTimePes;
+                $nextNoAppointment->waitingTimeOptimistic = $waitingTimeOpt;
+                $queueWithWaitingTime->addEntity($nextNoAppointment);
+                $nextNoAppointment = array_shift($listNoAppointment);
+            } elseif ($nextWithAppointment && $currentTime >= $nextWithAppointment->arrivalTime) {
                 $nextWithAppointment->waitingTimeEstimate = $waitingTime + 1;
                 $nextWithAppointment->waitingTimeOptimistic =
                     floor(($nextWithAppointment->arrivalTime - $dateTime->getTimestamp()) / 60);
@@ -112,6 +131,19 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueWithWaitingTime;
     }
 
+    private function getSortPriority($queue): int
+    {
+        $priority = self::DEFAULT_PRIORITY_WITHOUT_APPOINTMENT;
+        if (empty($queue['priority']) && $queue['withAppointment']) {
+            $priority = self::DEFAULT_PRIORITY_WITH_APPOINTMENT;
+        }
+        if (!empty($queue['priority'])) {
+            $priority = (int) $queue['priority'];
+        }
+
+        return $priority;
+    }
+
     public function withWaitingTime(\DateTimeInterface $dateTime)
     {
         $queueList = clone $this;
@@ -128,9 +160,12 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
     {
         $queueList = clone $this;
         $queueList->uasort(function ($first, $second) {
-            $firstSort = sprintf("%011d%011d", $first['arrivalTime'], $first['number']);
-            //error_log($firstSort);
-            $secondSort = sprintf("%011d%011d", $second['arrivalTime'], $second['number']);
+            $firstPriority = $this->getSortPriority($first);
+            $secondPriority = $this->getSortPriority($second);
+
+            $firstSort = sprintf("%01d%011d%011d", $firstPriority, $first['arrivalTime'], $first['number']);
+            $secondSort = sprintf("%01d%011d%011d", $secondPriority, $second['arrivalTime'], $second['number']);
+
             return strcmp($firstSort, $secondSort);
         });
         return $queueList;
