@@ -5,7 +5,7 @@ test-php-80:
     extends: .test-php
     allow_failure: false
     variables:
-        PHP_VERSION: "8.0"
+        PHP_VERSION: "8.3"
     only:
         changes:
             - .gitlab-ci.yml
@@ -20,7 +20,7 @@ test-php-80:
     extends: .test-php
     allow_failure: false
     variables:
-      PHP_VERSION: "8.0"
+      PHP_VERSION: "8.3"
     only:
         changes:
             - .gitlab-ci.yml
@@ -57,7 +57,7 @@ pages:
 build-docker:
     extends: .build-docker
     variables:
-        PHP_VERSION: "8.0"
+        PHP_VERSION: "8.3"
     only:
         - tags
         - main

@@ -32,8 +32,11 @@ trait Quote
             return $string;
         }
 
+        if ($string === null) {
+            return $string;
+        }
         $string = trim($string);
-        if (strlen($string) == 0 || is_null($string)) {
+        if (strlen($string) == 0) {
             return $string;
         }
 

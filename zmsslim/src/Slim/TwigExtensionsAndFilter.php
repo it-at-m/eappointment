@@ -25,6 +25,9 @@ class TwigExtensionsAndFilter extends TwigExtension
 
     public function decodeEntities($string)
     {
+        if ($string === null) {
+            return '';
+        }
         return trim(nl2br(html_entity_decode($string)));
     }
 

@@ -22,7 +22,7 @@
     ],
     "config": {
         "platform": {
-            "php": "8.0"
+            "php": "8.3"
         },
         "allow-plugins": {
             "php-http/discovery": true
@@ -36,11 +36,12 @@
         "phpspec/prophecy-phpunit": "^2.0.0"
     },
     "require": {
+        "php": "^8.3",
         "eappointment/mellon": "@dev",
         "eappointment/zmsentities": "@dev",
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
-        "monolog/monolog": "1.*",
+        "monolog/monolog": "2.*",
         "phpoffice/phpspreadsheet": "^1.0",
         "roave/security-advisories": "dev-master",
         "twig/twig": "3.*",

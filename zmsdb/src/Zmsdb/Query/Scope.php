@@ -385,12 +385,18 @@ class Scope extends Base implements MappingInterface
 
     private function convertTimestamps($data)
     {
-        $data[$this->getPrefixed("status__queue__lastGivenNumberTimestamp")] =
-            strtotime($data[$this->getPrefixed("status__queue__lastGivenNumberTimestamp")]);
+        $lastGivenNumberTimestampKey = $this->getPrefixed("status__queue__lastGivenNumberTimestamp");
+        $lastGivenNumberTimestamp = $data[$lastGivenNumberTimestampKey] ?? null;
+        $data[$lastGivenNumberTimestampKey] = $lastGivenNumberTimestamp !== null ? strtotime($lastGivenNumberTimestamp) : null;
 
-        $data[$this->getPrefixed("lastChange")] =
-            (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsdb\Connection\Select::$connectionTimezone))
-            ->getTimestamp();
+        $lastChangeKey = $this->getPrefixed("lastChange");
+        $lastChange = $data[$lastChangeKey] ?? null;
+        if ($lastChange !== null) {
+            $data[$lastChangeKey] = (new \DateTime($lastChange . \BO\Zmsdb\Connection\Select::$connectionTimezone))
+                ->getTimestamp();
+        } else {
+            $data[$lastChangeKey] = null;
+        }
 
         return $data;
     }

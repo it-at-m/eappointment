@@ -8,8 +8,25 @@
             "email": "mathias.fischer@berlinonline.de"
         }
     ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "8.3"
+        },
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
     "require": {
-        "php": "^8.0",
+        "php": "^8.3",
         "ext-json": "*",
         "ext-posix": "*",
         "slim/slim": "4.*",
@@ -41,14 +58,5 @@
     },
     "provide": {
         "psr/container-implementation": "2.0"
-    },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../*",
-            "options": {
-                "symlink": true
-            }
-        }
-    ]
+    }
 }

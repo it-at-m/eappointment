@@ -16,7 +16,7 @@
         "description": "Optional name field displayed for contact."
       },
       "postalCode": {
-        "type": ["string", "null"],
+        "type": ["string", "null", "integer"],
         "description": "The postal (ZIP) code."
       },
       "region": {
@@ -31,14 +31,5 @@
         "type": ["string", "null"],
         "description": "The house/street number."
       }
-    },
-    "required": [
-      "city",
-      "country",
-      "name",
-      "postalCode",
-      "region",
-      "street",
-      "streetNumber"
-    ]
+    }
   }

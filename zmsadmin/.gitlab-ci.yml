@@ -3,7 +3,7 @@ include:
 
 test-php-80:
     variables:
-      PHP_VERSION: 8.0
+      PHP_VERSION: 8.3
     image: ghcr.io/it-at-m/eappointment-php-base:${PHP_VERSION}-dev
     script:
         - $CLI_COMPOSER
@@ -19,7 +19,7 @@ test-php-80:
         - npm install --legacy-peer-deps
         - make css
     variables:
-        PHP_VERSION: "8.0"
+        PHP_VERSION: "8.3"
     only:
         changes:
             - .gitlab-ci.yml
@@ -71,7 +71,7 @@ pages:
 build-docker:
     extends: .build-docker
     variables:
-        PHP_VERSION: "8.0"
+        PHP_VERSION: "8.3"
     only:
         - tags
         - main

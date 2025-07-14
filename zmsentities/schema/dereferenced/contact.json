@@ -39,7 +39,7 @@
         },
         "postalCode": {
             "default": "",
-            "type": "string"
+            "type": ["string", "null", "integer"]
         },
         "region": {
             "default": "",

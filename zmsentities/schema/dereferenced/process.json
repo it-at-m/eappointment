@@ -748,7 +748,7 @@
                                     "default": ""
                                 },
                                 "slotsPerAppointment": {
-                                    "type": "string",
+                                    "type": ["string", "null", "integer"],
                                     "description": "allowed slots per appointment",
                                     "default": ""
                                 },

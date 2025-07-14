@@ -9,6 +9,9 @@
         }
     ],
     "config": {
+        "platform": {
+            "php": "8.3"
+        },
         "allow-plugins": {
             "php-http/discovery": true
         }
@@ -20,7 +23,7 @@
         "seld/jsonlint": "*"
     },
     "require": {
-        "php": "^8.0",
+        "php": "^8.3",
         "ext-curl": ">=0",
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",

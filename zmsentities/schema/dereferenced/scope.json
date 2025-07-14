@@ -165,7 +165,7 @@
                 },
                 "postalCode": {
                     "default": "",
-                    "type": "string"
+                    "type": ["string", "null", "integer"]
                 },
                 "region": {
                     "default": "",
@@ -376,7 +376,7 @@
                             "default": ""
                         },
                         "slotsPerAppointment": {
-                            "type": "string",
+                            "type": ["string", "null", "integer"],
                             "description": "allowed slots per appointment",
                             "default": ""
                         },

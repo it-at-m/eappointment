@@ -94,7 +94,8 @@
         "slotsPerAppointment": {
             "type": [
                 "string",
-                "null"
+                "null",
+                "integer"
             ],
             "description": "Number of slots that can be booked per appointment"
         },

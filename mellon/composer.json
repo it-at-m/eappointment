@@ -14,8 +14,25 @@
         "phpunit/phpunit": "^9.5.4",
         "roave/security-advisories": "dev-latest"
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "8.3"
+        },
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
     "require": {
-        "php": ">=8.0",
+        "php": "^8.3",
         "ext-json": ">=0",
         "ext-pcre": ">=0"
     },
@@ -27,14 +44,5 @@
         "psr-4": {
             "BO\\Mellon\\": "src/Mellon/"
         }
-    },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../*",
-            "options": {
-                "symlink": true
-            }
-        }
-    ]
+    }
 }

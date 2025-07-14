@@ -41,21 +41,19 @@ class SessionHandler implements \SessionHandlerInterface
         $this->http = $http;
     }
 
-    /**
-     * @SuppressWarnings(UnusedFormalParameter)
-     */
-    public function open($save_path, $name)
+    // Update method signatures for PHP 8.3 compatibility
+    public function open(string $save_path, string $name): bool
     {
         $this->sessionName = $name;
         return true;
     }
 
-    public function close()
+    public function close(): bool
     {
         return true;
     }
 
-    public function read($sessionId, $params = [])
+    public function read(string $sessionId): string
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $params['sync'] = static::$useSyncFlag;
@@ -80,7 +78,7 @@ class SessionHandler implements \SessionHandlerInterface
         return ($session && isset($session['content'])) ? serialize($session->getContent()) : '';
     }
 
-    public function write($sessionId, $sessionData, $params = [])
+    public function write(string $sessionId, string $sessionData): bool
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $entity = new \BO\Zmsentities\Session();
@@ -89,7 +87,7 @@ class SessionHandler implements \SessionHandlerInterface
         $entity->content = unserialize($sessionData);
 
         try {
-            $session = $this->http->readPostResult('/session/', $entity, $params)
+            $session = $this->http->readPostResult('/session/', $entity)
                 ->getEntity();
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
@@ -101,35 +99,16 @@ class SessionHandler implements \SessionHandlerInterface
         return (null !== $session) ? true : false;
     }
 
-    public function destroy($sessionId)
+    public function destroy(string $sessionId): bool
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $result = $this->http->readDeleteResult('/session/' . $this->sessionName . '/' . $hashedSessionId . '/');
         return ($result) ? true : false;
     }
 
-    /**
-     * @SuppressWarnings(UnusedFormalParameter)
-     * @SuppressWarnings(ShortMethodName)
-     * @codeCoverageIgnore
-     */
-    public function gc($maxlifetime)
+    public function gc(int $maxlifetime): int|false
     {
-        /*
-         * $compareTs = time() - $maxlifetime;
-         * $query = '
-         * DELETE FROM
-         * sessiondata
-         * WHERE
-         * UNIX_TIMESTAMP(`ts`) < ? AND
-         * sessionname=?
-         * ';
-         * $statement = $this->getWriter()->prepare($query);
-         * return $statement->execute(array(
-         * $compareTs,
-         * $this->sessionName
-         * ));
-         */
-        return true;
+        // No-op for now
+        return 0;
     }
 }
