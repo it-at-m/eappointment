@@ -32,6 +32,17 @@ if (!class_exists('\\BO\\Slim\\Application')) {
     }
 }
 
+// Also ensure the PhpUnit Base class is available
+if (!class_exists('\\BO\\Slim\\PhpUnit\\Base')) {
+    eval('
+    namespace BO\\Slim\\PhpUnit {
+        abstract class Base extends \\PHPUnit\\Framework\\TestCase {
+            // Minimal stub implementation
+        }
+    }
+    ');
+}
+
 class App extends \BO\Slim\Application
 {
     const IDENTIFIER = "ZMS";
