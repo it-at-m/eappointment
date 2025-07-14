@@ -201,12 +201,11 @@ class Slot extends Base
             $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
                 'availabilityID' => $availability->id,
             ]);
+
             $calendar = new Calendar();
-            $calendar->deleteFreeRange(
+            $calendar->cancelAvailability(
                 $availability->scope->id,
-                $availability->id,
-                $startDate,
-                $stopDate
+                $availability->id
             );
 
             if (!$availability->withData(['bookable' => ['startInDays' => 0]])->hasBookableDates($now)) {
@@ -447,6 +446,11 @@ class Slot extends Base
             'dateString' => $dateTime->format('Y-m-d'),
             'scopeID' => $scope->id,
         ]);
+
+        $calendar = new \BO\Zmsdb\OverallCalendar();
+        $calendarStatus =
+            $calendar->purgeMissingAvailabilityByScope($dateTime, $scope->id);
+
         return $this->perform(Query\Slot::QUERY_CANCEL_SLOT_OLD_BY_SCOPE, [
             'year' => $dateTime->format('Y'),
             'month' => $dateTime->format('m'),
