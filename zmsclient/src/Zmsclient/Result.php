@@ -133,6 +133,8 @@ class Result
     protected function testMeta($body, ResponseInterface $response, $bodyContent = '')
     {
         if ($body->hasFailed()) {
+            error_log("DEBUG: testMeta() - JSON validation failed, body content length: " . strlen($bodyContent) . ", content: '" . $bodyContent . "'");
+            error_log("DEBUG: testMeta() - Validation messages: " . $body->getMessages());
             throw new Exception\ApiFailed(
                 'API-Call failed, JSON parsing with error: ' . $body->getMessages()
                 . ' - Snippet: ' . substr(\strip_tags($bodyContent), 0, 2000) . '[...]',
@@ -242,6 +244,7 @@ class Result
     public function getData()
     {
         if (null === $this->data) {
+            error_log("DEBUG: getData() calling setResponse, response class: " . get_class($this->response));
             $this->setResponse($this->response);
         }
         return $this->data;
