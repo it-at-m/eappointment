@@ -1152,7 +1152,7 @@
                             "default": 0
                         },
                         "lastGivenNumberTimestamp": {
-                            "type": ["boolean", "number"],
+                            "type": ["boolean", "number", "null"],
                             "description": "unix timestamp of the last given waiting number",
                             "default": 0
                         }
