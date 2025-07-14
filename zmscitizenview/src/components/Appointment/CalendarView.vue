@@ -13,11 +13,11 @@
             :key="provider.id"
             :id="'checkbox-' + provider.id"
             :label="provider.name"
+            :hint="
+              provider.address.street + ' ' + provider.address.house_number
+            "
             v-model="selectedProviders[provider.id]"
           ></muc-checkbox>
-          <div class="provider-address">
-            {{ provider.address.street }} {{ provider.address.house_number }}
-          </div>
         </div>
       </div>
     </div>
@@ -467,6 +467,7 @@ import {
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
+import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -1069,36 +1070,10 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
  * The provider is queried for the service and each subservice because the slots for the respective service are stored in this provider.
  */
 const estimatedDuration = () => {
-  let time = 0;
-  const serviceProvider = selectedService.value?.providers?.find(
-    (provider) => provider.id == selectedProvider.value?.id
+  return calculateEstimatedDuration(
+    selectedService.value,
+    selectedProvider.value
   );
-  if (
-    serviceProvider &&
-    serviceProvider.slots &&
-    selectedService.value &&
-    selectedService.value.count
-  ) {
-    time =
-      selectedService.value.count *
-      serviceProvider.slots *
-      serviceProvider.slotTimeInMinutes;
-  }
-
-  if (selectedService.value?.subServices) {
-    selectedService.value.subServices.forEach((subservice) => {
-      const subserviceProvider = subservice.providers?.find(
-        (provider) => provider.id == selectedProvider.value?.id
-      );
-      if (subserviceProvider && subservice.count && subserviceProvider.slots) {
-        time +=
-          subservice.count *
-          subserviceProvider.slots *
-          subserviceProvider.slotTimeInMinutes;
-      }
-    });
-  }
-  return time;
 };
 
 const nextStep = () => emit("next");
@@ -1496,12 +1471,6 @@ watch(
   margin-bottom: 20px;
   padding-bottom: 0;
   padding-top: 30px;
-}
-
-.provider-address {
-  margin-top: -20px;
-  margin-bottom: 20px;
-  margin-left: 34px;
 }
 
 .m-button--ghost.disabled,

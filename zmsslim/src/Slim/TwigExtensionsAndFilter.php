@@ -18,7 +18,8 @@ class TwigExtensionsAndFilter extends TwigExtension
         return array(
             new \Twig\TwigFilter('msort', array($this, 'msort')),
             new \Twig\TwigFilter('getObjectName', array($this, 'getObjectName')),
-            new \Twig\TwigFilter('decodeEntities', array($this, 'decodeEntities'))
+            new \Twig\TwigFilter('decodeEntities', array($this, 'decodeEntities')),
+            new \Twig\TwigFilter('sanitize_html', array($this, 'sanitizeHtml'), ['is_safe' => ['html']])
         );
     }
 
@@ -59,5 +60,15 @@ class TwigExtensionsAndFilter extends TwigExtension
     public function getObjectName($object)
     {
         return (new \ReflectionClass($object))->getShortName();
+    }
+
+    public function sanitizeHtml($html)
+    {
+        static $purifier = null;
+        if ($purifier === null) {
+            $config = \HTMLPurifier_Config::createDefault();
+            $purifier = new \HTMLPurifier($config);
+        }
+        return $purifier->purify($html);
     }
 }
