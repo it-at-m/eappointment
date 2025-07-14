@@ -448,7 +448,6 @@ class Slot extends Base
         ]);
 
         $calendar = new \BO\Zmsdb\OverallCalendar();
-        $calendarStatus =
             $calendar->purgeMissingAvailabilityByScope($dateTime, $scope->id);
 
         return $this->perform(Query\Slot::QUERY_CANCEL_SLOT_OLD_BY_SCOPE, [
