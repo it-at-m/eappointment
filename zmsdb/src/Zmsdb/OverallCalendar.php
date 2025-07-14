@@ -11,7 +11,9 @@ class OverallCalendar extends Base
 {
     public function insertSlotsBulk(array $rows): void
     {
-        if (!$rows) return;
+        if (!$rows) {
+            return;
+        }
 
         $placeholders = rtrim(str_repeat('(?,?,?,?,?),', count($rows)), ',');
         $sql = sprintf(Query\OverallCalendar::UPSERT_MULTI, $placeholders);
@@ -30,8 +32,8 @@ class OverallCalendar extends Base
     public function cancelAvailability(int $scopeId, int $availabilityId): void
     {
         $this->perform(Calender::CANCEL_AVAILABILITY, [
-            'scope_id'=> $scopeId,
-            'availability_id'=> $availabilityId,
+            'scope_id' => $scopeId,
+            'availability_id' => $availabilityId,
         ]);
     }
 

@@ -36,7 +36,7 @@ class OverallCalendarRead extends BaseController
                     $time[$seatNo] = [
                         'seatNo'   => $seatNo,
                         'status'   => 'termin',
-                        'processId'=> (int) $row['process_id'],
+                        'processId' => (int) $row['process_id'],
                         'slots'    => (int) $row['slots'],
                     ];
                     $lastSlotInfo["$scopeKey|$seatNo"] = [
