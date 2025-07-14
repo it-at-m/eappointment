@@ -658,6 +658,7 @@ class Process extends Schema\Entity
     public function setWasMissed(bool $bool)
     {
         $this->wasMissed = $bool;
+        $this->status = self::STATUS_MISSED;
         return $this;
     }
 
