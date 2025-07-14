@@ -16,6 +16,8 @@ use BO\Zmsdb\Workstation as WorkstationQuery;
  *   - useraccount.lastLogin: changes on every login
  *   - scope.lastChange: changes when scope data is modified
  *   - scope.status.queue.lastGivenNumberTimestamp: changes when new queue numbers are given
+ *   - process.lastChange: changes on every request when process is empty (id = 0)
+ *   - process.createTimestamp: changes on every request when process is empty (id = 0)
  * - The complete workstation data (including timestamps) is still cached and returned
  */
 class WorkstationCache
@@ -78,6 +80,17 @@ class WorkstationCache
         // Remove lastGivenNumberTimestamp from scope status to prevent cache misses due to timestamp changes
         if (isset($workstationArray['scope']['status']['queue']['lastGivenNumberTimestamp'])) {
             unset($workstationArray['scope']['status']['queue']['lastGivenNumberTimestamp']);
+        }
+
+        // Remove dynamic timestamp fields from process when it's empty (id = 0)
+        // These fields change on every request even for empty processes
+        if (isset($workstationArray['process']['id']) && $workstationArray['process']['id'] == 0) {
+            if (isset($workstationArray['process']['lastChange'])) {
+                unset($workstationArray['process']['lastChange']);
+            }
+            if (isset($workstationArray['process']['createTimestamp'])) {
+                unset($workstationArray['process']['createTimestamp']);
+            }
         }
 
         return json_encode($workstationArray);
