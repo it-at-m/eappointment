@@ -83,10 +83,8 @@
             "$ref": "contact.json"
         },
         "clusters": {
-            "type": "array",
-            "items": {
-                "$ref": "cluster.json"
-            }
+            "type": ["array", "null"],
+            "items": {"anyOf": [{"$ref": "cluster.json"}, {"type": "null"}]}
         },
         "dayoff": {
             "type": "array",
@@ -158,80 +156,56 @@
             "type": "string"
         },
         "preferences": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "notifications": {
+            "oneOf": [
+                {"type": "null"},
+                {
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
-                        "enabled": {
-                            "oneOf": [
-                                {
-                                    "type": "null"
+                        "notifications": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "enabled": {
+                                    "oneOf": [
+                                        {"type": "null"},
+                                        {"type": "number"},
+                                        {"type": "boolean"},
+                                        {"type": "string", "pattern": "^[01]$"}
+                                    ],
+                                    "description": "true if sms are allowed"
                                 },
-                                {
-                                    "type": "number"
+                                "identification": {
+                                    "type": ["null", "string"],
+                                    "description": "usually an email address"
                                 },
-                                {
-                                    "type": "boolean"
+                                "sendConfirmationEnabled": {
+                                    "oneOf": [
+                                        {"type": "null"},
+                                        {"type": "number"},
+                                        {"type": "boolean"},
+                                        {"type": "string", "pattern": "^[01]$"}
+                                    ],
+                                    "description": "true if confirmation sms are enabled"
                                 },
-                                {
-                                    "type": "string",
-                                    "pattern": "^[01]$"
+                                "sendReminderEnabled": {
+                                    "oneOf": [
+                                        {"type": "null"},
+                                        {"type": "number"},
+                                        {"type": "boolean"},
+                                        {"type": "string", "pattern": "^[01]$"}
+                                    ],
+                                    "description": "true if reminder sms are enabled"
                                 }
-                            ],
-                            "description": "true if sms are allowed"
-                        },
-                        "identification": {
-                            "type": ["null", "string"],
-                            "description": "usually an email address"
-                        },
-                        "sendConfirmationEnabled": {
-                            "oneOf": [
-                                {
-                                    "type": "null"
-                                },
-                                {
-                                    "type": "number"
-                                },
-                                {
-                                    "type": "boolean"
-                                },
-                                {
-                                    "type": "string",
-                                    "pattern": "^[01]$"
-                                }
-                            ],
-                            "description": "true if confirmation sms are enabled"
-                        },
-                        "sendReminderEnabled": {
-                            "oneOf": [
-                                {
-                                    "type": "null"
-                                },
-                                {
-                                    "type": "number"
-                                },
-                                {
-                                    "type": "boolean"
-                                },
-                                {
-                                    "type": "string",
-                                    "pattern": "^[01]$"
-                                }
-                            ],
-                            "description": "true if reminder sms are enabled"
+                            }
                         }
                     }
                 }
-            }
+            ]
         },
         "scopes": {
-            "type": "array",
-            "items": {
-                "$ref": "scope.json"
-            }
+            "type": ["array", "null"],
+            "items": {"anyOf": [{"$ref": "scope.json"}, {"type": "null"}]}
         }
     }
 }
