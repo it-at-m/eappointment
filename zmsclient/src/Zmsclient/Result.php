@@ -55,27 +55,21 @@ class Result
      */
     public function setResponse(ResponseInterface $response)
     {
-        // Safely read the response body content for PHP 8.3 compatibility
+        // Get the body content - handle PHP 8.3 stream issues
         $bodyStream = $response->getBody();
-        $bodyContent = '';
 
-        // Try different approaches to read the stream content
-        if ($bodyStream->isSeekable()) {
-            $bodyStream->rewind();
-            $bodyContent = $bodyStream->getContents();
+        // Try to get the size first
+        $size = $bodyStream->getSize();
+
+        if ($size === 0) {
+            // Empty response - let the JSON validator handle it
+            $bodyContent = '';
         } else {
-            // For non-seekable streams, try to read from current position
+            // Try to rewind if seekable
+            if ($bodyStream->isSeekable()) {
+                $bodyStream->rewind();
+            }
             $bodyContent = $bodyStream->getContents();
-        }
-
-        // If still empty, try alternative method
-        if (empty($bodyContent)) {
-            $bodyContent = (string) $bodyStream;
-        }
-
-        // Handle empty responses (e.g., 404 errors) by providing a minimal JSON structure
-        if (empty($bodyContent)) {
-            $bodyContent = '{"meta":{"error":true,"message":"Empty response"},"data":null}';
         }
 
         $body = Validator::value($bodyContent)->isJson();
