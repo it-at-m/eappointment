@@ -20,12 +20,12 @@ services:
         source: "."
         target: "/app"
         consistency: cached
-#      - type: bind
-#        source: "../zmsslim"
-#        target: "/zmsslim"
-#      - type: bind
-#        source: "../zmsentities"
-#        target: "/zmsentities"
+      - type: bind
+        source: "../zmsslim"
+        target: "/zmsslim"
+      - type: bind
+        source: "../zmsentities"
+        target: "/zmsentities"
     environment:
       ZMS_API_URL: http://mockup:8083
     working_dir: /app
