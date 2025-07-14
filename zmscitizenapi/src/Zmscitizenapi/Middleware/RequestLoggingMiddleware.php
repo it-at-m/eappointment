@@ -36,12 +36,8 @@ class RequestLoggingMiddleware implements MiddlewareInterface
     {
         try {
             $response = $handler->handle($request);
-            $responseToLog = clone $response;
-            $body = $responseToLog->getBody();
-            if (method_exists($body, 'isSeekable') && $body->isSeekable()) {
-                $body->rewind();
-            }
-            $this->logger->logRequest($request, $responseToLog);
+
+            $this->logger->logRequest($request, $response);
             return $response;
         } catch (\Throwable $e) {
             $this->logger->logError($e, $request);
