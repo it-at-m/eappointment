@@ -16,8 +16,8 @@ use Error;
  */
 class TwigExtension extends \Twig\Extension\AbstractExtension
 {
-    protected $container; 
-    
+    protected $container;
+
     public function __construct($container = null)
     {
         $this->container = $container;
