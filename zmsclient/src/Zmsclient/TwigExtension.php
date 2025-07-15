@@ -92,17 +92,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     {
         $output = [];
         $output['header'] = $this->parseHeaders($response);
-
-        // Avoid consuming the response stream for logging
-        $bodyStream = $response->getBody();
-        $output['body'] = [
-            'size' => $bodyStream->getSize(),
-            'position' => $bodyStream->tell(),
-            'seekable' => $bodyStream->isSeekable(),
-            'readable' => $bodyStream->isReadable(),
-            'note' => 'Body content not displayed to avoid consuming stream'
-        ];
-
+        $output['body'] = $this->parseBody($response->getBody());
         return $output;
     }
 }
