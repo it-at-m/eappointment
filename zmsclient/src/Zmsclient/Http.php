@@ -117,7 +117,7 @@ class Http
         }
         
         $startTime = microtime(true);
-        $response = static::$client->sendRequest($request);
+        $response = $this->client->sendRequest($request);
         $duration = microtime(true) - $startTime;
         
         if (static::$logEnabled) {
