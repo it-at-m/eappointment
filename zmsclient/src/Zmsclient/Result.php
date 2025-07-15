@@ -55,26 +55,11 @@ class Result
      */
     public function setResponse(ResponseInterface $response)
     {
-        $bodyStream = $response->getBody();
-        $bodyContent = (string) $bodyStream;
+        $bodyContent = (string) $response->getBody();
 
-        // Debug logging for empty responses in PHP 8.3
+        // Handle empty responses in PHP 8.3 - convert to minimal valid JSON
         if (empty($bodyContent)) {
-            error_log("ZMSCLIENT DEBUG: Empty response body detected!");
-            error_log("- Request: " . ($this->request ? $this->request->getMethod() . " " . $this->request->getUri() : "unknown"));
-            error_log("- Status: " . $response->getStatusCode());
-            error_log("- Headers: " . json_encode($response->getHeaders()));
-            error_log("- Body stream size: " . ($bodyStream->getSize() ?? 'null'));
-            error_log("- Body stream position: " . $bodyStream->tell());
-            error_log("- Body stream seekable: " . ($bodyStream->isSeekable() ? 'true' : 'false'));
-            error_log("- Body stream readable: " . ($bodyStream->isReadable() ? 'true' : 'false'));
-
-            // Try to rewind and read again
-            if ($bodyStream->isSeekable()) {
-                $bodyStream->rewind();
-                $bodyContent = (string) $bodyStream;
-                error_log("- Body after rewind: " . (empty($bodyContent) ? 'still empty' : 'got content'));
-            }
+            $bodyContent = '{"meta":{"error":true,"message":"Empty response"},"data":null}';
         }
 
         $body = Validator::value($bodyContent)->isJson();

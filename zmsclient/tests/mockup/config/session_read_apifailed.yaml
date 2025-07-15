@@ -9,6 +9,20 @@ response:
   headers:
     Content-Type: 
     - "application/json"
+  body: > 
+    {
+      "$schema": "https://192.168.59.101/api/2/",
+      "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": true,
+        "exception": "BO\\Zmsapi\\Exception\\Session\\SessionReadFailed",
+        "generated": "2022-04-26T10:44:44+02:00",
+        "server": "Zmsapi-ENV (2.24.06-rc1-1-g16b133c)",
+        "message": "Session could not be read due to API failure.",
+        "trace": "\\BO\\Zmsapi\\SessionGet::readResponse +22\\n\\BO\\Zmsapi\\BaseController::__invoke +\\n\\::call_user_func +40\\n"
+      },
+      "data": null
+    }
 control:
   scenario:
     name: session
