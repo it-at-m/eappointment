@@ -60,8 +60,6 @@ class SessionHandler implements \SessionHandlerInterface
         $hashedSessionId = hash('sha256', $sessionId);
         $params['sync'] = static::$useSyncFlag;
 
-        error_log('/session/' . $this->sessionName . '/' . $hashedSessionId . '/');
-        error_log(json_encode($params));
         try {
             $session = $this->http->readGetResult(
                 '/session/' . $this->sessionName . '/' . $hashedSessionId . '/',

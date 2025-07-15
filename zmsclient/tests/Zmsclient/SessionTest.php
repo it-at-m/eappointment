@@ -64,9 +64,9 @@ class SessionTest extends Base
 
     public function testReadFailed404()
     {
+        $this->expectException('BO\Zmsclient\Exception\ApiFailed');
         $sessionHandler = $this->createSession();
         $sessionHandler->open('/', 'SessionException404');
-        $result = $sessionHandler->read(self::SESSION_ID);
-        $this->assertEquals('', $result);
+        $sessionHandler->read(self::SESSION_ID);
     }
 }
