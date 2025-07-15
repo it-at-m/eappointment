@@ -168,7 +168,7 @@
           >
             <div
               class="wrapper"
-              v-if="timeslot == currentHour"
+              v-if="timeslot == currentHour || providersWithAppointments.length === 1"
             >
               <div v-if="firstHour !== null && firstHour > 0">
                 <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
@@ -194,7 +194,7 @@
       </div>
       <div
         class="wrapper m-button-group"
-        v-if="!isLoadingAppointments"
+        v-if="!isLoadingAppointments && providersWithAppointments.length > 1"
       >
         <muc-button
           :key="currentHour ?? 0"
