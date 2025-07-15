@@ -38,9 +38,9 @@ export function fetchServicesAndProviders(
   const params = new URLSearchParams();
   if (serviceId) {
     params.append("serviceId", serviceId);
-  }
-  if (locationId) {
-    params.append("locationId", locationId);
+    if (locationId) {
+      params.append("locationId", locationId);
+    }
   }
   if (params.toString()) {
     apiUrl += "?" + params.toString();
