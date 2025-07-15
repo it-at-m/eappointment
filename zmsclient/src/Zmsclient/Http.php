@@ -117,6 +117,7 @@ class Http
         }
         $startTime = microtime(true);
         $response = $this->client->readResponse($request);
+        
         if (self::$logEnabled) {
             self::$log[] = $request;
             self::$log[] = $response;
