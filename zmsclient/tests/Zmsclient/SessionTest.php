@@ -16,6 +16,7 @@ class SessionTest extends Base
         $this->assertEquals(self::SESSION_NAME, $sessionHandler->sessionName);
 
         $entity = (new \BO\Zmsentities\Session())->getExample();
+        //error_log(json_encode($entity));
         $writeSession = $sessionHandler->write(self::SESSION_ID, serialize($entity->getContent()));
         $this->assertTrue($writeSession);
 
