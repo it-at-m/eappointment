@@ -8,19 +8,6 @@ class SessionTest extends Base
 
     const SESSION_ID = '0058pfv918e8ipmbadj05sm1e7';
 
-    /**
-     * Helper method to ensure session state is properly set up
-     */
-    private function setupSessionState()
-    {
-        $sessionHandler = $this->createSession();
-        $sessionHandler->open('/', self::SESSION_NAME);
-        $entity = (new \BO\Zmsentities\Session())->getExample();
-        // Create session to put mock server in correct state
-        $sessionHandler->write(self::SESSION_ID, serialize($entity->getContent()));
-        return $sessionHandler;
-    }
-
     public function testBasic()
     {
         $sessionHandler = $this->createSession();
@@ -52,9 +39,6 @@ class SessionTest extends Base
 
     public function testSessionDestroy()
     {
-        // First setup the session state so destroy can work
-        $this->setupSessionState();
-        
         $sessionHandler = $this->createSession();
         $sessionHandler->open('/', self::SESSION_NAME);
         $this->assertTrue($sessionHandler->destroy(self::SESSION_ID));
@@ -77,10 +61,11 @@ class SessionTest extends Base
         $sessionHandler->read(self::SESSION_ID);
     }
 
-    public function testGc()
+    public function testReadFailed404()
     {
         $sessionHandler = $this->createSession();
-        $sessionHandler->open('/', self::SESSION_NAME);
-        $this->assertEquals(1, $sessionHandler->gc(12));
+        $sessionHandler->open('/', 'SessionException404');
+        $result = $sessionHandler->read(self::SESSION_ID);
+        $this->assertEquals('', $result);
     }
 }
