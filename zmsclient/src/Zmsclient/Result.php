@@ -55,40 +55,7 @@ class Result
      */
     public function setResponse(ResponseInterface $response)
     {
-        $bodyStream = $response->getBody();
-        
-        // PHP 8.3 fix: Rewind stream to ensure we read from the beginning
-        if ($bodyStream->isSeekable()) {
-            $bodyStream->rewind();
-        }
-        
-        $content = (string) $bodyStream;
-        
-        // Handle empty responses (common with 404 from mockup server)
-        // Convert empty string to valid JSON to prevent validation errors
-        if (empty($content)) {
-            $statusCode = $response->getStatusCode();
-            $exceptionClass = "BO\\Zmsapi\\Exception\\Session\\SessionNotFound";
-            $message = "Session not found";
-            
-            // Try to match test expectations based on request URI
-            if ($this->request) {
-                $uri = (string) $this->request->getUri();
-                if (strpos($uri, 'SessionException500') !== false) {
-                    $statusCode = 500;
-                    $exceptionClass = "BO\\Zmsapi\\Exception\\Session\\SessionReadFailed";
-                    $message = "Session read failed";
-                } elseif (strpos($uri, 'SessionException404') !== false) {
-                    $statusCode = 404;
-                    $exceptionClass = "BO\\Zmsapi\\Exception\\Session\\SessionNotFound";
-                    $message = "Session not found";
-                }
-            }
-            
-            $content = '{"$schema":"https://mockup:8083/api/2/","meta":{"$schema":"https://schema.berlin.de/queuemanagement/metaresult.json","error":true,"message":"' . $message . '","exception":"' . $exceptionClass . '","generated":"' . date('c') . '","server":"zmsclient-fallback"},"data":{}}';
-        }
-        
-        $body = Validator::value($content)->isJson();
+        $body = Validator::value((string) $response->getBody())->isJson();
         $this->testMeta($body, $response);
         $result = $body->getValue();
         if (array_key_exists("data", $result)) {

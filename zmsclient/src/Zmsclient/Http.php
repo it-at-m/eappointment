@@ -115,20 +115,14 @@ class Http
         if (null !== static::$jsonCompressLevel) {
             $request = $request->withHeader('X-JsonCompressLevel', static::$jsonCompressLevel);
         }
-        
         $startTime = microtime(true);
-        $response = $this->client->send($request);
-        $duration = microtime(true) - $startTime;
-        
-        if (static::$logEnabled) {
-            static::$log[] = [
-                'request' => $request,
-                'response' => $response,
-                'duration' => $duration,
-                'timestamp' => time()
-            ];
+        $response = $this->client->readResponse($request);
+        if (self::$logEnabled) {
+            self::$log[] = $request;
+            self::$log[] = $response;
+            $responseSizeKb = round(strlen($response->getBody()->getContents()) / 1024);
+            self::$log[] = "Response ($responseSizeKb kb) time in s: " . round(microtime(true) - $startTime, 3);
         }
-        
         return $response;
     }
 
