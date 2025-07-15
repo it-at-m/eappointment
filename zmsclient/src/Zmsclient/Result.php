@@ -67,7 +67,7 @@ class Result
         // Handle empty responses (common with 404 from mockup server)
         // Convert empty string to valid JSON to prevent validation errors
         if (empty($content)) {
-            $content = '{"$schema":"https://schema.berlin.de/queuemanagement/result.json","meta":{"error":true,"message":"Empty response"},"data":{}}';
+            $content = '{"$schema":"https://mockup:8083/api/2/","meta":{"$schema":"https://schema.berlin.de/queuemanagement/metaresult.json","error":true,"message":"Empty response","generated":"' . date('c') . '","server":"zmsclient-fallback"},"data":{}}';
         }
         
         $body = Validator::value($content)->isJson();
