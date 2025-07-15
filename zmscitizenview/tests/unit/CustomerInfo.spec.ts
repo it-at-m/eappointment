@@ -290,7 +290,7 @@ describe("CustomerInfo", () => {
     it("should show info when mailAddress contains 50 characters", async () => {
       mockCustomerData.value.firstName = "Max";
       mockCustomerData.value.lastName = "Mustermann";
-      mockCustomerData.value.mailAddress = "C".repeat(38) + "@".repeat(1) + "example".repeat(10) + ".com";
+      mockCustomerData.value.mailAddress = "a".repeat(38) + "@example.com";
       const wrapper = createWrapper();
       await nextTick();
       expect(wrapper.html()).toContain("errorMessageMaxLength");
