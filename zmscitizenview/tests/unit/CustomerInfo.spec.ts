@@ -267,4 +267,69 @@ describe("CustomerInfo", () => {
       expect(nextButton.attributes('disabled')).toBe('false');
     });
   });
+
+  describe("Field length validation", () => {
+    it("should show info when firstName contains 50 characters", async () => {
+      mockCustomerData.value.firstName = "A".repeat(50);
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@example.com";
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+
+    it("should show info when lastName contains 50 characters", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "B".repeat(50);
+      mockCustomerData.value.mailAddress = "max@example.com";
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+
+    it("should show info when mailAddress contains 50 characters", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "C".repeat(38) + "@".repeat(1) + "example".repeat(10) + ".com";
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+
+    it("should show info when telephoneNumber contains 50 characters", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@example.com";
+      mockCustomerData.value.telephoneNumber = "1".repeat(50);
+      mockSelectedProvider.value.scope.telephoneActivated = true;
+      mockSelectedProvider.value.scope.telephoneRequired = true;
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+
+    it("should show info when customTextfield contains 100 characters", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@example.com";
+      mockCustomerData.value.customTextfield = "X".repeat(100);
+      mockSelectedProvider.value.scope.customTextfieldActivated = true;
+      mockSelectedProvider.value.scope.customTextfieldRequired = true;
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+
+    it("should show info when customTextfield2 contains 100 characters", async () => {
+      mockCustomerData.value.firstName = "Max";
+      mockCustomerData.value.lastName = "Mustermann";
+      mockCustomerData.value.mailAddress = "max@example.com";
+      mockCustomerData.value.customTextfield2 = "X".repeat(100);
+      mockSelectedProvider.value.scope.customTextfield2Activated = true;
+      mockSelectedProvider.value.scope.customTextfield2Required = true;
+      const wrapper = createWrapper();
+      await nextTick();
+      expect(wrapper.html()).toContain("errorMessageMaxLength");
+    });
+  });
 });
