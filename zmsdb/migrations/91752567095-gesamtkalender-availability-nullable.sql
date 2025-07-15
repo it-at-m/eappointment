@@ -1,16 +1,14 @@
 TRUNCATE TABLE `gesamtkalender`;
 
 ALTER TABLE `gesamtkalender`
-    MODIFY `availability_id` INT UNSIGNED NULL;
+    MODIFY `availability_id` INT UNSIGNED NULL,
+    ADD INDEX IF NOT EXISTS idx_scope_time_seat (`scope_id`, `time`, `seat`);
 
 ALTER TABLE `gesamtkalender`
-    ADD INDEX `idx_scope_time_seat` (`scope_id`, `time`, `seat`);
+DROP INDEX IF EXISTS uk_scope_time;
 
 ALTER TABLE `gesamtkalender`
-DROP INDEX `uk_scope_time`;
+    ADD UNIQUE INDEX IF NOT EXISTS uk_scope_time (`scope_id`, `time`, `seat`);
 
 ALTER TABLE `gesamtkalender`
-    ADD UNIQUE KEY `uk_scope_time` (`scope_id`, `time`, `seat`);
-
-ALTER TABLE `gesamtkalender`
-DROP INDEX `idx_scope_time_seat`;
+DROP INDEX IF EXISTS idx_scope_time_seat;
