@@ -64,6 +64,12 @@ class Result
         
         $content = (string) $bodyStream;
         
+        // Handle empty responses (common with 404 from mockup server)
+        // Convert empty string to valid JSON to prevent validation errors
+        if (empty($content)) {
+            $content = '{"$schema":"","meta":{"error":true,"message":"Empty response"},"data":{}}';
+        }
+        
         // Debug: Log detailed response information
         error_log("=== RESPONSE DEBUG ===");
         error_log("Status Code: " . $response->getStatusCode());
