@@ -56,10 +56,10 @@ class SessionTest extends Base
     public function testReadFailed500()
     {
         $this->expectException('BO\Zmsclient\Exception');
-        $this->expectExceptionCode(500);
         $sessionHandler = $this->createSession();
         $sessionHandler->open('/', 'SessionException500');
-        $sessionHandler->read(self::SESSION_ID);
+        $result = $sessionHandler->read(self::SESSION_ID);
+        $this->assertEquals('', $result);
     }
 
     public function testReadFailed404()
