@@ -56,6 +56,12 @@ class Result
     public function setResponse(ResponseInterface $response)
     {
         $bodyStream = $response->getBody();
+        
+        // PHP 8.3 fix: Rewind stream to ensure we read from the beginning
+        if ($bodyStream->isSeekable()) {
+            $bodyStream->rewind();
+        }
+        
         $content = (string) $bodyStream;
         
         // Debug: Log detailed response information
@@ -64,7 +70,7 @@ class Result
         error_log("Headers: " . json_encode($response->getHeaders()));
         error_log("Stream Class: " . get_class($bodyStream));
         error_log("Stream Size: " . ($bodyStream->getSize() ?? 'null'));
-        error_log("Stream Position: " . $bodyStream->tell());
+        error_log("Stream Position After Read: " . $bodyStream->tell());
         error_log("Stream Seekable: " . ($bodyStream->isSeekable() ? 'true' : 'false'));
         error_log("Stream Readable: " . ($bodyStream->isReadable() ? 'true' : 'false'));
         error_log("Content Length: " . strlen($content));
