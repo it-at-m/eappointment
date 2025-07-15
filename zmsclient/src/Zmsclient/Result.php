@@ -58,11 +58,6 @@ class Result
         $body = Validator::value((string) $response->getBody())->isJson();
         $this->testMeta($body, $response);
         $result = $body->getValue();
-        //error_log("DEBUG: Result: " . json_encode($result));
-        if (empty($result)) {
-            $result = '{}';
-            error_log("DEBUG: Empty body content, using '{}' as fallback");
-        }
         if (array_key_exists("data", $result)) {
             $this->setData($result['data']);
         }
