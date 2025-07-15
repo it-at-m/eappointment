@@ -1,3 +1,5 @@
+TRUNCATE TABLE `gesamtkalender`;
+
 ALTER TABLE `gesamtkalender`
     MODIFY `availability_id` INT UNSIGNED NULL;
 
