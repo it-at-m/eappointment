@@ -9,9 +9,6 @@
         }
     ],
     "config": {
-        "platform": {
-            "php": "8.0"
-        },
         "allow-plugins": {
             "php-http/discovery": true
         }
@@ -20,11 +17,10 @@
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^9.5.4",
-        "seld/jsonlint": "*",
-        "roave/security-advisories": "dev-latest"
+        "seld/jsonlint": "*"
     },
     "require": {
-        "php": ">=7.3.0",
+        "php": "^8.0",
         "ext-curl": ">=0",
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
