@@ -268,39 +268,42 @@ describe("CustomerInfo", () => {
     });
   });
 
+  const MAX_LENGTH_STANDARD = 50;
+  const MAX_LENGTH_CUSTOM = 100;
+  const setupValidCustomerData = () => {
+    mockCustomerData.value.firstName = "Max";
+    mockCustomerData.value.lastName = "Mustermann";
+    mockCustomerData.value.mailAddress = "max@example.com";
+  };
+
   describe("Field length validation", () => {
-    it("should show info when firstName contains 50 characters", async () => {
-      mockCustomerData.value.firstName = "A".repeat(50);
-      mockCustomerData.value.lastName = "Mustermann";
-      mockCustomerData.value.mailAddress = "max@example.com";
+    it("should show max length error when firstName exceeds maximum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.firstName = "A".repeat(MAX_LENGTH_STANDARD);
       const wrapper = createWrapper();
       await nextTick();
       expect(wrapper.html()).toContain("errorMessageMaxLength");
     });
 
-    it("should show info when lastName contains 50 characters", async () => {
-      mockCustomerData.value.firstName = "Max";
-      mockCustomerData.value.lastName = "B".repeat(50);
-      mockCustomerData.value.mailAddress = "max@example.com";
+    it("should show max length error when lastName exceeds maximum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.lastName = "B".repeat(MAX_LENGTH_STANDARD);
       const wrapper = createWrapper();
       await nextTick();
       expect(wrapper.html()).toContain("errorMessageMaxLength");
     });
 
-    it("should show info when mailAddress contains 50 characters", async () => {
-      mockCustomerData.value.firstName = "Max";
-      mockCustomerData.value.lastName = "Mustermann";
-      mockCustomerData.value.mailAddress = "a".repeat(38) + "@example.com";
+    it("should show max length error when mailAdress exceeds maximum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.mailAddress = "a".repeat(MAX_LENGTH_STANDARD - 12) + "@example.com";
       const wrapper = createWrapper();
       await nextTick();
       expect(wrapper.html()).toContain("errorMessageMaxLength");
     });
 
-    it("should show info when telephoneNumber contains 50 characters", async () => {
-      mockCustomerData.value.firstName = "Max";
-      mockCustomerData.value.lastName = "Mustermann";
-      mockCustomerData.value.mailAddress = "max@example.com";
-      mockCustomerData.value.telephoneNumber = "1".repeat(50);
+    it("should show max length error when telephoneNumber exceeds maximum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.telephoneNumber = "1".repeat(MAX_LENGTH_CUSTOM);
       mockSelectedProvider.value.scope.telephoneActivated = true;
       mockSelectedProvider.value.scope.telephoneRequired = true;
       const wrapper = createWrapper();
@@ -308,10 +311,8 @@ describe("CustomerInfo", () => {
       expect(wrapper.html()).toContain("errorMessageMaxLength");
     });
 
-    it("should show info when customTextfield contains 100 characters", async () => {
-      mockCustomerData.value.firstName = "Max";
-      mockCustomerData.value.lastName = "Mustermann";
-      mockCustomerData.value.mailAddress = "max@example.com";
+    it("should show max length error when customTextfield exceeds maximum length", async () => {
+      setupValidCustomerData();
       mockCustomerData.value.customTextfield = "X".repeat(100);
       mockSelectedProvider.value.scope.customTextfieldActivated = true;
       mockSelectedProvider.value.scope.customTextfieldRequired = true;
@@ -320,11 +321,9 @@ describe("CustomerInfo", () => {
       expect(wrapper.html()).toContain("errorMessageMaxLength");
     });
 
-    it("should show info when customTextfield2 contains 100 characters", async () => {
-      mockCustomerData.value.firstName = "Max";
-      mockCustomerData.value.lastName = "Mustermann";
-      mockCustomerData.value.mailAddress = "max@example.com";
-      mockCustomerData.value.customTextfield2 = "X".repeat(100);
+    it("should show max length error when customTextfield2 exceeds macimum length", async () => {
+      setupValidCustomerData();
+      mockCustomerData.value.customTextfield2 = "Y".repeat(100);
       mockSelectedProvider.value.scope.customTextfield2Activated = true;
       mockSelectedProvider.value.scope.customTextfield2Required = true;
       const wrapper = createWrapper();
