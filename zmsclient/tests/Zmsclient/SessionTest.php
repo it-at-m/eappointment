@@ -2,9 +2,6 @@
 
 namespace BO\Zmsclient\Tests;
 
-/**
- * @runTestsInSeparateProcesses
- */
 class SessionTest extends Base
 {
     const SESSION_NAME = 'ZmsclientUnittest';
