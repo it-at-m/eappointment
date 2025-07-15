@@ -57,9 +57,9 @@ class Result
     {
         $bodyContent = (string) $response->getBody();
 
-        // Handle empty responses in PHP 8.3 - convert to minimal valid JSON
+        // Handle empty responses in PHP 8.3 - convert to minimal valid JSON with correct API schema
         if (empty($bodyContent)) {
-            $bodyContent = '{"meta":{"error":true,"message":"Empty response"},"data":null}';
+            $bodyContent = '{"$schema":"https://mockup:8083/api/2/","meta":{"$schema":"https://schema.berlin.de/queuemanagement/metaresult.json","error":true,"message":"Empty response","generated":"2025-01-15T00:00:00+00:00","server":"mockup"},"data":null}';
         }
 
         $body = Validator::value($bodyContent)->isJson();
