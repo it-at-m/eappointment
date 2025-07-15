@@ -117,12 +117,29 @@ class Http
         }
         $startTime = microtime(true);
         $response = $this->client->readResponse($request);
+
+        // Debug logging for HTTP responses in PHP 8.3
+        $bodyContent = (string) $response->getBody();
+        error_log("ZMSCLIENT HTTP DEBUG: Response received");
+        error_log("- URL: " . $request->getMethod() . " " . $request->getUri());
+        error_log("- Status: " . $response->getStatusCode());
+        error_log("- Body size: " . strlen($bodyContent));
+        error_log("- Body empty: " . (empty($bodyContent) ? 'YES' : 'NO'));
+        if (!empty($bodyContent)) {
+            error_log("- Body preview: " . substr($bodyContent, 0, 200));
+        }
+
+        // Recreate response with rewound body stream to prevent consumption
+        $newBodyStream = new Psr7\Stream();
+        $newBodyStream->write($bodyContent);
+        $newBodyStream->rewind();
+        $response = $response->withBody($newBodyStream);
+
         if (self::$logEnabled) {
             self::$log[] = $request;
             self::$log[] = $response;
             // Get response size for logging without consuming the stream
-            $bodyStream = $response->getBody();
-            $responseSizeKb = round(($bodyStream->getSize() ?: 0) / 1024);
+            $responseSizeKb = round(strlen($bodyContent) / 1024);
             self::$log[] = "Response ($responseSizeKb kb) time in s: " . round(microtime(true) - $startTime, 3);
         }
         return $response;
