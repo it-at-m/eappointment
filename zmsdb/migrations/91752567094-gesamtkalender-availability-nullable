@@ -1,0 +1,8 @@
+ALTER TABLE `gesamtkalender`
+  MODIFY `availability_id` INT UNSIGNED NULL;
+
+ALTER TABLE `gesamtkalender`
+  DROP INDEX `uk_scope_time`;
+
+ALTER TABLE `gesamtkalender`
+  ADD UNIQUE KEY `uk_scope_time` (`scope_id`, `time`, `seat`);
