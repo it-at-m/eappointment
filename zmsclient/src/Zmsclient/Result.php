@@ -55,15 +55,24 @@ class Result
      */
     public function setResponse(ResponseInterface $response)
     {
-        $bodyContent = (string) $response->getBody();
+        $bodyStream = $response->getBody();
+        $content = (string) $bodyStream;
         
-        // Handle empty 404 responses which are valid in API context
-        // PHP 8.3 is stricter about JSON validation than PHP 8.0
-        if (empty($bodyContent) && $response->getStatusCode() == 404) {
-            $bodyContent = '{}';
-        }
+        // Debug: Log detailed response information
+        error_log("=== RESPONSE DEBUG ===");
+        error_log("Status Code: " . $response->getStatusCode());
+        error_log("Headers: " . json_encode($response->getHeaders()));
+        error_log("Stream Class: " . get_class($bodyStream));
+        error_log("Stream Size: " . ($bodyStream->getSize() ?? 'null'));
+        error_log("Stream Position: " . $bodyStream->tell());
+        error_log("Stream Seekable: " . ($bodyStream->isSeekable() ? 'true' : 'false'));
+        error_log("Stream Readable: " . ($bodyStream->isReadable() ? 'true' : 'false'));
+        error_log("Content Length: " . strlen($content));
+        error_log("Content (first 200 chars): " . substr($content, 0, 200));
+        error_log("Content Hex (first 40 bytes): " . bin2hex(substr($content, 0, 40)));
+        error_log("=======================");
         
-        $body = Validator::value($bodyContent)->isJson();
+        $body = Validator::value($content)->isJson();
         $this->testMeta($body, $response);
         $result = $body->getValue();
         if (array_key_exists("data", $result)) {
