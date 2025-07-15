@@ -115,8 +115,23 @@ class Http
         if (null !== static::$jsonCompressLevel) {
             $request = $request->withHeader('X-JsonCompressLevel', static::$jsonCompressLevel);
         }
+        
+        // Debug: Log request details
+        error_log("=== HTTP REQUEST DEBUG ===");
+        error_log("Method: " . $request->getMethod());
+        error_log("URI: " . (string) $request->getUri());
+        error_log("Headers: " . json_encode($request->getHeaders()));
+        error_log("Body: " . (string) $request->getBody());
+        error_log("============================");
+        
         $startTime = microtime(true);
         $response = $this->client->readResponse($request);
+        
+        // Debug: Log response basics before any processing
+        error_log("=== HTTP RESPONSE DEBUG ===");
+        error_log("Status: " . $response->getStatusCode());
+        error_log("Headers: " . json_encode($response->getHeaders()));
+        error_log("=============================");
         
         if (self::$logEnabled) {
             self::$log[] = $request;
