@@ -116,31 +116,19 @@ class Http
             $request = $request->withHeader('X-JsonCompressLevel', static::$jsonCompressLevel);
         }
         
-        // Debug: Log request details
-        error_log("=== HTTP REQUEST DEBUG ===");
-        error_log("Method: " . $request->getMethod());
-        error_log("URI: " . (string) $request->getUri());
-        error_log("Headers: " . json_encode($request->getHeaders()));
-        error_log("Body: " . (string) $request->getBody());
-        error_log("============================");
-        
         $startTime = microtime(true);
-        $response = $this->client->readResponse($request);
+        $response = static::$client->sendRequest($request);
+        $duration = microtime(true) - $startTime;
         
-        // Debug: Log response basics before any processing
-        error_log("=== HTTP RESPONSE DEBUG ===");
-        error_log("Status: " . $response->getStatusCode());
-        error_log("Headers: " . json_encode($response->getHeaders()));
-        error_log("=============================");
-        
-        if (self::$logEnabled) {
-            self::$log[] = $request;
-            self::$log[] = $response;
-            // Get response size for logging without consuming the stream
-            $bodyStream = $response->getBody();
-            $responseSizeKb = round(($bodyStream->getSize() ?: 0) / 1024);
-            self::$log[] = "Response ($responseSizeKb kb) time in s: " . round(microtime(true) - $startTime, 3);
+        if (static::$logEnabled) {
+            static::$log[] = [
+                'request' => $request,
+                'response' => $response,
+                'duration' => $duration,
+                'timestamp' => time()
+            ];
         }
+        
         return $response;
     }
 

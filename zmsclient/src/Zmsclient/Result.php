@@ -67,22 +67,8 @@ class Result
         // Handle empty responses (common with 404 from mockup server)
         // Convert empty string to valid JSON to prevent validation errors
         if (empty($content)) {
-            $content = '{"$schema":"","meta":{"error":true,"message":"Empty response"},"data":{}}';
+            $content = '{"$schema":"https://schema.berlin.de/queuemanagement/result.json","meta":{"error":true,"message":"Empty response"},"data":{}}';
         }
-        
-        // Debug: Log detailed response information
-        error_log("=== RESPONSE DEBUG ===");
-        error_log("Status Code: " . $response->getStatusCode());
-        error_log("Headers: " . json_encode($response->getHeaders()));
-        error_log("Stream Class: " . get_class($bodyStream));
-        error_log("Stream Size: " . ($bodyStream->getSize() ?? 'null'));
-        error_log("Stream Position After Read: " . $bodyStream->tell());
-        error_log("Stream Seekable: " . ($bodyStream->isSeekable() ? 'true' : 'false'));
-        error_log("Stream Readable: " . ($bodyStream->isReadable() ? 'true' : 'false'));
-        error_log("Content Length: " . strlen($content));
-        error_log("Content (first 200 chars): " . substr($content, 0, 200));
-        error_log("Content Hex (first 40 bytes): " . bin2hex(substr($content, 0, 40)));
-        error_log("=======================");
         
         $body = Validator::value($content)->isJson();
         $this->testMeta($body, $response);
