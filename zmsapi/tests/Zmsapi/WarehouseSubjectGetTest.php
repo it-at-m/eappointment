@@ -49,7 +49,7 @@ class WarehouseSubjectGetTest extends Base
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation->getUseraccount()->setRights('scope', 'department');
         $response = $this->render(['subject' => 'waitingorganisation'], [], []);
-        $this->assertStringContainsString('"data":[["71"', (string)$response->getBody());
+        $this->assertStringContainsString('"data":[[71', (string)$response->getBody());
     }
 
     public function testFilteredByOrganisation()
