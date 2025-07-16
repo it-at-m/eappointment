@@ -3,7 +3,6 @@
 require_once(__DIR__."/script_bootstrap.php");
 
 ini_set('memory_limit', '1024M');
-putenv('ZMS_CONFIG_SECURE_TOKEN=secure-token');
 
 if (preg_grep('/--commit/', $argv)) {
     $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
