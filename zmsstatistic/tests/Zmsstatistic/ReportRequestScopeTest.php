@@ -107,53 +107,57 @@ class ReportRequestScopeTest extends Base
 
     public function testWithDownloadXLSX()
     {
-        $this->setOutputCallback(function () {
-            $this->setApiCalls(
+        // Start output buffering to capture any output from the test
+        ob_start();
+        
+        $this->setApiCalls(
+            [
                 [
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/workstation/',
-                        'parameters' => ['resolveReferences' => 2],
-                        'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/scope/141/department/',
-                        'response' => $this->readFixture("GET_department_74.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/department/74/organisation/',
-                        'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/organisation/71/owner/',
-                        'response' => $this->readFixture("GET_owner_23.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/warehouse/requestscope/141/',
-                        'response' => $this->readFixture("GET_requestscope_141.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/warehouse/requestscope/141/2016-04/',
-                        'response' => $this->readFixture("GET_requestscope_141_042016.json")
-                    ]
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/requestscope/141/',
+                    'response' => $this->readFixture("GET_requestscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/requestscope/141/2016-04/',
+                    'response' => $this->readFixture("GET_requestscope_141_042016.json")
                 ]
-            );
-            $response = $this->render(
-                [
-                    'period' => '2016-04'
-                ],
-                [
-                    'type' => 'xlsx'
-                ],
-                [ ]
-            );
-            $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
-        });
+            ]
+        );
+        $response = $this->render(
+            [
+                'period' => '2016-04'
+            ],
+            [
+                'type' => 'xlsx'
+            ],
+            [ ]
+        );
+        $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
+        
+        // Clean up output buffer (discard any captured output)
+        ob_end_clean();
     }
 
     public function testWithDownloadCSV()
