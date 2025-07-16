@@ -158,6 +158,12 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
 - `cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}`
 - `./vendor/bin/phpunit`
 
+- Usefule flags for `./vendor/bin/phpunit`:
+  * `--display-warnings`
+  * `--display-deprecations`
+  * `--display-notices`
+  * `--display-errors`
+
 For `zmsapi` and `zmsdb` you must first import the test data (see below). 
 
 For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`). 
