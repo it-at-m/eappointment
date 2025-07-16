@@ -113,10 +113,10 @@ class SessionHandler implements \SessionHandlerInterface
      * @SuppressWarnings(ShortMethodName)
      * @codeCoverageIgnore
      */
-    public function gc(int $maxlifetime): bool
+    public function gc(int $max_lifetime): int|false
     {
         /*
-         * $compareTs = time() - $maxlifetime;
+         * $compareTs = time() - $max_lifetime;
          * $query = '
          * DELETE FROM
          * sessiondata
@@ -130,6 +130,6 @@ class SessionHandler implements \SessionHandlerInterface
          * $this->sessionName
          * ));
          */
-        return true;
+        return 1;
     }
 }
