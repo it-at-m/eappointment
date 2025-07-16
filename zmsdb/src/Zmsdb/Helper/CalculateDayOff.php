@@ -4,7 +4,7 @@ namespace BO\Zmsdb\Helper;
 
 class CalculateDayOff
 {
-    public \DateTime $dateTime;
+    private \DateTime $dateTime;
 
     protected $dayOffList = [
         'Y-01-01' => 'Neujahr',
