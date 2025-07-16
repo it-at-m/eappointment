@@ -4,6 +4,8 @@ namespace BO\Zmsdb\Helper;
 
 class CalculateDayOff
 {
+    public \DateTime $dateTime;
+
     protected $dayOffList = [
         'Y-01-01' => 'Neujahr',
         'Y-03-08' => 'Internationaler Frauentag',

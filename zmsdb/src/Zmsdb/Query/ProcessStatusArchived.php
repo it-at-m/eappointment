@@ -177,12 +177,12 @@ class ProcessStatusArchived extends Base implements MappingInterface
 
     public function postProcess($data)
     {
-        $data[$this->getPrefixed("appointments__0__date")] =
-            strtotime($data[$this->getPrefixed("appointments__0__date")]);
-        $data[$this->getPrefixed("queue__callTime")] =
-            strtotime($data[$this->getPrefixed("queue__callTime")]);
-        $data[$this->getPrefixed("queue__arrivalTime")] =
-            strtotime($data[$this->getPrefixed("queue__arrivalTime")]);
+        $date = $data[$this->getPrefixed("appointments__0__date")] ?? '';
+        $data[$this->getPrefixed("appointments__0__date")] = strtotime($date === null ? '' : $date);
+        $callTime = $data[$this->getPrefixed("queue__callTime")] ?? '';
+        $data[$this->getPrefixed("queue__callTime")] = strtotime($callTime === null ? '' : $callTime);
+        $arrivalTime = $data[$this->getPrefixed("queue__arrivalTime")] ?? '';
+        $data[$this->getPrefixed("queue__arrivalTime")] = strtotime($arrivalTime === null ? '' : $arrivalTime);
         if (isset($data[$this->getPrefixed('__clientsCount')])) {
             $clientsCount = $data[$this->getPrefixed('__clientsCount')];
             unset($data[$this->getPrefixed('__clientsCount')]);
