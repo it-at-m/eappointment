@@ -171,7 +171,8 @@
                                 "enabled": {
                                     "oneOf": [
                                         {"type": "null"},
-                                        {"type": "number"},
+-                                       {"type": "number"},
++                                       {"type": "number", "enum": [0, 1]},
                                         {"type": "boolean"},
                                         {"type": "string", "pattern": "^[01]$"}
                                     ],
