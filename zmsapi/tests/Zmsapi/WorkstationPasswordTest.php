@@ -10,9 +10,9 @@ class WorkstationPasswordTest extends Base
 
     public static $authKey = 'vorschau';
 
-    public function __construct()
+    public function setUp(): void
     {
-        parent::__construct();
+        parent::setUp();
         static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
         static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
     }
