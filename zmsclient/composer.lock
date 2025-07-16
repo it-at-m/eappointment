@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "29422ba909e569f91b227b98418d4939",
+    "content-hash": "e5a7d0319c1082a0c5b8968896e530be",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "d7a9bd0371b7f3998c5d65f97eb51711901cfb0e"
+                "reference": "05997d4aac9fe5d1028488b49d99200909b29b6f"
             },
             "require": {
                 "ext-json": ">=0",
@@ -174,7 +174,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "d7a9bd0371b7f3998c5d65f97eb51711901cfb0e"
+                "reference": "05997d4aac9fe5d1028488b49d99200909b29b6f"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -230,7 +230,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "d7a9bd0371b7f3998c5d65f97eb51711901cfb0e"
+                "reference": "05997d4aac9fe5d1028488b49d99200909b29b6f"
             },
             "require": {
                 "eappointment/mellon": "@dev",
