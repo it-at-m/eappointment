@@ -9,10 +9,11 @@
 
 namespace BO\Zmsticketprinter;
 
-define(
-    'ZMS_SECURE_TOKEN',
-    getenv('ZMS_SECURE_TOKEN') ? getenv('ZMS_SECURE_TOKEN') : 'secure-token'
-);
+if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
+    throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
+}
+
+define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
 
 class Application extends \BO\Slim\Application
 {
@@ -61,7 +62,7 @@ class Application extends \BO\Slim\Application
      * HTTP url for api
      */
     public const HTTP_BASE_URL = 'http://user:pass@host.tdl';
-    public const SECURE_TOKEN = ZMS_SECURE_TOKEN;
+    public const SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
 
     public const CLIENTKEY = '';
 }
