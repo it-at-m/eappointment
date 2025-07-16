@@ -11,5 +11,5 @@ class AuthKeyFound extends \Exception
 
     protected $message = 'Your client is still logged in with an user account. Logout first.';
 
-    protected mixed $data = null;
+    public mixed $data = null;
 }
