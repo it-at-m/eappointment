@@ -168,7 +168,10 @@
           >
             <div
               class="wrapper"
-              v-if="timeslot == currentHour || providersWithAppointments.length === 1"
+              v-if="
+                timeslot == currentHour ||
+                providersWithAppointments.length === 1
+              "
             >
               <div v-if="firstHour !== null && firstHour > 0">
                 <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
