@@ -18,7 +18,7 @@ class Message implements \JsonSerializable
     /**
      * @var Mixed $data
      */
-    public $data = null;
+    protected mixed $data = null;
 
     /**
      * @var Mixed $data

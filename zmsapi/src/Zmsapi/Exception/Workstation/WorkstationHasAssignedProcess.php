@@ -8,5 +8,5 @@ class WorkstationHasAssignedProcess extends \Exception
 
     protected $message = 'workstation has already an assigned process';
 
-    public $data = null;
+    protected mixed $data = null;
 }

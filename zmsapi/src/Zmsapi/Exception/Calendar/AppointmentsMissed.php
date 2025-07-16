@@ -9,5 +9,5 @@ class AppointmentsMissed extends \Exception
 {
     protected $code = 404;
 
-    public $data = null;
+    protected mixed $data = null;
 }
