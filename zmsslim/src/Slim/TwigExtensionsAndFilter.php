@@ -23,9 +23,10 @@ class TwigExtensionsAndFilter extends TwigExtension
         );
     }
 
-    public function decodeEntities($string) {
+    public function decodeEntities($string)
+    {
         return $string === null ? '' : trim(nl2br(html_entity_decode($string)));
-    }    
+    }
 
     public function msort($array, $key, $sort_flags = SORT_REGULAR)
     {

@@ -76,7 +76,7 @@
                     "description": "short note for internal usage"
                 },
                 "endDate": {
-                    "type": "number",
+                    "type": ["null", "number"],
                     "description": "unix timestamp of a day until this availability is valid"
                 },
                 "endTime": {
@@ -132,7 +132,7 @@
                     "description": "Multiplicated with a slotCount from an appointment this gives the duration in minutes for a appointment\/process."
                 },
                 "startDate": {
-                    "type": "number",
+                    "type": ["null", "number"],
                     "description": "unix timestamp of a day to start offering appointments"
                 },
                 "startTime": {
@@ -374,7 +374,7 @@
                     "description": "source of provider to resolve reference id"
                 },
                 "lastChange": {
-                    "type": "number",
+                    "type": ["null", "number"],
                     "description": "unix timestamp of the last change on this scope"
                 },
                 "preferences": {
@@ -446,7 +446,7 @@
                                     "default": ""
                                 },
                                 "slotsPerAppointment": {
-                                    "type": "string",
+                                    "type": ["string", "null", "integer"],
                                     "description": "allowed slots per appointment",
                                     "default": ""
                                 },

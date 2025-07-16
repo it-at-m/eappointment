@@ -112,13 +112,13 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function offsetSet($index, $value)
+    public function offsetSet(mixed $index, mixed $value): void
     {
         $className = $this::ENTITY_CLASS;
         if (is_a($value, $className)) {
-            return parent::offsetSet($index, $value);
+            parent::offsetSet($index, $value);
         } elseif (is_array($value)) {
-            return parent::offsetSet($index, new $className($value));
+            parent::offsetSet($index, new $className($value));
         } else {
             throw new \Exception('Invalid entity ' . get_class($value) . ' for collection ' . __CLASS__);
         }
@@ -237,7 +237,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $array;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->getArrayCopy();
     }

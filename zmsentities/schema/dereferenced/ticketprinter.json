@@ -262,7 +262,7 @@
                                                 "default": ""
                                             },
                                             "slotsPerAppointment": {
-                                                "type": "string",
+                                                "type": ["string", "null", "number"],
                                                 "description": "allowed slots per appointment",
                                                 "default": ""
                                             },
