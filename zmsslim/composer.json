@@ -14,7 +14,7 @@
         "ext-posix": "*",
         "slim/slim": "4.*",
         "twig/twig": "3.*",
-        "monolog/monolog": "1.*",
+        "monolog/monolog": "^2.0",
         "slim/twig-view": "3.*",
         "slim/http-cache": "1.*",
         "eappointment/mellon": "@dev",

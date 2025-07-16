@@ -23,7 +23,6 @@ coverage
 
 # Composer
 /vendor/
-composer.lock
 
 # IDE
 .idea/

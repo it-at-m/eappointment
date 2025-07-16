@@ -34,7 +34,7 @@
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
         "ext-json": ">=1.0",
-        "monolog/monolog": "1.*",
+        "monolog/monolog": "^2.0",
         "roave/security-advisories": "dev-master",
         "twig/twig": "3.*",
         "twig/intl-extra": "^3.4"
