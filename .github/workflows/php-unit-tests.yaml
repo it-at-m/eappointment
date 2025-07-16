@@ -46,6 +46,7 @@ jobs:
         env:
           XDEBUG_MODE: coverage
         run: |
+          set -e  # Exit on error, but we'll handle PHPUnit exit codes manually
           cd "${{ matrix.module }}"
           mkdir -p coverage
           echo "Running tests for ${{ matrix.module }}"
@@ -64,24 +65,30 @@ jobs:
           case "${{ matrix.module }}" in
             "zmsmessaging"|"zmsdldb"|"zmsslim")
               echo "Running tests WITHOUT coverage for ${{ matrix.module }}"
-              # Explicitly disable xdebug for test run
+              # Temporarily disable exit on error for PHPUnit
+              set +e
               XDEBUG_MODE=off php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
               TEST_RESULT=$?
+              set -e
               # Create empty placeholder files for artifacts
               touch coverage/.placeholder
               ;;
             *)
               echo "Running tests WITH coverage for ${{ matrix.module }}"
-              # Run tests with coverage enabled
+              # Temporarily disable exit on error for PHPUnit
+              set +e
               php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml
               TEST_RESULT=$?
+              set -e
               # Generate detailed coverage reports
               echo "Generating coverage reports..."
+              set +e
               php -dmemory_limit=-1 \
                 ./vendor/bin/phpunit -c phpunit.xml \
                 --coverage-html coverage/html \
                 --coverage-clover coverage/clover.xml \
-                --log-junit coverage/junit.xml || true
+                --log-junit coverage/junit.xml
+              set -e
               ;;
           esac
           
@@ -176,6 +183,7 @@ jobs:
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsapi
         run: |
+          set -e  # Exit on error, but we'll handle PHPUnit exit codes manually
           cd zmsapi
           echo "Setup fixtures..."
           rm -rf data
@@ -184,12 +192,15 @@ jobs:
           vendor/bin/importTestData --commit
           mkdir -p coverage
           echo "Running tests with coverage"
+          # Temporarily disable exit on error for PHPUnit
+          set +e
           php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
             ./vendor/bin/phpunit -c phpunit.xml \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
           TEST_RESULT=$?
+          set -e
           echo "Coverage files generated:"
           ls -la coverage/
           
@@ -255,17 +266,21 @@ jobs:
           MYSQL_ROOT_PASSWORD: zmsdb
           XDEBUG_MODE: coverage
         run: |
+          set -e  # Exit on error, but we'll handle PHPUnit exit codes manually
           cd zmsdb
           bin/importTestData --commit
           mkdir -p coverage
           echo "Running tests with coverage"
           php -i | grep -i xdebug
+          # Temporarily disable exit on error for PHPUnit
+          set +e
           php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
             ./vendor/bin/phpunit -c phpunit.xml \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
           TEST_RESULT=$?
+          set -e
           echo "Coverage files generated:"
           ls -la coverage/
           
@@ -319,16 +334,19 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          set -e
+          set -e  # Exit on error, but we'll handle PHPUnit exit codes manually
           cd ./zmsclient
           mkdir -p coverage
           docker-compose up -d
+          # Temporarily disable exit on error for PHPUnit
+          set +e
           docker-compose exec -T test php -dzend_extension=xdebug.so -dmemory_limit=-1 \
             ./vendor/bin/phpunit \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
           TEST_RESULT=$?
+          set -e
           echo "Coverage files generated:"
           ls -la coverage/
           
