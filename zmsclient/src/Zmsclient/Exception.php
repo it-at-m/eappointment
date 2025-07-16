@@ -40,7 +40,7 @@ class Exception extends \Exception
     /**
      * @var mixed $templatedata
      */
-    public $templatedata;
+    public mixed $templatedata = null;
 
     /**
      * @param String $message
