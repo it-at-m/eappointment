@@ -36,26 +36,26 @@ jobs:
           - module: mellon
             php_version: "8.3"
           - module: zmsadmin
-            php-version: "8.3"
+            php_version: "8.3"
           - module: zmsapi
-            php-version: "8.3"
+            php_version: "8.3"
           - module: zmscalldisplay
-            php-version: "8.3"
+            php_version: "8.3"
           - module: zmscitizenapi
-            php-version: "8.3"
+            php_version: "8.3"
           - module: zmsclient
-            php-version: "8.3"
+            php_version: "8.3"
           - module: zmsdb
-            php-version: "8.3"
+            php_version: "8.3"
           - module: zmsdldb
             php_version: "8.3"
           - module: zmsentities
-            php-version: "8.3"
+            php_version: "8.3"
           - module: zmsmessaging
-            php-version: "8.3"
+            php_version: "8.3"
           - module: zmsslim
             php_version: "8.3"
           - module: zmsstatistic
-            php-version: "8.3"
+            php_version: "8.3"
           - module: zmsticketprinter
-            php-version: "8.3"
+            php_version: "8.3"
