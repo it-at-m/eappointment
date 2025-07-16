@@ -8,10 +8,11 @@
 
 namespace BO\Zmsmessaging;
 
-define(
-    'ZMS_CONFIG_SECURE_TOKEN',
-    getenv('ZMS_CONFIG_SECURE_TOKEN') ? getenv('ZMS_CONFIG_SECURE_TOKEN') : 'secure-token'
-);
+if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
+    throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
+}
+
+define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
 
 /**
  * @SuppressWarnings("TooManyFields")
