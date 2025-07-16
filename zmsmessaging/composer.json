@@ -12,14 +12,12 @@
         "command": "bin/configure"
     },
     "config": {
-        "platform": {
-            "php": "8.0"
-        },
         "allow-plugins": {
             "php-http/discovery": true
         }
     },
     "require": {
+        "php": ">=8.3",
         "phpmailer/phpmailer": "^6.4",
         "monolog/monolog": "1.*",
         "eappointment/mellon": "@dev",

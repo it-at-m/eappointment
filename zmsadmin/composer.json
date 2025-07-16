@@ -21,9 +21,6 @@
         }
     ],
     "config": {
-        "platform": {
-            "php": "8.0"
-        },
         "allow-plugins": {
             "php-http/discovery": true
         }
@@ -36,6 +33,7 @@
         "phpspec/prophecy-phpunit": "^2.0.0"
     },
     "require": {
+        "php": ">=8.3",
         "eappointment/mellon": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsslim": "@dev",

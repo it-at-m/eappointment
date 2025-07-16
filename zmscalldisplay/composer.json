@@ -12,9 +12,6 @@
         "command": "bin/configure"
     },
     "config": {
-        "platform": {
-            "php": "8.0"
-        },
         "allow-plugins": {
             "php-http/discovery": true
         }
@@ -27,7 +24,7 @@
         "helmich/phpunit-psr7-assert": "^4.3.0"
     },
     "require": {
-        "php": ">=7.3.0",
+        "php": ">=8.3",
         "eappointment/mellon": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsentities": "@dev",
