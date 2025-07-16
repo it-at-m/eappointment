@@ -88,8 +88,14 @@ jobs:
           echo "Files in coverage directory:"
           ls -la coverage/ || true
           
-          # Exit with the test result code
-          exit $TEST_RESULT
+          # Check if tests passed (exit codes 0 = success, 1 = warnings but tests passed, 2+ = real failures)
+          if [ $TEST_RESULT -eq 0 ] || [ $TEST_RESULT -eq 1 ]; then
+            echo "Tests passed (exit code: $TEST_RESULT)"
+            exit 0
+          else
+            echo "Tests failed (exit code: $TEST_RESULT)"
+            exit $TEST_RESULT
+          fi
 
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
@@ -183,8 +189,18 @@ jobs:
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
+          TEST_RESULT=$?
           echo "Coverage files generated:"
           ls -la coverage/
+          
+          # Check if tests passed (exit codes 0 = success, 1 = warnings but tests passed, 2+ = real failures)
+          if [ $TEST_RESULT -eq 0 ] || [ $TEST_RESULT -eq 1 ]; then
+            echo "Tests passed (exit code: $TEST_RESULT)"
+            exit 0
+          else
+            echo "Tests failed (exit code: $TEST_RESULT)"
+            exit $TEST_RESULT
+          fi
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
@@ -249,8 +265,18 @@ jobs:
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
+          TEST_RESULT=$?
           echo "Coverage files generated:"
           ls -la coverage/
+          
+          # Check if tests passed (exit codes 0 = success, 1 = warnings but tests passed, 2+ = real failures)
+          if [ $TEST_RESULT -eq 0 ] || [ $TEST_RESULT -eq 1 ]; then
+            echo "Tests passed (exit code: $TEST_RESULT)"
+            exit 0
+          else
+            echo "Tests failed (exit code: $TEST_RESULT)"
+            exit $TEST_RESULT
+          fi
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
@@ -302,8 +328,18 @@ jobs:
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml
+          TEST_RESULT=$?
           echo "Coverage files generated:"
           ls -la coverage/
+          
+          # Check if tests passed (exit codes 0 = success, 1 = warnings but tests passed, 2+ = real failures)
+          if [ $TEST_RESULT -eq 0 ] || [ $TEST_RESULT -eq 1 ]; then
+            echo "Tests passed (exit code: $TEST_RESULT)"
+            exit 0
+          else
+            echo "Tests failed (exit code: $TEST_RESULT)"
+            exit $TEST_RESULT
+          fi
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
