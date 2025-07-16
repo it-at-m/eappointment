@@ -30,7 +30,7 @@ class Auth
                     'timezone' => date_default_timezone_get()
                 ]);
             }
-            setcookie(self::getCookieName(), $authKey, $expires, '/', '');
+            setcookie(self::getCookieName(), $authKey, $expires, '/', '', true, true);
         }
     }
 
