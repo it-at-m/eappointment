@@ -44,7 +44,7 @@ class SessionHandler implements \SessionHandlerInterface
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */
-    public function open($save_path, $name): bool
+    public function open(string $save_path, string $name): bool
     {
         $this->sessionName = $name;
         return true;
@@ -55,7 +55,7 @@ class SessionHandler implements \SessionHandlerInterface
         return true;
     }
 
-    public function read($sessionId, $params = []): string
+    public function read(string $sessionId, array $params = []): string
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $params['sync'] = static::$useSyncFlag;
@@ -80,7 +80,7 @@ class SessionHandler implements \SessionHandlerInterface
         return ($session && isset($session['content'])) ? serialize($session->getContent()) : '';
     }
 
-    public function write($sessionId, $sessionData, $params = []): bool
+    public function write(string $sessionId, string $sessionData, array $params = []): bool
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $entity = new \BO\Zmsentities\Session();
@@ -101,7 +101,7 @@ class SessionHandler implements \SessionHandlerInterface
         return (null !== $session) ? true : false;
     }
 
-    public function destroy($sessionId): bool
+    public function destroy(string $sessionId): bool
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $result = $this->http->readDeleteResult('/session/' . $this->sessionName . '/' . $hashedSessionId . '/');
