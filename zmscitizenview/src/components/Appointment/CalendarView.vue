@@ -299,7 +299,8 @@
           >
             <div
               class="wrapper"
-              v-if="timeslot == currentDayPart"
+              v-if="timeslot == currentDayPart
+                || providersWithAppointments.length === 1"
             >
               <div v-if="currentDayPart === 'am'">
                 <p class="centered-text">{{ t("am") }}</p>
@@ -328,7 +329,7 @@
       </div>
       <div
         class="wrapper m-button-group"
-        v-if="!isLoadingAppointments"
+        v-if="!isLoadingAppointments && providersWithAppointments.length > 1"
       >
         <muc-button
           icon="chevron-left"
