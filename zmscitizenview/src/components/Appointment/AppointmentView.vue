@@ -605,39 +605,6 @@ const parseAppointmentHash = (hash: string): AppointmentHash | null => {
 };
 
 onMounted(() => {
-  if (props.serviceId && props.locationId) {
-    fetchServicesAndProviders(
-      props.serviceId,
-      props.locationId,
-      props.baseUrl ?? undefined
-    ).then((data) => {
-      services.value = data.services;
-      relations.value = data.relations;
-      offices.value = data.offices;
-
-      const foundService = services.value.find(
-        (service) => service.id == props.serviceId
-      );
-      const foundOffice = offices.value.find(
-        (office) => office.id == props.locationId
-      );
-
-      if (foundService && foundOffice) {
-        selectedService.value = foundService as ServiceImpl;
-        selectedService.value.count = 1;
-        selectedService.value.providers = getProviders(
-          selectedService.value.id,
-          null
-        );
-        preselectedLocationId.value = props.locationId;
-        selectedProvider.value = foundOffice as OfficeImpl;
-        selectedServiceMap.value = new Map<string, number>();
-        selectedServiceMap.value.set(foundService.id, 1);
-        currentView.value = 1;
-      }
-    });
-  }
-
   if (props.confirmAppointmentHash) {
     const appointmentData = parseAppointmentHash(props.confirmAppointmentHash);
     if (!appointmentData) {
