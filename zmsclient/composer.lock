@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba70b8e3f79d27fd3c148c569cdecde8",
+    "content-hash": "deb059d229fe9c48b03091ee5436a76c",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -126,18 +126,18 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
+                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
             },
             "require": {
                 "ext-json": ">=0",
                 "ext-pcre": ">=0",
                 "php": ">=8.3",
-                "roave/security-advisories": "dev-master"
+                "roave/security-advisories": "dev-latest"
             },
             "require-dev": {
                 "phpmd/phpmd": "^2.8.0",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -175,7 +175,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
+                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -187,7 +187,7 @@
                 "league/html-to-markdown": "^5.0",
                 "opis/json-schema": "^2.4",
                 "php": ">=8.3",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "symfony/translation": "^5.4",
                 "symfony/twig-bridge": "^5.4",
                 "twig/intl-extra": "^3.4",
@@ -197,7 +197,7 @@
                 "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -233,7 +233,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
+                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -241,7 +241,7 @@
                 "ext-posix": "*",
                 "monolog/monolog": "^2.0",
                 "php": ">=8.3",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "slim/http-cache": "1.*",
                 "slim/psr7": "^1.5",
                 "slim/slim": "4.*",
@@ -259,7 +259,7 @@
                 "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -2106,7 +2106,7 @@
         },
         {
             "name": "roave/security-advisories",
-            "version": "dev-master",
+            "version": "dev-latest",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
@@ -3023,6 +3023,7 @@
                 "zfr/zfr-oauth2-server-module": "<0.1.2",
                 "zoujingli/thinkadmin": "<=6.1.53"
             },
+            "default-branch": true,
             "type": "metapackage",
             "notification-url": "https://packagist.org/downloads/",
             "license": [

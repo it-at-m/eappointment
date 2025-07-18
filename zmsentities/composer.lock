@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c08b00dce14075137906fe8eccf785b7",
+    "content-hash": "694e9e767da66890769837559ff90a79",
     "packages": [
         {
             "name": "eappointment/mellon",
@@ -12,18 +12,18 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
+                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
             },
             "require": {
                 "ext-json": ">=0",
                 "ext-pcre": ">=0",
                 "php": ">=8.3",
-                "roave/security-advisories": "dev-master"
+                "roave/security-advisories": "dev-latest"
             },
             "require-dev": {
                 "phpmd/phpmd": "^2.8.0",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -469,7 +469,7 @@
         },
         {
             "name": "roave/security-advisories",
-            "version": "dev-master",
+            "version": "dev-latest",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
@@ -1386,6 +1386,7 @@
                 "zfr/zfr-oauth2-server-module": "<0.1.2",
                 "zoujingli/thinkadmin": "<=6.1.53"
             },
+            "default-branch": true,
             "type": "metapackage",
             "notification-url": "https://packagist.org/downloads/",
             "license": [

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "54e5dd9597e14934b77382dc73abf0d7",
+    "content-hash": "1cf52232fd84f6636f2be3df979df4cc",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -184,18 +184,18 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
+                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
             },
             "require": {
                 "ext-json": ">=0",
                 "ext-pcre": ">=0",
                 "php": ">=8.3",
-                "roave/security-advisories": "dev-master"
+                "roave/security-advisories": "dev-latest"
             },
             "require-dev": {
                 "phpmd/phpmd": "^2.8.0",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -233,7 +233,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
+                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -245,7 +245,7 @@
                 "league/climate": "^3.2",
                 "monolog/monolog": "^2.0",
                 "php": ">=8.3",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "ulrichsg/getopt-php": "^2.3"
             },
             "require-dev": {
@@ -254,7 +254,7 @@
                 "mockery/mockery": "^0.9.4",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -311,7 +311,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "314ecc1f289d54083dd14fee8c4adefbd4b82388"
+                "reference": "ce8ad81aebbe04cac5c6d080d4cf7c522d70c939"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -325,7 +325,7 @@
                 "php": ">=8.3",
                 "php-http/curl-client": "^2.2",
                 "psr/http-message": "^1.0",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "slim/psr7": "^1.5",
                 "tracy/tracy": "^2.9",
                 "twig/twig": "3.*"
@@ -335,7 +335,7 @@
                 "phpmd/phpmd": "@stable",
                 "phpspec/prophecy-phpunit": "^2.4",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -371,7 +371,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
+                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
             },
             "require": {
                 "aura/sql": "^5",
@@ -387,13 +387,13 @@
                 "ext-pcre": ">=0",
                 "ext-pdo": "*",
                 "php": ">=8.3",
-                "roave/security-advisories": "dev-master"
+                "roave/security-advisories": "dev-latest"
             },
             "require-dev": {
                 "mockery/mockery": "^0.9.4",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "^3.5"
             },
             "bin": [
@@ -456,7 +456,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
+                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -468,7 +468,7 @@
                 "league/html-to-markdown": "^5.0",
                 "opis/json-schema": "^2.4",
                 "php": ">=8.3",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "symfony/translation": "^5.4",
                 "symfony/twig-bridge": "^5.4",
                 "twig/intl-extra": "^3.4",
@@ -478,7 +478,7 @@
                 "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -514,7 +514,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
+                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -522,7 +522,7 @@
                 "ext-posix": "*",
                 "monolog/monolog": "^2.0",
                 "php": ">=8.3",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "slim/http-cache": "1.*",
                 "slim/psr7": "^1.5",
                 "slim/slim": "4.*",
@@ -540,7 +540,7 @@
                 "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-master",
+                "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -2507,7 +2507,7 @@
         },
         {
             "name": "roave/security-advisories",
-            "version": "dev-master",
+            "version": "dev-latest",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
@@ -3424,6 +3424,7 @@
                 "zfr/zfr-oauth2-server-module": "<0.1.2",
                 "zoujingli/thinkadmin": "<=6.1.53"
             },
+            "default-branch": true,
             "type": "metapackage",
             "notification-url": "https://packagist.org/downloads/",
             "license": [

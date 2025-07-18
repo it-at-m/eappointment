@@ -22,7 +22,7 @@
         "phpunit/phpunit": "^10.5",
         "phpspec/prophecy-phpunit": "^2.4",
         "helmich/phpunit-psr7-assert": "4.4.1",
-        "roave/security-advisories": "dev-master"
+        "roave/security-advisories": "dev-latest"
     },
     "require": {
         "php": ">=8.3",
@@ -33,7 +33,7 @@
         "monolog/monolog": "^2.0",
         "twig/twig": "3.*",
         "twig/intl-extra": "^3.4",
-        "roave/security-advisories": "dev-master"
+        "roave/security-advisories": "dev-latest"
     },
     "bin": [],
     "autoload": {

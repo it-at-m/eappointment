@@ -23,7 +23,7 @@
         "phpunit/phpunit": "^10.5",
         "helmich/phpunit-psr7-assert": "4.4.1",
         "phpspec/prophecy-phpunit": "^2.4",
-        "roave/security-advisories": "dev-master"
+        "roave/security-advisories": "dev-latest"
     },
     "require": {
         "php": ">=8.3",
@@ -35,7 +35,7 @@
         "psr/simple-cache": "^3.0",
         "firebase/php-jwt": "^6.11",
         "monolog/monolog": "^2.0",
-        "roave/security-advisories": "dev-master"
+        "roave/security-advisories": "dev-latest"
     },
     "scripts": {
         "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",
