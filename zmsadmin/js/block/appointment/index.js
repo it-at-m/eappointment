@@ -245,27 +245,14 @@ class View extends RequestView {
     onChangeScope(event) {
         this.selectedScope = $(event.currentTarget).val();
         this.onChangeScopeCallback(event);
+
     }
 
     onChangeProcessTime(event) {
-        if (this.hasSlotCountEnabled && this.serviceListSelected.length == 0) {
-            this.auralMessage(this.auralMessages.chooseRequestFirst)
-        }
+        if (this.hasSlotCountEnabled && this.serviceListSelected.length == 0)
+                this.auralMessage(this.auralMessages.chooseRequestFirst)
         this.selectedTime = $(event.currentTarget).val();
         var hasFreeAppointments = (1 <= $(event.currentTarget).length && '00-00' != this.selectedTime);
-        if (hasFreeAppointments) {
-            this.$.find('select[name=priority]').val('');
-            this.$.find('#priority').hide();
-            this.$.find('select[name=priority][value=""]').hide();
-        } else {
-            this.$.find('#priority').show();
-            this.$.find('select[name=priority][value=""]').show();
-            if (!this.$.find('input[name=selected_process_priority]').val()) {
-                this.$.find('select[name=priority]').val(3);
-            } else {
-                this.$.find('select[name=priority]').val(this.$.find('input[name=selected_process_priority]').val());
-            }
-        }
         this.$main.data('selected-time', this.selectedTime);
         new FormButtons(this.$main.find('[data-form-buttons]'), {
             includeUrl: this.includeUrl,
