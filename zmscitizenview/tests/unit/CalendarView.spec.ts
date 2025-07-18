@@ -452,11 +452,9 @@ describe("CalendarView", () => {
       }
     });
 
-    // Wait for providers to be initialized
     await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } });
     await nextTick();
 
-    // Check internal state of selectedProviders
     expect(wrapper.vm.selectedProviders).toEqual({
       '1': false,
       '2': true,
