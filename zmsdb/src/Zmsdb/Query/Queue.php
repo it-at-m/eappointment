@@ -67,10 +67,7 @@ class Queue extends Process implements MappingInterface
                 )'
             ),
             'number' => self::expression(
-                'IF(`process`.`wartenummer`,
-                    `process`.`wartenummer`,
-                    `process`.`BuergerID`
-)'
+                "CONCAT('TB', IF(`process`.`wartenummer`, `process`.`wartenummer`, `process`.`BuergerID`))"
             ),
             'destination' => self::expression(
                 'IF(`process`.`AbholortID`,
