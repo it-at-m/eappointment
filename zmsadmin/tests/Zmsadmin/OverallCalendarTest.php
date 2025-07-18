@@ -25,7 +25,7 @@ class OverallCalendarTest extends Base
 
         $response = $this->render([], [], []);
 
-        $this->assertStringContainsString('Wochenkalender', (string)$response->getBody());
+        $this->assertStringContainsString('Gesamtübersicht', (string)$response->getBody());
         $this->assertStringContainsString('overall-calendar', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -62,7 +62,7 @@ class OverallCalendarTest extends Base
 
         $response = $this->render([], [], []);
 
-        $this->assertStringContainsString('Wochenkalender', (string)$response->getBody());
+        $this->assertStringContainsString('Gesamtübersicht', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -81,7 +81,7 @@ class OverallCalendarTest extends Base
 
         $response = $this->render([], [], []);
 
-        $this->assertStringContainsString('Wochenkalender', (string)$response->getBody());
+        $this->assertStringContainsString('Gesamtübersicht', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
