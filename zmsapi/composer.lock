@@ -56,26 +56,26 @@
         },
         {
             "name": "aura/sql",
-            "version": "4.0.0",
+            "version": "5.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/auraphp/Aura.Sql.git",
-                "reference": "995db7a252e5425b7db969736b12939e95cdaaa8"
+                "reference": "fd7a6dd1c9d2a1da5754c50f287f8be8a27db0e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/auraphp/Aura.Sql/zipball/995db7a252e5425b7db969736b12939e95cdaaa8",
-                "reference": "995db7a252e5425b7db969736b12939e95cdaaa8",
+                "url": "https://api.github.com/repos/auraphp/Aura.Sql/zipball/fd7a6dd1c9d2a1da5754c50f287f8be8a27db0e7",
+                "reference": "fd7a6dd1c9d2a1da5754c50f287f8be8a27db0e7",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
-                "php": ">=7.2",
-                "psr/log": "^1.0 || ^2.0"
+                "php": ">=8.1",
+                "psr/log": "^1.0 || ^2.0 || ^3.0"
             },
             "require-dev": {
                 "pds/skeleton": "~1.0",
-                "phpunit/phpunit": "^8.0|^9.5"
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
             "autoload": {
@@ -108,9 +108,9 @@
             ],
             "support": {
                 "issues": "https://github.com/auraphp/Aura.Sql/issues",
-                "source": "https://github.com/auraphp/Aura.Sql/tree/4.0.0"
+                "source": "https://github.com/auraphp/Aura.Sql/tree/5.0.3"
             },
-            "time": "2021-11-24T05:03:25+00:00"
+            "time": "2025-01-22T06:39:17+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -184,7 +184,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "804a7a0543b8dd8245a7299d08e1c1a7947c5880"
+                "reference": "2d9f52108a8cac93f8e6ce3d452dbb26aa094012"
             },
             "require": {
                 "ext-json": ">=0",
@@ -290,10 +290,10 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "804a7a0543b8dd8245a7299d08e1c1a7947c5880"
+                "reference": "2d9f52108a8cac93f8e6ce3d452dbb26aa094012"
             },
             "require": {
-                "aura/sql": "^4",
+                "aura/sql": "^5",
                 "eappointment/mellon": "@dev",
                 "eappointment/zmsapi": "@dev",
                 "eappointment/zmsclient": "@dev",
@@ -373,7 +373,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "804a7a0543b8dd8245a7299d08e1c1a7947c5880"
+                "reference": "2d9f52108a8cac93f8e6ce3d452dbb26aa094012"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -389,7 +389,7 @@
                 "nategood/httpful": "1.*",
                 "php": ">=8.3",
                 "twig/twig": "3.*",
-                "vanilla/garden-cli": "3.*"
+                "vanilla/garden-cli": "4.*"
             },
             "require-dev": {
                 "phpmd/phpmd": "@stable",
@@ -439,7 +439,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "804a7a0543b8dd8245a7299d08e1c1a7947c5880"
+                "reference": "2d9f52108a8cac93f8e6ce3d452dbb26aa094012"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -495,7 +495,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "804a7a0543b8dd8245a7299d08e1c1a7947c5880"
+                "reference": "2d9f52108a8cac93f8e6ce3d452dbb26aa094012"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -2392,30 +2392,30 @@
         },
         {
             "name": "psr/log",
-            "version": "1.1.4",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "d49695b909c3b7628b6289db5479a1c204601f11"
+                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/d49695b909c3b7628b6289db5479a1c204601f11",
-                "reference": "d49695b909c3b7628b6289db5479a1c204601f11",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
+                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=8.0.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "3.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Psr\\Log\\": "Psr/Log/"
+                    "Psr\\Log\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -2436,9 +2436,9 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/1.1.4"
+                "source": "https://github.com/php-fig/log/tree/3.0.2"
             },
-            "time": "2021-05-03T11:20:27+00:00"
+            "time": "2024-09-11T13:17:53+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -4020,30 +4020,30 @@
         },
         {
             "name": "vanilla/garden-cli",
-            "version": "v3.1.2",
+            "version": "v4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vanilla/garden-cli.git",
-                "reference": "d9844c47f4f2812259ee1b583aa66e7b6b5d85c5"
+                "reference": "e7e2f655b04661e9808ec7d51a381176e9bc981d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vanilla/garden-cli/zipball/d9844c47f4f2812259ee1b583aa66e7b6b5d85c5",
-                "reference": "d9844c47f4f2812259ee1b583aa66e7b6b5d85c5",
+                "url": "https://api.github.com/repos/vanilla/garden-cli/zipball/e7e2f655b04661e9808ec7d51a381176e9bc981d",
+                "reference": "e7e2f655b04661e9808ec7d51a381176e9bc981d",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "php": ">=7.2",
-                "psr/log": "^1.0"
+                "php": ">=8.1",
+                "psr/log": "^3.0"
             },
             "require-dev": {
                 "ergebnis/composer-normalize": "^2.8",
-                "phpdocumentor/reflection-docblock": "^4.3",
+                "phpdocumentor/reflection-docblock": "^5.3",
                 "phpunit/phpunit": "^8",
                 "vanilla/garden-container": "^3.0",
                 "vanilla/standards": "^1.3",
-                "vimeo/psalm": "^3.16"
+                "vimeo/psalm": "^4.0"
             },
             "suggest": {
                 "ext-pdo": "Required for the DbUtils class.",
@@ -4069,9 +4069,9 @@
             "description": "A full-featured, yet ridiculously simple commandline parser for your next php cli script. Stop fighting with getopt().",
             "support": {
                 "issues": "https://github.com/vanilla/garden-cli/issues",
-                "source": "https://github.com/vanilla/garden-cli/tree/v3.1.2"
+                "source": "https://github.com/vanilla/garden-cli/tree/v4.0"
             },
-            "time": "2020-10-25T13:36:44+00:00"
+            "time": "2023-01-24T20:33:46+00:00"
         }
     ],
     "packages-dev": [

@@ -25,7 +25,7 @@
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
         "ext-pcre": ">=0",
-        "vanilla/garden-cli": "3.*",
+        "vanilla/garden-cli": "4.*",
         "nategood/httpful": "1.*",
         "twig/twig": "3.*",
         "eappointment/mellon": "@dev",

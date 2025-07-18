@@ -35,7 +35,7 @@
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsapi": "@dev",
         "ext-pdo": "*",
-        "aura/sql": "^4"
+        "aura/sql": "^5"
     },
     "bin": [
         "bin/archiveStatisticData",
