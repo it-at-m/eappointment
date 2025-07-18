@@ -431,6 +431,37 @@ describe("CalendarView", () => {
     expect(fetchAvailableDays).toHaveBeenCalled();
   });
 
+  it('checks only the preselected office when preselectedOfficeId is provided', async () => {
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: '2025-06-17', providerIDs: '1,2,3' }
+      ]
+    });
+
+    const wrapper = createWrapper({
+      selectedService: {
+        id: 'service1',
+        providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } },
+          { name: 'Office C', id: '3', address: { street: 'Test', house_number: '3' } }
+        ]
+      },
+      props: {
+        preselectedOfficeId: '2'
+      }
+    });
+
+    await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } });
+    await nextTick();
+
+    expect(wrapper.vm.selectedProviders).toEqual({
+      '1': false,
+      '2': true,
+      '3': false
+    });
+  });
+
   it("handles calendar navigation correctly", async () => {
     const wrapper = createWrapper({
       selectedService: { id: "service1", providers: [

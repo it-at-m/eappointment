@@ -1142,6 +1142,18 @@ onMounted(() => {
       });
     }
 
+    // If a preselected office ID is provided, only check the corresponding provider's checkbox
+    if (props.preselectedOfficeId) {
+      selectedProviders.value = selectableProviders.value.reduce(
+        (acc, item) => {
+          acc[item.id] = String(item.id) === String(props.preselectedOfficeId);
+          return acc;
+        },
+        {} as { [id: string]: boolean }
+      );
+      initialized = true;
+    }
+
     officeOrder.value = new Map(
       selectableProviders.value.map((office, index) => [
         Number(office.id),
