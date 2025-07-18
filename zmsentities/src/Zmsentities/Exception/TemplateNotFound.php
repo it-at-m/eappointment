@@ -10,4 +10,6 @@ class TemplateNotFound extends \Exception
     protected $code = 500;
 
     protected $message = 'The requested template does not exist';
+    
+    public $data;
 }
