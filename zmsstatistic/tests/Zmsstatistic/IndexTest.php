@@ -27,7 +27,7 @@ class IndexTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/config/',
                     'parameters' => [],
-                    'xtoken' => 'secure-token',
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
                     'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
@@ -57,7 +57,7 @@ class IndexTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/config/',
                     'parameters' => [],
-                    'xtoken' => 'secure-token',
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
                     'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
@@ -90,7 +90,7 @@ class IndexTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/config/',
                     'parameters' => [],
-                    'xtoken' => 'secure-token',
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
                     'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
@@ -122,7 +122,7 @@ class IndexTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/config/',
                     'parameters' => [],
-                    'xtoken' => 'secure-token',
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
                     'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
@@ -156,7 +156,7 @@ class IndexTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/config/',
                     'parameters' => [],
-                    'xtoken' => 'secure-token',
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
                     'response' => $this->readFixture("GET_config.json"),
                 ]
             ]
