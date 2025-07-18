@@ -304,11 +304,8 @@
                 providersWithAppointments.length === 1
               "
             >
-              <div v-if="currentDayPart === 'am'">
-                <p class="centered-text">{{ t("am") }}</p>
-              </div>
-              <div v-else>
-                <p class="centered-text">{{ t("pm") }}</p>
+              <div>
+                <p class="centered-text">{{ t(currentDayPart) }}</p>
               </div>
               <div class="grid">
                 <div
