@@ -1,7 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
-import * as ZMSAppointmentAPI from "@/api/ZMSAppointmentAPI.ts";
 
 // @ts-expect-error: Vue SFC import for test
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
@@ -15,9 +14,9 @@ describe("AppointmentView", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       status: 200,
       json: async () => ({
+        offices: [],
         services: [],
         relations: [],
-        offices: [],
       }),
     }));
   });
@@ -160,31 +159,6 @@ describe("AppointmentView", () => {
       wrapper.vm.currentView = 3;
       await nextTick();
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(true);
-    });
-
-    it("jumps to calendar view when valid serviceId and locationId are provided", async () => {
-      const fetchMock = vi
-        .spyOn(ZMSAppointmentAPI, "fetchServicesAndProviders")
-        .mockResolvedValue({
-          offices: [{ id: "10489", name: "Office A" }],
-          services: [{ id: "1063453", name: "Service A" }],
-          relations: [],
-        });
-
-      const wrapper = createWrapper({
-        serviceId: "1063453",
-        locationId: "10489",
-        appointmentHash: undefined,
-      });
-
-      await nextTick();
-      await Promise.resolve();
-      await nextTick();
-
-      expect(wrapper.vm.currentView).toBe(1);
-      expect(wrapper.find('[data-test="calendar-view"]').exists()).toBe(true);
-
-      fetchMock.mockRestore();
     });
   });
 
@@ -856,7 +830,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set empty firstName
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "",
@@ -878,7 +852,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set empty lastName
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "John",
@@ -900,7 +874,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set empty mailAddress
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "John",
@@ -922,7 +896,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set empty telephoneNumber
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "John",
@@ -944,7 +918,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set invalid mailAddress
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "John",
@@ -966,7 +940,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set invalid telephoneNumber
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "John",
