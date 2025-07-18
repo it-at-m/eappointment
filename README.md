@@ -160,9 +160,10 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
 
 - Usefule flags for `./vendor/bin/phpunit`:
   * `--display-warnings`
-  * `--display-deprecations`
+  * `--display-phpunit-deprecations`
   * `--display-notices`
   * `--display-errors`
+  * `--display-failures`
 
 For `zmsapi` and `zmsdb` you must first import the test data (see below). 
 
