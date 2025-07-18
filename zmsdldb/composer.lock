@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65dd42ea3c17ecd7faf07a96ab39041d",
+    "content-hash": "e42f9f8e75cf4c8aa1e6c206e364d2a6",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -184,7 +184,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "4eb465ddffc32f521827a73c90a3e0884fc93914"
+                "reference": "804a7a0543b8dd8245a7299d08e1c1a7947c5880"
             },
             "require": {
                 "ext-json": ">=0",
@@ -232,7 +232,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "4eb465ddffc32f521827a73c90a3e0884fc93914"
+                "reference": "804a7a0543b8dd8245a7299d08e1c1a7947c5880"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -366,7 +366,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "4eb465ddffc32f521827a73c90a3e0884fc93914"
+                "reference": "804a7a0543b8dd8245a7299d08e1c1a7947c5880"
             },
             "require": {
                 "aura/sql": "^4",
@@ -449,7 +449,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "4eb465ddffc32f521827a73c90a3e0884fc93914"
+                "reference": "804a7a0543b8dd8245a7299d08e1c1a7947c5880"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -505,7 +505,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "4eb465ddffc32f521827a73c90a3e0884fc93914"
+                "reference": "804a7a0543b8dd8245a7299d08e1c1a7947c5880"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -1460,24 +1460,24 @@
         },
         {
             "name": "nategood/httpful",
-            "version": "0.3.2",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nategood/httpful.git",
-                "reference": "0cded3ea97ba905600de9ceb9ef13f3ab681587c"
+                "reference": "ea02c8aedef70b9a453ce97978d9d7c413972f15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nategood/httpful/zipball/0cded3ea97ba905600de9ceb9ef13f3ab681587c",
-                "reference": "0cded3ea97ba905600de9ceb9ef13f3ab681587c",
+                "url": "https://api.github.com/repos/nategood/httpful/zipball/ea02c8aedef70b9a453ce97978d9d7c413972f15",
+                "reference": "ea02c8aedef70b9a453ce97978d9d7c413972f15",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
-                "php": ">=7.2"
+                "php": ">=8.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "*"
+                "phpunit/phpunit": "^10.5"
             },
             "type": "library",
             "autoload": {
@@ -1508,9 +1508,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nategood/httpful/issues",
-                "source": "https://github.com/nategood/httpful/tree/v0.3.2"
+                "source": "https://github.com/nategood/httpful/tree/v1.0.0"
             },
-            "time": "2020-01-25T01:13:13+00:00"
+            "time": "2024-05-01T11:33:16+00:00"
         },
         {
             "name": "nikic/fast-route",
@@ -2402,30 +2402,30 @@
         },
         {
             "name": "psr/log",
-            "version": "2.0.0",
+            "version": "1.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "ef29f6d262798707a9edd554e2b82517ef3a9376"
+                "reference": "d49695b909c3b7628b6289db5479a1c204601f11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/ef29f6d262798707a9edd554e2b82517ef3a9376",
-                "reference": "ef29f6d262798707a9edd554e2b82517ef3a9376",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/d49695b909c3b7628b6289db5479a1c204601f11",
+                "reference": "d49695b909c3b7628b6289db5479a1c204601f11",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.0.0"
+                "php": ">=5.3.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Psr\\Log\\": "src"
+                    "Psr\\Log\\": "Psr/Log/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -2446,9 +2446,9 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/2.0.0"
+                "source": "https://github.com/php-fig/log/tree/1.1.4"
             },
-            "time": "2021-07-14T16:41:46+00:00"
+            "time": "2021-05-03T11:20:27+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -4030,20 +4030,35 @@
         },
         {
             "name": "vanilla/garden-cli",
-            "version": "v1.6.3",
+            "version": "v3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vanilla/garden-cli.git",
-                "reference": "8d150135624e207750cf45be107c3b4ef820faf4"
+                "reference": "d9844c47f4f2812259ee1b583aa66e7b6b5d85c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vanilla/garden-cli/zipball/8d150135624e207750cf45be107c3b4ef820faf4",
-                "reference": "8d150135624e207750cf45be107c3b4ef820faf4",
+                "url": "https://api.github.com/repos/vanilla/garden-cli/zipball/d9844c47f4f2812259ee1b583aa66e7b6b5d85c5",
+                "reference": "d9844c47f4f2812259ee1b583aa66e7b6b5d85c5",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6.0"
+                "ext-json": "*",
+                "php": ">=7.2",
+                "psr/log": "^1.0"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.8",
+                "phpdocumentor/reflection-docblock": "^4.3",
+                "phpunit/phpunit": "^8",
+                "vanilla/garden-container": "^3.0",
+                "vanilla/standards": "^1.3",
+                "vimeo/psalm": "^3.16"
+            },
+            "suggest": {
+                "ext-pdo": "Required for the DbUtils class.",
+                "phpdocumentor/reflection-docblock": "Required for the CliApplication functionality.",
+                "vanilla/garden-container": "Required for the CliApplication functionality."
             },
             "type": "library",
             "autoload": {
@@ -4064,9 +4079,9 @@
             "description": "A full-featured, yet ridiculously simple commandline parser for your next php cli script. Stop fighting with getopt().",
             "support": {
                 "issues": "https://github.com/vanilla/garden-cli/issues",
-                "source": "https://github.com/vanilla/garden-cli/tree/master"
+                "source": "https://github.com/vanilla/garden-cli/tree/v3.1.2"
             },
-            "time": "2017-11-30T16:08:28+00:00"
+            "time": "2020-10-25T13:36:44+00:00"
         }
     ],
     "packages-dev": [
