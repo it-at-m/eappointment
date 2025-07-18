@@ -186,7 +186,7 @@ class HttpTest extends Base
     public function testToken()
     {
         $this->createHttpClient(null, false);
-        $result = static::$http_client->readGetResult('/config/', null, 'secure-token');
+        $result = static::$http_client->readGetResult('/config/', null, 'a9b215f1-e460-490c-8a0b-6d42c274d5e4');
         $entity = $result->getEntity();
         $this->assertTrue($entity instanceof \BO\Zmsentities\Config);
     }
