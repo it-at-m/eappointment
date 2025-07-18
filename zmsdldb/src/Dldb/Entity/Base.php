@@ -88,25 +88,23 @@ class Base extends \ArrayObject
         $this->offsetSet($name, $value);
     }
 
-    public function offsetSet($index, $value): void
+    public function offsetSet($index, $value)
     {
-        if ($index === 'data_json') {
+        if ('data_json' == $index) {
             $value = json_decode($value, true);
             $this->exchangeArray($value);
-            return;
-        }
+        } else {
+            if (stripos($index, '_json')) {
+                $value = json_decode($value, true);
+                $index = str_replace('_json', '', $index);
+            }
+            if (stripos($index, '__')) {
+                static::doubleUnterlineToArray($this, $index, $value);
+                return true;
+            }
 
-        if (stripos($index, '_json') !== false) {
-            $value = json_decode($value, true);
-            $index = str_replace('_json', '', $index);
+            parent::offsetSet($index, $value);
         }
-
-        if (stripos($index, '__') !== false) {
-            static::doubleUnterlineToArray($this, $index, $value);
-            return;
-        }
-
-        parent::offsetSet($index, $value);
     }
 
     public static function doubleUnterlineToArray(&$array, $key, $value)
