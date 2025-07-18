@@ -36,7 +36,8 @@
         "php-http/curl-client": "^2.2",
         "slim/psr7": "^1.5",
         "tracy/tracy": "^2.9",
-        "twig/twig": "3.*"
+        "twig/twig": "3.*",
+        "roave/security-advisories": "dev-master"
     },
     "scripts": {
         "command": "bin/configure"
@@ -52,6 +53,7 @@
         "phpspec/prophecy-phpunit": "^2.4",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
-        "helmich/phpunit-psr7-assert": "4.4.1"
+        "helmich/phpunit-psr7-assert": "4.4.1",
+        "roave/security-advisories": "dev-master"
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1a95c872e86fa00556b223ad811cf536",
+    "content-hash": "aa82eeb027ddf391a1c18b468f5e1355",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -126,17 +126,18 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "2d9f52108a8cac93f8e6ce3d452dbb26aa094012"
+                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
             },
             "require": {
                 "ext-json": ">=0",
                 "ext-pcre": ">=0",
-                "php": ">=8.3"
+                "php": ">=8.3",
+                "roave/security-advisories": "dev-master"
             },
             "require-dev": {
                 "phpmd/phpmd": "^2.8.0",
                 "phpunit/phpunit": "^10.5",
-                "roave/security-advisories": "dev-latest",
+                "roave/security-advisories": "dev-master",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -174,7 +175,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "02a2d1340226765b6173d56ce3ea7986a2afe5e3"
+                "reference": "314ecc1f289d54083dd14fee8c4adefbd4b82388"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -188,6 +189,7 @@
                 "php": ">=8.3",
                 "php-http/curl-client": "^2.2",
                 "psr/http-message": "^1.0",
+                "roave/security-advisories": "dev-master",
                 "slim/psr7": "^1.5",
                 "tracy/tracy": "^2.9",
                 "twig/twig": "3.*"
@@ -197,6 +199,7 @@
                 "phpmd/phpmd": "@stable",
                 "phpspec/prophecy-phpunit": "^2.4",
                 "phpunit/phpunit": "^10.5",
+                "roave/security-advisories": "dev-master",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -232,7 +235,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "2d9f52108a8cac93f8e6ce3d452dbb26aa094012"
+                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -244,6 +247,7 @@
                 "league/html-to-markdown": "^5.0",
                 "opis/json-schema": "^2.4",
                 "php": ">=8.3",
+                "roave/security-advisories": "dev-master",
                 "symfony/translation": "^5.4",
                 "symfony/twig-bridge": "^5.4",
                 "twig/intl-extra": "^3.4",
@@ -253,6 +257,7 @@
                 "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^10.5",
+                "roave/security-advisories": "dev-master",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
@@ -288,7 +293,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "2d9f52108a8cac93f8e6ce3d452dbb26aa094012"
+                "reference": "0896b0f7a818aa911a372387ed2ce021c1bd53df"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -296,6 +301,7 @@
                 "ext-posix": "*",
                 "monolog/monolog": "^2.0",
                 "php": ">=8.3",
+                "roave/security-advisories": "dev-master",
                 "slim/http-cache": "1.*",
                 "slim/psr7": "^1.5",
                 "slim/slim": "4.*",
@@ -313,6 +319,7 @@
                 "helmich/phpunit-psr7-assert": "4.4.1",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^10.5",
+                "roave/security-advisories": "dev-master",
                 "squizlabs/php_codesniffer": "*"
             },
             "type": "library",

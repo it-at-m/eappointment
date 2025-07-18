@@ -28,7 +28,8 @@
         "squizlabs/php_codesniffer": "*",
         "mockery/mockery": "^0.9.4",
         "phpunit/phpunit": "^10.5",
-        "helmich/phpunit-psr7-assert": "4.4.1"
+        "helmich/phpunit-psr7-assert": "4.4.1",
+        "roave/security-advisories": "dev-master"
     },
     "require": {
         "php": ">=8.3",
@@ -40,7 +41,8 @@
         "eappointment/zmsentities": "@dev",
         "monolog/monolog": "^2.0",
         "ulrichsg/getopt-php": "^2.3",
-        "league/climate": "^3.2"
+        "league/climate": "^3.2",
+        "roave/security-advisories": "dev-master"
     },
     "scripts": {
         "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",

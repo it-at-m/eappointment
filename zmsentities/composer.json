@@ -21,7 +21,8 @@
         "twig/intl-extra": "^3.4",
         "symfony/translation": "^5.4",
         "symfony/twig-bridge": "^5.4",
-        "opis/json-schema": "^2.4"
+        "opis/json-schema": "^2.4",
+        "roave/security-advisories": "dev-master"
     },
     "scripts": {
         "command": "bin/configure"
@@ -45,6 +46,7 @@
         "phpunit/phpunit": "^10.5",
         "helmich/phpunit-psr7-assert": "4.4.1",
         "phpmd/phpmd": "@stable",
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "roave/security-advisories": "dev-master"
     }
 }

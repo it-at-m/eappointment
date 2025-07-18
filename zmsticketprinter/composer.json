@@ -25,7 +25,8 @@
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^10.5",
         "helmich/phpunit-psr7-assert": "4.4.1",
-        "phpspec/prophecy-phpunit": "^2.4"
+        "phpspec/prophecy-phpunit": "^2.4",
+        "roave/security-advisories": "dev-master"
     },
     "require": {
         "php": ">=8.3",
@@ -35,9 +36,9 @@
         "eappointment/zmsclient": "@dev",
         "ext-json": ">=1.0",
         "monolog/monolog": "^2.0",
-        "roave/security-advisories": "dev-master",
         "twig/twig": "3.*",
-        "twig/intl-extra": "^3.4"
+        "twig/intl-extra": "^3.4",
+        "roave/security-advisories": "dev-master"
     },
     "bin": [],
     "autoload": {

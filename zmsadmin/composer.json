@@ -30,7 +30,8 @@
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^10.5",
         "helmich/phpunit-psr7-assert": "4.4.1",
-        "phpspec/prophecy-phpunit": "^2.4"
+        "phpspec/prophecy-phpunit": "^2.4",
+        "roave/security-advisories": "dev-master"
     },
     "require": {
         "php": ">=8.3",
@@ -46,7 +47,8 @@
         "twig/twig": "3.*",
         "symfony/polyfill-intl-icu": "^1.21",
         "ezyang/htmlpurifier": "^4.18",
-        "league/commonmark": "^2.7"
+        "league/commonmark": "^2.7",
+        "roave/security-advisories": "dev-master"
     },
     "bin": [],
     "autoload": {
