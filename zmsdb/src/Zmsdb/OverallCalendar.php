@@ -14,42 +14,33 @@ class OverallCalendar extends Base
         if (!$rows) {
             return;
         }
-
         $placeholders = rtrim(str_repeat('(?,?,?,?,?),', count($rows)), ',');
-        $sql = sprintf(Query\OverallCalendar::UPSERT_MULTI, $placeholders);
+        $sql = sprintf(Calender::INSERT_MULTI, $placeholders);
 
         $params = [];
         foreach ($rows as $r) {
             $params[] = $r[0];
             $params[] = $r[1];
             $params[] = $r[2]->format('Y-m-d H:i:s');
-            $params[] = (int)$r[3];
-            $params[] = $r[4] ?? 'free';
+            $params[] = $r[3];
+            $params[] = $r[4];
         }
         $this->perform($sql, $params);
     }
 
-    public function cancelAvailability(int $scopeId, int $availabilityId): void
-    {
-        $this->perform(Calender::CANCEL_AVAILABILITY, [
+    public function deleteFreeRange(
+        int $scopeId,
+        int $availabilityId,
+        DateTimeInterface $begin,
+        DateTimeInterface $finish
+    ): void {
+        $this->perform(Calender::DELETE_FREE_RANGE, [
             'scope_id' => $scopeId,
             'availability_id' => $availabilityId,
+            'begin' => $begin->format('Y-m-d H:i:s'),
+            'finish' => $finish->format('Y-m-d H:i:s'),
         ]);
     }
-
-    public function purgeMissingAvailabilityByScope(
-        \DateTimeInterface $dateTime,
-        int $scopeId
-    ): bool {
-        return (bool) $this->perform(
-            Query\OverallCalendar::PURGE_MISSING_AVAIL_BY_SCOPE,
-            [
-                'dateString' => $dateTime->format('Y-m-d'),
-                'scopeID'    => $scopeId,
-            ]
-        );
-    }
-
 
     public function deleteOlderThan(DateTimeInterface $date): bool
     {
