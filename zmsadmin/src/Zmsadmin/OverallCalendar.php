@@ -32,7 +32,7 @@ class OverallCalendar extends BaseController
             $response,
             'page/overallCalendar.twig',
             array(
-                'title' => 'Gesamtübersicht',
+                'title' => 'Wochenkalender',
                 'workstation' => $workstation,
                 'menuActive' => 'overallcalendar',
                 'hideNavigation' => true,

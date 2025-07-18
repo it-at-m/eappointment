@@ -63,7 +63,7 @@ class OverallCalendarTest extends Base
             [self::SCOPE, $start]
         );
 
-        $this->assertSame('cancelled', $row['status'], 'nach dem Unbook muss der Slot als cancelled markiert sein');
+        $this->assertSame('free',  $row['status']);
         $this->assertNull($row['process_id']);
     }
 }

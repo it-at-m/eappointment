@@ -80,12 +80,9 @@ $day-h: 2.2rem;
 }
 .overall-calendar-open   { background: transparent;  border: 1px dashed #bbb; }
 .overall-calendar-empty  { background: transparent; }
-.overall-calendar-termin {
-  color: #000;
+.overall-calendar-termin {       /* Farbe wird inline gesetzt */
+  color: #000;                   /* auf Pastell gut lesbar  */
   border: 1px solid #bbb;
-}
-.overall-calendar-cancelled {
-  background: repeating-linear-gradient(135deg, rgba(240, 240, 240, 0.5), rgba(240, 240, 240, 0.5) 6px, rgba(221, 221, 221, 0.5) 6px 12px);
 }
 
 .overall-calendar-separator        { background:#ddd;   width:2px; }
@@ -180,9 +177,4 @@ body.no-page-scroll {
   background: #fff;
   z-index: 6;
   border-right: 1px solid #ccc;
-}
-
-.overall-calendar-actions .btn {
-  margin-bottom: 0;
-  margin-top: 1rem;
 }

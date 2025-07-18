@@ -25,54 +25,63 @@ class OverallCalendarRead extends BaseController
             $scope =& $day['scopes'][$scopeKey];
             $time  =& $scope['times'][$timeKey]['seats'];
 
-            $day['date']        = (new DateTimeImmutable($dateKey))->getTimestamp();
-            $scope['id']        = $scopeKey;
-            $scope['name']      = $row['scope_name'];
-            $scope['shortName'] = $row['scope_short'];
-            $scope['maxSeats']  = max($scope['maxSeats'] ?? 0, $seatNo, $defaultSeats);
+            $day['date']            = (new DateTimeImmutable($dateKey))->getTimestamp();
+            $scope['id']            = $scopeKey;
+            $scope['name']          = $row['scope_name'];
+            $scope['shortName']     = $row['scope_short'];
+            $scope['maxSeats']      = max($scope['maxSeats'] ?? 0, $seatNo, $defaultSeats);
+            $time[$seatNo]['init']  = true;
 
             if ($row['status'] === 'termin') {
                 if ($row['slots'] !== null) {
                     $time[$seatNo] = [
-                        'seatNo'   => $seatNo,
-                        'status'   => 'termin',
-                        'processId' => (int) $row['process_id'],
-                        'slots'    => (int) $row['slots'],
+                        'status'    => 'termin',
+                        'processId' => (int)$row['process_id'],
+                        'slots'     => (int)$row['slots'],
                     ];
                     $lastSlotInfo["$scopeKey|$seatNo"] = [
-                        'processId' => (int) $row['process_id'],
-                        'openSlots' => (int) $row['slots'] - 1,
+                        'processId' => (int)$row['process_id'],
+                        'openSlots' => (int)$row['slots'] - 1,
                     ];
                 } else {
-                    $time[$seatNo] = [
-                        'seatNo' => $seatNo,
-                        'status' => 'skip'
-                    ];
                     $info = $lastSlotInfo["$scopeKey|$seatNo"] ?? null;
-                    if ($info && --$info['openSlots'] <= 0) {
-                        unset($lastSlotInfo["$scopeKey|$seatNo"]);
+                    if ($info && $info['openSlots'] > 0) {
+                        $time[$seatNo] = ['status' => 'skip'];
+                        $lastSlotInfo["$scopeKey|$seatNo"]['openSlots']--;
+
+                        if ($lastSlotInfo["$scopeKey|$seatNo"]['openSlots'] <= 0) {
+                            unset($lastSlotInfo["$scopeKey|$seatNo"]);
+                        }
                     } else {
-                        $lastSlotInfo["$scopeKey|$seatNo"] = $info;
+                        $time[$seatNo] = ['status' => 'skip'];
                     }
                 }
-            } elseif ($row['status'] === 'cancelled') {
-                $time[$seatNo] = [
-                    'seatNo' => $seatNo,
-                    'status' => 'cancelled'
-                ];
-                unset($lastSlotInfo["$scopeKey|$seatNo"]);
             } else {
-                $time[$seatNo] = [
-                    'seatNo' => $seatNo,
-                    'status' => 'open'
-                ];
+                $info = $lastSlotInfo["$scopeKey|$seatNo"] ?? null;
+                if ($info && $info['openSlots'] > 0) {
+                    $time[$seatNo] = ['status' => 'skip'];
+                    $lastSlotInfo["$scopeKey|$seatNo"]['openSlots']--;
+
+                    if ($lastSlotInfo["$scopeKey|$seatNo"]['openSlots'] <= 0) {
+                        unset($lastSlotInfo["$scopeKey|$seatNo"]);
+                    }
+                } else {
+                    $time[$seatNo] = ['status' => 'open'];
+                    unset($lastSlotInfo["$scopeKey|$seatNo"]);
+                }
             }
         }
 
         foreach ($calendar as &$day) {
             foreach ($day['scopes'] as &$scope) {
                 foreach ($scope['times'] as $timeKey => $slotInfo) {
+                    for ($seatNumber = 1; $seatNumber <= $scope['maxSeats']; $seatNumber++) {
+                        if (!isset($slotInfo['seats'][$seatNumber])) {
+                            $slotInfo['seats'][$seatNumber] = ['status' => 'open'];
+                        }
+                    }
                     ksort($slotInfo['seats']);
+
                     $scope['times'][$timeKey] = [
                         'name'  => $timeKey,
                         'seats' => array_values($slotInfo['seats']),
@@ -82,8 +91,9 @@ class OverallCalendarRead extends BaseController
             }
             $day['scopes'] = array_values($day['scopes']);
         }
-        uksort($calendar, fn($a, $b) => strcmp($a, $b));
-
+        uksort($calendar, function ($a, $b) {
+            return strcmp($a, $b);
+        });
         return ['days' => array_values($calendar)];
     }
 
