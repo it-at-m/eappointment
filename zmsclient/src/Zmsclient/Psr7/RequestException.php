@@ -21,7 +21,7 @@ class RequestException extends \Exception
         \Exception $previous = null
     ) {
         $this->request = $request;
-        $code = null;
+        $code = 0;
         parent::__construct($message, $code, $previous);
     }
 }

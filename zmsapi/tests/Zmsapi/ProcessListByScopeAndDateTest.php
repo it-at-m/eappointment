@@ -27,7 +27,7 @@ class ProcessListByScopeAndDateTest extends Base
             []
         );
         $this->assertStringContainsString('$schema', (string)$response->getBody());
-        $this->assertStringContainsString('"id":"141","source":"dldb"', (string)$response->getBody());
+        $this->assertStringContainsString('"id":141,"source":"dldb"', (string)$response->getBody());
         $this->assertStringNotContainsString('"provider"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }

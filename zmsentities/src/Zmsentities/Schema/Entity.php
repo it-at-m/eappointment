@@ -60,11 +60,12 @@ class Entity extends \ArrayObject implements \JsonSerializable
         }
     }
 
-    public function exchangeArray($input)
+    public function exchangeArray(object|array $input): array
     {
         parent::exchangeArray($this->getDefaults());
         $input = $this->getUnflattenedArray($input);
         $this->addData($input);
+        return $this->getArrayCopy();
     }
 
     public function getUnflattenedArray($input)
@@ -176,7 +177,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $schema = array(
             '$schema' => 'https://schema.berlin.de/queuemanagement/' . $this->getEntityName() . '.json'

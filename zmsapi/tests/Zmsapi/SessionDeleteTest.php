@@ -12,7 +12,7 @@ class SessionDeleteTest extends Base
 
     public function testRendering()
     {
-        (new SessionUpdateTest)->testRendering();
+        (new SessionUpdateTest('dummyTest'))->testRendering();
         $response = $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
         $this->assertStringContainsString('session.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());

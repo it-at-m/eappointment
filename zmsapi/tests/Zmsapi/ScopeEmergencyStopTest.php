@@ -30,7 +30,7 @@ class ScopeEmergencyStopTest extends Base
             }'
         ], []);
         $this->assertStringContainsString('scope.json', (string)$response->getBody());
-        $this->assertStringContainsString('"activated":"0"', (string)$response->getBody());
+        $this->assertStringContainsString('"activated":0', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

@@ -18,7 +18,7 @@ class Message implements \JsonSerializable
     /**
      * @var Mixed $data
      */
-    public $data = null;
+    public mixed $data = null;
 
     /**
      * @var Mixed $data
@@ -107,7 +107,7 @@ class Message implements \JsonSerializable
         return $this->statuscode;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $schema = $this->request->getUri()->getScheme();
         $schema .= '://';

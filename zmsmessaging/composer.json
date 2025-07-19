@@ -12,26 +12,24 @@
         "command": "bin/configure"
     },
     "config": {
-        "platform": {
-            "php": "8.0"
-        },
         "allow-plugins": {
             "php-http/discovery": true
         }
     },
     "require": {
+        "php": ">=8.3",
         "phpmailer/phpmailer": "^6.4",
-        "monolog/monolog": "1.*",
+        "monolog/monolog": "^2.0",
         "eappointment/mellon": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsentities": "@dev",
         "eappointment/zmsslim": "@dev",
-        "roave/security-advisories": "dev-master",
         "giggsey/libphonenumber-for-php": "^8.13.55",
         "react/event-loop": "^1.5",
         "react/promise": "^3.2",
         "react/http": "^1.10",
-        "react/socket": "^1.15"
+        "react/socket": "^1.15",
+        "roave/security-advisories": "dev-latest"
     },
     "autoload": {
         "psr-4": {
@@ -40,10 +38,11 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5.4",
-        "phpspec/prophecy-phpunit": "^2.0.0",
+        "phpunit/phpunit": "^10.5",
+        "phpspec/prophecy-phpunit": "^2.4",
         "phpmd/phpmd": "^2.3",
-        "squizlabs/php_codesniffer": "^3.7"
+        "squizlabs/php_codesniffer": "^3.7",
+        "roave/security-advisories": "dev-latest"
     },
     "repositories": [
         {

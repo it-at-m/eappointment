@@ -14,7 +14,7 @@ class ProcessLogTest extends Base
 
     public function testRendering()
     {
-        (new ProcessUpdateTest)->testRendering();
+        (new ProcessUpdateTest('dummyTest'))->testRendering();
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render(['search' => self::SEARCH_PARAM], [], []);
         $this->assertStringContainsString('log.json', (string)$response->getBody());

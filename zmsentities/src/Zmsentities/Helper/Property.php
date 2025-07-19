@@ -42,25 +42,25 @@ class Property implements \ArrayAccess
         return $default;
     }
 
-    public function offsetGet($property)
+    public function offsetGet(mixed $property): mixed
     {
         return $this->__get($property);
     }
 
-    public function offsetExists($property)
+    public function offsetExists(mixed $property): bool
     {
         return null !== $this->__get($property)
             ->get();
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new \BO\Zmsentities\Exception\PropertyOffsetReadOnly(
             __CLASS__ . "[$offset] is readonly, could not set " . htmlspecialchars($value)
         );
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         throw new \BO\Zmsentities\Exception\PropertyOffsetReadOnly(__CLASS__ . "[$offset] is readonly");
     }

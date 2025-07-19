@@ -161,7 +161,7 @@ if ($rollbackDay !== "none") {
         $timestamp = date('Y-m-d');
         $backupDir = $backupPath . '/' . $timestamp;
         
-        if (!mkdir($backupDir, 0777, true) && !is_dir($backupDir)) {
+        if (!is_dir($backupDir) && !mkdir($backupDir, 0777, true)) {
             print($cli->red("Failed to create backup directory at $backupDir\n\n"));
             exit(1);
         }

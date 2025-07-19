@@ -10,14 +10,16 @@ class WorkstationOAuthTest extends Base
 
     public static $authKey = 'vorschau';
 
-    public function __construct()
+    public function setUp(): void
     {
-        parent::__construct();
-        static::$useraccount = json_decode($this->readFixture('GetUseraccount.json'), true);
-        static::$useraccount['id'] = 'testadmin@keycloak';
-        static::$useraccount['username'] = 'testadmin';
-        static::$useraccount['email'] = 'testadmin@example.com';
-        static::$useraccount = json_encode(static::$useraccount);
+        parent::setUp();
+        if (empty(static::$useraccount)) {
+            static::$useraccount = json_decode($this->readFixture('GetUseraccount.json'), true);
+            static::$useraccount['id'] = 'testadmin@keycloak';
+            static::$useraccount['username'] = 'testadmin';
+            static::$useraccount['email'] = 'testadmin@example.com';
+            static::$useraccount = json_encode(static::$useraccount);
+        }
     }
 
     public function testRendering()

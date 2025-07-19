@@ -100,7 +100,7 @@ class Index extends BaseController
             ->isString()
             ->getValue();
 
-        $decoded = base64_decode(str_replace(' ', '+', $config));
+        $decoded = base64_decode(str_replace(' ', '+', $config ?? ''));
 
         return json_decode($decoded, true);
     }
@@ -116,7 +116,7 @@ class Index extends BaseController
         if (!strpos($queryString, 'lang=')) {
             $queryString .= '&lang=de';
         }
-        return str_replace('/&', '', $queryString);
+        return str_replace('/&', '', $queryString ?? '');
     }
 
     private function getTranslations($languageConfig, $currentLang)

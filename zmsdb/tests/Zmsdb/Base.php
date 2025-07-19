@@ -24,7 +24,7 @@ abstract class Base extends TestCase
         \BO\Zmsdb\Connection\Select::setTransaction(false);
 
         $className = explode('\\', static::class);
-        $testName = end($className) . '/' . $this->getName();
+        $testName = end($className) . '/' . $this->name();
         Db::executeTestData($testName, 'setup');
     }
 
@@ -41,7 +41,7 @@ abstract class Base extends TestCase
         \BO\Zmsdb\Connection\Select::closeReadConnection();
 
         $className = explode('\\', static::class);
-        $testName = end($className) . '/' . $this->getName();
+        $testName = end($className) . '/' . $this->name();
         Db::executeTestData($testName, 'teardown');
     }
 

@@ -11,7 +11,7 @@ class TicketprinterWaitingnumberByScopeTest extends Base
         //Schöneberg with test scope ghostWorkstationCount of 3
         $response = $this->render(['id' => 146, 'hash' => '1abcdefghijklmnopqrstuvwxyz'], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
-        $this->assertStringContainsString('"id":"146"', (string)$response->getBody());
+        $this->assertStringContainsString('"id":146', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

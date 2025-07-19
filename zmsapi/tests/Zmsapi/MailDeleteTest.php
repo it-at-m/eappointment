@@ -8,7 +8,7 @@ class MailDeleteTest extends Base
 
     public function testRendering()
     {
-        $jsonString = (string)(new MailAddTest)->testRendering()->getBody();
+        $jsonString = (string)(new MailAddTest('dummyTest'))->testRendering()->getBody();
         $message = json_decode($jsonString, true);
         $entity = new \BO\Zmsentities\Mail($message['data']);
         $this->setWorkstation()->getUseraccount()->setRights('superuser');

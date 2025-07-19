@@ -5,6 +5,7 @@ namespace BO\Zmsclient\GraphQL;
 class GraphQLInterpreter implements \JsonSerializable
 {
     protected $gqlString;
+    protected $data;
 
     public function __construct($gqlString)
     {
@@ -57,7 +58,7 @@ class GraphQLInterpreter implements \JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->data;
     }

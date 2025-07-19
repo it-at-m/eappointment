@@ -9,12 +9,12 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": ">=8.3",
         "ext-json": "*",
         "ext-posix": "*",
         "slim/slim": "4.*",
         "twig/twig": "3.*",
-        "monolog/monolog": "1.*",
+        "monolog/monolog": "^2.0",
         "slim/twig-view": "3.*",
         "slim/http-cache": "1.*",
         "eappointment/mellon": "@dev",
@@ -22,13 +22,15 @@
         "symfony/twig-bridge": "^5.2",
         "stevenmaguire/oauth2-keycloak": "^4.0",
         "slim/psr7": "^1.5",
-        "tracy/tracy": "^2.9"
+        "tracy/tracy": "^2.9",
+        "roave/security-advisories": "dev-latest"
     },
     "require-dev": {
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "^9.5.4",
-        "helmich/phpunit-psr7-assert": "^4.3.0"
+        "phpunit/phpunit": "^10.5",
+        "helmich/phpunit-psr7-assert": "4.4.1",
+        "roave/security-advisories": "dev-latest"
     },
     "scripts": {
         "command": "bin/configure"

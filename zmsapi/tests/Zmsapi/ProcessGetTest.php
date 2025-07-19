@@ -33,7 +33,7 @@ class ProcessGetTest extends Base
             ->setJson($this->readFixture('GetProcess_10030.json'));
         $this->assertStringContainsString('"appointments":[{"date":1463379000}]', (string)$graphqlInterpreter);
 
-        $this->assertStringContainsString('"id":"141","source":"dldb","shortName":""', (string)$response->getBody());
+        $this->assertStringContainsString('"id":141,"source":"dldb","shortName":""', (string)$response->getBody());
         $this->assertStringNotContainsString('"provider":{"id":"122208","source":"dldb"}', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }

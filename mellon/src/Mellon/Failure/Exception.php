@@ -29,7 +29,7 @@ class Exception extends \Exception
             "({"
             . $validator->getName()
             . "}=="
-            . htmlspecialchars(escapeshellarg(substr((string)$validator->getUnvalidated(), 0, 65536)))
+            . escapeshellarg(substr((string)$validator->getUnvalidated(), 0, 65536))
             . ")";
         return $this;
     }

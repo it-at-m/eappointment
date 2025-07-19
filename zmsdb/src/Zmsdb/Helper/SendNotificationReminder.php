@@ -7,7 +7,7 @@ use BO\Zmsdb\Config as ConfigRepository;
 
 class SendNotificationReminder
 {
-    protected $datetime;
+    public \DateTimeInterface $dateTime;
 
     protected $reminderInSeconds;
 

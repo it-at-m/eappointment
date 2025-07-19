@@ -128,7 +128,7 @@ class ProcessReserveTest extends Base
            'clientkey' => 'default'
         ], []);
 
-        $this->assertStringContainsString('"slotCount":"1"', (string)$response->getBody());
+        $this->assertStringContainsString('"slotCount":1', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

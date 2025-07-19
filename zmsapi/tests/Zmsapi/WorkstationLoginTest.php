@@ -12,15 +12,17 @@ class WorkstationLoginTest extends Base
 
     public static $authKey = 'vorschau';
 
-    public function __construct()
+    public function setUp(): void
     {
-        parent::__construct();
+        parent::setUp();
         static::$loginName = (! \App::DEBUG) ? static::$loginName : 'testadmin';
         static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
-        static::$useraccount = json_decode($this->readFixture('GetUseraccount.json'), 1);
-        static::$useraccount['id'] = static::$loginName;
-        static::$useraccount['password'] = static::$authKey;
-        static::$useraccount = json_encode(static::$useraccount);
+        if (empty(static::$useraccount)) {
+            static::$useraccount = json_decode($this->readFixture('GetUseraccount.json'), 1);
+            static::$useraccount['id'] = static::$loginName;
+            static::$useraccount['password'] = static::$authKey;
+            static::$useraccount = json_encode(static::$useraccount);
+        }
     }
 
     public function testRendering()

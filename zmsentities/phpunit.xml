@@ -1,30 +1,9 @@
 <?xml version="1.0"?>
-<phpunit
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-  backupGlobals="false"
-  backupStaticAttributes="false"
-  bootstrap="tests/bootstrap.php"
-  colors="true"
-  convertErrorsToExceptions="true"
-  convertNoticesToExceptions="true"
-  convertWarningsToExceptions="true"
-  forceCoversAnnotation="false"
-  stopOnFailure="false"
-  verbose="true"
-  processIsolation="false"
->
-  <coverage processUncoveredFiles="true">
-    <include>
-      <directory suffix=".php">./src</directory>
-    </include>
-    <exclude>
-      <directory>./vendor</directory>
-      <directory>./tests</directory>
-    </exclude>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" backupGlobals="false" bootstrap="tests/bootstrap.php" colors="true" stopOnFailure="false" processIsolation="false" cacheDirectory=".phpunit.cache" backupStaticProperties="false" requireCoverageMetadata="false">
+  <coverage>
     <report>
-      <html outputDirectory="./coverage/html" />
-      <clover outputFile="./coverage/clover.xml" />
+      <html outputDirectory="./coverage/html"/>
+      <clover outputFile="./coverage/clover.xml"/>
     </report>
   </coverage>
   <testsuites>
@@ -32,4 +11,13 @@
       <directory>./tests/Zmsentities/</directory>
     </testsuite>
   </testsuites>
+  <source>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+    <exclude>
+      <directory>./vendor</directory>
+      <directory>./tests</directory>
+    </exclude>
+  </source>
 </phpunit>

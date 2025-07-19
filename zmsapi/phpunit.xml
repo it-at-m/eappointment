@@ -1,34 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" 
-  backupGlobals="false" 
-  backupStaticAttributes="false" 
-  bootstrap="tests/Zmsapi/bootstrap.php" 
-  colors="true" 
-  convertErrorsToExceptions="true" 
-  convertNoticesToExceptions="true" 
-  convertWarningsToExceptions="true" 
-  forceCoversAnnotation="false" 
-  stopOnFailure="false" 
-  verbose="true"
-  processIsolation="false"
->
-    <testsuites>
-        <testsuite name="Zmsapi Test Suite">
-            <directory>./tests/Zmsapi/</directory>
-        </testsuite>
-    </testsuites>
-    <coverage processUncoveredFiles="true">
-        <include>
-            <directory suffix=".php">./src</directory>
-        </include>
-        <exclude>
-            <directory>./tests</directory>
-        </exclude>
-        <report>
-            <html outputDirectory="./coverage/html" />
-            <clover outputFile="./coverage/clover.xml" />
-        </report>
-    </coverage>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" backupGlobals="false" bootstrap="tests/Zmsapi/bootstrap.php" colors="true" stopOnFailure="false" processIsolation="false" cacheDirectory=".phpunit.cache" backupStaticProperties="false" requireCoverageMetadata="false">
+  <testsuites>
+    <testsuite name="Zmsapi Test Suite">
+      <directory>./tests/Zmsapi/</directory>
+    </testsuite>
+  </testsuites>
+  <coverage>
+    <report>
+      <html outputDirectory="./coverage/html"/>
+      <clover outputFile="./coverage/clover.xml"/>
+    </report>
+  </coverage>
+  <source>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+    <exclude>
+      <directory>./tests</directory>
+    </exclude>
+  </source>
 </phpunit>
