@@ -631,7 +631,7 @@ onMounted(() => {
           confirmAppointmentSuccess.value = true;
         } else {
           const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
-          if (firstErrorCode === "processNotPreconfirmedAnymore") {
+          if (firstErrorCode === "processNotPreconfirmedAnymore" || firstErrorCode === "appointmentNotFound") {
             confirmAppointActivationExpiredError.value = true;
           } else {
             confirmAppointmentError.value = true;
