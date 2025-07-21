@@ -28,6 +28,7 @@ class WorkstationProcessGet extends BaseController
         $processId = $args['id'];
         $process = $query->readEntity($processId, (new \BO\Zmsdb\Helper\NoAuth()));
 
+        error_log(json_encode($process));
         $this->testProcessFutureDate($process);
 
         if (! $process || ! $process->hasId()) {
