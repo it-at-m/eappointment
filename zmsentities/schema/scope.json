@@ -291,8 +291,7 @@
                                 }
                             ],
                             "description": "minutes an appointment can have the status preconfirmed",
-                            "default": 60,
-                            "minimum": 15
+                            "default": 60
                         },
                         "startInDaysDefault": {
                             "oneOf": [
