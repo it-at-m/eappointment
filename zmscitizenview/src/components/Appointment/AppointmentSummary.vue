@@ -14,7 +14,7 @@
               v-if="selectedService"
               tabindex="0"
             >
-              {{ selectedService.count }}x {{ selectedService.name }}
+              {{ selectedService.count }}x <a href="{{ getServiceBaseURL() + selectedService.id }}" target="_blank" class="m-link" tabindex="0">{{ selectedService.name }}</a>
               <br />
             </p>
             <div v-if="selectedService && selectedService.subServices">
@@ -26,7 +26,7 @@
                   v-if="subService.count > 0"
                   tabindex="0"
                 >
-                  {{ subService.count }}x {{ subService.name }} <br />
+                  {{ subService.count }}x <a href="{{ getServiceBaseURL() + subService.id }}" target="_blank" class="m-link" tabindex="0">{{ subService.name }}</a> <br />
                 </p>
               </div>
             </div>
@@ -260,6 +260,7 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { SubService } from "@/types/SubService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import { getServiceBaseURL } from "@/utils/Constants";
 
 defineProps<{
   isRebooking: boolean;
