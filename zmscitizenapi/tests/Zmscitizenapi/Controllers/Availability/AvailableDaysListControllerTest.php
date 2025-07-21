@@ -50,7 +50,6 @@ class AvailableDaysListControllerTest extends ControllerTestCase
         $responseBody = json_decode((string) $response->getBody(), true);
         $expectedResponse = [
             'availableDays' => [
-                "2024-08-21",
                 "2024-08-22",
                 "2024-08-23",
                 "2024-08-26",

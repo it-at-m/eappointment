@@ -1,3 +1,59 @@
+     
+## Release Muc-27 (11.07.2025)
+                  
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-329'>ZMSKVR-329</a>] -         Standortadmin Absagemails
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-398'>ZMSKVR-398</a>] -         Logtabelle Wird Durch Cronjob Nicht Gelöscht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-402'>ZMSKVR-402</a>] -         Falsche Fehlermeldung Telefonfeld
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-471'>ZMSKVR-471</a>] -         Anzeige Termindauer bei Leistungsauswahl in Bürgerfrontend 2
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-486'>ZMSKVR-486</a>] -         Bürgerfrontend 2: Dauer der kombinierten DL wird  verkürzt 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-487'>ZMSKVR-487</a>] -         Standorteinstellung &quot;Maximale Anzahl an Terminen pro Mailadresse&quot; unwirksam
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-610'>ZMSKVR-610</a>] -         Schritt 2: Termin – Adresse als Teil der Checkbox
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-630'>ZMSKVR-630</a>] -         Termin-Weiterleitung schlägt fehlt
+</li>
+</ul>
+                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-68'>ZMSKVR-68</a>] -         Unzugeordneter Benutzer 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-82'>ZMSKVR-82</a>] -         Zeitauswahl Kalenderansicht, mehrere Orte
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-96'>ZMSKVR-96</a>] -         Bürgeransicht API Endpunkte für Daten von mehreren Orten für freie Terminen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-174'>ZMSKVR-174</a>] -         zmsslim: Upgrade PHP 8.0 auf 8.3
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-344'>ZMSKVR-344</a>] -         Anpassung Wording in Wartestatistik: Frontend und Download-Datei
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-397'>ZMSKVR-397</a>] -         Passkalender neue Bürgeransicht 
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-429'>ZMSKVR-429</a>] -         Fehlermeldung Aufrufanlage neutral gestalten
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-502'>ZMSKVR-502</a>] -         Schritt 0: Leistungssuche – Barrierefreies Pattern &quot;Select Search&quot; einbauen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-507'>ZMSKVR-507</a>] -         Schritt 2: Termin – Kalender Link-Design für Monat entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-537'>ZMSKVR-537</a>] -         Umbau Abfrage Terminstatus zur Performanceverbesserung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-544'>ZMSKVR-544</a>] -         Perfomance Ticket - Zeitauswahl Kalenderansicht, mehrere Orte
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-546'>ZMSKVR-546</a>] -         Uhrzeitangaben in Wartestatistik + DL Statistik
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-562'>ZMSKVR-562</a>] -         Weitere Verbesserung Wochenkalender 
+</li>
+</ul>
+                                                        
+
 ## Release Muc-26 (25.06.2025)
                             
 <h2>        Bug

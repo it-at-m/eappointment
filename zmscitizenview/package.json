@@ -13,11 +13,11 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@muenchen/muc-patternlab-vue": "5.3.0",
+    "@muenchen/muc-patternlab-vue": "5.4.0",
     "altcha": "^1.2.0",
     "jsdom": "^26.0.0",
     "vue": "^3.5.12",
-    "vue-i18n": "10.0.7",
+    "vue-i18n": "10.0.8",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
@@ -29,7 +29,7 @@
     "@vue/eslint-config-prettier": "10.2.0",
     "@vue/eslint-config-typescript": "14.6.0",
     "@vue/test-utils": "^2.4.1",
-    "eslint": "9.30.1",
+    "eslint": "9.31.0",
     "eslint-plugin-vue": "9.33.0",
     "typescript": "^5.4.2",
     "vite": "^5.4.10",

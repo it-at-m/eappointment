@@ -6,20 +6,48 @@ class OverallCalendar extends Base
 {
     const TABLE = 'gesamtkalender';
 
-    const INSERT_MULTI = '
-        INSERT IGNORE INTO gesamtkalender
-            (scope_id, availability_id, time, seat, status)
+    const UPSERT_MULTI = '
+        INSERT INTO gesamtkalender
+               (scope_id, availability_id, time, seat, status)
         VALUES %s
+        ON DUPLICATE KEY UPDATE
+            status = CASE
+                       WHEN status = "termin" THEN "termin"
+                       ELSE VALUES(status)
+                     END,
+        
+            availability_id = CASE
+                                WHEN status = "termin"
+                                  THEN availability_id
+                                ELSE VALUES(availability_id)
+                              END,
+        
+            updated_at = CURRENT_TIMESTAMP
+        ';
+
+    const CANCEL_AVAILABILITY = '
+        UPDATE gesamtkalender
+           SET status         = "cancelled",
+               availability_id= NULL,
+               updated_at     = CURRENT_TIMESTAMP
+         WHERE scope_id       = :scope_id
+           AND availability_id= :availability_id
+           AND status         = "free"
     ';
 
-    const DELETE_FREE_RANGE = '
-        DELETE FROM gesamtkalender
-         WHERE scope_id = :scope_id
-           AND availability_id = :availability_id  
-           AND status   = "free"
-           AND time    >= :begin
-           AND time    <  :finish
+    const PURGE_MISSING_AVAIL_BY_SCOPE = '
+        UPDATE gesamtkalender g
+           LEFT JOIN oeffnungszeit a
+                  ON g.availability_id = a.OeffnungszeitID
+           SET g.status         = "cancelled",
+               g.availability_id= NULL,
+               g.updated_at     = CURRENT_TIMESTAMP
+         WHERE ( a.OeffnungszeitID IS NULL
+                 OR a.Endedatum      < :dateString )
+           AND g.scope_id   = :scopeID
+           AND g.status    <> "termin"
     ';
+
 
     const DELETE_ALL_BEFORE = '
         DELETE FROM gesamtkalender
@@ -54,12 +82,22 @@ class OverallCalendar extends Base
     ';
 
     const UNBOOK_PROCESS = '
-        UPDATE gesamtkalender
-           SET process_id = NULL,
-               slots      = NULL,
-               status     = "free"
-         WHERE scope_id   = :scope_id
-           AND process_id = :process_id
+        UPDATE gesamtkalender g
+        LEFT  JOIN oeffnungszeit a
+               ON g.availability_id = a.OeffnungszeitID
+           SET g.process_id  = NULL,
+               g.slots       = NULL,
+               g.status      = CASE
+                                 WHEN a.OeffnungszeitID IS NULL
+                                      OR a.Endedatum < CURDATE()
+                                    THEN "cancelled"
+                                WHEN g.seat > IFNULL(a.Anzahlterminarbeitsplaetze,1)
+                                    THEN "cancelled"
+                                 ELSE "free"
+                               END,
+               g.updated_at  = CURRENT_TIMESTAMP
+         WHERE g.scope_id    = :scope_id
+           AND g.process_id  = :process_id
     ';
 
     const SELECT_RANGE = '
