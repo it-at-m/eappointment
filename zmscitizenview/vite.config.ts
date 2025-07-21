@@ -42,7 +42,16 @@ export default defineConfig({
     ssrManifest: true,
     manifest: true,
     minify: true,
-    assetsDir: "src"
+    assetsDir: "src",
+    rollupOptions: {
+      input: {
+        "zms-appointment": "./src/zms-appointment-webcomponent.ts",
+      },
+      output: {
+        entryFileNames: "entry-[name]-[hash].js",
+        dir: "dist/src",
+      },
+    }
   },
   esbuild: {
     drop: process.env.NODE_ENV === 'development' ? [] : ['console', 'debugger'],
