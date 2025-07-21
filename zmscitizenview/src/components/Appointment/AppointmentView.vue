@@ -159,6 +159,18 @@
             }}</template>
           </muc-callout>
           <muc-callout
+            v-if="confirmAppointmentActivationExpiredError"
+            type="error"
+          >
+            <template #content>
+              {{ t("appointmentActivationExpiredErrorText") }}
+            </template>
+
+            <template #header>
+              {{ t("appointmentActivationExpiredErrorHeader") }}
+            </template>
+        </muc-callout>
+          <muc-callout
             v-if="appointmentNotFoundError"
             type="error"
           >
@@ -283,6 +295,7 @@ const appointmentNotAvailableError = ref<boolean>(false);
 const updateAppointmentError = ref<boolean>(false);
 const tooManyAppointmentsWithSameMailError = ref<boolean>(false);
 const appointmentNotFoundError = ref<boolean>(false);
+const confirmAppointActivationExpiredError = ref<boolean>(false)
 
 const confirmAppointmentSuccess = ref<boolean>(false);
 const confirmAppointmentError = ref<boolean>(false);
@@ -617,7 +630,12 @@ onMounted(() => {
         if ((data as AppointmentDTO).processId != undefined) {
           confirmAppointmentSuccess.value = true;
         } else {
-          confirmAppointmentError.value = true;
+          const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+          if(firstErrorCode === "processNotPreconfirmedAnymore") {
+            confirmAppointActivationExpiredError.value = true
+          } else {
+            confirmAppointmentError.value = true
+          }
         }
       }
     );
