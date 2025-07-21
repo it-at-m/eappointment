@@ -9,7 +9,7 @@ class WorkstationProcessGetTest extends Base
     public function setUp(): void
     {
         parent::setUp();
-        \App::$now->modify('2016-05-24 11:45');
+        \App::$now->modify('2016-05-24 10:45');
     }
 
     public function tearDown(): void
