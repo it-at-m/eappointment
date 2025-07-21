@@ -16,7 +16,7 @@
             >
               {{ selectedService.count }}x
               <a
-                href="{{ getServiceBaseURL() + selectedService.id }}"
+                :href="getServiceBaseURL() + selectedService.id"
                 target="_blank"
                 class="m-link"
                 tabindex="0"
@@ -35,7 +35,7 @@
                 >
                   {{ subService.count }}x
                   <a
-                    href="{{ getServiceBaseURL() + subService.id }}"
+                    :href="getServiceBaseURL() + subService.id"
                     target="_blank"
                     class="m-link"
                     tabindex="0"
