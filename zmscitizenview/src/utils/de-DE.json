@@ -3,6 +3,8 @@
   "appointment": "Termin",
   "appointmentBookingErrorHeader": "Aktivierung fehlgeschlagen.",
   "appointmentBookingErrorText": "Aktivierung fehlgeschlagen.",
+  "appointmentActivationExpiredErrorHeader": "Aktivierungszeit abgelaufen.",
+  "appointmentActivationExpiredErrorText": "Die Zeit für die Aktivierung Ihres Termins ist abgelaufen. Bitte vereinbaren Sie einen neuen Termin.",
   "appointmentNotFoundErrorHeader": "Wir konnten Ihren Termin nicht finden.",
   "appointmentNotFoundErrorText": "Vielleicht haben Sie Ihren Termin bereits abgesagt? Andernfalls überprüfen Sie bitte, ob Sie den richtigen Link verwendet haben.",
   "appointmentSuccessfullyBookedHeader": "Ihr Termin wurde reserviert.",

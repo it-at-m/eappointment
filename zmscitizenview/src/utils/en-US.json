@@ -3,6 +3,8 @@
   "appointment": "Appointment",
   "appointmentBookingErrorHeader": "Activation failed.",
   "appointmentBookingErrorText": "Activation failed.",
+  "appointmentActivationExpiredErrorHeader": "Activation time expired.",
+  "appointmentActivationExpiredErrorText": "The time for activating your appointment has expired. Please book a new appointment.",
   "appointmentNotFoundErrorHeader": "We could not find your appointment.",
   "appointmentNotFoundErrorText": "Maybe you have already canceled your appointment? Otherwise, please check that you have used the correct link.",
   "appointmentSuccessfullyBookedHeader": " Your appointment has been booked.",
