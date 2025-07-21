@@ -9,7 +9,7 @@
             {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Zu Ihrer Auswahl konnte kein Vorgang gefunden werden. Bitte prüfen Sie die angegebene Vorgangsnummer in der URL.{% endtrans %}
         </p>
         <div class="form-actions">
-            <button class="btn button-cancel right" onclick="window.location.href='{{ urlGet('workstation') }}'">Zurück zur Sachbearbeitung</button>
+            <button class="btn button-cancel right" onclick="window.location.href='{{ urlGet('workstation') }}'">Abbrechen</button>
         </div>
     {% endblock %}
 
