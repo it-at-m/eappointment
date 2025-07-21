@@ -30,6 +30,30 @@ class WorkstationProcessGetTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testProcessNotCurrentDate()
+    {
+        // Use default test date (2016-04-01) but try to access process from May 24, 2016
+        $workstation = $this->setWorkstation(137, 'testuser', 313);
+        $workstation['queue']['clusterEnabled'] = 1;
+        
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCurrentDate');
+        $this->expectExceptionCode(404);
+        $this->render(['id' => 100032], [], []);
+    }
+
+    public function testWorkstationProcessMatchScopeFailed()
+    {
+        // Mock current date to May 24, 2016 to match appointment (pass date validation)
+        \App::$now = new \DateTimeImmutable('2016-05-24 10:45:00', new \DateTimeZone('Europe/Berlin'));
+        // Set workstation to different scope (143) than process scope (313) 
+        $workstation = $this->setWorkstation(137, 'testuser', 143);
+        $workstation['queue']['clusterEnabled'] = 1;
+        
+        $this->expectException('\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 100032], [], []);
+    }
+
     public function testEmpty()
     {
         $this->setWorkstation();
