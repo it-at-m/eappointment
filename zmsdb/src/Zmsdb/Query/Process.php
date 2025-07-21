@@ -30,6 +30,7 @@ class Process extends Base implements MappingInterface
             process.absagecode = 'deref!0',
             process.EMail = '',
             process.NutzerID = 0,
+            process.priority = null,
             process.status = 'blocked'
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
@@ -226,6 +227,35 @@ class Process extends Base implements MappingInterface
 
     public function getEntityMapping()
     {
+        $status_expression = self::expression(
+            'CASE
+                WHEN process.Name = "(abgesagt)"
+                    THEN "deleted"
+                WHEN process.StandortID = 0 AND process.AbholortID = 0
+                    THEN "blocked"
+                WHEN process.vorlaeufigeBuchung = 1 AND process.bestaetigt = 0 
+                    THEN "reserved"
+                WHEN process.nicht_erschienen != 0
+                    THEN "missed"
+                WHEN process.parked != 0
+                    THEN "parked"
+                WHEN process.Abholer != 0 AND process.AbholortID != 0 AND process.NutzerID = 0
+                    THEN "pending"
+                WHEN process.AbholortID != 0 AND process.NutzerID != 0
+                    THEN "pickup"
+                WHEN process.AbholortID = 0 AND process.aufruferfolgreich != 0 AND process.NutzerID != 0
+                    THEN "processing"
+                WHEN process.aufrufzeit != "00:00:00" AND process.NutzerID != 0 AND process.AbholortID = 0
+                    THEN "called"
+                WHEN process.Uhrzeit = "00:00:00"
+                    THEN "queued"
+                WHEN process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 0 
+                    THEN "preconfirmed"
+                WHEN process.vorlaeufigeBuchung = 0 AND process.bestaetigt = 1
+                    THEN "confirmed"
+                ELSE "free"
+            END'
+        );
         return [
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
@@ -256,14 +286,16 @@ class Process extends Base implements MappingInterface
             'customTextfield' => 'process.custom_text_field',
             'customTextfield2' => 'process.custom_text_field2',
             'createIP' => 'process.IPAdresse',
+            'priority' => 'process.priority',
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
             'showUpTime' => 'process.showUpTime',
             'processingTime' => 'process.processingTime',
             'timeoutTime' => 'process.timeoutTime',
             'finishTime' => 'process.finishTime',
-            'status' => 'process.status',
-            'queue__status' => 'process.status',
+            'dbstatus' => 'process.status',
+            'status' => $status_expression,
+            'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
                 'CONCAT(
                     `process`.`Datum`,
@@ -500,13 +532,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionStatus($status)
-    {
-        $this->query->where('process.status', '=', $status);
-        return $this;
-    }
-
-    public function addConditionOldStatus($status, $scopeId = 0)
+    public function addConditionStatus($status, $scopeId = 0)
     {
         $this->query->where(function (\BO\Zmsdb\Query\Builder\ConditionBuilder $query) use ($status, $scopeId) {
             if ('deleted' == $status) {
@@ -760,6 +786,7 @@ class Process extends Base implements MappingInterface
             $this->addValuesFollowingProcessData($process, $parentProcess);
         }
         $this->addValuesWasMissed($process);
+        $this->addValuesPriority($process);
     }
 
     public function addValuesIPAdress($process)
@@ -1039,6 +1066,16 @@ class Process extends Base implements MappingInterface
     {
         $data = [
             'wasMissed' => $process->wasMissed ? 1 : 0,
+        ];
+
+        $this->addValues($data);
+        return $this;
+    }
+
+    protected function addValuesPriority($process)
+    {
+        $data = [
+            'priority' => $process->priority,
         ];
 
         $this->addValues($data);
