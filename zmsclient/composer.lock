@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
+                "reference": "015f1a2146736b0597eafb1985e2a4504b55e4da"
             },
             "require": {
                 "ext-json": ">=0",
@@ -175,7 +175,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
+                "reference": "015f1a2146736b0597eafb1985e2a4504b55e4da"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -233,7 +233,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "d4642591811cb057d90bc34b374ad3aec7b09886"
+                "reference": "015f1a2146736b0597eafb1985e2a4504b55e4da"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -2110,12 +2110,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "5e472fed1bcf8d3a967247576053a20ef3cfefc0"
+                "reference": "2976f12cdae3501980aabb46810cf807f7fdec44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/5e472fed1bcf8d3a967247576053a20ef3cfefc0",
-                "reference": "5e472fed1bcf8d3a967247576053a20ef3cfefc0",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/2976f12cdae3501980aabb46810cf807f7fdec44",
+                "reference": "2976f12cdae3501980aabb46810cf807f7fdec44",
                 "shasum": ""
             },
             "conflict": {
@@ -2765,6 +2765,7 @@
                 "silverstripe/taxonomy": ">=1.3,<1.3.1|>=2,<2.0.1",
                 "silverstripe/userforms": "<3|>=5,<5.4.2",
                 "silverstripe/versioned-admin": ">=1,<1.11.1",
+                "simogeo/filemanager": "<=2.5",
                 "simple-updates/phpwhois": "<=1",
                 "simplesamlphp/saml2": "<=4.16.15|>=5.0.0.0-alpha1,<=5.0.0.0-alpha19",
                 "simplesamlphp/saml2-legacy": "<=4.16.15",
@@ -3059,7 +3060,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-17T21:05:33+00:00"
+            "time": "2025-07-20T17:05:09+00:00"
         },
         {
             "name": "slim/http-cache",
