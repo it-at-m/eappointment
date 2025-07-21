@@ -6,6 +6,18 @@ class WorkstationProcessGetTest extends Base
 {
     protected $classname = "WorkstationProcessGet";
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        \App::$now->modify('2016-05-24 11:45');
+    }
+
+    public function tearDown(): void
+    {
+        \App::$now = new \DateTime();
+        parent::tearDown();
+    }
+
     public function testRendering()
     {
         $this->setWorkstation();
