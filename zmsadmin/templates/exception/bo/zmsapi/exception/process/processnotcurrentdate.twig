@@ -1,0 +1,19 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'exception'} %}
+
+    {% block board_title %}Es ist ein Fehler aufgetreten.{% endblock %}
+    {% block board_body %}
+        <h2 class="exceptionData-headline">
+            Termin nicht verfügbar{% if sourceData.processId %} (Vorgang {{ sourceData.processId }}){% endif %}
+        </h2>
+        <p>
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Der angegebene Termin liegt nicht am heutigen Tag und kann nicht aufgerufen werden. Sie können nur Termine des aktuellen Tages aufrufen.{% endtrans %}
+            {% if sourceData.appointmentDate %}
+                <br><br><strong>Terminzeit:</strong> {{ sourceData.appointmentDate }}{% if sourceData.appointmentTime %} um {{ sourceData.appointmentTime }}{% endif %}
+            {% endif %}
+        </p>
+        <div class="form-actions">
+            <button class="btn button-cancel right" onclick="window.location.href='{{ urlGet('workstation') }}'">Zurück zur Sachbearbeitung</button>
+        </div>
+    {% endblock %}
+
+{% endembed %} 

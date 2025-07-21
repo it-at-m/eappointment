@@ -8,8 +8,6 @@
 namespace BO\Zmsapi;
 
 use BO\Slim\Render;
-use BO\Mellon\Validator;
-use BO\Zmsdb\Workstation;
 use BO\Zmsdb\Process;
 
 class WorkstationProcessGet extends BaseController
@@ -29,7 +27,8 @@ class WorkstationProcessGet extends BaseController
         $process = $query->readEntity($processId, (new \BO\Zmsdb\Helper\NoAuth()));
 
         error_log(json_encode($process));
-        $this->testProcessFutureDate($process);
+        // Check if the process appointment is not from the current date (past or future)
+        $this->testProcessCurrentDate($process);
 
         if (! $process || ! $process->hasId()) {
             $exception = new Exception\Process\ProcessNotFound();
@@ -47,8 +46,9 @@ class WorkstationProcessGet extends BaseController
         return $response;
     }
 
-    protected function testProcessFutureDate($process)
+    protected function testProcessCurrentDate($process)
     {
+        // Only check if process exists and has appointments
         if (!$process || !$process->hasId() || !$process->isWithAppointment()) {
             return;
         }
@@ -58,18 +58,20 @@ class WorkstationProcessGet extends BaseController
             return;
         }
 
+        // Get current date (start of today) and appointment date (start of appointment day)
         $now = \App::getNow();
         $today = $now->setTime(0, 0, 0);
         $appointmentDateTime = new \DateTimeImmutable();
         $appointmentDateTime = $appointmentDateTime->setTimestamp($appointment->date);
         $appointmentDate = $appointmentDateTime->setTime(0, 0, 0);
 
-        if ($appointmentDate > $today) {
-            $exception = new Exception\Process\ProcessFromFuture();
+        // If appointment is NOT from today (either past or future)
+        if ($appointmentDate != $today) {
+            $exception = new Exception\Process\ProcessNotCurrentDate();
             $exception->data = [
                 'processId' => $process->getId(),
                 'appointmentDate' => $appointmentDateTime->format('d.m.Y'),
-                'appointmentTime' => $appointmentDateTime->format('H:i')
+                'appointmentTime' => $appointmentDateTime->format('H:i') . ' Uhr'
             ];
             throw $exception;
         }
