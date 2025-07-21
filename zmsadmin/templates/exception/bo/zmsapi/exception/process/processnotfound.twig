@@ -3,13 +3,13 @@
     {% block board_title %}Es ist ein Fehler aufgetreten.{% endblock %}
     {% block board_body %}
         <h2 class="exceptionData-headline">
-            Die Vorgangsnummer existiert nicht
+            Die Vorgangsnummer existiert nicht{% if sourceData.processId %} (Vorgang {{ sourceData.processId }}){% endif %}
         </h2>
         <p>
-            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Zu Ihrer Auswahl konnte kein Vorgang gefunden werden. Bitte prüfen Sie die angegebene Vorgangsnummer.{% endtrans %}
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Zu Ihrer Auswahl konnte kein Vorgang gefunden werden. Bitte prüfen Sie die angegebene Vorgangsnummer in der URL.{% endtrans %}
         </p>
         <div class="form-actions">
-            <a class="btn button-cancel button-callback right" href="#">Abbrechen</a>
+            <button class="btn button-cancel right" onclick="window.location.href='{{ urlGet('workstation') }}'">Zurück zur Sachbearbeitung</button>
         </div>
     {% endblock %}
 
