@@ -63,12 +63,6 @@ class WorkstationProcessGet extends BaseController
         $appointmentDateTime = $appointmentDateTime->setTimestamp($appointment->date);
         $appointmentDate = $appointmentDateTime->setTime(0, 0, 0);
 
-        // Debug logging
-        error_log("DEBUG: Current date: " . $today->format('Y-m-d H:i:s'));
-        error_log("DEBUG: Appointment date: " . $appointmentDate->format('Y-m-d H:i:s'));
-        error_log("DEBUG: Appointment timestamp: " . $appointment->date);
-        error_log("DEBUG: Are they equal? " . ($appointmentDate == $today ? 'YES' : 'NO'));
-
         // If appointment is NOT from today (either past or future)
         if ($appointmentDate != $today) {
             $exception = new Exception\Process\ProcessNotCurrentDate();

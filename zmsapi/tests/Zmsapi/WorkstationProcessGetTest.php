@@ -9,17 +9,19 @@ class WorkstationProcessGetTest extends Base
     public function setUp(): void
     {
         parent::setUp();
-        \App::$now->modify('2016-05-24 10:45');
     }
 
     public function tearDown(): void
     {
-        \App::$now = new \DateTime();
+        // Reset to test bootstrap default
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         parent::tearDown();
     }
 
     public function testRendering()
     {
+        // Mock current date to May 24, 2016 to match the appointment date (1464086700)
+        \App::$now = new \DateTimeImmutable('2016-05-24 10:45:00', new \DateTimeZone('Europe/Berlin'));
         $this->setWorkstation();
         $response = $this->render(['id' => 100032], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
