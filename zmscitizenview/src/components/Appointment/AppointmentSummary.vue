@@ -14,7 +14,14 @@
               v-if="selectedService"
               tabindex="0"
             >
-              {{ selectedService.count }}x <a href="{{ getServiceBaseURL() + selectedService.id }}" target="_blank" class="m-link" tabindex="0">{{ selectedService.name }}</a>
+              {{ selectedService.count }}x
+              <a
+                href="{{ getServiceBaseURL() + selectedService.id }}"
+                target="_blank"
+                class="m-link"
+                tabindex="0"
+                >{{ selectedService.name }}</a
+              >
               <br />
             </p>
             <div v-if="selectedService && selectedService.subServices">
@@ -26,7 +33,15 @@
                   v-if="subService.count > 0"
                   tabindex="0"
                 >
-                  {{ subService.count }}x <a href="{{ getServiceBaseURL() + subService.id }}" target="_blank" class="m-link" tabindex="0">{{ subService.name }}</a> <br />
+                  {{ subService.count }}x
+                  <a
+                    href="{{ getServiceBaseURL() + subService.id }}"
+                    target="_blank"
+                    class="m-link"
+                    tabindex="0"
+                    >{{ subService.name }}</a
+                  >
+                  <br />
                 </p>
               </div>
             </div>
