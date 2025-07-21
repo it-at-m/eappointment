@@ -8,7 +8,7 @@
         <p>
             {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Der angegebene Termin liegt in der Zukunft und kann nicht aufgerufen werden. Sie können nur Termine des aktuellen Tages aufrufen. Bitte prüfen Sie die angegebene Vorgangsnummer in der URL.{% endtrans %}
             {% if sourceData.appointmentDate %}
-                <br><strong>Terminzeit:</strong> {{ sourceData.appointmentDate }}{% if sourceData.appointmentTime %} um {{ sourceData.appointmentTime }} Uhr{% endif %}
+                <br><br><strong>Terminzeit:</strong> {{ sourceData.appointmentDate }}{% if sourceData.appointmentTime %} um {{ sourceData.appointmentTime }} Uhr{% endif %}
             {% endif %}
         </p>
         <div class="form-actions">
