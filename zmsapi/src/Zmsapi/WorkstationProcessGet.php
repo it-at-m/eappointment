@@ -34,7 +34,9 @@ class WorkstationProcessGet extends BaseController
             throw $exception;
         }
 
-        $this->testProcessScopeAccess($workstation, $process);
+        // Check if workstation has rights to access this process's scope (standard pattern)
+        $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], 1);
+        $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
 
         $message = Response\Message::create($request);
         $message->data = $process;
@@ -71,21 +73,6 @@ class WorkstationProcessGet extends BaseController
                 'appointmentDate' => $appointmentDateTime->format('d.m.Y'),
                 'appointmentTime' => $appointmentDateTime->format('H:i') . ' Uhr'
             ];
-            throw $exception;
-        }
-    }
-
-    protected function testProcessScopeAccess($workstation, $process)
-    {
-        // Get cluster and scope list for this workstation
-        $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], 1);
-
-        try {
-            // Use the same validation method as other controllers
-            $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
-        } catch (\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed $exception) {
-            // Add process data to the exception for better error display
-            $exception->data = $process;
             throw $exception;
         }
     }
