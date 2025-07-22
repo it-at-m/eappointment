@@ -96,11 +96,25 @@ class WorkstationProcessGetTest extends Base
         $workstation = $this->setWorkstation(137, 'testuser', 313);
         $workstation['queue']['clusterEnabled'] = 1;
         
-        // Use a process ID that exists but has no appointments
-        // Based on test fixtures, let's try a different process
+        // Use a non-existent process ID to test that testProcessCurrentDate() 
+        // properly handles null/empty process (early return)
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectExceptionCode(404);
         $response = $this->render(['id' => 100031], [], []);
-        // This should either succeed or fail with ProcessNotFound, not ProcessNotCurrentDate
-        $this->assertTrue(in_array($response->getStatusCode(), [200, 404]));
+        
+        // The key test: testProcessCurrentDate should NOT throw ProcessNotCurrentDate
+        // for non-existent processes - it should return early and let ProcessNotFound be thrown
+    }
+
+    public function testProcessWithAppointmentButNoDate()
+    {
+        // Test the early return in testProcessCurrentDate when appointment has no date (date = 0)
+        // This would require mocking or a fixture with appointment.date = 0
+        // For now, this documents the test case we would want if we had such data
+        
+        // Since we don't have easy access to such test data, we'll skip this test
+        // The method handles this case with: if (!$appointment || !$appointment->date) return;
+        $this->markTestSkipped('No test data available with appointments that have date = 0');
     }
 
     public function testEmpty()
