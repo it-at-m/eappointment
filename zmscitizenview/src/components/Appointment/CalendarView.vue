@@ -305,7 +305,7 @@
               "
             >
               <div>
-                <p class="centered-text">{{ t(currentDayPart) }}</p>
+                <p class="centered-text">{{ t(timeslot) }}</p>
               </div>
               <div class="grid">
                 <div
