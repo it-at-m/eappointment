@@ -62,7 +62,7 @@ class WorkstationProcessGet extends BaseController
         $appointmentDateTime = $appointmentDateTime->setTimestamp($appointment->date);
         $appointmentDate = $appointmentDateTime->setTime(0, 0, 0);
 
-        if ($appointmentDate !== $today) {
+        if ($appointmentDate != $today) {
             $exception = new Exception\Process\ProcessNotCurrentDate();
             $exception->data = [
                 'processId' => $process->getId(),
