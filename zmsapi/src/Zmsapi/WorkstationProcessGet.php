@@ -77,8 +77,10 @@ class WorkstationProcessGet extends BaseController
 
     protected function validateProcessStatus($process)
     {
-        $blockedStatuses = ['reserved', 'preconfirmed', 'deleted', 'free', 'archived', 'anonymized', 'blocked', 'called', 'processing'];
-
+        // Block workstations from calling certain appointment statuses via URL
+        // This matches the frontend template logic plus prevents conflicts with active processes
+        $blockedStatuses = ['reserved', 'preconfirmed', 'deleted', 'called', 'processing'];
+        error_log('Process status: ' . $process->getStatus());
         if (in_array($process->getStatus(), $blockedStatuses)) {
             $exception = new Exception\Process\ProcessNotCallable();
             $exception->data = [
