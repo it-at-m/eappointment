@@ -15,6 +15,10 @@ if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
 
 define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
 
+if (!defined('ZMS_TICKETPRINTER_TWIG_CACHE')) {
+    define('ZMS_TICKETPRINTER_TWIG_CACHE', getenv('ZMS_TICKETPRINTER_TWIG_CACHE') ?: '/cache/');
+}
+
 class Application extends \BO\Slim\Application
 {
     /**
@@ -25,6 +29,7 @@ class Application extends \BO\Slim\Application
     const MODULE_NAME = 'zmsticketprinter';
 
     public const DEBUG = false;
+    const TWIG_CACHE = ZMS_TICKETPRINTER_TWIG_CACHE;
 
     /**
      * language preferences

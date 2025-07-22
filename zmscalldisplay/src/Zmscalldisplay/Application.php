@@ -15,6 +15,10 @@ if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
 
 define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
 
+if (!defined('ZMS_CALLDISPLAY_TWIG_CACHE')) {
+    define('ZMS_CALLDISPLAY_TWIG_CACHE', getenv('ZMS_CALLDISPLAY_TWIG_CACHE') ?: '/cache/');
+}
+
 class Application extends \BO\Slim\Application
 {
     /**
@@ -23,6 +27,7 @@ class Application extends \BO\Slim\Application
     const IDENTIFIER = 'zms';
     const MODULE_NAME = 'zmscalldisplay';
     const DEBUG = false;
+    const TWIG_CACHE = ZMS_CALLDISPLAY_TWIG_CACHE;
 
     /**
      * language preferences
