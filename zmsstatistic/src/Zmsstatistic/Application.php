@@ -20,6 +20,8 @@ if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
 
 define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
 
+define('ZMS_STATISTIC_TWIG_CACHE', getenv('ZMS_STATISTIC_TWIG_CACHE') ?: '/cache/');
+
 class Application extends \BO\Slim\Application
 {
     /**
@@ -32,7 +34,7 @@ class Application extends \BO\Slim\Application
 
     const DEBUG = false;
 
-    const TWIG_CACHE = '/cache/';
+    const TWIG_CACHE = ZMS_STATISTIC_TWIG_CACHE;
 
     const SESSION_DURATION = ZMS_STATISTIC_SESSION_DURATION;
 

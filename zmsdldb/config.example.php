@@ -45,6 +45,8 @@ if (getenv('MYSQL_PORT_RO')) {
     }
 }
 
+define('ZMS_DLDB_TWIG_CACHE', getenv('ZMS_DLDB_TWIG_CACHE') ?: '/cache/');
+
 class App extends \BO\Zmsapi\Application
 {
     const APP_PATH = APP_PATH;
@@ -75,7 +77,7 @@ class App extends \BO\Zmsapi\Application
      * Use caching
      *
      */
-    const TWIG_CACHE = '/cache/';
+    const TWIG_CACHE = ZMS_DLDB_TWIG_CACHE;
 
     // Uncomment the following line for testing with fixtures
     // public static $data = "/vendor/bo/zmsdb/tests/Zmsdb/fixtures";

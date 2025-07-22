@@ -8,3 +8,4 @@
 .vscode/tasks.json
 .vscode/terminals.json
 coverage/
+.phpunit.cache

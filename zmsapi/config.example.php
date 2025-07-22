@@ -47,6 +47,7 @@ if (getenv('MYSQL_PORT_RO')) {
 
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
 define('ZMS_MODULE_NAME', 'zmsapi');
+define('ZMS_API_TWIG_CACHE', getenv('ZMS_API_TWIG_CACHE') ?: '/cache/');
 
 class App extends \BO\Zmsapi\Application
 {
@@ -78,7 +79,7 @@ class App extends \BO\Zmsapi\Application
      * Use caching
      *
      */
-    const TWIG_CACHE = '/cache/';
+    const TWIG_CACHE = ZMS_API_TWIG_CACHE;
 
     /**
      * Name of the module
