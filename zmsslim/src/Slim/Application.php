@@ -4,7 +4,8 @@ namespace BO\Slim;
 
 define('ZMS_SESSION_DURATION', getenv('ZMS_SESSION_DURATION') ? getenv('ZMS_SESSION_DURATION') : 28800);
 if (!defined('ZMS_SLIM_TWIG_CACHE')) {
-    define('ZMS_SLIM_TWIG_CACHE', getenv('ZMS_SLIM_TWIG_CACHE') ?: false);
+    $value = getenv('ZMS_SLIM_TWIG_CACHE');
+    define('ZMS_SLIM_TWIG_CACHE', ($value === 'false') ? false : ($value ?: false));
 }
 
 class Application
@@ -58,7 +59,7 @@ class Application
 /**
      * Define path for Twig template cache
      */
-    const TWIG_CACHE = ZMS_SLIM_TWIG_CACHE;
+    const TWIG_CACHE = false;
 /**
      * Set this option, if ESI should be used
      */

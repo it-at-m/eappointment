@@ -45,7 +45,8 @@ if (getenv('MYSQL_PORT_RO')) {
     }
 }
 
-define('ZMS_DLDB_TWIG_CACHE', getenv('ZMS_DLDB_TWIG_CACHE') ?: '/cache/');
+$value = getenv('ZMS_DLDB_TWIG_CACHE');
+define('ZMS_DLDB_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
 
 class App extends \BO\Zmsapi\Application
 {

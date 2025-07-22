@@ -5,7 +5,8 @@ define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://l
 define('ZMS_CURL_TIMEOUT', getenv('ZMS_CURL_TIMEOUT') ? intval(getenv('ZMS_CURL_TIMEOUT')) : 25);
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
 define('ZMS_MODULE_NAME', 'zmsstatistic');
-define('ZMS_STATISTIC_TWIG_CACHE', getenv('ZMS_STATISTIC_TWIG_CACHE') ?: '/cache/');
+$value = getenv('ZMS_STATISTIC_TWIG_CACHE');
+define('ZMS_STATISTIC_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
 
 class App extends \BO\Zmsstatistic\Application
 {
