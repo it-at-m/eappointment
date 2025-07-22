@@ -100,5 +100,8 @@
   "languages": {
     "de": "Deutsch",
     "en": "Englisch"
-  }
+  },
+  "listView": "listenansicht",
+  "calendarView": "Kalenderansicht",
+  "loadMore": "Mehr laden"
 }
