@@ -20,7 +20,9 @@ if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
 
 define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
 
-define('ZMS_STATISTIC_TWIG_CACHE', getenv('ZMS_STATISTIC_TWIG_CACHE') ?: '/cache/');
+if (!defined('ZMS_STATISTIC_TWIG_CACHE')) {
+    define('ZMS_STATISTIC_TWIG_CACHE', getenv('ZMS_STATISTIC_TWIG_CACHE') ?: '/cache/');
+}
 
 class Application extends \BO\Slim\Application
 {
