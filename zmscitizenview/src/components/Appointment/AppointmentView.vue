@@ -295,7 +295,7 @@ const appointmentNotAvailableError = ref<boolean>(false);
 const updateAppointmentError = ref<boolean>(false);
 const tooManyAppointmentsWithSameMailError = ref<boolean>(false);
 const appointmentNotFoundError = ref<boolean>(false);
-const confirmAppointActivationExpiredError = ref<boolean>(false);
+const confirmAppointmentActivationExpiredError = ref<boolean>(false);
 
 const confirmAppointmentSuccess = ref<boolean>(false);
 const confirmAppointmentError = ref<boolean>(false);
@@ -635,7 +635,7 @@ onMounted(() => {
             firstErrorCode === "processNotPreconfirmedAnymore" ||
             firstErrorCode === "appointmentNotFound"
           ) {
-            confirmAppointActivationExpiredError.value = true;
+            confirmAppointmentActivationExpiredError.value = true;
           } else {
             confirmAppointmentError.value = true;
           }
