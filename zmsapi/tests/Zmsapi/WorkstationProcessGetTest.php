@@ -96,7 +96,6 @@ class WorkstationProcessGetTest extends Base
 
     public function testProcessNotCallablePreconfirmed()
     {
-        // Test that preconfirmed processes cannot be called via URL
         \App::$now = new \DateTimeImmutable('2016-05-24 10:45:00', new \DateTimeZone('Europe/Berlin'));
         $workstation = $this->setWorkstation(137, 'testuser', 313);
         $workstation['queue']['clusterEnabled'] = 1;

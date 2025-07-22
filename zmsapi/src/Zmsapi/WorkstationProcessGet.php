@@ -77,8 +77,6 @@ class WorkstationProcessGet extends BaseController
 
     protected function validateProcessStatus($process)
     {
-        // Block workstations from calling certain appointment statuses via URL
-        // This matches the frontend template logic plus prevents conflicts with active processes
         $blockedStatuses = ['reserved', 'preconfirmed', 'deleted', 'called', 'processing'];
 
         if (in_array($process->getStatus(), $blockedStatuses)) {
