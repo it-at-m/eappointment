@@ -156,7 +156,7 @@ class Workstation extends Schema\Entity
         return $scopeList;
     }
 
-    public function testMatchingProcessScope($scopeList, Process $process = null)
+    public function validateProcessScopeAccess($scopeList, Process $process = null)
     {
         if (null === $process) {
             $process = $this->process;

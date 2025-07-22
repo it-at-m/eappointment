@@ -66,7 +66,7 @@ class ProcessFinished extends BaseController
     {
         $department = (new \BO\Zmsdb\Department())->readByScopeId($workstation->scope['id'], 1);
         $workstation->process = $process;
-        $workstation->testMatchingProcessScope($department->getScopeList());
+        $workstation->validateProcessScopeAccess($department->getScopeList());
     }
 
     protected function testProcessData($process)

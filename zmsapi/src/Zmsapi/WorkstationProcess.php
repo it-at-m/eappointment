@@ -89,7 +89,7 @@ class WorkstationProcess extends BaseController
             throw new Exception\Process\ProcessReservedNotCallable();
         }
         if (! $allowClusterWideCall) {
-            $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
+            $workstation->validateProcessScopeAccess($workstation->getScopeList(), $process);
         }
         $process->testValid();
     }

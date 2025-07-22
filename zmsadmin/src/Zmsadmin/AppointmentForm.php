@@ -30,7 +30,7 @@ class AppointmentForm extends BaseController
         $selectedProcess = Helper\AppointmentFormHelper::readSelectedProcess($request);
         if ($selectedProcess && ! $workstation->hasSuperUseraccount()) {
             $workstation
-                ->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList(), $selectedProcess);
+                ->validateProcessScopeAccess((new Helper\ClusterHelper($workstation))->getScopeList(), $selectedProcess);
         }
 
         $selectedDate = ($selectedProcess && $selectedProcess->hasId())

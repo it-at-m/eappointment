@@ -26,7 +26,7 @@ class WorkstationProcessGet extends BaseController
         $processId = $args['id'];
         $process = $query->readEntity($processId, (new \BO\Zmsdb\Helper\NoAuth()));
 
-        $this->testProcessCurrentDate($process);
+        $this->validateProcessCurrentDate($process);
 
         if (! $process || ! $process->hasId()) {
             $exception = new Exception\Process\ProcessNotFound();
@@ -35,7 +35,7 @@ class WorkstationProcessGet extends BaseController
         }
 
         $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId(scopeId: $workstation->scope['id'], resolveReferences: 1);
-        $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
+        $workstation->validateProcessScopeAccess($workstation->getScopeList($cluster), $process);
 
         $message = Response\Message::create($request);
         $message->data = $process;
@@ -45,7 +45,7 @@ class WorkstationProcessGet extends BaseController
         return $response;
     }
 
-    protected function testProcessCurrentDate($process)
+    protected function validateProcessCurrentDate($process)
     {
         if (!$process || !$process->hasId() || !$process->isWithAppointment()) {
             return;
@@ -62,7 +62,7 @@ class WorkstationProcessGet extends BaseController
         $appointmentDateTime = $appointmentDateTime->setTimestamp($appointment->date);
         $appointmentDate = $appointmentDateTime->setTime(0, 0, 0);
 
-        if ($appointmentDate != $today) {
+        if ($appointmentDate !== $today) {
             $exception = new Exception\Process\ProcessNotCurrentDate();
             $exception->data = [
                 'processId' => $process->getId(),
