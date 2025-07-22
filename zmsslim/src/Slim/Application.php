@@ -4,7 +4,7 @@ namespace BO\Slim;
 
 define('ZMS_SESSION_DURATION', getenv('ZMS_SESSION_DURATION') ? getenv('ZMS_SESSION_DURATION') : 28800);
 if (!defined('ZMS_SLIM_TWIG_CACHE')) {
-    define('ZMS_SLIM_TWIG_CACHE', getenv('ZMS_SLIM_TWIG_CACHE') ?: '/cache/');
+    define('ZMS_SLIM_TWIG_CACHE', getenv('ZMS_SLIM_TWIG_CACHE') ?: false);
 }
 
 class Application
