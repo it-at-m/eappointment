@@ -605,6 +605,8 @@ const parseAppointmentHash = (hash: string): AppointmentHash | null => {
 };
 
 onMounted(() => {
+  console.log("Service ID:", props.serviceId);
+  console.log("Location ID:", props.locationId);
   if (props.confirmAppointmentHash) {
     const appointmentData = parseAppointmentHash(props.confirmAppointmentHash);
     if (!appointmentData) {
