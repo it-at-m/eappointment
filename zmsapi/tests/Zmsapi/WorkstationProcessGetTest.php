@@ -20,9 +20,7 @@ class WorkstationProcessGetTest extends Base
 
     public function testRendering()
     {
-        // Mock current date to May 24, 2016 to match the appointment date (1464086700)
         \App::$now = new \DateTimeImmutable('2016-05-24 10:45:00', new \DateTimeZone('Europe/Berlin'));
-        // Set workstation to scope 313 to match process 100032's scope
         $workstation = $this->setWorkstation(137, 'testuser', 313);
         $workstation['queue']['clusterEnabled'] = 1;
         $response = $this->render(['id' => 100032], [], []);
@@ -30,9 +28,20 @@ class WorkstationProcessGetTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testProcessNotCurrentDate()
+    public function testProcessNotCurrentDateInTheFuture()
     {
-        // Use default test date (2016-04-01) but try to access process from May 24, 2016
+        \App::$now = new \DateTimeImmutable('2016-05-23 10:45:00', new \DateTimeZone('Europe/Berlin'));
+        $workstation = $this->setWorkstation(137, 'testuser', 313);
+        $workstation['queue']['clusterEnabled'] = 1;
+        
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCurrentDate');
+        $this->expectExceptionCode(404);
+        $this->render(['id' => 100032], [], []);
+    }
+
+    public function testProcessNotCurrentDateInThePast()
+    {
+        \App::$now = new \DateTimeImmutable('2016-05-25 10:45:00', new \DateTimeZone('Europe/Berlin'));
         $workstation = $this->setWorkstation(137, 'testuser', 313);
         $workstation['queue']['clusterEnabled'] = 1;
         
@@ -43,9 +52,7 @@ class WorkstationProcessGetTest extends Base
 
     public function testWorkstationProcessMatchScopeFailed()
     {
-        // Mock current date to May 24, 2016 to match appointment (pass date validation)
         \App::$now = new \DateTimeImmutable('2016-05-24 10:45:00', new \DateTimeZone('Europe/Berlin'));
-        // Set workstation to different scope (143) than process scope (313) 
         $workstation = $this->setWorkstation(137, 'testuser', 143);
         $workstation['queue']['clusterEnabled'] = 1;
         

@@ -34,8 +34,7 @@ class WorkstationProcessGet extends BaseController
             throw $exception;
         }
 
-        // Check if workstation has rights to access this process's scope (standard pattern)
-        $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], 1);
+        $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId(scopeId: $workstation->scope['id'], resolveReferences: 1);
         $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
 
         $message = Response\Message::create($request);
@@ -48,7 +47,6 @@ class WorkstationProcessGet extends BaseController
 
     protected function testProcessCurrentDate($process)
     {
-        // Only check if process exists and has appointments
         if (!$process || !$process->hasId() || !$process->isWithAppointment()) {
             return;
         }
@@ -58,14 +56,12 @@ class WorkstationProcessGet extends BaseController
             return;
         }
 
-        // Get current date (start of today) and appointment date (start of appointment day)
         $now = \App::getNow();
         $today = $now->setTime(0, 0, 0);
         $appointmentDateTime = new \DateTimeImmutable();
         $appointmentDateTime = $appointmentDateTime->setTimestamp($appointment->date);
         $appointmentDate = $appointmentDateTime->setTime(0, 0, 0);
 
-        // If appointment is NOT from today (either past or future)
         if ($appointmentDate != $today) {
             $exception = new Exception\Process\ProcessNotCurrentDate();
             $exception->data = [
