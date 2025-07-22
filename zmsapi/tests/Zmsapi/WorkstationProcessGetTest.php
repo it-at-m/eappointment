@@ -94,18 +94,6 @@ class WorkstationProcessGetTest extends Base
         
     }
 
-    public function testProcessNotCallableStatus()
-    {
-        // Test that reserved/preconfirmed processes cannot be called via URL
-        \App::$now = new \DateTimeImmutable('2016-05-24 10:45:00', new \DateTimeZone('Europe/Berlin'));
-        $workstation = $this->setWorkstation(137, 'testuser', 313);
-        $workstation['queue']['clusterEnabled'] = 1;
-        
-        // This would need a process with reserved/preconfirmed status
-        // For now, we'll mark this as skipped since we don't have test data
-        $this->markTestSkipped('No test data available with reserved/preconfirmed status');
-    }
-
     public function testProcessNotCallablePreconfirmed()
     {
         // Test that preconfirmed processes cannot be called via URL
