@@ -20,65 +20,65 @@ class WorkstationProcessGetTest extends Base
 
     public function testRendering()
     {
-        \App::$now = new \DateTimeImmutable('2016-05-24 10:45:00', new \DateTimeZone('Europe/Berlin'));
-        $workstation = $this->setWorkstation(137, 'testuser', 313);
+        \App::$now = new \DateTimeImmutable('2016-05-16 10:45:00', new \DateTimeZone('Europe/Berlin'));
+        $workstation = $this->setWorkstation(137, 'testuser', 141);
         $workstation['queue']['clusterEnabled'] = 1;
-        $response = $this->render(['id' => 100032], [], []);
+        $response = $this->render(['id' => 10030], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testProcessNotCurrentDateInTheFuture()
     {
-        \App::$now = new \DateTimeImmutable('2016-05-23 10:45:00', new \DateTimeZone('Europe/Berlin'));
-        $workstation = $this->setWorkstation(137, 'testuser', 313);
+        \App::$now = new \DateTimeImmutable('2016-05-15 10:45:00', new \DateTimeZone('Europe/Berlin'));
+        $workstation = $this->setWorkstation(137, 'testuser', 141);
         $workstation['queue']['clusterEnabled'] = 1;
         
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCurrentDate');
         $this->expectExceptionCode(404);
-        $this->render(['id' => 100032], [], []);
+        $this->render(['id' => 10030], [], []);
     }
 
     public function testProcessNotCurrentDateInThePast()
     {
-        \App::$now = new \DateTimeImmutable('2016-05-25 10:45:00', new \DateTimeZone('Europe/Berlin'));
-        $workstation = $this->setWorkstation(137, 'testuser', 313);
+        \App::$now = new \DateTimeImmutable('2016-05-17 10:45:00', new \DateTimeZone('Europe/Berlin'));
+        $workstation = $this->setWorkstation(137, 'testuser', 141);
         $workstation['queue']['clusterEnabled'] = 1;
         
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCurrentDate');
         $this->expectExceptionCode(404);
-        $this->render(['id' => 100032], [], []);
+        $this->render(['id' => 10030], [], []);
     }
 
     public function testWorkstationProcessMatchScopeFailed()
     {
-        \App::$now = new \DateTimeImmutable('2016-05-24 10:45:00', new \DateTimeZone('Europe/Berlin'));
+        \App::$now = new \DateTimeImmutable('2016-05-16 10:45:00', new \DateTimeZone('Europe/Berlin'));
         $workstation = $this->setWorkstation(137, 'testuser', 143);
         $workstation['queue']['clusterEnabled'] = 1;
         
         $this->expectException('\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
         $this->expectExceptionCode(403);
-        $this->render(['id' => 100032], [], []);
+        $this->render(['id' => 10030], [], []);
     }
 
     public function testSameDateDifferentTimes()
     {
-        \App::$now = new \DateTimeImmutable('2016-05-24 08:00:00', new \DateTimeZone('Europe/Berlin'));
-        $workstation = $this->setWorkstation(137, 'testuser', 313);
+        \App::$now = new \DateTimeImmutable('2016-05-16 08:00:00', new \DateTimeZone('Europe/Berlin'));
+        $workstation = $this->setWorkstation(137, 'testuser', 141);
         $workstation['queue']['clusterEnabled'] = 1;
         
-        $response = $this->render(['id' => 100032], [], []);
+        $response = $this->render(['id' => 10030], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testMidnightBoundaryCase()
     {
-        \App::$now = new \DateTimeImmutable('2016-05-24 23:59:59', new \DateTimeZone('Europe/Berlin'));
-        $workstation = $this->setWorkstation(137, 'testuser', 313);
+        \App::$now = new \DateTimeImmutable('2016-05-16 23:59:59', new \DateTimeZone('Europe/Berlin'));
+        $workstation = $this->setWorkstation(137, 'testuser', 141);
         $workstation['queue']['clusterEnabled'] = 1;
         
-        $response = $this->render(['id' => 100032], [], []);
+        $response = $this->render(['id' => 10030], [], []);
         $this->assertStringContainsString('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -104,6 +104,18 @@ class WorkstationProcessGetTest extends Base
         // This would need a process with reserved/preconfirmed status
         // For now, we'll mark this as skipped since we don't have test data
         $this->markTestSkipped('No test data available with reserved/preconfirmed status');
+    }
+
+    public function testProcessNotCallablePreconfirmed()
+    {
+        // Test that preconfirmed processes cannot be called via URL
+        \App::$now = new \DateTimeImmutable('2016-05-24 10:45:00', new \DateTimeZone('Europe/Berlin'));
+        $workstation = $this->setWorkstation(137, 'testuser', 313);
+        $workstation['queue']['clusterEnabled'] = 1;
+        
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCallable');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 100032], [], []);
     }
 
     public function testEmpty()
