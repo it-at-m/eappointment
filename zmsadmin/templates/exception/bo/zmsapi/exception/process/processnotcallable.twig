@@ -1,0 +1,33 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'exception'} %}
+
+    {% block board_title %}Es ist ein Fehler aufgetreten.{% endblock %}
+
+    {% block board_body %}
+        <h2 class="exceptionData-headline">
+            Termin kann nicht aufgerufen werden{% if sourceData.processId %} (Vorgang {{ sourceData.processId }}){% endif %}
+        </h2>
+        <p>
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Der angegebene Termin kann nicht aufgerufen werden, da er entweder gelöscht, nur reserviert, noch nicht bestätigt oder bereits von einem anderen Arbeitsplatz bearbeitet wird. Nur bestätigte und verfügbare Termine können über die Sachbearbeitung aufgerufen werden. Bitte prüfen Sie die angegebene Vorgangsnummer in der URL.{% endtrans %}
+            {% if sourceData.status %}
+                {% set statusTranslations = {
+                    'free': 'frei',
+                    'reserved': 'reserviert',
+                    'preconfirmed': 'vorbestätigt',
+                    'deleted': 'gelöscht',
+                    'archived': 'archiviert',
+                    'anonymized': 'anonymisiert',
+                    'blocked': 'blockiert',
+                    'conflict': 'Konflikt',
+                    'called': 'aufgerufen',
+                    'processing': 'in Bearbeitung'
+                } %}
+                {% set germanStatus = statusTranslations[sourceData.status] ?? sourceData.status %}
+                <br><br><strong>Aktueller Status:</strong> {{ germanStatus }}
+            {% endif %}
+        </p>
+        <div class="form-actions">
+            <button class="btn button-cancel right" onclick="window.location.href='{{ urlGet('workstation') }}'">Abbrechen</button>
+        </div>
+    {% endblock %}
+
+{% endembed %} 

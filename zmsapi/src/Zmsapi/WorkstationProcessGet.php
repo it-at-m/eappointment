@@ -25,24 +25,20 @@ class WorkstationProcessGet extends BaseController
         $query = new Process();
         $processId = $args['id'];
 
-        // Load process data (we need it for validation, but won't set it in response until validation passes)
         $process = $query->readEntity($processId, (new \BO\Zmsdb\Helper\NoAuth()));
 
-        // Check if process exists
         if (! $process || ! $process->hasId()) {
             $exception = new Exception\Process\ProcessNotFound();
             $exception->data = ['processId' => $processId];
             throw $exception;
         }
 
-        // Validate date first (before scope - fails faster for wrong dates)
         $this->validateProcessCurrentDate($process);
+        $this->validateProcessStatus($process);
 
-        // Validate scope access
         $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId(scopeId: $workstation->scope['id'], resolveReferences: 1);
         $workstation->validateProcessScopeAccess($workstation->getScopeList($cluster), $process);
 
-        // Only if ALL validations pass, create the response with process data
         $message = Response\Message::create($request);
         $message->data = $process;
 
@@ -53,7 +49,6 @@ class WorkstationProcessGet extends BaseController
 
     protected function validateProcessCurrentDate($process)
     {
-        // Only check if process exists and has appointments
         if (!$process || !$process->hasId() || !$process->isWithAppointment()) {
             return;
         }
@@ -75,6 +70,20 @@ class WorkstationProcessGet extends BaseController
                 'processId' => $process->getId(),
                 'appointmentDate' => $appointmentDateTime->format('d.m.Y'),
                 'appointmentTime' => $appointmentDateTime->format('H:i') . ' Uhr'
+            ];
+            throw $exception;
+        }
+    }
+
+    protected function validateProcessStatus($process)
+    {
+        $blockedStatuses = ['reserved', 'preconfirmed', 'deleted', 'free', 'archived', 'anonymized', 'blocked', 'called', 'processing'];
+
+        if (in_array($process->getStatus(), $blockedStatuses)) {
+            $exception = new Exception\Process\ProcessNotCallable();
+            $exception->data = [
+                'processId' => $process->getId(),
+                'status' => $process->getStatus()
             ];
             throw $exception;
         }

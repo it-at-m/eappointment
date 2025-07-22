@@ -163,7 +163,6 @@ class Workstation extends Schema\Entity
         }
         if (! $scopeList->hasEntity($process->getScopeId())) {
             $exception = new Exception\WorkstationProcessMatchScopeFailed();
-            // Only include minimal data for security - not the full process object
             $scopeContactName = null;
             $currentScope = $process->getCurrentScope();
             if ($currentScope && isset($currentScope['contact']['name'])) {
