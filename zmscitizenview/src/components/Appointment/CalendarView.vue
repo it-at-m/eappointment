@@ -83,10 +83,21 @@
   </div>
 
   <div v-else-if="!error">
-    <div class="m-content">
+    <div class="m-content" style="display: flex; justify-content: space-between; align-items: flex-start;">
       <h2 tabindex="0">{{ t("time") }}</h2>
+      <div class="m-toggle-switch"
+           role="switch"
+           :aria-checked="isListView"
+           tabindex="0"
+           @click="toggleView"
+           @keydown.enter.prevent="toggleView"
+           @keydown.space.prevent="toggleView">
+        <span class="m-toggle-switch__label">{{ t("calendarView") }}</span>
+        <span class="m-toggle-switch__indicator"><span></span></span>
+        <span class="m-toggle-switch__label">{{ t("listView") }}</span>
+      </div>
     </div>
-    <div class="m-component">
+    <div v-if="!isListView" class="m-component">
       <muc-calendar
         :key="calendarKey"
         :model-value="selectedDay"
@@ -100,8 +111,105 @@
       />
     </div>
 
+    <div v-if="isListView" class="m-content">
+      <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+    </div>
+
+    <div v-if="isListView" class="m-component m-component-accordion">
+      <div class="m-component__body">
+        <div class="m-accordion" id="listViewAccordion">
+          <template v-for="(day, index) in firstFiveAvailableDays" :key="day.dateString">
+            <div>
+              <h3
+                style="margin-bottom:20px;background-color:var(--color-neutrals-blue-xlight);"
+                class="m-accordion__section-header" :id="'listHeading-' + index">
+                <button
+                  class="m-accordion__section-button"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  :data-bs-target="'#listContent-' + index"
+                  :aria-expanded="index === 0"
+                  :aria-controls="'listContent-' + index"
+                  @click="onDayAccordionSelect(day)"
+                >
+                  {{ day.label }}
+                  <svg aria-hidden="true" focusable="false" class="icon">
+                    <use
+                      :xlink:href="index === openAccordionIndex ? '#icon-chevron-up' : '#icon-chevron-down'"></use>
+                  </svg>
+                </button>
+              </h3>
+
+              <section
+                class="m-accordion__section-content collapse"
+                :class="{ show: index === openAccordionIndex }"
+                :id="'listContent-' + index"
+                :aria-labelledby="'listHeading-' + index"
+                data-bs-parent="#listViewAccordion"
+              >
+                <div class="m-textplus__content">
+                  <template v-if="isLoadingAppointments && index === openAccordionIndex">
+                    <div style="display:flex;justify-content:center;align-items:center;min-height:80px;"></div>
+                  </template>
+
+                  <template v-else-if="day.appointmentsCount > 18">
+                    <template v-for="(hourRow, hIndex) in day.hourRows" :key="hIndex">
+                      <div class="wrapper">
+                        <p class="centered-text nowrap">{{ hourRow.hour }}:00‑{{ hourRow.hour }}:59</p>
+                        <div class="grid">
+                          <div v-for="time in hourRow.times" :key="time" class="grid-item">
+                            <muc-button
+                              class="timeslot"
+                              variant="secondary"
+                              @click="handleTimeSlotSelection(hourRow.officeId, time)"
+                            >
+                              <template #default>{{ formatTime(time) }}</template>
+                            </muc-button>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </template>
+
+                  <template v-else>
+                    <template v-for="(partRow, pIndex) in day.dayPartRows" :key="pIndex">
+                      <div class="wrapper">
+                        <p class="centered-text nowrap">{{ t(partRow.part) }}</p>
+                        <div class="grid">
+                          <div v-for="time in partRow.times" :key="time" class="grid-item">
+                            <muc-button
+                              class="timeslot"
+                              variant="secondary"
+                              @click="handleTimeSlotSelection(partRow.officeId, time)"
+                            >
+                              <template #default>{{ formatTime(time) }}</template>
+                            </muc-button>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </template>
+                </div>
+              </section>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <muc-button
+      v-if="isListView && firstFiveAvailableDays.length < availableDays.length"
+      @click="loadMoreDays"
+      icon="chevron-down"
+      icon-animated
+      style="margin-top:16px"
+    >
+      <template #default>{{ t('loadMore') }}</template>
+    </muc-button>
+
     <div
       v-if="
+        !isListView &&
         selectedDay &&
         (timeSlotsInHoursByOffice.size > 0 || isLoadingAppointments) &&
         appointmentsCount > 18
@@ -236,6 +344,7 @@
 
     <div
       v-else-if="
+        !isListView &&
         selectedDay &&
         (timeSlotsInDayPartByOffice.size > 0 || isLoadingAppointments)
       "
@@ -374,18 +483,18 @@
             <b>{{ t("location") }}</b>
             <p class="m-teaser-contained-contact__summary">
               {{ selectedProvider.name }}
-              <br />
+              <br/>
               {{ selectedProvider.address.street }}
               {{ selectedProvider.address.house_number }}
             </p>
           </div>
           <div v-if="selectedDay">
             <b>{{ t("time") }}</b>
-            <br />
+            <br/>
             <p class="m-teaser-contained-contact__detail">
               {{ formatDay(selectedDay) }}, {{ formatTime(selectedTimeslot) }}
               {{ t("clock") }}
-              <br />
+              <br/>
               {{ t("estimatedDuration") }} {{ estimatedDuration() }}
               {{ t("minutes") }}
             </p>
@@ -394,7 +503,7 @@
             v-if="selectedProvider.scope && selectedProvider.scope.displayInfo"
           >
             <b>{{ t("hint") }}</b>
-            <br />
+            <br/>
             <div v-html="selectedProvider.scope.displayInfo"></div>
           </div>
         </template>
@@ -448,7 +557,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Ref } from "vue";
+import type {Ref} from "vue";
 
 import {
   MucButton,
@@ -456,21 +565,22 @@ import {
   MucCallout,
   MucCheckbox, // Todo: Use MucCheckbox once disabled boxes are available in the patternlab-vue package
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
+import {computed, inject, nextTick, onMounted, ref, watch} from "vue";
 
-import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
-import { AvailableTimeSlotsByOfficeDTO } from "@/api/models/AvailableTimeSlotsByOfficeDTO";
-import { OfficeAvailableTimeSlotsDTO } from "@/api/models/OfficeAvailableTimeSlotsDTO";
+import {AvailableDaysDTO} from "@/api/models/AvailableDaysDTO";
+import {AvailableTimeSlotsByOfficeDTO} from "@/api/models/AvailableTimeSlotsByOfficeDTO";
+import {OfficeAvailableTimeSlotsDTO} from "@/api/models/OfficeAvailableTimeSlotsDTO";
 import {
   fetchAvailableDays,
   fetchAvailableTimeSlots,
 } from "@/api/ZMSAppointmentAPI";
-import { OfficeImpl } from "@/types/OfficeImpl";
+import {OfficeImpl} from "@/types/OfficeImpl";
 import {
   SelectedServiceProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
-import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import {calculateEstimatedDuration} from "@/utils/calculateEstimatedDuration";
+import type { AccordionDay } from "@/types/AccordionDay";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -486,11 +596,11 @@ const props = defineProps<{
 
 const emit = defineEmits<(e: "next" | "back") => void>();
 
-const { selectedService } = inject<SelectedServiceProvider>(
+const {selectedService} = inject<SelectedServiceProvider>(
   "selectedServiceProvider"
 ) as SelectedServiceProvider;
 
-const { selectedProvider, selectedTimeslot } = inject<SelectedTimeslotProvider>(
+const {selectedProvider, selectedTimeslot} = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
 
@@ -648,7 +758,7 @@ const timeSlotsInDayPartBySelectedOffice = computed(() => {
   );
 });
 
-const formatterWeekday = new Intl.DateTimeFormat("de-DE", { weekday: "long" });
+const formatterWeekday = new Intl.DateTimeFormat("de-DE", {weekday: "long"});
 
 const formatterTime = new Intl.DateTimeFormat("de-DE", {
   timeZone: "Europe/Berlin",
@@ -1064,7 +1174,7 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   if (summary.value) {
     await nextTick();
     summary.value.focus();
-    summary.value.scrollIntoView({ behavior: "smooth", block: "center" });
+    summary.value.scrollIntoView({behavior: "smooth", block: "center"});
   }
 };
 
@@ -1276,8 +1386,8 @@ function updateDateRangeForSelectedProviders() {
     minDate.value = new Date(availableDaysForSelectedProviders[0].time);
     maxDate.value = new Date(
       availableDaysForSelectedProviders[
-        availableDaysForSelectedProviders.length - 1
-      ].time
+      availableDaysForSelectedProviders.length - 1
+        ].time
     );
   }
   return availableDaysForSelectedProviders;
@@ -1423,21 +1533,128 @@ watch(
     await snapToNearestAvailableTimeSlot();
     await validateCurrentDateHasAppointments();
   },
-  { deep: true }
+  {deep: true}
 );
+
+const isListView = ref(false);
+const toggleView = () => {
+  isListView.value = !isListView.value;
+};
+
+const openAccordionIndex = ref(0);
+
+const daysToShow = ref(5);
+
+const loadMoreDays = () => {
+  daysToShow.value += 3;
+};
+
+const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
+  if (!availableDays.value) return [];
+
+  const availableForProviders = availableDays.value.filter((day) =>
+    day.providerIDs
+      .split(",")
+      .some((id) => selectedProviders.value[id])
+  );
+
+  const trulyAvailable = availableForProviders.filter((day) => {
+    const dateStr = convertDateToString(new Date(day.time));
+    return !datesWithoutAppointments.value.has(dateStr);
+  });
+
+  return trulyAvailable.slice(0, daysToShow.value).map((dayObj) => {
+    const d = new Date(dayObj.time);
+    const dateString = convertDateToString(d);
+    const label =
+      formatterWeekday.format(d) +
+      ", " +
+      String(d.getDate()).padStart(2, "0") +
+      "." +
+      String(d.getMonth() + 1).padStart(2, "0") +
+      "." +
+      d.getFullYear();
+
+    let appointmentsCount = 0;
+    const hourRows: AccordionDay["hourRows"] = [];
+    const dayPartRows: AccordionDay["dayPartRows"] = [];
+
+    appointmentTimestampsByOffice.value.forEach((office) => {
+      if (!selectedProviders.value[office.officeId]) return;
+
+      const times = office.appointments.filter((ts) => {
+        return convertDateToString(new Date(ts * 1000)) === dateString;
+      });
+      appointmentsCount += times.length;
+
+      const byHour: Record<number, number[]> = {};
+      const byPart: { am: number[]; pm: number[] } = {am: [], pm: []};
+
+      times.forEach((ts) => {
+        const hr = parseInt(berlinHourFormatter.format(new Date(ts * 1000)));
+        (byHour[hr] ||= []).push(ts);
+        const part = hr >= 12 ? "pm" : "am";
+        byPart[part].push(ts);
+      });
+
+      Object.entries(byHour).forEach(([hour, tsArray]) => {
+        hourRows.push({
+          hour: Number(hour),
+          times: tsArray,
+          officeId: office.officeId,
+        });
+      });
+      if (byPart.am.length) {
+        dayPartRows.push({part: "am", times: byPart.am, officeId: office.officeId});
+      }
+      if (byPart.pm.length) {
+        dayPartRows.push({part: "pm", times: byPart.pm, officeId: office.officeId});
+      }
+    });
+
+    hourRows.sort((a, b) => a.hour - b.hour);
+    dayPartRows.sort((a, b) => (a.part === "am" ? -1 : 1));
+
+    return {
+      date: d,
+      dateString,
+      label,
+      appointmentsCount,
+      hourRows,
+      dayPartRows,
+    };
+  });
+});
+
+
+function onDayAccordionSelect(day: AccordionDay) {
+  if (!selectedDay.value || selectedDay.value.getTime() !== day.date.getTime()) {
+    selectedDay.value = day.date;
+    handleDaySelection(day.date);
+  }
+  const idx = firstFiveAvailableDays.value.findIndex(
+    (d) => d.dateString === day.dateString
+  );
+  openAccordionIndex.value = idx;
+}
 </script>
 
 <style scoped>
 .wrapper {
-  display: flex;
-  justify-content: left;
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  column-gap: 8px;
+  padding: 16px 0;
   border-bottom: 1px solid var(--color-neutrals-blue);
-  padding-bottom: 16px;
-  padding-top: 16px;
+  align-items: center;
 }
 
 .wrapper > * {
   margin: 0 8px;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 .grid {
