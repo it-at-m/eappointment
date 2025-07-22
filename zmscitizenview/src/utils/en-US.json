@@ -101,7 +101,7 @@
     "de": "German",
     "en": "English"
   },
-    "listView": "list view",
-    "calendarView": "calendar view",
-    "loadMore": "Load more"
+  "listView": "list view",
+  "calendarView": "calendar view",
+  "loadMore": "Load more"
 }
