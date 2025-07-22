@@ -156,14 +156,29 @@ class Workstation extends Schema\Entity
         return $scopeList;
     }
 
-    public function validateProcessScopeAccess($scopeList, Process $process = null)
+    public function validateProcessScopeAccess($scopeList, $process = null)
     {
         if (null === $process) {
             $process = $this->process;
         }
         if (! $scopeList->hasEntity($process->getScopeId())) {
             $exception = new Exception\WorkstationProcessMatchScopeFailed();
-            $exception->data = $process;
+            // Only include minimal data for security - not the full process object
+            $scopeContactName = null;
+            $currentScope = $process->getCurrentScope();
+            if ($currentScope && isset($currentScope['contact']['name'])) {
+                $scopeContactName = $currentScope['contact']['name'];
+            }
+
+            $exception->data = [
+                'id' => $process->getId(),
+                'scope' => [
+                    'id' => $process->getScopeId(),
+                    'contact' => [
+                        'name' => $scopeContactName
+                    ]
+                ]
+            ];
             throw $exception;
         }
     }
