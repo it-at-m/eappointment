@@ -116,7 +116,7 @@ jobs:
           - module: zmscitizenapi
             php_version: "8.0"
           - module: zmsdldb
-            php_version: "8.0"
+            php_version: "8.3"
           - module: zmsentities
             php_version: "8.0"
           - module: zmsmessaging
@@ -169,6 +169,7 @@ jobs:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsapi
+          ZMS_CONFIG_SECURE_TOKEN: secure-token
         run: |
           cd zmsapi
           echo "Setup fixtures..."
