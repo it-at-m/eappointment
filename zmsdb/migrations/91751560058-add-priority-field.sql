@@ -1,1 +1,0 @@
-ALTER TABLE `buerger` ADD COLUMN `priority` integer (1) DEFAULT NULL;

@@ -51,7 +51,6 @@ class Queue extends Process implements MappingInterface
                 )'
             ),
             'callCount' => 'process.AnzahlAufrufe',
-            'priority' => 'process.priority',
             'callTime' => self::expression(
                 'CONCAT(
                     `process`.`Datum`,

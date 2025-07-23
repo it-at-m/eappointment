@@ -53,7 +53,6 @@ class Process extends Schema\Entity
             'status' => 'free',
             'lastChange' => time(),
             'wasMissed' => false,
-            'priority' => null,
         ];
     }
 
@@ -107,8 +106,7 @@ class Process extends Schema\Entity
     {
         $this->queue = new Queue(array(
             'number' => $number,
-            'arrivalTime' => $dateTime->getTimestamp(),
-            'priority' => $this->getPriority()
+            'arrivalTime' => $dateTime->getTimestamp()
         ));
         return $this;
     }
@@ -177,7 +175,6 @@ class Process extends Schema\Entity
         $this->addAmendment($requestData, $notice);
         $this->addCustomTextfield($requestData, $notice);
         $this->addCustomTextfield2($requestData, $notice);
-        $this->addPriority($requestData);
         return $this;
     }
 
@@ -409,21 +406,9 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function addPriority($input)
-    {
-        $this->priority = isset($input['priority']) && $input['priority'] ? $input['priority'] : null;
-
-        return $this;
-    }
-
     public function getAuthKey()
     {
         return $this->toProperty()->authKey->get();
-    }
-
-    public function getPriority()
-    {
-        return (int) $this->toProperty()->priority->get();
     }
 
     public function setRandomAuthKey()
@@ -590,7 +575,6 @@ class Process extends Schema\Entity
             $queue->number = $this->toProperty()->queue->number->get();
         }
         $queue->arrivalTime = $this->getArrivalTime($dateTime)->getTimestamp();
-        $queue->priority = $this->priority;
         return $queue->setProcess($this);
     }
 
