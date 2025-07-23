@@ -9,7 +9,7 @@ if (!\BO\Zmsdb\Source\Dldb::$importPath) {
 if (isset($argv[1]) && $argv[1] == '--commit') {
     $importer = new \BO\Zmsdb\Source\Dldb();
     print("Starting services import.\n\n");
-    print($argv);
+    print("Arguments: " . (is_array($argv) ? json_encode($argv) : $argv) . "\n\n");
     $importer->startImport(preg_grep('#--?v(erbose)?#', $argv));
     print("Finished services import.\n\n");
 } else {

@@ -400,11 +400,11 @@
       "description": "Number is used to identify appointments like on call displays"
     },
     "lastChange": {
-      "type": "number",
+      "type": ["number", "null"],
       "description": "unix timestamp of the last change on this process"
     },
     "wasMissed": {
-      "type": ["string", "boolean"],
+      "type": ["string", "boolean", "number"],
       "default": false,
       "description": "Indicates whether the process was marked as missed at any prior point."
     },

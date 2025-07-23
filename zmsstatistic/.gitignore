@@ -23,7 +23,7 @@ coverage
 
 # Composer
 /vendor/
-composer.lock
+.phpunit.cache
 
 # IDE
 .idea/

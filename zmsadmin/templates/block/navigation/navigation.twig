@@ -41,10 +41,10 @@
                     {% endif %}
                     {% if workstation.useraccount.rights.useraccount  %}
                     <li class="nav__link{{ menuActive == 'overallcalendar'? ' active' }}">
-                        <a title="{% trans %}Wochenkalender mit allen Terminen{% endtrans %}"
+                        <a title="{% trans %}Gesamtübersicht mit allen Terminen{% endtrans %}"
                            href="{{ urlGet('overallcalendar', {}, {}) }}"
-                           {{ menuActive == 'overallcalendar'? ' aria-current=\"page\"' }}>
-                            Wochenkalender
+                           {{ menuActive == 'overallcalendar'? ' aria-current="page"' }}>
+                            Gesamtübersicht
                         </a>
                     </li>
                     {% endif %}

@@ -5,3 +5,4 @@ tags
 Makefile
 .DS_*
 coverage
+.phpunit.cache

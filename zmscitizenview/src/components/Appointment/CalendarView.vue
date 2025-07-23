@@ -168,7 +168,10 @@
           >
             <div
               class="wrapper"
-              v-if="timeslot == currentHour"
+              v-if="
+                timeslot == currentHour ||
+                providersWithAppointments.length === 1
+              "
             >
               <div v-if="firstHour !== null && firstHour > 0">
                 <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
@@ -194,7 +197,7 @@
       </div>
       <div
         class="wrapper m-button-group"
-        v-if="!isLoadingAppointments"
+        v-if="!isLoadingAppointments && providersWithAppointments.length > 1"
       >
         <muc-button
           :key="currentHour ?? 0"
@@ -296,13 +299,13 @@
           >
             <div
               class="wrapper"
-              v-if="timeslot == currentDayPart"
+              v-if="
+                timeslot == currentDayPart ||
+                providersWithAppointments.length === 1
+              "
             >
-              <div v-if="currentDayPart === 'am'">
-                <p class="centered-text">{{ t("am") }}</p>
-              </div>
-              <div v-else>
-                <p class="centered-text">{{ t("pm") }}</p>
+              <div>
+                <p class="centered-text">{{ t(timeslot) }}</p>
               </div>
               <div class="grid">
                 <div
@@ -325,7 +328,7 @@
       </div>
       <div
         class="wrapper m-button-group"
-        v-if="!isLoadingAppointments"
+        v-if="!isLoadingAppointments && providersWithAppointments.length > 1"
       >
         <muc-button
           icon="chevron-left"
@@ -1140,6 +1143,18 @@ onMounted(() => {
         const bPriority = b.priority ?? -Infinity;
         return bPriority - aPriority;
       });
+    }
+
+    // If a preselected office ID is provided, only check the corresponding provider's checkbox
+    if (props.preselectedOfficeId) {
+      selectedProviders.value = selectableProviders.value.reduce(
+        (acc, item) => {
+          acc[item.id] = String(item.id) === String(props.preselectedOfficeId);
+          return acc;
+        },
+        {} as { [id: string]: boolean }
+      );
+      initialized = true;
     }
 
     officeOrder.value = new Map(

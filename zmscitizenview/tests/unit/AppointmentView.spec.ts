@@ -13,7 +13,11 @@ describe("AppointmentView", () => {
   beforeAll(() => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       status: 200,
-      json: async () => ({}),
+      json: async () => ({
+        offices: [],
+        services: [],
+        relations: [],
+      }),
     }));
   });
 
@@ -826,7 +830,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set empty firstName
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "",
@@ -848,7 +852,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set empty lastName
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "John",
@@ -870,7 +874,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set empty mailAddress
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "John",
@@ -892,7 +896,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set empty telephoneNumber
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "John",
@@ -914,7 +918,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set invalid mailAddress
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "John",
@@ -936,7 +940,7 @@ describe("AppointmentView", () => {
         const wrapper = createWrapper();
         wrapper.vm.currentView = 2; // Customer info view
         await nextTick();
-        
+
         // Set invalid telephoneNumber
         wrapper.vm.$.appContext.provides.customerData.customerData.value = {
           firstName: "John",
