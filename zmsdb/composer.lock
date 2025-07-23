@@ -180,16 +180,16 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-chore-zmskvr-304-update-libphonenumber",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "f5e70ab73c2b6b9536fd35405378b37f6dc9bb11"
+                "reference": "a6ec5f9bce167fded44a9f3ffb53779e5938ffee"
             },
             "require": {
                 "ext-json": ">=0",
                 "ext-pcre": ">=0",
-                "php": ">=7.0.0"
+                "php": ">=8.0"
             },
             "require-dev": {
                 "phpmd/phpmd": "^2.8.0",
@@ -228,11 +228,11 @@
         },
         {
             "name": "eappointment/zmsapi",
-            "version": "dev-chore-zmskvr-304-update-libphonenumber",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "f5e70ab73c2b6b9536fd35405378b37f6dc9bb11"
+                "reference": "fc18527376d66e46d0cd6821d34170a655a647a0"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -303,7 +303,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-chore-zmskvr-304-update-libphonenumber",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -361,11 +361,11 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-chore-zmskvr-304-update-libphonenumber",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "f5e70ab73c2b6b9536fd35405378b37f6dc9bb11"
+                "reference": "1c02fdbeeefac41d1a9c54bfe8b0f456d8c1f7d1"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -428,11 +428,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-chore-zmskvr-304-update-libphonenumber",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "f5e70ab73c2b6b9536fd35405378b37f6dc9bb11"
+                "reference": "852f28a922ce9ba0705010c8b4712de094ed3741"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -453,7 +453,7 @@
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.6",
-                "squizlabs/php_codesniffer": "^3.5.8"
+                "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
             "autoload": {
@@ -484,18 +484,18 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-chore-zmskvr-304-update-libphonenumber",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "f5e70ab73c2b6b9536fd35405378b37f6dc9bb11"
+                "reference": "8e810743d49ebaee2d5e518651944feb96ea4a57"
             },
             "require": {
                 "eappointment/mellon": "@dev",
                 "ext-json": "*",
                 "ext-posix": "*",
                 "monolog/monolog": "1.*",
-                "php": ">=7.3.0",
+                "php": "^8.0",
                 "slim/http-cache": "1.*",
                 "slim/psr7": "^1.5",
                 "slim/slim": "4.*",
@@ -6199,16 +6199,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.12.1",
+            "version": "3.13.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "ea16a1f3719783345febd3aab41beb55c8c84bfd"
+                "reference": "5b5e3821314f947dd040c70f7992a64eac89025c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/ea16a1f3719783345febd3aab41beb55c8c84bfd",
-                "reference": "ea16a1f3719783345febd3aab41beb55c8c84bfd",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/5b5e3821314f947dd040c70f7992a64eac89025c",
+                "reference": "5b5e3821314f947dd040c70f7992a64eac89025c",
                 "shasum": ""
             },
             "require": {
@@ -6279,7 +6279,7 @@
                     "type": "thanks_dev"
                 }
             ],
-            "time": "2025-04-04T12:57:55+00:00"
+            "time": "2025-06-17T22:17:01+00:00"
         },
         {
             "name": "symfony/config",

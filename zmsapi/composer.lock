@@ -295,7 +295,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
+                "reference": "357bdd5f81e87ee615a42a24f933f5c1a0e14aec"
             },
             "require": {
                 "aura/sql": "^4",
@@ -378,7 +378,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
+                "reference": "1c02fdbeeefac41d1a9c54bfe8b0f456d8c1f7d1"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -445,7 +445,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
+                "reference": "852f28a922ce9ba0705010c8b4712de094ed3741"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -466,7 +466,7 @@
                 "helmich/phpunit-psr7-assert": "^4.3.0",
                 "phpmd/phpmd": "@stable",
                 "phpunit/phpunit": "^9.6",
-                "squizlabs/php_codesniffer": "^3.5.8"
+                "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
             "autoload": {
@@ -501,14 +501,14 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "42a33d8721db7f13b4de54623109453e35d31148"
+                "reference": "8e810743d49ebaee2d5e518651944feb96ea4a57"
             },
             "require": {
                 "eappointment/mellon": "@dev",
                 "ext-json": "*",
                 "ext-posix": "*",
                 "monolog/monolog": "1.*",
-                "php": ">=7.3.0",
+                "php": "^8.0",
                 "slim/http-cache": "1.*",
                 "slim/psr7": "^1.5",
                 "slim/slim": "4.*",
@@ -6447,16 +6447,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.11.2",
+            "version": "3.13.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079"
+                "reference": "5b5e3821314f947dd040c70f7992a64eac89025c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/1368f4a58c3c52114b86b1abe8f4098869cb0079",
-                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/5b5e3821314f947dd040c70f7992a64eac89025c",
+                "reference": "5b5e3821314f947dd040c70f7992a64eac89025c",
                 "shasum": ""
             },
             "require": {
@@ -6521,9 +6521,13 @@
                 {
                     "url": "https://opencollective.com/php_codesniffer",
                     "type": "open_collective"
+                },
+                {
+                    "url": "https://thanks.dev/u/gh/phpcsstandards",
+                    "type": "thanks_dev"
                 }
             ],
-            "time": "2024-12-11T16:04:26+00:00"
+            "time": "2025-06-17T22:17:01+00:00"
         },
         {
             "name": "symfony/config",
