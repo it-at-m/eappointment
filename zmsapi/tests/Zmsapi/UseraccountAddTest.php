@@ -98,7 +98,7 @@ class UseraccountAddTest extends Base
     public function testInvalidUserName()
     {
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
-        $this->expectExceptionCode(403);
+        $this->expectExceptionCode(400);
         $this->setWorkstation(137, "testadmin")->getUseraccount()->setRights('useraccount');
         $this->render([], [
             '__body' => '{
