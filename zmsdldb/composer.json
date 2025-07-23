@@ -9,9 +9,6 @@
         }
     ],
     "config": {
-        "platform": {
-            "php": "8.0"
-        },
         "allow-plugins": {
             "php-http/discovery": true
         }
@@ -19,20 +16,12 @@
     "require-dev": {
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
-<<<<<<< HEAD
         "phpunit/phpunit": "^10.5",
-=======
-        "phpunit/phpunit": "^9.5.4",
->>>>>>> next
         "seld/jsonlint": "*",
         "roave/security-advisories": "dev-latest"
     },
     "require": {
-<<<<<<< HEAD
         "php": ">=8.3",
-=======
-        "php": ">=7.3.0",
->>>>>>> next
         "ext-curl": ">=0",
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
