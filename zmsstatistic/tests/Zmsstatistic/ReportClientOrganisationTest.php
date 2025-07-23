@@ -121,62 +121,66 @@ class ReportClientOrganisationTest extends Base
 
     public function testWithDownloadXLSX()
     {
-        $this->setOutputCallback(function () {
-            $this->setApiCalls(
+        // Start output buffering to capture any output from the test
+        ob_start();
+        
+        $this->setApiCalls(
+            [
                 [
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/workstation/',
-                        'parameters' => ['resolveReferences' => 2],
-                        'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/scope/141/department/',
-                        'response' => $this->readFixture("GET_department_74.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/department/74/organisation/',
-                        'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/organisation/71/owner/',
-                        'response' => $this->readFixture("GET_owner_23.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/warehouse/clientorganisation/71/',
-                        'response' => $this->readFixture("GET_clientorganisation_71.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/warehouse/clientorganisation/71/2016-04/',
-                        'response' => $this->readFixture("GET_clientorganisation_71_042016.json")
-                    ],
-                    [
-                        'function' => 'readGetResult',
-                        'url' => '/warehouse/notificationorganisation/71/2016-04/',
-                        'parameters' => ['groupby' => 'month'],
-                        'response' => $this->readFixture("GET_notificationorganisation_71_042016.json")
-                    ]
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/organisation/71/owner/',
+                    'response' => $this->readFixture("GET_owner_23.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/clientorganisation/71/',
+                    'response' => $this->readFixture("GET_clientorganisation_71.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/clientorganisation/71/2016-04/',
+                    'response' => $this->readFixture("GET_clientorganisation_71_042016.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/notificationorganisation/71/2016-04/',
+                    'parameters' => ['groupby' => 'month'],
+                    'response' => $this->readFixture("GET_notificationorganisation_71_042016.json")
                 ]
-            );
-            $response = $this->render(
-                [
-                'period' => '2016-04'
-                ],
-                [
-                '__uri' => '/report/client/department/2016-04/',
-                'type' => 'xlsx'
-                ],
-                [ ]
-            );
+            ]
+        );
+        $response = $this->render(
+            [
+            'period' => '2016-04'
+            ],
+            [
+            '__uri' => '/report/client/department/2016-04/',
+            'type' => 'xlsx'
+            ],
+            [ ]
+        );
 
-            $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
-            //$this->assertLessThan(11, abs(6774 - strlen((string) $response->getBody()))); Todo: What is 6774?
-        });
+        $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
+        //$this->assertLessThan(11, abs(6774 - strlen((string) $response->getBody()))); Todo: What is 6774?
+        
+        // Clean up output buffer (discard any captured output)
+        ob_end_clean();
     }
 
     public function testWithDownloadCSV()

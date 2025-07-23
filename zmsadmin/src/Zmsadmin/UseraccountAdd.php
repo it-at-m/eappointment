@@ -44,7 +44,7 @@ class UseraccountAdd extends BaseController
         }
 
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
-        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
+        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
 
         return \BO\Slim\Render::withHtml(
             $response,

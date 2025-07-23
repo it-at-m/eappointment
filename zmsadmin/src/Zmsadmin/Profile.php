@@ -41,7 +41,7 @@ class Profile extends BaseController
         // A better approach would be a function called readUserAccountData($accountId)
         $userAccount = \App::$http->readGetResult('/useraccount/' . $entity->getId() . '/')->getEntity();
         $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
-        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider'));
+        $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
 
         return \BO\Slim\Render::withHtml(
             $response,

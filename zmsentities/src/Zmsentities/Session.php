@@ -27,7 +27,7 @@ class Session extends Schema\Entity
                     'date' => '0',
                     'familyName' => '',
                     'email' => '',
-                    'telehone' => '',
+                    'telephone' => '',
                     'amendment' => '',
                     'authKey' => ''
                 ],
