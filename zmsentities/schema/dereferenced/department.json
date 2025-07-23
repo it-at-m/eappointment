@@ -94,7 +94,7 @@
                 },
                 "postalCode": {
                     "default": "",
-                    "type": "string"
+                    "type": ["string", "null", "number"]
                 },
                 "region": {
                     "default": "",
@@ -525,12 +525,12 @@
                                         "default": ""
                                     },
                                     "appointmentsPerMail": {
-                                        "type": "string",
+                                        "type": ["string", "null", "integer"],
                                         "description": "allowed appointments per e-mail address",
                                         "default": ""
                                     },
                                     "slotsPerAppointment": {
-                                        "type": "string",
+                                        "type": ["string", "null", "integer"],
                                         "description": "allowed slots per appointment",
                                         "default": ""
                                     },

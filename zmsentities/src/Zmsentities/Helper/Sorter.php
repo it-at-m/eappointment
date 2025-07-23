@@ -27,7 +27,7 @@ class Sorter
 
     public static function toSortedCsv($csvString)
     {
-        $csvElements = explode(',', $csvString);
+        $csvElements = explode(',', $csvString ?? '');
         sort($csvElements);
         return implode(',', $csvElements);
     }

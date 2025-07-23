@@ -13,7 +13,7 @@ use BO\Zmsentities\Process;
 
 class SendMailReminder
 {
-    protected $datetime;
+    public \DateTimeInterface $dateTime;
 
     protected $lastRun;
 

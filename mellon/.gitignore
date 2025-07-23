@@ -5,3 +5,4 @@ tags
 /vendor/
 coverage
 .phpunit.result.cache
+.phpunit.cache
