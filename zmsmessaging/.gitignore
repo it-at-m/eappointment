@@ -9,3 +9,4 @@ vendor.update
 .phpunit.result.cache
 .DS_*
 coverage
+.phpunit.cache
