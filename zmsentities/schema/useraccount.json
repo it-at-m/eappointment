@@ -37,7 +37,8 @@
           "pointer": "Benutzername",
           "messages": {
             "minLength": "Bitte tragen Sie hier die LDAP-Kennung ein (erster Teil der E-Mail-Adresse)",
-            "maxLength": "Der Nutzername sollte 40 Zeichen nicht überschreiten"
+            "maxLength": "Der Nutzername sollte 40 Zeichen nicht überschreiten",
+            "pattern": "Der Nutzername darf nur Kleinbuchstaben, Zahlen, Punkte und Bindestriche enthalten"
           }
         }
       }
