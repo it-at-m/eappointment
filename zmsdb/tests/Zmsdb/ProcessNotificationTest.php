@@ -70,7 +70,7 @@ class ProcessNotificationTest extends Base
     {
         $now = new \DateTimeImmutable('2016-04-08 08:00:00');
         $query = new \BO\Zmsdb\ProcessStatusFree();
-        $input = (new \BO\Zmsdb\Tests\ProcessTest())->getTestProcessEntity();
+        $input = \BO\Zmsdb\Tests\ProcessTest::getTestProcessEntity();
         
         $process = $query->writeEntityReserved($input, $now);
         $process->reminderTimestamp = ($now->modify('-30 minutes'))->getTimestamp();

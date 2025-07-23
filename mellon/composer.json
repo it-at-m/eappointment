@@ -11,13 +11,14 @@
     "require-dev": {
         "phpmd/phpmd": "^2.8.0",
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "^9.5.4",
+        "phpunit/phpunit": "^10.5",
         "roave/security-advisories": "dev-latest"
     },
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.3",
         "ext-json": ">=0",
-        "ext-pcre": ">=0"
+        "ext-pcre": ">=0",
+        "roave/security-advisories": "dev-latest"
     },
     "scripts": {
         "test": "php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html coverage/",

@@ -31,12 +31,12 @@ class SessionHandler implements \SessionHandlerInterface
         static::$lastInstance = $this;
     }
 
-    public static function getLastInstance()
+    public static function getLastInstance(): ?self
     {
         return static::$lastInstance;
     }
 
-    public function setHttpHandler(Http $http)
+    public function setHttpHandler(Http $http): void
     {
         $this->http = $http;
     }
@@ -44,18 +44,18 @@ class SessionHandler implements \SessionHandlerInterface
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */
-    public function open($save_path, $name)
+    public function open(string $save_path, string $name): bool
     {
         $this->sessionName = $name;
         return true;
     }
 
-    public function close()
+    public function close(): bool
     {
         return true;
     }
 
-    public function read($sessionId, $params = [])
+    public function read(string $sessionId, array $params = []): string
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $params['sync'] = static::$useSyncFlag;
@@ -80,7 +80,7 @@ class SessionHandler implements \SessionHandlerInterface
         return ($session && isset($session['content'])) ? serialize($session->getContent()) : '';
     }
 
-    public function write($sessionId, $sessionData, $params = [])
+    public function write(string $sessionId, string $sessionData, array $params = []): bool
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $entity = new \BO\Zmsentities\Session();
@@ -101,7 +101,7 @@ class SessionHandler implements \SessionHandlerInterface
         return (null !== $session) ? true : false;
     }
 
-    public function destroy($sessionId)
+    public function destroy(string $sessionId): bool
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $result = $this->http->readDeleteResult('/session/' . $this->sessionName . '/' . $hashedSessionId . '/');
@@ -113,10 +113,10 @@ class SessionHandler implements \SessionHandlerInterface
      * @SuppressWarnings(ShortMethodName)
      * @codeCoverageIgnore
      */
-    public function gc($maxlifetime)
+    public function gc(int $max_lifetime): int|false
     {
         /*
-         * $compareTs = time() - $maxlifetime;
+         * $compareTs = time() - $max_lifetime;
          * $query = '
          * DELETE FROM
          * sessiondata
@@ -130,6 +130,6 @@ class SessionHandler implements \SessionHandlerInterface
          * $this->sessionName
          * ));
          */
-        return true;
+        return 1;
     }
 }

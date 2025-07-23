@@ -165,7 +165,7 @@
             "description": "source of provider to resolve reference id"
         },
         "lastChange": {
-            "type": "number",
+            "type": ["number", "null"],
             "description": "unix timestamp of the last change on this scope"
         },
         "preferences": {
@@ -291,8 +291,7 @@
                                 }
                             ],
                             "description": "minutes an appointment can have the status preconfirmed",
-                            "default": 60,
-                            "minimum": 15
+                            "default": 60
                         },
                         "startInDaysDefault": {
                             "oneOf": [
@@ -338,12 +337,12 @@
                             "default": ""
                         },
                         "appointmentsPerMail": {
-                            "type": ["string", "null"],
+                            "type": ["string", "null", "integer"],
                             "description": "allowed appointments per e-mail address",
                             "default": ""
                         },
                         "slotsPerAppointment": {
-                            "type": ["string", "null"],
+                            "type": ["string", "null", "integer"],
                             "description": "allowed slots per appointment",
                             "default": ""
                         },
@@ -1152,7 +1151,7 @@
                             "default": 0
                         },
                         "lastGivenNumberTimestamp": {
-                            "type": ["boolean", "number"],
+                            "type": ["number", "null"],
                             "description": "unix timestamp of the last given waiting number",
                             "default": 0
                         }
