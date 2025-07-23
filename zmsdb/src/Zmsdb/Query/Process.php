@@ -30,7 +30,6 @@ class Process extends Base implements MappingInterface
             process.absagecode = 'deref!0',
             process.EMail = '',
             process.NutzerID = 0,
-            process.priority = null,
             process.status = 'blocked'
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
@@ -286,7 +285,6 @@ class Process extends Base implements MappingInterface
             'customTextfield' => 'process.custom_text_field',
             'customTextfield2' => 'process.custom_text_field2',
             'createIP' => 'process.IPAdresse',
-            'priority' => 'process.priority',
             'createTimestamp' => 'process.IPTimeStamp',
             'lastChange' => 'process.updateTimestamp',
             'showUpTime' => 'process.showUpTime',
@@ -786,7 +784,6 @@ class Process extends Base implements MappingInterface
             $this->addValuesFollowingProcessData($process, $parentProcess);
         }
         $this->addValuesWasMissed($process);
-        $this->addValuesPriority($process);
     }
 
     public function addValuesIPAdress($process)
@@ -1066,16 +1063,6 @@ class Process extends Base implements MappingInterface
     {
         $data = [
             'wasMissed' => $process->wasMissed ? 1 : 0,
-        ];
-
-        $this->addValues($data);
-        return $this;
-    }
-
-    protected function addValuesPriority($process)
-    {
-        $data = [
-            'priority' => $process->priority,
         ];
 
         $this->addValues($data);

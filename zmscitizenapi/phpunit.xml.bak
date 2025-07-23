@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" 
+  backupGlobals="false" 
+  backupStaticAttributes="false"
+  bootstrap="tests/Zmscitizenapi/bootstrap.php"
+  colors="true"
+  convertErrorsToExceptions="true" 
+  convertNoticesToExceptions="true" 
+  convertWarningsToExceptions="true" 
+  forceCoversAnnotation="false" 
+  stopOnFailure="false" 
+  verbose="true"
+  processIsolation="false"
+>
+    <testsuites>
+        <testsuite name="Zmscititzenapi Test Suite">
+            <directory>./tests/Zmscitizenapi/</directory>
+        </testsuite>
+    </testsuites>
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+        <exclude>
+            <directory>./vendor</directory>
+            <directory>./tests</directory>
+        </exclude>
+        <report>
+            <html outputDirectory="./coverage/html" />
+            <clover outputFile="./coverage/clover.xml" />
+        </report>
+    </coverage>
+</phpunit>
