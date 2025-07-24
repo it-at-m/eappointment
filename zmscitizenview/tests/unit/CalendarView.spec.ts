@@ -1643,7 +1643,7 @@ describe("CalendarView", () => {
       });
 
       wrapper.vm.selectedHour = 10;
-      await nextTick()
+      await nextTick();
 
       const callout = wrapper.find('[data-test="muc-callout"]');
 
