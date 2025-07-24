@@ -23,6 +23,7 @@ coverage
 
 # Composer
 /vendor/
+.phpunit.cache
 
 # IDE
 .idea/

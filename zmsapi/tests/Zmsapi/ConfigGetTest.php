@@ -12,7 +12,7 @@ class ConfigGetTest extends Base
     {
         $response = $this->render([], [
             '__header' => array(
-                'X-Token' => 'secure-token'
+                'X-Token' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4'
             )
         ], []);
         $this->assertStringContainsString('config.json', (string)$response->getBody());

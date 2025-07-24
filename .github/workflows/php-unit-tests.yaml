@@ -183,7 +183,6 @@ jobs:
           MYSQL_PORT: "tcp://mariadb:3306"
           MYSQL_DATABASE: zmsbo
           MYSQL_ROOT_PASSWORD: zmsapi
-          ZMS_CONFIG_SECURE_TOKEN: secure-token
         run: |
           set -e  # Exit on error, but we'll handle PHPUnit exit codes manually
           cd zmsapi

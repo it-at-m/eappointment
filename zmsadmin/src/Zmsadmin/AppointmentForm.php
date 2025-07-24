@@ -42,6 +42,7 @@ class AppointmentForm extends BaseController
             : $validator->getParameter('selectedtime')->isString()->getValue();
 
         $selectedScope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation, $selectedProcess, 2);
+
         $requestList = ($selectedScope && $selectedScope->hasId())
             ? Helper\AppointmentFormHelper::readRequestList($request, $workstation, $selectedScope)
             : null;
