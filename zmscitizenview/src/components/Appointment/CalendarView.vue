@@ -216,7 +216,7 @@
                           >
                             <muc-button
                               class="timeslot"
-                              variant="secondary"
+                              :variant="selectedTimeslot === time ? 'primary' : 'secondary'"
                               @click="
                                 handleTimeSlotSelection(hourRow.officeId, time)
                               "
@@ -248,7 +248,7 @@
                           >
                             <muc-button
                               class="timeslot"
-                              variant="secondary"
+                              :variant="selectedTimeslot === time ? 'primary' : 'secondary'"
                               @click="
                                 handleTimeSlotSelection(partRow.officeId, time)
                               "
@@ -365,7 +365,7 @@
                 >
                   <muc-button
                     class="timeslot"
-                    variant="secondary"
+                    :variant="selectedTimeslot === time ? 'primary' : 'secondary'"
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
                     <template #default>{{ formatTime(time) }}</template>
@@ -497,7 +497,7 @@
                 >
                   <muc-button
                     class="timeslot"
-                    variant="secondary"
+                    :variant="selectedTimeslot === time ? 'primary' : 'secondary'"
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
                     <template #default>{{ formatTime(time) }}</template>
@@ -1241,6 +1241,8 @@ watch(selectedDay, (newDate) => {
   }
 });
 
+const selectedGridTime = ref<number | null>(null);
+
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
   selectedProvider.value = getProvider(officeId);
@@ -1632,6 +1634,7 @@ const daysToShow = ref(5);
 
 const loadMoreDays = () => {
   daysToShow.value += 3;
+  openAccordionIndex.value = -1;
 };
 
 const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
@@ -1717,18 +1720,17 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
   });
 });
 
-function onDayAccordionSelect(day: AccordionDay) {
-  if (
-    !selectedDay.value ||
-    selectedDay.value.getTime() !== day.date.getTime()
-  ) {
-    selectedDay.value = day.date;
-    handleDaySelection(day.date);
-  }
+const onDayAccordionSelect = (day: AccordionDay) => {
   const idx = firstFiveAvailableDays.value.findIndex(
     (d) => d.dateString === day.dateString
   );
-  openAccordionIndex.value = idx;
+  if (openAccordionIndex.value === idx) {
+    openAccordionIndex.value = -1; // Accordion schließen
+  } else {
+    openAccordionIndex.value = idx; // Accordion öffnen
+    selectedDay.value = day.date;
+    handleDaySelection(day.date);
+  }
 }
 </script>
 
