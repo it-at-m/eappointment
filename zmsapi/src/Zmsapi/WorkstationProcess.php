@@ -9,9 +9,7 @@ namespace BO\Zmsapi;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsdb\Log;
 use BO\Zmsdb\Workstation;
-use BO\Zmsdb\Process;
 use BO\Zmsdb\Process as Query;
 
 /**
@@ -42,6 +40,9 @@ class WorkstationProcess extends BaseController
         $entity->testValid();
         $this->testProcessData($entity);
         $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
+        
+        $this->validateProcessCurrentDate($process);
+        
         $previousStatus = $process->status;
         $process->status = 'called';
         $process = (new Query())->updateEntity(
@@ -67,6 +68,34 @@ class WorkstationProcess extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function validateProcessCurrentDate($process)
+    {
+        if (!$process || !$process->hasId() || !$process->isWithAppointment()) {
+            return;
+        }
+
+        $appointment = $process->getFirstAppointment();
+        if (!$appointment || !$appointment->date) {
+            return;
+        }
+
+        $now = \App::getNow();
+        $today = $now->setTime(0, 0, 0);
+        $appointmentDateTime = new \DateTimeImmutable();
+        $appointmentDateTime = $appointmentDateTime->setTimestamp($appointment->date);
+        $appointmentDate = $appointmentDateTime->setTime(0, 0, 0);
+
+        if ($appointmentDate != $today) {
+            $exception = new Exception\Process\ProcessNotCurrentDate();
+            $exception->data = [
+                'processId' => $process->getId(),
+                'appointmentDate' => $appointmentDateTime->format('d.m.Y'),
+                'appointmentTime' => $appointmentDateTime->format('H:i') . ' Uhr'
+            ];
+            throw $exception;
+        }
     }
 
     protected function testProcessData($entity)

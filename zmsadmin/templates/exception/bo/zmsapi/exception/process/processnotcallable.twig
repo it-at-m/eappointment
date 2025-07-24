@@ -4,7 +4,7 @@
 
     {% block board_body %}
         <h2 class="exceptionData-headline">
-            Termin kann nicht aufgerufen werden{% if sourceData.processId %} (Vorgang {{ sourceData.processId }}){% endif %}
+            Termin kann nicht aufgerufen oder bearbeitet werden{% if sourceData.processId %} (Vorgang {{ sourceData.processId }}){% endif %}
         </h2>
         <p>
             {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Der angegebene Termin kann nicht aufgerufen werden, da er entweder gelöscht, nur reserviert, noch nicht bestätigt oder bereits von einem anderen Arbeitsplatz bearbeitet wird. Nur bestätigte und verfügbare Termine können über die Sachbearbeitung aufgerufen werden. Bitte prüfen Sie die angegebene Vorgangsnummer in der URL.{% endtrans %}

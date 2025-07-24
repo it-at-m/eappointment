@@ -1,18 +1,18 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'exception'} %}
 
     {% block board_title %}Es ist ein Fehler aufgetreten.{% endblock %}
-
     {% block board_body %}
         <h2 class="exceptionData-headline">
             Zugriff verweigert{% if exception.data.id %} (Vorgang {{ exception.data.id}}){% endif %}
         </h2>
         <p>
-            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Diesem Arbeitsplatz ist es nicht erlaubt den Vorgang zu bearbeiten oder zu löschen. Der aufgerufene Vorgang gehört nicht zu diesem Standort. Bitte prüfen Sie die angegebene Vorgangsnummer in der URL.{% endtrans %}
+            {{ exclamationIcon|raw }} {{ errorPrefix }}: {% trans %}Diesem Arbeitsplatz ist es nicht erlaubt den Vorgang zu bearbeiten oder zu löschen. Der aufgerufene Vorgang gehört nicht zu diesem Standort. Bitte prüfen Sie die angegebene Vorgangsnummer in der URL oder wählen Sie einen anderen Standort aus.{% endtrans %}
             {% if exception.data.scope and exception.data.scope.contact and exception.data.scope.contact.name %}
                 <br><br><strong>Der Termin gehört zu:</strong> {{ exception.data.scope.contact.name }}
             {% endif %}
         </p>
         <div class="form-actions">
+            <button class="btn button-primary right" onclick="window.location.href='{{ urlGet('workstationSelect') }}'">Wechseln</button>
             <button class="btn button-cancel right" onclick="window.location.href='{{ urlGet('workstation') }}'">Abbrechen</button>
         </div>
     {% endblock %}

@@ -33,7 +33,6 @@ class WorkstationProcessGet extends BaseController
             throw $exception;
         }
 
-        $this->validateProcessCurrentDate($process);
         $this->validateProcessStatus($process);
 
         $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId(scopeId: $workstation->scope['id'], resolveReferences: 1);
@@ -45,34 +44,6 @@ class WorkstationProcessGet extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
-    }
-
-    protected function validateProcessCurrentDate($process)
-    {
-        if (!$process || !$process->hasId() || !$process->isWithAppointment()) {
-            return;
-        }
-
-        $appointment = $process->getFirstAppointment();
-        if (!$appointment || !$appointment->date) {
-            return;
-        }
-
-        $now = \App::getNow();
-        $today = $now->setTime(0, 0, 0);
-        $appointmentDateTime = new \DateTimeImmutable();
-        $appointmentDateTime = $appointmentDateTime->setTimestamp($appointment->date);
-        $appointmentDate = $appointmentDateTime->setTime(0, 0, 0);
-
-        if ($appointmentDate != $today) {
-            $exception = new Exception\Process\ProcessNotCurrentDate();
-            $exception->data = [
-                'processId' => $process->getId(),
-                'appointmentDate' => $appointmentDateTime->format('d.m.Y'),
-                'appointmentTime' => $appointmentDateTime->format('H:i') . ' Uhr'
-            ];
-            throw $exception;
-        }
     }
 
     protected function validateProcessStatus($process)
