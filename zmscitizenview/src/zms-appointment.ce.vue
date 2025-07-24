@@ -27,6 +27,15 @@ import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 
+const hash = window.location.hash || "";
+const path = window.location.pathname || "";
+
+const hashMatch = hash.match(/services\/([^/]+)\/locations\/([^/]+)/);
+const pathMatch = path.match(/services\/([^/]+)\/locations\/([^/]+)/);
+
+const fallbackServiceId = hashMatch?.[1] || pathMatch?.[1] || undefined;
+const fallbackLocationId = hashMatch?.[2] || pathMatch?.[2] || undefined;
+
 defineProps({
   baseUrl: {
     type: String,
@@ -36,12 +45,12 @@ defineProps({
   serviceId: {
     type: String,
     required: false,
-    default: undefined,
+    default: fallbackServiceId,
   },
   locationId: {
     type: String,
     required: false,
-    default: undefined,
+    default: fallbackLocationId,
   },
   exclusiveLocation: {
     type: String,
