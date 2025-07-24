@@ -40,9 +40,9 @@ class WorkstationProcess extends BaseController
         $entity->testValid();
         $this->testProcessData($entity);
         $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
-        
+
         $this->validateProcessCurrentDate($process);
-        
+
         $previousStatus = $process->status;
         $process->status = 'called';
         $process = (new Query())->updateEntity(
