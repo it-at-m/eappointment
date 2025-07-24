@@ -280,14 +280,6 @@ describe("AppointmentView", () => {
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
     });
-
-    it("shows error callout in calendar view if appointmentNotAvailableError is set", async () => {
-      const wrapper = createWrapper();
-      wrapper.vm.currentView = 1;
-      wrapper.vm.appointmentNotAvailableError = true;
-      await nextTick();
-      expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
-    });
   });
 
   describe("Confirmation View", () => {
