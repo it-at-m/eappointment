@@ -55,7 +55,19 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
           isCancelingAppointment: ref(false),
         },
       },
-      stubs: ["muc-slider", "muc-callout", "muc-calendar"],
+      stubs: {
+        "muc-slider": true,
+        "muc-callout": {
+            props: ["type", "t"],
+            template: `
+              <div data-test='muc-callout' :data-type="type">
+                <slot name="header"></slot>
+                <slot name="content">
+              </slot></div>
+            `
+        },
+        "muc-calendar": true
+      }
     },
     props: {
       ...baseProps,
@@ -1031,7 +1043,6 @@ describe("CalendarView", () => {
       expect(calendar.exists()).toBe(true);
 
       const actualDate = calendar.props('viewMonth');
-      console.log('Expected month:', dateForProvider1.getMonth(), 'Actual month:', actualDate.getMonth());
 
       expect(actualDate.getFullYear()).toBe(dateForProvider1.getFullYear());
       expect(actualDate.getMonth()).toBe(dateForProvider1.getMonth());
@@ -1584,6 +1595,61 @@ describe("CalendarView", () => {
       await nextTick();
       nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
       expect(nextButton && !nextButton.props('disabled')).toBe(true);
+    });
+
+  });
+
+  describe("Edge Cases", () => {
+    it('shows invalidCaptcha callout when errorKey is altcha.invalidCaptcha', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: true,
+          bookingErrorKey: "altcha.invalidCaptcha",
+        }
+      });
+
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+
+      expect(callout.exists()).toBe(true);
+      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.html()).toContain("altcha.invalidCaptcha");
+    });
+
+    it('shows noAppointmentsAvailable callout when errorKey is noAppointmentsAvailable', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: true,
+          bookingErrorKey: "noAppointmentsAvailable",
+        }
+      });
+
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+
+      expect(callout.exists()).toBe(true);
+      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.html()).toContain("noAppointmentsAvailable");
+    });
+
+    it('shows selectedDateNoLongerAvailable callout when selectedHour is set and errorKey is noAppointmentsAvailable', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: true,
+          bookingErrorKey: "selectedDateNoLongerAvailable",
+        }
+      });
+
+      wrapper.vm.selectedHour = 10;
+      await nextTick()
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+
+      expect(callout.exists()).toBe(true);
+      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.html()).toContain("selectedDateNoLongerAvailable");
     });
 
   });
