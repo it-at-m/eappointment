@@ -28,26 +28,28 @@ class WorkstationProcessGetTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testProcessNotCurrentDateInTheFuture()
+    public function testFutureAppointmentAccessibleForEditing()
     {
         \App::$now = new \DateTimeImmutable('2016-05-15 10:45:00', new \DateTimeZone('Europe/Berlin'));
         $workstation = $this->setWorkstation(137, 'testuser', 141);
         $workstation['queue']['clusterEnabled'] = 1;
         
-        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCurrentDate');
-        $this->expectExceptionCode(404);
-        $this->render(['id' => 10030], [], []);
+        // Future appointments should now be accessible for editing
+        $response = $this->render(['id' => 10030], [], []);
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testProcessNotCurrentDateInThePast()
+    public function testPastAppointmentAccessibleForEditing()
     {
         \App::$now = new \DateTimeImmutable('2016-05-17 10:45:00', new \DateTimeZone('Europe/Berlin'));
         $workstation = $this->setWorkstation(137, 'testuser', 141);
         $workstation['queue']['clusterEnabled'] = 1;
         
-        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCurrentDate');
-        $this->expectExceptionCode(404);
-        $this->render(['id' => 10030], [], []);
+        // Past appointments should now be accessible for editing
+        $response = $this->render(['id' => 10030], [], []);
+        $this->assertStringContainsString('process.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testWorkstationProcessMatchScopeFailed()
