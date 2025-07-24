@@ -2,19 +2,24 @@
   <div v-if="providersWithAppointments && providersWithAppointments.length > 1">
     <div class="m-component slider-no-margin">
       <div class="m-content">
-        <h2 tabindex="0" style="margin-bottom: 0">{{ t("location") }}</h2>
+        <h2
+          tabindex="0"
+          style="margin-bottom: 0"
+        >
+          {{ t("location") }}
+        </h2>
       </div>
       <div class="m-content">
-        <MucCheckboxGroup
-        :errorMsg="providerSelectionError"
-        >
+        <MucCheckboxGroup :errorMsg="providerSelectionError">
           <template #checkboxes>
             <MucCheckbox
               v-for="provider in providersWithAppointments"
               :key="provider.id"
               :id="'checkbox-' + provider.id"
               :label="provider.name"
-              :hint="provider.address.street + ' ' + provider.address.house_number"
+              :hint="
+                provider.address.street + ' ' + provider.address.house_number
+              "
               v-model="selectedProviders[provider.id]"
             />
           </template>
@@ -455,7 +460,7 @@ import {
   MucCalendar,
   MucCallout,
   MucCheckbox, // Todo: Use MucCheckbox once disabled boxes are available in the patternlab-vue package
-  MucCheckboxGroup
+  MucCheckboxGroup,
 } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
 
