@@ -216,7 +216,11 @@
                           >
                             <muc-button
                               class="timeslot"
-                              :variant="selectedTimeslot === time ? 'primary' : 'secondary'"
+                              :variant="
+                                selectedTimeslot === time
+                                  ? 'primary'
+                                  : 'secondary'
+                              "
                               @click="
                                 handleTimeSlotSelection(hourRow.officeId, time)
                               "
@@ -248,7 +252,11 @@
                           >
                             <muc-button
                               class="timeslot"
-                              :variant="selectedTimeslot === time ? 'primary' : 'secondary'"
+                              :variant="
+                                selectedTimeslot === time
+                                  ? 'primary'
+                                  : 'secondary'
+                              "
                               @click="
                                 handleTimeSlotSelection(partRow.officeId, time)
                               "
@@ -365,7 +373,9 @@
                 >
                   <muc-button
                     class="timeslot"
-                    :variant="selectedTimeslot === time ? 'primary' : 'secondary'"
+                    :variant="
+                      selectedTimeslot === time ? 'primary' : 'secondary'
+                    "
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
                     <template #default>{{ formatTime(time) }}</template>
@@ -497,7 +507,9 @@
                 >
                   <muc-button
                     class="timeslot"
-                    :variant="selectedTimeslot === time ? 'primary' : 'secondary'"
+                    :variant="
+                      selectedTimeslot === time ? 'primary' : 'secondary'
+                    "
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
                     <template #default>{{ formatTime(time) }}</template>
@@ -1731,7 +1743,7 @@ const onDayAccordionSelect = (day: AccordionDay) => {
     selectedDay.value = day.date;
     handleDaySelection(day.date);
   }
-}
+};
 </script>
 
 <style scoped>
