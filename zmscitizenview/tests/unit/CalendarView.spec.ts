@@ -1638,7 +1638,7 @@ describe("CalendarView", () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
-          bookingErrorKey: "selectedDateNoLongerAvailable",
+          bookingErrorKey: "noAppointmentsAvailable",
         }
       });
 
