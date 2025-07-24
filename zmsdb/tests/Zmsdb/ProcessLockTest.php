@@ -73,7 +73,7 @@ class ProcessLockTest extends Base
         $this->writeDBLock();
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = (new ProcessTest)->getTestProcessEntity();
+        $input = ProcessTest::getTestProcessEntity();
         $input->queue['callTime'] = 0;
         $process = $query->writeEntityReserved($input, $now);
         $process->amendment = 'Test amendment';
@@ -94,7 +94,7 @@ class ProcessLockTest extends Base
         $statement
             ->execute();
         $statement->fetchAll();
-        $process = (new ProcessTest)->getTestProcessEntity();
+        $process = ProcessTest::getTestProcessEntity();
         $process->getFirstAppointment()->date = 1464343200;// 2016-05-27 12:00:00 (1 slot free)
         $query = new ProcessStatusFree();
         $query->writeEntityReserved($process, $now, 'public', 1);

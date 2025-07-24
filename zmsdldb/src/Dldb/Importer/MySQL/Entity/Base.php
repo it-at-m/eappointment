@@ -318,7 +318,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return count($this->fields);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->fields;
     }

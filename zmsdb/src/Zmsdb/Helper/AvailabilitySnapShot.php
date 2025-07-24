@@ -4,6 +4,9 @@ namespace BO\Zmsdb\Helper;
 
 class AvailabilitySnapShot
 {
+    public \BO\Zmsentities\Availability $availability;
+    public \DateTimeInterface $dateTime;
+
     public function __construct(
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $dateTime

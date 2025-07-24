@@ -6,3 +6,4 @@ tags
 .phpunit.result.cache
 clover.xml
 coverage
+.phpunit.cache

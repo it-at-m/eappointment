@@ -1,35 +1,14 @@
 <?xml version="1.0"?>
-<phpunit
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-  backupGlobals="false"
-  backupStaticAttributes="false"
-  bootstrap="tests/bootstrap.php"
-  colors="true"
-  convertErrorsToExceptions="true"
-  convertNoticesToExceptions="true"
-  convertWarningsToExceptions="true"
-  forceCoversAnnotation="false"
-  stopOnFailure="false"
-  verbose="true"
-  processIsolation="true"
->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" backupGlobals="false" bootstrap="tests/bootstrap.php" colors="true" stopOnFailure="false" processIsolation="true" cacheDirectory=".phpunit.cache" backupStaticProperties="false" requireCoverageMetadata="false">
   <php>
-    <ini name="error_reporting" value="-1" />
-    <ini name="xdebug.mode" value="coverage" />
-    <env name="XDEBUG_MODE" value="coverage" />
+    <ini name="error_reporting" value="-1"/>
+    <ini name="xdebug.mode" value="coverage"/>
+    <env name="XDEBUG_MODE" value="coverage"/>
   </php>
-  <coverage processUncoveredFiles="true">
-    <include>
-      <directory suffix=".php">./src</directory>
-    </include>
-    <exclude>
-      <directory>./vendor</directory>
-      <directory>./tests</directory>
-    </exclude>
+  <coverage>
     <report>
-      <html outputDirectory="./coverage/html" />
-      <clover outputFile="./coverage/clover.xml" />
+      <html outputDirectory="./coverage/html"/>
+      <clover outputFile="./coverage/clover.xml"/>
     </report>
   </coverage>
   <testsuites>
@@ -37,4 +16,13 @@
       <directory>./tests/Slim/</directory>
     </testsuite>
   </testsuites>
+  <source>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+    <exclude>
+      <directory>./vendor</directory>
+      <directory>./tests</directory>
+    </exclude>
+  </source>
 </phpunit>

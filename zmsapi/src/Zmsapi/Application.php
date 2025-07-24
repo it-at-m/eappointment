@@ -7,12 +7,6 @@
 
 namespace BO\Zmsapi;
 
-if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
-    throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
-}
-
-define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
-
 class Application extends \BO\Slim\Application
 {
     /**
@@ -71,7 +65,7 @@ class Application extends \BO\Slim\Application
     /**
      * @var String Security Token for Api Access -> get config for example
      */
-    const SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
+    const SECURE_TOKEN = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';
 
     /**
      * language preferences

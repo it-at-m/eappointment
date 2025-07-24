@@ -23,7 +23,7 @@ class ExchangeClientscope extends Base
 
         $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Kundenstatistik " . $scope->contact->name . " " . $scope->shortName;
+        $entity['title'] = "Kundenstatistik " . (($scope && $scope->contact) ? $scope->contact->name : 'Unknown') . " " . ($scope ? $scope->shortName : 'Unknown');
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
@@ -76,7 +76,7 @@ class ExchangeClientscope extends Base
     {
         $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Kundenstatistik " . $scope->contact->name . " " . $scope->shortName;
+        $entity['title'] = "Kundenstatistik " . (($scope && $scope->contact) ? $scope->contact->name : 'Unknown') . " " . ($scope ? $scope->shortName : 'Unknown');
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

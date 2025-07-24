@@ -18,9 +18,6 @@
         }
     ],
     "config": {
-        "platform": {
-            "php": "8.0"
-        },
         "allow-plugins": {
             "php-http/discovery": true
         }
@@ -30,19 +27,22 @@
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "mockery/mockery": "^0.9.4",
-        "phpunit/phpunit": "^9.5.4",
-        "helmich/phpunit-psr7-assert": "^4.3.0"
+        "phpunit/phpunit": "^10.5",
+        "helmich/phpunit-psr7-assert": "4.4.1",
+        "roave/security-advisories": "dev-latest"
     },
     "require": {
+        "php": ">=8.3",
         "eappointment/mellon": "@dev",
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsdldb": "@dev",
         "eappointment/zmsdb": "@dev",
         "eappointment/zmsentities": "@dev",
-        "monolog/monolog": "1.*",
+        "monolog/monolog": "^2.0",
         "ulrichsg/getopt-php": "^2.3",
-        "league/climate": "^3.2"
+        "league/climate": "^3.2",
+        "roave/security-advisories": "dev-latest"
     },
     "scripts": {
         "clean": "rm -f public/doc/assets/*.* && rm -f public/_test/assets/*.*",

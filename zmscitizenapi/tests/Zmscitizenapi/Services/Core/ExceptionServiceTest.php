@@ -40,7 +40,7 @@ class ExceptionServiceTest extends TestCase
         }
     }
 
-    public function processExceptionProvider(): array
+    public static function processExceptionProvider(): array
     {
         return [
             'ProcessNotFound' => [
@@ -118,7 +118,7 @@ class ExceptionServiceTest extends TestCase
         }
     }
 
-    public function calendarExceptionProvider(): array
+    public static function calendarExceptionProvider(): array
     {
         return [
             'InvalidFirstDay' => [
@@ -156,7 +156,7 @@ class ExceptionServiceTest extends TestCase
         }
     }
 
-    public function entityExceptionProvider(): array
+    public static function entityExceptionProvider(): array
     {
         return [
             'DepartmentNotFound' => [

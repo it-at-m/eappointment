@@ -18,15 +18,12 @@
         }
     ],
     "config": {
-        "platform": {
-            "php": "8.0"
-        },
         "allow-plugins": {
             "php-http/discovery": true
         }
     },
     "require": {
-        "php": ">=7.3.0",
+        "php": ">=8.3",
         "ext-curl": ">=0",
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
@@ -39,7 +36,8 @@
         "php-http/curl-client": "^2.2",
         "slim/psr7": "^1.5",
         "tracy/tracy": "^2.9",
-        "twig/twig": "3.*"
+        "twig/twig": "3.*",
+        "roave/security-advisories": "dev-latest"
     },
     "scripts": {
         "command": "bin/configure"
@@ -51,10 +49,11 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5.4",
-        "phpspec/prophecy-phpunit": "^2.0.0",
+        "phpunit/phpunit": "^10.5",
+        "phpspec/prophecy-phpunit": "^2.4",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
-        "helmich/phpunit-psr7-assert": "^4.3.0"
+        "helmich/phpunit-psr7-assert": "4.4.1",
+        "roave/security-advisories": "dev-latest"
     }
 }
