@@ -141,7 +141,7 @@
                         "remoteAddress": {
                             "type": "string"
                         },
-                        "referrer": {
+                        "referer": {
                             "type": "string"
                         },
                         "step": {

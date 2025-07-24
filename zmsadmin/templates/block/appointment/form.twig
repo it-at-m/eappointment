@@ -401,29 +401,6 @@
                             </fieldset>
 
                             <button type="button" class="link clear-list" name="clear-list" accesskey="l">Liste leeren</button>
-
-                            <div id="priority" style="margin-top: 20px;">
-                                <input type="hidden" name="selected_process_priority" value="{{ selectedProcess.priority }}">
-                                {% set priorityOptions = [
-                                    {"value": 1, "name": "Hoch", "selected": selectedProcess.priority == 1 ? "selected" : ""},
-                                    {"value": 2, "name": "Mittel", "selected": selectedProcess.priority == 2 ? "selected" : ""},
-                                    {"value": 3, "name": "Niedrig", "selected": selectedProcess.priority == 3 or selectedProcess.priority == null ? "selected" : ""}
-                                ] %}
-
-                                {{ formgroup(
-                                    {"label": "Prio"},
-                                    [{
-                                        "type":"select",
-                                        "parameter": {
-                                            "accesskey":"o",
-                                            "name": "priority",
-                                            "id": "appointmentForm_priority",
-                                            "width": 3,
-                                            "options": priorityOptions,
-                                        }
-                                    }]
-                                ) }}
-                            </div>
                         </div>
                         {% else %}
                             <div class="message-info">

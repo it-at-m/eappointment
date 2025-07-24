@@ -7,3 +7,4 @@ public
 testdataset.sql.gz
 .phpunit.result.cache
 coverage
+.phpunit.cache
