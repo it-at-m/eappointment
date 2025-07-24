@@ -1599,8 +1599,8 @@ describe("CalendarView", () => {
 
   });
 
-  describe("Edge Cases", () => {
-    it('shows invalidCaptcha callout when errorKey is altcha.invalidCaptcha', async () => {
+  describe("Error States", () => {
+    it('shows invalidCaptcha warning callout when errorKey is altcha.invalidCaptcha', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
@@ -1617,7 +1617,7 @@ describe("CalendarView", () => {
       expect(callout.html()).toContain("altcha.invalidCaptcha");
     });
 
-    it('shows noAppointmentsAvailable callout when errorKey is noAppointmentsAvailable', async () => {
+    it('shows noAppointmentsAvailable warning callout when errorKey is noAppointmentsAvailable', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
@@ -1634,7 +1634,7 @@ describe("CalendarView", () => {
       expect(callout.html()).toContain("noAppointmentsAvailable");
     });
 
-    it('shows selectedDateNoLongerAvailable callout when selectedHour is set and errorKey is noAppointmentsAvailable', async () => {
+    it('shows selectedDateNoLongerAvailable warning callout when selectedHour is set and errorKey is noAppointmentsAvailable', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
@@ -1652,6 +1652,18 @@ describe("CalendarView", () => {
       expect(callout.html()).toContain("selectedDateNoLongerAvailable");
     });
 
+    it('does not show any callout when bookingError is false', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: false,
+          bookingErrorKey: "",
+        }
+      });
+
+      await nextTick();
+      const callout = wrapper.find('[data-test="muc-callout"]');
+      expect(callout.exists()).toBe(false);
+    });
   });
 });
 
