@@ -1059,7 +1059,7 @@ describe("AppointmentView", () => {
       confirmAppointmentHash: validHash
     });
 
-    await nextTick
+    await nextTick();
     await vi.waitFor(() => {
       expect(mockConfirmAppointment).toHaveBeenCalled();
     });
