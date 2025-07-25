@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "860a160632231993e9e16bb43836c629",
+    "content-hash": "a50057c0d47b7a13c8d41292bc2232cb",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -184,7 +184,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "36440afc27cd2cb9dd3e2d5af34a37de832d6c3d"
+                "reference": "1081d97ae9a2546f7cfb915f29b299dd3e39a230"
             },
             "require": {
                 "ext-json": ">=0",
@@ -233,7 +233,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "36440afc27cd2cb9dd3e2d5af34a37de832d6c3d"
+                "reference": "1081d97ae9a2546f7cfb915f29b299dd3e39a230"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -371,7 +371,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "36440afc27cd2cb9dd3e2d5af34a37de832d6c3d"
+                "reference": "1081d97ae9a2546f7cfb915f29b299dd3e39a230"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -439,7 +439,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "36440afc27cd2cb9dd3e2d5af34a37de832d6c3d"
+                "reference": "1081d97ae9a2546f7cfb915f29b299dd3e39a230"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -497,7 +497,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "36440afc27cd2cb9dd3e2d5af34a37de832d6c3d"
+                "reference": "1081d97ae9a2546f7cfb915f29b299dd3e39a230"
             },
             "require": {
                 "eappointment/mellon": "@dev",
