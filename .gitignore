@@ -9,3 +9,4 @@
 .vscode/terminals.json
 coverage/
 .phpunit.cache
+.phpunit.result.cache
