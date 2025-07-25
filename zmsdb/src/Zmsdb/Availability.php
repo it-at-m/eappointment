@@ -100,8 +100,8 @@ class Availability extends Base implements Interfaces\ResolveReferences
     public function readAvailabilityListByScope(
         \BO\Zmsentities\Scope $scope,
         $resolveReferences = 0,
-        \DateTimeImmutable $startDate = null,
-        \DateTimeImmutable $endDate = null
+        ?\DateTimeImmutable $startDate = null,
+        ?\DateTimeImmutable $endDate = null
     ) {
         $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
