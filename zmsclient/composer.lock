@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "deb059d229fe9c48b03091ee5436a76c",
+    "content-hash": "4975bf8b80752b5dd66805cc4958b425",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -122,16 +122,16 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-chore-zmskvr-upgrade-from-80-to-83",
+            "version": "dev-chore-gh-1280-upgrade-from-php-83-to-84",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "015f1a2146736b0597eafb1985e2a4504b55e4da"
+                "reference": "36440afc27cd2cb9dd3e2d5af34a37de832d6c3d"
             },
             "require": {
                 "ext-json": ">=0",
                 "ext-pcre": ">=0",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "roave/security-advisories": "dev-latest"
             },
             "require-dev": {
@@ -171,11 +171,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-chore-zmskvr-upgrade-from-80-to-83",
+            "version": "dev-chore-gh-1280-upgrade-from-php-83-to-84",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "015f1a2146736b0597eafb1985e2a4504b55e4da"
+                "reference": "36440afc27cd2cb9dd3e2d5af34a37de832d6c3d"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -186,7 +186,7 @@
                 "giggsey/libphonenumber-for-php": "^8.13.55",
                 "league/html-to-markdown": "^5.0",
                 "opis/json-schema": "^2.4",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "roave/security-advisories": "dev-latest",
                 "symfony/translation": "^5.4",
                 "symfony/twig-bridge": "^5.4",
@@ -229,18 +229,18 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-chore-zmskvr-upgrade-from-80-to-83",
+            "version": "dev-chore-gh-1280-upgrade-from-php-83-to-84",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "015f1a2146736b0597eafb1985e2a4504b55e4da"
+                "reference": "36440afc27cd2cb9dd3e2d5af34a37de832d6c3d"
             },
             "require": {
                 "eappointment/mellon": "@dev",
                 "ext-json": "*",
                 "ext-posix": "*",
                 "monolog/monolog": "^2.0",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "roave/security-advisories": "dev-latest",
                 "slim/http-cache": "1.*",
                 "slim/psr7": "^1.5",
@@ -2110,12 +2110,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "2976f12cdae3501980aabb46810cf807f7fdec44"
+                "reference": "0b1f127d644a2ff8af1c8bd2955dbe3c11812017"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/2976f12cdae3501980aabb46810cf807f7fdec44",
-                "reference": "2976f12cdae3501980aabb46810cf807f7fdec44",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/0b1f127d644a2ff8af1c8bd2955dbe3c11812017",
+                "reference": "0b1f127d644a2ff8af1c8bd2955dbe3c11812017",
                 "shasum": ""
             },
             "conflict": {
@@ -2276,7 +2276,7 @@
                 "doctrine/mongodb-odm": "<1.0.2",
                 "doctrine/mongodb-odm-bundle": "<3.0.1",
                 "doctrine/orm": ">=1,<1.2.4|>=2,<2.4.8|>=2.5,<2.5.1|>=2.8.3,<2.8.4",
-                "dolibarr/dolibarr": "<19.0.2|==21.0.0.0-beta",
+                "dolibarr/dolibarr": "<=21.0.2",
                 "dompdf/dompdf": "<2.0.4",
                 "doublethreedigital/guest-entries": "<3.1.2",
                 "drupal/admin_audit_trail": "<1.0.5",
@@ -2312,7 +2312,7 @@
                 "elefant/cms": "<2.0.7",
                 "elgg/elgg": "<3.3.24|>=4,<4.0.5",
                 "elijaa/phpmemcacheadmin": "<=1.3",
-                "elmsln/haxcms": "<11",
+                "elmsln/haxcms": "<11.0.8",
                 "encore/laravel-admin": "<=1.8.19",
                 "endroid/qr-code-bundle": "<3.4.2",
                 "enhavo/enhavo-app": "<=0.13.1",
@@ -2440,10 +2440,10 @@
                 "imdbphp/imdbphp": "<=5.1.1",
                 "impresscms/impresscms": "<=1.4.5",
                 "impresspages/impresspages": "<1.0.13",
-                "in2code/femanager": "<5.5.5|>=6,<6.4.1|>=7,<7.4.2|>=8,<8.2.2",
+                "in2code/femanager": "<6.4.2|>=7,<7.5.3|>=8,<8.3.1",
                 "in2code/ipandlanguageredirect": "<5.1.2",
                 "in2code/lux": "<17.6.1|>=18,<24.0.2",
-                "in2code/powermail": "<7.5.1|>=8,<8.5.1|>=9,<10.9.1|>=11,<12.4.1",
+                "in2code/powermail": "<7.5.1|>=8,<8.5.1|>=9,<10.9.1|>=11,<12.5.3|==13",
                 "innologi/typo3-appointments": "<2.0.6",
                 "intelliants/subrion": "<4.2.2",
                 "inter-mediator/inter-mediator": "==5.5",
@@ -2533,8 +2533,10 @@
                 "magneto/core": "<1.9.4.4-dev",
                 "maikuolan/phpmussel": ">=1,<1.6",
                 "mainwp/mainwp": "<=4.4.3.3",
+                "manogi/nova-tiptap": "<=3.2.6",
                 "mantisbt/mantisbt": "<=2.26.3",
                 "marcwillmann/turn": "<0.3.3",
+                "marshmallow/nova-tiptap": "<5.7",
                 "matomo/matomo": "<1.11",
                 "matyhtf/framework": "<3.0.6",
                 "mautic/core": "<5.2.6|>=6.0.0.0-alpha,<6.0.2",
@@ -3060,7 +3062,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-20T17:05:09+00:00"
+            "time": "2025-07-22T16:07:09+00:00"
         },
         {
             "name": "slim/http-cache",
@@ -7669,7 +7671,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-curl": ">=0",
         "ext-mbstring": ">=0",
         "ext-json": ">=1.0",
