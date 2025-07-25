@@ -35,7 +35,7 @@ abstract class Query
      *
      * @param   DialectInterface|null    $dialect
      */
-    public function __construct(DialectInterface $dialect = null)
+    public function __construct(?DialectInterface $dialect = null)
     {
         $this->dialect = ($dialect === null) ? new ANSI() : $dialect;
     }
