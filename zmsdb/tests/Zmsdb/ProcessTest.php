@@ -66,7 +66,7 @@ class ProcessTest extends Base
 
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $input['queue']['number'] = 'invalidNumber';
         $query->writeEntityReserved($input, $now);
     }
@@ -77,7 +77,7 @@ class ProcessTest extends Base
 
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $process = $query->writeEntityReserved($process, $now);
         $process = $query->writeEntityReserved($process, $now);
@@ -89,9 +89,9 @@ class ProcessTest extends Base
 
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $mulitpleSlots = $this->getTestProcessEntity();
+        $mulitpleSlots = self::getTestProcessEntity();
         $mulitpleSlots->getFirstAppointment()->slotCount = 10;
-        $later = $this->getTestProcessEntity();
+        $later = self::getTestProcessEntity();
         $later->getFirstAppointment()->date = $later->getFirstAppointment()->date + (60 * 25);
         $process = $query->writeEntityReserved($later, $now);
         $process = $query->writeEntityReserved($later, $now);
@@ -103,7 +103,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $input->id = 1000;
         try {
             $query->writeEntityReserved($input, $now);
@@ -117,7 +117,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $input->getFirstAppointment()->slotCount = 3;
         $input->queue['callTime'] = 0;
         $process = $query->writeEntityReserved($input, $now);
@@ -153,7 +153,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $input->getFirstAppointment()->slotCount = 3;
         $input->queue['callTime'] = 0;
         $process = $query->writeEntityReserved($input, $now);
@@ -290,7 +290,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $process->status = 'processing';
         $process->queue['callTime'] = $process->queue['arrivalTime'] + 3600;
@@ -304,7 +304,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $input->queue['callTime'] = 1464350400;
         $process = $query->writeEntityReserved($input, $now);
         $process->amendment = 'Test amendment';
@@ -353,7 +353,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusQueued();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $process = $query->writeNewFromAdmin($input, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals(1000, $process->queue->number);
@@ -395,7 +395,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now, "public", 0, 1);
         $process = $query->readSlotCount($process);
         $this->assertEquals(3, $process->getAppointments()->getFirst()['slotCount']);
@@ -406,7 +406,7 @@ class ProcessTest extends Base
         $now = static::$now;
         $query = new ProcessStatusFree();
 
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $input->getFirstAppointment()->slotCount = 3;
         $process = $query->writeEntityReserved($input, $now);
         $process = $query->readEntity($process->id, $process->authKey);
@@ -423,7 +423,7 @@ class ProcessTest extends Base
         $processQuery = new ProcessQuery();
         $scopeQuery = new ScopeQuery();
 
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $scope = $scopeQuery->readEntity(141);
         $processTest = new Entity([
             'appointments' => [
@@ -461,7 +461,7 @@ class ProcessTest extends Base
         $processQuery = new ProcessQuery();
         $scopeQuery = new ScopeQuery();
 
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $scope = $scopeQuery->readEntity(141);
         $scope['preferences']['appointment']['multipleSlotsEnabled'] = true;
         $scopeQuery->updateEntity($scope->id, $scope);
@@ -497,7 +497,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $processOld = $process;
         $process = $query->writeCanceledEntity($process->id, $process->authKey);
@@ -513,7 +513,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $query->writeBlockedEntity($process);
         $process = $query->readEntity($process->getId(), 'deref!0');
@@ -525,7 +525,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $authCheck = $query->readAuthKeyByProcessId($process->id);
         $process = $query->readEntity($process->id, $authCheck['authKey']);
@@ -537,7 +537,7 @@ class ProcessTest extends Base
     {
         $now = static::$now;
         $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
+        $input = self::getTestProcessEntity();
         $input['apiclient']['apiClientID'] = 1;
         $process = $query->writeEntityReserved($input, $now);
         $authCheck = $query->readAuthKeyByProcessId($process->id);
@@ -718,7 +718,7 @@ class ProcessTest extends Base
     /**
      * @SuppressWarnings(ExcessiveMethodLength)
      */
-    public function getTestProcessEntity()
+    public static function getTestProcessEntity()
     {
         // https://localhost/terminvereinbarung/termin/time/1464339600/151/
         $input = new Entity(array(

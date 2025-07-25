@@ -33,6 +33,16 @@ class Exception extends \Exception
     public $trace;
 
     /**
+     * @var string|null $originalMessage
+     */
+    public $originalMessage;
+
+    /**
+     * @var mixed $templatedata
+     */
+    public mixed $templatedata = null;
+
+    /**
      * @param String $message
      * @param \Psr\Http\Message\ResponseInterface $response
      * @param \Psr\Http\Message\RequestInterface $request (optional) reference for better error messages

@@ -1,9 +1,12 @@
 import { mount } from "@vue/test-utils";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
+import * as ZMSAppointmentAPI from "@/api/ZMSAppointmentAPI";
+import de from '@/utils/de-DE.json';
 
 // @ts-expect-error: Vue SFC import for test
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
+// beforeEach is already imported from vitest on line 2
 
 // Mock window.scrollTo for jsdom
 globalThis.scrollTo = vi.fn();
@@ -61,6 +64,13 @@ describe("AppointmentView", () => {
     email: "john@example.com",
     telephone: "1234567890",
   });
+  vi.mock("@/api/ZMSAppointmentAPI", async () => {
+    const actual = await vi.importActual("@/api/ZMSAppointmentAPI");
+    return {
+      ...actual,
+      confirmAppointment: vi.fn(),
+    };
+  });
 
   const createWrapper = (props = {}) => {
     return mount(AppointmentView, {
@@ -70,7 +80,11 @@ describe("AppointmentView", () => {
         locationId: mockLocationId,
         exclusiveLocation: mockExclusiveLocation,
         appointmentHash: mockAppointmentHash,
-        t: (key: string) => key,
+        t: (key: string) => {
+          const translations = de as any;
+          return translations[key] || key;
+        },
+
         ...props,
       },
       global: {
@@ -125,7 +139,12 @@ describe("AppointmentView", () => {
           },
           'muc-callout': {
             props: ["type"],
-            template: `<div data-test='muc-callout' :data-type="type"></div>`
+            template: `
+            <div data-test='muc-callout' :data-type="variant || type">
+              <slot name="header"></slot>
+              <slot name="content"></slot>
+            </div>
+          `
           },
         },
       },
@@ -279,14 +298,6 @@ describe("AppointmentView", () => {
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
-    });
-
-    it("shows error callout in calendar view if appointmentNotAvailableError is set", async () => {
-      const wrapper = createWrapper();
-      wrapper.vm.currentView = 1;
-      wrapper.vm.appointmentNotAvailableError = true;
-      await nextTick();
-      expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
     });
   });
 
@@ -958,5 +969,154 @@ describe("AppointmentView", () => {
         }
       });
     });
+  });
+  describe("API Error Handling - Confirmation", () => {
+    const mockConfirmAppointment = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+
+    beforeEach(() => {
+      mockConfirmAppointment.mockClear();
+    });
+    it("should display activation expired Error when API returns processNotPreconfirmedAnymore", async () => {
+      const mockErrorResponse = {
+        errors: [
+          {
+            errorCode: "processNotPreconfirmedAnymore",
+            message: "Process not preconfirmed anymore"
+          }
+        ]
+      };
+      mockConfirmAppointment.mockResolvedValueOnce(mockErrorResponse);
+
+      const appointmentData = {
+        id: "test-id",
+        authKey: "test-auth-key",
+        scope: {}
+      };
+
+      const validHash = btoa(JSON.stringify(appointmentData));
+
+      const wrapper = createWrapper({
+        confirmAppointmentHash: validHash
+      });
+
+      await nextTick();
+      await vi.waitFor(() => {
+        expect(mockConfirmAppointment).toHaveBeenCalled();
+      });
+
+      expect(mockConfirmAppointment).toHaveBeenCalledWith(
+        {
+          id: "test-id",
+          authKey: "test-auth-key",
+          scope: {}
+        },
+        "https://www.muenchen.de"
+      );
+
+      expect(wrapper.vm.confirmAppointmentActivationExpiredError).toBe(true);
+      expect(wrapper.vm.confirmAppointmentError).toBe(false);
+      expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
+
+      const errorCallout = wrapper.find('[data-test="muc-callout"]');
+      expect(errorCallout.exists()).toBe(true);
+      expect(errorCallout.attributes('data-type')).toBe('error');
+
+      expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorHeader);
+      expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorText);
+  });
+
+  it("should display activation expired error when API returns appointmentNotFound", async () => {
+    const mockErrorResponse = {
+      errors: [
+        {
+          errorCode: "appointmentNotFound",
+          message: "Appointment not found"
+        }
+      ]
+    };
+    mockConfirmAppointment.mockResolvedValueOnce(mockErrorResponse);
+
+    const appointmentData = {
+      id: "not-found-id",
+      authKey: "test-auth-key",
+      scope: {}
+    };
+    const validHash = btoa(JSON.stringify(appointmentData));
+
+    const wrapper = createWrapper({
+      confirmAppointmentHash: validHash
+    });
+
+    await nextTick();
+    await vi.waitFor(() => {
+      expect(mockConfirmAppointment).toHaveBeenCalled();
+    });
+
+    expect(mockConfirmAppointment).toHaveBeenLastCalledWith(
+      {
+        id: "not-found-id",
+        authKey: "test-auth-key",
+        scope: {}
+      },
+      "https://www.muenchen.de"
+    );
+
+    expect(wrapper.vm.confirmAppointmentActivationExpiredError).toBe(true);
+    expect(wrapper.vm.confirmAppointmentError).toBe(false);
+    expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
+
+
+    const errorCallout = wrapper.find('[data-test="muc-callout"]');
+    expect(errorCallout.exists()).toBe(true);
+    expect(errorCallout.attributes('data-type')).toBe('error');
+    expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorHeader);
+    expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorText);
+  });
+
+  it("should display generic error for other API error codes", async () => {
+    const mockErrorResponse = {
+      errors: [
+        {
+          errorCode: "someOtherError",
+          message: "Some other error occurred"
+        }
+      ]
+    };
+    mockConfirmAppointment.mockResolvedValueOnce(mockErrorResponse);
+
+    const appointmentData = {
+      id: "other-error-id",
+      authKey: "test-auth-key",
+      scope: {}
+    };
+    const validHash = btoa(JSON.stringify(appointmentData));
+
+    const wrapper = createWrapper({
+      confirmAppointmentHash: validHash
+    });
+
+    await nextTick();
+    await vi.waitFor(() => {
+      expect(mockConfirmAppointment).toHaveBeenCalled();
+    });
+
+    expect(mockConfirmAppointment).toHaveBeenCalledWith(
+      {
+        id: "other-error-id",
+        authKey: "test-auth-key",
+        scope: {}
+      },
+      "https://www.muenchen.de"
+    );
+
+    expect(wrapper.vm.confirmAppointmentError).toBe(true);
+    expect(wrapper.vm.confirmAppointmentActivationExpiredError).toBe(false);
+    expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
+
+    const errorCallout = wrapper.find('[data-test="muc-callout"]');
+    expect(errorCallout.exists()).toBe(true);
+    expect(errorCallout.attributes('data-type')).toBe('error');
+    expect(errorCallout.text()).toContain(de.appointmentBookingErrorText);
+  });
   });
 });

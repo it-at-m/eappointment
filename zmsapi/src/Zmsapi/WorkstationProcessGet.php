@@ -8,8 +8,6 @@
 namespace BO\Zmsapi;
 
 use BO\Slim\Render;
-use BO\Mellon\Validator;
-use BO\Zmsdb\Workstation;
 use BO\Zmsdb\Process;
 
 class WorkstationProcessGet extends BaseController
@@ -23,12 +21,22 @@ class WorkstationProcessGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        $workstation = (new Helper\User($request))->checkRights();
         $query = new Process();
-        $process = $query->readEntity($args['id'], (new \BO\Zmsdb\Helper\NoAuth()));
+        $processId = $args['id'];
+
+        $process = $query->readEntity($processId, (new \BO\Zmsdb\Helper\NoAuth()));
+
         if (! $process || ! $process->hasId()) {
-            throw new Exception\Process\ProcessNotFound();
+            $exception = new Exception\Process\ProcessNotFound();
+            $exception->data = ['processId' => $processId];
+            throw $exception;
         }
+
+        $this->validateProcessStatus($process);
+
+        $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId(scopeId: $workstation->scope['id'], resolveReferences: 1);
+        $workstation->validateProcessScopeAccess($workstation->getScopeList($cluster), $process);
 
         $message = Response\Message::create($request);
         $message->data = $process;
@@ -36,5 +44,19 @@ class WorkstationProcessGet extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function validateProcessStatus($process)
+    {
+        $blockedStatuses = ['reserved', 'preconfirmed', 'deleted', 'called', 'processing'];
+
+        if (in_array($process->getStatus(), $blockedStatuses)) {
+            $exception = new Exception\Process\ProcessNotCallable();
+            $exception->data = [
+                'processId' => $process->getId(),
+                'status' => $process->getStatus()
+            ];
+            throw $exception;
+        }
     }
 }

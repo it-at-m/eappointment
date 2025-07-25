@@ -29,7 +29,7 @@ class CounterAppointmentTimesTest extends Base
                         'startDate' => '2016-04-01',
                         'endDate' => '2016-04-01'
                     ],
-                    'xtoken' => 'secure-token',
+                    'xtoken' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4',
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ]
             ]

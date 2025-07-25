@@ -85,17 +85,15 @@ class AbstractAccess
         if (0 === strpos($functionName, 'fetch')) {
             $actionType = 'fetch';
             $instanceName = $this->getInstanceOnName($functionName, 5);
-            $instanceLength = $instanceName !== null ? strlen($instanceName) : 0;
-            $actionName = substr($functionName, 5 + $instanceLength);
-            if (!$actionName) {
+            $actionName = substr($functionName, 5 + strlen($instanceName));
+            if (! $actionName) {
                 $actionName = 'Id';
             }
         } elseif (0 === strpos($functionName, 'search')) {
             $actionType = 'search';
             $instanceName = $this->getInstanceOnName($functionName, 6);
-            $instanceLength = $instanceName !== null ? strlen($instanceName) : 0;
-            $actionName = substr($functionName, 6 + $instanceLength);
-            if (!$actionName) {
+            $actionName = substr($functionName, 6 + strlen($instanceName));
+            if (! $actionName) {
                 $actionType = "read";
                 $actionName = 'SearchResultList';
             }

@@ -30,7 +30,7 @@ class AppointmentForm extends BaseController
         $selectedProcess = Helper\AppointmentFormHelper::readSelectedProcess($request);
         if ($selectedProcess && ! $workstation->hasSuperUseraccount()) {
             $workstation
-                ->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList(), $selectedProcess);
+                ->validateProcessScopeAccess((new Helper\ClusterHelper($workstation))->getScopeList(), $selectedProcess);
         }
 
         $selectedDate = ($selectedProcess && $selectedProcess->hasId())
@@ -42,6 +42,7 @@ class AppointmentForm extends BaseController
             : $validator->getParameter('selectedtime')->isString()->getValue();
 
         $selectedScope = Helper\AppointmentFormHelper::readSelectedScope($request, $workstation, $selectedProcess, 2);
+
         $requestList = ($selectedScope && $selectedScope->hasId())
             ? Helper\AppointmentFormHelper::readRequestList($request, $workstation, $selectedScope)
             : null;

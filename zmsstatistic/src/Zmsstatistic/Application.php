@@ -79,7 +79,7 @@ class Application extends \BO\Slim\Application
     /**
     * config preferences
     */
-    const CONFIG_SECURE_TOKEN = ZMS_CONFIG_SECURE_TOKEN;
+    const CONFIG_SECURE_TOKEN = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';
 
     /**
      * HTTP url for api

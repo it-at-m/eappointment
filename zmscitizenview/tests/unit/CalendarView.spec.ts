@@ -55,7 +55,19 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
           isCancelingAppointment: ref(false),
         },
       },
-      stubs: ["muc-slider", "muc-callout", "muc-calendar"],
+      stubs: {
+        "muc-slider": true,
+        "muc-callout": {
+            props: ["type", "t"],
+            template: `
+              <div data-test='muc-callout' :data-type="type">
+                <slot name="header"></slot>
+                <slot name="content">
+              </slot></div>
+            `
+        },
+        "muc-calendar": true
+      }
     },
     props: {
       ...baseProps,
@@ -369,6 +381,35 @@ describe("CalendarView", () => {
     expect(officeAAA).toBeFalsy();
     expect(officeBBB).toBeTruthy();
     expect(officeCCC).toBeTruthy();
+  });
+
+  it("shows an error message when no provider is selected", async () => {
+    // Mock available days with provider IDs
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: "2025-06-17", providerIDs: "1,2" }
+      ]
+    });
+  
+    // Create component with two selectable providers
+    const wrapper = createWrapper({
+      selectedService: {
+        id: "service1",
+        providers: [
+          { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } },
+          { name: "Office B", id: 2, address: { street: "Main", house_number: "2" } }
+        ]
+      }
+    });
+  
+    await flushPromises(); // Wait for API call and computed properties
+  
+    // Make sure no provider is selected
+    wrapper.vm.selectedProviders = {};
+    await nextTick();
+  
+    // Expect the error message to be shown when no provider with appointments is selected
+    expect(wrapper.text()).toContain("errorMessageProviderSelection");
   });
 
   it("shows available day only by providers that have free appointments on that day", async () => {
@@ -1031,7 +1072,6 @@ describe("CalendarView", () => {
       expect(calendar.exists()).toBe(true);
 
       const actualDate = calendar.props('viewMonth');
-      console.log('Expected month:', dateForProvider1.getMonth(), 'Actual month:', actualDate.getMonth());
 
       expect(actualDate.getFullYear()).toBe(dateForProvider1.getFullYear());
       expect(actualDate.getMonth()).toBe(dateForProvider1.getMonth());
@@ -1586,6 +1626,73 @@ describe("CalendarView", () => {
       expect(nextButton && !nextButton.props('disabled')).toBe(true);
     });
 
+  });
+
+  describe("Error States", () => {
+    it('shows invalidCaptcha warning callout when errorKey is altcha.invalidCaptcha', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: true,
+          bookingErrorKey: "altcha.invalidCaptcha",
+        }
+      });
+
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+
+      expect(callout.exists()).toBe(true);
+      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.html()).toContain("altcha.invalidCaptcha");
+    });
+
+    it('shows noAppointmentsAvailable warning callout when errorKey is noAppointmentsAvailable', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: true,
+          bookingErrorKey: "noAppointmentsAvailable",
+        }
+      });
+
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+
+      expect(callout.exists()).toBe(true);
+      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.html()).toContain("noAppointmentsAvailable");
+    });
+
+    it('shows selectedDateNoLongerAvailable warning callout when selectedHour is set and errorKey is noAppointmentsAvailable', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: true,
+          bookingErrorKey: "noAppointmentsAvailable",
+        }
+      });
+
+      wrapper.vm.selectedHour = 10;
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+
+      expect(callout.exists()).toBe(true);
+      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.html()).toContain("selectedDateNoLongerAvailable");
+    });
+
+    it('does not show any callout when bookingError is false', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: false,
+          bookingErrorKey: "",
+        }
+      });
+
+      await nextTick();
+      const callout = wrapper.find('[data-test="muc-callout"]');
+      expect(callout.exists()).toBe(false);
+    });
   });
 });
 
