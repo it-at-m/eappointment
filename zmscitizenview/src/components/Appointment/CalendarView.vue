@@ -410,13 +410,17 @@
     <muc-callout type="warning">
       <template #header>
         {{
-          showErrorKey === "altcha.invalidCaptcha"
-            ? t("altcha.invalidCaptchaHeader")
-            : t("noAppointmentsAvailableHeader")
+          showErrorKey === "noAppointmentsAvailable" && selectedHour !== null
+            ? t("selectedDateNoLongerAvailableHeader")
+            : t(`${showErrorKey}Header`)
         }}
       </template>
       <template #content>
-        {{ t(showErrorKey) }}
+        {{
+          showErrorKey === "noAppointmentsAvailable" && selectedHour !== null
+            ? t("selectedDateNoLongerAvailableText")
+            : t(`${showErrorKey}Text`)
+        }}
       </template>
     </muc-callout>
   </div>
