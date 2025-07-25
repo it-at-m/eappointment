@@ -46,7 +46,7 @@ class PickupCall extends BaseController
                 $process = \App::$http
                     ->readGetResult('/process/' . $inputNumber . '/')
                     ->getEntity();
-                $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
+                $workstation->validateProcessScopeAccess($workstation->getScopeList(), $process);
             } else {
                 $process = \App::$http
                     ->readGetResult('/scope/' . $workstation->scope['id'] . '/queue/' . $inputNumber . '/')

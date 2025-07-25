@@ -16,6 +16,12 @@ class WorkstationProcessTest extends Base
 
     const SCOPE_ID = 143;
 
+    public function tearDown(): void
+    {
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        parent::tearDown();
+    }
+
     public function testRendering()
     {
         $this->setWorkstation();
@@ -102,6 +108,38 @@ class WorkstationProcessTest extends Base
         $this->setWorkstation();
         $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [], []);
+    }
+
+    public function testCallFutureAppointmentBlocked()
+    {
+        \App::$now = new \DateTimeImmutable('2016-05-15 10:45:00', new \DateTimeZone('Europe/Berlin'));
+        $this->setWorkstation();
+        
+        $input = $this->getInput();
+        $input->id = 10030; // Process with appointment on 2016-05-16
+        $input->authKey = '54321';
+        
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCurrentDate');
+        $this->expectExceptionCode(404);
+        $this->render([], [
+            '__body' => json_encode($input)
+        ], []);
+    }
+
+    public function testCallPastAppointmentBlocked()
+    {
+        \App::$now = new \DateTimeImmutable('2016-05-17 10:45:00', new \DateTimeZone('Europe/Berlin'));
+        $this->setWorkstation();
+        
+        $input = $this->getInput();
+        $input->id = 10030; // Process with appointment on 2016-05-16
+        $input->authKey = '54321';
+        
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCurrentDate');
+        $this->expectExceptionCode(404);
+        $this->render([], [
+            '__body' => json_encode($input)
+        ], []);
     }
 
     protected function getInput()
