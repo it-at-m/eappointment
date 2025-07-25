@@ -100,7 +100,7 @@ abstract class Query
      * @return  array|$this     array on get, $this on set
      * @see     Query::flag() for more info on flags.
      */
-    public function flags(array $flags = null)
+    public function flags(?array $flags = null)
     {
         if (!is_array($flags)) {
             return $this->flags;
