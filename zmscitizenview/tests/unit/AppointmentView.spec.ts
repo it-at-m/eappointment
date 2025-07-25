@@ -6,8 +6,7 @@ import de from '@/utils/de-DE.json';
 
 // @ts-expect-error: Vue SFC import for test
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
-import { beforeEach } from "node:test";
-import { error } from "node:console";
+// beforeEach is already imported from vitest on line 2
 
 // Mock window.scrollTo for jsdom
 globalThis.scrollTo = vi.fn();
