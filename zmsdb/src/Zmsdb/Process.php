@@ -375,7 +375,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readConflictListByScopeAndTime(\BO\Zmsentities\Scope $scope, \DateTimeInterface $startDate = null, \DateTimeInterface $endDate = null, \DateTimeInterface $now = null, $resolveReferences = 1)
+    public function readConflictListByScopeAndTime(\BO\Zmsentities\Scope $scope, ?\DateTimeInterface $startDate = null, ?\DateTimeInterface $endDate = null, ?\DateTimeInterface $now = null, $resolveReferences = 1)
     {
         $availabilityList = (new Availability())
             ->readAvailabilityListByScope($scope, 0, $startDate, $endDate)
