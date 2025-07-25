@@ -33,7 +33,7 @@ class PickupNotification extends BaseController
         $process = \App::$http->readGetResult('/process/' . $processId . '/')->getEntity();
         // disabled 2021-01-20 by TK because in ZMS1 it is allowed to send pickup notifications
         // to processes from another scope in department
-        //$workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
+        //$workstation->validateProcessScopeAccess($workstation->getScopeList(), $process);
         $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
