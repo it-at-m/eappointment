@@ -26,7 +26,7 @@ const path = window.location.pathname || "";
 const hashMatch = hash.match(/services\/([^/]+)(?:\/locations\/([^/]+))?/);
 const pathMatch = path.match(/services\/([^/]+)(?:\/locations\/([^/]+))?/);
 
-export const fallbackServiceId  = hashMatch?.[1] || pathMatch?.[1];
+export const fallbackServiceId = hashMatch?.[1] || pathMatch?.[1];
 export const fallbackLocationId = hashMatch?.[2] || pathMatch?.[2];
 </script>
 
