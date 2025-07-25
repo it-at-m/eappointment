@@ -184,7 +184,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "629618598d5b8f0f0cbebd09847be95dd748df6b"
+                "reference": "ce9f9a3f79b96a84805dec69b1868a0e9c27903c"
             },
             "require": {
                 "ext-json": ">=0",
@@ -233,7 +233,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "629618598d5b8f0f0cbebd09847be95dd748df6b"
+                "reference": "ce9f9a3f79b96a84805dec69b1868a0e9c27903c"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -311,7 +311,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "20638d761138fc8fffb335416a23743fae53e6db"
+                "reference": "0aae4726cea7a67d7b927118ce9db812f4ee04a2"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -326,7 +326,7 @@
                 "php-http/curl-client": "^2.2",
                 "psr/http-message": "^1.0",
                 "roave/security-advisories": "dev-latest",
-                "slim/psr7": "^1.5",
+                "slim/psr7": "^1.7.1",
                 "tracy/tracy": "^2.9",
                 "twig/twig": "3.*"
             },
@@ -371,7 +371,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "629618598d5b8f0f0cbebd09847be95dd748df6b"
+                "reference": "ce9f9a3f79b96a84805dec69b1868a0e9c27903c"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -439,7 +439,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "629618598d5b8f0f0cbebd09847be95dd748df6b"
+                "reference": "ce9f9a3f79b96a84805dec69b1868a0e9c27903c"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -497,7 +497,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "629618598d5b8f0f0cbebd09847be95dd748df6b"
+                "reference": "ce9f9a3f79b96a84805dec69b1868a0e9c27903c"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -507,7 +507,7 @@
                 "php": ">=8.4",
                 "roave/security-advisories": "dev-latest",
                 "slim/http-cache": "1.*",
-                "slim/psr7": "^1.5",
+                "slim/psr7": "^1.7.1",
                 "slim/slim": "4.*",
                 "slim/twig-view": "3.*",
                 "stevenmaguire/oauth2-keycloak": "^4.0",
