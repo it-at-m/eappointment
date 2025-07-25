@@ -57,7 +57,7 @@ class ProcessPickup extends BaseController
     protected function testProcessAccess($workstation, $process)
     {
         $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], 1);
-        $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
+        $workstation->validateProcessScopeAccess($workstation->getScopeList($cluster), $process);
         if ($workstation->process && $workstation->process->hasId() && $workstation->process->id != $process->id) {
             $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
             $exception->data = [
