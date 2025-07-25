@@ -2,6 +2,7 @@ import { mount } from "@vue/test-utils";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
 import * as ZMSAppointmentAPI from "@/api/ZMSAppointmentAPI";
+import de from '@/utils/de-DE.json';
 
 // @ts-expect-error: Vue SFC import for test
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
@@ -81,14 +82,10 @@ describe("AppointmentView", () => {
         exclusiveLocation: mockExclusiveLocation,
         appointmentHash: mockAppointmentHash,
         t: (key: string) => {
-          const translations: Record<string, string> = {
-            'appointmentActivationExpiredErrorHeader': 'Ihr Termin kann nicht mehr aktiviert werden.',
-            'appointmentActivationExpiredErrorText': 'Leider ist die Zeit für die Aktivierung Ihres Termins abgelaufen. Bitte vereinbaren Sie den Termin erneut.',
-            'appointmentBookingErrorHeader': 'Aktivierung fehlgeschlagen',
-            'appointmentBookingErrorText': 'Bei der Aktivierung ist ein Fehler aufgetreten.',
-          };
+          const translations = de as any;
           return translations[key] || key;
         },
+
         ...props,
       },
       global: {
@@ -1033,8 +1030,8 @@ describe("AppointmentView", () => {
       expect(errorCallout.exists()).toBe(true);
       expect(errorCallout.attributes('data-type')).toBe('error');
 
-      expect(errorCallout.text()).toContain("Ihr Termin kann nicht mehr aktiviert werden.");
-      expect(errorCallout.text()).toContain("Leider ist die Zeit für die Aktivierung Ihres Termins abgelaufen. Bitte vereinbaren Sie den Termin erneut.");
+      expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorHeader);
+      expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorText);
   });
 
   it("should display activation expired error when API returns appointmentNotFound", async () => {
@@ -1081,8 +1078,8 @@ describe("AppointmentView", () => {
     const errorCallout = wrapper.find('[data-test="muc-callout"]');
     expect(errorCallout.exists()).toBe(true);
     expect(errorCallout.attributes('data-type')).toBe('error');
-    expect(errorCallout.text()).toContain("Ihr Termin kann nicht mehr aktiviert werden.");
-    expect(errorCallout.text()).toContain("Leider ist die Zeit für die Aktivierung Ihres Termins abgelaufen. Bitte vereinbaren Sie den Termin erneut.");
+    expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorHeader);
+    expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorText);
   });
 
   it("should display generic error for other API error codes", async () => {
@@ -1128,7 +1125,7 @@ describe("AppointmentView", () => {
     const errorCallout = wrapper.find('[data-test="muc-callout"]');
     expect(errorCallout.exists()).toBe(true);
     expect(errorCallout.attributes('data-type')).toBe('error');
-    expect(errorCallout.text()).toContain("Aktivierung fehlgeschlagen");
+    expect(errorCallout.text()).toContain(de.appointmentBookingErrorText);
   });
   });
 });
