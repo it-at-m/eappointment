@@ -383,6 +383,35 @@ describe("CalendarView", () => {
     expect(officeCCC).toBeTruthy();
   });
 
+  it("shows an error message when no provider is selected", async () => {
+    // Mock available days with provider IDs
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: "2025-06-17", providerIDs: "1,2" }
+      ]
+    });
+  
+    // Create component with two selectable providers
+    const wrapper = createWrapper({
+      selectedService: {
+        id: "service1",
+        providers: [
+          { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } },
+          { name: "Office B", id: 2, address: { street: "Main", house_number: "2" } }
+        ]
+      }
+    });
+  
+    await flushPromises(); // Wait for API call and computed properties
+  
+    // Make sure no provider is selected
+    wrapper.vm.selectedProviders = {};
+    await nextTick();
+  
+    // Expect the error message to be shown when no provider with appointments is selected
+    expect(wrapper.text()).toContain("errorMessageProviderSelection");
+  });
+
   it("shows available day only by providers that have free appointments on that day", async () => {
     (fetchAvailableDays as Mock).mockResolvedValue({
       availableDays: [
