@@ -229,7 +229,7 @@ class Http
     }
 
     protected function readResult(
-        RequestInterface $request = null,
+        ?RequestInterface $request = null,
         $try = 0
     ) {
         $response = $this->readResponse($request);
