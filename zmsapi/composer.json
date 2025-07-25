@@ -26,7 +26,7 @@
         "aronduby/dump": "*",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
-        "mockery/mockery": "^0.9.4",
+        "mockery/mockery": "^1.0.0",
         "phpunit/phpunit": "^10.5",
         "helmich/phpunit-psr7-assert": "4.4.1",
         "roave/security-advisories": "dev-latest"
