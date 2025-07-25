@@ -143,16 +143,16 @@ class WorkstationTest extends EntityCommonTests
         $this->expectException('\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
         $entity = $this->getExample();
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
-        $entity->testMatchingProcessScope($scopeList);
+        $entity->validateProcessScopeAccess($scopeList);
     }
 
-    public function testMatchingProcessScope()
+    public function validateProcessScopeAccess()
     {
         $entity = $this->getExample();
         $entity->process = (new \BO\Zmsentities\Process)->getExample();
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $scopeList->addEntity((new \BO\Zmsentities\Scope)->getExample());
-        $entity->testMatchingProcessScope($scopeList);
+        $entity->validateProcessScopeAccess($scopeList);
         $this->assertTrue($scopeList->hasEntity($entity->process->getScopeId()));
     }
 
