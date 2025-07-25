@@ -174,17 +174,6 @@ const FormContent = (props) => {
                                 <Label attributes={{ "htmlFor": "AvDaySlottime", "className": "light" }}>&nbsp;Minuten Abstand zweier aufeinander folgender Termine</Label>
                             </Controls>
                         </FormGroup>
-                        <FormGroup inline={true}>
-                            <Controls>
-                                <Inputs.Checkbox name="multipleSlotsAllowed"
-                                    checked={"1" == data.multipleSlotsAllowed} {...{ onChange }}
-                                    value="1"
-                                    disabled={inputDisabled}
-                                    id="AvDayMultipleSlots"
-                                />
-                                <Label attributes={{ "htmlFor": "AvDayMultipleSlots", "className": "light" }}>Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen</Label>
-                            </Controls>
-                        </FormGroup>
                     </div>
                 </fieldset>
 
