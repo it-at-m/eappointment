@@ -46,7 +46,7 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
   <tr>
     <td><img src="https://service.berlin.de/i9f/r1/images/logo_berlin_m_srgb.svg" height="30" align="center"></td>
     <td style="padding-right: 30px;"><img src="https://gitlab.com/eappointment/zmsstatistic/-/raw/main/public/_css/images/bo_logo.svg?ref_type=heads" height="30" align="center"></td>
-    <td><img src="https://muenchen.digital/.resources/lhm-ms-templates-digitalradar/resources/img/logo-lhm.svg" height="30" align="center"></td>
+    <td><img src="https://assets.muenchen.de/logos/lhm/logo-lhm-muenchen.svg" height="30" align="center"></td>
     <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
   </tr>
 </table>
@@ -91,7 +91,7 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
   <tr>
     <td><img src="https://service.berlin.de/i9f/r1/images/logo_berlin_m_srgb.svg" height="30" align="center"></td>
     <td style="padding-right: 30px;"><img src="https://gitlab.com/eappointment/zmsstatistic/-/raw/main/public/_css/images/bo_logo.svg?ref_type=heads" height="30" align="center"></td>
-    <td><img src="https://muenchen.digital/.resources/lhm-ms-templates-digitalradar/resources/img/logo-lhm.svg" height="30" align="center"></td>
+    <td><img src="https://assets.muenchen.de/logos/lhm/logo-lhm-muenchen.svg" height="30" align="center"></td>
     <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
   </tr>
 </table>

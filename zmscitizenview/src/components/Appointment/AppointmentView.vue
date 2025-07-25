@@ -40,17 +40,6 @@
                 @back="decreaseCurrentView"
                 @next="nextReserveAppointment"
               />
-              <div v-if="appointmentNotAvailableError">
-                <muc-callout type="error">
-                  <template #content>
-                    {{ t("selectedDateNoLongerAvailableText") }}
-                  </template>
-
-                  <template #header>{{
-                    t("selectedDateNoLongerAvailableHeader")
-                  }}</template>
-                </muc-callout>
-              </div>
             </div>
             <div v-if="currentView === 2">
               <customer-info
