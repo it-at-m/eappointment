@@ -1,0 +1,29 @@
+services:
+  web:
+    container_name: zms-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/var/www/html:cached
+    ports:
+      - "8090:80"
+      - "8091:443"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.4
+    container_name: zms-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  db-data:
