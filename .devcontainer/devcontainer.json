@@ -1,0 +1,22 @@
+{
+  "name": "zms-devcontainer",
+  "dockerComposeFile": [
+    "docker-compose.yaml",
+    "docker-compose.phpmyadmin.yaml",
+    "docker-compose.refarch-gateway.yaml"
+  ],
+  "service": "web",
+  "workspaceFolder": "/var/www/html",
+  "shutdownAction": "stopCompose",
+  "forwardPorts": [8090, 8091, 8036, 8037, 8084],
+  // "customizations": {
+  //   "vscode": {
+  //     "extensions": [
+  //       "felixfbecker.php-debug",
+  //       "bmewburn.vscode-intelephense-client"
+  //     ]
+  //   }
+  // },
+  // "postCreateCommand": "cp .ddev/.env.template .ddev/.env || true",
+  "runServices": ["web", "db", "phpmyadmin", "refarch-gateway"]
+}
