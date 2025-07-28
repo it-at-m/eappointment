@@ -159,11 +159,12 @@ class ExceptionService
             default:
                 $error = [
                     'errorCode' => $exceptionName ?? 'unknown',
+                    'errorHeader' => $e->getMessage(),
                     'errorMessage' => $e->getMessage(),
                     'statusCode' => $e->getCode() ?: 500
                 ];
         }
 
-        throw new \RuntimeException($error['errorCode'] . ': ' . $error['errorMessage'], $error['statusCode'], $e);
+        throw new \RuntimeException($error['errorCode'] . ': ' . $error['errorHeader'] . ': ' . $error['errorMessage'], $error['statusCode'], $e);
     }
 }

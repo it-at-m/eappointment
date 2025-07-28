@@ -33,7 +33,7 @@ class ExceptionServiceTest extends TestCase
             $this->fail('Expected RuntimeException was not thrown');
         } catch (\RuntimeException $e) {
             $this->assertEquals(
-                $expectedError['errorCode'] . ': ' . $expectedError['errorMessage'],
+                $expectedError['errorCode'] . ': ' . $expectedError['errorHeader'] . ': ' . $expectedError['errorMessage'],
                 $e->getMessage()
             );
             $this->assertEquals($expectedError['statusCode'], $e->getCode());
@@ -111,7 +111,7 @@ class ExceptionServiceTest extends TestCase
             $this->fail('Expected RuntimeException was not thrown');
         } catch (\RuntimeException $e) {
             $this->assertEquals(
-                $expectedError['errorCode'] . ': ' . $expectedError['errorMessage'],
+                $expectedError['errorCode'] . ': ' . $expectedError['errorHeader'] . ': ' . $expectedError['errorMessage'],
                 $e->getMessage()
             );
             $this->assertEquals($expectedError['statusCode'], $e->getCode());
@@ -149,7 +149,7 @@ class ExceptionServiceTest extends TestCase
             $this->fail('Expected RuntimeException was not thrown');
         } catch (\RuntimeException $e) {
             $this->assertEquals(
-                $expectedError['errorCode'] . ': ' . $expectedError['errorMessage'],
+                $expectedError['errorCode'] . ': ' . $expectedError['errorHeader'] . ': ' . $expectedError['errorMessage'],
                 $e->getMessage()
             );
             $this->assertEquals($expectedError['statusCode'], $e->getCode());
@@ -198,7 +198,7 @@ class ExceptionServiceTest extends TestCase
             ExceptionService::handleException($exception, 'testMethod');
             $this->fail('Expected RuntimeException was not thrown');
         } catch (\RuntimeException $e) {
-            $this->assertEquals('UnmappedException: Test message', $e->getMessage());
+            $this->assertEquals('UnmappedException: Test message: Test message', $e->getMessage());
             $this->assertEquals(400, $e->getCode());
         }
     }
@@ -211,7 +211,7 @@ class ExceptionServiceTest extends TestCase
             ExceptionService::handleException($exception, 'testMethod');
             $this->fail('Expected RuntimeException was not thrown');
         } catch (\RuntimeException $e) {
-            $this->assertEquals('unknown: Test message', $e->getMessage());
+            $this->assertEquals('unknown: Test message: Test message', $e->getMessage());
             $this->assertEquals(400, $e->getCode());
         }
     }
