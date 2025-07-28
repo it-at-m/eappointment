@@ -117,7 +117,7 @@ class WorkstationProcessTest extends Base
         
         $input = $this->getInput();
         $input->id = 10030; // Process with appointment on 2016-05-16
-        $input->authKey = '54321';
+        $input->authKey = '1c56';
         
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCurrentDate');
         $this->expectExceptionCode(404);
@@ -133,7 +133,7 @@ class WorkstationProcessTest extends Base
         
         $input = $this->getInput();
         $input->id = 10030; // Process with appointment on 2016-05-16
-        $input->authKey = '54321';
+        $input->authKey = '1c56';
         
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotCurrentDate');
         $this->expectExceptionCode(404);
