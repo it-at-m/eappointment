@@ -93,11 +93,9 @@ jobs:
               ;;
           esac
           
-          # Check PHPUnit exit codes: 0 = success, 1 = warnings (allowed), 2+ = failures (not allowed)
+          # Check PHPUnit exit codes: 0 = success, 1+ = failures/errors (not allowed)
           if [ $TEST_RESULT -eq 0 ]; then
             echo "All tests passed successfully for ${{ matrix.module }}"
-          elif [ $TEST_RESULT -eq 1 ]; then
-            echo "Tests passed with warnings/deprecations for ${{ matrix.module }} (allowed)"
           else
             echo "Tests failed for ${{ matrix.module }} (exit code: $TEST_RESULT)"
             exit $TEST_RESULT
@@ -204,11 +202,9 @@ jobs:
           TEST_RESULT=$?
           set -e
           
-          # Check PHPUnit exit codes: 0 = success, 1 = warnings (allowed), 2+ = failures (not allowed)
+          # Check PHPUnit exit codes: 0 = success, 1+ = failures/errors (not allowed)
           if [ $TEST_RESULT -eq 0 ]; then
             echo "All tests passed successfully"
-          elif [ $TEST_RESULT -eq 1 ]; then
-            echo "Tests passed with warnings/deprecations (allowed)"
           else
             echo "Tests failed (exit code: $TEST_RESULT)"
             exit $TEST_RESULT
@@ -285,11 +281,9 @@ jobs:
           TEST_RESULT=$?
           set -e
           
-          # Check PHPUnit exit codes: 0 = success, 1 = warnings (allowed), 2+ = failures (not allowed)
+          # Check PHPUnit exit codes: 0 = success, 1+ = failures/errors (not allowed)
           if [ $TEST_RESULT -eq 0 ]; then
             echo "All tests passed successfully"
-          elif [ $TEST_RESULT -eq 1 ]; then
-            echo "Tests passed with warnings/deprecations (allowed)"
           else
             echo "Tests failed (exit code: $TEST_RESULT)"
             exit $TEST_RESULT
@@ -352,11 +346,9 @@ jobs:
           TEST_RESULT=$?
           set -e
           
-          # Check PHPUnit exit codes: 0 = success, 1 = warnings (allowed), 2+ = failures (not allowed)
+          # Check PHPUnit exit codes: 0 = success, 1+ = failures/errors (not allowed)
           if [ $TEST_RESULT -eq 0 ]; then
             echo "All tests passed successfully"
-          elif [ $TEST_RESULT -eq 1 ]; then
-            echo "Tests passed with warnings/deprecations (allowed)"
           else
             echo "Tests failed (exit code: $TEST_RESULT)"
             exit $TEST_RESULT
