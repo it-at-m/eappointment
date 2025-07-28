@@ -204,7 +204,12 @@
                     ></div>
                   </template>
 
-                  <template v-else-if="day.appointmentsCount > APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW">
+                  <template
+                    v-else-if="
+                      day.appointmentsCount >
+                      APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW
+                    "
+                  >
                     <template
                       v-for="(hourRow, hIndex) in day.hourRows"
                       :key="hIndex"
