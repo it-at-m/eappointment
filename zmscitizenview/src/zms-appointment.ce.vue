@@ -24,8 +24,12 @@
 const hash = window.location.hash || "";
 const path = window.location.pathname || "";
 
-const confirmHashMatch = hash.match(/#\/appointment\/confirm\/(.+)/) || path.match(/\/appointment\/confirm\/(.+)/);
-const appointmentHashMatch = hash.match(/#\/appointment\/([^/]+)$/) || path.match(/\/appointment\/([^/]+)$/);
+const confirmHashMatch =
+  hash.match(/#\/appointment\/confirm\/(.+)/) ||
+  path.match(/\/appointment\/confirm\/(.+)/);
+const appointmentHashMatch =
+  hash.match(/#\/appointment\/([^/]+)$/) ||
+  path.match(/\/appointment\/([^/]+)$/);
 
 const hashMatch = hash.match(/services\/([^/]+)(?:\/locations\/([^/]+))?/);
 const pathMatch = path.match(/services\/([^/]+)(?:\/locations\/([^/]+))?/);
@@ -68,12 +72,12 @@ defineProps({
   appointmentHash: {
     type: String,
     required: false,
-    default: undefined,
+    default: fallbackAppointmentHash,
   },
   confirmAppointmentHash: {
     type: String,
     required: false,
-    default: undefined,
+    default: fallbackConfirmAppointmentHash,
   },
 });
 
