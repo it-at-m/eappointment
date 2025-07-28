@@ -1297,8 +1297,6 @@ watch(selectedDay, (newDate) => {
   }
 });
 
-const selectedGridTime = ref<number | null>(null);
-
 const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   selectedTimeslot.value = timeSlot;
   selectedProvider.value = getProvider(officeId);
