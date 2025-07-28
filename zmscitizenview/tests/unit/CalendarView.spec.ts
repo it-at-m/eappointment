@@ -390,7 +390,7 @@ describe("CalendarView", () => {
         { time: "2025-06-17", providerIDs: "1,2" }
       ]
     });
-  
+
     // Create component with two selectable providers
     const wrapper = createWrapper({
       selectedService: {
@@ -401,13 +401,13 @@ describe("CalendarView", () => {
         ]
       }
     });
-  
+
     await flushPromises(); // Wait for API call and computed properties
-  
+
     // Make sure no provider is selected
     wrapper.vm.selectedProviders = {};
     await nextTick();
-  
+
     // Expect the error message to be shown when no provider with appointments is selected
     expect(wrapper.text()).toContain("errorMessageProviderSelection");
   });
@@ -1692,6 +1692,106 @@ describe("CalendarView", () => {
       await nextTick();
       const callout = wrapper.find('[data-test="muc-callout"]');
       expect(callout.exists()).toBe(false);
+    });
+  });
+
+  describe("CalendarView – Toggle & List View", () => {
+
+    it("toggles from calendar view to list view and back", async () => {
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+          ]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      expect(wrapper.vm.isListView).toBe(false);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(true);
+      expect(wrapper.find(".m-component-accordion").exists()).toBe(false);
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      expect(wrapper.vm.isListView).toBe(true);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(false);
+      expect(wrapper.find(".m-component-accordion").exists()).toBe(true);
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      expect(wrapper.vm.isListView).toBe(false);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(true);
+    });
+
+    it("adds three more days whenever the 'Mehr laden' button is clicked", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: Array.from({ length: 9 }, (_, i) => ({
+          time: `2025-06-${String(10 + i).padStart(2, "0")}`,
+          providerIDs: "1"
+        }))
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [{ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } }]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      expect(wrapper.vm.daysToShow).toBe(5);
+      expect(wrapper.findAll(".m-accordion__section-header").length).toBe(5);
+
+      const loadBtn = wrapper.findAllComponents({ name: "MucButton" })
+        .find(btn => btn.text().includes("loadMore"));
+      expect(loadBtn).toBeTruthy();
+
+      await loadBtn!.trigger("click");
+      await nextTick();
+
+      expect(wrapper.vm.daysToShow).toBe(8);
+      expect(wrapper.findAll(".m-accordion__section-header").length).toBe(8);
+    });
+
+    it("opens the clicked accordion section and closes the previous one", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-10", providerIDs: "1" },
+          { time: "2025-06-11", providerIDs: "1" }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [{ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } }]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      expect(wrapper.find("#listContent-0").classes()).toContain("show");
+      expect(wrapper.find("#listContent-1").classes()).not.toContain("show");
+
+      await wrapper.find("#listHeading-1 .m-accordion__section-button").trigger("click");
+      await nextTick();
+
+      expect(wrapper.find("#listContent-0").classes()).not.toContain("show");
+      expect(wrapper.find("#listContent-1").classes()).toContain("show");
     });
   });
 });
