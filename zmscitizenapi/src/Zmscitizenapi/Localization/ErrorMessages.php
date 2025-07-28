@@ -147,7 +147,7 @@ class ErrorMessages
         ],
         'invalidEmail' => [
             'errorCode' => 'invalidEmail',
-            'statusCode' => self::HTTP_BAD_REQUEST, 
+            'statusCode' => self::HTTP_BAD_REQUEST,
             'errorHeader' => 'Invalid email.',
             'errorMessage' => 'email should be a valid email address.'
         ],
@@ -226,7 +226,7 @@ class ErrorMessages
             'statusCode' => self::HTTP_INTERNAL_SERVER_ERROR
         ],
         'invalidApiClient' => [
-            'errorCode' => 'invalidApiClient',  
+            'errorCode' => 'invalidApiClient',
             'errorHeader' => 'Invalid API client.',
             'errorMessage' => 'Invalid API client.',
             'statusCode' => self::HTTP_BAD_REQUEST
@@ -268,7 +268,7 @@ class ErrorMessages
             'statusCode' => self::HTTP_NOT_FOUND
         ],
         'scopeNotFound' => [
-            'errorCode' => 'scopeNotFound', 
+            'errorCode' => 'scopeNotFound',
             'errorHeader' => 'Scope not found.',
             'errorMessage' => 'Scope not found.',
             'statusCode' => self::HTTP_NOT_FOUND
@@ -743,7 +743,7 @@ class ErrorMessages
         ],
         'notFound' => [
             'errorCode' => 'notFound',
-            'statusCode' => self::HTTP_NOT_FOUND,   
+            'statusCode' => self::HTTP_NOT_FOUND,
             'errorHeader' => 'Кінцева точка не знайдена.',
             'errorMessage' => 'Кінцеву точку не знайдено.',
         ],
@@ -773,7 +773,7 @@ class ErrorMessages
         ],
         'invalidStartDate' => [
             'errorCode' => 'invalidStartDate',
-            'statusCode' => self::HTTP_BAD_REQUEST, 
+            'statusCode' => self::HTTP_BAD_REQUEST,
             'errorHeader' => 'Недійсна дата початку.',
             'errorMessage' => 'Потрібна дійсна дата початку.'
         ],
