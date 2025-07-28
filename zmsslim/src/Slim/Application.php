@@ -3,6 +3,11 @@
 namespace BO\Slim;
 
 define('ZMS_SESSION_DURATION', getenv('ZMS_SESSION_DURATION') ? getenv('ZMS_SESSION_DURATION') : 28800);
+if (!defined('ZMS_SLIM_TWIG_CACHE')) {
+    $value = getenv('ZMS_SLIM_TWIG_CACHE');
+    define('ZMS_SLIM_TWIG_CACHE', ($value === 'false') ? false : ($value ?: false));
+}
+
 class Application
 {
     /**
