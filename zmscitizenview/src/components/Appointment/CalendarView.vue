@@ -204,6 +204,23 @@
                       v-for="(hourRow, hIndex) in day.hourRows"
                       :key="hIndex"
                     >
+                      <div
+                        class="ml-4 location-title"
+                        v-if="
+                          (selectableProviders?.length || 0) > 1 &&
+                          (hIndex === 0 ||
+                            day.hourRows[hIndex - 1].officeId !==
+                              hourRow.officeId)
+                        "
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="icon icon--before"
+                        >
+                          <use xlink:href="#icon-map-pin"></use>
+                        </svg>
+                        {{ officeName(hourRow.officeId) }}
+                      </div>
                       <div class="wrapper">
                         <p class="centered-text nowrap">
                           {{ hourRow.hour }}:00‑{{ hourRow.hour }}:59
@@ -225,9 +242,9 @@
                                 handleTimeSlotSelection(hourRow.officeId, time)
                               "
                             >
-                              <template #default>{{
-                                formatTime(time)
-                              }}</template>
+                              <template #default
+                                >{{ formatTime(time) }}
+                              </template>
                             </muc-button>
                           </div>
                         </div>
@@ -240,6 +257,23 @@
                       v-for="(partRow, pIndex) in day.dayPartRows"
                       :key="pIndex"
                     >
+                      <div
+                        class="ml-4 location-title"
+                        v-if="
+                          (selectableProviders?.length || 0) > 1 &&
+                          (pIndex === 0 ||
+                            day.dayPartRows[pIndex - 1].officeId !==
+                              partRow.officeId)
+                        "
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="icon icon--before"
+                        >
+                          <use xlink:href="#icon-map-pin"></use>
+                        </svg>
+                        {{ officeName(partRow.officeId) }}
+                      </div>
                       <div class="wrapper">
                         <p class="centered-text nowrap">
                           {{ t(partRow.part) }}
@@ -261,9 +295,9 @@
                                 handleTimeSlotSelection(partRow.officeId, time)
                               "
                             >
-                              <template #default>{{
-                                formatTime(time)
-                              }}</template>
+                              <template #default
+                                >{{ formatTime(time) }}
+                              </template>
                             </muc-button>
                           </div>
                         </div>
