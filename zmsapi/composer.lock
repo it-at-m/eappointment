@@ -184,7 +184,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "c5e0df8c28ac3eca633d7497edf71165a2302b94"
+                "reference": "8ccef217eb665f20f8c5f932a41d975a8c65a7f4"
             },
             "require": {
                 "ext-json": ">=0",
@@ -293,7 +293,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "c5e0df8c28ac3eca633d7497edf71165a2302b94"
+                "reference": "8ccef217eb665f20f8c5f932a41d975a8c65a7f4"
             },
             "require": {
                 "aura/sql": "^6.0",
@@ -378,7 +378,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "c5e0df8c28ac3eca633d7497edf71165a2302b94"
+                "reference": "8ccef217eb665f20f8c5f932a41d975a8c65a7f4"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -446,7 +446,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "c5e0df8c28ac3eca633d7497edf71165a2302b94"
+                "reference": "8ccef217eb665f20f8c5f932a41d975a8c65a7f4"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -504,7 +504,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "c5e0df8c28ac3eca633d7497edf71165a2302b94"
+                "reference": "8ccef217eb665f20f8c5f932a41d975a8c65a7f4"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -2501,12 +2501,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "0b1f127d644a2ff8af1c8bd2955dbe3c11812017"
+                "reference": "81355a1946c1cb0d4dd1966161015b8522f30173"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/0b1f127d644a2ff8af1c8bd2955dbe3c11812017",
-                "reference": "0b1f127d644a2ff8af1c8bd2955dbe3c11812017",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/81355a1946c1cb0d4dd1966161015b8522f30173",
+                "reference": "81355a1946c1cb0d4dd1966161015b8522f30173",
                 "shasum": ""
             },
             "conflict": {
@@ -2703,7 +2703,7 @@
                 "elefant/cms": "<2.0.7",
                 "elgg/elgg": "<3.3.24|>=4,<4.0.5",
                 "elijaa/phpmemcacheadmin": "<=1.3",
-                "elmsln/haxcms": "<11.0.8",
+                "elmsln/haxcms": "<11.0.14",
                 "encore/laravel-admin": "<=1.8.19",
                 "endroid/qr-code-bundle": "<3.4.2",
                 "enhavo/enhavo-app": "<=0.13.1",
@@ -3453,7 +3453,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-22T16:07:09+00:00"
+            "time": "2025-07-25T21:05:39+00:00"
         },
         {
             "name": "seld/cli-prompt",
@@ -5570,16 +5570,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.5.0",
+            "version": "v5.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "ae59794362fe85e051a58ad36b289443f57be7a9"
+                "reference": "221b0d0fdf1369c71047ad1d18bb5880017bbc56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/ae59794362fe85e051a58ad36b289443f57be7a9",
-                "reference": "ae59794362fe85e051a58ad36b289443f57be7a9",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/221b0d0fdf1369c71047ad1d18bb5880017bbc56",
+                "reference": "221b0d0fdf1369c71047ad1d18bb5880017bbc56",
                 "shasum": ""
             },
             "require": {
@@ -5622,9 +5622,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.5.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.6.0"
             },
-            "time": "2025-05-31T08:24:38+00:00"
+            "time": "2025-07-27T20:03:57+00:00"
         },
         {
             "name": "pdepend/pdepend",
