@@ -2,23 +2,28 @@
   <div v-if="providersWithAppointments && providersWithAppointments.length > 1">
     <div class="m-component slider-no-margin">
       <div class="m-content">
-        <h2 tabindex="0">{{ t("location") }}</h2>
+        <h2
+          tabindex="0"
+          style="margin-bottom: 0"
+        >
+          {{ t("location") }}
+        </h2>
       </div>
-      <div
-        class="m-content"
-        v-if="providersWithAppointments.length > 1"
-      >
-        <div v-for="provider in providersWithAppointments">
-          <muc-checkbox
-            :key="provider.id"
-            :id="'checkbox-' + provider.id"
-            :label="provider.name"
-            :hint="
-              provider.address.street + ' ' + provider.address.house_number
-            "
-            v-model="selectedProviders[provider.id]"
-          ></muc-checkbox>
-        </div>
+      <div class="m-content">
+        <MucCheckboxGroup :errorMsg="providerSelectionError">
+          <template #checkboxes>
+            <MucCheckbox
+              v-for="provider in providersWithAppointments"
+              :key="provider.id"
+              :id="'checkbox-' + provider.id"
+              :label="provider.name"
+              :hint="
+                provider.address.street + ' ' + provider.address.house_number
+              "
+              v-model="selectedProviders[provider.id]"
+            />
+          </template>
+        </MucCheckboxGroup>
       </div>
     </div>
   </div>
@@ -638,13 +643,17 @@
     <muc-callout type="warning">
       <template #header>
         {{
-          showErrorKey === "altcha.invalidCaptcha"
-            ? t("altcha.invalidCaptchaHeader")
-            : t("noAppointmentsAvailableHeader")
+          showErrorKey === "noAppointmentsAvailable" && selectedHour !== null
+            ? t("selectedDateNoLongerAvailableHeader")
+            : t(`${showErrorKey}Header`)
         }}
       </template>
       <template #content>
-        {{ t(showErrorKey) }}
+        {{
+          showErrorKey === "noAppointmentsAvailable" && selectedHour !== null
+            ? t("selectedDateNoLongerAvailableText")
+            : t(`${showErrorKey}Text`)
+        }}
       </template>
     </muc-callout>
   </div>
@@ -684,6 +693,7 @@ import {
   MucCalendar,
   MucCallout,
   MucCheckbox, // Todo: Use MucCheckbox once disabled boxes are available in the patternlab-vue package
+  MucCheckboxGroup,
 } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
 
@@ -1668,6 +1678,20 @@ watch(
   },
   { deep: true }
 );
+
+const providerSelectionError = computed(() => {
+  if (!availableDays?.value || availableDays.value.length === 0) {
+    return "";
+  }
+
+  const hasSelection = Object.entries(selectedProviders.value).some(
+    ([id, isSelected]) =>
+      isSelected &&
+      providersWithAppointments.value.some((p) => p.id.toString() === id)
+  );
+
+  return hasSelection ? "" : props.t("errorMessageProviderSelection");
+});
 
 const isListView = ref(false);
 const toggleView = () => {

@@ -17,3 +17,4 @@ VERSION
 .phpunit.result.cache
 coverage
 .phpunit.cache
+.phpunit.cache/test-results

@@ -89,7 +89,35 @@ class UseraccountAddTest extends Base
               "departments": [
                   {"id": 74}
               ],
-              "id": "unittest_rights_failed",
+              "id": "unittest-rights-failed",
+              "password": "unittest"
+            }'
+        ], []);
+    }
+
+    public function testInvalidUserName()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
+        $this->setWorkstation(137, "testadmin")->getUseraccount()->setRights('useraccount');
+        $this->render([], [
+            '__body' => '{
+                "rights": {
+                "availability": 0,
+                "basic": 1,
+                "cluster": 0,
+                "department": 0,
+                "organisation": 0,
+                "scope": 0,
+                "sms": 0,
+                "superuser": 1,
+                "ticketprinter": 0,
+                "useraccount": 0
+              },
+              "departments": [
+                  {"id": 74}
+              ],
+              "id": "äas#d wrong user name",
               "password": "unittest"
             }'
         ], []);
