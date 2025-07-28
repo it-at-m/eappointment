@@ -145,7 +145,7 @@ jobs:
   zmsapi-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment-php-base:8.3-dev"
+      image: "ghcr.io/it-at-m/eappointment-php-base:8.4-dev"
     services:
       mariadb:
         image: mariadb:10.11
@@ -229,7 +229,7 @@ jobs:
   zmsdb-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment-php-base:8.3-dev"
+      image: "ghcr.io/it-at-m/eappointment-php-base:8.4-dev"
     services:
       mariadb:
         image: mariadb:10.11
