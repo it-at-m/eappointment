@@ -184,7 +184,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "8ccef217eb665f20f8c5f932a41d975a8c65a7f4"
+                "reference": "c4acef203b9015bddaa62f089f16183b7f30476f"
             },
             "require": {
                 "ext-json": ">=0",
@@ -293,7 +293,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "8ccef217eb665f20f8c5f932a41d975a8c65a7f4"
+                "reference": "c4acef203b9015bddaa62f089f16183b7f30476f"
             },
             "require": {
                 "aura/sql": "^6.0",
@@ -378,7 +378,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "8ccef217eb665f20f8c5f932a41d975a8c65a7f4"
+                "reference": "c4acef203b9015bddaa62f089f16183b7f30476f"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -446,7 +446,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "8ccef217eb665f20f8c5f932a41d975a8c65a7f4"
+                "reference": "c4acef203b9015bddaa62f089f16183b7f30476f"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -504,7 +504,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "8ccef217eb665f20f8c5f932a41d975a8c65a7f4"
+                "reference": "c4acef203b9015bddaa62f089f16183b7f30476f"
             },
             "require": {
                 "eappointment/mellon": "@dev",
