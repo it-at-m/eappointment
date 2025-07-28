@@ -1096,9 +1096,9 @@ const handleError = (data: any): void => {
   error.value = true;
 
   const tokenErrors = ["captchaMissing", "captchaExpired", "captchaInvalid"];
-  const errorCode = data?.errors?.[0]?.errorCode;
+  const firstErrorCode = data?.errors?.[0]?.errorCode;
 
-  errorKey.value = tokenErrors.includes(errorCode)
+  errorKey.value = tokenErrors.includes(firstErrorCode)
     ? "altcha.invalidCaptcha"
     : "noAppointmentsAvailable";
 };

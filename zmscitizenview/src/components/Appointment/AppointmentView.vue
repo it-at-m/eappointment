@@ -378,9 +378,8 @@ const setRebookData = () => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          if (
-            (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
-          ) {
+          const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+          if (firstErrorCode === "tooManyAppointmentsWithSameMail") {
             tooManyAppointmentsWithSameMailError.value = true;
           } else {
             updateAppointmentError.value = true;
@@ -464,9 +463,8 @@ const nextUpdateAppointment = () => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          if (
-            (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
-          ) {
+          const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
+          if (firstErrorCode === "tooManyAppointmentsWithSameMail") {
             tooManyAppointmentsWithSameMailError.value = true;
           } else {
             updateAppointmentError.value = true;
@@ -627,6 +625,8 @@ onMounted(() => {
             firstErrorCode === "appointmentNotFound"
           ) {
             confirmAppointmentActivationExpiredError.value = true;
+          } else if (firstErrorCode === "tooManyAppointmentsWithSameMail") {
+            tooManyAppointmentsWithSameMailError.value = true;
           } else {
             confirmAppointmentError.value = true;
           }

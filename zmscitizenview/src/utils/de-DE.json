@@ -77,7 +77,7 @@
   "time": "Zeit",
   "timeStampSuffix": "Uhr",
   "tooManyAppointmentsWithSameMailErrorHeader": "Sie haben bereits zu viele Termine gebucht.",
-  "tooManyAppointmentsWithSameMailErrorText": "Sie können mit Ihrer E-Mail-Adresse höchstens drei Termine auf einmal vereinbaren. Bitte sagen Sie einen anderen Termin ab, bevor Sie einen neuen Termin buchen.",
+  "tooManyAppointmentsWithSameMailErrorText": "Sie können mit Ihrer E-Mail-Adresse nur eine begrenzte Anzahl an Terminen vereinbaren. Bitte sagen Sie einen anderen Termin ab, bevor Sie einen neuen Termin buchen.",
   "updateAppointmentErrorHeader": "Terminupdate fehlgeschlagen",
   "updateAppointmentErrorText": "Terminupdate fehlgeschlagen.",
   "your": "Ihr",
