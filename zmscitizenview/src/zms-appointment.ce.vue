@@ -23,8 +23,15 @@
 <script lang="ts">
 const hash = window.location.hash || "";
 const path = window.location.pathname || "";
+
+const confirmHashMatch = hash.match(/#\/appointment\/confirm\/(.+)/) || path.match(/\/appointment\/confirm\/(.+)/);
+const appointmentHashMatch = hash.match(/#\/appointment\/([^/]+)$/) || path.match(/\/appointment\/([^/]+)$/);
+
 const hashMatch = hash.match(/services\/([^/]+)(?:\/locations\/([^/]+))?/);
 const pathMatch = path.match(/services\/([^/]+)(?:\/locations\/([^/]+))?/);
+
+export const fallbackConfirmAppointmentHash = confirmHashMatch?.[1];
+export const fallbackAppointmentHash = appointmentHashMatch?.[1];
 
 export const fallbackServiceId = hashMatch?.[1] || pathMatch?.[1];
 export const fallbackLocationId = hashMatch?.[2] || pathMatch?.[2];
