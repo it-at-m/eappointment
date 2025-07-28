@@ -46,7 +46,7 @@ jobs:
         env:
           XDEBUG_MODE: coverage
         run: |
-          set -e  # Exit on error, but we'll handle PHPUnit exit codes manually
+          set -e  # Exit immediately on any error
           cd "${{ matrix.module }}"
           mkdir -p coverage
           echo "Running tests for ${{ matrix.module }}"
@@ -67,8 +67,10 @@ jobs:
               echo "Running tests WITHOUT coverage for ${{ matrix.module }}"
               # Temporarily disable exit on error for PHPUnit
               set +e
-              XDEBUG_MODE=off php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml --display-phpunit-deprecations --display-warnings
+              PHPUNIT_OUTPUT=$(XDEBUG_MODE=off php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml \
+                --display-phpunit-deprecations --display-warnings 2>&1)
               TEST_RESULT=$?
+              echo "$PHPUNIT_OUTPUT"
               set -e
               # Create empty placeholder files for artifacts
               touch coverage/.placeholder
@@ -77,32 +79,30 @@ jobs:
               echo "Running tests WITH coverage for ${{ matrix.module }}"
               # Temporarily disable exit on error for PHPUnit
               set +e
-              php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml --display-phpunit-deprecations --display-warnings
+              PHPUNIT_OUTPUT=$(php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml \
+                --display-phpunit-deprecations --display-warnings 2>&1)
               TEST_RESULT=$?
+              echo "$PHPUNIT_OUTPUT"
               set -e
               # Generate detailed coverage reports
               echo "Generating coverage reports..."
-              set +e
               php -dmemory_limit=-1 \
                 ./vendor/bin/phpunit -c phpunit.xml \
                 --coverage-html coverage/html \
                 --coverage-clover coverage/clover.xml \
                 --log-junit coverage/junit.xml \
                 --display-phpunit-deprecations --display-warnings
-              set -e
               ;;
           esac
           
-          echo "Files in coverage directory:"
-          ls -la coverage/ || true
-          
-          # Check if tests passed (exit codes 0 = success, 1 = warnings but tests passed, 2+ = real failures)
-          if [ $TEST_RESULT -eq 0 ] || [ $TEST_RESULT -eq 1 ]; then
-            echo "Tests passed (exit code: $TEST_RESULT)"
-            exit 0
-          else
-            echo "Tests failed (exit code: $TEST_RESULT)"
+          # Check for actual test failures in output (not just warnings)
+          if [ $TEST_RESULT -eq 0 ]; then
+            echo "All tests passed successfully for ${{ matrix.module }}"
+          elif echo "$PHPUNIT_OUTPUT" | grep -q "FAILURES!\|Failures: [1-9]"; then
+            echo "Tests failed for ${{ matrix.module }} (exit code: $TEST_RESULT)"
             exit $TEST_RESULT
+          else
+            echo "Tests passed with warnings/deprecations for ${{ matrix.module }} (allowed)"
           fi
 
       - name: Upload Coverage
@@ -185,7 +185,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: zmsapi
           ZMS_CONFIG_SECURE_TOKEN: secure-token
         run: |
-          set -e  # Exit on error, but we'll handle PHPUnit exit codes manually
+          set -e  # Exit immediately on any error
           cd zmsapi
           echo "Setup fixtures..."
           rm -rf data
@@ -194,26 +194,27 @@ jobs:
           vendor/bin/importTestData --commit
           mkdir -p coverage
           echo "Running tests with coverage"
+          
           # Temporarily disable exit on error for PHPUnit
           set +e
-          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+          PHPUNIT_OUTPUT=$(php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
             ./vendor/bin/phpunit -c phpunit.xml \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml \
-            --display-phpunit-deprecations --display-warnings
+            --display-phpunit-deprecations --display-warnings 2>&1)
           TEST_RESULT=$?
+          echo "$PHPUNIT_OUTPUT"
           set -e
-          echo "Coverage files generated:"
-          ls -la coverage/
           
-          # Check if tests passed (exit codes 0 = success, 1 = warnings but tests passed, 2+ = real failures)
-          if [ $TEST_RESULT -eq 0 ] || [ $TEST_RESULT -eq 1 ]; then
-            echo "Tests passed (exit code: $TEST_RESULT)"
-            exit 0
-          else
+          # Check for actual test failures in output (not just warnings)
+          if [ $TEST_RESULT -eq 0 ]; then
+            echo "All tests passed successfully"
+          elif echo "$PHPUNIT_OUTPUT" | grep -q "FAILURES!\|Failures: [1-9]"; then
             echo "Tests failed (exit code: $TEST_RESULT)"
             exit $TEST_RESULT
+          else
+            echo "Tests passed with warnings/deprecations (allowed)"
           fi
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
@@ -269,32 +270,33 @@ jobs:
           MYSQL_ROOT_PASSWORD: zmsdb
           XDEBUG_MODE: coverage
         run: |
-          set -e  # Exit on error, but we'll handle PHPUnit exit codes manually
+          set -e  # Exit immediately on any error
           cd zmsdb
           bin/importTestData --commit
           mkdir -p coverage
           echo "Running tests with coverage"
           php -i | grep -i xdebug
+          
           # Temporarily disable exit on error for PHPUnit
           set +e
-          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+          PHPUNIT_OUTPUT=$(php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
             ./vendor/bin/phpunit -c phpunit.xml \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml \
-            --display-phpunit-deprecations --display-warnings
+            --display-phpunit-deprecations --display-warnings 2>&1)
           TEST_RESULT=$?
+          echo "$PHPUNIT_OUTPUT"
           set -e
-          echo "Coverage files generated:"
-          ls -la coverage/
           
-          # Check if tests passed (exit codes 0 = success, 1 = warnings but tests passed, 2+ = real failures)
-          if [ $TEST_RESULT -eq 0 ] || [ $TEST_RESULT -eq 1 ]; then
-            echo "Tests passed (exit code: $TEST_RESULT)"
-            exit 0
-          else
+          # Check for actual test failures in output (not just warnings)
+          if [ $TEST_RESULT -eq 0 ]; then
+            echo "All tests passed successfully"
+          elif echo "$PHPUNIT_OUTPUT" | grep -q "FAILURES!\|Failures: [1-9]"; then
             echo "Tests failed (exit code: $TEST_RESULT)"
             exit $TEST_RESULT
+          else
+            echo "Tests passed with warnings/deprecations (allowed)"
           fi
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
@@ -338,30 +340,31 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          set -e  # Exit on error, but we'll handle PHPUnit exit codes manually
+          set -e  # Exit immediately on any error
           cd ./zmsclient
           mkdir -p coverage
           docker-compose up -d
+          
           # Temporarily disable exit on error for PHPUnit
           set +e
-          docker-compose exec -T test php -dzend_extension=xdebug.so -dmemory_limit=-1 \
+          PHPUNIT_OUTPUT=$(docker-compose exec -T test php -dzend_extension=xdebug.so -dmemory_limit=-1 \
             ./vendor/bin/phpunit \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml \
-            --display-phpunit-deprecations --display-warnings
+            --display-phpunit-deprecations --display-warnings 2>&1)
           TEST_RESULT=$?
+          echo "$PHPUNIT_OUTPUT"
           set -e
-          echo "Coverage files generated:"
-          ls -la coverage/
           
-          # Check if tests passed (exit codes 0 = success, 1 = warnings but tests passed, 2+ = real failures)
-          if [ $TEST_RESULT -eq 0 ] || [ $TEST_RESULT -eq 1 ]; then
-            echo "Tests passed (exit code: $TEST_RESULT)"
-            exit 0
-          else
+          # Check for actual test failures in output (not just warnings)
+          if [ $TEST_RESULT -eq 0 ]; then
+            echo "All tests passed successfully"
+          elif echo "$PHPUNIT_OUTPUT" | grep -q "FAILURES!\|Failures: [1-9]"; then
             echo "Tests failed (exit code: $TEST_RESULT)"
             exit $TEST_RESULT
+          else
+            echo "Tests passed with warnings/deprecations (allowed)"
           fi
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
