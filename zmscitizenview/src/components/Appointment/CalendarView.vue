@@ -204,7 +204,7 @@
                     ></div>
                   </template>
 
-                  <template v-else-if="day.appointmentsCount > 18">
+                  <template v-else-if="day.appointmentsCount > APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW">
                     <template
                       v-for="(hourRow, hIndex) in day.hourRows"
                       :key="hIndex"
@@ -332,7 +332,7 @@
         !isListView &&
         selectedDay &&
         (timeSlotsInHoursByOffice.size > 0 || isLoadingAppointments) &&
-        appointmentsCount > 18
+        appointmentsCount > APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW
       "
       :key="
         String(selectedDay) +
@@ -1692,6 +1692,8 @@ const providerSelectionError = computed(() => {
 
   return hasSelection ? "" : props.t("errorMessageProviderSelection");
 });
+
+const APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW = 18;
 
 const isListView = ref(false);
 const toggleView = () => {
