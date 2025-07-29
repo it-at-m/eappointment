@@ -184,7 +184,7 @@ describe("AppointmentView", () => {
   describe("Error States", () => {
     it("shows appointment not found error", async () => {
       const wrapper = createWrapper();
-      wrapper.vm.appointmentNotFoundError = true;
+      wrapper.vm.apiErrorAppointmentNotFound = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
@@ -247,10 +247,10 @@ describe("AppointmentView", () => {
   });
 
   describe("Additional Error Callouts", () => {
-    it("shows tooManyAppointmentsWithSameMailError callout in summary", async () => {
+    it("shows apiErrorTooManyAppointmentsWithSameMail callout in summary", async () => {
       const wrapper = createWrapper();
       wrapper.vm.currentView = 3;
-      wrapper.vm.tooManyAppointmentsWithSameMailError = true;
+      wrapper.vm.apiErrorTooManyAppointmentsWithSameMail = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
     });
@@ -1021,8 +1021,8 @@ describe("AppointmentView", () => {
       expect(errorCallout.exists()).toBe(true);
       expect(errorCallout.attributes('data-type')).toBe('error');
 
-      expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorHeader);
-      expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorText);
+      expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredHeader);
+      expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredText);
   });
 
   it("should display activation expired error when API returns appointmentNotFound", async () => {
@@ -1069,8 +1069,8 @@ describe("AppointmentView", () => {
     const errorCallout = wrapper.find('[data-test="muc-callout"]');
     expect(errorCallout.exists()).toBe(true);
     expect(errorCallout.attributes('data-type')).toBe('error');
-    expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorHeader);
-    expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorText);
+    expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredHeader);
+    expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredText);
   });
 
   it("should display generic error for other API error codes", async () => {

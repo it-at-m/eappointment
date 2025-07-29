@@ -20,7 +20,7 @@ const baseProps = {
   selectedServiceMap: new Map([["service1", 1]]),
   captchaToken: "test-token",
   bookingError: false,
-  bookingErrorKey: "noAppointmentsAvailable",
+  bookingErrorKey: "apiErrorNoAppointmentForThisScope",
   t,
 };
 
@@ -1646,11 +1646,11 @@ describe("CalendarView", () => {
       expect(callout.html()).toContain("altcha.invalidCaptcha");
     });
 
-    it('shows noAppointmentsAvailable warning callout when errorKey is noAppointmentsAvailable', async () => {
+    it('shows apiErrorNoAppointmentForThisScope warning callout when errorKey is apiErrorNoAppointmentForThisScope', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
-          bookingErrorKey: "noAppointmentsAvailable",
+          bookingErrorKey: "apiErrorNoAppointmentForThisScope",
         }
       });
 
@@ -1660,14 +1660,14 @@ describe("CalendarView", () => {
 
       expect(callout.exists()).toBe(true);
       expect(callout.attributes('data-type')).toBe("warning");
-      expect(callout.html()).toContain("noAppointmentsAvailable");
+      expect(callout.html()).toContain("apiErrorNoAppointmentForThisScope");
     });
 
-    it('shows selectedDateNoLongerAvailable warning callout when selectedHour is set and errorKey is noAppointmentsAvailable', async () => {
+    it('shows apiErrorAppointmentNotAvailable warning callout when selectedHour is set and errorKey is apiErrorNoAppointmentForThisScope', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
-          bookingErrorKey: "noAppointmentsAvailable",
+          bookingErrorKey: "apiErrorNoAppointmentForThisScope",
         }
       });
 
@@ -1678,7 +1678,7 @@ describe("CalendarView", () => {
 
       expect(callout.exists()).toBe(true);
       expect(callout.attributes('data-type')).toBe("warning");
-      expect(callout.html()).toContain("selectedDateNoLongerAvailable");
+      expect(callout.html()).toContain("apiErrorAppointmentNotAvailable");
     });
 
     it('does not show any callout when bookingError is false', async () => {

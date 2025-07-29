@@ -2,7 +2,9 @@
   <div class="m-component m-component-form">
     <div
       v-if="
-        !confirmAppointmentHash && !appointmentNotFoundError && currentView < 4
+        !confirmAppointmentHash &&
+        !apiErrorAppointmentNotFound &&
+        currentView < 4
       "
     >
       <muc-stepper
@@ -52,7 +54,7 @@
               <appointment-summary
                 v-if="
                   !updateAppointmentError &&
-                  !tooManyAppointmentsWithSameMailError
+                  !apiErrorTooManyAppointmentsWithSameMail
                 "
                 :is-rebooking="isRebooking"
                 :rebook-or-cancel-dialog="rebookOrCanelDialog"
@@ -63,14 +65,14 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
               />
-              <div v-if="tooManyAppointmentsWithSameMailError">
+              <div v-if="apiErrorTooManyAppointmentsWithSameMail">
                 <muc-callout type="error">
                   <template #content>
-                    {{ t("tooManyAppointmentsWithSameMailErrorText") }}
+                    {{ t("apiErrorTooManyAppointmentsWithSameMailText") }}
                   </template>
 
                   <template #header>{{
-                    t("tooManyAppointmentsWithSameMailErrorHeader")
+                    t("apiErrorTooManyAppointmentsWithSameMailHeader")
                   }}</template>
                 </muc-callout>
               </div>
@@ -152,23 +154,23 @@
             type="error"
           >
             <template #content>
-              {{ t("appointmentActivationExpiredErrorText") }}
+              {{ t("apiErrorPreconfirmationExpiredText") }}
             </template>
 
             <template #header>
-              {{ t("appointmentActivationExpiredErrorHeader") }}
+              {{ t("apiErrorPreconfirmationExpiredHeader") }}
             </template>
           </muc-callout>
           <muc-callout
-            v-if="appointmentNotFoundError"
+            v-if="apiErrorAppointmentNotFound"
             type="error"
           >
             <template #content>
-              {{ t("appointmentNotFoundErrorText") }}
+              {{ t("apiErrorAppointmentNotFoundText") }}
             </template>
 
             <template #header>{{
-              t("appointmentNotFoundErrorHeader")
+              t("apiErrorAppointmentNotFoundHeader")
             }}</template>
           </muc-callout>
         </div>
@@ -277,13 +279,14 @@ const captchaError = ref<boolean>(false);
 
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
-  if (appointmentNotAvailableError.value) return "noAppointmentsAvailable";
+  if (appointmentNotAvailableError.value)
+    return "apiErrorNoAppointmentForThisScope";
   return "";
 });
 const appointmentNotAvailableError = ref<boolean>(false);
 const updateAppointmentError = ref<boolean>(false);
-const tooManyAppointmentsWithSameMailError = ref<boolean>(false);
-const appointmentNotFoundError = ref<boolean>(false);
+const apiErrorTooManyAppointmentsWithSameMail = ref<boolean>(false);
+const apiErrorAppointmentNotFound = ref<boolean>(false);
 const confirmAppointmentActivationExpiredError = ref<boolean>(false);
 
 const confirmAppointmentSuccess = ref<boolean>(false);
@@ -380,7 +383,7 @@ const setRebookData = () => {
         } else {
           const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
           if (firstErrorCode === "tooManyAppointmentsWithSameMail") {
-            tooManyAppointmentsWithSameMailError.value = true;
+            apiErrorTooManyAppointmentsWithSameMail.value = true;
           } else {
             updateAppointmentError.value = true;
           }
@@ -465,7 +468,7 @@ const nextUpdateAppointment = () => {
         } else {
           const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
           if (firstErrorCode === "tooManyAppointmentsWithSameMail") {
-            tooManyAppointmentsWithSameMailError.value = true;
+            apiErrorTooManyAppointmentsWithSameMail.value = true;
           } else {
             updateAppointmentError.value = true;
           }
@@ -626,7 +629,7 @@ onMounted(() => {
           ) {
             confirmAppointmentActivationExpiredError.value = true;
           } else if (firstErrorCode === "tooManyAppointmentsWithSameMail") {
-            tooManyAppointmentsWithSameMailError.value = true;
+            apiErrorTooManyAppointmentsWithSameMail.value = true;
           } else {
             confirmAppointmentError.value = true;
           }
@@ -648,7 +651,7 @@ onMounted(() => {
 
       const appointmentData = parseAppointmentHash(props.appointmentHash ?? "");
       if (!appointmentData) {
-        appointmentNotFoundError.value = true;
+        apiErrorAppointmentNotFound.value = true;
         return;
       }
 
@@ -717,7 +720,7 @@ onMounted(() => {
               currentView.value = 3;
             }
           } else {
-            appointmentNotFoundError.value = true;
+            apiErrorAppointmentNotFound.value = true;
           }
         }
       );

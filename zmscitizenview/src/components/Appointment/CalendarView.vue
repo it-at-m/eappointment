@@ -79,10 +79,10 @@
   >
     <muc-callout type="warning">
       <template #header>
-        {{ t("noAppointmentsAvailableHeader") }}
+        {{ t("apiErrorNoAppointmentForThisScopeHeader") }}
       </template>
       <template #content>
-        {{ t("noAppointmentsAvailable") }}
+        {{ t("apiErrorNoAppointmentForThisScope") }}
       </template>
     </muc-callout>
   </div>
@@ -648,15 +648,17 @@
     <muc-callout type="warning">
       <template #header>
         {{
-          showErrorKey === "noAppointmentsAvailable" && selectedHour !== null
-            ? t("selectedDateNoLongerAvailableHeader")
+          showErrorKey === "apiErrorNoAppointmentForThisScope" &&
+          selectedHour !== null
+            ? t("apiErrorAppointmentNotAvailableHeader")
             : t(`${showErrorKey}Header`)
         }}
       </template>
       <template #content>
         {{
-          showErrorKey === "noAppointmentsAvailable" && selectedHour !== null
-            ? t("selectedDateNoLongerAvailableText")
+          showErrorKey === "apiErrorNoAppointmentForThisScope" &&
+          selectedHour !== null
+            ? t("apiErrorAppointmentNotAvailableText")
             : t(`${showErrorKey}Text`)
         }}
       </template>
@@ -1100,7 +1102,7 @@ const handleError = (data: any): void => {
 
   errorKey.value = tokenErrors.includes(firstErrorCode)
     ? "altcha.invalidCaptcha"
-    : "noAppointmentsAvailable";
+    : "apiErrorNoAppointmentForThisScope";
 };
 
 const getAppointmentsOfDay = (date: string) => {
