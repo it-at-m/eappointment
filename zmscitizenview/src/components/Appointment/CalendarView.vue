@@ -244,7 +244,7 @@
                             <muc-button
                               class="timeslot"
                               :variant="
-                                selectedTimeslot === time
+                                isSlotSelected(hourRow.officeId, time)
                                   ? 'primary'
                                   : 'secondary'
                               "
@@ -297,7 +297,7 @@
                             <muc-button
                               class="timeslot"
                               :variant="
-                                selectedTimeslot === time
+                                isSlotSelected(partRow.officeId, time)
                                   ? 'primary'
                                   : 'secondary'
                               "
@@ -418,7 +418,7 @@
                   <muc-button
                     class="timeslot"
                     :variant="
-                      selectedTimeslot === time ? 'primary' : 'secondary'
+                      isSlotSelected(officeId, time) ? 'primary' : 'secondary'
                     "
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
@@ -552,7 +552,7 @@
                   <muc-button
                     class="timeslot"
                     :variant="
-                      selectedTimeslot === time ? 'primary' : 'secondary'
+                      isSlotSelected(officeId, time) ? 'primary' : 'secondary'
                     "
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
@@ -1807,6 +1807,10 @@ const onDayAccordionSelect = (day: AccordionDay) => {
     handleDaySelection(day.date);
   }
 };
+
+const isSlotSelected = (officeId: number | string, time: number) =>
+  selectedTimeslot.value === time &&
+  selectedProvider.value?.id?.toString() === officeId.toString();
 </script>
 
 <style scoped>
