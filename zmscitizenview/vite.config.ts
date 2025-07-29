@@ -44,8 +44,8 @@ export default defineConfig({
     minify: true,
     assetsDir: "src"
   },
-  esbuild: {
-    drop: process.env.NODE_ENV === 'development' ? [] : ['console', 'debugger'],
-  },
+  // esbuild: {
+  //   drop: process.env.NODE_ENV === 'development' ? [] : ['console', 'debugger'],
+  // },
   base: './',
 })
