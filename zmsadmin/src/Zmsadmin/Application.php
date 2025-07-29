@@ -18,11 +18,16 @@ define(
     getenv('ZMS_ADMIN_SESSION_DURATION') ? getenv('ZMS_ADMIN_SESSION_DURATION') : 28800
 );
 
-if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
+if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
     throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
 }
 
 define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
+
+if (!defined('ZMS_ADMIN_TWIG_CACHE')) {
+    $value = getenv('ZMS_ADMIN_TWIG_CACHE');
+    define('ZMS_ADMIN_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
+}
 
 class Application extends \BO\Slim\Application
 {
@@ -36,7 +41,7 @@ class Application extends \BO\Slim\Application
 
     const DEBUG = false;
 
-    const TWIG_CACHE = '/cache/';
+    const TWIG_CACHE = ZMS_ADMIN_TWIG_CACHE;
 
     const TEMPLATE_PATH = ZMS_ADMIN_TEMPLATE_FOLDER;
 
