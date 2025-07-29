@@ -244,7 +244,7 @@
                             <muc-button
                               class="timeslot"
                               :variant="
-                                selectedTimeslot === time
+                                isSlotSelected(hourRow.officeId, time)
                                   ? 'primary'
                                   : 'secondary'
                               "
@@ -297,7 +297,7 @@
                             <muc-button
                               class="timeslot"
                               :variant="
-                                selectedTimeslot === time
+                                isSlotSelected(hourRow.officeId, time)
                                   ? 'primary'
                                   : 'secondary'
                               "
@@ -418,7 +418,9 @@
                   <muc-button
                     class="timeslot"
                     :variant="
-                      selectedTimeslot === time ? 'primary' : 'secondary'
+                      isSlotSelected(hourRow.officeId, time)
+                        ? 'primary'
+                        : 'secondary'
                     "
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
@@ -552,7 +554,9 @@
                   <muc-button
                     class="timeslot"
                     :variant="
-                      selectedTimeslot === time ? 'primary' : 'secondary'
+                      isSlotSelected(hourRow.officeId, time)
+                        ? 'primary'
+                        : 'secondary'
                     "
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
@@ -1312,6 +1316,10 @@ const handleTimeSlotSelection = async (officeId: number, timeSlot: number) => {
   }
 };
 
+const isSlotSelected = (officeId: number | string, time: number) =>
+  selectedProvider?.value?.id?.toString() === officeId.toString() &&
+  selectedTimeslot.value === time;
+
 /**
  * This function determines the expected duration of the appointment.
  * The provider is queried for the service and each subservice because the slots for the respective service are stored in this provider.
@@ -1800,9 +1808,9 @@ const onDayAccordionSelect = (day: AccordionDay) => {
     (d) => d.dateString === day.dateString
   );
   if (openAccordionIndex.value === idx) {
-    openAccordionIndex.value = -1; // Accordion schließen
+    openAccordionIndex.value = -1;
   } else {
-    openAccordionIndex.value = idx; // Accordion öffnen
+    openAccordionIndex.value = idx;
     selectedDay.value = day.date;
     handleDaySelection(day.date);
   }
