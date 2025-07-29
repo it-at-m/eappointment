@@ -32,6 +32,7 @@
   "errorMessageLastName": "Bitte geben Sie Ihren Nachnamen an.",
   "errorMessageMailAddressRequired": "Bitte geben Sie Ihre E-Mail-Adresse an.",
   "errorMessageMailAddressValidation": "Ihre E-Mail-Adresse entspricht nicht dem vorgegebenen Format. Bitte prüfen Sie nochmal, ob Sie sie richtig geschrieben haben.",
+  "errorMessageMaxLength": "Die maximale Länge von {max} Zeichen wurde erreicht.",
   "errorMessageProviderSelection": "Bitte wählen Sie mindestens einen Ort aus, um passende Termine zu sehen.",
   "errorMessageTelephoneNumberRequired": "Bitte geben Sie Ihre Telefonnummer an.",
   "errorMessageTelephoneNumberValidation": "Ihre Telefonnummer entspricht nicht dem vorgegebenen Format. Bitte geben Sie nur ein +-Zeichen und Zahlen ein.",
