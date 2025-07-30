@@ -108,194 +108,25 @@ export function handleApiError(
     errorState.value = false;
   });
 
-  // Map error code to the corresponding error state
-  switch (errorCode) {
-    case "appointmentCanNotBeCanceled":
-      errorStates.apiErrorAppointmentCanNotBeCanceled.value = true;
-      break;
-    case "appointmentNotAvailable":
-      errorStates.apiErrorAppointmentNotAvailable.value = true;
-      break;
-    case "appointmentNotFound":
-      errorStates.apiErrorAppointmentNotFound.value = true;
-      break;
-    case "authKeyMismatch":
-      errorStates.apiErrorAuthKeyMismatch.value = true;
-      break;
-    case "captchaVerificationError":
-      errorStates.apiErrorCaptchaVerificationError.value = true;
-      break;
-    case "captchaVerificationFailed":
-      errorStates.apiErrorCaptchaVerificationFailed.value = true;
-      break;
-    case "departmentNotFound":
-      errorStates.apiErrorDepartmentNotFound.value = true;
-      break;
-    case "emailIsRequired":
-      errorStates.apiErrorEmailIsRequired.value = true;
-      break;
-    case "emptyServiceArrays":
-      errorStates.apiErrorEmptyServiceArrays.value = true;
-      break;
-    case "internalError":
-      errorStates.apiErrorInternalError.value = true;
-      break;
-    case "invalidApiClient":
-      errorStates.apiErrorInvalidApiClient.value = true;
-      break;
-    case "invalidAuthKey":
-      errorStates.apiErrorInvalidAuthKey.value = true;
-      break;
-    case "invalidCustomTextfield":
-      errorStates.apiErrorInvalidCustomTextfield.value = true;
-      break;
-    case "invalidDate":
-      errorStates.apiErrorInvalidDate.value = true;
-      break;
-    case "invalidEmail":
-      errorStates.apiErrorInvalidEmail.value = true;
-      break;
-    case "invalidEndDate":
-      errorStates.apiErrorInvalidEndDate.value = true;
-      break;
-    case "invalidFamilyName":
-      errorStates.apiErrorInvalidFamilyName.value = true;
-      break;
-    case "invalidLocationAndServiceCombination":
-      errorStates.apiErrorInvalidLocationAndServiceCombination.value = true;
-      break;
-    case "invalidOfficeId":
-      errorStates.apiErrorInvalidOfficeId.value = true;
-      break;
-    case "invalidProcessId":
-      errorStates.apiErrorInvalidProcessId.value = true;
-      break;
-    case "invalidRequest":
-      errorStates.apiErrorInvalidRequest.value = true;
-      break;
-    case "invalidSchema":
-      errorStates.apiErrorInvalidSchema.value = true;
-      break;
-    case "invalidScopeId":
-      errorStates.apiErrorInvalidScopeId.value = true;
-      break;
-    case "invalidServiceCount":
-      errorStates.apiErrorInvalidServiceCount.value = true;
-      break;
-    case "invalidServiceId":
-      errorStates.apiErrorInvalidServiceId.value = true;
-      break;
-    case "invalidStartDate":
-      errorStates.apiErrorInvalidStartDate.value = true;
-      break;
-    case "invalidTelephoneNumber":
-      errorStates.apiErrorInvalidTelephone.value = true;
-      break;
-    case "invalidTelephone":
-      errorStates.apiErrorInvalidTelephone.value = true;
-      break;
-    case "invalidTimestamp":
-      errorStates.apiErrorInvalidTimestamp.value = true;
-      break;
-    case "ipBlacklisted":
-      errorStates.apiErrorIpBlacklisted.value = true;
-      break;
-    case "mailNotFound":
-      errorStates.apiErrorMailNotFound.value = true;
-      break;
-    case "mismatchedArrays":
-      errorStates.apiErrorMismatchedArrays.value = true;
-      break;
-    case "noAppointmentForThisDay":
-      errorStates.apiErrorNoAppointmentForThisDay.value = true;
-      break;
-    case "noAppointmentForThisScope":
-      errorStates.apiErrorNoAppointmentForThisScope.value = true;
-      break;
-    case "notFound":
-      errorStates.apiErrorNotFound.value = true;
-      break;
-    case "notImplemented":
-      errorStates.apiErrorNotImplemented.value = true;
-      break;
-    case "organisationNotFound":
-      errorStates.apiErrorOrganisationNotFound.value = true;
-      break;
-    case "preconfirmationExpired":
-      errorStates.apiErrorPreconfirmationExpired.value = true;
-      break;
-    case "processAlreadyCalled":
-      errorStates.apiErrorProcessAlreadyCalled.value = true;
-      break;
-    case "processAlreadyExists":
-      errorStates.apiErrorProcessAlreadyExists.value = true;
-      break;
-    case "processDeleteFailed":
-      errorStates.apiErrorProcessDeleteFailed.value = true;
-      break;
-    case "processInvalid":
-      errorStates.apiErrorProcessInvalid.value = true;
-      break;
-    case "processNotPreconfirmedAnymore":
-      errorStates.apiErrorProcessNotPreconfirmedAnymore.value = true;
-      break;
-    case "processNotReservedAnymore":
-      errorStates.apiErrorProcessNotReservedAnymore.value = true;
-      break;
-    case "providerNotFound":
-      errorStates.apiErrorProviderNotFound.value = true;
-      break;
-    case "rateLimitExceeded":
-      errorStates.apiErrorRateLimitExceeded.value = true;
-      break;
-    case "requestDataTooLarge":
-      errorStates.apiErrorRequestDataTooLarge.value = true;
-      break;
-    case "requestMethodNotAllowed":
-      errorStates.apiErrorRequestMethodNotAllowed.value = true;
-      break;
-    case "requestNotFound":
-      errorStates.apiErrorRequestNotFound.value = true;
-      break;
-    case "scopeNotFound":
-      errorStates.apiErrorScopeNotFound.value = true;
-      break;
-    case "scopesNotFound":
-      errorStates.apiErrorScopesNotFound.value = true;
-      break;
-    case "serviceUnavailable":
-      errorStates.apiErrorServiceUnavailable.value = true;
-      break;
-    case "sourceNotFound":
-      errorStates.apiErrorSourceNotFound.value = true;
-      break;
-    case "telephoneIsRequired":
-      errorStates.apiErrorTelephoneIsRequired.value = true;
-      break;
-    case "tooManyAppointmentsWithSameMail":
-      errorStates.apiErrorTooManyAppointmentsWithSameMail.value = true;
-      break;
-    case "zmsClientCommunicationError":
-      errorStates.apiErrorZmsClientCommunicationError.value = true;
-      break;
-    case "unknownError":
-      errorStates.apiErrorUnknownError.value = true;
-      break;
-    default:
-      errorStates.apiErrorGenericFallback.value = true; // Generic fallback
+  // Dynamic error state mapping
+  const errorStateKey = `apiError${errorCode.charAt(0).toUpperCase() + errorCode.slice(1)}`;
+
+  if (errorStates[errorStateKey]) {
+    errorStates[errorStateKey].value = true;
+  } else {
+    errorStates.apiErrorGenericFallback.value = true;
   }
 }
 
 export function getApiErrorTranslation(
   errorStates: ErrorStateMap
 ): ApiErrorTranslation {
-  // Find the first active error state and return its translation
+  // Find the first active error state
   const activeErrorState = Object.entries(errorStates).find(
     ([_, isActive]) => isActive.value
   );
 
   if (!activeErrorState) {
-    // Default fallback for generic errors
     return {
       headerKey: "apiErrorGenericFallbackHeader",
       textKey: "apiErrorGenericFallbackText",
@@ -304,300 +135,11 @@ export function getApiErrorTranslation(
 
   const [errorStateName] = activeErrorState;
 
-  // Map error state names to translation keys
-  switch (errorStateName) {
-    case "apiErrorAppointmentCanNotBeCanceled":
-      return {
-        headerKey: "apiErrorAppointmentCanNotBeCanceledHeader",
-        textKey: "apiErrorAppointmentCanNotBeCanceledText",
-      };
-    case "apiErrorAppointmentNotAvailable":
-      return {
-        headerKey: "apiErrorAppointmentNotAvailableHeader",
-        textKey: "apiErrorAppointmentNotAvailableText",
-      };
-    case "apiErrorAppointmentNotFound":
-      return {
-        headerKey: "apiErrorAppointmentNotFoundHeader",
-        textKey: "apiErrorAppointmentNotFoundText",
-      };
-    case "apiErrorAuthKeyMismatch":
-      return {
-        headerKey: "apiErrorAuthKeyMismatchHeader",
-        textKey: "apiErrorAuthKeyMismatchText",
-      };
-    case "apiErrorCaptchaVerificationError":
-      return {
-        headerKey: "apiErrorCaptchaVerificationErrorHeader",
-        textKey: "apiErrorCaptchaVerificationErrorText",
-      };
-    case "apiErrorCaptchaVerificationFailed":
-      return {
-        headerKey: "apiErrorCaptchaVerificationFailedHeader",
-        textKey: "apiErrorCaptchaVerificationFailedText",
-      };
-    case "apiErrorDepartmentNotFound":
-      return {
-        headerKey: "apiErrorDepartmentNotFoundHeader",
-        textKey: "apiErrorDepartmentNotFoundText",
-      };
-    case "apiErrorEmailIsRequired":
-      return {
-        headerKey: "apiErrorEmailIsRequiredHeader",
-        textKey: "apiErrorEmailIsRequiredText",
-      };
-    case "apiErrorEmptyServiceArrays":
-      return {
-        headerKey: "apiErrorEmptyServiceArraysHeader",
-        textKey: "apiErrorEmptyServiceArraysText",
-      };
-    case "apiErrorInternalError":
-      return {
-        headerKey: "apiErrorInternalErrorHeader",
-        textKey: "apiErrorInternalErrorText",
-      };
-    case "apiErrorInvalidApiClient":
-      return {
-        headerKey: "apiErrorInvalidApiClientHeader",
-        textKey: "apiErrorInvalidApiClientText",
-      };
-    case "apiErrorInvalidAuthKey":
-      return {
-        headerKey: "apiErrorInvalidAuthKeyHeader",
-        textKey: "apiErrorInvalidAuthKeyText",
-      };
-    case "apiErrorInvalidCustomTextfield":
-      return {
-        headerKey: "apiErrorInvalidCustomTextfieldHeader",
-        textKey: "apiErrorInvalidCustomTextfieldText",
-      };
-    case "apiErrorInvalidDate":
-      return {
-        headerKey: "apiErrorInvalidDateHeader",
-        textKey: "apiErrorInvalidDateText",
-      };
-    case "apiErrorInvalidEmail":
-      return {
-        headerKey: "apiErrorInvalidEmailHeader",
-        textKey: "apiErrorInvalidEmailText",
-      };
-    case "apiErrorInvalidEndDate":
-      return {
-        headerKey: "apiErrorInvalidEndDateHeader",
-        textKey: "apiErrorInvalidEndDateText",
-      };
-    case "apiErrorInvalidFamilyName":
-      return {
-        headerKey: "apiErrorInvalidFamilyNameHeader",
-        textKey: "apiErrorInvalidFamilyNameText",
-      };
-    case "apiErrorInvalidLocationAndServiceCombination":
-      return {
-        headerKey: "apiErrorInvalidLocationAndServiceCombinationHeader",
-        textKey: "apiErrorInvalidLocationAndServiceCombinationText",
-      };
-    case "apiErrorInvalidOfficeId":
-      return {
-        headerKey: "apiErrorInvalidOfficeIdHeader",
-        textKey: "apiErrorInvalidOfficeIdText",
-      };
-    case "apiErrorInvalidProcessId":
-      return {
-        headerKey: "apiErrorInvalidProcessIdHeader",
-        textKey: "apiErrorInvalidProcessIdText",
-      };
-    case "apiErrorInvalidRequest":
-      return {
-        headerKey: "apiErrorInvalidRequestHeader",
-        textKey: "apiErrorInvalidRequestText",
-      };
-    case "apiErrorInvalidSchema":
-      return {
-        headerKey: "apiErrorInvalidSchemaHeader",
-        textKey: "apiErrorInvalidSchemaText",
-      };
-    case "apiErrorInvalidScopeId":
-      return {
-        headerKey: "apiErrorInvalidScopeIdHeader",
-        textKey: "apiErrorInvalidScopeIdText",
-      };
-    case "apiErrorInvalidServiceCount":
-      return {
-        headerKey: "apiErrorInvalidServiceCountHeader",
-        textKey: "apiErrorInvalidServiceCountText",
-      };
-    case "apiErrorInvalidServiceId":
-      return {
-        headerKey: "apiErrorInvalidServiceIdHeader",
-        textKey: "apiErrorInvalidServiceIdText",
-      };
-    case "apiErrorInvalidStartDate":
-      return {
-        headerKey: "apiErrorInvalidStartDateHeader",
-        textKey: "apiErrorInvalidStartDateText",
-      };
-    case "apiErrorInvalidTelephone":
-      return {
-        headerKey: "apiErrorInvalidTelephoneHeader",
-        textKey: "apiErrorInvalidTelephoneText",
-      };
-    case "apiErrorInvalidTimestamp":
-      return {
-        headerKey: "apiErrorInvalidTimestampHeader",
-        textKey: "apiErrorInvalidTimestampText",
-      };
-    case "apiErrorIpBlacklisted":
-      return {
-        headerKey: "apiErrorIpBlacklistedHeader",
-        textKey: "apiErrorIpBlacklistedText",
-      };
-    case "apiErrorMailNotFound":
-      return {
-        headerKey: "apiErrorMailNotFoundHeader",
-        textKey: "apiErrorMailNotFoundText",
-      };
-    case "apiErrorMismatchedArrays":
-      return {
-        headerKey: "apiErrorMismatchedArraysHeader",
-        textKey: "apiErrorMismatchedArraysText",
-      };
-    case "apiErrorNoAppointmentForThisDay":
-      return {
-        headerKey: "apiErrorNoAppointmentForThisDayHeader",
-        textKey: "apiErrorNoAppointmentForThisDayText",
-      };
-    case "apiErrorNoAppointmentForThisScope":
-      return {
-        headerKey: "apiErrorNoAppointmentForThisScopeHeader",
-        textKey: "apiErrorNoAppointmentForThisScopeText",
-      };
-    case "apiErrorNotFound":
-      return {
-        headerKey: "apiErrorNotFoundHeader",
-        textKey: "apiErrorNotFoundText",
-      };
-    case "apiErrorNotImplemented":
-      return {
-        headerKey: "apiErrorNotImplementedHeader",
-        textKey: "apiErrorNotImplementedText",
-      };
-    case "apiErrorOrganisationNotFound":
-      return {
-        headerKey: "apiErrorOrganisationNotFoundHeader",
-        textKey: "apiErrorOrganisationNotFoundText",
-      };
-    case "apiErrorPreconfirmationExpired":
-      return {
-        headerKey: "apiErrorPreconfirmationExpiredHeader",
-        textKey: "apiErrorPreconfirmationExpiredText",
-      };
-    case "apiErrorProcessAlreadyCalled":
-      return {
-        headerKey: "apiErrorProcessAlreadyCalledHeader",
-        textKey: "apiErrorProcessAlreadyCalledText",
-      };
-    case "apiErrorProcessAlreadyExists":
-      return {
-        headerKey: "apiErrorProcessAlreadyExistsHeader",
-        textKey: "apiErrorProcessAlreadyExistsText",
-      };
-    case "apiErrorProcessDeleteFailed":
-      return {
-        headerKey: "apiErrorProcessDeleteFailedHeader",
-        textKey: "apiErrorProcessDeleteFailedText",
-      };
-    case "apiErrorProcessInvalid":
-      return {
-        headerKey: "apiErrorProcessInvalidHeader",
-        textKey: "apiErrorProcessInvalidText",
-      };
-    case "apiErrorProcessNotPreconfirmedAnymore":
-      return {
-        headerKey: "apiErrorProcessNotPreconfirmedAnymoreHeader",
-        textKey: "apiErrorProcessNotPreconfirmedAnymoreText",
-      };
-    case "apiErrorProcessNotReservedAnymore":
-      return {
-        headerKey: "apiErrorProcessNotReservedAnymoreHeader",
-        textKey: "apiErrorProcessNotReservedAnymoreText",
-      };
-    case "apiErrorProviderNotFound":
-      return {
-        headerKey: "apiErrorProviderNotFoundHeader",
-        textKey: "apiErrorProviderNotFoundText",
-      };
-    case "apiErrorRateLimitExceeded":
-      return {
-        headerKey: "apiErrorRateLimitExceededHeader",
-        textKey: "apiErrorRateLimitExceededText",
-      };
-    case "apiErrorRequestDataTooLarge":
-      return {
-        headerKey: "apiErrorRequestDataTooLargeHeader",
-        textKey: "apiErrorRequestDataTooLargeText",
-      };
-    case "apiErrorRequestMethodNotAllowed":
-      return {
-        headerKey: "apiErrorRequestMethodNotAllowedHeader",
-        textKey: "apiErrorRequestMethodNotAllowedText",
-      };
-    case "apiErrorRequestNotFound":
-      return {
-        headerKey: "apiErrorRequestNotFoundHeader",
-        textKey: "apiErrorRequestNotFoundText",
-      };
-    case "apiErrorScopeNotFound":
-      return {
-        headerKey: "apiErrorScopeNotFoundHeader",
-        textKey: "apiErrorScopeNotFoundText",
-      };
-    case "apiErrorScopesNotFound":
-      return {
-        headerKey: "apiErrorScopesNotFoundHeader",
-        textKey: "apiErrorScopesNotFoundText",
-      };
-    case "apiErrorServiceUnavailable":
-      return {
-        headerKey: "apiErrorServiceUnavailableHeader",
-        textKey: "apiErrorServiceUnavailableText",
-      };
-    case "apiErrorSourceNotFound":
-      return {
-        headerKey: "apiErrorSourceNotFoundHeader",
-        textKey: "apiErrorSourceNotFoundText",
-      };
-    case "apiErrorTelephoneIsRequired":
-      return {
-        headerKey: "apiErrorTelephoneIsRequiredHeader",
-        textKey: "apiErrorTelephoneIsRequiredText",
-      };
-    case "apiErrorTooManyAppointmentsWithSameMail":
-      return {
-        headerKey: "apiErrorTooManyAppointmentsWithSameMailHeader",
-        textKey: "apiErrorTooManyAppointmentsWithSameMailText",
-      };
-    case "apiErrorUnknownError":
-      return {
-        headerKey: "apiErrorUnknownErrorHeader",
-        textKey: "apiErrorUnknownErrorText",
-      };
-    case "apiErrorZmsClientCommunicationError":
-      return {
-        headerKey: "apiErrorZmsClientCommunicationErrorHeader",
-        textKey: "apiErrorZmsClientCommunicationErrorText",
-      };
-    case "apiErrorGenericFallback":
-      return {
-        headerKey: "apiErrorGenericFallbackHeader",
-        textKey: "apiErrorGenericFallbackText",
-      };
-    default:
-      // Default fallback for generic errors
-      return {
-        headerKey: "apiErrorGenericFallbackHeader",
-        textKey: "apiErrorGenericFallbackText",
-      };
-  }
+  // Dynamic translation key generation
+  return {
+    headerKey: `${errorStateName}Header`,
+    textKey: `${errorStateName}Text`,
+  };
 }
 
 export function handleApiResponse(data: any, errorStates: ErrorStateMap): void {
@@ -614,37 +156,32 @@ export function hasAnyApiError(errorStates: ErrorStateMap): boolean {
 // Context-specific error detection methods
 // Each method shows any error that occurs in that specific context
 // The component determines which context is active based on the current state
-export function hasUpdateContextError(
+export function hasContextError(
   errorStates: ErrorStateMap,
+  context: string,
   activeContext?: string
 ): boolean {
-  return hasAnyApiError(errorStates) && activeContext === "update";
+  return hasAnyApiError(errorStates) && activeContext === context;
 }
 
-export function hasConfirmContextError(
+// Convenience functions for specific contexts
+export const hasUpdateContextError = (
   errorStates: ErrorStateMap,
   activeContext?: string
-): boolean {
-  return hasAnyApiError(errorStates) && activeContext === "confirm";
-}
-
-export function hasPreconfirmContextError(
+) => hasContextError(errorStates, "update", activeContext);
+export const hasConfirmContextError = (
   errorStates: ErrorStateMap,
   activeContext?: string
-): boolean {
-  return hasAnyApiError(errorStates) && activeContext === "preconfirm";
-}
-
-export function hasCancelContextError(
+) => hasContextError(errorStates, "confirm", activeContext);
+export const hasPreconfirmContextError = (
   errorStates: ErrorStateMap,
   activeContext?: string
-): boolean {
-  return hasAnyApiError(errorStates) && activeContext === "cancel";
-}
-
-export function hasInitializationContextError(
+) => hasContextError(errorStates, "preconfirm", activeContext);
+export const hasCancelContextError = (
   errorStates: ErrorStateMap,
   activeContext?: string
-): boolean {
-  return hasAnyApiError(errorStates) && activeContext === "initialization";
-}
+) => hasContextError(errorStates, "cancel", activeContext);
+export const hasInitializationContextError = (
+  errorStates: ErrorStateMap,
+  activeContext?: string
+) => hasContextError(errorStates, "initialization", activeContext);
