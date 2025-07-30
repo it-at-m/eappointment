@@ -304,9 +304,11 @@ const cancelAppointmentError = ref<boolean>(false);
 const errorStates = createErrorStates();
 const errorStateMap = computed<ErrorStateMap>(() => errorStates.errorStateMap);
 
-// Destructure individual error refs for direct access when needed
-const { apiErrorAppointmentNotAvailable, apiErrorAppointmentNotFound } =
-  errorStates;
+// Access individual error refs from the error state map
+const apiErrorAppointmentNotAvailable =
+  errorStateMap.value.apiErrorAppointmentNotAvailable;
+const apiErrorAppointmentNotFound =
+  errorStateMap.value.apiErrorAppointmentNotFound;
 
 const isReservingAppointment = ref<boolean>(false);
 const isUpdatingAppointment = ref<boolean>(false);
