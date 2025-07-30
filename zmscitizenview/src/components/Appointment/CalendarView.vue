@@ -82,7 +82,7 @@
         {{ t("noAppointmentsAvailableHeader") }}
       </template>
       <template #content>
-        {{ t("noAppointmentsAvailable") }}
+        {{ t("noAppointmentsAvailableText") }}
       </template>
     </muc-callout>
   </div>
