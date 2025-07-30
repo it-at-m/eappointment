@@ -321,12 +321,14 @@ class Messaging
             throw new \Exception("ICS template for status $status not found");
         }
 
+        $baseParameters = self::generateMailParameters(new ProcessList([$process]), $config, null, $status);
+
         // Extract the first appointment details
         $appointment = $process->getFirstAppointment();
         $currentYear = $appointment->getStartTime()->format('Y');
 
         // Prepare parameters for ICS rendering, including the plain text description
-        $parameters = [
+        $additionalParameters = [
             'date' => $appointment->toDateTime()->format('U'),
             'startTime' => $appointment->getStartTime()->format('U'),
             'endTime' => $appointment->getEndTime()->format('U'),
@@ -336,6 +338,8 @@ class Messaging
             'timestamp' => (!$now) ? time() : $now,
             'message' => $plainTextDescription // Pass the plain text email content to the ICS template
         ];
+
+        $parameters = array_merge($baseParameters, $additionalParameters);
 
         // Render the ICS content using Twig and the fetched template
         if ($templateProvider) {
