@@ -1,63 +1,78 @@
 import { Ref, ref } from "vue";
 
-export interface ErrorStateMap {
-  apiErrorAppointmentCanNotBeCanceled: Ref<boolean>;
-  apiErrorAppointmentNotAvailable: Ref<boolean>;
-  apiErrorAppointmentNotFound: Ref<boolean>;
-  apiErrorAuthKeyMismatch: Ref<boolean>;
-  apiErrorCaptchaVerificationError: Ref<boolean>;
-  apiErrorCaptchaVerificationFailed: Ref<boolean>;
-  apiErrorDepartmentNotFound: Ref<boolean>;
-  apiErrorEmailIsRequired: Ref<boolean>;
-  apiErrorEmptyServiceArrays: Ref<boolean>;
-  apiErrorInternalError: Ref<boolean>;
-  apiErrorInvalidApiClient: Ref<boolean>;
-  apiErrorInvalidAuthKey: Ref<boolean>;
-  apiErrorInvalidCustomTextfield: Ref<boolean>;
-  apiErrorInvalidDate: Ref<boolean>;
-  apiErrorInvalidEmail: Ref<boolean>;
-  apiErrorInvalidEndDate: Ref<boolean>;
-  apiErrorInvalidFamilyName: Ref<boolean>;
-  apiErrorInvalidLocationAndServiceCombination: Ref<boolean>;
-  apiErrorInvalidOfficeId: Ref<boolean>;
-  apiErrorInvalidProcessId: Ref<boolean>;
-  apiErrorInvalidRequest: Ref<boolean>;
-  apiErrorInvalidSchema: Ref<boolean>;
-  apiErrorInvalidScopeId: Ref<boolean>;
-  apiErrorInvalidServiceCount: Ref<boolean>;
-  apiErrorInvalidServiceId: Ref<boolean>;
-  apiErrorInvalidStartDate: Ref<boolean>;
-  apiErrorInvalidTelephone: Ref<boolean>;
-  apiErrorInvalidTimestamp: Ref<boolean>;
-  apiErrorIpBlacklisted: Ref<boolean>;
-  apiErrorMailNotFound: Ref<boolean>;
-  apiErrorMismatchedArrays: Ref<boolean>;
-  apiErrorNoAppointmentForThisDay: Ref<boolean>;
-  apiErrorNoAppointmentForThisScope: Ref<boolean>;
-  apiErrorNotFound: Ref<boolean>;
-  apiErrorNotImplemented: Ref<boolean>;
-  apiErrorOrganisationNotFound: Ref<boolean>;
-  apiErrorPreconfirmationExpired: Ref<boolean>;
-  apiErrorProcessAlreadyCalled: Ref<boolean>;
-  apiErrorProcessAlreadyExists: Ref<boolean>;
-  apiErrorProcessDeleteFailed: Ref<boolean>;
-  apiErrorProcessInvalid: Ref<boolean>;
-  apiErrorProcessNotPreconfirmedAnymore: Ref<boolean>;
-  apiErrorProcessNotReservedAnymore: Ref<boolean>;
-  apiErrorProviderNotFound: Ref<boolean>;
-  apiErrorRateLimitExceeded: Ref<boolean>;
-  apiErrorRequestDataTooLarge: Ref<boolean>;
-  apiErrorRequestMethodNotAllowed: Ref<boolean>;
-  apiErrorRequestNotFound: Ref<boolean>;
-  apiErrorScopeNotFound: Ref<boolean>;
-  apiErrorScopesNotFound: Ref<boolean>;
-  apiErrorServiceUnavailable: Ref<boolean>;
-  apiErrorSourceNotFound: Ref<boolean>;
-  apiErrorTelephoneIsRequired: Ref<boolean>;
-  apiErrorTooManyAppointmentsWithSameMail: Ref<boolean>;
-  apiErrorUnknownError: Ref<boolean>;
-  apiErrorZmsClientCommunicationError: Ref<boolean>;
-  apiErrorGenericFallback: Ref<boolean>;
+export type ErrorStateMap = Record<string, Ref<boolean>>;
+
+// Helper function to create error states with type safety
+export function createErrorStateMap(): ErrorStateMap {
+  const errorStateMap: ErrorStateMap = {};
+
+  // Define all error state names
+  const errorStateNames = [
+    "apiErrorAppointmentCanNotBeCanceled",
+    "apiErrorAppointmentNotAvailable",
+    "apiErrorAppointmentNotFound",
+    "apiErrorAuthKeyMismatch",
+    "apiErrorCaptchaVerificationError",
+    "apiErrorCaptchaVerificationFailed",
+    "apiErrorDepartmentNotFound",
+    "apiErrorEmailIsRequired",
+    "apiErrorEmptyServiceArrays",
+    "apiErrorInternalError",
+    "apiErrorInvalidApiClient",
+    "apiErrorInvalidAuthKey",
+    "apiErrorInvalidCustomTextfield",
+    "apiErrorInvalidDate",
+    "apiErrorInvalidEmail",
+    "apiErrorInvalidEndDate",
+    "apiErrorInvalidFamilyName",
+    "apiErrorInvalidLocationAndServiceCombination",
+    "apiErrorInvalidOfficeId",
+    "apiErrorInvalidProcessId",
+    "apiErrorInvalidRequest",
+    "apiErrorInvalidSchema",
+    "apiErrorInvalidScopeId",
+    "apiErrorInvalidServiceCount",
+    "apiErrorInvalidServiceId",
+    "apiErrorInvalidStartDate",
+    "apiErrorInvalidTelephone",
+    "apiErrorInvalidTimestamp",
+    "apiErrorIpBlacklisted",
+    "apiErrorMailNotFound",
+    "apiErrorMismatchedArrays",
+    "apiErrorNoAppointmentForThisDay",
+    "apiErrorNoAppointmentForThisScope",
+    "apiErrorNotFound",
+    "apiErrorNotImplemented",
+    "apiErrorOrganisationNotFound",
+    "apiErrorPreconfirmationExpired",
+    "apiErrorProcessAlreadyCalled",
+    "apiErrorProcessAlreadyExists",
+    "apiErrorProcessDeleteFailed",
+    "apiErrorProcessInvalid",
+    "apiErrorProcessNotPreconfirmedAnymore",
+    "apiErrorProcessNotReservedAnymore",
+    "apiErrorProviderNotFound",
+    "apiErrorRateLimitExceeded",
+    "apiErrorRequestDataTooLarge",
+    "apiErrorRequestMethodNotAllowed",
+    "apiErrorRequestNotFound",
+    "apiErrorScopeNotFound",
+    "apiErrorScopesNotFound",
+    "apiErrorServiceUnavailable",
+    "apiErrorSourceNotFound",
+    "apiErrorTelephoneIsRequired",
+    "apiErrorTooManyAppointmentsWithSameMail",
+    "apiErrorUnknownError",
+    "apiErrorZmsClientCommunicationError",
+    "apiErrorGenericFallback",
+  ] as const;
+
+  // Create refs for each error state
+  errorStateNames.forEach((name) => {
+    errorStateMap[name] = ref<boolean>(false);
+  });
+
+  return errorStateMap;
 }
 
 export interface ApiErrorTranslation {
@@ -67,185 +82,12 @@ export interface ApiErrorTranslation {
 
 // Centralized error state management
 export function createErrorStates() {
-  // Create all error refs
-  const apiErrorAppointmentCanNotBeCanceled = ref<boolean>(false);
-  const apiErrorAppointmentNotAvailable = ref<boolean>(false);
-  const apiErrorAppointmentNotFound = ref<boolean>(false);
-  const apiErrorAuthKeyMismatch = ref<boolean>(false);
-  const apiErrorCaptchaVerificationError = ref<boolean>(false);
-  const apiErrorCaptchaVerificationFailed = ref<boolean>(false);
-  const apiErrorDepartmentNotFound = ref<boolean>(false);
-  const apiErrorEmailIsRequired = ref<boolean>(false);
-  const apiErrorEmptyServiceArrays = ref<boolean>(false);
-  const apiErrorInternalError = ref<boolean>(false);
-  const apiErrorInvalidApiClient = ref<boolean>(false);
-  const apiErrorInvalidAuthKey = ref<boolean>(false);
-  const apiErrorInvalidCustomTextfield = ref<boolean>(false);
-  const apiErrorInvalidDate = ref<boolean>(false);
-  const apiErrorInvalidEmail = ref<boolean>(false);
-  const apiErrorInvalidEndDate = ref<boolean>(false);
-  const apiErrorInvalidFamilyName = ref<boolean>(false);
-  const apiErrorInvalidLocationAndServiceCombination = ref<boolean>(false);
-  const apiErrorInvalidOfficeId = ref<boolean>(false);
-  const apiErrorInvalidProcessId = ref<boolean>(false);
-  const apiErrorInvalidRequest = ref<boolean>(false);
-  const apiErrorInvalidSchema = ref<boolean>(false);
-  const apiErrorInvalidScopeId = ref<boolean>(false);
-  const apiErrorInvalidServiceCount = ref<boolean>(false);
-  const apiErrorInvalidServiceId = ref<boolean>(false);
-  const apiErrorInvalidStartDate = ref<boolean>(false);
-  const apiErrorInvalidTelephone = ref<boolean>(false);
-  const apiErrorInvalidTimestamp = ref<boolean>(false);
-  const apiErrorIpBlacklisted = ref<boolean>(false);
-  const apiErrorMailNotFound = ref<boolean>(false);
-  const apiErrorMismatchedArrays = ref<boolean>(false);
-  const apiErrorNoAppointmentForThisDay = ref<boolean>(false);
-  const apiErrorNoAppointmentForThisScope = ref<boolean>(false);
-  const apiErrorNotFound = ref<boolean>(false);
-  const apiErrorNotImplemented = ref<boolean>(false);
-  const apiErrorOrganisationNotFound = ref<boolean>(false);
-  const apiErrorPreconfirmationExpired = ref<boolean>(false);
-  const apiErrorProcessAlreadyCalled = ref<boolean>(false);
-  const apiErrorProcessAlreadyExists = ref<boolean>(false);
-  const apiErrorProcessDeleteFailed = ref<boolean>(false);
-  const apiErrorProcessInvalid = ref<boolean>(false);
-  const apiErrorProcessNotPreconfirmedAnymore = ref<boolean>(false);
-  const apiErrorProcessNotReservedAnymore = ref<boolean>(false);
-  const apiErrorProviderNotFound = ref<boolean>(false);
-  const apiErrorRateLimitExceeded = ref<boolean>(false);
-  const apiErrorRequestDataTooLarge = ref<boolean>(false);
-  const apiErrorRequestMethodNotAllowed = ref<boolean>(false);
-  const apiErrorRequestNotFound = ref<boolean>(false);
-  const apiErrorScopeNotFound = ref<boolean>(false);
-  const apiErrorScopesNotFound = ref<boolean>(false);
-  const apiErrorServiceUnavailable = ref<boolean>(false);
-  const apiErrorSourceNotFound = ref<boolean>(false);
-  const apiErrorTelephoneIsRequired = ref<boolean>(false);
-  const apiErrorTooManyAppointmentsWithSameMail = ref<boolean>(false);
-  const apiErrorUnknownError = ref<boolean>(false);
-  const apiErrorZmsClientCommunicationError = ref<boolean>(false);
-  const apiErrorGenericFallback = ref<boolean>(false);
-
-  // Create error state map
-  const errorStateMap: ErrorStateMap = {
-    apiErrorAppointmentCanNotBeCanceled,
-    apiErrorAppointmentNotAvailable,
-    apiErrorAppointmentNotFound,
-    apiErrorAuthKeyMismatch,
-    apiErrorCaptchaVerificationError,
-    apiErrorCaptchaVerificationFailed,
-    apiErrorDepartmentNotFound,
-    apiErrorEmailIsRequired,
-    apiErrorEmptyServiceArrays,
-    apiErrorInternalError,
-    apiErrorInvalidApiClient,
-    apiErrorInvalidAuthKey,
-    apiErrorInvalidCustomTextfield,
-    apiErrorInvalidDate,
-    apiErrorInvalidEmail,
-    apiErrorInvalidEndDate,
-    apiErrorInvalidFamilyName,
-    apiErrorInvalidLocationAndServiceCombination,
-    apiErrorInvalidOfficeId,
-    apiErrorInvalidProcessId,
-    apiErrorInvalidRequest,
-    apiErrorInvalidSchema,
-    apiErrorInvalidScopeId,
-    apiErrorInvalidServiceCount,
-    apiErrorInvalidServiceId,
-    apiErrorInvalidStartDate,
-    apiErrorInvalidTelephone,
-    apiErrorInvalidTimestamp,
-    apiErrorIpBlacklisted,
-    apiErrorMailNotFound,
-    apiErrorMismatchedArrays,
-    apiErrorNoAppointmentForThisDay,
-    apiErrorNoAppointmentForThisScope,
-    apiErrorNotFound,
-    apiErrorNotImplemented,
-    apiErrorOrganisationNotFound,
-    apiErrorPreconfirmationExpired,
-    apiErrorProcessAlreadyCalled,
-    apiErrorProcessAlreadyExists,
-    apiErrorProcessDeleteFailed,
-    apiErrorProcessInvalid,
-    apiErrorProcessNotPreconfirmedAnymore,
-    apiErrorProcessNotReservedAnymore,
-    apiErrorProviderNotFound,
-    apiErrorRateLimitExceeded,
-    apiErrorRequestDataTooLarge,
-    apiErrorRequestMethodNotAllowed,
-    apiErrorRequestNotFound,
-    apiErrorScopeNotFound,
-    apiErrorScopesNotFound,
-    apiErrorServiceUnavailable,
-    apiErrorSourceNotFound,
-    apiErrorTelephoneIsRequired,
-    apiErrorTooManyAppointmentsWithSameMail,
-    apiErrorUnknownError,
-    apiErrorZmsClientCommunicationError,
-    apiErrorGenericFallback,
-  };
+  // Create error state map using helper function
+  const errorStateMap = createErrorStateMap();
 
   return {
     // Individual error refs for direct access when needed
-    apiErrorAppointmentCanNotBeCanceled,
-    apiErrorAppointmentNotAvailable,
-    apiErrorAppointmentNotFound,
-    apiErrorAuthKeyMismatch,
-    apiErrorCaptchaVerificationError,
-    apiErrorCaptchaVerificationFailed,
-    apiErrorDepartmentNotFound,
-    apiErrorEmailIsRequired,
-    apiErrorEmptyServiceArrays,
-    apiErrorInternalError,
-    apiErrorInvalidApiClient,
-    apiErrorInvalidAuthKey,
-    apiErrorInvalidCustomTextfield,
-    apiErrorInvalidDate,
-    apiErrorInvalidEmail,
-    apiErrorInvalidEndDate,
-    apiErrorInvalidFamilyName,
-    apiErrorInvalidLocationAndServiceCombination,
-    apiErrorInvalidOfficeId,
-    apiErrorInvalidProcessId,
-    apiErrorInvalidRequest,
-    apiErrorInvalidSchema,
-    apiErrorInvalidScopeId,
-    apiErrorInvalidServiceCount,
-    apiErrorInvalidServiceId,
-    apiErrorInvalidStartDate,
-    apiErrorInvalidTelephone,
-    apiErrorInvalidTimestamp,
-    apiErrorIpBlacklisted,
-    apiErrorMailNotFound,
-    apiErrorMismatchedArrays,
-    apiErrorNoAppointmentForThisDay,
-    apiErrorNoAppointmentForThisScope,
-    apiErrorNotFound,
-    apiErrorNotImplemented,
-    apiErrorOrganisationNotFound,
-    apiErrorPreconfirmationExpired,
-    apiErrorProcessAlreadyCalled,
-    apiErrorProcessAlreadyExists,
-    apiErrorProcessDeleteFailed,
-    apiErrorProcessInvalid,
-    apiErrorProcessNotPreconfirmedAnymore,
-    apiErrorProcessNotReservedAnymore,
-    apiErrorProviderNotFound,
-    apiErrorRateLimitExceeded,
-    apiErrorRequestDataTooLarge,
-    apiErrorRequestMethodNotAllowed,
-    apiErrorRequestNotFound,
-    apiErrorScopeNotFound,
-    apiErrorScopesNotFound,
-    apiErrorServiceUnavailable,
-    apiErrorSourceNotFound,
-    apiErrorTelephoneIsRequired,
-    apiErrorTooManyAppointmentsWithSameMail,
-    apiErrorUnknownError,
-    apiErrorZmsClientCommunicationError,
-    apiErrorGenericFallback,
+    ...errorStateMap,
     // Error state map for centralized operations
     errorStateMap,
   };
