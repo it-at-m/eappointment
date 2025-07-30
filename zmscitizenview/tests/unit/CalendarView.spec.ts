@@ -1629,7 +1629,7 @@ describe("CalendarView", () => {
   });
 
   describe("Error States", () => {
-    it('shows invalidCaptcha warning callout when errorKey is altcha.invalidCaptcha', async () => {
+    it('shows captcha error warning callout when captcha error is set', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
@@ -1637,16 +1637,20 @@ describe("CalendarView", () => {
         }
       });
 
+      // Set captcha error state
+      wrapper.vm.errorStates.apiErrorCaptchaInvalid.value = true;
+
       await nextTick();
 
       const callout = wrapper.find('[data-test="muc-callout"]');
 
       expect(callout.exists()).toBe(true);
       expect(callout.attributes('data-type')).toBe("warning");
-      expect(callout.html()).toContain("altcha.invalidCaptcha");
+      expect(callout.html()).toContain("apiErrorCaptchaInvalidHeader");
+      expect(callout.html()).toContain("apiErrorCaptchaInvalidText");
     });
 
-    it('shows apiErrorNoAppointmentForThisScope warning callout when errorKey is apiErrorNoAppointmentForThisScope', async () => {
+    it('shows no appointment error warning callout when no appointment error is set', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
@@ -1654,16 +1658,20 @@ describe("CalendarView", () => {
         }
       });
 
+      // Set no appointment error state
+      wrapper.vm.errorStates.apiErrorNoAppointmentForThisScope.value = true;
+
       await nextTick();
 
       const callout = wrapper.find('[data-test="muc-callout"]');
 
       expect(callout.exists()).toBe(true);
       expect(callout.attributes('data-type')).toBe("warning");
-      expect(callout.html()).toContain("apiErrorNoAppointmentForThisScope");
+      expect(callout.html()).toContain("apiErrorNoAppointmentForThisScopeHeader");
+      expect(callout.html()).toContain("apiErrorNoAppointmentForThisScopeText");
     });
 
-    it('shows apiErrorAppointmentNotAvailable warning callout when selectedHour is set and errorKey is apiErrorNoAppointmentForThisScope', async () => {
+    it('shows appointment not available error warning callout when appointment not available error is set', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
@@ -1672,13 +1680,18 @@ describe("CalendarView", () => {
       });
 
       wrapper.vm.selectedHour = 10;
+      
+      // Set appointment not available error state
+      wrapper.vm.errorStates.apiErrorAppointmentNotAvailable.value = true;
+
       await nextTick();
 
       const callout = wrapper.find('[data-test="muc-callout"]');
 
       expect(callout.exists()).toBe(true);
       expect(callout.attributes('data-type')).toBe("warning");
-      expect(callout.html()).toContain("apiErrorAppointmentNotAvailable");
+      expect(callout.html()).toContain("apiErrorAppointmentNotAvailableHeader");
+      expect(callout.html()).toContain("apiErrorAppointmentNotAvailableText");
     });
 
     it('does not show any callout when bookingError is false', async () => {

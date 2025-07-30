@@ -647,20 +647,10 @@
   >
     <muc-callout type="warning">
       <template #header>
-        {{
-          showErrorKey === "apiErrorNoAppointmentForThisScope" &&
-          selectedHour !== null
-            ? t("apiErrorAppointmentNotAvailableHeader")
-            : t(`${showErrorKey}Header`)
-        }}
+        {{ t(apiErrorTranslation.headerKey) }}
       </template>
       <template #content>
-        {{
-          showErrorKey === "apiErrorNoAppointmentForThisScope" &&
-          selectedHour !== null
-            ? t("apiErrorAppointmentNotAvailableText")
-            : t(`${showErrorKey}Text`)
-        }}
+        {{ t(apiErrorTranslation.textKey) }}
       </template>
     </muc-callout>
   </div>
@@ -717,6 +707,11 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import {
+  createErrorStates,
+  getApiErrorTranslation,
+  handleApiResponse,
+} from "@/utils/errorHandler";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -762,12 +757,17 @@ const appointmentsCount = ref<number>(0);
 const appointmentTimestampsByOffice = ref<OfficeAvailableTimeSlotsDTO[]>([]);
 const appointmentTimestamps = ref<number[]>([]);
 
-const errorKey = ref("");
+// Create centralized error states
+const errorStates = createErrorStates();
+const errorStateMap = computed(() => errorStates.errorStateMap);
+
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
-const showErrorKey = computed(() =>
-  error.value ? errorKey.value : props.bookingErrorKey
-);
+
+// Computed property to get the correct translation for API errors
+const apiErrorTranslation = computed(() => {
+  return getApiErrorTranslation(errorStateMap.value);
+});
 
 const selectedDay = ref<Date>();
 const minDate = ref<Date>();
@@ -1087,7 +1087,6 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
       minDate.value = new Date((days[0] as any).time);
       maxDate.value = new Date((days[days.length - 1] as any).time);
       error.value = false;
-      errorKey.value = "";
     } else {
       handleError(data);
     }
@@ -1097,16 +1096,8 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
 const handleError = (data: any): void => {
   error.value = true;
 
-  const tokenErrors = ["captchaMissing", "captchaExpired", "captchaInvalid"];
-  const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
-
-  if (firstErrorCode === "noAppointmentsAvailable") {
-    errorKey.value = "apiErrorNoAppointmentForThisScope";
-  } else {
-    errorKey.value = tokenErrors.includes(firstErrorCode)
-      ? "altcha.invalidCaptcha"
-      : "apiErrorNoAppointmentForThisScope";
-  }
+  // Use centralized error handling
+  handleApiResponse(data, errorStateMap.value);
 };
 
 const getAppointmentsOfDay = (date: string) => {
