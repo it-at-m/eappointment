@@ -155,6 +155,8 @@ class View extends RequestView {
             this.onRemoveRequestCount(event);
         }).on('change', '#appointmentForm_slotCount', (event) => {
             this.onChangeSlotCount(event);
+        }).on('change', '#appointmentForm_priority', (event) => {
+            this.onChangePriority(event);
         }).on('change', '.appointment-form .switchcluster select', (event) => {
             this.onChangeScope(event);
         }).on('change', 'select#process_time', (event) => {
@@ -246,6 +248,11 @@ class View extends RequestView {
         this.selectedScope = $(event.currentTarget).val();
         this.onChangeScopeCallback(event);
 
+    }
+
+    onChangePriority(event) {
+        const selectedPriority = $(event.currentTarget).val();
+        this.$.find('input[name=selected_process_priority]').val(selectedPriority);
     }
 
     onChangeProcessTime(event) {
