@@ -82,7 +82,7 @@
         {{ t("apiErrorNoAppointmentForThisScopeHeader") }}
       </template>
       <template #content>
-        {{ t("apiErrorNoAppointmentForThisScope") }}
+        {{ t("apiErrorNoAppointmentForThisScopeText") }}
       </template>
     </muc-callout>
   </div>
@@ -1098,11 +1098,23 @@ const handleError = (data: any): void => {
   error.value = true;
 
   const tokenErrors = ["captchaMissing", "captchaExpired", "captchaInvalid"];
-  const firstErrorCode = data?.errors?.[0]?.errorCode;
+  const firstErrorCode = (data as any).errors?.[0]?.errorCode ?? "";
 
-  errorKey.value = tokenErrors.includes(firstErrorCode)
-    ? "altcha.invalidCaptcha"
-    : "apiErrorNoAppointmentForThisScope";
+  if (firstErrorCode === "noAppointmentsAvailable") {
+    errorKey.value = "apiErrorNoAppointmentForThisScope";
+  } else {
+    errorKey.value = tokenErrors.includes(firstErrorCode)
+      ? "altcha.invalidCaptcha"
+      : "apiErrorNoAppointmentForThisScope";
+  }
+
+  if (firstErrorCode === "noAppointmentsAvailable") {
+    errorKey.value = "apiErrorNoAppointmentForThisScope";
+  } else {
+    errorKey.value = tokenErrors.includes(firstErrorCode)
+      ? "altcha.invalidCaptcha"
+      : "apiErrorNoAppointmentForThisScope";
+  }
 };
 
 const getAppointmentsOfDay = (date: string) => {
