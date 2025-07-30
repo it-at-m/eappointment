@@ -1107,14 +1107,6 @@ const handleError = (data: any): void => {
       ? "altcha.invalidCaptcha"
       : "apiErrorNoAppointmentForThisScope";
   }
-
-  if (firstErrorCode === "noAppointmentsAvailable") {
-    errorKey.value = "apiErrorNoAppointmentForThisScope";
-  } else {
-    errorKey.value = tokenErrors.includes(firstErrorCode)
-      ? "altcha.invalidCaptcha"
-      : "apiErrorNoAppointmentForThisScope";
-  }
 };
 
 const getAppointmentsOfDay = (date: string) => {

@@ -184,7 +184,7 @@ describe("AppointmentView", () => {
   describe("Error States", () => {
     it("shows appointment not found error", async () => {
       const wrapper = createWrapper();
-      wrapper.vm.apiErrorAppointmentNotFound = true;
+      wrapper.vm.errorStates.apiErrorAppointmentNotFound.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
