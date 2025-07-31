@@ -20,7 +20,8 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
             "waitingTimeEstimate" => 0,
             "waitingTimeOptimistic" => 0,
             "waitingTime" => 0,
-            "wayTime" => 0
+            "wayTime" => 0,
+            "priority" => null
         ];
     }
 
