@@ -764,7 +764,6 @@ const errorStateMap = computed(() => errorStates.errorStateMap);
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
 
-// Computed property to get the correct translation for API errors
 const apiErrorTranslation = computed(() => {
   return getApiErrorTranslation(errorStateMap.value);
 });

@@ -317,7 +317,6 @@ const isCancelingAppointment = ref<boolean>(false);
 
 const preselectedLocationId = ref<string | undefined>(props.locationId);
 
-// Computed property to get the correct translation for API errors
 const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   return getApiErrorTranslation(errorStateMap.value);
 });
