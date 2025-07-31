@@ -1,5 +1,6 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import { ref } from "vue";
+
+// @ts-expect-error: Vue SFC import for test
 import { handleApiResponse, createErrorStates } from "@/utils/errorHandler";
 
 describe("errorHandler", () => {
