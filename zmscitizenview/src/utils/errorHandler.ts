@@ -146,9 +146,19 @@ export function getApiErrorTranslation(
 }
 
 export function handleApiResponse(data: any, errorStates: ErrorStateMap): void {
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    errorStates.apiErrorGenericFallback.value = true;
+    return;
+  }
+
   const firstErrorCode = data?.errors?.[0]?.errorCode ?? "";
   if (firstErrorCode) {
     handleApiError(firstErrorCode, errorStates);
+  } else if (data.errors && data.errors.length > 0) {
+    errorStates.apiErrorGenericFallback.value = true;
+  } else if (data.errors && data.errors.length === 0) {
+    // Handle case where errors array exists but is empty
+    errorStates.apiErrorGenericFallback.value = true;
   }
 }
 
