@@ -1637,7 +1637,6 @@ describe("CalendarView", () => {
         }
       });
 
-      // Set captcha error state
       wrapper.vm.errorStates.apiErrorCaptchaInvalid.value = true;
 
       await nextTick();
@@ -1658,7 +1657,6 @@ describe("CalendarView", () => {
         }
       });
 
-      // Set no appointment error state
       wrapper.vm.errorStates.apiErrorNoAppointmentForThisScope.value = true;
 
       await nextTick();
@@ -1680,8 +1678,7 @@ describe("CalendarView", () => {
       });
 
       wrapper.vm.selectedHour = 10;
-      
-      // Set appointment not available error state
+
       wrapper.vm.errorStates.apiErrorAppointmentNotAvailable.value = true;
 
       await nextTick();

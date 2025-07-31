@@ -192,7 +192,6 @@ describe("AppointmentView", () => {
 
     it("shows booking error", async () => {
       const wrapper = createWrapper();
-      // Set the error through the centralized system
       wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);

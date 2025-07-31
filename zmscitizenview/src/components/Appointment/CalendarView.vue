@@ -1096,7 +1096,6 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
 const handleError = (data: any): void => {
   error.value = true;
 
-  // Use centralized error handling
   handleApiResponse(data, errorStateMap.value);
 };
 

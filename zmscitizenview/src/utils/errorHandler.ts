@@ -167,7 +167,6 @@ export function hasContextError(
   return hasAnyApiError(errorStates) && activeContext === context;
 }
 
-// Convenience functions for specific contexts
 export const hasUpdateContextError = (
   errorStates: ErrorStateMap,
   activeContext?: string
