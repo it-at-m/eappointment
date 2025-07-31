@@ -7,7 +7,7 @@
   "apiErrorAppointmentNotFoundHeader": "Wir konnten Ihren Termin nicht finden.",
   "apiErrorAppointmentNotFoundText": "Vielleicht haben Sie Ihren Termin bereits abgesagt? Andernfalls überprüfen Sie bitte, ob Sie den richtigen Link verwendet haben.",
   "apiErrorAuthKeyMismatchHeader": "Ungültiger Authentifizierungsschlüssel.",
-  "apiErrorAuthKeyMismatchText": "Leider kann Ihr Termin nicht aktiviert werden. Bitte überprüfen Sie bitte, ob Sie den richtigen Link verwendet haben.",
+  "apiErrorAuthKeyMismatchText": "Leider kann Ihr Termin nicht aktiviert werden. Bitte überprüfen Sie, ob Sie den richtigen Link verwendet haben.",
   "apiErrorCaptchaVerificationErrorHeader": "Verifizierung fehlgeschlagen.",
   "apiErrorCaptchaVerificationErrorText": "Verifizierung fehlgeschlagen. Versuche es später noch einmal.",
   "apiErrorCaptchaMissingHeader": "Captcha token fehlt.",
