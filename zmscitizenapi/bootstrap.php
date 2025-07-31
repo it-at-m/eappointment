@@ -40,7 +40,6 @@ $cache = new \Symfony\Component\Cache\Psr16Cache(
 
 $logger = new LoggerService();
 // Security middleware (order is important)
-App::$slim->add(new \BO\Zmscitizenapi\Middleware\LanguageMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RequestLoggingMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\SecurityHeadersMiddleware($logger));
 App::$slim->add(new \BO\Zmscitizenapi\Middleware\RateLimitingMiddleware($cache, $logger));
@@ -59,10 +58,9 @@ $errorMiddleware->setErrorHandler(
         $response = $response->withStatus(405)
             ->withHeader('Content-Type', 'application/json');
 
-        $currentLanguage = $request->getAttribute('language');
         $responseBody = json_encode([
             'errors' => [
-                \BO\Zmscitizenapi\Localization\ErrorMessages::get('requestMethodNotAllowed', $currentLanguage)
+                \BO\Zmscitizenapi\Localization\ErrorMessages::get('requestMethodNotAllowed')
             ]
         ]);
 
