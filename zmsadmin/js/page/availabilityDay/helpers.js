@@ -290,8 +290,8 @@ export const getFormValuesFromData = data => {
 export const accordionTitle = (data) => {
     const startDate = moment(data.startDate, 'X').format('DD.MM.YYYY');
     const endDate = moment(data.endDate, 'X').format('DD.MM.YYYY');
-    const startTime = data.startTime ? moment(data.startTime, 'h:mm:ss').format('HH:mm') : null;
-    const endTime = data.endTime ? moment(data.endTime, 'h:mm:ss').format('HH:mm') : null;
+    const startTime = data.startTime ? moment(data.startTime, 'h:mm:ss').format('HH:mm') : '';
+    const endTime = data.endTime ? moment(data.endTime, 'h:mm:ss').format('HH:mm') : '';
     const availabilityType = availabilityTypes.find(element => element.value == data.type);
     const availabilityWeekDayList = Object.keys(data.weekday).filter(key => parseInt(data.weekday[key], 10) > 0)
     const availabilityWeekDay = weekDayList.filter(element => availabilityWeekDayList.includes(element.value)

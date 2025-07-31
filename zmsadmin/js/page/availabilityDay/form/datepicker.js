@@ -66,7 +66,13 @@ class AvailabilityDatePicker extends Component
             .set({"h": endTime.hours(), "m": endTime.minutes()})
             .toDate()
 
-        let selectedDate = ("startDate" == this.props.name) ? startDate : endDate
+        let selectedDate = null;
+
+        if ("startDate" === this.props.name && this.props.attributes.availability.startTime !== null) {
+            selectedDate = startDate;
+        } else if (this.props.attributes.availability.endTime !== null) {
+            selectedDate = endDate;
+        }
 
         if (name && date) {
             startDate = ("startDate" == name) ? date.startOf('day') : startDate;
