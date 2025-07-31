@@ -18,19 +18,26 @@ def print_info(string):
 
 repo_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 modules = [
-  "mellon",
-  "zmsadmin",
-  "zmsapi",
-  "zmscalldisplay",
-  "zmscitizenapi",
-  "zmsclient",
-  "zmsdb",
-  "zmsdldb",
-  "zmsentities",
-  "zmsmessaging",
-  "zmsslim",
-  "zmsstatistic",
-  "zmsticketprinter",
+  # Level 1: Base dependencies (no dependencies)
+  "mellon",        # Base dependency for all modules
+  
+  # Level 2: Direct mellon dependencies
+  "zmsslim",       # Provides BO\Slim\Application - depends on: mellon
+  "zmsentities",   # Entity definitions - depends on: mellon
+  
+  # Level 3: Dependencies with level 1-2 deps
+  "zmsdldb",       # DLDB integration - no dependencies shown in graph
+  "zmsdb",         # Database layer - depends on: zmsentities, zmsdldb, mellon
+  "zmsclient",     # Core client - depends on: zmsentities, zmsslim, mellon
+  
+  # Level 4: All remaining modules (depend on multiple level 1-3 modules)
+  "zmsapi",        # API layer - depends on: zmsslim, zmsclient, zmsdldb, zmsdb, zmsentities
+  "zmsadmin",      # Admin interface - depends on: mellon, zmsclient, zmsslim, zmsentities
+  "zmscitizenapi", # Citizen API - depends on: mellon, zmsslim, zmsclient, zmsentities
+  "zmscalldisplay", # Call display - depends on: mellon, zmsclient, zmsentities, zmsslim
+  "zmsmessaging",  # Messaging - depends on: mellon, zmsclient, zmsentities, zmsslim
+  "zmsstatistic",  # Statistics - depends on: mellon, zmsentities, zmsslim, zmsclient
+  "zmsticketprinter", # Ticket printer - depends on: mellon, zmsentities, zmsslim, zmsclient
 ]
 
 

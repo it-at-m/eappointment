@@ -72,7 +72,7 @@ class Slot extends Base
 
     public function hasScopeRelevantChanges(
         \BO\Zmsentities\Scope $scope,
-        \DateTimeInterface $slotLastChange = null
+        ?\DateTimeInterface $slotLastChange = null
     ) {
         $startInDaysDefault = (new Preferences())
             ->readProperty('scope', $scope->id, 'appointment', 'startInDaysDefault');
@@ -100,7 +100,7 @@ class Slot extends Base
     public function isAvailabilityOutdated(
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $now,
-        \DateTimeInterface $slotLastChange = null
+        ?\DateTimeInterface $slotLastChange = null
     ) {
         $proposedChange = new Helper\AvailabilitySnapShot($availability, $now);
         $formerChange = new Helper\AvailabilitySnapShot($availability, $slotLastChange);
@@ -176,7 +176,7 @@ class Slot extends Base
     public function writeByAvailability(
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $now,
-        \DateTimeInterface $slotLastChange = null
+        ?\DateTimeInterface $slotLastChange = null
     ) {
         $now = \BO\Zmsentities\Helper\DateTime::create($now);
         $calculateSlotsUntilDate = \BO\Zmsentities\Helper\DateTime::create($now)->modify('+' . self::MAX_DAYS_OF_SLOT_CALCULATION . ' days');
@@ -375,7 +375,7 @@ class Slot extends Base
         return new \DateTimeImmutable($last['dateString'] . \BO\Zmsdb\Connection\Select::$connectionTimezone);
     }
 
-    public function updateSlotProcessMapping($scopeID = null)
+    public function updateSlotProcessMapping(?int $scopeID = null)
     {
         if ($scopeID) {
             $processIdList = $this->fetchAll(
@@ -393,7 +393,7 @@ class Slot extends Base
         return count($processIdList);
     }
 
-    public function deleteSlotProcessOnSlot($scopeID = null)
+    public function deleteSlotProcessOnSlot(?int $scopeID = null)
     {
         if ($scopeID) {
             $this->perform(
@@ -406,7 +406,7 @@ class Slot extends Base
         }
     }
 
-    public function deleteSlotProcessOnProcess($scopeID = null)
+    public function deleteSlotProcessOnProcess(?int $scopeID = null)
     {
         if ($scopeID) {
             $processIdList = $this->fetchAll(

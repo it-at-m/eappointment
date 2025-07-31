@@ -22,7 +22,7 @@ class Response extends \Slim\Psr7\Response
      *
      * @return static
      */
-    public function withRedirect($url, int $status = null): Response
+    public function withRedirect($url, ?int $status = null): Response
     {
         /** @var Response $redirectResponse */
         $redirectResponse = $this->withHeader('Location', (string) $url);

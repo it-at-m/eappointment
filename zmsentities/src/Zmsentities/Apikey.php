@@ -43,12 +43,14 @@ class Apikey extends Schema\Entity
      */
     public function isVerifiedHash($text, $hash, $secret = '4Td8x5Qn5hjW3uSc6MWWVQPwrw6b74fL')
     {
-        return password_verify($text . $secret, '$2y$10$' . base64_decode($hash));
+        $decoded = base64_decode($hash);
+        $reconstructed = '$2y$12$' . $decoded;
+        return password_verify($text . $secret, $reconstructed);
     }
 
     public function withCaptchaData($base64_jpg)
     {
-        $this->captcha = new Mimepart([
+        $this['captcha'] = new Mimepart([
             'content' => $base64_jpg,
             'mime' => 'image/jpeg;base64',
             'base64' => true

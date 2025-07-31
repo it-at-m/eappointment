@@ -21,7 +21,7 @@ trait Values
      * @param   array|null   $values
      * @return  $this|array
      */
-    public function values(array $values = null)
+    public function values(?array $values = null)
     {
         if ($values === null) {
             return $this->values;

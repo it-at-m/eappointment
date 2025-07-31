@@ -50,9 +50,9 @@ class Exception extends \Exception
      */
     public function __construct(
         $message = '',
-        \Psr\Http\Message\ResponseInterface $response = null,
-        \Psr\Http\Message\RequestInterface $request = null,
-        \Exception $previous = null
+        ?\Psr\Http\Message\ResponseInterface $response = null,
+        ?\Psr\Http\Message\RequestInterface $request = null,
+        ?\Exception $previous = null
     ) {
         $this->response = $response;
         $this->request = $request;

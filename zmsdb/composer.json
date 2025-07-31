@@ -23,7 +23,7 @@
         }
     },
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-mbstring": ">=0",
         "ext-intl": "*",
         "ext-json": ">=1.0",
@@ -35,7 +35,7 @@
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsapi": "@dev",
         "ext-pdo": "*",
-        "aura/sql": "^5",
+        "aura/sql": "^6.0",
         "roave/security-advisories": "dev-latest"
     },
     "bin": [
