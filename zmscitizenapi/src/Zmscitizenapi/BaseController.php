@@ -26,7 +26,7 @@ abstract class BaseController extends \BO\Slim\Controller
             return $this->readResponse($request, $noCacheResponse, $args);
         } catch (\RuntimeException $e) {
         // Extract error details from the exception message
-            [$errorCode, $errorMessage] = explode(': ', $e->getMessage(), 3);
+            [$errorCode, $errorMessage] = explode(': ', $e->getMessage(), 2);
             return $this->createJsonResponse($response, [
                 'errors' => [
                     [
