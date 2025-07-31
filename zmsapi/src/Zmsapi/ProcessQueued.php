@@ -42,6 +42,7 @@ class ProcessQueued extends BaseController
         $process->status = 'queued';
         $process->queue['callCount'] = 0;
         $process->queue['lastCallTime'] = 0;
+        $process->queue['priority'] = $entity->getPriority();
         $cluster = (new \BO\Zmsdb\Cluster())->readByScopeId($workstation->scope['id'], 1);
         $workstation->validateProcessScopeAccess($workstation->getScopeList($cluster), $process);
         $process = (new Query())->updateEntity(
