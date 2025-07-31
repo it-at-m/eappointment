@@ -765,6 +765,14 @@ const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
 
 const apiErrorTranslation = computed(() => {
+  // If we have a booking error from props, use that instead of our own error states
+  if (props.bookingError && props.bookingErrorKey) {
+    return {
+      headerKey: `${props.bookingErrorKey}Header`,
+      textKey: `${props.bookingErrorKey}Text`,
+    };
+  }
+  // Otherwise, use our own error states
   return getApiErrorTranslation(errorStateMap.value);
 });
 

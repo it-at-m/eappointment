@@ -1633,11 +1633,9 @@ describe("CalendarView", () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
-          bookingErrorKey: "altcha.invalidCaptcha",
+          bookingErrorKey: "apiErrorCaptchaInvalid",
         }
       });
-
-      wrapper.vm.errorStates.apiErrorCaptchaInvalid.value = true;
 
       await nextTick();
 
@@ -1657,8 +1655,6 @@ describe("CalendarView", () => {
         }
       });
 
-      wrapper.vm.errorStates.apiErrorNoAppointmentForThisScope.value = true;
-
       await nextTick();
 
       const callout = wrapper.find('[data-test="muc-callout"]');
@@ -1673,13 +1669,9 @@ describe("CalendarView", () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
-          bookingErrorKey: "apiErrorNoAppointmentForThisScope",
+          bookingErrorKey: "apiErrorAppointmentNotAvailable",
         }
       });
-
-      wrapper.vm.selectedHour = 10;
-
-      wrapper.vm.errorStates.apiErrorAppointmentNotAvailable.value = true;
 
       await nextTick();
 
