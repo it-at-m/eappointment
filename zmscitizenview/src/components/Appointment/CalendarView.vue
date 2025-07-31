@@ -77,12 +77,14 @@
     v-if="availableDaysFetched && !hasAppointmentsForSelectedProviders()"
     class="m-component"
   >
+  <h2 tabindex="0">{{ t("time") }}</h2>
+  
     <muc-callout type="warning">
       <template #header>
-        {{ t("noAppointmentsAvailableHeader") }}
+        <h3>{{ t("noAppointmentsAvailableHeader") }}</h3>
       </template>
       <template #content>
-        {{ t("noAppointmentsAvailable") }}
+        {{ t("noAppointmentsAvailableText") }}
       </template>
     </muc-callout>
   </div>
