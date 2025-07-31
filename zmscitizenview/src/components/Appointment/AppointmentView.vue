@@ -37,7 +37,13 @@
                 :selected-service-map="selectedServiceMap"
                 :captcha-token="captchaToken ?? null"
                 :t="t"
-                :booking-error="captchaError || apiErrorAppointmentNotAvailable"
+                :booking-error="
+                  captchaError ||
+                  apiErrorAppointmentNotAvailable ||
+                  errorStates.errorStateMap.apiErrorCaptchaExpired.value ||
+                  errorStates.errorStateMap.apiErrorCaptchaMissing.value ||
+                  errorStates.errorStateMap.apiErrorCaptchaInvalid.value
+                "
                 :booking-error-key="bookingErrorKey"
                 @back="decreaseCurrentView"
                 @next="nextReserveAppointment"
@@ -293,6 +299,12 @@ const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
   if (apiErrorAppointmentNotAvailable.value)
     return "apiErrorNoAppointmentForThisScope";
+  if (errorStateMap.value.apiErrorCaptchaExpired.value)
+    return "apiErrorCaptchaExpired";
+  if (errorStateMap.value.apiErrorCaptchaMissing.value)
+    return "apiErrorCaptchaMissing";
+  if (errorStateMap.value.apiErrorCaptchaInvalid.value)
+    return "apiErrorCaptchaInvalid";
   return "";
 });
 
