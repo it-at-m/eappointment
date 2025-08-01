@@ -20,7 +20,7 @@ const baseProps = {
   selectedServiceMap: new Map([["service1", 1]]),
   captchaToken: "test-token",
   bookingError: false,
-  bookingErrorKey: "noAppointmentsAvailable",
+  bookingErrorKey: "apiErrorNoAppointmentForThisScope",
   t,
 };
 
@@ -1629,11 +1629,11 @@ describe("CalendarView", () => {
   });
 
   describe("Error States", () => {
-    it('shows invalidCaptcha warning callout when errorKey is altcha.invalidCaptcha', async () => {
+    it('shows captcha error warning callout when captcha error is set', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
-          bookingErrorKey: "altcha.invalidCaptcha",
+          bookingErrorKey: "apiErrorCaptchaInvalid",
         }
       });
 
@@ -1643,14 +1643,15 @@ describe("CalendarView", () => {
 
       expect(callout.exists()).toBe(true);
       expect(callout.attributes('data-type')).toBe("warning");
-      expect(callout.html()).toContain("altcha.invalidCaptcha");
+      expect(callout.html()).toContain("apiErrorCaptchaInvalidHeader");
+      expect(callout.html()).toContain("apiErrorCaptchaInvalidText");
     });
 
-    it('shows noAppointmentsAvailable warning callout when errorKey is noAppointmentsAvailable', async () => {
+    it('shows no appointment error warning callout when no appointment error is set', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
-          bookingErrorKey: "noAppointmentsAvailable",
+          bookingErrorKey: "apiErrorNoAppointmentForThisScope",
         }
       });
 
@@ -1660,25 +1661,26 @@ describe("CalendarView", () => {
 
       expect(callout.exists()).toBe(true);
       expect(callout.attributes('data-type')).toBe("warning");
-      expect(callout.html()).toContain("noAppointmentsAvailable");
+      expect(callout.html()).toContain("apiErrorNoAppointmentForThisScopeHeader");
+      expect(callout.html()).toContain("apiErrorNoAppointmentForThisScopeText");
     });
 
-    it('shows selectedDateNoLongerAvailable warning callout when selectedHour is set and errorKey is noAppointmentsAvailable', async () => {
+    it('shows appointment not available error warning callout when appointment not available error is set', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
-          bookingErrorKey: "noAppointmentsAvailable",
+          bookingErrorKey: "apiErrorAppointmentNotAvailable",
         }
       });
 
-      wrapper.vm.selectedHour = 10;
       await nextTick();
 
       const callout = wrapper.find('[data-test="muc-callout"]');
 
       expect(callout.exists()).toBe(true);
       expect(callout.attributes('data-type')).toBe("warning");
-      expect(callout.html()).toContain("selectedDateNoLongerAvailable");
+      expect(callout.html()).toContain("apiErrorAppointmentNotAvailableHeader");
+      expect(callout.html()).toContain("apiErrorAppointmentNotAvailableText");
     });
 
     it('does not show any callout when bookingError is false', async () => {
