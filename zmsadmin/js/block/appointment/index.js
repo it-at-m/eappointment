@@ -254,11 +254,6 @@ class View extends RequestView {
         this.$.find('input[name=selected_process_priority]').val(selectedPriority);
     }
 
-    onChangePriority(event) {
-        const selectedPriority = $(event.currentTarget).val();
-        this.$.find('input[name=selected_process_priority]').val(selectedPriority);
-    }
-
     onChangeProcessTime(event) {
         if (this.hasSlotCountEnabled && this.serviceListSelected.length == 0) {
             this.auralMessage(this.auralMessages.chooseRequestFirst)
