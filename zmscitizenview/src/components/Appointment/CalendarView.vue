@@ -1291,7 +1291,11 @@ const hasSelectedProviderWithAppointments = computed(() => {
 watch(providersWithAppointments, (newProviders) => {
   // If no provider with appointments is selected and we have providers with appointments, select the first one
   // But only if there's no preselected office ID that should be respected
-  if (!hasSelectedProviderWithAppointments.value && newProviders.length > 0 && !props.preselectedOfficeId) {
+  if (
+    !hasSelectedProviderWithAppointments.value &&
+    newProviders.length > 0 &&
+    !props.preselectedOfficeId
+  ) {
     selectedProviders.value[newProviders[0].id] = true;
   }
 });
