@@ -647,13 +647,16 @@
     v-if="showError"
     class="m-component"
   >
+    <h2 tabindex="0">{{ t("time") }}</h2>
     <muc-callout type="warning">
       <template #header>
-        {{
-          showErrorKey === "noAppointmentsAvailable" && selectedHour !== null
-            ? t("selectedDateNoLongerAvailableHeader")
-            : t(`${showErrorKey}Header`)
-        }}
+        <h3>
+          {{
+            showErrorKey === "noAppointmentsAvailable" && selectedHour !== null
+              ? t("selectedDateNoLongerAvailableHeader")
+              : t(`${showErrorKey}Header`)
+          }}
+        </h3>
       </template>
       <template #content>
         {{
