@@ -98,8 +98,8 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         description: 'Neue Öffnungszeit',
         startDate: timestamp,
         endDate: timestamp,
-        startTime: null,
-        endTime: null,
+        startTime: '00:00:00',
+        endTime: '00:00:00',
         bookable: {
             ...(scope.preferences.appointment.startInDaysDefault ? { startInDays: scope.preferences.appointment.startInDaysDefault } : {}),
             ...(scope.preferences.appointment.endInDaysDefault ? { endInDays: scope.preferences.appointment.endInDaysDefault } : {})

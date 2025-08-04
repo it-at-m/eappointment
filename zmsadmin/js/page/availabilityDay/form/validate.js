@@ -241,10 +241,10 @@ function isValidTimestamp(timestamp) {
 function validateStartTime(today, tomorrow, selectedDate, data) {
     let errorList = []
     const startTime = moment(data.startDate, 'X').startOf('day');
-    const startHour = data.startTime.split(':')[0];
-    const endHour = data.endTime.split(':')[0];
-    const startMinute = data.startTime.split(':')[1];
-    const endMinute = data.endTime.split(':')[1];
+    const startHour = data.startTime ? data.startTime.split(':')[0] : '00';
+    const endHour = data.endTime ? data.endTime.split(':')[0] : '00';
+    const startMinute = data.startTime ? data.startTime.split(':')[1] : '00';
+    const endMinute = data.endTime ? data.endTime.split(':')[1] : '00';
     //const startDateTime = startTime.clone().set({ h: startHour, m: startMinute });
     const isFuture = (data.kind && 'future' == data.kind);
     //const isOrigin = (data.kind && 'origin' == data.kind);
@@ -291,10 +291,10 @@ function validateEndTime(today, yesterday, selectedDate, data) {
     var errorList = []
     const startTime = moment(data.startDate, 'X').startOf('day');
     const endTime = moment(data.endDate, 'X').startOf('day');
-    const startHour = data.startTime.split(':')[0]
-    const endHour = data.endTime.split(':')[0]
-    const startMinute = data.startTime.split(':')[1]
-    const endMinute = data.endTime.split(':')[1]
+    const startHour = data.startTime ? data.startTime.split(':')[0] : '00';
+    const endHour = data.endTime ? data.endTime.split(':')[0] : '00';
+    const startMinute = data.startTime ? data.startTime.split(':')[1] : '00';
+    const endMinute = data.endTime ? data.endTime.split(':')[1] : '00';
     const dayMinutesStart = (parseInt(startHour) * 60) + parseInt(startMinute);
     const dayMinutesEnd = (parseInt(endHour) * 60) + parseInt(endMinute);
     const startTimestamp = startTime.set({ h: startHour, m: startMinute }).unix();
@@ -321,10 +321,10 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
     var errorList = []
     const endTime = moment(data.endDate, 'X').startOf('day');
     const startTime = moment(data.startDate, 'X').startOf('day');
-    const endHour = data.endTime.split(':')[0]
-    const endMinute = data.endTime.split(':')[1]
-    const startHour = data.startTime.split(':')[0]
-    const startMinute = data.startTime.split(':')[1]
+    const startHour = data.startTime ? data.startTime.split(':')[0] : '00';
+    const endHour = data.endTime ? data.endTime.split(':')[0] : '00';
+    const startMinute = data.startTime ? data.startTime.split(':')[1] : '00';
+    const endMinute = data.endTime ? data.endTime.split(':')[1] : '00';
     const endDateTime = endTime.clone().set({ h: endHour, m: endMinute });
     const startDateTime = startTime.clone().set({ h: startHour, m: startMinute });
     const endTimestamp = endDateTime.unix();
@@ -379,12 +379,12 @@ function validateType(data) {
 
 function validateSlotTime(data) {
     let errorList = []
-    
-    const startHour = parseInt(data.startTime.split(':')[0])
-    const endHour = parseInt(data.endTime.split(':')[0])
-    const startMinute = parseInt(data.startTime.split(':')[1])
-    const endMinute = parseInt(data.endTime.split(':')[1])
-    
+
+    const startHour = parseInt(data.startTime ? data.startTime.split(':')[0] : '00');
+    const endHour = parseInt(data.endTime ? data.endTime.split(':')[0] : '00');
+    const startMinute = parseInt(data.startTime ? data.startTime.split(':')[1] : '00');
+    const endMinute = parseInt(data.endTime ? data.endTime.split(':')[1] : '00');
+
     const totalMinutes = ((endHour - startHour) * 60) + (endMinute - startMinute)
     const slotTime = parseInt(data.slotTimeInMinutes)
     
