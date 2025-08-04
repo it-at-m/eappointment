@@ -63,6 +63,8 @@
   "service": "Service",
   "serviceSelectionPlaceholder": "Enter search term",
   "serviceSearch": "Search for citizen services",
+  "sessionTimeoutHeader": "Your session has expired.",
+  "sessionTimeoutText": "Please select a new date to continue with the booking.",
   "showAllServices": "Show all services",
   "skipCombinableServices": "Skip combinable services",
   "shortNameResidenceRegistration": "Residence registration",

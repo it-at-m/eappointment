@@ -62,6 +62,8 @@
   "selectedDateNoLongerAvailableText": "Leider hat inzwischen eine andere Person Ihren gewünschten Termin gebucht. Bitte wählen Sie einen neuen Termin aus.",
   "service": "Leistung",
   "serviceSelectionPlaceholder": "Leistung auswählen",
+  "sessionTimeoutHeader": "Ihre Sitzung ist abgelaufen.",
+  "sessionTimeoutText": "Bitte wählen Sie einen neuen Termin, um mit der Buchung fortzufahren.",
   "shortNameResidenceRegistration": "Wohnsitz-Anmeldung",
   "shortNamePassport": "Reisepass",
   "shortNameIdentityCard": "Personalausweis",
