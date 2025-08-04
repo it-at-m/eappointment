@@ -44,6 +44,7 @@
             <div v-if="currentView === 2">
               <customer-info
                 :t="t"
+                :session-timeout-error="sessionTimeoutError"
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
               />
@@ -57,6 +58,7 @@
                 :is-rebooking="isRebooking"
                 :rebook-or-cancel-dialog="rebookOrCanelDialog"
                 :t="t"
+                :session-timeout-error="sessionTimeoutError"
                 @back="decreaseCurrentView"
                 @book-appointment="nextBookAppointment"
                 @cancel-appointment="nextCancelAppointment"
@@ -375,6 +377,23 @@ const setRebookData = () => {
       rebookedAppointment.value.customTextfield2;
     updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
       (data) => {
+        if ("errors" in data) {
+          const firstErrorCode = data.errors?.[0]?.errorCode ?? "";
+
+          if (firstErrorCode === "notFound") {
+            sessionTimeoutError.value = true;
+            return;
+          }
+
+          if (firstErrorCode === "tooManyAppointmentsWithSameMail") {
+            tooManyAppointmentsWithSameMailError.value = true;
+          } else {
+            updateAppointmentError.value = true;
+          }
+
+          return;
+        }
+
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
@@ -439,6 +458,8 @@ const nextReserveAppointment = () => {
     });
 };
 
+const sessionTimeoutError = ref(false);
+
 const nextUpdateAppointment = () => {
   if (isUpdatingAppointment.value) {
     return;
@@ -461,6 +482,23 @@ const nextUpdateAppointment = () => {
 
     updateAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
+        if ("errors" in data) {
+          const firstErrorCode = data.errors?.[0]?.errorCode ?? "";
+
+          if (firstErrorCode === "notFound") {
+            sessionTimeoutError.value = true;
+            return;
+          }
+
+          if (firstErrorCode === "tooManyAppointmentsWithSameMail") {
+            tooManyAppointmentsWithSameMailError.value = true;
+          } else {
+            updateAppointmentError.value = true;
+          }
+
+          return;
+        }
+
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
@@ -489,6 +527,14 @@ const nextBookAppointment = () => {
     isBookingAppointment.value = true;
     preconfirmAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
+        if ("errors" in data) {
+          const error = data.errors[0];
+          if (error?.errorCode === "notFound") {
+            sessionTimeoutError.value = true;
+            return;
+          }
+        }
+
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
           if (isRebooking.value && rebookedAppointment.value) {
@@ -497,7 +543,7 @@ const nextBookAppointment = () => {
               props.baseUrl ?? undefined
             );
           }
-          increaseCurrentView();
+          increaseCurrentView(); // <-- Weiterleitung zur nächsten Seite
         }
       })
       .finally(() => {

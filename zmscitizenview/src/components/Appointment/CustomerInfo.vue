@@ -71,6 +71,12 @@
       maxlength="100"
     />
   </form>
+  <div v-if="sessionTimeoutError">
+    <muc-callout type="error">
+      <template #header>{{ t("sessionTimeoutHeader") }}</template>
+      <template #content>{{ t("sessionTimeoutText") }}</template>
+    </muc-callout>
+  </div>
   <div class="m-button-group">
     <muc-button
       icon="arrow-left"
@@ -95,7 +101,12 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCallout,
+  MucInput,
+  MucTextArea,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import {
@@ -105,6 +116,7 @@ import {
 
 const props = defineProps<{
   t: (key: string) => string;
+  sessionTimeoutError: boolean;
 }>();
 
 const emit = defineEmits<(e: "next" | "back") => void>();

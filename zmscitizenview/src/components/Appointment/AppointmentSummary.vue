@@ -237,6 +237,12 @@
       <template #default>{{ t("cancelReschedule") }}</template>
     </muc-button>
   </div>
+  <div v-if="sessionTimeoutError">
+    <muc-callout type="error">
+      <template #header>{{ t("sessionTimeoutHeader") }}</template>
+      <template #content>{{ t("sessionTimeoutText") }}</template>
+    </muc-callout>
+  </div>
   <div
     v-if="!rebookOrCancelDialog && !isRebooking"
     class="m-button-group"
@@ -281,6 +287,7 @@ defineProps<{
   isRebooking: boolean;
   rebookOrCancelDialog: boolean;
   t: (key: string) => string;
+  sessionTimeoutError: boolean;
 }>();
 
 const emit =
