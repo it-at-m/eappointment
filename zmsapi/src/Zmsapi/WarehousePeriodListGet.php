@@ -26,7 +26,7 @@ class WarehousePeriodListGet extends BaseController
         $period = $validator->getParameter('period')->isString()->isBiggerThan(2)->setDefault('month')->getValue();
         $subject = Validator::value($args['subject'])->isString()->getValue();
         $subjectId = Validator::value($args['subjectId'])->isNumber()->getValue();
-        $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject);
+        $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject ?? '');
         if (! class_exists($exchangeClass)) {
             throw new Exception\Warehouse\UnknownReportType();
         }

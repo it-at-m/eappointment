@@ -42,8 +42,8 @@ class Base extends \ArrayObject implements \JsonSerializable
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
-                Sorter::toSortableString(ucfirst($a->name)),
-                Sorter::toSortableString(ucfirst($b->name))
+                Sorter::toSortableString(ucfirst($a->name ?? '')),
+                Sorter::toSortableString(ucfirst($b->name ?? ''))
             );
         });
         return $this;
@@ -53,8 +53,8 @@ class Base extends \ArrayObject implements \JsonSerializable
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
-                Sorter::toSortableString(ucfirst($a->contact['name'])),
-                Sorter::toSortableString(ucfirst($b->contact['name']))
+                Sorter::toSortableString(ucfirst($a->contact['name'] ?? '')),
+                Sorter::toSortableString(ucfirst($b->contact['name'] ?? ''))
             );
         });
         return $this;
@@ -72,8 +72,8 @@ class Base extends \ArrayObject implements \JsonSerializable
     {
         $this->uasort(function ($a, $b) use ($key) {
             return strcmp(
-                Sorter::toSortableString(ucfirst($a[$key])),
-                Sorter::toSortableString(ucfirst($b[$key]))
+                Sorter::toSortableString(ucfirst($a[$key] ?? '')),
+                Sorter::toSortableString(ucfirst($b[$key] ?? ''))
             );
         });
         return $this;
