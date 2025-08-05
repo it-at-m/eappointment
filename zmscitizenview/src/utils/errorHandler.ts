@@ -96,9 +96,7 @@ export function createErrorStates() {
   };
 }
 
-export const clearContextErrors = (
-  errorStateMap: ErrorStateMap
-) => {
+export const clearContextErrors = (errorStateMap: ErrorStateMap) => {
   Object.values(errorStateMap).forEach((errorState) => {
     errorState.value = false;
   });
