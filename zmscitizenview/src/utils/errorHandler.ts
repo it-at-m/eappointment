@@ -97,8 +97,7 @@ export function createErrorStates() {
 }
 
 export const clearContextErrors = (
-  errorStateMap: ErrorStateMap,
-  context: string
+  errorStateMap: ErrorStateMap
 ) => {
   Object.values(errorStateMap).forEach((errorState) => {
     errorState.value = false;
