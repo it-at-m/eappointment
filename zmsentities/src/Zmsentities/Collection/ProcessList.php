@@ -46,8 +46,8 @@ class ProcessList extends Base
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
-                Sorter::toSortableString(ucfirst($a->scope->contact['name'])),
-                Sorter::toSortableString(ucfirst($b->scope->contact['name']))
+                Sorter::toSortableString(ucfirst($a->scope->contact['name'] ?? '')),
+                Sorter::toSortableString(ucfirst($b->scope->contact['name'] ?? ''))
             );
         });
         return $this;
