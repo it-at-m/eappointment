@@ -77,9 +77,11 @@
     v-if="availableDaysFetched && !hasAppointmentsForSelectedProviders()"
     class="m-component"
   >
+    <h2 tabindex="0">{{ t("time") }}</h2>
+
     <muc-callout type="warning">
       <template #header>
-        {{ t("apiErrorNoAppointmentForThisScopeHeader") }}
+        <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
         {{ t("apiErrorNoAppointmentForThisScopeText") }}
@@ -645,9 +647,10 @@
     v-if="showError"
     class="m-component"
   >
+    <h2 tabindex="0">{{ t("time") }}</h2>
     <muc-callout type="warning">
       <template #header>
-        {{ t(apiErrorTranslation.headerKey) }}
+        <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
         {{ t(apiErrorTranslation.textKey) }}
