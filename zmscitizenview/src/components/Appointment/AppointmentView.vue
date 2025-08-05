@@ -222,6 +222,7 @@ import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
 import {
+  clearContextErrors,
   createErrorStates,
   getApiErrorTranslation,
   handleApiError,
@@ -413,6 +414,7 @@ const decreaseCurrentView = () => currentView.value--;
  */
 const changeStep = (step: string) => {
   if (parseInt(step) < parseInt(activeStep.value)) {
+    clearContextErrors(errorStateMap.value, "update");
     currentView.value = parseInt(step);
   }
 };
@@ -453,6 +455,7 @@ const setRebookData = () => {
       rebookedAppointment.value.customTextfield;
     appointment.value.customTextfield2 =
       rebookedAppointment.value.customTextfield2;
+    clearContextErrors(errorStateMap.value, "update");
     currentContext.value = "update";
     updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
       (data) => {
@@ -473,7 +476,7 @@ const nextReserveAppointment = () => {
   }
 
   isReservingAppointment.value = true;
-  apiErrorAppointmentNotAvailable.value = false;
+  clearContextErrors(errorStateMap.value, "reserve");
   captchaError.value = false;
   rebookOrCanelDialog.value = false;
 
@@ -513,6 +516,7 @@ const nextUpdateAppointment = () => {
 
   if (appointment.value) {
     isUpdatingAppointment.value = true;
+    clearContextErrors(errorStateMap.value, "update");
     appointment.value.familyName =
       customerData.value.firstName + " " + customerData.value.lastName;
     appointment.value.email = customerData.value.mailAddress;
@@ -549,10 +553,10 @@ const nextBookAppointment = () => {
 
   if (appointment.value) {
     isBookingAppointment.value = true;
+    clearContextErrors(errorStateMap.value, "preconfirm");
     currentContext.value = "preconfirm";
     preconfirmAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
-        // Handle API errors first
         if ((data as any)?.errors?.length > 0) {
           handleApiResponse(data, errorStateMap.value);
           return;
@@ -583,6 +587,7 @@ const nextCancelAppointment = () => {
 
   if (appointment.value) {
     isCancelingAppointment.value = true;
+    clearContextErrors(errorStateMap.value, "cancel");
     currentContext.value = "cancel";
     cancelAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
@@ -605,6 +610,7 @@ const nextCancelAppointment = () => {
 };
 
 const nextRescheduleAppointment = () => {
+  clearContextErrors(errorStateMap.value, "reserve");
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
   setServices();
@@ -612,6 +618,7 @@ const nextRescheduleAppointment = () => {
 };
 
 const nextCancelReschedule = () => {
+  clearContextErrors(errorStateMap.value, "update");
   isRebooking.value = false;
   rebookOrCanelDialog.value = true;
 };
@@ -684,6 +691,7 @@ const parseAppointmentHash = (hash: string): AppointmentHash | null => {
 
 onMounted(() => {
   if (props.confirmAppointmentHash) {
+    clearContextErrors(errorStateMap.value, "confirm");
     const appointmentData = parseAppointmentHash(props.confirmAppointmentHash);
     if (!appointmentData) {
       handleApiError("appointmentNotFound", errorStateMap.value);
@@ -711,6 +719,7 @@ onMounted(() => {
   }
 
   if (props.appointmentHash) {
+    clearContextErrors(errorStateMap.value, "initialization");
     rebookOrCanelDialog.value = true;
     fetchServicesAndProviders(
       props.serviceId ?? undefined,

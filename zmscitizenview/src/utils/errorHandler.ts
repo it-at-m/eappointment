@@ -96,6 +96,15 @@ export function createErrorStates() {
   };
 }
 
+export const clearContextErrors = (
+  errorStateMap: ErrorStateMap,
+  context: string
+) => {
+  Object.values(errorStateMap).forEach((errorState) => {
+    errorState.value = false;
+  });
+};
+
 /**
  * Centralized error handler that maps API error codes to reactive error state variables
  * @param errorCode - The error code from the API response

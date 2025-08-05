@@ -711,6 +711,7 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
+  clearContextErrors,
   createErrorStates,
   getApiErrorTranslation,
   handleApiResponse,
@@ -760,7 +761,6 @@ const appointmentsCount = ref<number>(0);
 const appointmentTimestampsByOffice = ref<OfficeAvailableTimeSlotsDTO[]>([]);
 const appointmentTimestamps = ref<number[]>([]);
 
-// Create centralized error states
 const errorStates = createErrorStates();
 const errorStateMap = computed(() => errorStates.errorStateMap);
 
@@ -1105,7 +1105,6 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
 
 const handleError = (data: any): void => {
   error.value = true;
-
   handleApiResponse(data, errorStateMap.value);
 };
 
