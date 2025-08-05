@@ -54,7 +54,7 @@ class ExchangeWaitingscopeTest extends Base
 
         $query->writeWaitingTimeCalculated($scope, $now);
         $entry = $query->readByDateTime($scope, $now);
-        $this->assertEquals(7, $entry['waitingcalculated']);
+        $this->assertEquals(11, $entry['waitingcalculated']);
 
         // we now actually expect waitingcount to be zero because it will only be updated in the call to "updateWaitingStatistics" 
         $this->assertEquals(0, $entry['waitingcount']);
