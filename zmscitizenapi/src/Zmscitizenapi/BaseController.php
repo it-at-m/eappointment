@@ -70,7 +70,7 @@ abstract class BaseController extends \BO\Slim\Controller
         if (isset($content['errors'])) {
             foreach ($content['errors'] as &$error) {
                 if (isset($error['errorCode'])) {
-                    $error = ErrorMessages::get($error['errorCode'], $this->language);
+                    $error = ErrorMessages::get($error['errorCode']);
                 }
             }
         }
