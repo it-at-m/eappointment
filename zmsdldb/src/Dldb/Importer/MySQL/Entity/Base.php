@@ -71,7 +71,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     ) {
         try {
             $className = preg_replace_callback('/[_-]([a-z0-9]*)/i', function ($matches) {
-                return ucfirst($matches[1]);
+                return ucfirst($matches[1] ?? '');
             }, $entityName);
             $className = '\\BO\\Dldb\\Importer\\MySQL\\Entity' . $className;
 

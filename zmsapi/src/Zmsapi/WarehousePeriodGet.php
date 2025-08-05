@@ -28,7 +28,7 @@ class WarehousePeriodGet extends BaseController
         $validator = $request->getAttribute('validator');
         $groupby = $validator->getParameter('groupby')->isString()->isBiggerThan(2)->getValue();
 
-        $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject);
+        $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject ?? '');
         if (! class_exists($exchangeClass)) {
             throw new Exception\Warehouse\UnknownReportType();
         }
