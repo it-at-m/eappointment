@@ -89,7 +89,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $pessimisticTime += $timeSlot;
         $waitingTimePes = (int)floor(($pessimisticTime - $dateTime->getTimestamp()) / 60);
         while ($nextWithAppointment || $nextNoAppointment) {
-            if ($nextNoAppointment && (int) $nextNoAppointment->priority === 1) {
+            if ($nextNoAppointment && $this->getSortPriority($nextNoAppointment) === 1) {
                 $nextNoAppointment->waitingTimeEstimate = $waitingTimePes;
                 $nextNoAppointment->waitingTimeOptimistic = $waitingTimeOpt;
                 $queueWithWaitingTime->addEntity($nextNoAppointment);
@@ -97,7 +97,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
             } elseif (
                 $nextNoAppointment
                 && $nextWithAppointment
-                && (int) $nextNoAppointment->priority === 2
+                && $this->getSortPriority($nextNoAppointment) === 2
                 && $nextNoAppointment->arrivalTime < $nextWithAppointment->arrivalTime
             ) {
                 $nextNoAppointment->waitingTimeEstimate = $waitingTimePes;
@@ -139,6 +139,22 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         }
         if (!empty($queue['priority'])) {
             $priority = (int) $queue['priority'];
+        }
+
+        // HOTFIX: Dynamic maximum wait time override to prevent starvation
+        // Threshold based on queue length - truly dynamic without fixed numbers
+        if (isset($queue['arrivalTime']) && $queue['arrivalTime'] > 0) {
+            $currentTime = time();
+            $waitingTimeMinutes = ($currentTime - $queue['arrivalTime']) / 60;
+
+            // Calculate dynamic threshold based on queue length
+            $queueLength = count($this->withStatus(['queued', 'confirmed']));
+            $maxWaitThreshold = ($this->processTimeAverage * $queueLength) / max(1, $this->workstationCount);
+
+            // Force priority 1 if waiting longer than dynamic threshold
+            if ($waitingTimeMinutes > $maxWaitThreshold) {
+                return 1;
+            }
         }
 
         return $priority;
