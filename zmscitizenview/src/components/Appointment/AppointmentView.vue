@@ -501,6 +501,7 @@ const nextUpdateAppointment = () => {
 
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
+          increaseCurrentView();
         } else {
           if (
             (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
@@ -510,7 +511,10 @@ const nextUpdateAppointment = () => {
             updateAppointmentError.value = true;
           }
         }
-        increaseCurrentView();
+      })
+      .catch((error) => {
+        console.error("UpdateAppointment failed:", error);
+        sessionTimeoutError.value = true;
       })
       .finally(() => {
         isUpdatingAppointment.value = false;
