@@ -880,4 +880,17 @@ class ProcessTest extends Base
         ));
         return $input;
     }
+
+    public function testTicketPrinterProcessPriority()
+    {
+        $now = static::$now;
+        $query = new ProcessStatusQueued();
+        $scope = (new ScopeQuery())->readEntity(141, 0, true);
+        
+        $process = $query->writeNewFromTicketprinter($scope, $now);
+        
+        $this->assertEquals(2, $process->priority, 'Ticket printer processes should have priority 2 (Mittel)');
+        $this->assertEquals(2, $process->queue['priority'], 'Queue priority should be set to 2 for ticket printer processes');
+        $this->assertEquals('queued', $process->status, 'Ticket printer processes should be in queued status');
+    }
 }
