@@ -184,7 +184,7 @@ describe("AppointmentView", () => {
   describe("Error States", () => {
     it("shows appointment not found error", async () => {
       const wrapper = createWrapper();
-      wrapper.vm.appointmentNotFoundError = true;
+      wrapper.vm.errorStates.apiErrorAppointmentNotFound.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
@@ -192,7 +192,7 @@ describe("AppointmentView", () => {
 
     it("shows booking error", async () => {
       const wrapper = createWrapper();
-      wrapper.vm.confirmAppointmentError = true;
+      wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
@@ -247,10 +247,10 @@ describe("AppointmentView", () => {
   });
 
   describe("Additional Error Callouts", () => {
-    it("shows tooManyAppointmentsWithSameMailError callout in summary", async () => {
+    it("shows apiErrorTooManyAppointmentsWithSameMail callout in summary", async () => {
       const wrapper = createWrapper();
       wrapper.vm.currentView = 3;
-      wrapper.vm.tooManyAppointmentsWithSameMailError = true;
+      wrapper.vm.errorStates.apiErrorTooManyAppointmentsWithSameMail.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
     });
@@ -258,14 +258,14 @@ describe("AppointmentView", () => {
     it("shows updateAppointmentError callout in summary", async () => {
       const wrapper = createWrapper();
       wrapper.vm.currentView = 3;
-      wrapper.vm.updateAppointmentError = true;
+      wrapper.vm.errorStates.apiErrorGenericFallback.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
     });
 
     it("shows confirmAppointmentError callout after booking", async () => {
       const wrapper = createWrapper();
-      wrapper.vm.confirmAppointmentError = true;
+      wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
@@ -1013,16 +1013,15 @@ describe("AppointmentView", () => {
         "https://www.muenchen.de"
       );
 
-      expect(wrapper.vm.confirmAppointmentActivationExpiredError).toBe(true);
-      expect(wrapper.vm.confirmAppointmentError).toBe(false);
+      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
       expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
 
       const errorCallout = wrapper.find('[data-test="muc-callout"]');
       expect(errorCallout.exists()).toBe(true);
       expect(errorCallout.attributes('data-type')).toBe('error');
 
-      expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorHeader);
-      expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorText);
+      expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredHeader);
+      expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredText);
   });
 
   it("should display activation expired error when API returns appointmentNotFound", async () => {
@@ -1061,16 +1060,15 @@ describe("AppointmentView", () => {
       "https://www.muenchen.de"
     );
 
-    expect(wrapper.vm.confirmAppointmentActivationExpiredError).toBe(true);
-    expect(wrapper.vm.confirmAppointmentError).toBe(false);
+    expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
     expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
 
 
     const errorCallout = wrapper.find('[data-test="muc-callout"]');
     expect(errorCallout.exists()).toBe(true);
     expect(errorCallout.attributes('data-type')).toBe('error');
-    expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorHeader);
-    expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorText);
+    expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredHeader);
+    expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredText);
   });
 
   it("should display generic error for other API error codes", async () => {
@@ -1109,14 +1107,13 @@ describe("AppointmentView", () => {
       "https://www.muenchen.de"
     );
 
-    expect(wrapper.vm.confirmAppointmentError).toBe(true);
-    expect(wrapper.vm.confirmAppointmentActivationExpiredError).toBe(false);
+    expect(wrapper.vm.errorStates.apiErrorGenericFallback.value).toBe(true);
     expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
 
     const errorCallout = wrapper.find('[data-test="muc-callout"]');
     expect(errorCallout.exists()).toBe(true);
     expect(errorCallout.attributes('data-type')).toBe('error');
-    expect(errorCallout.text()).toContain(de.appointmentBookingErrorText);
+    expect(errorCallout.text()).toContain(de.apiErrorGenericFallbackHeader);
   });
   });
 });

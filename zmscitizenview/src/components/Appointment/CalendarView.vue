@@ -77,12 +77,14 @@
     v-if="availableDaysFetched && !hasAppointmentsForSelectedProviders()"
     class="m-component"
   >
+    <h2 tabindex="0">{{ t("time") }}</h2>
+
     <muc-callout type="warning">
       <template #header>
-        {{ t("noAppointmentsAvailableHeader") }}
+        <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
-        {{ t("noAppointmentsAvailable") }}
+        {{ t("apiErrorNoAppointmentForThisScopeText") }}
       </template>
     </muc-callout>
   </div>
@@ -645,20 +647,13 @@
     v-if="showError"
     class="m-component"
   >
+    <h2 tabindex="0">{{ t("time") }}</h2>
     <muc-callout type="warning">
       <template #header>
-        {{
-          showErrorKey === "noAppointmentsAvailable" && selectedHour !== null
-            ? t("selectedDateNoLongerAvailableHeader")
-            : t(`${showErrorKey}Header`)
-        }}
+        <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
-        {{
-          showErrorKey === "noAppointmentsAvailable" && selectedHour !== null
-            ? t("selectedDateNoLongerAvailableText")
-            : t(`${showErrorKey}Text`)
-        }}
+        {{ t(apiErrorTranslation.textKey) }}
       </template>
     </muc-callout>
   </div>
@@ -715,6 +710,11 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import {
+  createErrorStates,
+  getApiErrorTranslation,
+  handleApiResponse,
+} from "@/utils/errorHandler";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -760,12 +760,23 @@ const appointmentsCount = ref<number>(0);
 const appointmentTimestampsByOffice = ref<OfficeAvailableTimeSlotsDTO[]>([]);
 const appointmentTimestamps = ref<number[]>([]);
 
-const errorKey = ref("");
+const errorStates = createErrorStates();
+const errorStateMap = computed(() => errorStates.errorStateMap);
+
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
-const showErrorKey = computed(() =>
-  error.value ? errorKey.value : props.bookingErrorKey
-);
+
+const apiErrorTranslation = computed(() => {
+  // If we have a booking error from props, use that instead of our own error states
+  if (props.bookingError && props.bookingErrorKey) {
+    return {
+      headerKey: `${props.bookingErrorKey}Header`,
+      textKey: `${props.bookingErrorKey}Text`,
+    };
+  }
+  // Otherwise, use our own error states
+  return getApiErrorTranslation(errorStateMap.value);
+});
 
 const selectedDay = ref<Date>();
 const minDate = ref<Date>();
@@ -1085,7 +1096,6 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
       minDate.value = new Date((days[0] as any).time);
       maxDate.value = new Date((days[days.length - 1] as any).time);
       error.value = false;
-      errorKey.value = "";
     } else {
       handleError(data);
     }
@@ -1094,13 +1104,7 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
 
 const handleError = (data: any): void => {
   error.value = true;
-
-  const tokenErrors = ["captchaMissing", "captchaExpired", "captchaInvalid"];
-  const errorCode = data?.errors?.[0]?.errorCode;
-
-  errorKey.value = tokenErrors.includes(errorCode)
-    ? "altcha.invalidCaptcha"
-    : "noAppointmentsAvailable";
+  handleApiResponse(data, errorStateMap.value);
 };
 
 const getAppointmentsOfDay = (date: string) => {
