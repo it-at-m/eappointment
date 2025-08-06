@@ -726,8 +726,10 @@ const handleInvalidJumpinLink = () => {
 };
 
 const redirectToAppointmentStart = () => {
-  window.location.href =
-    "https://stadt.muenchen.de/buergerservice/terminvereinbarung.html#/";
+  // Clear jump-in link parameters and reset to clean start state
+  // This keeps users within our application instead of redirecting to external site
+  const baseUrl = window.location.origin + window.location.pathname;
+  window.location.href = baseUrl;
 };
 
 onMounted(() => {

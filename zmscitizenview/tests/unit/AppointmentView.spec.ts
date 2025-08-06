@@ -335,7 +335,12 @@ describe("AppointmentView", () => {
     it("calls redirectToAppointmentStart when button is clicked", async () => {
       const originalLocation = window.location;
       delete (window as any).location;
-      (window as any).location = { ...originalLocation, href: "" };
+      (window as any).location = { 
+        ...originalLocation, 
+        href: "http://localhost:8082/#/services/000000000000/locations/000000000000",
+        origin: "http://localhost:8082",
+        pathname: "/"
+      };
       
       const wrapper = createWrapper();
       wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
@@ -344,7 +349,7 @@ describe("AppointmentView", () => {
       const button = wrapper.find('.m-button-group button');
       await button.trigger('click');
       
-      expect(window.location.href).toBe("https://stadt.muenchen.de/buergerservice/terminvereinbarung.html#/");
+      expect(window.location.href).toBe("http://localhost:8082/");
       
       (window as any).location = originalLocation;
     });
