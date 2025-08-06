@@ -27,7 +27,7 @@ const validate = (data, props) => {
     errorList.itemList.push(validateBookableDayRange(data));
 
     errorList.itemList = errorList.itemList.filter(el => el.length);
-    errorList.itemList = errorList.itemList.flat(); // Flatten the nested arrays
+    errorList.itemList = errorList.itemList.flat();
     let valid = (0 < errorList.itemList.length) ? false : true;
 
     return {
@@ -255,8 +255,7 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
             })
         }
     */
-    
-    // Only check cronjob time restriction if both time fields have values
+
     if (data.startTime && data.endTime) {
         const startHourInt = parseInt(startHour);
         const endHourInt = parseInt(endHour);
@@ -295,7 +294,6 @@ function validateEndTime(today, yesterday, selectedDate, data) {
     const startTimestamp = startTime.set({ h: startHour, m: startMinute }).unix();
     const endTimestamp = endTime.clone().set({ h: endHour, m: endMinute }).unix();
 
-    // Only check time comparison if both time fields have values
     if (data.startTime && data.endTime) {
         if (dayMinutesEnd <= dayMinutesStart) {
             errorList.push({

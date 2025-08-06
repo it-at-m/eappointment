@@ -148,7 +148,6 @@ class AvailabilityDatePicker extends Component
 
         if (!date) {
             this.closeTimePicker();
-            // Trigger validation even when field is cleared
             if (this.props.onChange) {
                 const fieldName = name === 'startDate' ? 'startTime' : 'endTime';
                 this.props.onChange(fieldName, '');
@@ -310,7 +309,6 @@ class AvailabilityDatePicker extends Component
                                 selected={!this.state.timePickerInitialized || !this.props.attributes.availability.startTime ? null : this.state.selectedDate}
                                 onChange={date => {this.handleTimeChange(this.props.name, date)}}
                                 onFocus={() => {
-                                    // Mark the field as touched to trigger validation
                                     const fieldName = this.props.name === 'startDate' ? 'startTime' : 'endTime';
                                     const currentValue = this.props.attributes.availability[fieldName] || '';
                                     if (this.props.onChange) {

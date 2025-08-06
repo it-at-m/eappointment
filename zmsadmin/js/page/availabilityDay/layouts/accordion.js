@@ -61,7 +61,6 @@ class Accordion extends Component
                 if (a.type === 'appointment' && b.type !== 'appointment') return -1;
                 if (a.type !== 'appointment' && b.type === 'appointment') return 1;
 
-                // Handle undefined startTime values
                 const aTime = a.startTime || '';
                 const bTime = b.startTime || '';
                 return aTime.localeCompare(bTime);
