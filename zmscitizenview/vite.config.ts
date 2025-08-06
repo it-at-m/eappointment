@@ -46,6 +46,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         "zms-appointment": "./src/zms-appointment-webcomponent.ts",
+        "zms-appointment-detail": "./src/zms-appointment-detail-webcomponent.ts",
+        "zms-appointment-overview": "./src/zms-appointment-overview-webcomponent.ts",
+        "zms-appointment-slider": "./src/zms-appointment-slider-webcomponent.ts",
       },
       output: {
         entryFileNames: "entry-[name]-[hash].js",

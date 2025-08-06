@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link href="/favicon.ico" rel="icon">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Terminvereinbarung Webcomponents</title>
+    <title>Terminvereinbarung Detail Webcomponent</title>
 
     <!-- Muenchen.de-Styles -->
     <link
@@ -15,30 +15,19 @@
             rel="stylesheet"
             href="https://assets.muenchen.de/mde/1.0.10/css/style.css"
     />
+
+    <!-- built files will be auto injected -->
+    <script src="src/zms-appointment-detail-webcomponent.ts" type="module"></script>
+
 </head>
 <body>
 
 <noscript>
     <strong>Damit das Widget korrekt funktioniert, muss Javascript aktiviert werden.</strong>
 </noscript>
-<div>
-    <h1>The following webcomponents are available:</h1>
-    <ul>
-        <li>
-            <a href="index-appointment.html">appointment webcomponent</a>
-        </li>
-        <li>
-            <a href="index-appointment-detail.html">appointment-detail webcomponent</a>
-        </li>
-        <li>
-            <a href="index-appointment-overview.html">appointment-overview webcomponent</a>
-        </li>
-        <li>
-            <a href="index-appointment-slider.html">appointment-slider webcomponent</a>
-        </li>
-    </ul>
-</div>
-
+<i18n-host>
+    <zms-appointment-detail-wrapped></zms-appointment-detail-wrapped>
+</i18n-host>
 </body>
 
 </html>

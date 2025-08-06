@@ -96,6 +96,19 @@
     "verifying": "Überprüfe...",
     "waitAlert": "Überprüfung läuft... bitte warten."
   },
+  "appointmentOverview": {
+    "appointmentNumber": "Terminnummer",
+    "arrangeAppointment": "Termin vereinbaren",
+    "buttonBackToOverview": "Zurück zur Übersicht",
+    "loadingAppointmentErrorHeader": "Ihre Termine können zur Zeit nicht geladen werden.",
+    "loadingAppointmentErrorText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal.",
+    "myAppointments": "Meine Termine",
+    "myFurtherAppointments": "Meine weiteren Termine",
+    "newAppointmentTitle": "Neuer Termin",
+    "onSiteAppointment": "Vor-Ort-Termin",
+    "showAllAppointments": "Alle Termine anzeigen",
+    "upcomingAppointments": "Kommende Termine"
+  },
 
   "languages": {
     "de": "Deutsch",

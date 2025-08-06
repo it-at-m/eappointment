@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="/favicon.ico" rel="icon">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Terminvereinbarung Bürgeransicht Webcomponent</title>
+
+    <!-- Muenchen.de-Styles -->
+    <link
+            rel="stylesheet"
+            href="https://assets.muenchen.de/mde/1.0.10/css/fonts.css"
+    />
+    <link
+            rel="stylesheet"
+            href="https://assets.muenchen.de/mde/1.0.10/css/style.css"
+    />
+
+    <!-- built files will be auto injected -->
+    <script src="src/zms-appointment-slider-webcomponent.ts" type="module"></script>
+
+</head>
+<body>
+
+<noscript>
+    <strong>Damit das Widget korrekt funktioniert, muss Javascript aktiviert werden.</strong>
+</noscript>
+<h1>zms-appointment-slider overview page</h1>
+<i18n-host>
+    <zms-appointment-slider-wrapped
+        appointment-detail-url="index-appointment-detail.html"
+        appointment-overview-url="index-appointment-overview.html"
+        newAppointmentUrl="index-appointment.html"
+    ></zms-appointment-slider-wrapped>
+</i18n-host>
+
+<h1>zms-appointment-slider detail page</h1>
+<i18n-host>
+    <zms-appointment-slider-wrapped
+            appointment-detail-url="index-appointment-detail.html"
+            appointment-overview-url="index-appointment-overview.html"
+            newAppointmentUrl="index-appointment.html"
+            displayed-on-detail-screen
+    ></zms-appointment-slider-wrapped>
+</i18n-host>
+</body>
+
+</html>
