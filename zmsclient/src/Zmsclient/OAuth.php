@@ -92,4 +92,32 @@ class OAuth
             }
         }
     }
+
+    /**
+     * Process and validate resource owner data from OAuth provider
+     *
+     * @param array $rawOwnerData Raw owner data from provider
+     * @return array Processed owner data
+     * @throws \BO\Zmsclient\Exception
+     */
+    public function processResourceOwnerData(array $rawOwnerData)
+    {
+        $ownerData = $rawOwnerData;
+
+        if (class_exists('App') && isset(\App::$http)) {
+            $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+
+            if (1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {
+                if (isset($rawOwnerData['verifiedEmail']) && $rawOwnerData['verifiedEmail']) {
+                    $ownerData['email'] = $rawOwnerData['verifiedEmail'];
+                } else {
+                    unset($ownerData['email']);
+                }
+            } else {
+                $ownerData['email'] = $rawOwnerData['email'] ?? null;
+            }
+        }
+
+        return $ownerData;
+    }
 }

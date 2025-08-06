@@ -31,12 +31,13 @@ class KeycloakInstance
         ]);
 
         try {
-            $accessToken = $this->getAccessToken($request->getParam("code"));
+                        $accessToken = $this->getAccessToken($request->getParam("code"));
             $this->validateAccess($accessToken);
-            $ownerInputData = $this->provider->getResourceOwnerData($accessToken);
+            $rawOwnerData = $this->provider->getResourceOwnerData($accessToken);
 
-            // Use zmsclient OAuth for validation
+            // Use zmsclient OAuth for processing and validation
             $oauth = new \BO\Zmsclient\OAuth(\App::$http, new \BO\Zmsclient\Auth());
+            $ownerInputData = $oauth->processResourceOwnerData($rawOwnerData);
             $oauth->validateOwnerData($ownerInputData);
 
             if (\BO\Zmsclient\Auth::getKey()) {

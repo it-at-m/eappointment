@@ -115,4 +115,32 @@ class OAuthTest extends TestCase
         $this->oauth->validateOwnerData($ownerInputData);
         $this->assertTrue(true, 'Validation passed without email in test environment');
     }
+
+    public function testProcessResourceOwnerDataWithVerifiedEmail()
+    {
+        $rawOwnerData = [
+            'username' => 'test@keycloak',
+            'email' => 'test@example.com',
+            'verifiedEmail' => 'verified@example.com'
+        ];
+
+        $result = $this->oauth->processResourceOwnerData($rawOwnerData);
+        
+        // In test environment, should return original data
+        $this->assertEquals($rawOwnerData, $result);
+    }
+
+    public function testProcessResourceOwnerDataWithoutVerifiedEmail()
+    {
+        $rawOwnerData = [
+            'username' => 'test@keycloak',
+            'email' => 'test@example.com'
+            // No verifiedEmail
+        ];
+
+        $result = $this->oauth->processResourceOwnerData($rawOwnerData);
+        
+        // In test environment, should return original data
+        $this->assertEquals($rawOwnerData, $result);
+    }
 } 
