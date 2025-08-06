@@ -76,4 +76,20 @@ class OAuth
             }
         }
     }
+
+    /**
+     * Validate owner data from OAuth provider
+     *
+     * @param array $ownerInputData Resource owner data from OAuth provider
+     * @throws \BO\Zmsclient\Exception
+     */
+    public function validateOwnerData(array $ownerInputData)
+    {
+        if (class_exists('App') && isset(\App::$http)) {
+            $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+            if (! \array_key_exists('email', $ownerInputData) && 1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {
+                throw new \BO\Zmsclient\Exception('OAuth precondition failed: email required but not provided');
+            }
+        }
+    }
 }

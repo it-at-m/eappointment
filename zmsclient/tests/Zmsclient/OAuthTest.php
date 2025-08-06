@@ -91,4 +91,28 @@ class OAuthTest extends TestCase
         // Verify the method executed without throwing an exception
         $this->assertTrue(true, 'Method executed successfully');
     }
+
+    public function testValidateOwnerDataWithEmail()
+    {
+        $ownerInputData = [
+            'id' => 'test-user-id',
+            'email' => 'test@example.com'
+        ];
+
+        // Should not throw an exception when email is present
+        $this->oauth->validateOwnerData($ownerInputData);
+        $this->assertTrue(true, 'Validation passed with email');
+    }
+
+    public function testValidateOwnerDataWithoutEmail()
+    {
+        $ownerInputData = [
+            'id' => 'test-user-id'
+            // No email provided
+        ];
+
+        // Should not throw an exception when App is not available in test environment
+        $this->oauth->validateOwnerData($ownerInputData);
+        $this->assertTrue(true, 'Validation passed without email in test environment');
+    }
 } 
