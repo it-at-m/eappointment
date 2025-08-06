@@ -27,6 +27,7 @@ const validate = (data, props) => {
     errorList.itemList.push(validateBookableDayRange(data));
 
     errorList.itemList = errorList.itemList.filter(el => el.length);
+    errorList.itemList = errorList.itemList.flat(); // Flatten the nested arrays
     let valid = (0 < errorList.itemList.length) ? false : true;
 
     return {
@@ -201,11 +202,6 @@ function validateTimestampAndTimeFormats(data) {
                 message: 'Die Startzeit muss im Format "HH:mm:ss" oder "HH:mm" vorliegen.'
             });
         }
-    } else {
-        errorList.push({
-            type: 'startTimeMissing',
-            message: 'Die Startzeit darf nicht leer sein.'
-        });
     }
 
     if (data.endTime) {
@@ -215,11 +211,6 @@ function validateTimestampAndTimeFormats(data) {
                 message: 'Die Endzeit muss im Format "HH:mm:ss" oder "HH:mm" vorliegen.'
             });
         }
-    } else {
-        errorList.push({
-            type: 'endTimeMissing',
-            message: 'Die Endzeit darf nicht leer sein.'
-        });
     }
 
     if (isStartDateValid && isEndDateValid) {
@@ -264,24 +255,28 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
             })
         }
     */
-    const startHourInt = parseInt(startHour);
-    const endHourInt = parseInt(endHour);
-    const startMinuteInt = parseInt(startMinute);
-    const endMinuteInt = parseInt(endMinute);
-    if (
-        (startHourInt === 22 && startMinuteInt > 0) || 
-        startHourInt === 23 || 
-        startHourInt === 0 || 
-        (endHourInt === 22 && endMinuteInt > 0) || 
-        endHourInt === 23 || 
-        endHourInt === 0 ||
-        (startHourInt === 1 && startMinuteInt > 0) ||
-        (endHourInt === 1 && endMinuteInt > 0)
-    ) {
-        errorList.push({
-            type: 'startOfDay',
-            message: 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
-        });
+    
+    // Only check cronjob time restriction if both time fields have values
+    if (data.startTime && data.endTime) {
+        const startHourInt = parseInt(startHour);
+        const endHourInt = parseInt(endHour);
+        const startMinuteInt = parseInt(startMinute);
+        const endMinuteInt = parseInt(endMinute);
+        if (
+            (startHourInt === 22 && startMinuteInt > 0) || 
+            startHourInt === 23 || 
+            startHourInt === 0 || 
+            (endHourInt === 22 && endMinuteInt > 0) || 
+            endHourInt === 23 || 
+            endHourInt === 0 ||
+            (startHourInt === 1 && startMinuteInt > 0) ||
+            (endHourInt === 1 && endMinuteInt > 0)
+        ) {
+            errorList.push({
+                type: 'startOfDay',
+                message: 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
+            });
+        }
     }
 
     return errorList;
@@ -300,18 +295,21 @@ function validateEndTime(today, yesterday, selectedDate, data) {
     const startTimestamp = startTime.set({ h: startHour, m: startMinute }).unix();
     const endTimestamp = endTime.clone().set({ h: endHour, m: endMinute }).unix();
 
-    if (dayMinutesEnd <= dayMinutesStart) {
-        errorList.push({
-            type: 'endTime',
-            message: 'Die Endzeit darf nicht vor der Startzeit liegen.'
-        })
-    }
+    // Only check time comparison if both time fields have values
+    if (data.startTime && data.endTime) {
+        if (dayMinutesEnd <= dayMinutesStart) {
+            errorList.push({
+                type: 'endTime',
+                message: 'Die Endzeit darf nicht vor der Startzeit liegen.'
+            })
+        }
 
-    if (startTimestamp >= endTimestamp) {
-        errorList.push({
-            type: 'endTime',
-            message: 'Das Enddatum darf nicht vor dem Startdatum liegen.'
-        })
+        if (startTimestamp >= endTimestamp) {
+            errorList.push({
+                type: 'endTime',
+                message: 'Das Enddatum darf nicht vor dem Startdatum liegen.'
+            })
+        }
     }
 
     return errorList;
