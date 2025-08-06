@@ -144,6 +144,11 @@ class AvailabilityDatePicker extends Component
             timePickerInitialized: true
         });
 
+        if (!date) {
+            this.closeTimePicker();
+            return;
+        }
+
         if ('startDate' == name) {
             if (this.state.availability.startTime != moment(date).format('HH:mm')) {
                 this.props.onChange("startTime", moment(date).format('HH:mm'));
