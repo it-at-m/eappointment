@@ -24,7 +24,7 @@ class AvailabilityDatePicker extends Component
             minTime: setHours(setMinutes(new Date(), 1), 0),
             maxTime: setHours(setMinutes(new Date(), 59), 23),
             datePickerIsOpen: false,
-            timPickerIsOpen: false,
+            timePickerIsOpen: false,
             timePickerInitialized: this.props.attributes.availability.kind !== "new"
         }
         this.escHandler = this.escHandler.bind(this);
