@@ -12,5 +12,10 @@ import ZMSAppointmentSliderElement from "@/zms-appointment-slider.ce.vue";
 const I18nHostElement = defineCustomElement(I18nHost);
 customElements.define("i18n-host", I18nHostElement);
 
-const zmsAppointmentSliderWebcomponent = defineCustomElement(ZMSAppointmentSliderElement);
-customElements.define("zms-appointment-slider-wrapped", zmsAppointmentSliderWebcomponent);
+const zmsAppointmentSliderWebcomponent = defineCustomElement(
+  ZMSAppointmentSliderElement
+);
+customElements.define(
+  "zms-appointment-slider-wrapped",
+  zmsAppointmentSliderWebcomponent
+);

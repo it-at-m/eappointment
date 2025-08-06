@@ -46,7 +46,7 @@
       class="slider-content"
     >
       <muc-slider-item
-        v-for="(appointment, index) in allAppointments.slice(0,3)"
+        v-for="(appointment, index) in allAppointments.slice(0, 3)"
         :key="index"
       >
         <appointment-card
@@ -84,7 +84,7 @@
     </muc-card-container>
     <muc-card-container v-else>
       <appointment-card
-        v-for="(appointment, index) in allAppointments.slice(0,3)"
+        v-for="(appointment, index) in allAppointments.slice(0, 3)"
         :key="index"
         :appointment="appointment"
         :appointment-detail-url="appointmentDetailUrl"
@@ -97,25 +97,28 @@
 </template>
 
 <script setup lang="ts">
+import {
+  MucCardContainer,
+  MucSlider,
+  MucSliderItem,
+} from "@muenchen/muc-patternlab-vue";
 
-import {MucCardContainer, MucSlider, MucSliderItem} from "@muenchen/muc-patternlab-vue";
-import {AppointmentDTO} from "@/api/models/AppointmentDTO";
+import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { Office } from "@/api/models/Office";
 import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentCard.vue";
-import AppointmentCard from "@/components/AppointmentOverview/AppointmentCard.vue";
 import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSvg.vue";
-import {Office} from "@/api/models/Office";
+import AppointmentCard from "@/components/AppointmentOverview/AppointmentCard.vue";
 
 defineProps<{
-  allAppointments: AppointmentDTO[],
-  isMobile: boolean,
-  newAppointmentUrl: string,
-  appointmentDetailUrl: string,
-  displayedOnDetailScreen: boolean,
-  offices: Office[],
-  t: (key: string) => string
-  }>();
+  allAppointments: AppointmentDTO[];
+  isMobile: boolean;
+  newAppointmentUrl: string;
+  appointmentDetailUrl: string;
+  displayedOnDetailScreen: boolean;
+  offices: Office[];
+  t: (key: string) => string;
+}>();
 </script>
-
 
 <style scoped>
 /* No extra padding in MucSlider */

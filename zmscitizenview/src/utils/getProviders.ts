@@ -1,6 +1,6 @@
+import { Office } from "@/api/models/Office";
+import { Relation } from "@/api/models/Relation";
 import { OfficeImpl } from "@/types/OfficeImpl";
-import {Relation} from "@/api/models/Relation";
-import {Office} from "@/api/models/Office";
 
 /**
  * Creates a list of possible providers for a service.
@@ -15,13 +15,11 @@ export function getProviders(
   providers: string[] | null,
   relations: Relation[],
   offices: Office[]
-  ): OfficeImpl[] {
+): OfficeImpl[] {
   const officesAtService = new Array<OfficeImpl>();
   relations.forEach((relation) => {
     if (relation.serviceId == serviceId) {
-      const office = offices.find(
-        (office) => office.id == relation.officeId
-      );
+      const office = offices.find((office) => office.id == relation.officeId);
       if (office) {
         const foundOffice: OfficeImpl = new OfficeImpl(
           office.id,

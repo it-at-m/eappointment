@@ -3,19 +3,27 @@
     v-if="appointments.length > 0 || !displayedOnDetailScreen"
     :class="displayedOnDetailScreen ? 'details-background' : 'overview-padding'"
   >
-    <div
-      class="container"
-    >
+    <div class="container">
       <div class="header">
         <div class="headline">
           <span class="header-icon">
             <muc-icon icon="calendar" />
           </span>
           <h2>
-            <span v-if="displayedOnDetailScreen">{{ t('appointmentOverview.myAppointments') }}</span>
-            <span v-else>{{ t('appointmentOverview.myFurtherAppointments') }}</span>
+            <span v-if="displayedOnDetailScreen">{{
+              t("appointmentOverview.myAppointments")
+            }}</span>
+            <span v-else>{{
+              t("appointmentOverview.myFurtherAppointments")
+            }}</span>
 
-            <span v-if="appointments.length && !displayedOnDetailScreen && !loadingError"> ({{ appointments.length }})</span>
+            <span
+              v-if="
+                appointments.length && !displayedOnDetailScreen && !loadingError
+              "
+            >
+              ({{ appointments.length }})</span
+            >
           </h2>
         </div>
         <muc-link
@@ -62,24 +70,24 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {AppointmentDTO} from "@/api/models/AppointmentDTO";
-import {getAppointments} from "@/api/ZMSAppointmentUserAPI";
+import { MucIcon, MucLink } from "@muenchen/muc-patternlab-vue";
+import { onMounted, ref } from "vue";
+
+import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { Office } from "@/api/models/Office";
+import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
+import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
 import AppointmentCardViewer from "./AppointmentCardViewer.vue";
-import {fetchServicesAndProviders} from "@/api/ZMSAppointmentAPI";
-import {Office} from "@/api/models/Office";
-import {MucIcon, MucLink} from "@muenchen/muc-patternlab-vue";
-
 
 const props = defineProps<{
   baseUrl?: string;
-  appointmentDetailUrl: string,
-  appointmentOverviewUrl: string,
-  newAppointmentUrl: string,
-  displayedOnDetailScreen: boolean,
-  t: (key: string) => string
+  appointmentDetailUrl: string;
+  appointmentOverviewUrl: string;
+  newAppointmentUrl: string;
+  displayedOnDetailScreen: boolean;
+  t: (key: string) => string;
 }>();
 
 const loading = ref(true);
@@ -89,40 +97,40 @@ const isMobile = ref(false);
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
 
-const appointmentNumber = ref('');
+const appointmentNumber = ref("");
 
 const checksMobile = () => {
-  isMobile.value = window.matchMedia('(max-width: 767px)').matches
+  isMobile.value = window.matchMedia("(max-width: 767px)").matches;
 };
 
 onMounted(() => {
   loading.value = true;
   checksMobile();
-  window.addEventListener('resize', checksMobile);
+  window.addEventListener("resize", checksMobile);
 
-  fetchServicesAndProviders(
-    undefined,
-    undefined,
-    props.baseUrl ?? undefined
-  ).then((data) => {
-    offices.value = data.offices;
-    getAppointments("user").then(
-      (data) => {
-        if (Array.isArray(data) && data.every(item => item.processId !== undefined)) {
+  fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
+    .then((data) => {
+      offices.value = data.offices;
+      getAppointments("user").then((data) => {
+        if (
+          Array.isArray(data) &&
+          data.every((item) => item.processId !== undefined)
+        ) {
           appointments.value = data;
         } else {
           loadingError.value = true;
         }
+      });
+    })
+    .finally(() => {
+      loading.value = false;
+      if (props.displayedOnDetailScreen) {
+        appointments.value = appointments.value.filter(
+          (appoinement: AppointmentDTO) =>
+            appoinement.processId != appointmentNumber.value
+        );
       }
-    )
-
-  }).finally(() => {
-    loading.value = false;
-    if(props.displayedOnDetailScreen) {
-      appointments.value = appointments.value.filter((appoinement: AppointmentDTO) => appoinement.processId != appointmentNumber.value);
-    }
-  });
-
+    });
 });
 </script>
 
@@ -177,4 +185,3 @@ onMounted(() => {
   }
 }
 </style>
-

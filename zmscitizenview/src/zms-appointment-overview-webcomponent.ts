@@ -12,5 +12,10 @@ import ZMSAppointmentOverviewElement from "@/zms-appointment-overview.ce.vue";
 const I18nHostElement = defineCustomElement(I18nHost);
 customElements.define("i18n-host", I18nHostElement);
 
-const zmsAppointmentOverviewWebcomponent = defineCustomElement(ZMSAppointmentOverviewElement);
-customElements.define("zms-appointment-overview-wrapped", zmsAppointmentOverviewWebcomponent);
+const zmsAppointmentOverviewWebcomponent = defineCustomElement(
+  ZMSAppointmentOverviewElement
+);
+customElements.define(
+  "zms-appointment-overview-wrapped",
+  zmsAppointmentOverviewWebcomponent
+);

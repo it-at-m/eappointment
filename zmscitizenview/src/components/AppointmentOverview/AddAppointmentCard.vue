@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="add-card"
-  >
+  <div class="add-card">
     <a
       class="no-link-style"
       :href="newAppointmentUrl"
@@ -16,7 +14,8 @@
             class="add-card-muc-button"
             icon="arrow-right"
             variant="primary"
-          >{{ t('appointmentOverview.arrangeAppointment') }}</muc-button>
+            >{{ t("appointmentOverview.arrangeAppointment") }}</muc-button
+          >
         </div>
       </div>
     </a>
@@ -24,12 +23,12 @@
 </template>
 
 <script setup lang="ts">
-import {MucButton} from "@muenchen/muc-patternlab-vue";
+import { MucButton } from "@muenchen/muc-patternlab-vue";
 
 defineProps<{
   title: string;
-  newAppointmentUrl: string,
-  t: (key: string) => string
+  newAppointmentUrl: string;
+  t: (key: string) => string;
 }>();
 
 defineSlots<{
@@ -55,7 +54,7 @@ defineSlots<{
 }
 
 .add-card:hover {
-  background-color: #E5EEF5;
+  background-color: #e5eef5;
 }
 
 .add-card:hover .add-card-muc-button {
@@ -74,5 +73,4 @@ defineSlots<{
 .add-card-button {
   margin-top: 24px;
 }
-
 </style>

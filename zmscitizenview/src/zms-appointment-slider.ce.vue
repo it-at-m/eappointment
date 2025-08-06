@@ -28,10 +28,10 @@ import AppointmentSliderView from "@/components/AppointmentOverview/AppointmentS
 
 defineProps<{
   baseUrl?: string;
-  appointmentDetailUrl: string,
-  appointmentOverviewUrl: string,
-  newAppointmentUrl: string,
-  displayedOnDetailScreen: boolean,
+  appointmentDetailUrl: string;
+  appointmentOverviewUrl: string;
+  newAppointmentUrl: string;
+  displayedOnDetailScreen: boolean;
 }>();
 
 const { t } = useI18n();

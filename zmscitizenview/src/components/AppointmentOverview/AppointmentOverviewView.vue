@@ -5,7 +5,9 @@
         style="width: 32px; height: 32px; margin-right: 8px"
         icon="calendar"
       />
-      {{ t('appointmentOverview.upcomingAppointments') }} ({{ appointments.length }})
+      {{ t("appointmentOverview.upcomingAppointments") }} ({{
+        appointments.length
+      }})
     </h2>
     <error-alert
       v-if="loadingError"
@@ -15,7 +17,9 @@
       <muc-button
         icon="arrow-right"
         @onclick="goToOverviewLink"
-      > {{ t('appointmentOverview.buttonBackToOverview') }} </muc-button>
+      >
+        {{ t("appointmentOverview.buttonBackToOverview") }}
+      </muc-button>
     </error-alert>
     <div v-else>
       <muc-card-container
@@ -47,22 +51,27 @@
 </template>
 
 <script setup lang="ts">
-import {  onMounted, ref } from "vue";
-import {MucButton, MucCardContainer, MucIcon} from "@muenchen/muc-patternlab-vue";
-import {AppointmentDTO} from "@/api/models/AppointmentDTO";
-import {getAppointments} from "@/api/ZMSAppointmentUserAPI";
+import {
+  MucButton,
+  MucCardContainer,
+  MucIcon,
+} from "@muenchen/muc-patternlab-vue";
+import { onMounted, ref } from "vue";
+
+import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { Office } from "@/api/models/Office";
+import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
+import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
 import AppointmentCard from "./AppointmentCard.vue";
-import {fetchServicesAndProviders} from "@/api/ZMSAppointmentAPI";
-import {Office} from "@/api/models/Office";
 
 const props = defineProps<{
   baseUrl?: string;
-  appointmentDetailUrl: string,
-  newAppointmentUrl: string,
-  overviewUrl: string,
-  t: (key: string) => string
+  appointmentDetailUrl: string;
+  newAppointmentUrl: string;
+  overviewUrl: string;
+  t: (key: string) => string;
 }>();
 
 const appointments = ref<AppointmentDTO[]>([]);
@@ -70,32 +79,28 @@ const offices = ref<Office[]>([]);
 const loading = ref(true);
 const loadingError = ref(false);
 
-const goToOverviewLink = () =>{
+const goToOverviewLink = () => {
   location.href = props.overviewUrl;
-}
+};
 
 onMounted(() => {
   loading.value = true;
-  fetchServicesAndProviders(
-    undefined,
-    undefined,
-    props.baseUrl ?? undefined
-  ).then((data) => {
-       offices.value = data.offices;
-    getAppointments("user").then(
-      (data) => {
-        if (Array.isArray(data) && data.every(item => item.processId !== undefined)) {
+  fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
+    .then((data) => {
+      offices.value = data.offices;
+      getAppointments("user").then((data) => {
+        if (
+          Array.isArray(data) &&
+          data.every((item) => item.processId !== undefined)
+        ) {
           appointments.value = data;
         } else {
           loadingError.value = true;
         }
-      }
-    )
-
-  }).finally(() => (loading.value = false));
-
+      });
+    })
+    .finally(() => (loading.value = false));
 });
-
 </script>
 
 <style scoped>
