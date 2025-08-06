@@ -1,28 +1,25 @@
-import {
-  getAPIBaseURL,
-} from "@/utils/Constants";
-import {AppointmentDTO} from "@/api/models/AppointmentDTO";
-
+import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { getAPIBaseURL } from "@/utils/Constants";
 
 export function getAppointments(
-  userId : string,
+  userId: string,
   baseUrl?: string
 ): Promise<AppointmentDTO[]> {
-  return new Promise((resolve) =>
-    setTimeout(() => resolve(DUMMYDATA), 1000)
-  );
+  console.debug(getAPIBaseURL(baseUrl) + userId);
+  return new Promise((resolve) => setTimeout(() => resolve(DUMMYDATA), 1000));
 }
 
-export function getAppointmentDetails (
+export function getAppointmentDetails(
   processId: string,
   baseUrl?: string
 ): Promise<AppointmentDTO> {
+  console.debug(getAPIBaseURL(baseUrl) + processId);
   return new Promise((resolve) =>
     setTimeout(() => resolve(DUMMYDATA[0]), 1000)
   );
 }
 
-const DUMMYDATA : AppointmentDTO[] = [
+const DUMMYDATA: AppointmentDTO[] = [
   {
     processId: "1111",
     timestamp: 1753360200,
@@ -36,14 +33,14 @@ const DUMMYDATA : AppointmentDTO[] = [
         id: "10489",
         source: "source",
       },
-      shortName: "1"
+      shortName: "1",
     },
     subRequestCounts: [
       {
         id: "1063453",
         name: "Reisepass",
-        count: 1
-      }
+        count: 1,
+      },
     ],
     serviceId: "1063441",
     serviceName: "Personalausweis",
@@ -62,12 +59,11 @@ const DUMMYDATA : AppointmentDTO[] = [
         id: "10546",
         source: "source",
       },
-      shortName: "2"
+      shortName: "2",
     },
     subRequestCounts: [],
     serviceId: "id_2222",
     serviceName: "Gewerbe anmelden",
     serviceCount: 1,
   },
-
-]
+];

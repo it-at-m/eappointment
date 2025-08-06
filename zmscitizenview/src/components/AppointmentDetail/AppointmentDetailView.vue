@@ -12,27 +12,28 @@
     <p tabindex="0">
       {{ formatTime(appointment.timestamp) }}
       {{ t("timeStampSuffix") }} <br />
-      {{ t("estimatedDuration") }} {{ estimatedDuration() }}
-      {{ t("minutes") }}<br />
+      {{ t("estimatedDuration") }} {{ estimatedDuration() }} {{ t("minutes")
+      }}<br />
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {AppointmentDTO} from "@/api/models/AppointmentDTO";
-import {getAppointmentDetails} from "@/api/ZMSAppointmentUserAPI";
-import {Service} from "@/api/models/Service";
-import {Relation} from "@/api/models/Relation";
-import {Office} from "@/api/models/Office";
-import {fetchServicesAndProviders} from "@/api/ZMSAppointmentAPI";
-import {OfficeImpl} from "@/types/OfficeImpl";
-import {AppointmentImpl} from "@/types/AppointmentImpl";
-import {ServiceImpl} from "@/types/ServiceImpl";
-import {SubService} from "@/types/SubService";
-import {getProviders} from "@/utils/getProviders";
-import {formatTime} from "@/utils/formatTime";
-import {calculateEstimatedDuration} from "@/utils/calculateEstimatedDuration";
+import { onMounted, ref } from "vue";
+
+import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { Office } from "@/api/models/Office";
+import { Relation } from "@/api/models/Relation";
+import { Service } from "@/api/models/Service";
+import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
+import { getAppointmentDetails } from "@/api/ZMSAppointmentUserAPI";
+import { AppointmentImpl } from "@/types/AppointmentImpl";
+import { OfficeImpl } from "@/types/OfficeImpl";
+import { ServiceImpl } from "@/types/ServiceImpl";
+import { SubService } from "@/types/SubService";
+import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import { formatTime } from "@/utils/formatTime";
+import { getProviders } from "@/utils/getProviders";
 
 const props = defineProps<{
   baseUrl?: string;
@@ -71,67 +72,59 @@ onMounted(() => {
     relations.value = data.relations;
     offices.value = data.offices;
 
-    getAppointmentDetails("1111").then(
-      (data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
-          appointment.value = data;
+    getAppointmentDetails("1111").then((data) => {
+      if ((data as AppointmentDTO).processId != undefined) {
+        appointment.value = data;
 
-          selectedService.value = services.value.find(
-            (service) => service.id == appointment.value?.serviceId
+        selectedService.value = services.value.find(
+          (service) => service.id == appointment.value?.serviceId
+        );
+        if (selectedService.value) {
+          selectedService.value.count = appointment.value.serviceCount;
+
+          selectedService.value.providers = getProviders(
+            selectedService.value?.id,
+            null,
+            relations.value,
+            offices.value
           );
-          if (selectedService.value) {
-            selectedService.value.count = appointment.value.serviceCount;
 
-            selectedService.value.providers = getProviders(
-              selectedService.value?.id,
-              null,
-              relations.value,
-              offices.value
-            );
+          const foundOffice = selectedService.value.providers.find(
+            (office) => office.id == appointment.value?.officeId
+          );
 
-
-            const foundOffice = selectedService.value.providers.find(
-              (office) => office.id == appointment.value?.officeId
-            );
-
-            if (foundOffice) {
-              selectedProvider.value = foundOffice;
-            }
-
-            if (appointment.value.subRequestCounts.length > 0) {
-              appointment.value.subRequestCounts.forEach(
-                (subRequestCount) => {
-                  const subRequest = services.value.find(
-                    (service) => service.id == subRequestCount.id
-                  ) as Service;
-                  const subService = new SubService(
-                    subRequest.id,
-                    subRequest.name,
-                    subRequest.maxQuantity,
-                    getProviders(
-                      subRequest.id,
-                      null,
-                      relations.value,
-                      offices.value
-                    ),
-                    subRequestCount.count
-                  );
-                  if (
-                    selectedService.value &&
-                    !selectedService.value.subServices
-                  ) {
-                    selectedService.value.subServices = [];
-                  }
-                  selectedService.value?.subServices?.push(subService);
-                }
-              );
-            }
+          if (foundOffice) {
+            selectedProvider.value = foundOffice;
           }
-        } else {
-          loadingError.value = true;
+
+          if (appointment.value.subRequestCounts.length > 0) {
+            appointment.value.subRequestCounts.forEach((subRequestCount) => {
+              const subRequest = services.value.find(
+                (service) => service.id == subRequestCount.id
+              ) as Service;
+              const subService = new SubService(
+                subRequest.id,
+                subRequest.name,
+                subRequest.maxQuantity,
+                getProviders(
+                  subRequest.id,
+                  null,
+                  relations.value,
+                  offices.value
+                ),
+                subRequestCount.count
+              );
+              if (selectedService.value && !selectedService.value.subServices) {
+                selectedService.value.subServices = [];
+              }
+              selectedService.value?.subServices?.push(subService);
+            });
+          }
         }
+      } else {
+        loadingError.value = true;
       }
-    );
+    });
   });
 });
 </script>

@@ -13,12 +13,12 @@
 </template>
 
 <script lang="ts" setup>
-import {MucCallout} from "@muenchen/muc-patternlab-vue";
+import { MucCallout } from "@muenchen/muc-patternlab-vue";
 
 defineProps<{
-  message: string,
-  header: string}
->();
+  message: string;
+  header: string;
+}>();
 
 defineSlots<{
   default(): unknown;
@@ -26,10 +26,8 @@ defineSlots<{
 </script>
 
 <style scoped>
-
 .container {
   padding-top: 32px;
   padding-bottom: 32px;
 }
-
 </style>

@@ -27,9 +27,9 @@ import AppointmentOverviewView from "@/components/AppointmentOverview/Appointmen
 
 defineProps<{
   baseUrl?: string;
-  appointmentDetailUrl: string,
-  newAppointmentUrl: string,
-  overviewUrl: string,
+  appointmentDetailUrl: string;
+  newAppointmentUrl: string;
+  overviewUrl: string;
 }>();
 
 const { t } = useI18n();
