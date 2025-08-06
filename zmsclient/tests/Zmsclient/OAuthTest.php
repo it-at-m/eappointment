@@ -69,26 +69,21 @@ class OAuthTest extends TestCase
 
     public function testClearExistingSessionWithKey()
     {
-        // Set up a cookie to simulate an existing session
         $_COOKIE[Auth::getCookieName()] = 'existing-session-key';
 
         $this->oauth->clearExistingSession();
 
-        // Verify the method executed without throwing an exception
         $this->assertTrue(true, 'Method executed successfully');
 
-        // Clean up
         unset($_COOKIE[Auth::getCookieName()]);
     }
 
     public function testClearExistingSessionWithoutKey()
     {
-        // Ensure no cookie is set
         unset($_COOKIE[Auth::getCookieName()]);
 
         $this->oauth->clearExistingSession();
 
-        // Verify the method executed without throwing an exception
         $this->assertTrue(true, 'Method executed successfully');
     }
 
@@ -99,7 +94,6 @@ class OAuthTest extends TestCase
             'email' => 'test@example.com'
         ];
 
-        // Should not throw an exception when email is present
         $this->oauth->validateOwnerData($ownerInputData);
         $this->assertTrue(true, 'Validation passed with email');
     }
@@ -108,10 +102,8 @@ class OAuthTest extends TestCase
     {
         $ownerInputData = [
             'id' => 'test-user-id'
-            // No email provided
         ];
 
-        // Should not throw an exception when App is not available in test environment
         $this->oauth->validateOwnerData($ownerInputData);
         $this->assertTrue(true, 'Validation passed without email in test environment');
     }
@@ -126,7 +118,6 @@ class OAuthTest extends TestCase
 
         $result = $this->oauth->processResourceOwnerData($rawOwnerData);
         
-        // In test environment, should return original data
         $this->assertEquals($rawOwnerData, $result);
     }
 
@@ -135,12 +126,10 @@ class OAuthTest extends TestCase
         $rawOwnerData = [
             'username' => 'test@keycloak',
             'email' => 'test@example.com'
-            // No verifiedEmail
         ];
 
         $result = $this->oauth->processResourceOwnerData($rawOwnerData);
         
-        // In test environment, should return original data
         $this->assertEquals($rawOwnerData, $result);
     }
 } 

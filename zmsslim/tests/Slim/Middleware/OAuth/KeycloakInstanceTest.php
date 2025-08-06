@@ -24,7 +24,7 @@ class KeycloakInstanceTest extends TestCase
     protected function setUp(): void
     {
         $this->instance = $this->getMockBuilder(KeycloakInstance::class)
-            ->onlyMethods(['getAccessToken', 'testAccess', 'testOwnerData', 'writeTokenToSession', 'writeDeleteSession'])
+            ->onlyMethods(['getAccessToken', 'validateAccess', 'validateOwnerData', 'writeTokenToSession', 'writeDeleteSession'])
             ->getMock();
 
         $this->request = $this->createMock(ServerRequestInterface::class);
@@ -52,44 +52,38 @@ class KeycloakInstanceTest extends TestCase
 
         $this->instance
             ->expects($this->once())
-            ->method('testAccess');
+            ->method('validateAccess');
 
         $this->instance
             ->expects($this->once())
-            ->method('testOwnerData')
+            ->method('validateOwnerData')
             ->with($ownerInputData);
 
         $this->instance
             ->expects($this->once())
             ->method('writeTokenToSession');
 
-        // Mock the provider to return owner data
         $provider = $this->createMock(\BO\Slim\Middleware\OAuth\Keycloak\Provider::class);
         $provider->method('getResourceOwnerData')->willReturn($ownerInputData);
         $this->instance->method('getProvider')->willReturn($provider);
 
-        // Mock Auth to return a key
         $authMock = $this->createMock(Auth::class);
         $authMock->method('getKey')->willReturn('test-state-key');
         
-        // Mock the OAuth class
         $oauthMock = $this->createMock(OAuth::class);
         $oauthMock->expects($this->once())->method('clearExistingSession');
         $oauthMock->expects($this->once())->method('processOAuthLogin')
             ->with($ownerInputData, 'test-state-key');
 
-        // We need to mock the global App::$http
         $httpMock = $this->createMock(Http::class);
         $httpMock->method('readGetResult')->willReturn($this->createMock(Result::class));
         
-        // Mock the global App class
         $appMock = $this->createMock(\stdClass::class);
         $appMock->http = $httpMock;
         $appMock->log = $this->createMock(\stdClass::class);
         $appMock->log->method('info');
         $appMock->log->method('error');
         
-        // Use reflection to set the mock
         $reflection = new \ReflectionClass($this->instance);
         $property = $reflection->getProperty('provider');
         $property->setAccessible(true);

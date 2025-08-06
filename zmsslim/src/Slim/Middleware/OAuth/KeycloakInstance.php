@@ -31,11 +31,9 @@ class KeycloakInstance
         ]);
 
         try {
-                        $accessToken = $this->getAccessToken($request->getParam("code"));
+            $accessToken = $this->getAccessToken($request->getParam("code"));
             $this->validateAccess($accessToken);
             $rawOwnerData = $this->provider->getResourceOwnerData($accessToken);
-
-            // Use zmsclient OAuth for processing and validation
             $oauth = new \BO\Zmsclient\OAuth(\App::$http, new \BO\Zmsclient\Auth());
             $ownerInputData = $oauth->processResourceOwnerData($rawOwnerData);
             $oauth->validateOwnerData($ownerInputData);
@@ -50,7 +48,6 @@ class KeycloakInstance
 
             $this->writeTokenToSession($accessToken);
 
-            // Use zmsclient OAuth for business logic
             $oauth = new \BO\Zmsclient\OAuth(\App::$http, new \BO\Zmsclient\Auth());
             $oauth->clearExistingSession();
             $oauth->processOAuthLogin($ownerInputData, \BO\Zmsclient\Auth::getKey());
@@ -135,7 +132,6 @@ class KeycloakInstance
 
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
 
-        // Fix: Properly handle base64url encoding before JSON decoding
         $payload = str_replace(['-', '_'], ['+', '/'], $payload);
         $payload = base64_decode($payload . str_repeat('=', 4 - (strlen($payload) % 4)));
         $accessTokenPayload = json_decode($payload, true);

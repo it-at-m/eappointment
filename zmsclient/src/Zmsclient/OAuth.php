@@ -2,14 +2,6 @@
 
 namespace BO\Zmsclient;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use League\OAuth2\Client\Token\AccessToken;
-
-/**
- * OAuth Business Logic moved from ZMS-Slim Middleware
- * Handles OAuth authentication workflow
- */
 class OAuth
 {
     protected $http;
@@ -21,14 +13,6 @@ class OAuth
         $this->auth = $auth;
     }
 
-    /**
-     * Process OAuth login workflow
-     *
-     * @param array $ownerInputData Resource owner data from OAuth provider
-     * @param string $state Authentication state
-     * @return \BO\Zmsclient\Result
-     * @throws \BO\Zmsclient\Exception
-     */
     public function processOAuthLogin(array $ownerInputData, string $state)
     {
         if (class_exists('App') && isset(\App::$log)) {
@@ -39,7 +23,6 @@ class OAuth
         }
 
         try {
-            // Send OAuth data to workstation endpoint
             $result = $this->http->readPostResult('/workstation/oauth/', $ownerInputData, ['state' => $state]);
 
             if (class_exists('App') && isset(\App::$log)) {
@@ -62,9 +45,6 @@ class OAuth
         }
     }
 
-    /**
-     * Clear existing session if needed
-     */
     public function clearExistingSession()
     {
         if (Auth::getKey()) {
@@ -77,12 +57,6 @@ class OAuth
         }
     }
 
-    /**
-     * Validate owner data from OAuth provider
-     *
-     * @param array $ownerInputData Resource owner data from OAuth provider
-     * @throws \BO\Zmsclient\Exception
-     */
     public function validateOwnerData(array $ownerInputData)
     {
         if (class_exists('App') && isset(\App::$http)) {
@@ -93,13 +67,6 @@ class OAuth
         }
     }
 
-    /**
-     * Process and validate resource owner data from OAuth provider
-     *
-     * @param array $rawOwnerData Raw owner data from provider
-     * @return array Processed owner data
-     * @throws \BO\Zmsclient\Exception
-     */
     public function processResourceOwnerData(array $rawOwnerData)
     {
         $ownerData = $rawOwnerData;
