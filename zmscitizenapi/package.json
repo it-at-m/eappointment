@@ -19,7 +19,7 @@
   "devDependencies": {
     "swagger-jsdoc": "^6.1.0",
     "swagger-parser": "^10.0.0",
-    "openapi-types": "^10.0.0",
+    "openapi-types": "^12.0.0",
     "js-yaml": "^4.1.0"
   }
 }
