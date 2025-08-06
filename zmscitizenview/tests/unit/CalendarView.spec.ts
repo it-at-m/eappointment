@@ -20,7 +20,7 @@ const baseProps = {
   selectedServiceMap: new Map([["service1", 1]]),
   captchaToken: "test-token",
   bookingError: false,
-  bookingErrorKey: "noAppointmentsAvailable",
+  bookingErrorKey: "apiErrorNoAppointmentForThisScope",
   t,
 };
 
@@ -55,7 +55,19 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
           isCancelingAppointment: ref(false),
         },
       },
-      stubs: ["muc-slider", "muc-callout", "muc-calendar"],
+      stubs: {
+        "muc-slider": true,
+        "muc-callout": {
+            props: ["type", "t"],
+            template: `
+              <div data-test='muc-callout' :data-type="type">
+                <slot name="header"></slot>
+                <slot name="content">
+              </slot></div>
+            `
+        },
+        "muc-calendar": true
+      }
     },
     props: {
       ...baseProps,
@@ -371,6 +383,35 @@ describe("CalendarView", () => {
     expect(officeCCC).toBeTruthy();
   });
 
+  it("shows an error message when no provider is selected", async () => {
+    // Mock available days with provider IDs
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: "2025-06-17", providerIDs: "1,2" }
+      ]
+    });
+
+    // Create component with two selectable providers
+    const wrapper = createWrapper({
+      selectedService: {
+        id: "service1",
+        providers: [
+          { name: "Office A", id: 1, address: { street: "Main", house_number: "1" } },
+          { name: "Office B", id: 2, address: { street: "Main", house_number: "2" } }
+        ]
+      }
+    });
+
+    await flushPromises(); // Wait for API call and computed properties
+
+    // Make sure no provider is selected
+    wrapper.vm.selectedProviders = {};
+    await nextTick();
+
+    // Expect the error message to be shown when no provider with appointments is selected
+    expect(wrapper.text()).toContain("errorMessageProviderSelection");
+  });
+
   it("shows available day only by providers that have free appointments on that day", async () => {
     (fetchAvailableDays as Mock).mockResolvedValue({
       availableDays: [
@@ -429,6 +470,37 @@ describe("CalendarView", () => {
 
     // Test that appointments are refetched when selection changes
     expect(fetchAvailableDays).toHaveBeenCalled();
+  });
+
+  it('checks only the preselected office when preselectedOfficeId is provided', async () => {
+    (fetchAvailableDays as Mock).mockResolvedValue({
+      availableDays: [
+        { time: '2025-06-17', providerIDs: '1,2,3' }
+      ]
+    });
+
+    const wrapper = createWrapper({
+      selectedService: {
+        id: 'service1',
+        providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } },
+          { name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } },
+          { name: 'Office C', id: '3', address: { street: 'Test', house_number: '3' } }
+        ]
+      },
+      props: {
+        preselectedOfficeId: '2'
+      }
+    });
+
+    await wrapper.vm.showSelectionForProvider({ name: 'Office B', id: '2', address: { street: 'Test', house_number: '2' } });
+    await nextTick();
+
+    expect(wrapper.vm.selectedProviders).toEqual({
+      '1': false,
+      '2': true,
+      '3': false
+    });
   });
 
   it("handles calendar navigation correctly", async () => {
@@ -1000,7 +1072,6 @@ describe("CalendarView", () => {
       expect(calendar.exists()).toBe(true);
 
       const actualDate = calendar.props('viewMonth');
-      console.log('Expected month:', dateForProvider1.getMonth(), 'Actual month:', actualDate.getMonth());
 
       expect(actualDate.getFullYear()).toBe(dateForProvider1.getFullYear());
       expect(actualDate.getMonth()).toBe(dateForProvider1.getMonth());
@@ -1555,6 +1626,175 @@ describe("CalendarView", () => {
       expect(nextButton && !nextButton.props('disabled')).toBe(true);
     });
 
+  });
+
+  describe("Error States", () => {
+    it('shows captcha error warning callout when captcha error is set', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: true,
+          bookingErrorKey: "apiErrorCaptchaInvalid",
+        }
+      });
+
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+
+      expect(callout.exists()).toBe(true);
+      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.html()).toContain("apiErrorCaptchaInvalidHeader");
+      expect(callout.html()).toContain("apiErrorCaptchaInvalidText");
+    });
+
+    it('shows no appointment error warning callout when no appointment error is set', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: true,
+          bookingErrorKey: "apiErrorNoAppointmentForThisScope",
+        }
+      });
+
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+
+      expect(callout.exists()).toBe(true);
+      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.html()).toContain("apiErrorNoAppointmentForThisScopeHeader");
+      expect(callout.html()).toContain("apiErrorNoAppointmentForThisScopeText");
+    });
+
+    it('shows appointment not available error warning callout when appointment not available error is set', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: true,
+          bookingErrorKey: "apiErrorAppointmentNotAvailable",
+        }
+      });
+
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+
+      expect(callout.exists()).toBe(true);
+      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.html()).toContain("apiErrorAppointmentNotAvailableHeader");
+      expect(callout.html()).toContain("apiErrorAppointmentNotAvailableText");
+    });
+
+    it('does not show any callout when bookingError is false', async () => {
+      const wrapper = createWrapper({
+        props: {
+          bookingError: false,
+          bookingErrorKey: "",
+        }
+      });
+
+      await nextTick();
+      const callout = wrapper.find('[data-test="muc-callout"]');
+      expect(callout.exists()).toBe(false);
+    });
+  });
+
+  describe("CalendarView – Toggle & List View", () => {
+
+    it("toggles from calendar view to list view and back", async () => {
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+          ]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      expect(wrapper.vm.isListView).toBe(false);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(true);
+      expect(wrapper.find(".m-component-accordion").exists()).toBe(false);
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      expect(wrapper.vm.isListView).toBe(true);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(false);
+      expect(wrapper.find(".m-component-accordion").exists()).toBe(true);
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      expect(wrapper.vm.isListView).toBe(false);
+      expect(wrapper.findComponent({ name: "muc-calendar" }).exists()).toBe(true);
+    });
+
+    it("adds three more days whenever the 'Mehr laden' button is clicked", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: Array.from({ length: 9 }, (_, i) => ({
+          time: `2025-06-${String(10 + i).padStart(2, "0")}`,
+          providerIDs: "1"
+        }))
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [{ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } }]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      expect(wrapper.vm.daysToShow).toBe(5);
+      expect(wrapper.findAll(".m-accordion__section-header").length).toBe(5);
+
+      const loadBtn = wrapper.findAllComponents({ name: "MucButton" })
+        .find(btn => btn.text().includes("loadMore"));
+      expect(loadBtn).toBeTruthy();
+
+      await loadBtn!.trigger("click");
+      await nextTick();
+
+      expect(wrapper.vm.daysToShow).toBe(8);
+      expect(wrapper.findAll(".m-accordion__section-header").length).toBe(8);
+    });
+
+    it("opens the clicked accordion section and closes the previous one", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-10", providerIDs: "1" },
+          { time: "2025-06-11", providerIDs: "1" }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [{ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } }]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      expect(wrapper.find("#listContent-0").classes()).toContain("show");
+      expect(wrapper.find("#listContent-1").classes()).not.toContain("show");
+
+      await wrapper.find("#listHeading-1 .m-accordion__section-button").trigger("click");
+      await nextTick();
+
+      expect(wrapper.find("#listContent-0").classes()).not.toContain("show");
+      expect(wrapper.find("#listContent-1").classes()).toContain("show");
+    });
   });
 });
 

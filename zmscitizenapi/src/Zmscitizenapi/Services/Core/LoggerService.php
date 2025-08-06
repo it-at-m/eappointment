@@ -178,10 +178,10 @@ class LoggerService
 
         if ($response->getStatusCode() >= 400) {
             $stream = $response->getBody();
-            if ($stream->isSeekable()) {
-                try {
-                    $stream->rewind();
-                    $body = (string)$stream;
+            try {
+                $body = (string)$stream;
+
+                if (!empty($body)) {
                     $decodedBody = json_decode($body, true);
                     if (json_last_error() === JSON_ERROR_NONE && isset($decodedBody['errors'])) {
                         $englishErrors = [];
@@ -194,10 +194,9 @@ class LoggerService
                         }
                         $data['errors'] = $englishErrors;
                     }
-                    $stream->rewind();
-                } catch (\Throwable $e) {
-                    $data['error'] = 'Failed to read response body: ' . $e->getMessage();
                 }
+            } catch (\Exception $e) {
+                $data['stream_error'] = 'Unable to read response body: ' . $e->getMessage();
             }
         }
 

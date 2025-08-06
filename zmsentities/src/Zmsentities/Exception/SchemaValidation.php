@@ -13,6 +13,8 @@ class SchemaValidation extends \Exception
 
     protected $schemaName = '';
 
+    public $template;
+
     public function setValidationError(array $validationErrorList)
     {
         $this->setMessages($validationErrorList);

@@ -13,7 +13,7 @@
                 "date": "1456310041",
                 "familyName": "Max Mustermann",
                 "clientEmail": "max@zms-bo.de",
-                "clientTelehone": "03023232323",
+                "clientTelephone": "03023232323",
                 "clientAmendment": "Notiz zum Termin",
                 "clientCustomTextfield": "Notiz zum Termin",
                 "clientCustomTextfield2": "Notiz zum Termin",
@@ -105,7 +105,7 @@
                         "clientEmail": {
                             "type": "string"
                         },
-                        "clientTelehone": {
+                        "clientTelephone": {
                             "type": "number"
                         },
                         "clientAmendment": {
@@ -143,7 +143,7 @@
                         "remoteAddress": {
                             "type": "string"
                         },
-                        "referrer": {
+                        "referer": {
                             "type": "string"
                         },
                         "step": {

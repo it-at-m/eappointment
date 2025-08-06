@@ -8,15 +8,16 @@
 
 namespace BO\Zmsmessaging;
 
-if (!getenv('ZMS_CONFIG_SECURE_TOKEN')) {
+/**
+ * @SuppressWarnings("TooManyFields")
+ */
+
+if (($token = getenv('ZMS_CONFIG_SECURE_TOKEN')) === false || $token === '') {
     throw new \RuntimeException('ZMS_CONFIG_SECURE_TOKEN environment variable must be set');
 }
 
 define('ZMS_CONFIG_SECURE_TOKEN', getenv('ZMS_CONFIG_SECURE_TOKEN'));
 
-/**
- * @SuppressWarnings("TooManyFields")
- */
 class Application
 {
     /**

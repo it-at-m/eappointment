@@ -436,7 +436,7 @@ class MapperService
                 city: $contact['city'] ?? null,
                 country: $contact['country'] ?? null,
                 name: $contact['name'] ?? null,
-                postalCode: $contact['postalCode'] ?? null,
+                postalCode: isset($contact['postalCode']) ? (is_null($contact['postalCode']) ? null : (string)$contact['postalCode']) : null,
                 region: $contact['region'] ?? null,
                 street: $contact['street'] ?? null,
                 streetNumber: $contact['streetNumber'] ?? null
@@ -447,7 +447,7 @@ class MapperService
             city: $contact->city ?? null,
             country: $contact->country ?? null,
             name: $contact->name ?? null,
-            postalCode: $contact->postalCode ?? null,
+            postalCode: isset($contact->postalCode) ? (is_null($contact->postalCode) ? null : (string)$contact->postalCode) : null,
             region: $contact->region ?? null,
             street: $contact->street ?? null,
             streetNumber: $contact->streetNumber ?? null

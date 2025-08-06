@@ -42,8 +42,8 @@ class Base extends \ArrayObject implements \JsonSerializable
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
-                Sorter::toSortableString(ucfirst($a->name)),
-                Sorter::toSortableString(ucfirst($b->name))
+                Sorter::toSortableString(ucfirst($a->name ?? '')),
+                Sorter::toSortableString(ucfirst($b->name ?? ''))
             );
         });
         return $this;
@@ -53,8 +53,8 @@ class Base extends \ArrayObject implements \JsonSerializable
     {
         $this->uasort(function ($a, $b) {
             return strcmp(
-                Sorter::toSortableString(ucfirst($a->contact['name'])),
-                Sorter::toSortableString(ucfirst($b->contact['name']))
+                Sorter::toSortableString(ucfirst($a->contact['name'] ?? '')),
+                Sorter::toSortableString(ucfirst($b->contact['name'] ?? ''))
             );
         });
         return $this;
@@ -72,8 +72,8 @@ class Base extends \ArrayObject implements \JsonSerializable
     {
         $this->uasort(function ($a, $b) use ($key) {
             return strcmp(
-                Sorter::toSortableString(ucfirst($a[$key])),
-                Sorter::toSortableString(ucfirst($b[$key]))
+                Sorter::toSortableString(ucfirst($a[$key] ?? '')),
+                Sorter::toSortableString(ucfirst($b[$key] ?? ''))
             );
         });
         return $this;
@@ -112,13 +112,13 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function offsetSet($index, $value)
+    public function offsetSet(mixed $index, mixed $value): void
     {
         $className = $this::ENTITY_CLASS;
         if (is_a($value, $className)) {
-            return parent::offsetSet($index, $value);
+            parent::offsetSet($index, $value);
         } elseif (is_array($value)) {
-            return parent::offsetSet($index, new $className($value));
+            parent::offsetSet($index, new $className($value));
         } else {
             throw new \Exception('Invalid entity ' . get_class($value) . ' for collection ' . __CLASS__);
         }
@@ -237,7 +237,7 @@ class Base extends \ArrayObject implements \JsonSerializable
         return $array;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->getArrayCopy();
     }

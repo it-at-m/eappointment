@@ -5,7 +5,6 @@ import { CaptchaDetailsDTO } from "@/api/models/CaptchaDetailsDTO";
 import { ErrorDTO } from "@/api/models/ErrorDTO";
 import { OfficesAndServicesDTO } from "@/api/models/OfficesAndServicesDTO";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
-import { OfficeImpl } from "@/types/OfficeImpl";
 import {
   getAPIBaseURL,
   VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
@@ -35,8 +34,15 @@ export function fetchServicesAndProviders(
   let apiUrl =
     getAPIBaseURL(baseUrl) + VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT;
 
-  if (serviceId && locationId) {
-    apiUrl += `?serviceId=${serviceId}&locationId=${locationId}`;
+  const params = new URLSearchParams();
+  if (serviceId) {
+    params.append("serviceId", serviceId);
+    if (locationId) {
+      params.append("locationId", locationId);
+    }
+  }
+  if (params.toString()) {
+    apiUrl += "?" + params.toString();
   }
 
   return fetch(apiUrl).then((response) => {

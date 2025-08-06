@@ -48,6 +48,6 @@ class Factory
         }
         $schema = $this->data['$schema'];
         $entityName = preg_replace('#^.*/([^/]+)\.json#', '$1', $schema);
-        return ucfirst($entityName);
+        return ucfirst($entityName ?? '');
     }
 }

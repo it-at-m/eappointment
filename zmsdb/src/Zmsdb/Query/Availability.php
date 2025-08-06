@@ -311,13 +311,15 @@ class Availability extends Base implements MappingInterface
 
     public function postProcess($data)
     {
-        $data[$this->getPrefixed("startDate")] =
-            (new \DateTime($data[$this->getPrefixed("startDate")]))->getTimestamp();
-        $data[$this->getPrefixed("endDate")] =
-            (new \DateTime($data[$this->getPrefixed("endDate")]))->getTimestamp();
-        $data[$this->getPrefixed("lastChange")] =
-            (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsdb\Connection\Select::$connectionTimezone))
-            ->getTimestamp();
+        $startDateKey = $this->getPrefixed("startDate");
+        $endDateKey = $this->getPrefixed("endDate");
+        $lastChangeKey = $this->getPrefixed("lastChange");
+        $startDate = $data[$startDateKey] ?? null;
+        $endDate = $data[$endDateKey] ?? null;
+        $lastChange = $data[$lastChangeKey] ?? null;
+        $data[$startDateKey] = $startDate !== null ? (new \DateTime($startDate))->getTimestamp() : null;
+        $data[$endDateKey] = $endDate !== null ? (new \DateTime($endDate))->getTimestamp() : null;
+        $data[$lastChangeKey] = $lastChange !== null ? (new \DateTime($lastChange . \BO\Zmsdb\Connection\Select::$connectionTimezone))->getTimestamp() : null;
         return $data;
     }
 }

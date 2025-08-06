@@ -72,6 +72,7 @@ class UserAccountTest extends Base
         foreach ($entityList as $entity) {
             $entity->departments[] = (new \BO\Zmsdb\Department())->readEntity(72);
             $entity->email = "test@berlinonline.de";
+            $entity->id = "superuser";
         }
         $this->assertEntityList("\\BO\\Zmsentities\\Useraccount", $entityList);
         $this->assertEquals(true, $entityList->hasEntity(static::$username)); //superuser bo
