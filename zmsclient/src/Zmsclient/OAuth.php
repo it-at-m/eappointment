@@ -31,27 +31,33 @@ class OAuth
      */
     public function processOAuthLogin(array $ownerInputData, string $state)
     {
-        \App::$log->info('Processing OAuth login', [
-            'event' => 'oauth_login_process',
-            'timestamp' => date('c')
-        ]);
+        if (class_exists('App') && isset(\App::$log)) {
+            \App::$log->info('Processing OAuth login', [
+                'event' => 'oauth_login_process',
+                'timestamp' => date('c')
+            ]);
+        }
 
         try {
             // Send OAuth data to workstation endpoint
             $result = $this->http->readPostResult('/workstation/oauth/', $ownerInputData, ['state' => $state]);
 
-            \App::$log->info('OAuth login successful', [
-                'event' => 'oauth_login_success',
-                'timestamp' => date('c')
-            ]);
+            if (class_exists('App') && isset(\App::$log)) {
+                \App::$log->info('OAuth login successful', [
+                    'event' => 'oauth_login_success',
+                    'timestamp' => date('c')
+                ]);
+            }
 
             return $result;
         } catch (\BO\Zmsclient\Exception $exception) {
-            \App::$log->error('OAuth login failed', [
-                'event' => 'oauth_login_error',
-                'timestamp' => date('c'),
-                'error' => $exception->getMessage()
-            ]);
+            if (class_exists('App') && isset(\App::$log)) {
+                \App::$log->error('OAuth login failed', [
+                    'event' => 'oauth_login_error',
+                    'timestamp' => date('c'),
+                    'error' => $exception->getMessage()
+                ]);
+            }
             throw $exception;
         }
     }
@@ -61,11 +67,13 @@ class OAuth
      */
     public function clearExistingSession()
     {
-        if ($this->auth->getKey()) {
-            \App::$log->info('Clearing existing session', [
-                'event' => 'oauth_session_clear',
-                'timestamp' => date('c')
-            ]);
+        if (Auth::getKey()) {
+            if (class_exists('App') && isset(\App::$log)) {
+                \App::$log->info('Clearing existing session', [
+                    'event' => 'oauth_session_clear',
+                    'timestamp' => date('c')
+                ]);
+            }
         }
     }
 }
