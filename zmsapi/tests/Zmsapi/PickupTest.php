@@ -15,7 +15,7 @@ class PickupTest extends Base
         
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
         $entity->status = 'pending';
-        $response = (new ProcessFinishedTest())->render([], [
+        $response = (new ProcessFinishedTest('dummyTest'))->render([], [
             '__body' => json_encode($entity)
         ], []);
         $response = $this->render([], [], []);
@@ -31,7 +31,7 @@ class PickupTest extends Base
 
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
         $entity->status = 'pending';
-        $response = (new ProcessFinishedTest())->render([], [
+        $response = (new ProcessFinishedTest('dummyTest'))->render([], [
             '__body' => json_encode($entity)
         ], []);
         $response = $this->render([], ['selectedScope' => 141], []);
@@ -49,7 +49,7 @@ class PickupTest extends Base
 
         $entity = (new \BO\Zmsdb\Process)->readEntity(10030, new \BO\Zmsdb\Helper\NoAuth);
         $entity->status = 'pending';
-        $response = (new ProcessFinishedTest())->render([], [
+        $response = (new ProcessFinishedTest('dummyTest'))->render([], [
             '__body' => json_encode($entity)
         ], []);
 

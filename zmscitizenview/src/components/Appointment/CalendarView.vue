@@ -2,23 +2,28 @@
   <div v-if="providersWithAppointments && providersWithAppointments.length > 1">
     <div class="m-component slider-no-margin">
       <div class="m-content">
-        <h2 tabindex="0">{{ t("location") }}</h2>
+        <h2
+          tabindex="0"
+          style="margin-bottom: 0"
+        >
+          {{ t("location") }}
+        </h2>
       </div>
-      <div
-        class="m-content"
-        v-if="providersWithAppointments.length > 1"
-      >
-        <div v-for="provider in providersWithAppointments">
-          <muc-checkbox
-            :key="provider.id"
-            :id="'checkbox-' + provider.id"
-            :label="provider.name"
-            :hint="
-              provider.address.street + ' ' + provider.address.house_number
-            "
-            v-model="selectedProviders[provider.id]"
-          ></muc-checkbox>
-        </div>
+      <div class="m-content">
+        <MucCheckboxGroup :errorMsg="providerSelectionError">
+          <template #checkboxes>
+            <MucCheckbox
+              v-for="provider in providersWithAppointments"
+              :key="provider.id"
+              :id="'checkbox-' + provider.id"
+              :label="provider.name"
+              :hint="
+                provider.address.street + ' ' + provider.address.house_number
+              "
+              v-model="selectedProviders[provider.id]"
+            />
+          </template>
+        </MucCheckboxGroup>
       </div>
     </div>
   </div>
@@ -72,21 +77,46 @@
     v-if="availableDaysFetched && !hasAppointmentsForSelectedProviders()"
     class="m-component"
   >
+    <h2 tabindex="0">{{ t("time") }}</h2>
+
     <muc-callout type="warning">
       <template #header>
-        {{ t("noAppointmentsAvailableHeader") }}
+        <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
-        {{ t("noAppointmentsAvailable") }}
+        {{ t("apiErrorNoAppointmentForThisScopeText") }}
       </template>
     </muc-callout>
   </div>
 
   <div v-else-if="!error">
-    <div class="m-content">
+    <div
+      class="m-content"
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      "
+    >
       <h2 tabindex="0">{{ t("time") }}</h2>
+      <div
+        class="m-toggle-switch"
+        role="switch"
+        :aria-checked="isListView"
+        tabindex="0"
+        @click="toggleView"
+        @keydown.enter.prevent="toggleView"
+        @keydown.space.prevent="toggleView"
+      >
+        <span class="m-toggle-switch__label">{{ t("calendarView") }}</span>
+        <span class="m-toggle-switch__indicator"><span></span></span>
+        <span class="m-toggle-switch__label">{{ t("listView") }}</span>
+      </div>
     </div>
-    <div class="m-component">
+    <div
+      v-if="!isListView"
+      class="m-component"
+    >
       <muc-calendar
         :key="calendarKey"
         :model-value="selectedDay"
@@ -101,10 +131,215 @@
     </div>
 
     <div
+      v-if="isListView"
+      class="m-content"
+    >
+      <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+    </div>
+
+    <div
+      v-if="isListView"
+      class="m-component m-component-accordion"
+    >
+      <div class="m-component__body">
+        <div
+          class="m-accordion"
+          id="listViewAccordion"
+        >
+          <template
+            v-for="(day, index) in firstFiveAvailableDays"
+            :key="day.dateString"
+          >
+            <div>
+              <h3
+                style="
+                  margin-bottom: 20px;
+                  background-color: var(--color-neutrals-blue-xlight);
+                "
+                class="m-accordion__section-header"
+                :id="'listHeading-' + index"
+              >
+                <button
+                  class="m-accordion__section-button"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  :data-bs-target="'#listContent-' + index"
+                  :aria-expanded="index === 0"
+                  :aria-controls="'listContent-' + index"
+                  @click="onDayAccordionSelect(day)"
+                >
+                  {{ day.label }}
+                  <svg
+                    aria-hidden="true"
+                    focusable="false"
+                    class="icon"
+                  >
+                    <use
+                      :xlink:href="
+                        index === openAccordionIndex
+                          ? '#icon-chevron-up'
+                          : '#icon-chevron-down'
+                      "
+                    ></use>
+                  </svg>
+                </button>
+              </h3>
+
+              <section
+                class="m-accordion__section-content collapse"
+                :class="{ show: index === openAccordionIndex }"
+                :id="'listContent-' + index"
+                :aria-labelledby="'listHeading-' + index"
+                data-bs-parent="#listViewAccordion"
+              >
+                <div class="m-textplus__content">
+                  <template
+                    v-if="isLoadingAppointments && index === openAccordionIndex"
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 80px;
+                      "
+                    ></div>
+                  </template>
+
+                  <template
+                    v-else-if="
+                      day.appointmentsCount >
+                      APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW
+                    "
+                  >
+                    <template
+                      v-for="(hourRow, hIndex) in day.hourRows"
+                      :key="hIndex"
+                    >
+                      <div
+                        class="ml-4 location-title"
+                        v-if="
+                          (selectableProviders?.length || 0) > 1 &&
+                          (hIndex === 0 ||
+                            day.hourRows[hIndex - 1].officeId !==
+                              hourRow.officeId)
+                        "
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="icon icon--before"
+                        >
+                          <use xlink:href="#icon-map-pin"></use>
+                        </svg>
+                        {{ officeName(hourRow.officeId) }}
+                      </div>
+                      <div class="wrapper">
+                        <p class="centered-text nowrap">
+                          {{ hourRow.hour }}:00‑{{ hourRow.hour }}:59
+                        </p>
+                        <div class="grid">
+                          <div
+                            v-for="time in hourRow.times"
+                            :key="time"
+                            class="grid-item"
+                          >
+                            <muc-button
+                              class="timeslot"
+                              :variant="
+                                isSlotSelected(hourRow.officeId, time)
+                                  ? 'primary'
+                                  : 'secondary'
+                              "
+                              @click="
+                                handleTimeSlotSelection(hourRow.officeId, time)
+                              "
+                            >
+                              <template #default
+                                >{{ formatTime(time) }}
+                              </template>
+                            </muc-button>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </template>
+
+                  <template v-else>
+                    <template
+                      v-for="(partRow, pIndex) in day.dayPartRows"
+                      :key="pIndex"
+                    >
+                      <div
+                        class="ml-4 location-title"
+                        v-if="
+                          (selectableProviders?.length || 0) > 1 &&
+                          (pIndex === 0 ||
+                            day.dayPartRows[pIndex - 1].officeId !==
+                              partRow.officeId)
+                        "
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="icon icon--before"
+                        >
+                          <use xlink:href="#icon-map-pin"></use>
+                        </svg>
+                        {{ officeName(partRow.officeId) }}
+                      </div>
+                      <div class="wrapper">
+                        <p class="centered-text nowrap">
+                          {{ t(partRow.part) }}
+                        </p>
+                        <div class="grid">
+                          <div
+                            v-for="time in partRow.times"
+                            :key="time"
+                            class="grid-item"
+                          >
+                            <muc-button
+                              class="timeslot"
+                              :variant="
+                                isSlotSelected(partRow.officeId, time)
+                                  ? 'primary'
+                                  : 'secondary'
+                              "
+                              @click="
+                                handleTimeSlotSelection(partRow.officeId, time)
+                              "
+                            >
+                              <template #default
+                                >{{ formatTime(time) }}
+                              </template>
+                            </muc-button>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </template>
+                </div>
+              </section>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <muc-button
+      v-if="isListView && firstFiveAvailableDays.length < availableDays.length"
+      @click="loadMoreDays"
+      icon="chevron-down"
+      icon-animated
+      style="margin-top: 16px"
+    >
+      <template #default>{{ t("loadMore") }}</template>
+    </muc-button>
+
+    <div
       v-if="
+        !isListView &&
         selectedDay &&
         (timeSlotsInHoursByOffice.size > 0 || isLoadingAppointments) &&
-        appointmentsCount > 18
+        appointmentsCount > APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW
       "
       :key="
         String(selectedDay) +
@@ -168,7 +403,10 @@
           >
             <div
               class="wrapper"
-              v-if="timeslot == currentHour"
+              v-if="
+                timeslot == currentHour ||
+                providersWithAppointments.length === 1
+              "
             >
               <div v-if="firstHour !== null && firstHour > 0">
                 <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
@@ -181,7 +419,9 @@
                 >
                   <muc-button
                     class="timeslot"
-                    variant="secondary"
+                    :variant="
+                      isSlotSelected(officeId, time) ? 'primary' : 'secondary'
+                    "
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
                     <template #default>{{ formatTime(time) }}</template>
@@ -194,7 +434,7 @@
       </div>
       <div
         class="wrapper m-button-group"
-        v-if="!isLoadingAppointments"
+        v-if="!isLoadingAppointments && providersWithAppointments.length > 1"
       >
         <muc-button
           :key="currentHour ?? 0"
@@ -233,6 +473,7 @@
 
     <div
       v-else-if="
+        !isListView &&
         selectedDay &&
         (timeSlotsInDayPartByOffice.size > 0 || isLoadingAppointments)
       "
@@ -296,13 +537,13 @@
           >
             <div
               class="wrapper"
-              v-if="timeslot == currentDayPart"
+              v-if="
+                timeslot == currentDayPart ||
+                providersWithAppointments.length === 1
+              "
             >
-              <div v-if="currentDayPart === 'am'">
-                <p class="centered-text">{{ t("am") }}</p>
-              </div>
-              <div v-else>
-                <p class="centered-text">{{ t("pm") }}</p>
+              <div>
+                <p class="centered-text">{{ t(timeslot) }}</p>
               </div>
               <div class="grid">
                 <div
@@ -312,7 +553,9 @@
                 >
                   <muc-button
                     class="timeslot"
-                    variant="secondary"
+                    :variant="
+                      isSlotSelected(officeId, time) ? 'primary' : 'secondary'
+                    "
                     @click="handleTimeSlotSelection(officeId, time)"
                   >
                     <template #default>{{ formatTime(time) }}</template>
@@ -325,7 +568,7 @@
       </div>
       <div
         class="wrapper m-button-group"
-        v-if="!isLoadingAppointments"
+        v-if="!isLoadingAppointments && providersWithAppointments.length > 1"
       >
         <muc-button
           icon="chevron-left"
@@ -404,16 +647,13 @@
     v-if="showError"
     class="m-component"
   >
+    <h2 tabindex="0">{{ t("time") }}</h2>
     <muc-callout type="warning">
       <template #header>
-        {{
-          showErrorKey === "altcha.invalidCaptcha"
-            ? t("altcha.invalidCaptchaHeader")
-            : t("noAppointmentsAvailableHeader")
-        }}
+        <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
-        {{ t(showErrorKey) }}
+        {{ t(apiErrorTranslation.textKey) }}
       </template>
     </muc-callout>
   </div>
@@ -445,6 +685,7 @@
 </template>
 
 <script setup lang="ts">
+import type { AccordionDay } from "@/types/AccordionDay";
 import type { Ref } from "vue";
 
 import {
@@ -452,6 +693,7 @@ import {
   MucCalendar,
   MucCallout,
   MucCheckbox, // Todo: Use MucCheckbox once disabled boxes are available in the patternlab-vue package
+  MucCheckboxGroup,
 } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
 
@@ -468,6 +710,11 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import {
+  createErrorStates,
+  getApiErrorTranslation,
+  handleApiResponse,
+} from "@/utils/errorHandler";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -513,12 +760,23 @@ const appointmentsCount = ref<number>(0);
 const appointmentTimestampsByOffice = ref<OfficeAvailableTimeSlotsDTO[]>([]);
 const appointmentTimestamps = ref<number[]>([]);
 
-const errorKey = ref("");
+const errorStates = createErrorStates();
+const errorStateMap = computed(() => errorStates.errorStateMap);
+
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
-const showErrorKey = computed(() =>
-  error.value ? errorKey.value : props.bookingErrorKey
-);
+
+const apiErrorTranslation = computed(() => {
+  // If we have a booking error from props, use that instead of our own error states
+  if (props.bookingError && props.bookingErrorKey) {
+    return {
+      headerKey: `${props.bookingErrorKey}Header`,
+      textKey: `${props.bookingErrorKey}Text`,
+    };
+  }
+  // Otherwise, use our own error states
+  return getApiErrorTranslation(errorStateMap.value);
+});
 
 const selectedDay = ref<Date>();
 const minDate = ref<Date>();
@@ -838,7 +1096,6 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
       minDate.value = new Date((days[0] as any).time);
       maxDate.value = new Date((days[days.length - 1] as any).time);
       error.value = false;
-      errorKey.value = "";
     } else {
       handleError(data);
     }
@@ -847,13 +1104,7 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
 
 const handleError = (data: any): void => {
   error.value = true;
-
-  const tokenErrors = ["captchaMissing", "captchaExpired", "captchaInvalid"];
-  const errorCode = data?.errors?.[0]?.errorCode;
-
-  errorKey.value = tokenErrors.includes(errorCode)
-    ? "altcha.invalidCaptcha"
-    : "noAppointmentsAvailable";
+  handleApiResponse(data, errorStateMap.value);
 };
 
 const getAppointmentsOfDay = (date: string) => {
@@ -1142,6 +1393,18 @@ onMounted(() => {
       });
     }
 
+    // If a preselected office ID is provided, only check the corresponding provider's checkbox
+    if (props.preselectedOfficeId) {
+      selectedProviders.value = selectableProviders.value.reduce(
+        (acc, item) => {
+          acc[item.id] = String(item.id) === String(props.preselectedOfficeId);
+          return acc;
+        },
+        {} as { [id: string]: boolean }
+      );
+      initialized = true;
+    }
+
     officeOrder.value = new Map(
       selectableProviders.value.map((office, index) => [
         Number(office.id),
@@ -1422,19 +1685,154 @@ watch(
   },
   { deep: true }
 );
+
+const providerSelectionError = computed(() => {
+  if (!availableDays?.value || availableDays.value.length === 0) {
+    return "";
+  }
+
+  const hasSelection = Object.entries(selectedProviders.value).some(
+    ([id, isSelected]) =>
+      isSelected &&
+      providersWithAppointments.value.some((p) => p.id.toString() === id)
+  );
+
+  return hasSelection ? "" : props.t("errorMessageProviderSelection");
+});
+
+const APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW = 18;
+
+const isListView = ref(false);
+const toggleView = () => {
+  isListView.value = !isListView.value;
+};
+
+const openAccordionIndex = ref(0);
+
+const daysToShow = ref(5);
+
+const loadMoreDays = () => {
+  daysToShow.value += 3;
+  openAccordionIndex.value = -1;
+};
+
+const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
+  if (!availableDays.value) return [];
+
+  const availableForProviders = availableDays.value.filter((day) =>
+    day.providerIDs.split(",").some((id) => selectedProviders.value[id])
+  );
+
+  const trulyAvailable = availableForProviders.filter((day) => {
+    const dateStr = convertDateToString(new Date(day.time));
+    return !datesWithoutAppointments.value.has(dateStr);
+  });
+
+  return trulyAvailable.slice(0, daysToShow.value).map((dayObj) => {
+    const d = new Date(dayObj.time);
+    const dateString = convertDateToString(d);
+    const label =
+      formatterWeekday.format(d) +
+      ", " +
+      String(d.getDate()).padStart(2, "0") +
+      "." +
+      String(d.getMonth() + 1).padStart(2, "0") +
+      "." +
+      d.getFullYear();
+
+    let appointmentsCount = 0;
+    const hourRows: AccordionDay["hourRows"] = [];
+    const dayPartRows: AccordionDay["dayPartRows"] = [];
+
+    appointmentTimestampsByOffice.value.forEach((office) => {
+      if (!selectedProviders.value[office.officeId]) return;
+
+      const times = office.appointments.filter((ts) => {
+        return convertDateToString(new Date(ts * 1000)) === dateString;
+      });
+      appointmentsCount += times.length;
+
+      const byHour: Record<number, number[]> = {};
+      const byPart: { am: number[]; pm: number[] } = { am: [], pm: [] };
+
+      times.forEach((ts) => {
+        const hr = parseInt(berlinHourFormatter.format(new Date(ts * 1000)));
+        (byHour[hr] ||= []).push(ts);
+        const part = hr >= 12 ? "pm" : "am";
+        byPart[part].push(ts);
+      });
+
+      Object.entries(byHour).forEach(([hour, tsArray]) => {
+        hourRows.push({
+          hour: Number(hour),
+          times: tsArray,
+          officeId: office.officeId,
+        });
+      });
+      if (byPart.am.length) {
+        dayPartRows.push({
+          part: "am",
+          times: byPart.am,
+          officeId: office.officeId,
+        });
+      }
+      if (byPart.pm.length) {
+        dayPartRows.push({
+          part: "pm",
+          times: byPart.pm,
+          officeId: office.officeId,
+        });
+      }
+    });
+
+    hourRows.sort((a, b) => a.hour - b.hour);
+    dayPartRows.sort((a, b) => (a.part === "am" ? -1 : 1));
+
+    return {
+      date: d,
+      dateString,
+      label,
+      appointmentsCount,
+      hourRows,
+      dayPartRows,
+    };
+  });
+});
+
+const onDayAccordionSelect = (day: AccordionDay) => {
+  const idx = firstFiveAvailableDays.value.findIndex(
+    (d) => d.dateString === day.dateString
+  );
+  if (openAccordionIndex.value === idx) {
+    openAccordionIndex.value = -1; // Accordion schließen
+  } else {
+    openAccordionIndex.value = idx; // Accordion öffnen
+    selectedDay.value = day.date;
+    handleDaySelection(day.date);
+  }
+};
+
+const isSlotSelected = (officeId: number | string, time: number) =>
+  selectedTimeslot.value === time &&
+  selectedProvider.value?.id?.toString() === officeId.toString();
 </script>
 
 <style scoped>
 .wrapper {
-  display: flex;
-  justify-content: left;
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  column-gap: 8px;
+  padding: 16px 0;
   border-bottom: 1px solid var(--color-neutrals-blue);
-  padding-bottom: 16px;
-  padding-top: 16px;
+  align-items: center;
 }
 
 .wrapper > * {
   margin: 0 8px;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 .grid {

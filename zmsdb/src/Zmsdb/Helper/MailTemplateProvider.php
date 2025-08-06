@@ -5,6 +5,7 @@ namespace BO\Zmsdb\Helper;
 class MailTemplateProvider
 {
     protected $templates = false;
+    protected $process;
 
     public function __construct($process)
     {

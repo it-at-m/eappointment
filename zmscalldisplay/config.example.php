@@ -5,13 +5,15 @@ define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://e
 define('ZMS_API_PROXY', getenv('ZMS_API_PROXY') ? getenv('ZMS_API_PROXY') : NULL);
 define('ZMS_IDENTIFIER', getenv('ZMS_IDENTIFIER') ? getenv('ZMS_IDENTIFIER') : 'zms');
 define('ZMS_MODULE_NAME', 'zmscalldisplay');
+$value = getenv('ZMS_CALLDISPLAY_TWIG_CACHE');
+define('ZMS_CALLDISPLAY_TWIG_CACHE', ($value === 'false') ? false : ($value ?: '/cache/'));
 
 class App extends \BO\Zmscalldisplay\Application
 {
     const IDENTIFIER = ZMS_IDENTIFIER;
     const APP_PATH = APP_PATH;
     const DEBUG = false;
-    //const TWIG_CACHE = '/cache/';
+    const TWIG_CACHE = ZMS_CALLDISPLAY_TWIG_CACHE;
     const HTTP_BASE_URL = ZMS_API_URL;
 
     /**

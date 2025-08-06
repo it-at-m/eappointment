@@ -46,7 +46,7 @@ BerlinOnline Stadtportal GmbH & Co KG and it@M.
   <tr>
     <td><img src="https://service.berlin.de/i9f/r1/images/logo_berlin_m_srgb.svg" height="30" align="center"></td>
     <td style="padding-right: 30px;"><img src="https://gitlab.com/eappointment/zmsstatistic/-/raw/main/public/_css/images/bo_logo.svg?ref_type=heads" height="30" align="center"></td>
-    <td><img src="https://muenchen.digital/.resources/lhm-ms-templates-digitalradar/resources/img/logo-lhm.svg" height="30" align="center"></td>
+    <td><img src="https://assets.muenchen.de/logos/lhm/logo-lhm-muenchen.svg" height="30" align="center"></td>
     <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
   </tr>
 </table>
@@ -91,7 +91,7 @@ BerlinOnline Stadtportal GmbH & Co KG und it@M.
   <tr>
     <td><img src="https://service.berlin.de/i9f/r1/images/logo_berlin_m_srgb.svg" height="30" align="center"></td>
     <td style="padding-right: 30px;"><img src="https://gitlab.com/eappointment/zmsstatistic/-/raw/main/public/_css/images/bo_logo.svg?ref_type=heads" height="30" align="center"></td>
-    <td><img src="https://muenchen.digital/.resources/lhm-ms-templates-digitalradar/resources/img/logo-lhm.svg" height="30" align="center"></td>
+    <td><img src="https://assets.muenchen.de/logos/lhm/logo-lhm-muenchen.svg" height="30" align="center"></td>
     <td><img src="https://avatars.githubusercontent.com/u/58515289" height="30" align="center"></td>
   </tr>
 </table>
@@ -158,7 +158,18 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
 - `cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}`
 - `./vendor/bin/phpunit`
 
-For zmsapi and zmsdb you must first import the test data (see below). For zmsclient you need the php base image.
+- Usefule flags for `./vendor/bin/phpunit`:
+  * `--display-warnings`
+  * `--display-phpunit-deprecations`
+  * `--display-notices`
+  * `--display-errors`
+  * `--display-failures`
+
+For `zmsapi` and `zmsdb` you must first import the test data (see below). 
+
+For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`). 
+- `cd zmsclient`
+- `docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit`
 
 ### Special Cases (zmsapi & zmsdb)
 For the modules zmsapi and zmsdb, test data must be imported. Please note that this will overwrite your local database.

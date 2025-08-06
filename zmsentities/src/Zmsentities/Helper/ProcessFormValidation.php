@@ -154,7 +154,7 @@ class ProcessFormValidation
 
     protected static function testName($collection, $withAppointment)
     {
-        $length = strlen(Validator::param('familyName')->isString()->getValue());
+        $length = strlen(Validator::param('familyName')->isString()->getValue() ?? '');
         if ($length || $withAppointment) {
             $collection['familyName'] = Validator::param('familyName')->isString()
                 ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
@@ -165,7 +165,7 @@ class ProcessFormValidation
 
     protected static function testMail($collection, $scopePrefs, $withAppointment)
     {
-        $length = strlen(Validator::param('email')->isString()->getValue());
+        $length = strlen(Validator::param('email')->isString()->getValue() ?? '');
         if (self::isMailRequired($scopePrefs) && $withAppointment) {
             $collection['email'] = Validator::param('email')
                 ->isMail("Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.")
@@ -191,7 +191,7 @@ class ProcessFormValidation
 
     protected static function testSurvey($collection)
     {
-        $length = strlen(Validator::param('email')->isString()->getValue());
+        $length = strlen(Validator::param('email')->isString()->getValue() ?? '');
         if (self::hasCheckedSurvey() && !$length) {
             $collection['surveyAccepted'] = Validator::param('surveyAccepted')->isNumber();
             $collection['email'] = Validator::param('email')->isString()->isBiggerThan(

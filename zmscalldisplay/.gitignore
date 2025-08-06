@@ -20,4 +20,5 @@ vendor.update
 .parcel-cache
 .phpunit.result.cache
 coverage
+.phpunit.cache
 

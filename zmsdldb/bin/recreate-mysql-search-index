@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+error_reporting(E_ALL & ~E_DEPRECATED);
 $localInclude = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .  'vendor';
 $modulInclude = __DIR__ . str_repeat(DIRECTORY_SEPARATOR . '..', 3);
 set_include_path(get_include_path() . PATH_SEPARATOR . $localInclude . PATH_SEPARATOR . $modulInclude);

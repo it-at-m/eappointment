@@ -90,23 +90,21 @@ class Base extends \ArrayObject
 
     public function offsetSet($index, $value): void
     {
-        if ($index === 'data_json') {
+        if ('data_json' == $index) {
             $value = json_decode($value, true);
             $this->exchangeArray($value);
-            return;
-        }
+        } else {
+            if (stripos($index, '_json')) {
+                $value = json_decode($value, true);
+                $index = str_replace('_json', '', $index);
+            }
+            if (stripos($index, '__')) {
+                static::doubleUnterlineToArray($this, $index, $value);
+                return;
+            }
 
-        if (stripos($index, '_json') !== false) {
-            $value = json_decode($value, true);
-            $index = str_replace('_json', '', $index);
+            parent::offsetSet($index, $value);
         }
-
-        if (stripos($index, '__') !== false) {
-            static::doubleUnterlineToArray($this, $index, $value);
-            return;
-        }
-
-        parent::offsetSet($index, $value);
     }
 
     public static function doubleUnterlineToArray(&$array, $key, $value)

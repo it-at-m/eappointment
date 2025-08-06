@@ -9,7 +9,10 @@ class AvailabilityForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: getFormValuesFromData(this.props.data)
+            data: {
+                ...getFormValuesFromData(this.props.data),
+                multipleSlotsAllowed: "1"
+            }
         };
     }
 

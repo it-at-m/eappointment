@@ -8,7 +8,7 @@ class NotificationDeleteTest extends Base
 
     public function testRendering()
     {
-        $jsonString = (string)(new NotificationAddTest)->testRendering()->getBody();
+        $jsonString = (string)(new NotificationAddTest('dummyTest'))->testRendering()->getBody();
         $entity = json_decode($jsonString)->data;
         $entity = new \BO\Zmsentities\Notification($entity);
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
