@@ -13,11 +13,12 @@ export function generateLoaderJs(filename, subdirectory, suffix) {
   // replace the correct placeholder with the actual filename
   const loaderJsReplaced = loaderJsTemplate.replaceAll(
     "{{path}}",
-    `${subdirectory}/${filename}`
+    `../${subdirectory}/${filename}`
   );
   // write script to the dist folder as loader.js.template
+  fs.mkdirSync(`./dist/${suffix}`, { recursive: true })
   fs.writeFileSync(
-    path.resolve(`./dist/loader-${suffix}.js`),
+    path.resolve(`./dist/${suffix}/loader.js`),
     loaderJsReplaced,
     {
       encoding: "utf-8",
@@ -31,7 +32,9 @@ export function generateSingleLoaderJs(loaderPath) {
     encoding: "utf-8",
   });
 
-  const loaderContent = loaderJsTemplate.replaceAll("{{path}}", `${loaderPath}`);
+  const loaderContent = loaderJsTemplate
+    .replaceAll("{{path}}", `${loaderPath}`)
+    .replaceAll("/../src/wrapper.js", "/src/wrapper.js");
 
   fs.writeFileSync(path.resolve('./dist/loader.js'), loaderContent, {
     encoding: 'utf-8',

@@ -41,7 +41,7 @@ for (const key in manifest) {
 
     // Can be deleted after all loader.js have been replaced
     if (key.includes('src/zms-appointment-webcomponent.ts')){
-      generateSingleLoaderJs(`loader-${fileName}.js`)
+      generateSingleLoaderJs(`${fileName}/loader.js`)
     }
   }
 }
