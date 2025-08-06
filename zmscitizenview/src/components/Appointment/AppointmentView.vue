@@ -4,6 +4,7 @@
       v-if="
         !confirmAppointmentHash &&
         !apiErrorAppointmentNotFound &&
+        !apiErrorInvalidJumpinLink &&
         currentView < 4
       "
     >
@@ -25,6 +26,7 @@
                 :t="t"
                 @next="setServices"
                 @captchaTokenChanged="captchaToken = $event ?? undefined"
+                @invalidJumpinLink="handleInvalidJumpinLink"
               />
             </div>
 
@@ -179,6 +181,31 @@
               {{ t(apiErrorTranslation.headerKey) }}
             </template>
           </muc-callout>
+
+          <muc-callout
+            v-if="apiErrorInvalidJumpinLink"
+            type="error"
+          >
+            <template #content>
+              <p>{{ t("apiErrorInvalidJumpinLinkText") }}</p>
+              <div
+                class="m-button-group"
+                style="margin-top: 1rem"
+              >
+                <muc-button
+                  icon="arrow-right"
+                  @click="redirectToAppointmentStart"
+                  style="margin-bottom: 0; margin-right: 0"
+                >
+                  {{ t("bookAppointmentStart") }}
+                </muc-button>
+              </div>
+            </template>
+
+            <template #header>
+              {{ t("apiErrorInvalidJumpinLinkHeader") }}
+            </template>
+          </muc-callout>
         </div>
       </div>
     </div>
@@ -188,7 +215,11 @@
 <script setup lang="ts">
 import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
 
-import { MucCallout, MucStepper } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCallout,
+  MucStepper,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, nextTick, onMounted, provide, ref, watch } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
@@ -322,6 +353,7 @@ const apiErrorAppointmentNotAvailable =
   errorStateMap.value.apiErrorAppointmentNotAvailable;
 const apiErrorAppointmentNotFound =
   errorStateMap.value.apiErrorAppointmentNotFound;
+const apiErrorInvalidJumpinLink = errorStateMap.value.apiErrorInvalidJumpinLink;
 
 const isReservingAppointment = ref<boolean>(false);
 const isUpdatingAppointment = ref<boolean>(false);
@@ -687,6 +719,15 @@ const parseAppointmentHash = (hash: string): AppointmentHash | null => {
   } catch {
     return null;
   }
+};
+
+const handleInvalidJumpinLink = () => {
+  handleApiError("invalidJumpinLink", errorStateMap.value);
+};
+
+const redirectToAppointmentStart = () => {
+  window.location.href =
+    "https://stadt.muenchen.de/buergerservice/terminvereinbarung.html#/";
 };
 
 onMounted(() => {
