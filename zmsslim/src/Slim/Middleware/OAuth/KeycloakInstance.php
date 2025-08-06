@@ -45,9 +45,11 @@ class KeycloakInstance
             }
 
             $this->writeTokenToSession($accessToken);
-            \App::$http
-                ->readPostResult('/workstation/oauth/', $ownerInputData, ['state' => \BO\Zmsclient\Auth::getKey()])
-                ->getEntity();
+
+            // Use zmsclient OAuth for business logic
+            $oauth = new \BO\Zmsclient\OAuth(\App::$http, new \BO\Zmsclient\Auth());
+            $oauth->clearExistingSession();
+            $oauth->processOAuthLogin($ownerInputData, \BO\Zmsclient\Auth::getKey());
 
             \App::$log->info('OIDC login successful', [
                 'event' => 'oauth_login_success',
