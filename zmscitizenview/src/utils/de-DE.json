@@ -121,7 +121,7 @@
   "apiErrorZmsClientCommunicationErrorHeader": "Der Service ist vorübergehend nicht verfügbar.",
   "apiErrorZmsClientCommunicationErrorText": "Der Service ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später noch einmal.",
   "apiErrorInvalidJumpinLinkHeader": "Diese Ansicht kann nicht geladen werden.",
-  "apiErrorInvalidJumpinLinkText": "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie erneut in die Terminvereinbarung und wählen Sie eine Leistung.",
+  "apiErrorInvalidJumpinLinkText": "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu, um eine Leistung zu wählen.",
   "appointment": "Termin",
   "appointmentBookingErrorHeader": "Aktivierung fehlgeschlagen",
   "appointmentBookingErrorText": "Aktivierung fehlgeschlagen",
