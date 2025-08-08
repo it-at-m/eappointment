@@ -410,8 +410,8 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "BO\\Dldb\\": "src/Dldb/",
-                    "BO\\Dldb\\Tests\\": "tests/Dldb/"
+                    "BO\\Zmsdldb\\": "src/Zmsdldb/",
+                    "BO\\Zmsdldb\\Tests\\": "tests/Zmsdldb/"
                 }
             },
             "scripts": {

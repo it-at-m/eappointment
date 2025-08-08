@@ -24,7 +24,7 @@ $cli->description("Test Search")
     ->opt('index:i', 'name of index, one of all, service or location', true)
     ->opt(
         'fixtures:f',
-        'path to fixtures (a set of .json data files like locations_de.json), default: tests/Dldb/fixtures/',
+        'path to fixtures (a set of .json data files like locations_de.json), default: tests/Zmsdldb/fixtures/',
         false
     )
     ;
@@ -35,7 +35,7 @@ try {
     $host = 'localhost';
     $port = '9200';
     $transport = 'Http';
-    $fixtures = 'tests/Dldb/fixtures/';
+    $fixtures = 'tests/Zmsdldb/fixtures/';
     if ($args->getOpt('host')) {
         $host = $args->getOpt('host');
     }
@@ -51,7 +51,7 @@ try {
     if ($args->getOpt('fixtures')) {
         $fixtures = $args->getOpt('fixtures');
     }
-    $access = new \BO\Dldb\ElasticAccess($alias, $host, $port, $transport);
+    $access = new \BO\Zmsdldb\ElasticAccess($alias, $host, $port, $transport);
     $access->loadFromPath($fixtures);
     $index = $args->getOpt('index');
     if ($index == 'service') {
