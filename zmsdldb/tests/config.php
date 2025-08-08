@@ -1,7 +1,7 @@
 <?php
 
 
-define('FIXTURES', __DIR__ . DIRECTORY_SEPARATOR . 'Dldb' . DIRECTORY_SEPARATOR . 'fixtures');
+define('FIXTURES', __DIR__ . DIRECTORY_SEPARATOR . 'Zmsdldb' . DIRECTORY_SEPARATOR . 'fixtures');
 define('LOCATION_SINGLE', 122231); // Abgeordnetenhaus von Berlin
 define('SERVICE_SINGLE', 120703); // Personalausweis
 define('TOPIC_SINGLE', 324801); // Arbeit, Beruf und Soziales

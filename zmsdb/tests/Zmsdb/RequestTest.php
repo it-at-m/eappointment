@@ -84,7 +84,7 @@ class RequestTest extends Base
     public function testWriteImport()
     {
         $query = new Query();
-        $repository = (new \BO\Dldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Dldb::$importPath);
+        $repository = (new \BO\Zmsdldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Zmsdldb::$importPath);
         $importInput = $repository->fromService()->fetchId(120335);
         $importInput['group'] = 'test';
         $entity = $query->writeImportEntity($importInput, 'dldb'); //return written entity by true
