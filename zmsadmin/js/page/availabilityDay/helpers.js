@@ -98,8 +98,6 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         description: 'Neue Öffnungszeit',
         startDate: timestamp,
         endDate: timestamp,
-        startTime: '07:00:00',
-        endTime: '20:00:00',
         bookable: {
             ...(scope.preferences.appointment.startInDaysDefault ? { startInDays: scope.preferences.appointment.startInDaysDefault } : {}),
             ...(scope.preferences.appointment.endInDaysDefault ? { endInDays: scope.preferences.appointment.endInDaysDefault } : {})
@@ -290,8 +288,8 @@ export const getFormValuesFromData = data => {
 export const accordionTitle = (data) => {
     const startDate = moment(data.startDate, 'X').format('DD.MM.YYYY');
     const endDate = moment(data.endDate, 'X').format('DD.MM.YYYY');
-    const startTime = moment(data.startTime, 'h:mm:ss').format('HH:mm');
-    const endTime = moment(data.endTime, 'h:mm:ss').format('HH:mm');
+    const startTime = data.startTime ? moment(data.startTime, 'h:mm:ss').format('HH:mm') : '';
+    const endTime = data.endTime ? moment(data.endTime, 'h:mm:ss').format('HH:mm') : '';
     const availabilityType = availabilityTypes.find(element => element.value == data.type);
     const availabilityWeekDayList = Object.keys(data.weekday).filter(key => parseInt(data.weekday[key], 10) > 0)
     const availabilityWeekDay = weekDayList.filter(element => availabilityWeekDayList.includes(element.value)

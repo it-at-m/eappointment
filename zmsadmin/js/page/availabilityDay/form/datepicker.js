@@ -24,7 +24,8 @@ class AvailabilityDatePicker extends Component
             minTime: setHours(setMinutes(new Date(), 1), 0),
             maxTime: setHours(setMinutes(new Date(), 59), 23),
             datePickerIsOpen: false,
-            timPickerIsOpen: false
+            timePickerIsOpen: false,
+            timePickerInitialized: this.props.attributes.availability.kind !== "new"
         }
         this.escHandler = this.escHandler.bind(this);
         //datepicker
@@ -57,15 +58,18 @@ class AvailabilityDatePicker extends Component
     }
 
     updateState(name, date) {
-        let startTime = moment(this.props.attributes.availability.startTime, 'HH:mm');
+        let startTime = this.props.attributes.availability.startTime ? 
+            moment(this.props.attributes.availability.startTime, 'HH:mm') : null;
         let startDate = moment.unix(this.props.attributes.availability.startDate)
-            .set({"h": startTime.hours(), "m": startTime.minutes()})
+            .set({"h": startTime ? startTime.hours() : 0, "m": startTime ? startTime.minutes() : 0})
             .toDate()
-        let endTime = moment(this.props.attributes.availability.endTime, 'HH:mm');
+        let endTime = this.props.attributes.availability.endTime ? 
+            moment(this.props.attributes.availability.endTime, 'HH:mm') : null;
         let endDate = moment.unix(this.props.attributes.availability.endDate)
-            .set({"h": endTime.hours(), "m": endTime.minutes()})
+            .set({"h": endTime ? endTime.hours() : 0, "m": endTime ? endTime.minutes() : 0})
             .toDate()
 
+        let selectedTime = ("startDate" == this.props.name) ? startTime : endTime
         let selectedDate = ("startDate" == this.props.name) ? startDate : endDate
 
         if (name && date) {
@@ -76,7 +80,8 @@ class AvailabilityDatePicker extends Component
         this.setState({
             availability: this.props.attributes.availability,
             availabilityList: this.props.attributes.availabilitylist,
-            selectedDate: selectedDate
+            selectedDate: selectedDate,
+            timePickerInitialized: this.props.attributes.availability.kind !== "new" || (selectedTime && selectedTime.format("H") != 0)
         })
     }
 
@@ -137,6 +142,19 @@ class AvailabilityDatePicker extends Component
     }
 
     handleTimeChange(name, date) {
+        this.setState({
+            timePickerInitialized: true
+        });
+
+        if (!date) {
+            this.closeTimePicker();
+            if (this.props.onChange) {
+                const fieldName = name === 'startDate' ? 'startTime' : 'endTime';
+                this.props.onChange(fieldName, '');
+            }
+            return;
+        }
+
         if ('startDate' == name) {
             if (this.state.availability.startTime != moment(date).format('HH:mm')) {
                 this.props.onChange("startTime", moment(date).format('HH:mm'));
@@ -147,7 +165,6 @@ class AvailabilityDatePicker extends Component
                 this.props.onChange("endTime", moment(date).format('HH:mm'));
             }
         }
-        this.closeTimePicker();
     }
 
     escHandler(event) {
@@ -208,7 +225,7 @@ class AvailabilityDatePicker extends Component
 
     closeTimePicker() {
         this.setState({
-            timePickerIsOpen: false,
+            timePickerIsOpen: false
         });
     }
 
@@ -281,7 +298,7 @@ class AvailabilityDatePicker extends Component
                         <Label 
                             attributes={{"htmlFor": this.props.attributes.id + "_time", "className": "light"}} 
                             value={"startDate" == this.props.name ? "Uhrzeit von" : "Uhrzeit bis" }>
-                        </Label> 
+                        </Label>
                         <div className="controls add-date-picker">
                             <DatePicker
                                 name={this.props.name + "_time"}
@@ -289,8 +306,15 @@ class AvailabilityDatePicker extends Component
                                 className="form-control form-input" 
                                 ariaDescribedBy={"help_" + this.props.attributes.id + "_time"}
                                 id={this.props.attributes.id + "_time"}
-                                selected={this.state.selectedDate}
+                                selected={!this.state.timePickerInitialized || !this.props.attributes.availability.startTime ? null : this.state.selectedDate}
                                 onChange={date => {this.handleTimeChange(this.props.name, date)}}
+                                onFocus={() => {
+                                    const fieldName = this.props.name === 'startDate' ? 'startTime' : 'endTime';
+                                    const currentValue = this.props.attributes.availability[fieldName] || '';
+                                    if (this.props.onChange) {
+                                        this.props.onChange(fieldName, currentValue);
+                                    }
+                                }}
                                 showTimeSelect
                                 showTimeSelectOnly
                                 dateFormat="HH:mm"
@@ -308,7 +332,7 @@ class AvailabilityDatePicker extends Component
                                 strictParsing={true}
                                 open={this.state.timePickerIsOpen}
                                 ref={(timepicker) => { this.timepicker = timepicker }} 
-
+                                placeholderText="Uhrzeit wählen"
                             />
                             <a href="#" aria-describedby={"help_" + this.props.attributes.id + "_time"} aria-label="Uhrzeitauswahl öffnen" className="calendar-placement icon" title={"startDate" == this.props.name ? "Uhrzeit von wählen" : "Uhrzeit bis wählen"} onClick={this.handleClockIcon} onKeyDown={this.tpKeyDownHandler}>
                                 <i className="far fa-clock" aria-hidden="true" />
