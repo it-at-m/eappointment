@@ -19,8 +19,7 @@ class OAuthMiddleware
      * @var array
      */
     public static $authInstances = [
-        'keycloak' => '\BO\Slim\Middleware\OAuth\KeycloakInstance',
-        'gitlab' => '\BO\Slim\Middleware\OAuth\GitlabInstance'
+        'keycloak' => '\BO\Slim\Middleware\OAuth\KeycloakInstance'
     ];
 
     /**

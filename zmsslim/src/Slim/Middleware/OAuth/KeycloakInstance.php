@@ -32,9 +32,11 @@ class KeycloakInstance
 
         try {
             $accessToken = $this->getAccessToken($request->getParam("code"));
-            $this->testAccess($accessToken);
-            $ownerInputData = $this->provider->getResourceOwnerData($accessToken);
-            $this->testOwnerData($ownerInputData);
+            $this->validateAccess($accessToken);
+            $rawOwnerData = $this->provider->getResourceOwnerData($accessToken);
+            $oauth = new \BO\Zmsclient\OAuth(\App::$http, new \BO\Zmsclient\Auth());
+            $ownerInputData = $oauth->processResourceOwnerData($rawOwnerData);
+            $oauth->validateOwnerData($ownerInputData);
 
             if (\BO\Zmsclient\Auth::getKey()) {
                 \App::$log->info('Clearing existing session', [
@@ -45,9 +47,10 @@ class KeycloakInstance
             }
 
             $this->writeTokenToSession($accessToken);
-            \App::$http
-                ->readPostResult('/workstation/oauth/', $ownerInputData, ['state' => \BO\Zmsclient\Auth::getKey()])
-                ->getEntity();
+
+            $oauth = new \BO\Zmsclient\OAuth(\App::$http, new \BO\Zmsclient\Auth());
+            $oauth->clearExistingSession();
+            $oauth->processOAuthLogin($ownerInputData, \BO\Zmsclient\Auth::getKey());
 
             \App::$log->info('OIDC login successful', [
                 'event' => 'oauth_login_success',
@@ -93,7 +96,7 @@ class KeycloakInstance
         return true;
     }
 
-    private function testAccess(AccessToken $token)
+    private function validateAccess(AccessToken $token)
     {
         \App::$log->info('Validating OIDC token', [
             'event' => 'oauth_token_validation',
@@ -129,7 +132,6 @@ class KeycloakInstance
 
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
 
-        // Fix: Properly handle base64url encoding before JSON decoding
         $payload = str_replace(['-', '_'], ['+', '/'], $payload);
         $payload = base64_decode($payload . str_repeat('=', 4 - (strlen($payload) % 4)));
         $accessTokenPayload = json_decode($payload, true);
@@ -203,13 +205,7 @@ class KeycloakInstance
         ]);
     }
 
-    private function testOwnerData(array $ownerInputData)
-    {
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
-        if (! \array_key_exists('email', $ownerInputData) && 1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {
-            throw new \BO\Slim\Exception\OAuthPreconditionFailed();
-        }
-    }
+
 
     private function getAccessToken($code)
     {
