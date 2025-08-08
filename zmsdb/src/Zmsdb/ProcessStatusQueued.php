@@ -17,6 +17,7 @@ class ProcessStatusQueued extends Process
     ) {
         $process = Entity::createFromScope($scope, $dateTime);
         $process->setStatus('queued');
+        $process->priority = 2;
         $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
         $process->addQueue($newQueueNumber, $dateTime);
         $process = $this->writeNewProcess($process, $dateTime);

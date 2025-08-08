@@ -54,7 +54,7 @@ class ExchangeWaitingscopeTest extends Base
 
         $query->writeWaitingTimeCalculated($scope, $now);
         $entry = $query->readByDateTime($scope, $now);
-        $this->assertEquals(7, $entry['waitingcalculated']);
+        $this->assertEquals(11, $entry['waitingcalculated']);
 
         // we now actually expect waitingcount to be zero because it will only be updated in the call to "updateWaitingStatistics" 
         $this->assertEquals(0, $entry['waitingcount']);
@@ -65,20 +65,20 @@ class ExchangeWaitingscopeTest extends Base
         (new \BO\Zmsdb\ProcessStatusQueued())->writeNewFromTicketprinter($scope, $now);
         $query->writeWaitingTimeCalculated($scope, $now);
         $entry = $query->readByDateTime($scope, $now);
-        $this->assertEquals(14, $entry['waitingcalculated']);
+        $this->assertEquals(15, $entry['waitingcalculated']);
         $this->assertEquals(0, $entry['waitingcount']);
         $this->assertEquals(0, $entry['waitingtime']);
         // highest values should not be decreased
         $now =  new DateTime('2016-04-01 08:17:00');
         $query->writeWaitingTimeCalculated($scope, $now);
         $entry = $query->readByDateTime($scope, $now);
-        $this->assertEquals(14, $entry['waitingcalculated']);
+        $this->assertEquals(15, $entry['waitingcalculated']);
         $this->assertEquals(0, $entry['waitingcount']);
         $this->assertEquals(0, $entry['waitingtime']);
         // set waitingtime
         $query->writeWaitingTime($process, $now);
         $entry = $query->readByDateTime($scope, $now);
-        $this->assertEquals(14, $entry['waitingcalculated']);
+        $this->assertEquals(15, $entry['waitingcalculated']);
         $this->assertEquals(0, $entry['waitingcount']);
         $this->assertEquals(6, $entry['waitingtime']);
         // higher waitingtime
