@@ -14,12 +14,12 @@ class Search extends Base
 
     public function postSetupFields()
     {
-        if (array_key_exists('search_value', ($this->fields ?? [])) && !empty($this->fields['search_value'])) {
+        if (isset($this->fields['search_value']) && !empty($this->fields['search_value'])) {
             if (is_array($this->fields['search_value'])) {
                 $this->fields['search_value'] = implode(', ', array_filter($this->fields['search_value']));
             }
         }
-        $this->fields['search_value'] = trim($this->fields['search_value']);
+        $this->fields['search_value'] = trim($this->fields['search_value'] ?? '');
     }
 
     public function postSetup()
