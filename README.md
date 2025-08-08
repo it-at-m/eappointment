@@ -164,6 +164,7 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
   * `--display-notices`
   * `--display-errors`
   * `--display-failures`
+  * `--debug` - Provides detailed test execution information including deprecation warnings and memory usage
 
 For `zmsapi` and `zmsdb` you must first import the test data (see below). 
 
