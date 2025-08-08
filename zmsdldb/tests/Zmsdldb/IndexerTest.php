@@ -4,9 +4,9 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
  
-namespace BO\Dldb\Tests;
+namespace BO\Zmsdldb\Tests;
 
-use BO\Dldb\FileAccess;
+use BO\Zmsdldb\FileAccess;
 
 class IndexerTest extends \PHPUnit\Framework\TestCase
 {
@@ -18,7 +18,7 @@ class IndexerTest extends \PHPUnit\Framework\TestCase
             return true;
         }
         if (!getenv('FASTTEST')) {
-            $indexer = new \BO\Dldb\Indexer\ElasticSearch(FIXTURES);
+            $indexer = new \BO\Zmsdldb\Indexer\ElasticSearch(FIXTURES);
             $indexer->setHost(ES_HOST);
             $indexer->setPort(ES_PORT);
             $indexer->setTransport(ES_TRANSPORT);
@@ -34,7 +34,7 @@ class IndexerTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse(ES_TEST);
             return true;
         }
-        $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+        $access = new \BO\Zmsdldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
         $location = $access->fromLocation()->fetchId(LOCATION_SINGLE);
         $this->assertNotFalse($location);
@@ -46,7 +46,7 @@ class IndexerTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse(ES_TEST);
             return true;
         }
-        $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+        $access = new \BO\Zmsdldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
         $location = $access->fromLocation()->fetchId(LOCATION_SINGLE);
         $this->assertNotFalse($location);
@@ -88,7 +88,7 @@ class IndexerTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse(ES_TEST);
             return true;
         }
-        $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+        $access = new \BO\Zmsdldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
         $location = $access->fromLocation()->fetchId(1);
         $this->assertFalse($location);
@@ -103,7 +103,7 @@ class IndexerTest extends \PHPUnit\Framework\TestCase
             return true;
         }
         if (!getenv('NOCOMPARE')) {
-            $access1 = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+            $access1 = new \BO\Zmsdldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
             $access1->loadFromPath(FIXTURES);
             $access2 = new FileAccess();
             $access2->loadFromPath(FIXTURES);
@@ -144,7 +144,7 @@ class IndexerTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse(ES_TEST);
             return true;
         }
-        $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+        $access = new \BO\Zmsdldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
         $serviceList = $access->fromService('de')->searchAll('');
         //var_dump(reset($serviceList));exit;
@@ -180,7 +180,7 @@ class IndexerTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse(ES_TEST);
             return true;
         }
-        $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+        $access = new \BO\Zmsdldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
         $serviceList = $access->fromService()->searchAll('');
         $this->assertTrue(

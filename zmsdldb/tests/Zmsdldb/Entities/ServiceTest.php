@@ -4,18 +4,18 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
-namespace BO\Dldb\Tests\Entities;
+namespace BO\Zmsdldb\Tests\Entities;
 
-use BO\Dldb\FileAccess;
+use BO\Zmsdldb\FileAccess;
 
-class ServiceTest extends Base
+class ServiceTest extends \PHPUnit\Framework\TestCase
 {
     public function testFilter()
     {
         $access = new FileAccess();
         $access->loadFromPath(FIXTURES);
         $serviceList = $access->fromService()->fetchList();
-        $this->assertTrue($serviceList instanceof \BO\Dldb\Collection\Services);
+        $this->assertTrue($serviceList instanceof \BO\Zmsdldb\Collection\Services);
         $this->assertTrue($serviceList[SERVICE_SINGLE]->hasAppointments());
         $this->assertTrue($serviceList[SERVICE_SINGLE]->hasAppointments(true));
         // Aufenthaltsgenehmigung Praktikum

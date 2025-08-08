@@ -196,9 +196,9 @@ bin/importTestData --commit
 ### Common Errors
 
 - If you encounter `Too many levels of symbolic links`, remove the `<exclude>` rule for the vendor directory in the module's phpunit.xml.
-- If you get `No data path given in /var/www/html/zmsdb/src/Zmsdb/Source/Dldb.php:29`, make sure your zmsdb/config.php contains the following line:
+- If you get `No data path given in /var/www/html/zmsdb/src/Zmsdb/Source/Zmsdldb.php:29`, make sure your zmsdb/config.php contains the following line:
   ```php
-  \BO\Zmsdb\Source\Dldb::$importPath = realpath(dirname(__FILE__) . '/tests/Zmsdb/fixtures/');
+  \BO\Zmsdb\Source\Zmsdldb::$importPath = realpath(dirname(__FILE__) . '/tests/Zmsdb/fixtures/');
   ```
 
 ## Cronjobs

@@ -4,9 +4,9 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
-namespace BO\Dldb\Tests;
+namespace BO\Zmsdldb\Tests;
 
-use BO\Dldb\Plz\Coordinates;
+use BO\Zmsdldb\Plz\Coordinates;
 
 class CoordinatesTest extends \PHPUnit\Framework\TestCase
 {

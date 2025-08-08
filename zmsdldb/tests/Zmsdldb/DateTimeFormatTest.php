@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Dldb\Tests;
+namespace BO\Zmsdldb\Tests;
 
 use PHPUnit\Framework\TestCase;
 
@@ -9,7 +9,7 @@ class DateTimeFormatTest extends TestCase
 
     public function testTwigDateFormat()
     {
-        $twigExtensionsClass = new \BO\Dldb\TwigExtension();
+        $twigExtensionsClass = new \BO\Zmsdldb\TwigExtension();
         $date = '2016-04-01';
         $this->assertEquals('2016-04-01', $twigExtensionsClass->formatDateTime($date)['dateId']);
         $this->assertEquals('Fr., 01. April 2016', $twigExtensionsClass->formatDateTime($date)['date']);

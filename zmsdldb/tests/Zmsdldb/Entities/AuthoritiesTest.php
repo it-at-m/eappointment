@@ -4,11 +4,11 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
-namespace BO\Dldb\Tests\Entities;
+namespace BO\Zmsdldb\Tests\Entities;
 
-use BO\Dldb\FileAccess;
+use BO\Zmsdldb\FileAccess;
 
-class AuthoritiesTest extends Base
+class AuthoritiesTest extends \PHPUnit\Framework\TestCase
 {
     public function testHasAppointments()
     {

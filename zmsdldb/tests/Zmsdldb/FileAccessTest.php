@@ -4,9 +4,9 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
  
-namespace BO\Dldb\Tests;
+namespace BO\Zmsdldb\Tests;
 
-use BO\Dldb\FileAccess;
+use BO\Zmsdldb\FileAccess;
 
 class FileAccessTest extends \PHPUnit\Framework\TestCase
 {
@@ -132,42 +132,42 @@ class FileAccessTest extends \PHPUnit\Framework\TestCase
 
     public function testFailInit()
     {
-        $this->expectException("\BO\Dldb\Exception");
+        $this->expectException("\BO\Zmsdldb\Exception");
         $access = new FileAccess();
         $access->fromLocation();
     }
 
     public function testFailFunction()
     {
-        $this->expectException("\BO\Dldb\Exception");
+        $this->expectException("\BO\Zmsdldb\Exception");
         $access = new FileAccess();
         $access->fetchDummyAction();
     }
 
     public function testFailLocation()
     {
-        $this->expectException("\BO\Dldb\Exception");
+        $this->expectException("\BO\Zmsdldb\Exception");
         $access = new FileAccess('dummy', 'dummy');
         $access->fromLocation()->loadData();
     }
 
     public function testFailService()
     {
-        $this->expectException("\BO\Dldb\Exception");
+        $this->expectException("\BO\Zmsdldb\Exception");
         $access = new FileAccess(LOCATION_JSON, 'dummy');
         $access->fromService()->loadData();
     }
 
     public function testFailJsonLocation()
     {
-        $this->expectException("\BO\Dldb\Exception");
+        $this->expectException("\BO\Zmsdldb\Exception");
         $access = new FileAccess(__FILE__, 'dummy');
         $access->fromLocation()->loadData();
     }
 
     public function testFailJsonService()
     {
-        $this->expectException("\BO\Dldb\Exception");
+        $this->expectException("\BO\Zmsdldb\Exception");
         $access = new FileAccess(LOCATION_JSON, __FILE__);
         $access->fromService()->loadData();
     }

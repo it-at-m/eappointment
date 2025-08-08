@@ -9,7 +9,7 @@ require('autoload.php');
 
 
 use Garden\Cli\Cli;
-use \BO\Dldb\MySQLAccess; 
+use \BO\Zmsdldb\MySQLAccess; 
 
 
 $cli = new Cli();
@@ -41,17 +41,17 @@ try {
            
     $stm = $mysqlAccess->query($sql);
     $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json)  use ($mysqlAccess) {
-        $importEntity = new \BO\Dldb\Importer\MySQL\Entity\Service($mysqlAccess, json_decode($data_json, true), false);
+        $importEntity = new \BO\Zmsdldb\Importer\MySQL\Entity\Service($mysqlAccess, json_decode($data_json, true), false);
         $importEntity->setupFields();
         $mapping = $importEntity->getReferenceMapping(true);
 
         foreach ($mapping as $field => $data) {
-            if ('BO\\Dldb\\Importer\\MySQL\\Entity\\Search' == ltrim($data['class'], '\\')) {
+            if ('BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search' == ltrim($data['class'], '\\')) {
                 $searchData = $data['addFields'];
                 foreach ($data['neededFields'] as $key => $mapKey) {
                     $searchData[$mapKey] = $importEntity->get($key);
                 }
-                $searchEntity = new \BO\Dldb\Importer\MySQL\Entity\Search($mysqlAccess, $searchData);
+                $searchEntity = new \BO\Zmsdldb\Importer\MySQL\Entity\Search($mysqlAccess, $searchData);
                 $searchEntity->save();
             }
         }
@@ -61,17 +61,17 @@ try {
            
     $stm = $mysqlAccess->query($sql);
     $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($mysqlAccess) {
-        $importEntity = new \BO\Dldb\Importer\MySQL\Entity\Location($mysqlAccess, json_decode($data_json, true), false);
+        $importEntity = new \BO\Zmsdldb\Importer\MySQL\Entity\Location($mysqlAccess, json_decode($data_json, true), false);
         $importEntity->setupFields();
         $mapping = $importEntity->getReferenceMapping(true);
 
         foreach ($mapping as $field => $data) {
-            if ('BO\\Dldb\\Importer\\MySQL\\Entity\\Search' == ltrim($data['class'], '\\')) {
+            if ('BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search' == ltrim($data['class'], '\\')) {
                 $searchData = $data['addFields'];
                 foreach ($data['neededFields'] as $key => $mapKey) {
                     $searchData[$mapKey] = $importEntity->get($key);
                 }
-                $searchEntity = new \BO\Dldb\Importer\MySQL\Entity\Search($mysqlAccess, $searchData);
+                $searchEntity = new \BO\Zmsdldb\Importer\MySQL\Entity\Search($mysqlAccess, $searchData);
                 $searchEntity->save();
             }
         }
@@ -81,17 +81,17 @@ try {
 
     $stm = $mysqlAccess->query($sql);
     $stm->fetchAll(\PDO::FETCH_FUNC, function($data_json) use ($mysqlAccess) {
-        $importEntity = new \BO\Dldb\Importer\MySQL\Entity\Topic($mysqlAccess, json_decode($data_json, true), false);
+        $importEntity = new \BO\Zmsdldb\Importer\MySQL\Entity\Topic($mysqlAccess, json_decode($data_json, true), false);
         $importEntity->setupFields();
         $mapping = $importEntity->getReferenceMapping(true);
 
         foreach ($mapping as $field => $data) {
-            if ('BO\\Dldb\\Importer\\MySQL\\Entity\\Search' == ltrim($data['class'], '\\')) {
+            if ('BO\\Zmsdldb\\Importer\\MySQL\\Entity\\Search' == ltrim($data['class'], '\\')) {
                 $searchData = $data['addFields'];
                 foreach ($data['neededFields'] as $key => $mapKey) {
                     $searchData[$mapKey] = $importEntity->get($key);
                 }
-                $searchEntity = new \BO\Dldb\Importer\MySQL\Entity\Search($mysqlAccess, $searchData);
+                $searchEntity = new \BO\Zmsdldb\Importer\MySQL\Entity\Search($mysqlAccess, $searchData);
                 $searchEntity->save();
             }
         }

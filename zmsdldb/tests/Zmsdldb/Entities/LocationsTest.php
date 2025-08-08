@@ -4,11 +4,11 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
-namespace BO\Dldb\Tests\Entities;
+namespace BO\Zmsdldb\Tests\Entities;
 
-use BO\Dldb\FileAccess;
+use BO\Zmsdldb\FileAccess;
 
-class LocationsTest extends Base
+class LocationsTest extends \PHPUnit\Framework\TestCase
 {
     public function testFilter()
     {
@@ -16,7 +16,7 @@ class LocationsTest extends Base
         $access->loadFromPath(FIXTURES);
         $locationList = $access->fetchLocationList(SERVICE_SINGLE);
 
-        $this->assertTrue($locationList instanceof \BO\Dldb\Collection\Locations);
+        $this->assertTrue($locationList instanceof \BO\Zmsdldb\Collection\Locations);
         $this->assertTrue(in_array(LOCATION_SINGLE, $locationList->getIds()));
         $this->assertTrue(in_array(LOCATION_SINGLE, explode(',', $locationList->getCSV())));
         $this->assertTrue(in_array(
