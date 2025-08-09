@@ -38,95 +38,172 @@ class ReportClientIndex extends BaseController
           ->readGetResult('/warehouse/clientscope/' . $scopeId . '/')
           ->getEntity();
 
-        $exchangeClient = null;
-        $dateRange = null;
+        // Extract date parameters and validate
+        $dateRange = $this->extractDateRange($validator);
         
-        // Check for date range parameters
+        // Get exchange client data based on date range or period
+        $exchangeClient = $this->getExchangeClientData($validator, $scopeId, $dateRange, $args);
+
+        // Handle download request
+        $type = $validator->getParameter('type')->isString()->getValue();
+        if ($type) {
+            return $this->handleDownloadRequest($request, $response, $args, $exchangeClient, $dateRange);
+        }
+
+        // Render HTML response
+        return $this->renderHtmlResponse($response, $args, $clientPeriod, $dateRange, $exchangeClient);
+    }
+
+    /**
+     * Extract and validate date range from request parameters
+     */
+    private function extractDateRange($validator): ?array
+    {
         $fromDate = $validator->getParameter('from')->isString()->getValue();
         $toDate = $validator->getParameter('to')->isString()->getValue();
         
-        if ($fromDate && $toDate) {
-            if ($this->isValidDateFormat($fromDate) && $this->isValidDateFormat($toDate)) {
-                $dateRange = [
-                    'from' => $fromDate,
-                    'to' => $toDate
-                ];
-                $year = substr($fromDate, 0, 4);
+        if ($fromDate && $toDate && $this->isValidDateFormat($fromDate) && $this->isValidDateFormat($toDate)) {
+            return [
+                'from' => $fromDate,
+                'to' => $toDate
+            ];
+        }
+        
+        return null;
+    }
 
-                try {
-                    // Fetch the whole year grouped by day
-                    $exchangeClientFull = \App::$http
-                        ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $year . '/', ['groupby' => 'day'])
-                        ->getEntity();
-
-                    error_log("Filtering from: " . $fromDate . " to: " . $toDate);
-                    error_log("Total data rows before filtering: " . count($exchangeClientFull->data));
-
-                    $filteredData = [];
-                    foreach ($exchangeClientFull->data as $row) {
-                        if ($row[1] >= $fromDate && $row[1] <= $toDate) {
-                            $filteredData[] = $row;
-                        }
-                    }
-
-                    error_log("Total data rows after filtering: " . count($filteredData));
-
-                    // Clone entity, replace data, calculate totals and convert to hash format
-                    $exchangeClient = clone $exchangeClientFull;
-                    $exchangeClient->data = $filteredData;
-                    
-                    // Ensure period is set for download functionality
-                    if (!isset($exchangeClient->period)) {
-                        $exchangeClient->period = 'day';
-                    }
-                    
-                    // Update firstDay and lastDay to reflect the actual filtered date range
-                    $exchangeClient->firstDay = (new \BO\Zmsentities\Day())->setDateTime(new \DateTime($fromDate));
-                    $exchangeClient->lastDay = (new \BO\Zmsentities\Day())->setDateTime(new \DateTime($toDate));
-                    
-                    $exchangeClient = $exchangeClient
-                        ->withCalculatedTotals($this->totals, 'date')
-                        ->toHashed();
-
-                } catch (\Exception $exception) {
-                    error_log("Exception in exchangeClientFull: " . $exception->getMessage());
-                }
-            }
+    /**
+     * Get exchange client data based on date range or period
+     */
+    private function getExchangeClientData($validator, $scopeId, $dateRange, $args): mixed
+    {
+        if ($dateRange) {
+            return $this->getExchangeClientForDateRange($scopeId, $dateRange);
         } elseif (isset($args['period'])) {
-            // Existing period functionality (backward compatibility)
-            try {
-                $exchangeClient = \App::$http
-                    ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $args['period'] . '/')
-                    ->getEntity()
-                    ->withCalculatedTotals($this->totals, 'date')
-                    ->toHashed();
-            } catch (\Exception $exception) {
-                // do nothing
+            return $this->getExchangeClientForPeriod($scopeId, $args['period']);
+        }
+        
+        return null;
+    }
+
+    /**
+     * Get exchange client data for a specific date range
+     */
+    private function getExchangeClientForDateRange($scopeId, $dateRange): mixed
+    {
+        $fromDate = $dateRange['from'];
+        $toDate = $dateRange['to'];
+        $year = substr($fromDate, 0, 4);
+
+        try {
+            // Fetch the whole year grouped by day
+            $exchangeClientFull = \App::$http
+                ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $year . '/', ['groupby' => 'day'])
+                ->getEntity();
+
+            error_log("Filtering from: " . $fromDate . " to: " . $toDate);
+            error_log("Total data rows before filtering: " . count($exchangeClientFull->data));
+
+            // Filter data by date range
+            $filteredData = $this->filterDataByDateRange($exchangeClientFull->data, $fromDate, $toDate);
+
+            error_log("Total data rows after filtering: " . count($filteredData));
+
+            // Create filtered exchange client
+            return $this->createFilteredExchangeClient($exchangeClientFull, $filteredData, $fromDate, $toDate);
+
+        } catch (\Exception $exception) {
+            error_log("Exception in getExchangeClientForDateRange: " . $exception->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Get exchange client data for a specific period (legacy functionality)
+     */
+    private function getExchangeClientForPeriod($scopeId, $period): mixed
+    {
+        try {
+            return \App::$http
+                ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $period . '/')
+                ->getEntity()
+                ->withCalculatedTotals($this->totals, 'date')
+                ->toHashed();
+        } catch (\Exception $exception) {
+            error_log("Exception in getExchangeClientForPeriod: " . $exception->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Filter data array by date range
+     */
+    private function filterDataByDateRange($data, $fromDate, $toDate): array
+    {
+        $filteredData = [];
+        foreach ($data as $row) {
+            if ($row[1] >= $fromDate && $row[1] <= $toDate) {
+                $filteredData[] = $row;
             }
         }
+        return $filteredData;
+    }
 
-        $type = $validator->getParameter('type')->isString()->getValue();
-        if ($type) {
-            $args['category'] = 'clientscope';
+    /**
+     * Create filtered exchange client with updated properties
+     */
+    private function createFilteredExchangeClient($exchangeClientFull, $filteredData, $fromDate, $toDate): mixed
+    {
+        // Clone entity and replace data
+        $exchangeClient = clone $exchangeClientFull;
+        $exchangeClient->data = $filteredData;
+        
+        // Ensure period is set for download functionality
+        if (!isset($exchangeClient->period)) {
+            $exchangeClient->period = 'day';
+        }
+        
+        // Update firstDay and lastDay to reflect the actual filtered date range
+        $exchangeClient->firstDay = (new \BO\Zmsentities\Day())->setDateTime(new \DateTime($fromDate));
+        $exchangeClient->lastDay = (new \BO\Zmsentities\Day())->setDateTime(new \DateTime($toDate));
+        
+        return $exchangeClient
+            ->withCalculatedTotals($this->totals, 'date')
+            ->toHashed();
+    }
 
-            // Set period for download filename - use date range or existing period
-            if ($dateRange) {
-                $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
-            }
+    /**
+     * Handle download request and return Excel file
+     */
+    private function handleDownloadRequest($request, $response, $args, $exchangeClient, $dateRange): ResponseInterface
+    {
+        $args['category'] = 'clientscope';
 
-            if ($exchangeClient && count($exchangeClient->data)) {
-                $args['reports'][] = $exchangeClient;
-                error_log("Adding report to download with " . count($exchangeClient->data) . " data rows");
-                error_log("Report period: " . ($exchangeClient->period ?? 'not set'));
-            } else {
-                error_log("No exchangeClient data for download. ExchangeClient: " . ($exchangeClient ? 'exists' : 'null') . ", Data count: " . ($exchangeClient ? count($exchangeClient->data) : 'N/A'));
-            }
-            $args['scope'] = $this->workstation->getScope();
-            $args['department'] = $this->department;
-            $args['organisation'] = $this->organisation;
-            return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+        // Set period for download filename - use date range or existing period
+        if ($dateRange) {
+            $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
         }
 
+        if ($exchangeClient && count($exchangeClient->data)) {
+            $args['reports'][] = $exchangeClient;
+            error_log("Adding report to download with " . count($exchangeClient->data) . " data rows");
+            error_log("Report period: " . ($exchangeClient->period ?? 'not set'));
+        } else {
+            error_log("No exchangeClient data for download. ExchangeClient: " . ($exchangeClient ? 'exists' : 'null') . ", Data count: " . ($exchangeClient ? count($exchangeClient->data) : 'N/A'));
+        }
+
+        $args['scope'] = $this->workstation->getScope();
+        $args['department'] = $this->department;
+        $args['organisation'] = $this->organisation;
+        
+        return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+    }
+
+    /**
+     * Render HTML response for the report page
+     */
+    private function renderHtmlResponse($response, $args, $clientPeriod, $dateRange, $exchangeClient): ResponseInterface
+    {
         return Render::withHtml(
             $response,
             'page/reportClientIndex.twig',
@@ -149,11 +226,8 @@ class ReportClientIndex extends BaseController
 
     /**
      * Validate if the given string is a valid date format (YYYY-MM-DD)
-     * 
-     * @param string $date
-     * @return bool
      */
-    private function isValidDateFormat($date)
+    private function isValidDateFormat($date): bool
     {
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
             return false;
