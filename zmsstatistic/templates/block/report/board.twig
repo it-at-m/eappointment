@@ -9,7 +9,7 @@
     {% endif %}
 
     {% if dateRange %}
-        {% set tablePeriod = dateRange.from ~ " bis " ~ dateRange.to %}
+        {% set tablePeriod = dateRange.from|date("d.m.Y") ~ " bis " ~ dateRange.to|date("d.m.Y") %}
     {% endif %}
 
     {% if activeDepartment %}
