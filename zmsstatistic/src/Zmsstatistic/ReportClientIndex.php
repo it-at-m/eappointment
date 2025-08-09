@@ -93,24 +93,31 @@ class ReportClientIndex extends BaseController
     {
         $fromDate = $dateRange['from'];
         $toDate = $dateRange['to'];
-        $year = substr($fromDate, 0, 4);
-
+        
         try {
-            // Fetch the whole year grouped by day
-            $exchangeClientFull = \App::$http
-                ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $year . '/', ['groupby' => 'day'])
-                ->getEntity();
-
+            // Get all years that need to be fetched for this date range
+            $years = $this->getYearsForDateRange($fromDate, $toDate);
+            
+            error_log("Date range spans years: " . implode(', ', $years));
             error_log("Filtering from: " . $fromDate . " to: " . $toDate);
-            error_log("Total data rows before filtering: " . count($exchangeClientFull->data));
+            
+            // Fetch and combine data from all necessary years
+            $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years);
+            
+            if (empty($combinedData['data'])) {
+                error_log("No data found for years: " . implode(', ', $years));
+                return null;
+            }
+            
+            error_log("Total data rows before filtering: " . count($combinedData['data']));
 
             // Filter data by date range
-            $filteredData = $this->filterDataByDateRange($exchangeClientFull->data, $fromDate, $toDate);
+            $filteredData = $this->filterDataByDateRange($combinedData['data'], $fromDate, $toDate);
 
             error_log("Total data rows after filtering: " . count($filteredData));
 
             // Create filtered exchange client
-            return $this->createFilteredExchangeClient($exchangeClientFull, $filteredData, $fromDate, $toDate);
+            return $this->createFilteredExchangeClient($combinedData['entity'], $filteredData, $fromDate, $toDate);
 
         } catch (\Exception $exception) {
             error_log("Exception in getExchangeClientForDateRange: " . $exception->getMessage());
@@ -133,6 +140,60 @@ class ReportClientIndex extends BaseController
             error_log("Exception in getExchangeClientForPeriod: " . $exception->getMessage());
             return null;
         }
+    }
+
+    /**
+     * Get all years that need to be fetched for a date range
+     */
+    private function getYearsForDateRange($fromDate, $toDate): array
+    {
+        $fromYear = (int) substr($fromDate, 0, 4);
+        $toYear = (int) substr($toDate, 0, 4);
+        
+        $years = [];
+        for ($year = $fromYear; $year <= $toYear; $year++) {
+            $years[] = $year;
+        }
+        
+        return $years;
+    }
+
+    /**
+     * Fetch and combine data from multiple years
+     */
+    private function fetchAndCombineDataFromYears($scopeId, $years): array
+    {
+        $combinedData = [];
+        $baseEntity = null;
+        
+        foreach ($years as $year) {
+            try {
+                $exchangeClient = \App::$http
+                    ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $year . '/', ['groupby' => 'day'])
+                    ->getEntity();
+                
+                // Use the first successfully fetched entity as the base
+                if ($baseEntity === null) {
+                    $baseEntity = $exchangeClient;
+                }
+                
+                // Combine data from all years
+                if (isset($exchangeClient->data)) {
+                    $combinedData = array_merge($combinedData, $exchangeClient->data);
+                }
+                
+                error_log("Fetched " . count($exchangeClient->data) . " rows for year " . $year);
+                
+            } catch (\Exception $exception) {
+                error_log("Failed to fetch data for year " . $year . ": " . $exception->getMessage());
+                // Continue with other years - don't fail completely if one year is missing
+            }
+        }
+        
+        return [
+            'entity' => $baseEntity,
+            'data' => $combinedData
+        ];
     }
 
     /**
