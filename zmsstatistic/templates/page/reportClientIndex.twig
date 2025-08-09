@@ -10,7 +10,7 @@
     <div class="counter-view" data-includeurl="{{ includeUrl() }}">
         <div class="report-index">
             {% embed "block/report/period.twig" with {"source":source, "items": clientperiod, "selected": period} %}
-            {% block breadcrumb %}
+            {# {% block breadcrumb %}
             <nav class="breadcrumb">
                 <ol>
                     {% set arguments = {} %}
@@ -27,12 +27,15 @@
                     <li><a class="{{ activeScope }}" href="{{ urlGet("ReportClientIndex", arguments, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
                 </ol>
             </nav>
-            {% endblock %}
+            {% endblock %} #}
+            {% endembed %}
+
+            {% embed "block/report/datepicker.twig" %}
             {% endembed %}
 
             {% embed "block/report/board.twig" with {'class': 'board--spaceless', 'source':source, "selected": period} %}
                 {% block board_body %}
-                {% if selected %}
+                {% if selected or dateRange %}
                     <table class="table--base">
                         <thead>
                             <tr>
@@ -87,9 +90,13 @@
                         <tbody>
                             {% if exchangeClient.data %}
                                 <tr>
-                                    {% set totaldate = period|format_date(pattern="MMMM y") %}
-                                    {% if exchangeClient.period == "month" %}
-                                    {% set totaldate = "Kalenderjahr " ~ period %}
+                                    {% if dateRange %}
+                                        {% set totaldate = "Zeitraum " ~ dateRange.from|date("d.m.Y") ~ " - " ~ dateRange.to|date("d.m.Y") %}
+                                    {% else %}
+                                        {% set totaldate = period|format_date(pattern="MMMM y") %}
+                                        {% if exchangeClient.period == "month" %}
+                                        {% set totaldate = "Kalenderjahr " ~ period %}
+                                        {% endif %}
                                     {% endif %}
                                     <td class="report-board--summary" colspan="2">{{ totaldate }}</td>
                                     <td class="colKunden report-board--summary">{{ exchangeClient.data|last.clientscount }}</td>
@@ -133,7 +140,7 @@
                 {% endif %}
                 {% endblock %}
             {% endembed %}
-            {% if period %}
+            {% if period or dateRange %}
             {{ block('advanceInfoClient') }}
             {% endif %}
         </div>

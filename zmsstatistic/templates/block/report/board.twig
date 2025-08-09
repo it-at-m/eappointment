@@ -8,20 +8,28 @@
         {% set tablePeriod = periodName|trans ~ period %}
     {% endif %}
 
+    {% if dateRange %}
+        {% set tablePeriod = dateRange.from ~ " bis " ~ dateRange.to %}
+    {% endif %}
+
     {% if activeDepartment %}
         {% set tableName = department.name %}
     {% elseif activeOrganisation %}
         {% set tableName = organisation.name %}
     {% endif %}
 
-    {% if selected %}
+    {% if selected or dateRange %}
         {% trans %}Auswertung für{% endtrans %} {{ tableName }} {% trans %}im Zeitraum{% endtrans %} {{ tablePeriod }}
     {% endif %}
 {% endblock %}
 
 {% block board_header_right %}
-    {% if selected or download %}
-        <a href="{{ urlGet(currentRoute().name, currentRoute().params, {'type':'xlsx'}) }}" target="_blank" title="Download" class="button button--diamond"><i class="fas fa-download" aria-hidden="true"></i></a>
+    {% if selected or dateRange or download %}
+        {% set downloadParams = {'type':'xlsx'} %}
+        {% if dateRange %}
+            {% set downloadParams = downloadParams|merge({'from': dateRange.from, 'to': dateRange.to}) %}
+        {% endif %}
+        <a href="{{ urlGet(currentRoute().name, currentRoute().params, downloadParams) }}" target="_blank" title="Download" class="button button--diamond"><i class="fas fa-download" aria-hidden="true"></i></a>
     {% endif %}
 {% endblock %}
 

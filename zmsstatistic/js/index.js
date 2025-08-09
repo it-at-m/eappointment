@@ -11,6 +11,7 @@ import 'moment/locale/de';
 import { getDataAttributes, forceHttps } from './lib/utils'
 import PeriodListView from './block/periodlist'
 import WarehouseReportView from './block/warehousereport'
+import DatepickerView from './block/datepicker'
 
 // Bind jQuery on $ for testing
 window.$ = $;
@@ -29,4 +30,8 @@ $('.report-index').each(function () {
 
 $('.warehouse-report').each(function () {
     new WarehouseReportView(this, getDataAttributes(this));
+})
+
+$('.datepicker').each(function () {
+    new DatepickerView(this, getDataAttributes(this));
 })
