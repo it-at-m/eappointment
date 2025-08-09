@@ -10,24 +10,6 @@
     <div class="counter-view" data-includeurl="{{ includeUrl() }}">
         <div class="report-index">
             {% embed "block/report/period.twig" with {"source":source, "items": clientperiod, "selected": period} %}
-            {# {% block breadcrumb %}
-            <nav class="breadcrumb">
-                <ol>
-                    {% set arguments = {} %}
-                    {% if period %}
-                        {% set arguments = {"period": period} %}
-                    {% endif %}
-                    <li>{{ title|trans }}</li>
-                    {% if organisation %}
-                        <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportClientOrganisation", arguments, {}) }}">{{ organisation.name }}</a></li>
-                    {% endif %}
-                    {% if department %}
-                        <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportClientDepartment", arguments, {}) }}">{{ department.name }}</a></li>
-                    {% endif %}
-                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportClientIndex", arguments, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
-                </ol>
-            </nav>
-            {% endblock %} #}
             {% endembed %}
 
             <form class="form--base panel--heavy">
@@ -65,7 +47,6 @@
                                 {% endfor %}
                             {% else %}
                             <tr>
-                            <!--td colspan="6">{#% trans %}Es wurden keine Daten gefunden{% endtrans %#}</td -->
                                 <td colspan="2">{{ organisation.name }}</td>
                                 <td colspan="2">{{ department.name }}</td>
                                 <td colspan="2">{{ workstation.scope.contact.name }}</td>
