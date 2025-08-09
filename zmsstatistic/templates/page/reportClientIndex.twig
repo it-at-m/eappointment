@@ -30,8 +30,13 @@
             {% endblock %} #}
             {% endembed %}
 
-            {% embed "block/report/datepicker.twig" %}
+            <form class="form--base panel--heavy">
+            {% embed "block/report/scopePicker.twig" %}
             {% endembed %}
+
+            {% embed "block/report/datePicker.twig" %}
+            {% endembed %}
+            </form>
 
             {% embed "block/report/board.twig" with {'class': 'board--spaceless', 'source':source, "selected": period} %}
                 {% block board_body %}

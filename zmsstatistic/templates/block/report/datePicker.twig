@@ -1,0 +1,21 @@
+<div class="datepicker">
+    <div class="datepicker-daterange-header header">
+        <label>Datumsauswahl</label>
+    </div>
+    <div class="datepicker-daterange">
+        <div class="datepicker-datefield">
+            <label for="calendar-date-from" class="form-label">Von</label>
+            <input type="date" id="calendar-date-from" name="from" class="form-control" 
+                    value="{{ dateRange.from|default("now"|date("Y-m-d")) }}">
+        </div>
+        <div class="datepicker-datefield">
+            <label for="calendar-date-until" class="form-label">Bis</label>
+            <input type="date" id="calendar-date-until" name="to" class="form-control" 
+                    value="{{ dateRange.to|default("now"|date("Y-m-d")) }}">
+        </div>
+    </div>
+
+    <div class="datepicker-actions">
+        <button type="submit" class="btn btn-primary">Übernehmen</button>
+    </div>
+</div>

@@ -1,0 +1,65 @@
+{% from 'element/helper/form.twig' import formgroup, providername %}
+
+{% set scopeOptions = [] %}
+{% for department in workstation.useraccount.departments %}
+    {% set scopeOptionsGroupOptions = [] %}
+    {% for scope in department.scopes %}
+        {% if scope.contact.name %}
+            {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+        {% endif %}
+    {% endfor %}
+    {% for cluster in department.clusters %}
+        {% for scope in cluster.scopes %}
+            {% if scope.contact.name %}
+                {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    {% set scopeOptions = scopeOptions|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}
+{% endfor %}
+
+<fieldset class="scope-picker">
+  <div class="header">
+    <label for="scope-select">Standortauswahl</label>
+    <button type="button"
+            id="select-all-scopes"
+            class="btn-icon"
+            aria-label="Alle auswählen"
+            title="Alle Standorte auswählen">
+      <i class="fas fa-check-double"></i>
+    </button>
+  </div>
+
+  {{ formgroup(
+      {
+        "label": false,
+        "errors": advancedData.scope.messages,
+        "description": "Halten Sie <strong>Strg</strong> gedrückt für Mehrfachauswahl."
+      },
+      [{
+        "type": "select",
+        "parameter": {
+          "name": "scopes[]",
+          "multiple": true,
+          "size": 8,
+          "value": selectedScopeIds,
+          "accesskey": "s",
+          "options": scopeOptions,
+          "id": "scope-select",
+          "style": "width:100%;"
+        }
+      }]
+  ) }}
+</fieldset>
+
+<script>
+const selectAllBtn = document.getElementById('select-all-scopes');
+const select = document.getElementById('scope-select');
+
+selectAllBtn.addEventListener('click', function() {
+  const allSelected = Array.from(select.options).every(opt => opt.selected);
+  for (let option of select.options) {
+    option.selected = !allSelected;
+  }
+});
+</script>

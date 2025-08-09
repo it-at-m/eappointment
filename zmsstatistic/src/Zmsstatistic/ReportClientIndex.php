@@ -13,6 +13,8 @@ use Psr\Http\Message\ResponseInterface;
 
 class ReportClientIndex extends BaseController
 {
+    protected $resolveLevel = 3;
+    
     protected $totals = [
         'clientscount',
         'missed',
