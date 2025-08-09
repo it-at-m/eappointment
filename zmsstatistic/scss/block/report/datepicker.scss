@@ -1,0 +1,58 @@
+.datepicker {
+    margin-bottom: 20px;
+}
+
+.datepicker-daterange-header {
+    margin-bottom: .4em;
+    
+    label {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+}
+
+.datepicker-daterange {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.datepicker-datefield {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    min-width: 100px;
+}
+
+.datepicker-datefield label {
+    font-size: .97em;
+    font-weight: 500;
+    margin-bottom: 2px;
+    color: #444;
+}
+
+.datepicker-datefield input[type="date"] {
+    padding: 8px 12px;
+    border: 1.5px solid #888;
+    font-size: 1em;
+    background: #fff;
+
+    &:focus {
+        border-color: #4577ee;
+        outline: none;
+    }
+}
+
+.datepicker-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    
+    .btn {
+        margin-bottom: 0;
+        margin-top: 1rem;
+    }
+}
