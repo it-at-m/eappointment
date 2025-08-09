@@ -35,9 +35,13 @@ class ReportClientIndex extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $scopeId = $this->workstation->scope['id'];
+        
+        // Extract selected scopes or fallback to current scope
+        $selectedScopes = $this->extractSelectedScopes($validator);
+        $scopeId = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
+        
         $clientPeriod = \App::$http
-          ->readGetResult('/warehouse/clientscope/' . $scopeId . '/')
+          ->readGetResult('/warehouse/clientscope/' . $this->workstation->scope['id'] . '/')
           ->getEntity();
 
         // Extract date parameters and validate
@@ -49,11 +53,32 @@ class ReportClientIndex extends BaseController
         // Handle download request
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
-            return $this->handleDownloadRequest($request, $response, $args, $exchangeClient, $dateRange);
+            return $this->handleDownloadRequest($request, $response, $args, $exchangeClient, $dateRange, $selectedScopes);
         }
 
         // Render HTML response
-        return $this->renderHtmlResponse($response, $args, $clientPeriod, $dateRange, $exchangeClient);
+        return $this->renderHtmlResponse($response, $args, $clientPeriod, $dateRange, $exchangeClient, $selectedScopes);
+    }
+
+    /**
+     * Extract selected scope IDs from request parameters
+     */
+    private function extractSelectedScopes($validator): array
+    {
+        $selectedScopes = $validator->getParameter('scopes')->isArray()->getValue();
+        
+        if (!empty($selectedScopes)) {
+            // Filter out non-numeric values and ensure they are valid scope IDs
+            $validScopes = array_filter($selectedScopes, function($scopeId) {
+                return is_numeric($scopeId) && $scopeId > 0;
+            });
+            
+            if (!empty($validScopes)) {
+                return array_map('intval', $validScopes);
+            }
+        }
+        
+        return [];
     }
 
     /**
@@ -238,13 +263,18 @@ class ReportClientIndex extends BaseController
     /**
      * Handle download request and return Excel file
      */
-    private function handleDownloadRequest($request, $response, $args, $exchangeClient, $dateRange): ResponseInterface
+    private function handleDownloadRequest($request, $response, $args, $exchangeClient, $dateRange, $selectedScopes = []): ResponseInterface
     {
         $args['category'] = 'clientscope';
 
         // Set period for download filename - use date range or existing period
         if ($dateRange) {
             $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
+        }
+
+        // Add selected scopes to args for potential use in download
+        if (!empty($selectedScopes)) {
+            $args['selectedScopes'] = $selectedScopes;
         }
 
         if ($exchangeClient && count($exchangeClient->data)) {
@@ -265,7 +295,7 @@ class ReportClientIndex extends BaseController
     /**
      * Render HTML response for the report page
      */
-    private function renderHtmlResponse($response, $args, $clientPeriod, $dateRange, $exchangeClient): ResponseInterface
+    private function renderHtmlResponse($response, $args, $clientPeriod, $dateRange, $exchangeClient, $selectedScopes = []): ResponseInterface
     {
         return Render::withHtml(
             $response,
@@ -282,6 +312,7 @@ class ReportClientIndex extends BaseController
                 'dateRange' => $dateRange,
                 'exchangeClient' => $exchangeClient,
                 'source' => ['entity' => 'ClientIndex'],
+                'selectedScopeIds' => $selectedScopes,
                 'workstation' => $this->workstation->getArrayCopy()
             )
         );
