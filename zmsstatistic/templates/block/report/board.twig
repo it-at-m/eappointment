@@ -30,11 +30,7 @@
             {% set downloadParams = downloadParams|merge({'from': dateRange.from, 'to': dateRange.to}) %}
         {% endif %}
         {% if selectedScopeIds %}
-            {% for scopeId in selectedScopeIds %}
-                {% set paramKey = 'scopes[' ~ loop.index0 ~ ']' %}
-                {% set scopeParam = {(paramKey): scopeId} %}
-                {% set downloadParams = downloadParams|merge(scopeParam) %}
-            {% endfor %}
+            {% set downloadParams = downloadParams|merge({'scopes': selectedScopeIds}) %}
         {% endif %}
         <a href="{{ urlGet(currentRoute().name, currentRoute().params, downloadParams) }}" target="_blank" title="Download" class="button button--diamond"><i class="fas fa-download" aria-hidden="true"></i></a>
     {% endif %}
