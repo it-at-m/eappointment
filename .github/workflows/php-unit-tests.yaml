@@ -279,13 +279,13 @@ jobs:
           mkdir -p coverage
           docker-compose up -d
           
-          echo "Running tests WITHOUT coverage for zmsclient"
-          docker-compose exec -T test php -dmemory_limit=-1 \
+          echo "Running tests WITH coverage for zmsclient"
+          docker-compose exec -T test php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
             ./vendor/bin/phpunit \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml \
+            --log-junit coverage/junit.xml \
             --display-phpunit-deprecations --display-warnings --fail-on-deprecation
-          
-          # Create empty placeholder files for artifacts
-          touch coverage/.placeholder
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
