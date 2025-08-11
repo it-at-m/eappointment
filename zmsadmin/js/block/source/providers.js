@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import $ from "jquery"
 import * as Inputs from '../../lib/inputs'
 import { getEntity } from '../../lib/schema'
 
-const renderProvider = (provider, index, onChange, onDeleteClick, labels, descriptions, source) => {
+const renderProvider = (provider, index, onChange, onDeleteClick, labels, descriptions, source, parentProviders, onParentChange, canDelete) => {
     const formName = `providers[${index}]`
-
+    const parentValue = provider.parent_id == null ? '' : String(provider.parent_id);
     return (
         <tr key={index} className="provider-item">
             <td className="provider-item__id" width="auto">
@@ -24,6 +23,18 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     value={provider.name}
                     onChange={onChange}
                     attributes={{ "aria-label": "Bezeichnung" }}
+                />
+            </td>
+            <td className="provider-item__parent" width="auto">
+                <Inputs.Select
+                    name={provider.parent_id == null ? undefined : `${formName}[parent_id]`}
+                    value={parentValue}
+                    onChange={(_, value) => onParentChange(index, value)}
+                    options={[
+                        { name: '—', value: '' },
+                        ...parentProviders.map(p => ({ name: p.name, value: String(p.id) }))
+                    ]}
+                    attributes={{ "aria-label": labels.parent }}
                 />
             </td>
             <td className="provider-item__link">
@@ -126,13 +137,17 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     value={source}
                 />
             </td>
-            <td className="provider-item__delete">
-                <div className="form-check">
-                    <label className="checkboxdeselect provider__delete-button form-check-label">
-                        <input className="form-check-input" type="checkbox" readOnly={true} checked={true} onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" />
-                        <span>Löschen</span>
-                    </label>
-                </div>
+            <td className="provider-item__delete" style={{ verticalAlign: 'middle' }}>
+                {canDelete && (
+                    <button type="button"
+                            className="link button-default provider__delete-button"
+                            onClick={() => onDeleteClick(index)}
+                            aria-label="Diesen Datensatz löschen"
+                            style={{ display: 'inline-flex', alignItems: 'center' }}>
+                        <i className="fas fa-trash-alt color-negative" style={{ marginRight: '5px' }}></i>
+                        Löschen
+                    </button>
+                )}
             </td>
         </tr >
     )
@@ -144,25 +159,52 @@ class ProvidersView extends Component {
     }
 
     getNextId() {
-        let nextId = Number(this.props.source.providers.length ? this.props.source.providers[this.props.source.providers.length - 1].id : 0) + 1
-        return nextId;
+        const list = (this.props.source.providers || []);
+        const lastId = list.length ? Number(list[list.length - 1].id) : 0;
+        return lastId + 1;
     }
+
+    onParentChange = (rowIndex, rawValue) => {
+        const providerCopy = { ...this.props.source.providers[rowIndex] };
+
+        if (!rawValue) {
+            delete providerCopy.parent_id;
+            providerCopy.link    = '';
+            providerCopy.contact = { street:'', streetNumber:'', postalCode:'', city:'' };
+            providerCopy.data    = '';
+        } else {
+            const parent_id = Number(rawValue);
+            const parent    = this.props.parentproviders.find(p => Number(p.id) === parent_id);
+
+            providerCopy.parent_id = parent_id;
+
+            if (parent) {
+                providerCopy.link    = parent.link   || '';
+                providerCopy.contact = { ...parent.contact };
+                providerCopy.data    = parent.data   || '';
+            }
+        }
+
+        this.props.changeHandler(`providers[${rowIndex}]`, providerCopy);
+    };
 
     getProvidersWithLabels(onChange, onDeleteClick) {
-        return this.props.source.providers.map((provider, index) => renderProvider(provider, index, onChange, onDeleteClick, this.props.labelsproviders, this.props.descriptions, this.props.source.source))
-    }
-
-    hideDeleteButton() {
-        $('.provider-item').each((index, item) => {
-            if ($(item).find('.provider-item__id input').val()) {
-                $(item).find('.provider__delete-button').css("visibility", "hidden");
-            }
-        })
+        const list = (this.props.source && this.props.source.providers) || [];
+        const moreThanOne = list.length > 1;
+        return list.map((provider, index) => {
+            const canDelete = moreThanOne && (provider.canDelete !== false);
+            return renderProvider(
+                provider, index, onChange, onDeleteClick,
+                this.props.labelsproviders, this.props.descriptions,
+                this.props.source.source, this.props.parentproviders,
+                this.onParentChange,
+                canDelete
+            );
+        });
     }
 
     componentDidMount() {
         console.log("mounted provider component")
-        this.hideDeleteButton()
     }
 
     componentDidUpdate() {
@@ -194,24 +236,14 @@ class ProvidersView extends Component {
                         <tr>
                             <th>LfdNr.</th>
                             <th>Bezeichnung</th>
+                            <th>Hauptdienstleister</th>
                             <th>Link und weitere Daten</th>
-                            <th></th>
+                            <th>Löschen</th>
                         </tr>
                     </thead>
                     <tbody>
                         {this.getProvidersWithLabels(onChange, onDeleteClick)}
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colSpan="4">
-                                <p>
-                                    <Inputs.Description
-                                        value={this.props.descriptions.delete}
-                                    />
-                                </p>
-                            </td>
-                        </tr>
-                    </tfoot>
                 </table>
                 <div className="table-actions">
                     <button className="link button-default" onClick={onNewClick}><i className="fas fa-plus-square color-positive"></i> Neuer Dienstleister</button>
@@ -227,7 +259,8 @@ ProvidersView.propTypes = {
     source: PropTypes.object.isRequired,
     changeHandler: PropTypes.func,
     addNewHandler: PropTypes.func,
-    deleteHandler: PropTypes.func
+    deleteHandler: PropTypes.func,
+    parentproviders: PropTypes.array.isRequired
 }
 
 export default ProvidersView

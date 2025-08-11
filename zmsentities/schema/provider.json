@@ -84,6 +84,15 @@
             "default": "",
             "type": ["null", "string"],
             "description": "provider display name"
+        },
+        "parent_id": {
+            "default": null,
+            "oneOf": [
+                { "type": "null" },
+                { "type": "number" },
+                { "type": "string", "pattern": "^[0-9]+$" }
+            ],
+            "description": "optional parent provider id (FK)"
         }
     }
 }
