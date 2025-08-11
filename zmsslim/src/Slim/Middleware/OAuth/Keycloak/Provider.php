@@ -31,7 +31,7 @@ class Provider extends Keycloak
     {
         $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
         $options = $this->getOptionsFromJsonFile();
-        
+
         // Use GuzzleHttp client for OAuth compatibility
         $guzzleClient = $client instanceof \GuzzleHttp\ClientInterface ? $client : new \GuzzleHttp\Client();
         parent::__construct($options, ['httpClient' => $guzzleClient]);

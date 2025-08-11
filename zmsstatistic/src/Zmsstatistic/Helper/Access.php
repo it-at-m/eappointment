@@ -14,7 +14,6 @@ use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Exception\WorkstationMissingScope;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
-use BO\Zmsentities\Application;
 
 class Access extends \BO\Slim\Controller
 {
