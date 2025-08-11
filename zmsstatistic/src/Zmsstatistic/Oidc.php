@@ -52,7 +52,6 @@ class Oidc extends BaseController
 
                     $departmentCount = $workstation->getUseraccount()->getDepartmentList()->count();
 
-                    // Log department check with username
                     \App::$log->info('OIDC Login department check', [
                         'event' => 'oauth_login_department_check',
                         'timestamp' => date('c'),

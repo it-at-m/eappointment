@@ -52,7 +52,6 @@ class Oidc extends BaseController
 
                     $departmentCount = $workstation->getUseraccount()->getDepartmentList()->count();
 
-                    // Log department check with username
                     \App::$log->info('OIDC Login department check', [
                         'event' => 'oauth_login_department_check',
                         'timestamp' => date('c'),
@@ -79,7 +78,6 @@ class Oidc extends BaseController
                         []
                     );
                 } catch (\Exception $e) {
-                    // Log workstation access error
                     \App::$log->error('OIDC Login workstation error', [
                         'event' => 'oauth_login_workstation_error',
                         'timestamp' => date('c'),
@@ -92,7 +90,6 @@ class Oidc extends BaseController
                 }
             }
 
-            // Log invalid state
             \App::$log->error('OIDC Login invalid state', [
                 'event' => 'oauth_login_invalid_state',
                 'timestamp' => date('c'),
