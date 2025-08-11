@@ -212,8 +212,6 @@ class ReportClientIndex extends BaseController
                 if (isset($exchangeClient->data)) {
                     $combinedData = array_merge($combinedData, $exchangeClient->data);
                 }
-
-
             } catch (\Exception $exception) {
                 // Continue with other years - don't fail completely if one year is missing
             }
