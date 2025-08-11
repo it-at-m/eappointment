@@ -63,7 +63,7 @@ jobs:
           
           # Different approach for problematic modules vs regular modules
           case "${{ matrix.module }}" in
-            "zmsmessaging"|"zmsdldb"|)
+            "zmsmessaging")
               echo "Running tests WITHOUT coverage for ${{ matrix.module }}"
               php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml \
                 --display-phpunit-deprecations --display-warnings --fail-on-deprecation
