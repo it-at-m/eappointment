@@ -34,9 +34,9 @@ class KeycloakInstance
 
         try {
             $accessToken = $this->getAccessToken($request->getQueryParams()["code"] ?? '');
-            $this->testAccess($accessToken);
+            $this->validateAccess($accessToken);
             $ownerInputData =  $this->provider->getResourceOwnerData($accessToken);
-            $this->testOwnerData((array) $ownerInputData);
+            $this->validateOwnerData((array) $ownerInputData);
 
             if (\BO\Zmsclient\Auth::getKey()) {
                 \App::$log->info('Clearing existing session', [
@@ -93,7 +93,7 @@ class KeycloakInstance
         return true;
     }
 
-    private function testAccess(AccessToken $token)
+    private function validateAccess(AccessToken $token)
     {
         \App::$log->info('Validating OIDC token', [
             'event' => 'oauth_token_validation',
@@ -203,7 +203,7 @@ class KeycloakInstance
         ]);
     }
 
-    private function testOwnerData(array $ownerInputData)
+    private function validateOwnerData(array $ownerInputData)
     {
         $config = $this->oauthService->readConfig();
         if (! \array_key_exists('email', $ownerInputData) && 1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {

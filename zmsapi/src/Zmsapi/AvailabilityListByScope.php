@@ -35,7 +35,7 @@ class AvailabilityListByScope extends BaseController
 
         $scope = (new \BO\Zmsdb\Scope())->readEntity($args['id'], $resolveReferences);
         $this->testScope($scope);
-        $this->testAccessRights($request, $scope);
+        $this->validateAccessRights($request, $scope);
 
         $message = Response\Message::create($request);
         $message->meta->reducedData = $graphQl ? true : false;
@@ -67,7 +67,7 @@ class AvailabilityListByScope extends BaseController
         }
     }
 
-    protected function testAccessRights($request, $scope)
+    protected function validateAccessRights($request, $scope)
     {
         try {
             (new Helper\User($request, 2))->checkRights(

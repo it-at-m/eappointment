@@ -38,7 +38,7 @@ class Access extends \BO\Slim\Controller
             $this->organisation = $this->readOrganisation();
             $this->owner = $this->readOwner();
         }
-        $this->testAccessRights($request);
+        $this->validateAccessRights($request);
     }
 
     protected function readWorkstation()
@@ -74,14 +74,14 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function testAccessRights($request)
+    protected function validateAccessRights($request)
     {
         $path = $request->getUri()->getPath();
-        $this->testAccess($path);
+        $this->validateAccess($path);
         //$this->testScope($path);
     }
 
-    protected function testAccess($path)
+    protected function validateAccess($path)
     {
         if (
             (false !== strpos($path, 'owner') && ! $this->owner) ||
