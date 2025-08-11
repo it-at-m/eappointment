@@ -61,13 +61,38 @@ class RequestRelationView extends Component {
                         attributes={{ "aria-label": this.props.labelsrequestrelation.slots }}
                     />
                 </td>
-                <td className="request-item__delete">
-                    <div className="form-check">
-                        <label className="checkboxdeselect requestrelation__delete-button form-check-label">
-                            <input className="form-check-input" type="checkbox" readOnly={true} checked="checked" onClick={() => onDeleteClick(index)} role="button" aria-label="Diesen Datensatz löschen" />
-                            <span>Löschen</span>
-                        </label>
-                    </div>
+                <td className="requestrelation-item__public">
+                    {(() => {
+                        const isPublic =
+                            item.public === undefined || item.public === null
+                                ? true
+                                : (item.public === true || item.public === 1 || item.public === '1');
+                        const publicVal = isPublic ? '1' : '0';
+                        return (
+                            <Inputs.Select
+                                name={`${formName}[public]`}
+                                value={publicVal}
+                                onChange={(_, v) => onChange(`${formName}[public]`, v)}
+                                options={[
+                                    { name: 'Öffentlich', value: '1' },
+                                    { name: 'Nicht öffentlich', value: '0' }
+                                ]}
+                                attributes={{ "aria-label": this.props.labelsrequestrelation.public }}
+                            />
+                        );
+                    })()}
+                </td>
+                <td className="requestrelation-item__delete" style={{ verticalAlign: 'middle' }}>
+                    <button
+                        type="button"
+                        className="link button-default requestrelation__delete-button"
+                        onClick={() => onDeleteClick(index)}
+                        aria-label="Diesen Datensatz löschen"
+                        style={{ display: 'inline-flex', alignItems: 'center' }}
+                    >
+                        <i className="fas fa-trash-alt color-negative" style={{ marginRight: '5px' }} />
+                        Löschen
+                    </button>
                 </td>
             </tr >
         )
@@ -91,7 +116,6 @@ class RequestRelationView extends Component {
         }
 
         return (
-            <fieldset>
                 <div className="requestrelation__list" aria-live="polite" id="liveregionRequestrelationList">
                     <table className="table--base">
                         <thead>
@@ -99,27 +123,18 @@ class RequestRelationView extends Component {
                                 <th>{this.props.labelsrequestrelation.request}</th>
                                 <th>{this.props.labelsrequestrelation.provider}</th>
                                 <th>{this.props.labelsrequestrelation.slots}</th>
+                                <th>{this.props.labelsrequestrelation.public}</th>
                                 <th>{this.props.labelsrequestrelation.delete}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {this.getRequestRelation(onChange, onDeleteClick)}
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colSpan="4">
-                                    <Inputs.Description
-                                        value={this.props.descriptions.requestrelation}
-                                    />
-                                </td>
-                            </tr>
-                        </tfoot>
                     </table>
                     <div className="table-actions">
                         <button className="link button-default requestrelation--new" onClick={onNewClick}><i className="fas fa-plus-square color-positive"></i> {this.props.labelsrequestrelation.new}</button>
                     </div>
                 </div>
-            </fieldset>
         )
     }
 }
