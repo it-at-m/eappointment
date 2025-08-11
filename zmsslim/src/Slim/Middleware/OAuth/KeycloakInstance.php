@@ -16,7 +16,7 @@ class KeycloakInstance
 
     public function __construct(?\BO\Zmsclient\OAuthService $oauthService = null)
     {
-        $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http);
+        $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
         $this->provider = new Keycloak\Provider(null, $this->oauthService);
     }
 

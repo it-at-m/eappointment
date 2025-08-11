@@ -32,7 +32,7 @@ class Provider extends Keycloak
     public function __construct($client = null, ?\BO\Zmsclient\OAuthService $oauthService = null)
     {
         $client = ((null === $client)) ? new Client() : $client;
-        $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http);
+        $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
         $options = $this->getOptionsFromJsonFile();
         parent::__construct($options, ['httpClient' => $client]);
     }

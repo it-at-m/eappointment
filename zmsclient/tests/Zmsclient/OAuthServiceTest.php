@@ -17,7 +17,7 @@ class OAuthServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->httpMock = $this->createMock(Http::class);
-        $this->oauthService = new OAuthService($this->httpMock);
+        $this->oauthService = new OAuthService($this->httpMock, 'secure-token');
         $this->configMock = $this->createMock(Config::class);
     }
 

@@ -11,14 +11,13 @@ use BO\Zmsentities\Useraccount;
  */
 class OAuthService
 {
-    /**
-     * @var Http $http
-     */
-    protected $http;
+    protected Http $http;
+    private string $configSecureToken;
 
-    public function __construct(Http $http)
+    public function __construct(Http $http, string $configSecureToken)
     {
         $this->http = $http;
+        $this->configSecureToken = $configSecureToken;
     }
 
     /**
@@ -28,7 +27,7 @@ class OAuthService
      */
     public function readConfig(): Config
     {
-        return $this->http->readGetResult('/config/', [], 'secure-token')->getEntity();
+        return $this->http->readGetResult('/config/', [], $this->configSecureToken)->getEntity();
     }
 
     /**
