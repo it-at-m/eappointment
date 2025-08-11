@@ -40,7 +40,7 @@ class IndexerTest extends \PHPUnit\Framework\TestCase
         $this->assertNotFalse($location);
     }
 
-    public function validateAccess()
+    public function testAccess()
     {
         if (ES_TEST === false) {
             $this->assertFalse(ES_TEST);

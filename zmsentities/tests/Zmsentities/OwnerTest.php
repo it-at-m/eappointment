@@ -43,7 +43,7 @@ class OwnerTest extends EntityCommonTests
         );
     }
 
-    public function validateAccess()
+    public function testAccess()
     {
         $ownerList = new $this->collectionclass();
         $owner = new $this->entityclass();
