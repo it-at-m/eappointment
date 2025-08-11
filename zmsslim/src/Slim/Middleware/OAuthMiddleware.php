@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
+use BO\Zmsclient\Psr7\Stream;
 
 /**
  * @SuppressWarnings(PHPMD)
@@ -61,10 +62,23 @@ class OAuthMiddleware
         $queryParams = $request->getQueryParams();
         $oidcProviderName = isset($queryParams['provider'])
             ? $queryParams['provider'] : \BO\Zmsclient\Auth::getOidcProvider();
-        if ($oidcProviderName) {
+
+        if ($oidcProviderName && isset(static::$authInstances[$oidcProviderName])) {
             $oidcInstance = static::$authInstances[$oidcProviderName];
             $instance = new $oidcInstance();
             $response = $this->{$this->handlerCall}($request, $response, $instance, $next);
+        } else {
+            \App::$log->error('Unknown OIDC provider requested', [
+                'event' => 'oauth_unknown_provider',
+                'provider' => $oidcProviderName ?: 'none',
+                'available_providers' => array_keys(static::$authInstances),
+                'handler' => $this->authentificationHandler,
+                'timestamp' => date('c'),
+                'request_uri' => $request->getUri()->getPath(),
+                'session_id' => session_id()
+            ]);
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json')
+                ->withBody(Stream::create(json_encode(['error' => 'Unknown OIDC provider'])));
         }
         return $response;
     }
