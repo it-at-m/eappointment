@@ -78,7 +78,7 @@ class Access extends \BO\Slim\Controller
     {
         $path = $request->getUri()->getPath();
         $this->validateAccess($path);
-        //$this->testScope($path);
+        $this->validateScope($path);
     }
 
     protected function validateAccess($path)
@@ -92,7 +92,7 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function testScope($path)
+    protected function validateScope($path)
     {
         if (
             $this->isPathWithoutScope($path)
