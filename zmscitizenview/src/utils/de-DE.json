@@ -63,7 +63,7 @@
   "service": "Leistung",
   "serviceSelectionPlaceholder": "Leistung auswählen",
   "sessionTimeoutHeader": "Ihre Sitzung ist abgelaufen.",
-  "sessionTimeoutText": "Bitte wählen Sie einen neuen Termin, um mit der Buchung fortzufahren.",
+  "sessionTimeoutText": "Seit dem Start Ihrer Terminbuchung ist zu viel Zeit vergangen. Bitte wählen Sie einen neuen Termin, um mit der Buchung fortzufahren.",
   "shortNameResidenceRegistration": "Wohnsitz-Anmeldung",
   "shortNamePassport": "Reisepass",
   "shortNameIdentityCard": "Personalausweis",

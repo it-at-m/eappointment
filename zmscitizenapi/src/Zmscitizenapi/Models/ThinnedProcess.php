@@ -48,8 +48,12 @@ class ThinnedProcess extends Entity implements JsonSerializable
     public ?string $captchaToken;
 /** @var int|null */
     public ?int $slotCount;
+/** @var int|null */
+    public ?int $reservationDuration;
+/** @var string|null */
+    public ?string $createTimestamp;
 
-    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $customTextfield2 = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, ?string $serviceName = null, int $serviceCount = 0, ?string $status = null, ?string $captchaToken = null, ?int $slotCount = null)
+    public function __construct(?int $processId = null, ?string $timestamp = null, ?string $authKey = null, ?string $familyName = null, ?string $customTextfield = null, ?string $customTextfield2 = null, ?string $email = null, ?string $telephone = null, ?string $officeName = null, ?int $officeId = null, ?ThinnedScope $scope = null, array $subRequestCounts = [], ?int $serviceId = null, ?string $serviceName = null, int $serviceCount = 0, ?string $status = null, ?string $captchaToken = null, ?int $slotCount = null, ?int $reservationDuration = null, ?string $createTimestamp = null)
     {
         $this->processId = $processId;
         $this->timestamp = $timestamp;
@@ -69,6 +73,8 @@ class ThinnedProcess extends Entity implements JsonSerializable
         $this->status = $status;
         $this->captchaToken = $captchaToken;
         $this->slotCount = $slotCount;
+        $this->reservationDuration = $reservationDuration;
+        $this->createTimestamp = $createTimestamp;
         $this->ensureValid();
     }
 
@@ -97,7 +103,9 @@ class ThinnedProcess extends Entity implements JsonSerializable
             'serviceCount' => $this->serviceCount,
             'status' => $this->status ?? null,
             'captchaToken' => $this->captchaToken ?? null,
-            'slotCount' => $this->slotCount ?? null
+            'slotCount' => $this->slotCount ?? null,
+            'reservationDuration' => $this->reservationDuration ?? null,
+            'createTimestamp' => $this->createTimestamp ?? null
         ];
     }
 

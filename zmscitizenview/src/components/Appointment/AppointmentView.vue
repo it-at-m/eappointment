@@ -44,7 +44,6 @@
             <div v-if="currentView === 2">
               <customer-info
                 :t="t"
-                :session-timeout-error="sessionTimeoutError"
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
               />
@@ -58,7 +57,6 @@
                 :is-rebooking="isRebooking"
                 :rebook-or-cancel-dialog="rebookOrCanelDialog"
                 :t="t"
-                :session-timeout-error="sessionTimeoutError"
                 @back="decreaseCurrentView"
                 @book-appointment="nextBookAppointment"
                 @cancel-appointment="nextCancelAppointment"
@@ -301,6 +299,12 @@ const isCancelingAppointment = ref<boolean>(false);
 
 const preselectedLocationId = ref<string | undefined>(props.locationId);
 
+const sessionTimeoutError = ref(false);
+
+const resetSessionTimeoutState = () => {
+  sessionTimeoutError.value = false;
+};
+
 provide<SelectedServiceProvider>("selectedServiceProvider", {
   selectedService,
   updateSelectedService,
@@ -326,15 +330,25 @@ provide("loadingStates", {
   isCancelingAppointment,
 });
 
+provide("sessionTimeoutErrorRef", sessionTimeoutError);
+
 const increaseCurrentView = () => currentView.value++;
 
-const decreaseCurrentView = () => currentView.value--;
+const decreaseCurrentView = () => {
+  if (currentView.value === 2) {
+    resetSessionTimeoutState();
+  }
+  currentView.value--;
+};
 
 /**
  * Adjusts the current view to the active step in the stepper
  */
 const changeStep = (step: string) => {
   if (parseInt(step) < parseInt(activeStep.value)) {
+    if (parseInt(step) <= 1) {
+      resetSessionTimeoutState();
+    }
     currentView.value = parseInt(step);
   }
 };
@@ -377,23 +391,6 @@ const setRebookData = () => {
       rebookedAppointment.value.customTextfield2;
     updateAppointment(appointment.value, props.baseUrl ?? undefined).then(
       (data) => {
-        if ("errors" in data) {
-          const firstErrorCode = data.errors?.[0]?.errorCode ?? "";
-
-          if (firstErrorCode === "notFound") {
-            sessionTimeoutError.value = true;
-            return;
-          }
-
-          if (firstErrorCode === "tooManyAppointmentsWithSameMail") {
-            tooManyAppointmentsWithSameMailError.value = true;
-          } else {
-            updateAppointmentError.value = true;
-          }
-
-          return;
-        }
-
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
@@ -431,6 +428,8 @@ const nextReserveAppointment = () => {
   )
     .then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
+        resetSessionTimeoutState();
+
         if (appointment.value && !isRebooking.value) {
           cancelAppointment(appointment.value, props.baseUrl ?? undefined);
         }
@@ -458,8 +457,6 @@ const nextReserveAppointment = () => {
     });
 };
 
-const sessionTimeoutError = ref(false);
-
 const nextUpdateAppointment = () => {
   if (isUpdatingAppointment.value) {
     return;
@@ -482,39 +479,27 @@ const nextUpdateAppointment = () => {
 
     updateAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
-        if ("errors" in data) {
-          const firstErrorCode = data.errors?.[0]?.errorCode ?? "";
-
-          if (firstErrorCode === "notFound") {
-            sessionTimeoutError.value = true;
-            return;
-          }
-
-          if (firstErrorCode === "tooManyAppointmentsWithSameMail") {
-            tooManyAppointmentsWithSameMailError.value = true;
-          } else {
-            updateAppointmentError.value = true;
-          }
-
+        if ((data as AppointmentDTO).processId !== undefined) {
+          appointment.value = data as AppointmentDTO;
+          increaseCurrentView();
           return;
         }
 
-        if ((data as AppointmentDTO).processId != undefined) {
-          appointment.value = data as AppointmentDTO;
+        const firstError = (data as any)?.errors?.[0] ?? (data as any);
+        const errorCode: string = firstError?.errorCode ?? "";
+
+        if (errorCode === "tooManyAppointmentsWithSameMail") {
+          tooManyAppointmentsWithSameMailError.value = true;
           increaseCurrentView();
-        } else {
-          if (
-            (data as ErrorDTO).errorCode === "tooManyAppointmentsWithSameMail"
-          ) {
-            tooManyAppointmentsWithSameMailError.value = true;
-          } else {
-            updateAppointmentError.value = true;
-          }
+          return;
         }
-      })
-      .catch((error) => {
-        console.error("UpdateAppointment failed:", error);
-        sessionTimeoutError.value = true;
+
+        if ("appointmentNotFound".includes(errorCode)) {
+          sessionTimeoutError.value = true;
+          return;
+        }
+
+        updateAppointmentError.value = true;
       })
       .finally(() => {
         isUpdatingAppointment.value = false;
@@ -531,14 +516,6 @@ const nextBookAppointment = () => {
     isBookingAppointment.value = true;
     preconfirmAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
-        if ("errors" in data) {
-          const error = data.errors[0];
-          if (error?.errorCode === "notFound") {
-            sessionTimeoutError.value = true;
-            return;
-          }
-        }
-
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
           if (isRebooking.value && rebookedAppointment.value) {
@@ -547,7 +524,7 @@ const nextBookAppointment = () => {
               props.baseUrl ?? undefined
             );
           }
-          increaseCurrentView(); // <-- Weiterleitung zur nächsten Seite
+          increaseCurrentView();
         }
       })
       .finally(() => {

@@ -1,11 +1,24 @@
 <template>
+  <div v-if="sessionTimeoutError">
+    <muc-callout type="error">
+      <template #content>
+        {{ t("sessionTimeoutText") }}
+      </template>
+
+      <template #header>{{ t("sessionTimeoutHeader") }}</template>
+    </muc-callout>
+  </div>
   <h2
+    v-if="!sessionTimeoutError"
     class="m-component-form__title"
     tabindex="0"
   >
     {{ t("contactDetails") }}
   </h2>
-  <form class="m-form m-form--default">
+  <form
+    v-if="!sessionTimeoutError"
+    class="m-form m-form--default"
+  >
     <muc-input
       id="firstname"
       v-model="customerData.firstName"
@@ -71,12 +84,6 @@
       maxlength="100"
     />
   </form>
-  <div v-if="sessionTimeoutError">
-    <muc-callout type="error">
-      <template #header>{{ t("sessionTimeoutHeader") }}</template>
-      <template #content>{{ t("sessionTimeoutText") }}</template>
-    </muc-callout>
-  </div>
   <div class="m-button-group">
     <muc-button
       icon="arrow-left"
@@ -87,6 +94,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
+      v-if="!sessionTimeoutError"
       :disabled="loadingStates.isUpdatingAppointment.value"
       :icon="'arrow-right'"
       @click="nextStep"
@@ -116,7 +124,6 @@ import {
 
 const props = defineProps<{
   t: (key: string) => string;
-  sessionTimeoutError: boolean;
 }>();
 
 const emit = defineEmits<(e: "next" | "back") => void>();
@@ -128,6 +135,11 @@ const { customerData } = inject<CustomerDataProvider>(
 const { selectedProvider } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
+
+const sessionTimeoutError = inject<Ref<boolean>>(
+  "sessionTimeoutErrorRef",
+  ref(false)
+);
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),

@@ -687,6 +687,16 @@ class ZmsApiFacadeService
         }
         $thinnedProcess = MapperService::processToThinnedProcess($process);
 
+        if (isset($process->createTimestamp)) {
+            $thinnedProcess->createTimestamp = $process->createTimestamp instanceof \DateTimeInterface
+                ? $process->createTimestamp->format('Y-m-d\TH:i:sP')
+                : (string) $process->createTimestamp;
+        }
+    
+        if (isset($process->scope) && isset($process->scope->toProperty()->preferences->appointment->reservationDuration)) {
+            $thinnedProcess->reservationDuration = (int) $process->scope->toProperty()->preferences->appointment->reservationDuration->get();
+        }
+
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $providerMap = [];
         foreach ($providerList as $provider) {
