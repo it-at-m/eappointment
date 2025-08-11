@@ -12,10 +12,12 @@ use League\OAuth2\Client\Token\AccessToken;
 class KeycloakInstance
 {
     protected $provider = null;
+    protected $oauthService = null;
 
-    public function __construct()
+    public function __construct(?\BO\Zmsclient\OAuthService $oauthService = null)
     {
-        $this->provider = new Keycloak\Provider();
+        $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http);
+        $this->provider = new Keycloak\Provider(null, $this->oauthService);
     }
 
     public function getProvider()
@@ -31,9 +33,9 @@ class KeycloakInstance
         ]);
 
         try {
-            $accessToken = $this->getAccessToken($request->getParam("code"));
+            $accessToken = $this->getAccessToken($request->getQueryParams()["code"] ?? '');
             $this->testAccess($accessToken);
-            $ownerInputData = $this->provider->getResourceOwnerData($accessToken);
+            $ownerInputData = (array) $this->provider->getResourceOwnerData($accessToken);
             $this->testOwnerData($ownerInputData);
 
             if (\BO\Zmsclient\Auth::getKey()) {
@@ -45,9 +47,7 @@ class KeycloakInstance
             }
 
             $this->writeTokenToSession($accessToken);
-            \App::$http
-                ->readPostResult('/workstation/oauth/', $ownerInputData, ['state' => \BO\Zmsclient\Auth::getKey()])
-                ->getEntity();
+            $this->oauthService->authenticateWorkstation($ownerInputData, \BO\Zmsclient\Auth::getKey());
 
             \App::$log->info('OIDC login successful', [
                 'event' => 'oauth_login_success',
@@ -71,7 +71,7 @@ class KeycloakInstance
     {
         $this->writeDeleteSession();
         $realmData = $this->provider->getBasicOptionsFromJsonFile();
-        return $response->withRedirect($realmData['logoutUri'], 301);
+        return $response->withStatus(301)->withHeader('Location', $realmData['logoutUri']);
     }
 
     public function writeNewAccessTokenIfExpired()
@@ -205,7 +205,7 @@ class KeycloakInstance
 
     private function testOwnerData(array $ownerInputData)
     {
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        $config = $this->oauthService->readConfig();
         if (! \array_key_exists('email', $ownerInputData) && 1 == $config->getPreference('oidc', 'onlyVerifiedMail')) {
             throw new \BO\Slim\Exception\OAuthPreconditionFailed();
         }
