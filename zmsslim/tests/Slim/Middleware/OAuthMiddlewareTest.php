@@ -17,17 +17,6 @@ class MockAuth
 
 class OAuthMiddlewareTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        if (!class_exists('App')) {
-            eval('class App { public static $log; }');
-        }
-        \App::$log = $this->createMock(\Psr\Log\LoggerInterface::class);
-
-        if (!class_exists('BO\Zmsclient\Auth')) {
-            class_alias('BO\Slim\Tests\Slim\Middleware\MockAuth', 'BO\Zmsclient\Auth');
-        }
-    }
 
     public function testProviderValidationWithAuthInstances()
     {
