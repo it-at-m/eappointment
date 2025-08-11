@@ -1,3 +1,12 @@
+
+{% block breadcrumb %}
+<nav class="breadcrumb">
+    <ol>
+        <li>Auswertung</li>
+    </ol>
+</nav>
+{% endblock %}
+
 {% set years = [getNow()|date('Y')] %}
 {% for key, entry in items.data %}
     {% if entry|first|length == 4 and entry|first not in years %}
