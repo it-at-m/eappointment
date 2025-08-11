@@ -3,6 +3,7 @@
 namespace BO\Slim\Middleware\OAuth\Keycloak;
 
 use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
+use BO\Zmsclient\PSR7\Client;
 use League\OAuth2\Client\Token\AccessToken;
 use BO\Zmsentities\Useraccount;
 
@@ -30,14 +31,22 @@ class Provider extends Keycloak
     public function __construct($client = null, ?\BO\Zmsclient\OAuthService $oauthService = null)
     {
         $this->oauthService = $oauthService ?: new \BO\Zmsclient\OAuthService(\App::$http, \App::CONFIG_SECURE_TOKEN);
+        $client = ((null === $client)) ? new Client() : $client;
         $options = $this->getOptionsFromJsonFile();
-
-        // Use GuzzleHttp client for OAuth compatibility
-        $guzzleClient = $client instanceof \GuzzleHttp\ClientInterface ? $client : new \GuzzleHttp\Client();
-        parent::__construct($options, ['httpClient' => $guzzleClient]);
+        return parent::__construct($options, ['httpClient' => $client]);
     }
 
-
+    /**
+     * Sets the HTTP client instance.
+     *
+     * @param  \BO\Zmsclient\PSR7\ClientInterface $client
+     * @return self
+     */
+    public function setHttpClient($client)
+    {
+        $this->httpClient = $client;
+        return $this;
+    }
 
     /**
      * Generate a user object from a successful user details request.
