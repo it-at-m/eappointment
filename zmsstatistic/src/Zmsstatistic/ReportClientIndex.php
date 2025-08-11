@@ -48,12 +48,19 @@ class ReportClientIndex extends BaseController
         $dateRange = $this->extractDateRange($validator);
 
         // Get exchange client data based on date range or period
-        $exchangeClient = $this->getExchangeClientData($validator, $scopeId, $dateRange, $args);
+        $exchangeClient = $this->getExchangeClientData($scopeId, $dateRange, $args);
 
         // Handle download request
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
-            return $this->handleDownloadRequest($request, $response, $args, $exchangeClient, $dateRange, $selectedScopes);
+            return $this->handleDownloadRequest(
+                $request,
+                $response,
+                $args,
+                $exchangeClient,
+                $dateRange,
+                $selectedScopes
+            );
         }
 
         // Render HTML response
@@ -102,7 +109,7 @@ class ReportClientIndex extends BaseController
     /**
      * Get exchange client data based on date range or period
      */
-    private function getExchangeClientData($validator, $scopeId, $dateRange, $args): mixed
+    private function getExchangeClientData($scopeId, $dateRange, $args): mixed
     {
         if ($dateRange) {
             return $this->getExchangeClientForDateRange($scopeId, $dateRange);
@@ -261,8 +268,14 @@ class ReportClientIndex extends BaseController
     /**
      * Handle download request and return Excel file
      */
-    private function handleDownloadRequest($request, $response, $args, $exchangeClient, $dateRange, $selectedScopes = []): ResponseInterface
-    {
+    private function handleDownloadRequest(
+        $request,
+        $response,
+        $args,
+        $exchangeClient,
+        $dateRange,
+        $selectedScopes = []
+    ): ResponseInterface {
         $args['category'] = 'clientscope';
 
         // Set period for download filename - use date range or existing period
@@ -280,7 +293,12 @@ class ReportClientIndex extends BaseController
             error_log("Adding report to download with " . count($exchangeClient->data) . " data rows");
             error_log("Report period: " . ($exchangeClient->period ?? 'not set'));
         } else {
-            error_log("No exchangeClient data for download. ExchangeClient: " . ($exchangeClient ? 'exists' : 'null') . ", Data count: " . ($exchangeClient ? count($exchangeClient->data) : 'N/A'));
+            error_log(
+                "No exchangeClient data for download. ExchangeClient: " .
+                ($exchangeClient ? 'exists' : 'null') .
+                ", Data count: " .
+                ($exchangeClient ? count($exchangeClient->data) : 'N/A')
+            );
         }
 
         $args['scope'] = $this->workstation->getScope();
@@ -293,8 +311,14 @@ class ReportClientIndex extends BaseController
     /**
      * Render HTML response for the report page
      */
-    private function renderHtmlResponse($response, $args, $clientPeriod, $dateRange, $exchangeClient, $selectedScopes = []): ResponseInterface
-    {
+    private function renderHtmlResponse(
+        $response,
+        $args,
+        $clientPeriod,
+        $dateRange,
+        $exchangeClient,
+        $selectedScopes = []
+    ): ResponseInterface {
         return Render::withHtml(
             $response,
             'page/reportClientIndex.twig',
