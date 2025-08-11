@@ -61,24 +61,13 @@ jobs:
             cp phpunit.xml.dist phpunit.xml
           fi
           
-          # Different approach for problematic modules vs regular modules
-          case "${{ matrix.module }}" in
-            "zmsmessaging")
-              echo "Running tests WITHOUT coverage for ${{ matrix.module }}"
-              php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml \
-                --display-phpunit-deprecations --display-warnings --fail-on-deprecation
-              # Create empty placeholder files for artifacts
-              touch coverage/.placeholder
-              ;;
-            *)
-              echo "Running tests WITH coverage for ${{ matrix.module }}"
-              php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml \
-                --coverage-html coverage/html \
-                --coverage-clover coverage/clover.xml \
-                --log-junit coverage/junit.xml \
-                --display-phpunit-deprecations --display-warnings --fail-on-deprecation
-              ;;
-          esac
+          # Run all modules with coverage
+          echo "Running tests WITH coverage for ${{ matrix.module }}"
+          php -dmemory_limit=-1 ./vendor/bin/phpunit -c phpunit.xml \
+            --coverage-html coverage/html \
+            --coverage-clover coverage/clover.xml \
+            --log-junit coverage/junit.xml \
+            --display-phpunit-deprecations --display-warnings --fail-on-deprecation
 
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
