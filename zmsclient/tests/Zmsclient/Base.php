@@ -30,7 +30,7 @@ abstract class Base extends TestCase
 
     public function createHttpClient($mockup = null, $withUser = true)
     {
-        static::$http_client = new Http($this::$http_baseurl, $mockup);
+        static::$http_client = new Http(static::$http_baseurl, $mockup);
         if ($withUser) {
             static::$http_client->setUserInfo('_system_soap', 'zmssoap');
         }
