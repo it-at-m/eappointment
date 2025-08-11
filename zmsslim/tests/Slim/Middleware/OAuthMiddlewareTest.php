@@ -20,9 +20,9 @@ class OAuthMiddlewareTest extends TestCase
     protected function setUp(): void
     {
         if (!class_exists('App')) {
-            class_alias('stdClass', 'App');
+            eval('class App { public static $log; }');
         }
-        \App::$log = $this->createMock(\stdClass::class);
+        \App::$log = $this->createMock(\Psr\Log\LoggerInterface::class);
 
         if (!class_exists('BO\Zmsclient\Auth')) {
             class_alias('BO\Slim\Tests\Slim\Middleware\MockAuth', 'BO\Zmsclient\Auth');
