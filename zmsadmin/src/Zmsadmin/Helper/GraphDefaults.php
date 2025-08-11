@@ -31,6 +31,7 @@ class GraphDefaults
             client
             workstation
             ticketprinter
+            queue
         }
         status 
     },
