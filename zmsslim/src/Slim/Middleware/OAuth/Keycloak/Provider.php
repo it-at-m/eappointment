@@ -6,6 +6,7 @@ use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 use BO\Zmsclient\PSR7\Client;
 use League\OAuth2\Client\Token\AccessToken;
 use GuzzleHttp\ClientInterface;
+use BO\Zmsentities\Useraccount;
 
 /**
  * @SuppressWarnings(PHPMD)
@@ -66,7 +67,7 @@ class Provider extends Keycloak
      * @param  AccessToken $token
      * @return array
      */
-    public function getResourceOwnerData(AccessToken $token): array
+    public function getResourceOwnerData(AccessToken $token): Useraccount
     {
         $resourceOwner = $this->getResourceOwner($token);
         $config = $this->oauthService->readConfig();
@@ -79,7 +80,7 @@ class Provider extends Keycloak
         } else {
             $ownerData['email'] = $resourceOwner->getEmail();
         }
-        return $ownerData;
+        return new Useraccount($ownerData);
     }
 
     private function getOptionsFromJsonFile(): array

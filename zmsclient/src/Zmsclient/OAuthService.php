@@ -3,6 +3,7 @@
 namespace BO\Zmsclient;
 
 use BO\Zmsentities\Config;
+use BO\Zmsentities\Useraccount;
 
 /**
  * Service class for handling OAuth-related HTTP requests
@@ -33,11 +34,11 @@ class OAuthService
     /**
      * Authenticate OAuth user with workstation
      *
-     * @param array $ownerInputData
+     * @param Useraccount $ownerInputData
      * @param string|null $state
      * @return mixed
      */
-    public function authenticateWorkstation(array $ownerInputData, ?string $state = null)
+    public function authenticateWorkstation(Useraccount $ownerInputData, ?string $state = null)
     {
         $headers = [];
         if ($state) {

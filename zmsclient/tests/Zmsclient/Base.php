@@ -25,12 +25,12 @@ abstract class Base extends TestCase
     {
         $this->writeTestLogout();
         static::$http_client = null;
-        \BO\Zmsclient\HTTP::$jsonCompressLevel = 0;
+        HTTP::$jsonCompressLevel = 0;
     }
 
     public function createHttpClient($mockup = null, $withUser = true)
     {
-        static::$http_client = new \BO\Zmsclient\Http($this::$http_baseurl, $mockup);
+        static::$http_client = new Http($this::$http_baseurl, $mockup);
         if ($withUser) {
             static::$http_client->setUserInfo('_system_soap', 'zmssoap');
         }

@@ -35,8 +35,8 @@ class KeycloakInstance
         try {
             $accessToken = $this->getAccessToken($request->getQueryParams()["code"] ?? '');
             $this->testAccess($accessToken);
-            $ownerInputData = (array) $this->provider->getResourceOwnerData($accessToken);
-            $this->testOwnerData($ownerInputData);
+            $ownerInputData =  $this->provider->getResourceOwnerData($accessToken);
+            $this->testOwnerData((array) $ownerInputData);
 
             if (\BO\Zmsclient\Auth::getKey()) {
                 \App::$log->info('Clearing existing session', [

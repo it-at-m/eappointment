@@ -5,6 +5,7 @@ namespace BO\Zmsclient\Tests\Zmsclient;
 use BO\Zmsclient\OAuthService;
 use BO\Zmsclient\Http;
 use BO\Zmsentities\Config;
+use BO\Zmsentities\Useraccount;
 use PHPUnit\Framework\TestCase;
 
 class OAuthServiceTest extends TestCase
@@ -37,7 +38,7 @@ class OAuthServiceTest extends TestCase
 
     public function testAuthenticateWorkstation()
     {
-        $ownerData = ['username' => 'test@keycloak', 'email' => 'test@example.com'];
+        $ownerData = new Useraccount(['username' => 'test@keycloak', 'email' => 'test@example.com']);
         $state = 'test-state';
         $resultMock = $this->createMock(\BO\Zmsclient\Result::class);
         $resultMock->method('getEntity')->willReturn(['success' => true]);
@@ -54,7 +55,7 @@ class OAuthServiceTest extends TestCase
 
     public function testAuthenticateWorkstationWithoutState()
     {
-        $ownerData = ['username' => 'test@keycloak', 'email' => 'test@example.com'];
+        $ownerData = new Useraccount(['username' => 'test@keycloak', 'email' => 'test@example.com']);
         $resultMock = $this->createMock(\BO\Zmsclient\Result::class);
         $resultMock->method('getEntity')->willReturn(['success' => true]);
 
