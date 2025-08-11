@@ -31,12 +31,44 @@ class SourceView extends Component {
         this.setState({ source: newstate })
     }
 
+    getDeleteLabel(field, index) {
+        const src = this.props.source || {};
+
+        if (field === 'requests') {
+            const r = (src.requests || [])[index];
+            return `„${r && r.name ? r.name : 'Dienstleistung'}“`;
+        }
+
+        if (field === 'providers') {
+            const p = (src.providers || [])[index];
+            return `„${p && p.name ? p.name : 'Dienstleister'}“`;
+        }
+
+        if (field === 'requestrelation') {
+            const rel = (src.requestrelation || [])[index] || {};
+            const reqId = rel.request && rel.request.id;
+            const prvId = rel.provider && rel.provider.id;
+
+            const req = (src.requests || []).find(r => String(r.id) === String(reqId));
+            const prv = (src.providers || []).find(p => String(p.id) === String(prvId));
+
+            const rName = (req && req.name) || (rel.request && rel.request.name) || 'Dienstleistung';
+            const pName = (prv && prv.name) || (rel.provider && rel.provider.name) || 'Dienstleister';
+
+            return `Kombination „${rName} × ${pName}“`;
+        }
+
+        return 'diesen Datensatz';
+    }
+
     deleteHandler(field, deleteIndex) {
-        let newstate = this.props.source
-        newstate[field] = this.props.source[field].filter((item, index) => {
-            return index !== deleteIndex
-        })
-        this.setState({ source: newstate })
+        const label = this.getDeleteLabel(field, deleteIndex);
+        const msg = `${label} wirklich löschen?\n\nHinweis: Die Änderung wird erst nach „Speichern“ wirksam.`;
+        if (!window.confirm(msg)) return;
+
+        let newstate = this.props.source;
+        newstate[field] = list.filter((_, i) => i !== deleteIndex);
+        this.setState({ source: newstate });
     }
 
     componentDidMount() {
@@ -56,27 +88,30 @@ class SourceView extends Component {
                     changeHandler={this.changeHandler}
                 />
                 <fieldset>
+                    <legend>Dienstleister</legend>
+                    <ProvidersView
+                        {...this.props}
+                        parentproviders={this.props.parentproviders}
+                        source={this.props.source}
+                        changeHandler={this.changeHandler}
+                        addNewHandler={this.addNewHandler}
+                        deleteHandler={this.deleteHandler}
+                    />
+                </fieldset>
+                <fieldset>
                     <legend>Dienstleistungen</legend>
                     <RequestsView
                         {...this.props}
                         source={this.props.source}
+                        parentrequests={this.props.parentrequests}
+                        requestvariants={this.props.requestvariants}
                         changeHandler={this.changeHandler}
                         addNewHandler={this.addNewHandler}
                         deleteHandler={this.deleteHandler}
                     />
                 </fieldset>
                 <fieldset>
-                    <legend>Dienstleister</legend>
-                    <ProvidersView
-                        {...this.props}
-                        source={this.props.source}
-                        changeHandler={this.changeHandler}
-                        addNewHandler={this.addNewHandler}
-                        deleteHandler={this.deleteHandler}
-                    />
-                </fieldset>
-                <fieldset>
-                    <legend>Zeitslots</legend>
+                    <legend>Kombinationen</legend>
                     <RequestRelationView
                         {...this.props}
                         source={this.props.source}
@@ -91,7 +126,9 @@ class SourceView extends Component {
 }
 
 SourceView.propTypes = {
-    source: PropTypes.object
+    source: PropTypes.object,
+    parentProviders: PropTypes.array.isRequired,
+    parentrequests: PropTypes.array.isRequired,
 }
 
 export default SourceView
