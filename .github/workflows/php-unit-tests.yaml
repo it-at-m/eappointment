@@ -280,7 +280,7 @@ jobs:
           docker-compose up -d
           
           echo "Running tests WITH coverage for zmsclient"
-          docker-compose exec -T test php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=-1 \
+          docker-compose exec -T test php -dmemory_limit=-1 \
             ./vendor/bin/phpunit \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
