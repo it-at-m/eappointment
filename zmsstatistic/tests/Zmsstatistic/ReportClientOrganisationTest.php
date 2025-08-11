@@ -42,7 +42,7 @@ class ReportClientOrganisationTest extends Base
               ]
             ]
         );
-        $response = $this->render([ ], ['__uri' => '/report/client/department/'], [ ]);
+        $response = $this->render([ ], ['__uri' => '/report/client/organisation/'], [ ]);
         $this->assertStringContainsString('Kundenstatistik Bezirk', (string) $response->getBody());
         $this->assertStringContainsString(
             '<a href="/report/client/organisation/2016-04/">April</a>',
@@ -178,7 +178,7 @@ class ReportClientOrganisationTest extends Base
             'period' => '2016-04'
             ],
             [
-            '__uri' => '/report/client/department/2016-04/',
+            '__uri' => '/report/client/organisation/2016-04/',
             'type' => 'xlsx'
             ],
             [ ]
