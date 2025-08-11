@@ -13,7 +13,8 @@ class Request extends Schema\Entity
         return [
             'id' => '',
             'name' => '',
-            'source' => 'dldb'
+            'source' => 'dldb',
+            'parent_id' => null
         ];
     }
 
@@ -62,6 +63,11 @@ class Request extends Schema\Entity
     public function getAdditionalData()
     {
         return $this->toProperty()->data->get();
+    }
+
+    public function getParentId()
+    {
+        return $this->toProperty()->parent_id->get();
     }
 
     public function __toString()
