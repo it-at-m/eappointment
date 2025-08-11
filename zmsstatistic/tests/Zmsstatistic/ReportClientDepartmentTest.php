@@ -45,14 +45,22 @@ class ReportClientDepartmentTest extends Base
         $response = $this->render([ ], ['__uri' => '/report/client/department/'], [ ]);
         $this->assertStringContainsString('Kundenstatistik Behörde', (string) $response->getBody());
         $this->assertStringContainsString(
-            '<a class="active" href="/report/client/department/">Bürgeramt</a>',
-            (string) $response->getBody()
-        );
-        $this->assertStringContainsString(
             '<a href="/report/client/department/2016-04/">April</a>',
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<label for="scope-select">Standortauswahl</label>',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<optgroup label="Charlottenburg-Wilmersdorf -&gt; Bürgeramt">',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<label>Datumsauswahl</label>',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 

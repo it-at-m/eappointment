@@ -17,8 +17,8 @@ class ReportClientScopeTest extends Base
               [
                   'function' => 'readGetResult',
                   'url' => '/workstation/',
-                  'parameters' => ['resolveReferences' => 2],
-                  'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                  'parameters' => ['resolveReferences' => 3],
+                  'response' => $this->readFixture("GET_Workstation_Resolved3.json")
               ],
               [
                   'function' => 'readGetResult',
@@ -45,14 +45,21 @@ class ReportClientScopeTest extends Base
         $response = $this->render([ ], ['__uri' => '/report/client/scope/'], [ ]);
         $this->assertStringContainsString('Kundenstatistik Standort', (string) $response->getBody());
         $this->assertStringContainsString(
-            '<a class="active" href="/report/client/scope/">Bürgeramt Heerstraße </a>',
-            (string) $response->getBody()
-        );
-        $this->assertStringContainsString(
             '<a href="/report/client/scope/2016-04/">April</a>',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<label for="scope-select">Standortauswahl</label>',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<optgroup label="Charlottenburg-Wilmersdorf -&gt; Bürgeramt">',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<label>Datumsauswahl</label>',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
@@ -63,8 +70,8 @@ class ReportClientScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'parameters' => ['resolveReferences' => 3],
+                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -111,8 +118,8 @@ class ReportClientScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'parameters' => ['resolveReferences' => 3],
+                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -166,8 +173,8 @@ class ReportClientScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'parameters' => ['resolveReferences' => 3],
+                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -219,8 +226,8 @@ class ReportClientScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'parameters' => ['resolveReferences' => 3],
+                    'response' => $this->readFixture("GET_Workstation_Resolved3.json")
                 ],
                 [
                     'function' => 'readGetResult',
