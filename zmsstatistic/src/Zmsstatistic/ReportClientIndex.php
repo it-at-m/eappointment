@@ -132,28 +132,27 @@ class ReportClientIndex extends BaseController
             // Get all years that need to be fetched for this date range
             $years = $this->getYearsForDateRange($fromDate, $toDate);
 
-            error_log("Date range spans years: " . implode(', ', $years));
-            error_log("Filtering from: " . $fromDate . " to: " . $toDate);
+
 
             // Fetch and combine data from all necessary years
             $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years);
 
             if (empty($combinedData['data'])) {
-                error_log("No data found for years: " . implode(', ', $years));
                 return null;
             }
 
-            error_log("Total data rows before filtering: " . count($combinedData['data']));
+
 
             // Filter data by date range
             $filteredData = $this->filterDataByDateRange($combinedData['data'], $fromDate, $toDate);
 
-            error_log("Total data rows after filtering: " . count($filteredData));
+            if (empty($filteredData)) {
+                return null;
+            }
 
             // Create filtered exchange client
             return $this->createFilteredExchangeClient($combinedData['entity'], $filteredData, $fromDate, $toDate);
         } catch (\Exception $exception) {
-            error_log("Exception in getExchangeClientForDateRange: " . $exception->getMessage());
             return null;
         }
     }
@@ -170,7 +169,6 @@ class ReportClientIndex extends BaseController
                 ->withCalculatedTotals($this->totals, 'date')
                 ->toHashed();
         } catch (\Exception $exception) {
-            error_log("Exception in getExchangeClientForPeriod: " . $exception->getMessage());
             return null;
         }
     }
@@ -215,9 +213,8 @@ class ReportClientIndex extends BaseController
                     $combinedData = array_merge($combinedData, $exchangeClient->data);
                 }
 
-                error_log("Fetched " . count($exchangeClient->data) . " rows for year " . $year);
+
             } catch (\Exception $exception) {
-                error_log("Failed to fetch data for year " . $year . ": " . $exception->getMessage());
                 // Continue with other years - don't fail completely if one year is missing
             }
         }
@@ -260,9 +257,14 @@ class ReportClientIndex extends BaseController
         $exchangeClient->firstDay = (new \BO\Zmsentities\Day())->setDateTime(new \DateTime($fromDate));
         $exchangeClient->lastDay = (new \BO\Zmsentities\Day())->setDateTime(new \DateTime($toDate));
 
-        return $exchangeClient
-            ->withCalculatedTotals($this->totals, 'date')
-            ->toHashed();
+        // Only call withCalculatedTotals if we have data
+        if (!empty($filteredData)) {
+            return $exchangeClient
+                ->withCalculatedTotals($this->totals, 'date')
+                ->toHashed();
+        }
+
+        return $exchangeClient->toHashed();
     }
 
     /**
@@ -290,15 +292,6 @@ class ReportClientIndex extends BaseController
 
         if ($exchangeClient && count($exchangeClient->data)) {
             $args['reports'][] = $exchangeClient;
-            error_log("Adding report to download with " . count($exchangeClient->data) . " data rows");
-            error_log("Report period: " . ($exchangeClient->period ?? 'not set'));
-        } else {
-            error_log(
-                "No exchangeClient data for download. ExchangeClient: " .
-                ($exchangeClient ? 'exists' : 'null') .
-                ", Data count: " .
-                ($exchangeClient ? count($exchangeClient->data) : 'N/A')
-            );
         }
 
         $args['scope'] = $this->workstation->getScope();
