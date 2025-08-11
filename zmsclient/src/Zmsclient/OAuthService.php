@@ -5,10 +5,6 @@ namespace BO\Zmsclient;
 use BO\Zmsentities\Config;
 use BO\Zmsentities\Useraccount;
 
-/**
- * Service class for handling OAuth-related HTTP requests
- * This service centralizes OAuth HTTP calls that were previously in zmsslim
- */
 class OAuthService
 {
     protected Http $http;
