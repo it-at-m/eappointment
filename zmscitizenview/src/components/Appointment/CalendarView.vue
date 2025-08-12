@@ -151,7 +151,7 @@
             :key="day.dateString"
           >
             <div>
-              <h3
+              <h4
                 style="
                   margin-bottom: 20px;
                   background-color: var(--color-neutrals-blue-xlight);
@@ -183,7 +183,7 @@
                     ></use>
                   </svg>
                 </button>
-              </h3>
+              </h4>
 
               <section
                 class="m-accordion__section-content collapse"
