@@ -87,7 +87,6 @@ const { t } = useI18n();
 <style>
 @import "@muenchen/muc-patternlab-vue/assets/css/custom-style.css";
 @import "@muenchen/muc-patternlab-vue/style.css";
-@import "./styles/breakpoints.css";
 
 :host {
   font-family:

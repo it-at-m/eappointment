@@ -425,7 +425,10 @@
     </div>
 
     <muc-button
-      v-if="isListView && firstFiveAvailableDays.length < availableDays.length"
+      v-if="
+        isListView &&
+        firstFiveAvailableDays.length < (availableDays?.length || 0)
+      "
       @click="loadMoreDays"
       icon="chevron-down"
       icon-animated
@@ -2150,7 +2153,7 @@ const getCurrentDayPartForDay = (dateString: string) => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .wrapper {
   display: grid;
   grid-template-columns: 6rem 1fr;
@@ -2224,8 +2227,19 @@ const getCurrentDayPartForDay = (dateString: string) => {
 
 /* Active toggle text styling */
 .m-toggle-switch__label:not(.disabled) {
-  color: #005A9F; /* BDE Blue */
+  color: #005a9f; /* BDE Blue */
   transition: color 0.2s ease;
+}
+
+/* Calendar date number styling - increase font size for better desktop readability */
+.muc-calendar .muc-calendar__day-number,
+.muc-calendar .muc-calendar__day {
+  font-size: 1.125rem !important; /* 18px */
+}
+
+/* Ensure the calendar container has proper sizing */
+.muc-calendar {
+  font-size: 1.125rem;
 }
 
 .view-toggle-container {
@@ -2235,11 +2249,26 @@ const getCurrentDayPartForDay = (dateString: string) => {
 }
 
 /* Responsive layout: on larger screens, display toggle to the right of heading */
-@media (min-width: var(--breakpoint-xs)) {
+@include xs-up {
   .view-toggle-container {
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
+  }
+}
+
+@include xs-down {
+  .timeslot.m-button,
+  .timeslot .m-button {
+    padding: 1px 8.5px !important; /* Even smaller padding for very small screens */
+    font-size: 1rem !important; /* 16px for mobile */
+    min-height: 2.25rem;
+  }
+  .grid-item {
+    margin: 6px 6px;
+  }
+  .grid {
+    margin-right: 0px;
   }
 }
 </style>

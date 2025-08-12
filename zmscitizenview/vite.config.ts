@@ -35,6 +35,13 @@ export default defineConfig({
       '.vue',
     ],
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "${fileURLToPath(new URL('./src/styles/breakpoints.scss', import.meta.url))}";`
+      }
+    }
+  },
   server: {
     port: 8082,
   },
