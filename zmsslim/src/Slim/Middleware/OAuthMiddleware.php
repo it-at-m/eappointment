@@ -8,6 +8,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
 use BO\Zmsclient\Auth;
 use BO\Zmsclient\Psr7\Stream;
+use Slim\Psr7\Factory\StreamFactory;
 
 /**
  * @SuppressWarnings(PHPMD)
@@ -78,8 +79,10 @@ class OAuthMiddleware
                 'request_uri' => $request->getUri()->getPath(),
                 'session_id' => session_id()
             ]);
+            $stream = (new StreamFactory())->createStream();
+            $stream->write(json_encode(['error' => 'Unknown OIDC provider']));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json')
-                ->withBody(Stream::create(json_encode(['error' => 'Unknown OIDC provider'])));
+                ->withBody($stream);
         }
         return $response;
     }
