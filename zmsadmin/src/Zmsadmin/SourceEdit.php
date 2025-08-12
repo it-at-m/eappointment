@@ -35,6 +35,19 @@ class SourceEdit extends BaseController
                 ->getEntity();
         }
 
+        $parents = \App::$http->readGetResult('/source/dldb/', ['resolveReferences' => 2])->getEntity();
+        $parentProviders = $parents->providers;
+        $parentRequests = $parents->requests;
+        $apiRes  = \App::$http->readGetResult('/requestvariants/');
+        $payload = json_decode((string) $apiRes->getResponse()->getBody(), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            \BO\Log::error('requestvariants JSON decode failed: ' . json_last_error_msg());
+            $requestVariants = [];
+        } else {
+            $requestVariants = $payload['data'] ?? [];
+        }
+
+
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $result = $this->testUpdateEntity($input);
@@ -53,6 +66,9 @@ class SourceEdit extends BaseController
                 'menuActive' => 'source',
                 'workstation' => $workstation,
                 'source' => (isset($source)) ? $source : null,
+                'parentProviders' => $parentProviders,
+                'parentRequests' => $parentRequests,
+                'requestVariants' => $requestVariants,
                 'success' => $success,
                 'exception' => (isset($result)) ? $result : null
             )
