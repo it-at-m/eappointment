@@ -4,7 +4,6 @@ namespace BO\Slim\Tests\Slim\Middleware;
 
 use BO\Slim\Middleware\OAuthMiddleware;
 use PHPUnit\Framework\TestCase;
-use App;
 
 
 class OAuthMiddlewareTest extends TestCase
