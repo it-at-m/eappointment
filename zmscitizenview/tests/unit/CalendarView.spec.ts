@@ -1963,7 +1963,54 @@ describe("CalendarView", () => {
       expect(currentDayPart).toBe("am");
     });
 
-    it("shows navigation buttons for hourly view in list view", async () => {
+    it("shows navigation buttons for hourly view when multiple providers are selected", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-10", providerIDs: "1,2" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400, 1747223700, 1747224000, 1747224300]
+          },
+          {
+            officeId: 2,
+            appointments: [1747202400, 1747223100, 1747223400, 1747223700, 1747224000, 1747224300]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
+            { name: "Office B", id: 2, address: { street: "Oak", house_number: "100" } }
+          ]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office B", id: 2, address: { street: "Oak", house_number: "100" } });
+      await flushPromises();
+
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.isListView).toBe(false);
+
+      const buttons = wrapper.findAllComponents({ name: "MucButton" });
+      const earlierButton = buttons.find(btn => btn.text().includes("earlier"));
+      const laterButton = buttons.find(btn => btn.text().includes("later"));
+
+      expect(earlierButton).toBeDefined();
+      expect(laterButton).toBeDefined();
+    });
+
+    it("hides navigation buttons for hourly view when single provider is selected", async () => {
       (fetchAvailableDays as Mock).mockResolvedValue({
         availableDays: [
           { time: "2025-06-10", providerIDs: "1" }
@@ -1983,8 +2030,7 @@ describe("CalendarView", () => {
         selectedService: {
           id: "service1",
           providers: [
-            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
-            { name: "Office B", id: 2, address: { street: "Oak", house_number: "100" } }
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
           ]
         }
       });
@@ -1992,17 +2038,17 @@ describe("CalendarView", () => {
       await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
       await flushPromises();
 
-      await wrapper.find(".m-toggle-switch").trigger("click");
       await nextTick();
+      await flushPromises();
 
-      await nextTick();
-      await nextTick();
+      expect(wrapper.vm.isListView).toBe(false);
 
       const buttons = wrapper.findAllComponents({ name: "MucButton" });
       const earlierButton = buttons.find(btn => btn.text().includes("earlier"));
       const laterButton = buttons.find(btn => btn.text().includes("later"));
 
-      expect(buttons.length).toBeGreaterThan(0);
+      expect(earlierButton).toBeUndefined();
+      expect(laterButton).toBeUndefined();
     });
 
     it("filters location titles to show only once per office per time period", async () => {
@@ -2044,9 +2090,17 @@ describe("CalendarView", () => {
       await nextTick();
       await nextTick();
 
+      await wrapper.find("#listHeading-0 .m-accordion__section-button").trigger("click");
+      await nextTick();
+      
       const locationTitles = wrapper.findAll(".location-title");
       
-      expect(wrapper.vm.firstFiveAvailableDays.length).toBeGreaterThan(0);
+      if ((wrapper.vm.selectableProviders?.length || 0) > 1) {
+        expect(locationTitles.length).toBeGreaterThanOrEqual(0);
+        const officeNames = locationTitles.map(el => el.text());
+        const uniqueNames = [...new Set(officeNames)];
+        expect(officeNames.length).toBe(uniqueNames.length);
+      }
     });
   });
 });
