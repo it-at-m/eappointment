@@ -45,14 +45,19 @@ export default defineConfig({
     assetsDir: "src",
     rollupOptions: {
       input: {
+        "index": "./index.html",
+        "index-appointment": "./index-appointment.html",
+        "index-appointment-detail": "./index-appointment-detail.html",
+        "index-appointment-overview": "./index-appointment-overview.html",
+        "index-appointment-slider": "./index-appointment-slider.html",
         "zms-appointment": "./src/zms-appointment-webcomponent.ts",
         "zms-appointment-detail": "./src/zms-appointment-detail-webcomponent.ts",
         "zms-appointment-overview": "./src/zms-appointment-overview-webcomponent.ts",
         "zms-appointment-slider": "./src/zms-appointment-slider-webcomponent.ts",
       },
       output: {
-        entryFileNames: "entry-[name]-[hash].js",
-        dir: "dist/src",
+        entryFileNames: "src/entry-[name]-[hash].js",
+        dir: "dist",
       },
     }
   },

@@ -1,2 +1,2 @@
 import(document.currentScript ? new URL('./{{path}}', document.currentScript.src).href : './{{path}}');
-import(document.currentScript ? new URL('./../src/wrapper.js', document.currentScript.src).href : './../src/wrapper.js');
+import(document.currentScript ? new URL('./../wrapper.js', document.currentScript.src).href : './../wrapper.js');
