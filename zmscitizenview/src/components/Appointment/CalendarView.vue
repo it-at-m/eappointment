@@ -90,14 +90,7 @@
   </div>
 
   <div v-else-if="!error">
-    <div
-      class="m-content"
-      style="
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-      "
-    >
+    <div class="view-toggle-container">
       <h2 tabindex="0">{{ t("time") }}</h2>
       <div
         class="m-toggle-switch"
@@ -2212,6 +2205,21 @@ const getCurrentDayPartForDay = (dateString: string) => {
 .disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.view-toggle-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Responsive layout: on larger screens, display toggle to the right of heading */
+@media (min-width: var(--breakpoint-xs)) {
+  .view-toggle-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
 }
 </style>
 
