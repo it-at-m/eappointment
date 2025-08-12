@@ -81,7 +81,7 @@ $breakpoint-xl: 1904px;
 }
 
 .hidden-sm-up {
-  @include xs-up {
+  @include sm-up {
     display: none !important;
   }
 }
@@ -93,7 +93,7 @@ $breakpoint-xl: 1904px;
 }
 
 .hidden-md-up {
-  @include sm-up {
+  @include md-up {
     display: none !important;
   }
 }
@@ -105,7 +105,7 @@ $breakpoint-xl: 1904px;
 }
 
 .hidden-lg-up {
-  @include md-up {
+  @include lg-up {
     display: none !important;
   }
 }
