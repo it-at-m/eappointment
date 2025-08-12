@@ -120,6 +120,8 @@
   "apiErrorGenericFallbackText": "Please try again later.",
   "apiErrorZmsClientCommunicationErrorHeader": "Service is temporarily unavailable.",
   "apiErrorZmsClientCommunicationErrorText": "The service is temporarily unavailable. Please try again later.",
+  "apiErrorInvalidJumpinLinkHeader": "This view cannot be loaded.",
+  "apiErrorInvalidJumpinLinkText": "The link to this page is unfortunately incorrect. Please restart the appointment booking and select a service.",
   "appointment": "Appointment",
   "appointmentBookingErrorHeader": "Activation failed.",
   "appointmentBookingErrorText": "Activation failed.",
@@ -216,5 +218,6 @@
   },
   "listView": "List view",
   "calendarView": "Calendar view",
-  "loadMore": "Load more"
+  "loadMore": "Load more",
+  "bookAppointmentStart": "Book appointment"
 }
