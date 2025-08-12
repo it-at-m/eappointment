@@ -101,9 +101,17 @@
         @keydown.enter.prevent="toggleView"
         @keydown.space.prevent="toggleView"
       >
-        <span class="m-toggle-switch__label">{{ t("calendarView") }}</span>
+        <span
+          class="m-toggle-switch__label"
+          :class="{ disabled: isListView }"
+          >{{ t("calendarView") }}</span
+        >
         <span class="m-toggle-switch__indicator"><span></span></span>
-        <span class="m-toggle-switch__label">{{ t("listView") }}</span>
+        <span
+          class="m-toggle-switch__label"
+          :class="{ disabled: !isListView }"
+          >{{ t("listView") }}</span
+        >
       </div>
     </div>
     <div
@@ -2205,6 +2213,13 @@ const getCurrentDayPartForDay = (dateString: string) => {
 .disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Disabled toggle text styling */
+.m-toggle-switch__label.disabled {
+  opacity: 0.5;
+  color: var(--color-neutrals-grey, #666);
+  transition: opacity 0.2s ease;
 }
 
 .view-toggle-container {
