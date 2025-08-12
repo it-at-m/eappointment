@@ -150,7 +150,7 @@ class Request extends Base
             'group' => $entity->getGroup(),
             'link' =>  $entity->getLink(),
             'data' => $additionalData,
-            'variant_id' => $entity->getProperty('variant_id'),
+            'variant_id' => $entity->getVariantId()
         ]);
         $this->writeItem($query);
         return $this->readEntity($entity->getSource(), $entity->getId());
