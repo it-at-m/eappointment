@@ -6,8 +6,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
-use BO\Zmsclient\Psr7\Stream;
 use BO\Zmsclient\Auth;
+use BO\Zmsclient\Psr7\Stream;
 
 /**
  * @SuppressWarnings(PHPMD)
