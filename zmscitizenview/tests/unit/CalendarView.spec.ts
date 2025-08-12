@@ -1844,6 +1844,15 @@ describe("CalendarView", () => {
         ]
       });
 
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400, 1747223700, 1747224000, 1747224300]
+          }
+        ]
+      });
+
       const wrapper = createWrapper({
         selectedService: {
           id: "service1",
@@ -1866,9 +1875,14 @@ describe("CalendarView", () => {
       wrapper.vm.selectedProviders = { "2": true };
       await nextTick();
 
-      // Check that navigation state is cleared
-      expect(wrapper.vm.listViewCurrentHour.has(dateString)).toBe(false);
-      expect(wrapper.vm.listViewCurrentDayPart.has(dateString)).toBe(false);
+      // Check that navigation state is NOT immediately cleared (this is the new behavior)
+      // The snap function will handle updating it if needed, but it won't be cleared immediately
+      expect(wrapper.vm.listViewCurrentHour.has(dateString)).toBe(true);
+      expect(wrapper.vm.listViewCurrentDayPart.has(dateString)).toBe(true);
+      
+      // The values should still be the same
+      expect(wrapper.vm.listViewCurrentHour.get(dateString)).toBe(16);
+      expect(wrapper.vm.listViewCurrentDayPart.get(dateString)).toBe("pm");
     });
 
     it("navigates between hours in list view", async () => {

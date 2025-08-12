@@ -164,8 +164,8 @@
                   type="button"
                   data-bs-toggle="collapse"
                   :data-bs-target="'#listContent-' + index"
-                  :aria-expanded="index === openAccordionIndex"
-                  :aria-controls="'listContent-' + index"
+                  :aria-expanded="day.dateString === openAccordionDate"
+                  :aria-controls="'#listContent-' + index"
                   @click="onDayAccordionSelect(day)"
                 >
                   {{ day.label }}
@@ -176,7 +176,7 @@
                   >
                     <use
                       :xlink:href="
-                        index === openAccordionIndex
+                        day.dateString === openAccordionDate
                           ? '#icon-chevron-up'
                           : '#icon-chevron-down'
                       "
@@ -187,14 +187,17 @@
 
               <section
                 class="m-accordion__section-content collapse"
-                :class="{ show: index === openAccordionIndex }"
+                :class="{ show: day.dateString === openAccordionDate }"
                 :id="'listContent-' + index"
                 :aria-labelledby="'listHeading-' + index"
                 data-bs-parent="#listViewAccordion"
               >
                 <div class="m-textplus__content">
                   <template
-                    v-if="isLoadingAppointments && index === openAccordionIndex"
+                    v-if="
+                      isLoadingAppointments &&
+                      day.dateString === openAccordionDate
+                    "
                   >
                     <div
                       style="
@@ -1576,6 +1579,9 @@ onMounted(() => {
     );
 
     showSelectionForProvider(offices[0]);
+
+    // Initialize accordion state - open the first available day by default
+    // This will be set when the first day data is loaded
   }
 });
 
@@ -1837,6 +1843,107 @@ async function snapToNearestAvailableTimeSlot() {
   }
 }
 
+// Add list view version of snap function
+async function snapToListViewNearestAvailableTimeSlot() {
+  await nextTick(); // Ensure computed properties are updated
+
+  // For each day in the list view, check if current hour/day part is still available
+  for (const [dateString] of listViewCurrentHour.value) {
+    const currentHour = listViewCurrentHour.value.get(dateString);
+    if (currentHour !== undefined) {
+      // Check if this hour still has appointments for selected providers
+      const hasAppointmentsInHour = firstFiveAvailableDays.value.some((day) => {
+        if (day.dateString === dateString) {
+          return day.hourRows.some(
+            (hourRow) =>
+              hourRow.hour === currentHour &&
+              hourRow.times.length > 0 &&
+              selectedProviders.value[hourRow.officeId]
+          );
+        }
+        return false;
+      });
+
+      if (!hasAppointmentsInHour) {
+        // Find the nearest available hour
+        const day = firstFiveAvailableDays.value.find(
+          (d) => d.dateString === dateString
+        );
+        if (day) {
+          const availableHours = getListDayAvailableHours(day);
+          if (availableHours.length > 0) {
+            // Snap to the nearest available hour, prefer earlier if equally close
+            let nearest = availableHours[0];
+            let minDiff = Math.abs(currentHour - nearest);
+            for (const hour of availableHours) {
+              const diff = Math.abs(currentHour - hour);
+              if (diff < minDiff || (diff === minDiff && hour < nearest)) {
+                nearest = hour;
+                minDiff = diff;
+              }
+            }
+            // Only update if we found a different hour to prevent unnecessary resets
+            if (nearest !== currentHour) {
+              listViewCurrentHour.value.set(dateString, nearest);
+            }
+          }
+        }
+      }
+      // If the current hour is still valid, keep it - don't change anything
+    }
+  }
+
+  // For each day in the list view, check if current day part is still available
+  for (const [dateString] of listViewCurrentDayPart.value) {
+    const currentDayPart = listViewCurrentDayPart.value.get(dateString);
+    if (currentDayPart !== undefined) {
+      // Check if this day part still has appointments for selected providers
+      const hasAppointmentsInDayPart = firstFiveAvailableDays.value.some(
+        (day) => {
+          if (day.dateString === dateString) {
+            return day.dayPartRows.some(
+              (partRow) =>
+                partRow.part === currentDayPart &&
+                partRow.times.length > 0 &&
+                selectedProviders.value[partRow.officeId]
+            );
+          }
+          return false;
+        }
+      );
+
+      if (!hasAppointmentsInDayPart) {
+        // Find the nearest available day part
+        const day = firstFiveAvailableDays.value.find(
+          (d) => d.dateString === dateString
+        );
+        if (day) {
+          const availableDayParts = getListDayAvailableDayParts(day);
+          if (availableDayParts.length > 0) {
+            // Prefer the other part if available
+            let newDayPart = currentDayPart;
+            if (currentDayPart === "am" && availableDayParts.includes("pm")) {
+              newDayPart = "pm";
+            } else if (
+              currentDayPart === "pm" &&
+              availableDayParts.includes("am")
+            ) {
+              newDayPart = "am";
+            } else {
+              newDayPart = availableDayParts[0];
+            }
+            // Only update if we found a different day part to prevent unnecessary resets
+            if (newDayPart !== currentDayPart) {
+              listViewCurrentDayPart.value.set(dateString, newDayPart);
+            }
+          }
+        }
+      }
+      // If the current day part is still valid, keep it - don't change anything
+    }
+  }
+}
+
 watch(
   selectedProviders,
   async (newVal, oldVal) => {
@@ -1845,17 +1952,14 @@ watch(
     await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
     await snapToNearestAvailableTimeSlot();
     await validateCurrentDateHasAppointments();
-  },
-  { deep: true }
-);
 
-// Add watcher to reset list view navigation state when providers change
-watch(
-  selectedProviders,
-  () => {
-    // Clear list view navigation state when providers change
-    listViewCurrentHour.value.clear();
-    listViewCurrentDayPart.value.clear();
+    // Also handle list view navigation snapping
+    if (isListView.value) {
+      await snapToListViewNearestAvailableTimeSlot();
+    }
+
+    // Don't clear the navigation state immediately - let the snap function handle it
+    // This prevents the accordion from closing and resetting to the start
   },
   { deep: true }
 );
@@ -1883,6 +1987,9 @@ const toggleView = () => {
 
 const openAccordionIndex = ref(0);
 
+// Change to track which specific day is open by dateString instead of index
+const openAccordionDate = ref<string | null>(null);
+
 const daysToShow = ref(5);
 
 // Add state for list view navigation - track current hour and day part for each day
@@ -1891,7 +1998,8 @@ const listViewCurrentDayPart = ref<Map<string, "am" | "pm">>(new Map());
 
 const loadMoreDays = () => {
   daysToShow.value += 3;
-  openAccordionIndex.value = -1;
+  // Don't reset the accordion state when loading more days
+  // openAccordionDate.value = null;
 };
 
 const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
@@ -1998,14 +2106,19 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
   });
 });
 
+// Add watcher to automatically open the first day in the accordion when data is loaded
+watch(firstFiveAvailableDays, (newDays) => {
+  if (newDays.length > 0 && !openAccordionDate.value) {
+    // Automatically open the first day when data is first loaded
+    openAccordionDate.value = newDays[0].dateString;
+  }
+});
+
 const onDayAccordionSelect = (day: AccordionDay) => {
-  const idx = firstFiveAvailableDays.value.findIndex(
-    (d) => d.dateString === day.dateString
-  );
-  if (openAccordionIndex.value === idx) {
-    openAccordionIndex.value = -1; // Accordion schließen
+  if (openAccordionDate.value === day.dateString) {
+    openAccordionDate.value = null; // Accordion schließen
   } else {
-    openAccordionIndex.value = idx; // Accordion öffnen
+    openAccordionDate.value = day.dateString; // Accordion öffnen
     selectedDay.value = day.date;
     handleDaySelection(day.date);
 
