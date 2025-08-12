@@ -4081,6 +4081,36 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/requestvariants/":
+ *      get:
+ *          summary: Get all request variants
+ *          tags:
+ *              - requestvariant
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  type: object
+ *                                  properties:
+ *                                      id:
+ *                                          type: integer
+ *                                      name:
+ *                                          type: string
+ */
+\App::$slim->get(
+    '/requestvariants/',
+    '\BO\Zmsapi\RequestVariantList'
+)->setName("RequestVariantList");
+
+/**
+ *  @swagger
  *  "/provider/{source}/{id}/request/":
  *      get:
  *          summary: Get a list of requests by provider ID
