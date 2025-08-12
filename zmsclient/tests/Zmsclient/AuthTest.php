@@ -23,15 +23,7 @@ class AuthTest extends TestCase
         
         // Clear cookies for clean test state
         $_COOKIE = [];
-        
-        // Mock App class and log if it doesn't exist
-        if (!class_exists('App')) {
-            eval('class App { public static $log; }');
-        }
-        
-        // Create mock log
-        $this->mockLog = $this->createMock(\Monolog\Logger::class);
-        App::$log = $this->mockLog;
+
     }
 
     protected function tearDown(): void
