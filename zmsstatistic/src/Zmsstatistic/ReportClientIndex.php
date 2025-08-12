@@ -217,6 +217,11 @@ class ReportClientIndex extends BaseController
             }
         }
 
+        // Sort the combined data by date (column index 1) after combining all years
+        usort($combinedData, function($a, $b) {
+            return strcmp($a[1], $b[1]);
+        });
+
         return [
             'entity' => $baseEntity,
             'data' => $combinedData
@@ -234,6 +239,7 @@ class ReportClientIndex extends BaseController
                 $filteredData[] = $row;
             }
         }
+        
         return $filteredData;
     }
 
