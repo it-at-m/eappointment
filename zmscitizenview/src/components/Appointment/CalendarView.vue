@@ -164,7 +164,7 @@
                   type="button"
                   data-bs-toggle="collapse"
                   :data-bs-target="'#listContent-' + index"
-                  :aria-expanded="index === 0"
+                  :aria-expanded="index === openAccordionIndex"
                   :aria-controls="'listContent-' + index"
                   @click="onDayAccordionSelect(day)"
                 >
@@ -220,9 +220,13 @@
                         class="ml-4 location-title"
                         v-if="
                           (selectableProviders?.length || 0) > 1 &&
+                          hourRow.hour ===
+                            getCurrentHourForDay(day.dateString) &&
+                          hourRow.times.length > 0 &&
                           (hIndex === 0 ||
                             day.hourRows[hIndex - 1].officeId !==
-                              hourRow.officeId)
+                              hourRow.officeId ||
+                            day.hourRows[hIndex - 1].hour !== hourRow.hour)
                         "
                       >
                         <svg
@@ -233,7 +237,12 @@
                         </svg>
                         {{ officeName(hourRow.officeId) }}
                       </div>
-                      <div class="wrapper">
+                      <div
+                        class="wrapper"
+                        v-if="
+                          hourRow.hour === getCurrentHourForDay(day.dateString)
+                        "
+                      >
                         <p class="centered-text nowrap">
                           {{ hourRow.hour }}:00‑{{ hourRow.hour }}:59
                         </p>
@@ -262,6 +271,47 @@
                         </div>
                       </div>
                     </template>
+
+                    <!-- Navigation buttons for hourly view -->
+                    <div
+                      v-if="
+                        day.hourRows.length > 0 &&
+                        providersWithAppointments.length > 1
+                      "
+                      class="wrapper m-button-group"
+                    >
+                      <muc-button
+                        icon="chevron-left"
+                        icon-shown-left
+                        variant="ghost"
+                        @click="listViewEarlierAppointments(day, 'hour')"
+                        :disabled="
+                          getCurrentHourForDay(day.dateString) === undefined ||
+                          getListDayAvailableHours(day).indexOf(
+                            getCurrentHourForDay(day.dateString)!
+                          ) <= 0
+                        "
+                      >
+                        <template #default>{{ t("earlier") }}</template>
+                      </muc-button>
+
+                      <muc-button
+                        class="float-right"
+                        icon="chevron-right"
+                        icon-shown-right
+                        variant="ghost"
+                        @click="listViewLaterAppointments(day, 'hour')"
+                        :disabled="
+                          getCurrentHourForDay(day.dateString) === undefined ||
+                          getListDayAvailableHours(day).indexOf(
+                            getCurrentHourForDay(day.dateString)!
+                          ) >=
+                            getListDayAvailableHours(day).length - 1
+                        "
+                      >
+                        <template #default>{{ t("later") }}</template>
+                      </muc-button>
+                    </div>
                   </template>
 
                   <template v-else>
@@ -273,9 +323,13 @@
                         class="ml-4 location-title"
                         v-if="
                           (selectableProviders?.length || 0) > 1 &&
+                          partRow.part ===
+                            getCurrentDayPartForDay(day.dateString) &&
+                          partRow.times.length > 0 &&
                           (pIndex === 0 ||
                             day.dayPartRows[pIndex - 1].officeId !==
-                              partRow.officeId)
+                              partRow.officeId ||
+                            day.dayPartRows[pIndex - 1].part !== partRow.part)
                         "
                       >
                         <svg
@@ -286,7 +340,13 @@
                         </svg>
                         {{ officeName(partRow.officeId) }}
                       </div>
-                      <div class="wrapper">
+                      <div
+                        class="wrapper"
+                        v-if="
+                          partRow.part ===
+                          getCurrentDayPartForDay(day.dateString)
+                        "
+                      >
                         <p class="centered-text nowrap">
                           {{ t(partRow.part) }}
                         </p>
@@ -315,6 +375,42 @@
                         </div>
                       </div>
                     </template>
+
+                    <!-- Navigation buttons for day part view -->
+                    <div
+                      v-if="
+                        day.dayPartRows.length > 0 &&
+                        providersWithAppointments.length > 1
+                      "
+                      class="wrapper m-button-group"
+                    >
+                      <muc-button
+                        icon="chevron-left"
+                        icon-shown-left
+                        variant="ghost"
+                        @click="listViewEarlierAppointments(day, 'dayPart')"
+                        :disabled="
+                          getCurrentDayPartForDay(day.dateString) === 'am' ||
+                          getListDayAvailableDayParts(day).indexOf('am') === -1
+                        "
+                      >
+                        <template #default>{{ t("earlier") }}</template>
+                      </muc-button>
+
+                      <muc-button
+                        class="float-right"
+                        icon="chevron-right"
+                        icon-shown-right
+                        variant="ghost"
+                        @click="listViewLaterAppointments(day, 'dayPart')"
+                        :disabled="
+                          getCurrentDayPartForDay(day.dateString) === 'pm' ||
+                          getListDayAvailableDayParts(day).indexOf('pm') === -1
+                        "
+                      >
+                        <template #default>{{ t("later") }}</template>
+                      </muc-button>
+                    </div>
                   </template>
                 </div>
               </section>
@@ -893,6 +989,73 @@ const earlierAppointments = (type = "hour") => {
     const idx = availableHours.indexOf(currentHour.value);
     if (idx > 0) {
       selectedHour.value = availableHours[idx - 1];
+    }
+  }
+};
+
+// Add list view navigation functions
+const getListDayAvailableHours = (day: AccordionDay) => {
+  const hourSet = new Set<number>();
+  day.hourRows.forEach((hourRow) => {
+    if (hourRow.times.length > 0) {
+      hourSet.add(hourRow.hour);
+    }
+  });
+  return Array.from(hourSet).sort((a, b) => a - b);
+};
+
+const getListDayAvailableDayParts = (day: AccordionDay) => {
+  const dayParts: ("am" | "pm")[] = [];
+  day.dayPartRows.forEach((partRow) => {
+    if (partRow.times.length > 0) {
+      dayParts.push(partRow.part);
+    }
+  });
+  return dayParts.sort((a, b) => (a === "am" ? -1 : 1));
+};
+
+const listViewEarlierAppointments = (
+  day: AccordionDay,
+  type: "hour" | "dayPart"
+) => {
+  const dateString = day.dateString;
+
+  if (type === "dayPart") {
+    const currentPart = listViewCurrentDayPart.value.get(dateString);
+    if (currentPart === "pm") {
+      listViewCurrentDayPart.value.set(dateString, "am");
+    }
+  } else {
+    const currentHour = listViewCurrentHour.value.get(dateString);
+    if (currentHour !== undefined) {
+      const availableHours = getListDayAvailableHours(day);
+      const idx = availableHours.indexOf(currentHour);
+      if (idx > 0) {
+        listViewCurrentHour.value.set(dateString, availableHours[idx - 1]);
+      }
+    }
+  }
+};
+
+const listViewLaterAppointments = (
+  day: AccordionDay,
+  type: "hour" | "dayPart"
+) => {
+  const dateString = day.dateString;
+
+  if (type === "dayPart") {
+    const currentPart = listViewCurrentDayPart.value.get(dateString);
+    if (currentPart === "am") {
+      listViewCurrentDayPart.value.set(dateString, "pm");
+    }
+  } else {
+    const currentHour = listViewCurrentHour.value.get(dateString);
+    if (currentHour !== undefined) {
+      const availableHours = getListDayAvailableHours(day);
+      const idx = availableHours.indexOf(currentHour);
+      if (idx !== -1 && idx < availableHours.length - 1) {
+        listViewCurrentHour.value.set(dateString, availableHours[idx + 1]);
+      }
     }
   }
 };
@@ -1686,6 +1849,17 @@ watch(
   { deep: true }
 );
 
+// Add watcher to reset list view navigation state when providers change
+watch(
+  selectedProviders,
+  () => {
+    // Clear list view navigation state when providers change
+    listViewCurrentHour.value.clear();
+    listViewCurrentDayPart.value.clear();
+  },
+  { deep: true }
+);
+
 const providerSelectionError = computed(() => {
   if (!availableDays?.value || availableDays.value.length === 0) {
     return "";
@@ -1710,6 +1884,10 @@ const toggleView = () => {
 const openAccordionIndex = ref(0);
 
 const daysToShow = ref(5);
+
+// Add state for list view navigation - track current hour and day part for each day
+const listViewCurrentHour = ref<Map<string, number>>(new Map());
+const listViewCurrentDayPart = ref<Map<string, "am" | "pm">>(new Map());
 
 const loadMoreDays = () => {
   daysToShow.value += 3;
@@ -1788,6 +1966,27 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
     hourRows.sort((a, b) => a.hour - b.hour);
     dayPartRows.sort((a, b) => (a.part === "am" ? -1 : 1));
 
+    // Initialize current hour and day part for this day if not set
+    if (!listViewCurrentHour.value.has(dateString)) {
+      const availableHours = getListDayAvailableHours({
+        hourRows,
+        dayPartRows,
+      } as AccordionDay);
+      if (availableHours.length > 0) {
+        listViewCurrentHour.value.set(dateString, availableHours[0]);
+      }
+    }
+
+    if (!listViewCurrentDayPart.value.has(dateString)) {
+      const availableDayParts = getListDayAvailableDayParts({
+        hourRows,
+        dayPartRows,
+      } as AccordionDay);
+      if (availableDayParts.length > 0) {
+        listViewCurrentDayPart.value.set(dateString, availableDayParts[0]);
+      }
+    }
+
     return {
       date: d,
       dateString,
@@ -1809,12 +2008,32 @@ const onDayAccordionSelect = (day: AccordionDay) => {
     openAccordionIndex.value = idx; // Accordion öffnen
     selectedDay.value = day.date;
     handleDaySelection(day.date);
+
+    // Reset navigation state for the selected day
+    const availableHours = getListDayAvailableHours(day);
+    if (availableHours.length > 0) {
+      listViewCurrentHour.value.set(day.dateString, availableHours[0]);
+    }
+
+    const availableDayParts = getListDayAvailableDayParts(day);
+    if (availableDayParts.length > 0) {
+      listViewCurrentDayPart.value.set(day.dateString, availableDayParts[0]);
+    }
   }
 };
 
 const isSlotSelected = (officeId: number | string, time: number) =>
   selectedTimeslot.value === time &&
   selectedProvider.value?.id?.toString() === officeId.toString();
+
+// Add helper functions to get current hour and day part for list view
+const getCurrentHourForDay = (dateString: string) => {
+  return listViewCurrentHour.value.get(dateString);
+};
+
+const getCurrentDayPartForDay = (dateString: string) => {
+  return listViewCurrentDayPart.value.get(dateString);
+};
 </script>
 
 <style scoped>
