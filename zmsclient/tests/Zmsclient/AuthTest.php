@@ -24,6 +24,9 @@ class AuthTest extends TestCase
         // Clear cookies for clean test state
         $_COOKIE = [];
 
+        // Create mock log
+        $this->mockLog = $this->createMock(\Monolog\Logger::class);
+        App::$log = $this->mockLog;
     }
 
     protected function tearDown(): void
@@ -97,6 +100,46 @@ class AuthTest extends TestCase
         Auth::setKey($authKey, $expires);
         
         $this->assertEquals($authKey, $_COOKIE[Auth::getCookieName()]);
+    }
+
+    public function testSetKeyLogsInfoWhenAppLogExists()
+    {
+        $authKey = 'test-auth-key-logging';
+        $expires = time() + 3600;
+        
+        $this->mockLog
+            ->expects($this->once())
+            ->method('info')
+            ->with(
+                'Auth session set',
+                $this->callback(function ($context) use ($authKey, $expires) {
+                    return $context['event'] === 'auth_session_set' &&
+                           $context['hashed_session_token'] === hash('sha256', $authKey) &&
+                           $context['expires'] === date('Y-m-d H:i:s', $expires) &&
+                           isset($context['timestamp']) &&
+                           isset($context['timezone']);
+                })
+            );
+        
+        Auth::setKey($authKey, $expires);
+    }
+
+    public function testSetKeyDoesNotLogWhenAppLogNotExists()
+    {
+        // Temporarily remove log
+        $originalLog = App::$log;
+        App::$log = null;
+        
+        $authKey = 'test-auth-key-no-log';
+        $expires = time() + 3600;
+        
+        // Should not throw any errors
+        Auth::setKey($authKey, $expires);
+        
+        $this->assertEquals($authKey, $_COOKIE[Auth::getCookieName()]);
+        
+        // Restore log
+        App::$log = $originalLog;
     }
 
     public function testGetKeyWhenCookieExists()
