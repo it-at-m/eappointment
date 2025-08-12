@@ -2231,18 +2231,6 @@ const getCurrentDayPartForDay = (dateString: string) => {
   transition: color 0.2s ease;
 }
 
-/* Calendar date number styling - responsive font sizing */
-.muc-calendar-view-full-size .muc-calendar-item,
-.muc-calendar-container .muc-calendar-item {
-  font-size: 1.125rem !important; /* 18px - default for desktop */
-}
-
-/* Ensure the calendar container has proper sizing */
-.muc-calendar-view-full-size,
-.muc-calendar-container {
-  font-size: 1.125rem !important; /* Desktop size */
-}
-
 .view-toggle-container {
   display: flex;
   flex-direction: column;
@@ -2260,16 +2248,6 @@ const getCurrentDayPartForDay = (dateString: string) => {
 
 /* Mobile styles - grouped together for better organization */
 @include xs-down {
-  /* Calendar date numbers - smaller for mobile */
-  .muc-calendar-view-full-size .muc-calendar-item,
-  .muc-calendar-container .muc-calendar-item {
-    font-size: 1rem !important; /* 16px for mobile */
-  }
-  .muc-calendar-view-full-size,
-  .muc-calendar-container {
-    font-size: 1rem !important; /* Mobile size */
-  }
-
   /* Timeslot buttons - smaller padding for mobile */
   .timeslot.m-button,
   .timeslot .m-button {
@@ -2336,7 +2314,6 @@ const getCurrentDayPartForDay = (dateString: string) => {
   padding-left: 0.5rem !important;
 }
 
-/* Calendar date number styling - global styles to override component styles */
 .muc-calendar-view-full-size .muc-calendar-item,
 .muc-calendar-container .muc-calendar-item {
   font-size: 1.125rem !important; /* 18px - default for desktop */
@@ -2345,17 +2322,5 @@ const getCurrentDayPartForDay = (dateString: string) => {
 .muc-calendar-view-full-size,
 .muc-calendar-container {
   font-size: 1.125rem !important; /* Desktop size */
-}
-
-/* Mobile: smaller font size for small screens */
-@media (max-width: 600px) {
-  .muc-calendar-view-full-size .muc-calendar-item,
-  .muc-calendar-container .muc-calendar-item {
-    font-size: 1rem !important; /* 16px for mobile */
-  }
-  .muc-calendar-view-full-size,
-  .muc-calendar-container {
-    font-size: 1rem !important; /* Mobile size */
-  }
 }
 </style>
