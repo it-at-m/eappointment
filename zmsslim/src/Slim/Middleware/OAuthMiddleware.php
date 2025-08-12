@@ -7,6 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
 use BO\Zmsclient\Psr7\Stream;
+use BO\Zmsclient\Auth;
 
 /**
  * @SuppressWarnings(PHPMD)
@@ -61,7 +62,7 @@ class OAuthMiddleware
         $request = $request->withAttribute('authentificationHandler', $this->authentificationHandler);
         $queryParams = $request->getQueryParams();
         $oidcProviderName = isset($queryParams['provider'])
-            ? $queryParams['provider'] : \BO\Zmsclient\Auth::getOidcProvider();
+            ? $queryParams['provider'] : Auth::getOidcProvider();
 
         if ($oidcProviderName && isset(static::$authInstances[$oidcProviderName])) {
             $oidcInstance = static::$authInstances[$oidcProviderName];
@@ -85,11 +86,11 @@ class OAuthMiddleware
 
     private function handleLogin(ServerRequestInterface $request, ResponseInterface $response, $instance, $next)
     {
-        if (! $request->getParam("code") && '' == \BO\Zmsclient\Auth::getKey()) {
+        if (! $request->getParam("code") && '' == Auth::getKey()) {
             return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
-        } elseif ($request->getParam("state") !== \BO\Zmsclient\Auth::getKey()) {
-            \BO\Zmsclient\Auth::removeKey();
-            \BO\Zmsclient\Auth::removeOidcProvider();
+        } elseif ($request->getParam("state") !== Auth::getKey()) {
+            Auth::removeKey();
+            Auth::removeOidcProvider();
             return $response->withRedirect($this->getAuthUrl($request, $instance), 301);
         }
         if ('login' == $request->getAttribute('authentificationHandler')) {
@@ -125,8 +126,8 @@ class OAuthMiddleware
     private function getAuthUrl(ServerRequestInterface $request, $instance)
     {
         $authUrl = $instance->getProvider()->getAuthorizationUrl();
-        \BO\Zmsclient\Auth::setOidcProvider($request->getParam('provider'));
-        \BO\Zmsclient\Auth::setKey($instance->getProvider()->getState(), time() + \App::SESSION_DURATION);
+        Auth::setOidcProvider($request->getParam('provider'));
+        Auth::setKey($instance->getProvider()->getState(), time() + \App::SESSION_DURATION);
         return $authUrl;
     }
 }

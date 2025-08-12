@@ -4,34 +4,31 @@ namespace BO\Slim\Tests\Slim\Middleware;
 
 use BO\Slim\Middleware\OAuthMiddleware;
 use PHPUnit\Framework\TestCase;
+use App;
 
-class MockAuth
-{
-    public static function getOidcProvider() { return 'keycloak'; }
-    public static function getKey() { return 'test-key'; }
-    public static function setKey($key, $time = null) { return true; }
-    public static function removeKey() { return true; }
-    public static function setOidcProvider($provider) { return true; }
-    public static function removeOidcProvider() { return true; }
-}
 
 class OAuthMiddlewareTest extends TestCase
 {
-
     public function testProviderValidationWithAuthInstances()
     {
         $this->assertArrayHasKey('keycloak', OAuthMiddleware::$authInstances);
         $this->assertArrayNotHasKey('unknown', OAuthMiddleware::$authInstances);
     }
 
-    public function testConstructorWithDifferentHandlers()
+    public function testConstructorWithLoginHandler()
     {
         $loginMiddleware = new OAuthMiddleware('login');
         $this->assertInstanceOf(OAuthMiddleware::class, $loginMiddleware);
+    }
 
+    public function testConstructorWithLogoutHandler()
+    {
         $logoutMiddleware = new OAuthMiddleware('logout');
         $this->assertInstanceOf(OAuthMiddleware::class, $logoutMiddleware);
+    }
 
+    public function testConstructorWithRefreshHandler()
+    {
         $refreshMiddleware = new OAuthMiddleware('refresh');
         $this->assertInstanceOf(OAuthMiddleware::class, $refreshMiddleware);
     }
@@ -42,7 +39,7 @@ class OAuthMiddlewareTest extends TestCase
         $this->assertFalse(isset(OAuthMiddleware::$authInstances['unknown']));
     }
 
-    public function testErrorLoggingConfiguration()
+    public function testAuthInstancesArrayStructure()
     {
         $this->assertIsArray(OAuthMiddleware::$authInstances);
         $this->assertNotEmpty(OAuthMiddleware::$authInstances);
