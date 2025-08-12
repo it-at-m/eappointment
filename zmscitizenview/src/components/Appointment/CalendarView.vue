@@ -292,7 +292,7 @@
                         :disabled="
                           getCurrentHourForDay(day.dateString) === undefined ||
                           getListDayAvailableHours(day).indexOf(
-                            getCurrentHourForDay(day.dateString)!
+                            getCurrentHourForDay(day.dateString) ?? -1
                           ) <= 0
                         "
                       >
@@ -308,7 +308,7 @@
                         :disabled="
                           getCurrentHourForDay(day.dateString) === undefined ||
                           getListDayAvailableHours(day).indexOf(
-                            getCurrentHourForDay(day.dateString)!
+                            getCurrentHourForDay(day.dateString) ?? -1
                           ) >=
                             getListDayAvailableHours(day).length - 1
                         "
