@@ -14,7 +14,8 @@ class Request extends Schema\Entity
             'id' => '',
             'name' => '',
             'source' => 'dldb',
-            'parent_id' => null
+            'parent_id' => null,
+            'variant_id'=> null
         ];
     }
 
@@ -68,6 +69,11 @@ class Request extends Schema\Entity
     public function getParentId()
     {
         return $this->toProperty()->parent_id->get();
+    }
+
+    public function getVariantId()
+    {
+        return $this->toProperty()->variant_id->get();  // ⬅️ neu
     }
 
     public function __toString()
