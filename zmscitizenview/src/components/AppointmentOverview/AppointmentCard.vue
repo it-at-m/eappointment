@@ -2,7 +2,7 @@
   <muc-card
     class="multiline-text"
     :tagline="t('appointmentOverview.onSiteAppointment')"
-    :title="formatTitle()"
+    :title="formatTitle(appointment)"
     @click="goToAppointmentLink(appointment.processId!)"
   >
     <template #headerPrefix>
@@ -47,6 +47,7 @@ import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
 import { formatTime } from "@/utils/formatTime";
+import { formatTitle } from "@/utils/formatTitle";
 
 const props = defineProps<{
   appointment: AppointmentDTO;
@@ -56,15 +57,6 @@ const props = defineProps<{
 }>();
 
 const selectedProvider = ref<Office>();
-
-const formatTitle = (): string => {
-  const serviceTitle =
-    props.appointment.serviceCount + "x " + props.appointment.serviceName;
-  const subserviceTitle = props.appointment.subRequestCounts
-    .map((subCount) => subCount.count + "x " + subCount.name)
-    .join("\n");
-  return serviceTitle + "\n" + subserviceTitle;
-};
 
 const formatDay = () => {
   const date = new Date(props.appointment.timestamp * 1000);
