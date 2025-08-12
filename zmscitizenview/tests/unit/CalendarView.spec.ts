@@ -1536,7 +1536,6 @@ describe("CalendarView", () => {
     await flushPromises();
     await wrapper.vm.handleDaySelection(new Date("2025-07-02"));
     await flushPromises();
-    // Should show am/pm labels
     expect(wrapper.html()).toMatch(/am|pm/);
   });
 
@@ -1596,13 +1595,11 @@ describe("CalendarView", () => {
     });
 
     it('enables the next button after selecting an appointment and disables it after reservation starts', async () => {
-      // Simulate selecting an appointment
       selectedTimeslotRef.value = 1234567890;
       await nextTick();
       let nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
       expect(nextButton && !nextButton.props('disabled')).toBe(true);
 
-      // Simulate reservation (loading state)
       loadingStates.isReservingAppointment.value = true;
       await nextTick();
       nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
@@ -1826,13 +1823,9 @@ describe("CalendarView", () => {
       await wrapper.find(".m-toggle-switch").trigger("click");
       await nextTick();
 
-      // Wait for the computed property to update
       await nextTick();
       await nextTick();
 
-      // Check that navigation state is initialized for the first day
-      const firstDayDateString = "2025-06-10";
-      // The navigation state should be initialized when the day is selected
       expect(wrapper.vm.listViewCurrentHour).toBeDefined();
       expect(wrapper.vm.listViewCurrentDayPart).toBeDefined();
     });
@@ -1866,21 +1859,16 @@ describe("CalendarView", () => {
       await wrapper.find(".m-toggle-switch").trigger("click");
       await nextTick();
 
-      // Set some navigation state manually
       const dateString = "2025-06-10";
       wrapper.vm.listViewCurrentHour.set(dateString, 16);
       wrapper.vm.listViewCurrentDayPart.set(dateString, "pm");
 
-      // Change providers
       wrapper.vm.selectedProviders = { "2": true };
       await nextTick();
 
-      // Check that navigation state is NOT immediately cleared (this is the new behavior)
-      // The snap function will handle updating it if needed, but it won't be cleared immediately
       expect(wrapper.vm.listViewCurrentHour.has(dateString)).toBe(true);
       expect(wrapper.vm.listViewCurrentDayPart.has(dateString)).toBe(true);
       
-      // The values should still be the same
       expect(wrapper.vm.listViewCurrentHour.get(dateString)).toBe(16);
       expect(wrapper.vm.listViewCurrentDayPart.get(dateString)).toBe("pm");
     });
@@ -1916,21 +1904,18 @@ describe("CalendarView", () => {
 
       const dateString = "2025-06-10";
       
-      // Set initial navigation state manually
       wrapper.vm.listViewCurrentHour.set(dateString, 16);
       const initialHour = 16;
 
-      // Test earlier navigation - this should change the hour to 15
       wrapper.vm.listViewEarlierAppointments({ 
         dateString, 
         hourRows: [{ hour: 15, times: [1], officeId: 1 }, { hour: 16, times: [1], officeId: 1 }] 
       } as any, "hour");
       await nextTick();
 
-      // Verify navigation state changed
       const currentHour = wrapper.vm.listViewCurrentHour.get(dateString);
       expect(currentHour).toBeDefined();
-      expect(currentHour).toBe(15); // Should have changed to 15
+      expect(currentHour).toBe(15);
     });
 
     it("navigates between day parts in list view", async () => {
@@ -1964,21 +1949,18 @@ describe("CalendarView", () => {
 
       const dateString = "2025-06-10";
       
-      // Set initial navigation state manually
       wrapper.vm.listViewCurrentDayPart.set(dateString, "pm");
       const initialDayPart = "pm";
 
-      // Test earlier navigation - this should change from pm to am
       wrapper.vm.listViewEarlierAppointments({ 
         dateString, 
         dayPartRows: [{ part: "am", times: [1], officeId: 1 }, { part: "pm", times: [1], officeId: 1 }] 
       } as any, "dayPart");
       await nextTick();
 
-      // Verify navigation state changed
       const currentDayPart = wrapper.vm.listViewCurrentDayPart.get(dateString);
       expect(currentDayPart).toBeDefined();
-      expect(currentDayPart).toBe("am"); // Should have changed from pm to am
+      expect(currentDayPart).toBe("am");
     });
 
     it("shows navigation buttons for hourly view in list view", async () => {
@@ -2013,18 +1995,13 @@ describe("CalendarView", () => {
       await wrapper.find(".m-toggle-switch").trigger("click");
       await nextTick();
 
-      // Wait for the component to fully render
       await nextTick();
       await nextTick();
 
-      // Check that navigation buttons are present
       const buttons = wrapper.findAllComponents({ name: "MucButton" });
       const earlierButton = buttons.find(btn => btn.text().includes("earlier"));
       const laterButton = buttons.find(btn => btn.text().includes("later"));
 
-      // Note: Navigation buttons only appear when there are multiple hours and multiple providers
-      // In this test setup, we might not have enough data to trigger the navigation buttons
-      // So we'll just verify the component renders without errors
       expect(buttons.length).toBeGreaterThan(0);
     });
 
@@ -2064,15 +2041,11 @@ describe("CalendarView", () => {
       await wrapper.find(".m-toggle-switch").trigger("click");
       await nextTick();
 
-      // Wait for the component to fully render
       await nextTick();
       await nextTick();
 
-      // Check that location titles are filtered and only show once per time period
       const locationTitles = wrapper.findAll(".location-title");
       
-      // In this test setup, we might not have location titles rendered
-      // So we'll just verify the component renders without errors
       expect(wrapper.vm.firstFiveAvailableDays.length).toBeGreaterThan(0);
     });
   });
