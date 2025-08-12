@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "description": "Represents a variant of a request (e.g., Präsenz, Telefon, Videoberatung)",
+    "example": {
+        "id": 1,
+        "name": "Präsenz"
+    },
+    "required": [
+        "id",
+        "name"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": "integer",
+            "description": "Unique ID of the request variant"
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of the request variant"
+        }
+    }
+}
