@@ -26,18 +26,14 @@ class View extends BaseView {
         // Update select all button when scope selection changes
         this.$main.find('#scope-select').on('change', () => {
             this.updateSelectAllButton();
-            this.validateAndUpdateButton();
         });
 
-        // Add real-time validation for date fields
-        this.$main.find('#calendar-date-from, #calendar-date-until').on('change', () => {
-            this.validateAndUpdateButton();
-        });
+        // Add date range limiting functionality
+        this.setupDateRangeLimiting();
     }
 
     setupValidation() {
         this.addErrorDisplayElements();
-        this.validateAndUpdateButton();
     }
 
     addErrorDisplayElements() {
@@ -50,11 +46,9 @@ class View extends BaseView {
     }
 
     validateAndUpdateButton() {
-        const selectedScopes = this.getSelectedScopes();
         const fromDate = this.$main.find('#calendar-date-from').val();
         const toDate = this.$main.find('#calendar-date-until').val();
         
-        const submitButton = this.$main.find('button[type="submit"]');
         const scopeError = this.$main.find('.scope-error');
         const dateError = this.$main.find('.date-error');
         
@@ -63,11 +57,6 @@ class View extends BaseView {
         scopeError.hide();
         dateError.hide();
 
-        if (selectedScopes.length === 0) {
-            scopeError.text('Bitte wählen Sie mindestens einen Standort aus.').show();
-            hasErrors = true;
-        }
-        
         if (fromDate || toDate) {
             if (!fromDate || !toDate) {
                 dateError.text('Bitte geben Sie sowohl Start- als auch Enddatum an.').show();
@@ -82,12 +71,6 @@ class View extends BaseView {
                 dateError.text('Nur vergangene Daten sind erlaubt. Zukünftige Daten sind nicht zulässig.').show();
                 hasErrors = true;
             }
-        }
-        
-        if (hasErrors) {
-            submitButton.prop('disabled', true).addClass('btn-disabled');
-        } else {
-            submitButton.prop('disabled', false).removeClass('btn-disabled');
         }
         
         return !hasErrors;
@@ -124,16 +107,112 @@ class View extends BaseView {
                 toInput.val(urlParams.to);
             }
         }
+        
+        this.updateDateRangeLimits();
+    }
+
+    setupDateRangeLimiting() {
+        const fromInput = this.$main.find('#calendar-date-from');
+        const toInput = this.$main.find('#calendar-date-until');
+        
+        this.updateDateRangeLimits();
+        
+        fromInput.on('change', () => {
+            this.updateDateRangeLimits();
+        });
+        
+        toInput.on('change', () => {
+            this.updateDateRangeLimits();
+        });
+    }
+
+    updateDateRangeLimits() {
+        const fromInput = this.$main.find('#calendar-date-from');
+        const toInput = this.$main.find('#calendar-date-until');
+        const today = new Date();
+        const todayIso = today.toISOString().slice(0, 10);
+
+        fromInput.attr('max', todayIso);
+        toInput.attr('max', todayIso);
+
+        if (fromInput.val()) {
+            const fromDate = new Date(fromInput.val());
+            const maxToDate = new Date(fromDate);
+            maxToDate.setDate(maxToDate.getDate() + 366);
+            
+            const maxAllowedDate = new Date(Math.min(maxToDate.getTime(), today.getTime()));
+            const maxAllowedIso = maxAllowedDate.toISOString().slice(0, 10);
+            
+            toInput.attr('min', fromInput.val());
+            toInput.attr('max', maxAllowedIso);
+            
+            if (toInput.val() && (toInput.val() < fromInput.val() || toInput.val() > maxAllowedIso)) {
+                toInput.val(fromInput.val());
+            }
+        } else {
+            toInput.attr('min', '');
+            toInput.attr('max', todayIso);
+        }
+        
+        if (toInput.val()) {
+            const toDate = new Date(toInput.val());
+            const minFromDate = new Date(toDate);
+            minFromDate.setDate(minFromDate.getDate() - 366);
+            
+            const minAllowedDate = new Date(Math.max(minFromDate.getTime(), 0));
+            const minAllowedIso = minAllowedDate.toISOString().slice(0, 10);
+            
+            fromInput.attr('min', minAllowedIso);
+            fromInput.attr('max', toInput.val());
+            
+            if (fromInput.val() && (fromInput.val() < minAllowedIso || fromInput.val() > toInput.val())) {
+                fromInput.val(toInput.val());
+            }
+        } else {
+            fromInput.attr('min', '');
+            fromInput.attr('max', todayIso);
+        }
     }
 
     handleFormSubmit() {
         const selectedScopes = this.getSelectedScopes();
         const fromDate = this.$main.find('#calendar-date-from').val();
         const toDate = this.$main.find('#calendar-date-until').val();
-
-        if (this.validateAndUpdateButton()) {
-            this.redirectWithFilters(selectedScopes, fromDate, toDate);
+        
+        const scopeError = this.$main.find('.scope-error');
+        const dateError = this.$main.find('.date-error');
+        
+        scopeError.hide();
+        dateError.hide();
+        
+        if (selectedScopes.length === 0) {
+            scopeError.text('Bitte wählen Sie mindestens einen Standort aus.').show();
+            return;
         }
+
+        let hasDateErrors = false;
+        if (fromDate || toDate) {
+            if (!fromDate || !toDate) {
+                dateError.text('Bitte geben Sie sowohl Start- als auch Enddatum an.').show();
+                hasDateErrors = true;
+            } else if (!this.isValidDateFormat(fromDate) || !this.isValidDateFormat(toDate)) {
+                dateError.text('Ungültiges Datumsformat. Erwartetes Format: JJJJ-MM-TT').show();
+                hasDateErrors = true;
+            } else if (moment(fromDate).isAfter(moment(toDate))) {
+                dateError.text('Das Startdatum muss vor dem Enddatum liegen.').show();
+                hasDateErrors = true;
+            } else if (moment(fromDate).isAfter(moment()) || moment(toDate).isAfter(moment())) {
+                dateError.text('Nur vergangene Daten sind erlaubt. Zukünftige Daten sind nicht zulässig.').show();
+                hasDateErrors = true;
+            }
+        }
+        
+        if (hasDateErrors) {
+            return; // Don't proceed with form submission
+        }
+
+        // All validations passed, proceed with form submission
+        this.redirectWithFilters(selectedScopes, fromDate, toDate);
     }
 
     getSelectedScopes() {
@@ -155,7 +234,6 @@ class View extends BaseView {
         }
         
         this.updateSelectAllButton();
-        this.validateAndUpdateButton();
     }
 
     updateSelectAllButton() {
