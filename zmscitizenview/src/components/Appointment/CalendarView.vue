@@ -2303,6 +2303,18 @@ const getCurrentDayPartForDay = (dateString: string) => {
 .m-button-group button:has(.m-button__icon--after) {
   min-width: 100px !important;
 }
+
+/* Remove focus effects from navigation buttons */
+.m-button-group button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.m-button-group button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
 </style>
 
 <style>
