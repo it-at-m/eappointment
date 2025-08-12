@@ -27,6 +27,7 @@ const validate = (data, props) => {
     errorList.itemList.push(validateBookableDayRange(data));
 
     errorList.itemList = errorList.itemList.filter(el => el.length);
+    errorList.itemList = errorList.itemList.flat();
     let valid = (0 < errorList.itemList.length) ? false : true;
 
     return {
@@ -201,11 +202,6 @@ function validateTimestampAndTimeFormats(data) {
                 message: 'Die Startzeit muss im Format "HH:mm:ss" oder "HH:mm" vorliegen.'
             });
         }
-    } else {
-        errorList.push({
-            type: 'startTimeMissing',
-            message: 'Die Startzeit darf nicht leer sein.'
-        });
     }
 
     if (data.endTime) {
@@ -215,11 +211,6 @@ function validateTimestampAndTimeFormats(data) {
                 message: 'Die Endzeit muss im Format "HH:mm:ss" oder "HH:mm" vorliegen.'
             });
         }
-    } else {
-        errorList.push({
-            type: 'endTimeMissing',
-            message: 'Die Endzeit darf nicht leer sein.'
-        });
     }
 
     if (isStartDateValid && isEndDateValid) {
@@ -241,10 +232,10 @@ function isValidTimestamp(timestamp) {
 function validateStartTime(today, tomorrow, selectedDate, data) {
     let errorList = []
     const startTime = moment(data.startDate, 'X').startOf('day');
-    const startHour = data.startTime.split(':')[0];
-    const endHour = data.endTime.split(':')[0];
-    const startMinute = data.startTime.split(':')[1];
-    const endMinute = data.endTime.split(':')[1];
+    const startHour = data.startTime ? data.startTime.split(':')[0] : '00';
+    const endHour = data.endTime ? data.endTime.split(':')[0] : '00';
+    const startMinute = data.startTime ? data.startTime.split(':')[1] : '00';
+    const endMinute = data.endTime ? data.endTime.split(':')[1] : '00';
     //const startDateTime = startTime.clone().set({ h: startHour, m: startMinute });
     const isFuture = (data.kind && 'future' == data.kind);
     //const isOrigin = (data.kind && 'origin' == data.kind);
@@ -264,24 +255,27 @@ function validateStartTime(today, tomorrow, selectedDate, data) {
             })
         }
     */
-    const startHourInt = parseInt(startHour);
-    const endHourInt = parseInt(endHour);
-    const startMinuteInt = parseInt(startMinute);
-    const endMinuteInt = parseInt(endMinute);
-    if (
-        (startHourInt === 22 && startMinuteInt > 0) || 
-        startHourInt === 23 || 
-        startHourInt === 0 || 
-        (endHourInt === 22 && endMinuteInt > 0) || 
-        endHourInt === 23 || 
-        endHourInt === 0 ||
-        (startHourInt === 1 && startMinuteInt > 0) ||
-        (endHourInt === 1 && endMinuteInt > 0)
-    ) {
-        errorList.push({
-            type: 'startOfDay',
-            message: 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
-        });
+
+    if (data.startTime && data.endTime) {
+        const startHourInt = parseInt(startHour);
+        const endHourInt = parseInt(endHour);
+        const startMinuteInt = parseInt(startMinute);
+        const endMinuteInt = parseInt(endMinute);
+        if (
+            (startHourInt === 22 && startMinuteInt > 0) || 
+            startHourInt === 23 || 
+            startHourInt === 0 || 
+            (endHourInt === 22 && endMinuteInt > 0) || 
+            endHourInt === 23 || 
+            endHourInt === 0 ||
+            (startHourInt === 1 && startMinuteInt > 0) ||
+            (endHourInt === 1 && endMinuteInt > 0)
+        ) {
+            errorList.push({
+                type: 'startOfDay',
+                message: 'Die Uhrzeit darf nicht zwischen 22:00 und 01:00 liegen, da in diesem Zeitraum der tägliche Cronjob ausgeführt wird.'
+            });
+        }
     }
 
     return errorList;
@@ -291,27 +285,29 @@ function validateEndTime(today, yesterday, selectedDate, data) {
     var errorList = []
     const startTime = moment(data.startDate, 'X').startOf('day');
     const endTime = moment(data.endDate, 'X').startOf('day');
-    const startHour = data.startTime.split(':')[0]
-    const endHour = data.endTime.split(':')[0]
-    const startMinute = data.startTime.split(':')[1]
-    const endMinute = data.endTime.split(':')[1]
+    const startHour = data.startTime ? data.startTime.split(':')[0] : '00';
+    const endHour = data.endTime ? data.endTime.split(':')[0] : '00';
+    const startMinute = data.startTime ? data.startTime.split(':')[1] : '00';
+    const endMinute = data.endTime ? data.endTime.split(':')[1] : '00';
     const dayMinutesStart = (parseInt(startHour) * 60) + parseInt(startMinute);
     const dayMinutesEnd = (parseInt(endHour) * 60) + parseInt(endMinute);
     const startTimestamp = startTime.set({ h: startHour, m: startMinute }).unix();
     const endTimestamp = endTime.clone().set({ h: endHour, m: endMinute }).unix();
 
-    if (dayMinutesEnd <= dayMinutesStart) {
-        errorList.push({
-            type: 'endTime',
-            message: 'Die Endzeit darf nicht vor der Startzeit liegen.'
-        })
-    }
+    if (data.startTime && data.endTime) {
+        if (dayMinutesEnd <= dayMinutesStart) {
+            errorList.push({
+                type: 'endTime',
+                message: 'Die Endzeit darf nicht vor der Startzeit liegen.'
+            })
+        }
 
-    if (startTimestamp >= endTimestamp) {
-        errorList.push({
-            type: 'endTime',
-            message: 'Das Enddatum darf nicht vor dem Startdatum liegen.'
-        })
+        if (startTimestamp >= endTimestamp) {
+            errorList.push({
+                type: 'endTime',
+                message: 'Das Enddatum darf nicht vor dem Startdatum liegen.'
+            })
+        }
     }
 
     return errorList;
@@ -321,10 +317,10 @@ function validateOriginEndTime(today, yesterday, selectedDate, data) {
     var errorList = []
     const endTime = moment(data.endDate, 'X').startOf('day');
     const startTime = moment(data.startDate, 'X').startOf('day');
-    const endHour = data.endTime.split(':')[0]
-    const endMinute = data.endTime.split(':')[1]
-    const startHour = data.startTime.split(':')[0]
-    const startMinute = data.startTime.split(':')[1]
+    const startHour = data.startTime ? data.startTime.split(':')[0] : '00';
+    const endHour = data.endTime ? data.endTime.split(':')[0] : '00';
+    const startMinute = data.startTime ? data.startTime.split(':')[1] : '00';
+    const endMinute = data.endTime ? data.endTime.split(':')[1] : '00';
     const endDateTime = endTime.clone().set({ h: endHour, m: endMinute });
     const startDateTime = startTime.clone().set({ h: startHour, m: startMinute });
     const endTimestamp = endDateTime.unix();
@@ -379,12 +375,12 @@ function validateType(data) {
 
 function validateSlotTime(data) {
     let errorList = []
-    
-    const startHour = parseInt(data.startTime.split(':')[0])
-    const endHour = parseInt(data.endTime.split(':')[0])
-    const startMinute = parseInt(data.startTime.split(':')[1])
-    const endMinute = parseInt(data.endTime.split(':')[1])
-    
+
+    const startHour = parseInt(data.startTime ? data.startTime.split(':')[0] : '00');
+    const endHour = parseInt(data.endTime ? data.endTime.split(':')[0] : '00');
+    const startMinute = parseInt(data.startTime ? data.startTime.split(':')[1] : '00');
+    const endMinute = parseInt(data.endTime ? data.endTime.split(':')[1] : '00');
+
     const totalMinutes = ((endHour - startHour) * 60) + (endMinute - startMinute)
     const slotTime = parseInt(data.slotTimeInMinutes)
     

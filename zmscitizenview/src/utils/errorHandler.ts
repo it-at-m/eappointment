@@ -67,6 +67,7 @@ export function createErrorStateMap(): ErrorStateMap {
     "apiErrorTooManyAppointmentsWithSameMail",
     "apiErrorUnknownError",
     "apiErrorZmsClientCommunicationError",
+    "apiErrorInvalidJumpinLink",
     "apiErrorGenericFallback",
   ] as const;
 

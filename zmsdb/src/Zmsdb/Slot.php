@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb;
 
-use BO\Dldb\Helper\DateTime;
+use BO\Zmsdldb\Helper\DateTime;
 use BO\Zmsentities\Slot as Entity;
 use BO\Zmsentities\Collection\SlotList as Collection;
 use BO\Zmsentities\Availability as AvailabilityEntity;

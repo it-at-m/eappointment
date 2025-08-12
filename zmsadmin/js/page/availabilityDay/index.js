@@ -52,7 +52,6 @@ class AvailabilityPage extends Component {
     }
 
     componentDidMount() {
-        this.getValidationList()
         this.unloadHandler = ev => {
             const confirmMessage = "Es wurden nicht alle Änderungen gespeichert. Diese gehen beim schließen verloren."
             if (this.state.stateChanged) {
@@ -267,7 +266,6 @@ class AvailabilityPage extends Component {
             this.setState({
                 selectedAvailability: availability
             }, () => {
-                this.getValidationList()
             })
         } else {
             this.setState({

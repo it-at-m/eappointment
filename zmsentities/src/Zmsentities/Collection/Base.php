@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package Dldb
+ * @package Zmsdldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
