@@ -7,7 +7,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
 use BO\Zmsclient\Auth;
-use BO\Zmsclient\Psr7\Stream;
 use Slim\Psr7\Factory\StreamFactory;
 
 /**
