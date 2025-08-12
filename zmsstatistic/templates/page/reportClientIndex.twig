@@ -20,37 +20,6 @@
             {% embed "block/report/board.twig" with {'class': 'board--spaceless', 'source':source, "selected": period} %}
                 {% block board_body %}
                 {% if selected or dateRange %}
-                    <table class="table--base">
-                        <thead>
-                            <tr>
-                                <th colspan="2">{% trans %}Organisation{% endtrans %}</th>
-                                <th colspan="2">{% trans %}Behörde{% endtrans %}</th>
-                                <th colspan="2">{% trans %}Standort{% endtrans %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% if exchangeNotification.data %}
-                                {% for item in exchangeNotification.data %}
-                                    <tr>
-                                        <td colspan="2">{{ item.organisationname }}</td>
-                                        <td colspan="2">{{ item.departmentname }}</td>
-                                        {% if source.entity == "ClientOrganisation" %}
-                                            <td colspan="2">Alle</td>
-                                        {% else %}
-                                            <td colspan="2">{{ item.scopename }}</td>
-                                        {% endif %}
-                                        <td>{{ item.notificationscount }}</td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                            <tr>
-                                <td colspan="2">{{ organisation.name }}</td>
-                                <td colspan="2">{{ department.name }}</td>
-                                <td colspan="2">{{ workstation.scope.contact.name }}</td>
-                            </tr>
-                            {% endif %}
-                        </tbody>
-                        </table>
                         <table class="table--base">
                         <thead>
                             <tr>
