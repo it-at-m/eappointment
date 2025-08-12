@@ -2144,11 +2144,13 @@ const isSlotSelected = (officeId: number | string, time: number) =>
   selectedProvider.value?.id?.toString() === officeId.toString();
 
 // Add helper functions to get current hour and day part for list view
-const getCurrentHourForDay = (dateString: string) => {
+const getCurrentHourForDay = (dateString: string): number | undefined => {
   return listViewCurrentHour.value.get(dateString);
 };
 
-const getCurrentDayPartForDay = (dateString: string) => {
+const getCurrentDayPartForDay = (
+  dateString: string
+): "am" | "pm" | undefined => {
   return listViewCurrentDayPart.value.get(dateString);
 };
 </script>
