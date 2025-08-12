@@ -47,25 +47,25 @@ jobs:
         run: mkdir -p public
 
       - name: Download schema diagrams
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: schema-diagrams
           path: public/diagrams
 
       - name: Download coverage reports
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.coverage_artifact }}
           path: public
 
       - name: Download API docs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.api_docs_artifact }}
           path: public
 
       - name: Download security reports
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.security_artifact }}
           path: public
@@ -192,19 +192,19 @@ jobs:
           EOL
 
       - name: Download coverage reports
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.coverage_artifact }}
           path: public
 
       - name: Download API docs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.api_docs_artifact }}
           path: public
 
       - name: Download security reports
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.security_artifact }}
           path: public

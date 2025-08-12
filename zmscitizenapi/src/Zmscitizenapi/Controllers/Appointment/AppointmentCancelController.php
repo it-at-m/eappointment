@@ -31,7 +31,7 @@ class AppointmentCancelController extends BaseController
         if (is_array($result) && isset($result['errors'])) {
             foreach ($result['errors'] as &$error) {
                 if (isset($error['errorCode'])) {
-                    $error = ErrorMessages::get($error['errorCode'], $this->language);
+                    $error = ErrorMessages::get($error['errorCode']);
                 }
             }
             return $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']));
