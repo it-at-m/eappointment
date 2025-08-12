@@ -31,44 +31,12 @@ class SourceView extends Component {
         this.setState({ source: newstate })
     }
 
-    getDeleteLabel(field, index) {
-        const src = this.props.source || {};
-
-        if (field === 'requests') {
-            const r = (src.requests || [])[index];
-            return `„${r && r.name ? r.name : 'Dienstleistung'}“`;
-        }
-
-        if (field === 'providers') {
-            const p = (src.providers || [])[index];
-            return `„${p && p.name ? p.name : 'Dienstleister'}“`;
-        }
-
-        if (field === 'requestrelation') {
-            const rel = (src.requestrelation || [])[index] || {};
-            const reqId = rel.request && rel.request.id;
-            const prvId = rel.provider && rel.provider.id;
-
-            const req = (src.requests || []).find(r => String(r.id) === String(reqId));
-            const prv = (src.providers || []).find(p => String(p.id) === String(prvId));
-
-            const rName = (req && req.name) || (rel.request && rel.request.name) || 'Dienstleistung';
-            const pName = (prv && prv.name) || (rel.provider && rel.provider.name) || 'Dienstleister';
-
-            return `Kombination „${rName} × ${pName}“`;
-        }
-
-        return 'diesen Datensatz';
-    }
-
     deleteHandler(field, deleteIndex) {
-        const label = this.getDeleteLabel(field, deleteIndex);
-        const msg = `${label} wirklich löschen?\n\nHinweis: Die Änderung wird erst nach „Speichern“ wirksam.`;
-        if (!window.confirm(msg)) return;
-
-        let newstate = this.props.source;
-        newstate[field] = list.filter((_, i) => i !== deleteIndex);
-        this.setState({ source: newstate });
+        let newstate = this.props.source
+        newstate[field] = this.props.source[field].filter((item, index) => {
+            return index !== deleteIndex
+        })
+        this.setState({ source: newstate })
     }
 
     componentDidMount() {
