@@ -1,6 +1,6 @@
 import path from "node:path";
 import {generateLoaderJs, generateSingleLoaderJs} from './lib/loaderjsGenerator.js';
-import manifest from '../dist/src/.vite/manifest.json' with {type: 'json'};
+import manifest from '../dist/.vite/manifest.json' with {type: 'json'};
 
 /**
  * Why this?
@@ -36,8 +36,7 @@ for (const key in manifest) {
 
     // get fileName and directory for generating loader file
     const fileName = path.basename(key, path.extname(key));
-    const dirName = path.dirname(key);
-    generateLoaderJs(entrypoint, dirName, fileName);
+    generateLoaderJs(entrypoint, fileName);
 
     // Can be deleted after all loader.js have been replaced
     if (key.includes('src/zms-appointment-webcomponent.ts')){
