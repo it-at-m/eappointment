@@ -2285,6 +2285,24 @@ const getCurrentDayPartForDay = (dateString: string) => {
     margin-right: 0px;
   }
 }
+
+/* Fix for button scaling - ensure consistent width for both earlier and later buttons */
+.m-button-group .muc-button[icon-shown-left],
+.m-button-group .muc-button[icon-shown-right] {
+  min-width: 100px !important;
+}
+
+/* Target the actual rendered buttons with left or right icons */
+.m-button-group button .m-button__icon--before,
+.m-button-group button .m-button__icon--after {
+  min-width: 100px !important;
+}
+
+/* Alternative - target buttons that contain either left or right icons */
+.m-button-group button:has(.m-button__icon--before),
+.m-button-group button:has(.m-button__icon--after) {
+  min-width: 100px !important;
+}
 </style>
 
 <style>
