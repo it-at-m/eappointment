@@ -6,6 +6,7 @@ import { getEntity } from '../../lib/schema'
 const renderRequest = (request, index, onChange, onDeleteClick, labels, descriptions, source, parentRequests, onParentChange, canDelete, requestVariants = []) => {
     const formName = `requests[${index}]`
     const parentValue = request.parent_id == null ? '' : String(request.parent_id);
+    const variantValue = request.variant_id == null ? '' : String(request.variant_id);
     return (
         <tr key={index} className="request-item">
             <td className="request-item__id" width="auto">
@@ -75,6 +76,7 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     />
                     <Inputs.Controls>
                         <Inputs.Textarea
+                            key={`req-data-${index}-${request.parent_id ?? 'none'}`}
                             name={`${formName}[data]`}
                             value={(request.data) ? JSON.stringify(request.data) : ''}
                             placeholder='{}'
@@ -100,14 +102,16 @@ const renderRequest = (request, index, onChange, onDeleteClick, labels, descript
                     />
                     <Inputs.Controls>
                         <Inputs.Select
-                            name={`${formName}[variant_id]`}
+                            name={variantValue === '' ? undefined : `${formName}[variant_id]`}
                             value={request.variant_id == null ? '' : String(request.variant_id)}
-                            onChange={(_, v) => onChange(`${formName}[variant_id]`, v ? Number(v) : null)}
+                            onChange={(_, v) =>
+                                onChange(`${formName}[variant_id]`, v === '' ? null : Number(v))
+                            }
                             options={[
                                 { name: '—', value: '' },
                                 ...requestVariants.map(v => ({ name: v.name, value: String(v.id) }))
                             ]}
-                            attributes={{ "id": `requestVariant${index}` }}
+                            attributes={{ id: `requestVariant${index}` }}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -140,27 +144,14 @@ class RequestsView extends Component {
 
     onParentChange = (rowIndex, rawValue) => {
         const parent_id = rawValue === '' ? null : Number(rawValue);
-
-        const parent = parent_id === null
+        const parent = parent_id == null
             ? null
             : this.props.parentrequests.find(r => Number(r.id) === parent_id);
 
-        const requestCopy = {
-            ...this.props.source.requests[rowIndex],
-            parent_id
-        };
-
-        if (parent) {
-            requestCopy.link  = parent.link  || '';
-            requestCopy.group = parent.group || '';
-            requestCopy.data  = parent.data  || '';
-        } else {
-            requestCopy.link  = '';
-            requestCopy.group = '';
-            requestCopy.data  = '';
-        }
-
-        this.props.changeHandler(`requests[${rowIndex}]`, requestCopy);
+        this.props.changeHandler(`requests[${rowIndex}][parent_id]`, parent_id);
+        this.props.changeHandler(`requests[${rowIndex}][link]`, parent?.link || '');
+        this.props.changeHandler(`requests[${rowIndex}][group]`, parent?.group || '');
+        this.props.changeHandler(`requests[${rowIndex}][data]`, parent?.data || {});
     };
 
     getRequestsWithLabels(onChange, onDeleteClick) {
@@ -194,13 +185,22 @@ class RequestsView extends Component {
             getEntity('request').then((entity) => {
                 entity.id = this.getNextId()
                 entity.source = this.props.source.source
+                entity.__isNew = true
+                entity.variant_id = null;
                 this.props.addNewHandler('requests', [entity])
             })
         }
 
         const onDeleteClick = index => {
-            this.props.deleteHandler('requests', index)
-        }
+            const item = this.props.source.requests[index];
+            const name = item?.name || 'diesen Datensatz';
+            if (item?.__isNew === true) {
+                return this.props.deleteHandler('requests', index);
+            }
+            const msg = `„${name}“ wirklich löschen?\n\nHinweis: Die Änderung wird erst nach „Speichern“ wirksam.`;
+            if (window.confirm(msg)) this.props.deleteHandler('requests', index);
+        };
+
 
         const onChange = (field, value) => {
             this.props.changeHandler(field, value)
