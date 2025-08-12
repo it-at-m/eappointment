@@ -15,7 +15,7 @@ class Request extends Schema\Entity
             'name' => '',
             'source' => 'dldb',
             'parent_id' => null,
-            'variant_id'=> null
+            'variant_id' => null
         ];
     }
 
