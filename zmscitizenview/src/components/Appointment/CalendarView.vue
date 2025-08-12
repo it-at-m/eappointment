@@ -244,7 +244,9 @@
                       <div
                         class="wrapper"
                         v-if="
-                          hourRow.hour === getCurrentHourForDay(day.dateString)
+                          hourRow.hour ===
+                            getCurrentHourForDay(day.dateString) ||
+                          providersWithAppointments.length === 1
                         "
                       >
                         <p class="centered-text nowrap">
@@ -348,7 +350,8 @@
                         class="wrapper"
                         v-if="
                           partRow.part ===
-                          getCurrentDayPartForDay(day.dateString)
+                            getCurrentDayPartForDay(day.dateString) ||
+                          providersWithAppointments.length === 1
                         "
                       >
                         <p class="centered-text nowrap">
