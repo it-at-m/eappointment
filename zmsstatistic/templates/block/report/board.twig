@@ -18,8 +18,13 @@
         {% set tableName = organisation.name %}
     {% endif %}
 
-    {% if selected or dateRange %}
+    {# TODO: Can be deleted when all other statistic components are migrated #}
+    {% if selected and not dateRange %}
         {% trans %}Auswertung für{% endtrans %} {{ tableName }} {% trans %}im Zeitraum{% endtrans %} {{ tablePeriod }}
+    {% endif %}
+
+    {% if dateRange %}
+        {% trans %}Auswertung für die ausgewählten Standorte im Zeitraum{% endtrans %} {{ tablePeriod }}
     {% endif %}
 {% endblock %}
 
