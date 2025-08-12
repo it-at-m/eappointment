@@ -1,6 +1,6 @@
 {% from 'element/helper/form.twig' import formgroup, providername %}
 
-<form data-report-filter>
+<div data-report-filter>
     <!-- Scope Selection -->
     {% set scopeOptions = [] %}
     {% for department in workstation.useraccount.departments %}
@@ -77,4 +77,4 @@
     <div class="reportfilter-actions">
         <button type="submit" class="btn btn-primary">Übernehmen</button>
     </div>
-</form>
+</div>
