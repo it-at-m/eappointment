@@ -120,6 +120,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     />
                     <Inputs.Controls>
                         <Inputs.Textarea
+                            key={`prov-data-${index}-${provider.parent_id ?? 'none'}`}
                             name={`${formName}[data]`}
                             value={(provider.data) ? JSON.stringify(provider.data) : ''}
                             placeholder='{}'
@@ -165,27 +166,17 @@ class ProvidersView extends Component {
     }
 
     onParentChange = (rowIndex, rawValue) => {
-        const providerCopy = { ...this.props.source.providers[rowIndex] };
+        const parent_id = rawValue === '' ? null : Number(rawValue);
+        const parent = parent_id == null
+            ? null
+            : this.props.parentproviders.find(p => Number(p.id) === parent_id);
 
-        if (!rawValue) {
-            delete providerCopy.parent_id;
-            providerCopy.link    = '';
-            providerCopy.contact = { street:'', streetNumber:'', postalCode:'', city:'' };
-            providerCopy.data    = '';
-        } else {
-            const parent_id = Number(rawValue);
-            const parent    = this.props.parentproviders.find(p => Number(p.id) === parent_id);
+        console.log(parent);
 
-            providerCopy.parent_id = parent_id;
-
-            if (parent) {
-                providerCopy.link    = parent.link   || '';
-                providerCopy.contact = { ...parent.contact };
-                providerCopy.data    = parent.data   || '';
-            }
-        }
-
-        this.props.changeHandler(`providers[${rowIndex}]`, providerCopy);
+        this.props.changeHandler(`providers[${rowIndex}][parent_id]`, parent_id);
+        this.props.changeHandler(`providers[${rowIndex}][link]`, parent?.link || '');
+        this.props.changeHandler(`providers[${rowIndex}][contact]`, parent?.contact ? { ...parent.contact } : { street:'', streetNumber:'', postalCode:'', city:'' });
+        this.props.changeHandler(`providers[${rowIndex}][data]`, parent?.data || {});
     };
 
     getProvidersWithLabels(onChange, onDeleteClick) {
@@ -217,13 +208,23 @@ class ProvidersView extends Component {
             getEntity('provider').then((entity) => {
                 entity.id = this.getNextId()
                 entity.source = this.props.source.source
+                entity.__isNew = true
                 this.props.addNewHandler('providers', [entity])
             })
         }
 
         const onDeleteClick = index => {
-            this.props.deleteHandler('providers', index)
-        }
+            const item = this.props.source.providers[index];
+            const name = item?.name || 'diesen Datensatz';
+            if (item?.__isNew === true) {
+                return this.props.deleteHandler('providers', index);
+            }
+            const msg = `„${name}“ wirklich löschen?\n\nHinweis: Die Änderung wird erst nach „Speichern“ wirksam.`;
+            if (window.confirm(msg)) {
+                this.props.deleteHandler('providers', index);
+            }
+        };
+
 
         const onChange = (field, value) => {
             this.props.changeHandler(field, value)
