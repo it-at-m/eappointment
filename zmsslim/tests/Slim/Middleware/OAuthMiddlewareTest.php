@@ -8,9 +8,13 @@ use PHPUnit\Framework\TestCase;
 
 class OAuthMiddlewareTest extends TestCase
 {
-    public function testProviderValidationWithAuthInstances()
+    public function testAuthInstancesContainsKeycloak()
     {
         $this->assertArrayHasKey('keycloak', OAuthMiddleware::$authInstances);
+    }
+
+    public function testAuthInstancesDoesNotContainUnknown()
+    {
         $this->assertArrayNotHasKey('unknown', OAuthMiddleware::$authInstances);
     }
 
@@ -32,15 +36,23 @@ class OAuthMiddlewareTest extends TestCase
         $this->assertInstanceOf(OAuthMiddleware::class, $refreshMiddleware);
     }
 
-    public function testEnhancedProviderValidationLogic()
+    public function testKeycloakAuthInstanceExists()
     {
         $this->assertTrue(isset(OAuthMiddleware::$authInstances['keycloak']));
+    }
+
+    public function testUnknownAuthInstanceDoesNotExist()
+    {
         $this->assertFalse(isset(OAuthMiddleware::$authInstances['unknown']));
     }
 
-    public function testAuthInstancesArrayStructure()
+    public function testAuthInstancesIsArray()
     {
         $this->assertIsArray(OAuthMiddleware::$authInstances);
+    }
+
+    public function testAuthInstancesIsNotEmpty()
+    {
         $this->assertNotEmpty(OAuthMiddleware::$authInstances);
     }
 }
