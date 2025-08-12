@@ -35,8 +35,6 @@ class ReportClientIndex extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-
-        // Extract selected scopes or fallback to current scope
         $selectedScopes = $this->extractSelectedScopes($validator);
         $scopeId = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
 
@@ -44,13 +42,9 @@ class ReportClientIndex extends BaseController
           ->readGetResult('/warehouse/clientscope/' . $this->workstation->scope['id'] . '/')
           ->getEntity();
 
-        // Extract date parameters and validate
         $dateRange = $this->extractDateRange($validator);
-
-        // Get exchange client data based on date range or period
         $exchangeClient = $this->getExchangeClientData($scopeId, $dateRange, $args);
 
-        // Handle download request
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
             return $this->handleDownloadRequest(
@@ -63,7 +57,6 @@ class ReportClientIndex extends BaseController
             );
         }
 
-        // Render HTML response
         return $this->renderHtmlResponse($response, $args, $clientPeriod, $dateRange, $exchangeClient, $selectedScopes);
     }
 
@@ -75,7 +68,6 @@ class ReportClientIndex extends BaseController
         $selectedScopes = $validator->getParameter('scopes')->isArray()->getValue();
 
         if (!empty($selectedScopes)) {
-            // Filter out non-numeric values and ensure they are valid scope IDs
             $validScopes = array_filter($selectedScopes, function ($scopeId) {
                 return is_numeric($scopeId) && $scopeId > 0;
             });
@@ -129,28 +121,19 @@ class ReportClientIndex extends BaseController
         $toDate = $dateRange['to'];
 
         try {
-            // Get all years that need to be fetched for this date range
             $years = $this->getYearsForDateRange($fromDate, $toDate);
-
-
-
-            // Fetch and combine data from all necessary years
             $combinedData = $this->fetchAndCombineDataFromYears($scopeId, $years);
 
             if (empty($combinedData['data'])) {
                 return null;
             }
 
-
-
-            // Filter data by date range
             $filteredData = $this->filterDataByDateRange($combinedData['data'], $fromDate, $toDate);
 
             if (empty($filteredData)) {
                 return null;
             }
 
-            // Create filtered exchange client
             return $this->createFilteredExchangeClient($combinedData['entity'], $filteredData, $fromDate, $toDate);
         } catch (\Exception $exception) {
             return null;
@@ -217,8 +200,7 @@ class ReportClientIndex extends BaseController
             }
         }
 
-        // Sort the combined data by date (column index 1) after combining all years
-        usort($combinedData, function($a, $b) {
+        usort($combinedData, function ($a, $b) {
             return strcmp($a[1], $b[1]);
         });
 
@@ -239,7 +221,6 @@ class ReportClientIndex extends BaseController
                 $filteredData[] = $row;
             }
         }
-        
         return $filteredData;
     }
 
@@ -248,20 +229,16 @@ class ReportClientIndex extends BaseController
      */
     private function createFilteredExchangeClient($exchangeClientFull, $filteredData, $fromDate, $toDate): mixed
     {
-        // Clone entity and replace data
         $exchangeClient = clone $exchangeClientFull;
         $exchangeClient->data = $filteredData;
 
-        // Ensure period is set for download functionality
         if (!isset($exchangeClient->period)) {
             $exchangeClient->period = 'day';
         }
 
-        // Update firstDay and lastDay to reflect the actual filtered date range
         $exchangeClient->firstDay = (new \BO\Zmsentities\Day())->setDateTime(new \DateTime($fromDate));
         $exchangeClient->lastDay = (new \BO\Zmsentities\Day())->setDateTime(new \DateTime($toDate));
 
-        // Only call withCalculatedTotals if we have data
         if (!empty($filteredData)) {
             return $exchangeClient
                 ->withCalculatedTotals($this->totals, 'date')
@@ -284,12 +261,10 @@ class ReportClientIndex extends BaseController
     ): ResponseInterface {
         $args['category'] = 'clientscope';
 
-        // Set period for download filename - use date range or existing period
         if ($dateRange) {
             $args['period'] = $dateRange['from'] . '_' . $dateRange['to'];
         }
 
-        // Add selected scopes to args for potential use in download
         if (!empty($selectedScopes)) {
             $args['selectedScopes'] = $selectedScopes;
         }

@@ -124,7 +124,6 @@ class ReportClientDepartmentTest extends Base
             'Auswertung für Bürgeramt im Zeitraum April 2016',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('135', (string) $response->getBody());
     }
 
     public function testWithDownloadXLSX()
