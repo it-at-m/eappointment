@@ -75,5 +75,4 @@ class RequestRelation extends Base implements MappingInterface
               AND source       = :source
         ';
     }
-
 }

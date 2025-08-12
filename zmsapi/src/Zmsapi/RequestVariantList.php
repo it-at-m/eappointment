@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsapi;
 
 use BO\Slim\Render;
