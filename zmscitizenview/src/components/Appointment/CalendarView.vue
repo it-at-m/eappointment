@@ -2231,15 +2231,16 @@ const getCurrentDayPartForDay = (dateString: string) => {
   transition: color 0.2s ease;
 }
 
-/* Calendar date number styling - increase font size for better desktop readability */
-.muc-calendar .muc-calendar__day-number,
-.muc-calendar .muc-calendar__day {
-  font-size: 1.125rem !important; /* 18px */
+/* Calendar date number styling - responsive font sizing */
+.muc-calendar-view-full-size .muc-calendar-item,
+.muc-calendar-container .muc-calendar-item {
+  font-size: 1.125rem !important; /* 18px - default for desktop */
 }
 
 /* Ensure the calendar container has proper sizing */
-.muc-calendar {
-  font-size: 1.125rem;
+.muc-calendar-view-full-size,
+.muc-calendar-container {
+  font-size: 1.125rem !important; /* Desktop size */
 }
 
 .view-toggle-container {
@@ -2257,13 +2258,26 @@ const getCurrentDayPartForDay = (dateString: string) => {
   }
 }
 
+/* Mobile styles - grouped together for better organization */
 @include xs-down {
+  /* Calendar date numbers - smaller for mobile */
+  .muc-calendar-view-full-size .muc-calendar-item,
+  .muc-calendar-container .muc-calendar-item {
+    font-size: 1rem !important; /* 16px for mobile */
+  }
+  .muc-calendar-view-full-size,
+  .muc-calendar-container {
+    font-size: 1rem !important; /* Mobile size */
+  }
+
+  /* Timeslot buttons - smaller padding for mobile */
   .timeslot.m-button,
   .timeslot .m-button {
-    padding: 1px 8.5px !important; /* Even smaller padding for very small screens */
-    font-size: 1rem !important; /* 16px for mobile */
+    padding: 1px 8px !important; /* Even smaller padding for very small screens */
     min-height: 2.25rem;
   }
+
+  /* Grid layout adjustments for mobile */
   .grid-item {
     margin: 6px 6px;
   }
@@ -2290,5 +2304,28 @@ const getCurrentDayPartForDay = (dateString: string) => {
 .m-callout__content ul li {
   list-style-type: disc !important;
   padding-left: 0.5rem !important;
+}
+
+/* Calendar date number styling - global styles to override component styles */
+.muc-calendar-view-full-size .muc-calendar-item,
+.muc-calendar-container .muc-calendar-item {
+  font-size: 1.125rem !important; /* 18px - default for desktop */
+}
+
+.muc-calendar-view-full-size,
+.muc-calendar-container {
+  font-size: 1.125rem !important; /* Desktop size */
+}
+
+/* Mobile: smaller font size for small screens */
+@media (max-width: 600px) {
+  .muc-calendar-view-full-size .muc-calendar-item,
+  .muc-calendar-container .muc-calendar-item {
+    font-size: 1rem !important; /* 16px for mobile */
+  }
+  .muc-calendar-view-full-size,
+  .muc-calendar-container {
+    font-size: 1rem !important; /* Mobile size */
+  }
 }
 </style>
