@@ -79,7 +79,7 @@ class ProviderTest extends Base
     public function testWriteImport()
     {
         $query = new Query();
-        $repository = (new \BO\Dldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Dldb::$importPath);
+        $repository = (new \BO\Zmsdldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Zmsdldb::$importPath);
         $importInput = $repository->fromLocation()->fetchList();
         $collection = $query->writeImportList($importInput, 'dldb'); //return written entity by true
         $this->assertEquals('dldb', $collection->getFirst()->getSource());
@@ -89,7 +89,7 @@ class ProviderTest extends Base
     public function testWriteRequestRelationImport()
     {
         $query = new \BO\Zmsdb\RequestRelation();
-        $repository = (new \BO\Dldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Dldb::$importPath);
+        $repository = (new \BO\Zmsdldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Zmsdldb::$importPath);
         $importInput = $repository->fromLocation()->fetchList();
         $collection = $query->writeImportList($importInput, 'dldb'); //return written entity by true
         $this->assertEquals('dldb', $collection->getFirst()->getSource());

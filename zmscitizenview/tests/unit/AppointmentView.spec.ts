@@ -1,14 +1,14 @@
 import { mount } from "@vue/test-utils";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
+// @ts-expect-error: Vue SFC import for test  
 import * as ZMSAppointmentAPI from "@/api/ZMSAppointmentAPI";
+// @ts-expect-error: Vue SFC import for test
 import de from '@/utils/de-DE.json';
-
 // @ts-expect-error: Vue SFC import for test
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 // beforeEach is already imported from vitest on line 2
 
-// Mock window.scrollTo for jsdom
 globalThis.scrollTo = vi.fn();
 
 describe("AppointmentView", () => {
@@ -115,7 +115,7 @@ describe("AppointmentView", () => {
           'service-finder': {
             template: "<div data-test='service-finder'></div>",
             props: ["baseUrl", "preselectedServiceId", "preselectedOfficeId", "exclusiveLocation", "t"],
-            emits: ["next", "captchaTokenChanged"],
+            emits: ["next", "captchaTokenChanged", "invalidJumpinLink"],
           },
           'calendar-view': {
             template: "<div data-test='calendar-view'></div>",
@@ -144,6 +144,14 @@ describe("AppointmentView", () => {
               <slot name="header"></slot>
               <slot name="content"></slot>
             </div>
+          `
+          },
+          'muc-button': {
+            props: ["icon", "variant", "disabled"],
+            template: `
+            <button data-test='muc-button' :icon="icon" :variant="variant" :disabled="disabled">
+              <slot></slot>
+            </button>
           `
           },
         },
@@ -184,7 +192,7 @@ describe("AppointmentView", () => {
   describe("Error States", () => {
     it("shows appointment not found error", async () => {
       const wrapper = createWrapper();
-      wrapper.vm.appointmentNotFoundError = true;
+      wrapper.vm.errorStates.apiErrorAppointmentNotFound.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
@@ -192,7 +200,7 @@ describe("AppointmentView", () => {
 
     it("shows booking error", async () => {
       const wrapper = createWrapper();
-      wrapper.vm.confirmAppointmentError = true;
+      wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
@@ -247,10 +255,10 @@ describe("AppointmentView", () => {
   });
 
   describe("Additional Error Callouts", () => {
-    it("shows tooManyAppointmentsWithSameMailError callout in summary", async () => {
+    it("shows apiErrorTooManyAppointmentsWithSameMail callout in summary", async () => {
       const wrapper = createWrapper();
       wrapper.vm.currentView = 3;
-      wrapper.vm.tooManyAppointmentsWithSameMailError = true;
+      wrapper.vm.errorStates.apiErrorTooManyAppointmentsWithSameMail.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
     });
@@ -258,14 +266,14 @@ describe("AppointmentView", () => {
     it("shows updateAppointmentError callout in summary", async () => {
       const wrapper = createWrapper();
       wrapper.vm.currentView = 3;
-      wrapper.vm.updateAppointmentError = true;
+      wrapper.vm.errorStates.apiErrorGenericFallback.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
     });
 
     it("shows confirmAppointmentError callout after booking", async () => {
       const wrapper = createWrapper();
-      wrapper.vm.confirmAppointmentError = true;
+      wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
@@ -288,6 +296,81 @@ describe("AppointmentView", () => {
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("success");
+    });
+  });
+
+  describe("Invalid Jump-in Link (404 Error)", () => {
+    it("shows 404 callout when invalid jump-in link error is triggered", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
+      await nextTick();
+      
+      const callout = wrapper.find('[data-test="muc-callout"]');
+      expect(callout.exists()).toBe(true);
+      expect(callout.attributes('data-type')).toBe("error");
+      expect(callout.text()).toContain("Diese Ansicht kann nicht geladen werden");
+      expect(callout.text()).toContain("Der Link zu dieser Seite ist leider fehlerhaft");
+    });
+
+    it("shows button with correct text and icon in 404 callout", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
+      await nextTick();
+      
+      const button = wrapper.find('.m-button-group button');
+      expect(button.exists()).toBe(true);
+      expect(button.text()).toContain("Termin vereinbaren");
+      expect(button.attributes('icon')).toBe("arrow-right");
+    });
+
+    it("hides stepper and main content when 404 error is active", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
+      await nextTick();
+      
+      expect(wrapper.find('[data-test="muc-stepper"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(false);
+    });
+
+    it("calls redirectToAppointmentStart when button is clicked", async () => {
+      const originalLocation = window.location;
+      delete (window as any).location;
+      (window as any).location = { 
+        ...originalLocation, 
+        href: "http://localhost:8082/#/services/000000000000/locations/000000000000",
+        origin: "http://localhost:8082",
+        pathname: "/"
+      };
+      
+      const wrapper = createWrapper();
+      wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
+      await nextTick();
+      
+      const button = wrapper.find('.m-button-group button');
+      await button.trigger('click');
+      
+      expect(window.location.href).toBe("http://localhost:8082/");
+      
+      (window as any).location = originalLocation;
+    });
+
+    it("handles invalid jump-in link event from ServiceFinder", async () => {
+      const wrapper = createWrapper();
+      
+      wrapper.vm.handleInvalidJumpinLink();
+      await nextTick();
+      
+      expect(wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value).toBe(true);
+    });
+
+    it("button has correct styling with disabled margins", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.errorStates.apiErrorInvalidJumpinLink.value = true;
+      await nextTick();
+      
+      const button = wrapper.find('.m-button-group button');
+      expect(button.attributes('style')).toContain('margin-bottom: 0');
+      expect(button.attributes('style')).toContain('margin-right: 0');
     });
   });
 
@@ -1013,16 +1096,15 @@ describe("AppointmentView", () => {
         "https://www.muenchen.de"
       );
 
-      expect(wrapper.vm.confirmAppointmentActivationExpiredError).toBe(true);
-      expect(wrapper.vm.confirmAppointmentError).toBe(false);
+      expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
       expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
 
       const errorCallout = wrapper.find('[data-test="muc-callout"]');
       expect(errorCallout.exists()).toBe(true);
       expect(errorCallout.attributes('data-type')).toBe('error');
 
-      expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorHeader);
-      expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorText);
+      expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredHeader);
+      expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredText);
   });
 
   it("should display activation expired error when API returns appointmentNotFound", async () => {
@@ -1061,16 +1143,15 @@ describe("AppointmentView", () => {
       "https://www.muenchen.de"
     );
 
-    expect(wrapper.vm.confirmAppointmentActivationExpiredError).toBe(true);
-    expect(wrapper.vm.confirmAppointmentError).toBe(false);
+    expect(wrapper.vm.errorStates.apiErrorPreconfirmationExpired.value).toBe(true);
     expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
 
 
     const errorCallout = wrapper.find('[data-test="muc-callout"]');
     expect(errorCallout.exists()).toBe(true);
     expect(errorCallout.attributes('data-type')).toBe('error');
-    expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorHeader);
-    expect(errorCallout.text()).toContain(de.appointmentActivationExpiredErrorText);
+    expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredHeader);
+    expect(errorCallout.text()).toContain(de.apiErrorPreconfirmationExpiredText);
   });
 
   it("should display generic error for other API error codes", async () => {
@@ -1109,14 +1190,13 @@ describe("AppointmentView", () => {
       "https://www.muenchen.de"
     );
 
-    expect(wrapper.vm.confirmAppointmentError).toBe(true);
-    expect(wrapper.vm.confirmAppointmentActivationExpiredError).toBe(false);
+    expect(wrapper.vm.errorStates.apiErrorGenericFallback.value).toBe(true);
     expect(wrapper.vm.confirmAppointmentSuccess).toBe(false);
 
     const errorCallout = wrapper.find('[data-test="muc-callout"]');
     expect(errorCallout.exists()).toBe(true);
     expect(errorCallout.attributes('data-type')).toBe('error');
-    expect(errorCallout.text()).toContain(de.appointmentBookingErrorText);
+    expect(errorCallout.text()).toContain(de.apiErrorGenericFallbackHeader);
   });
   });
 });

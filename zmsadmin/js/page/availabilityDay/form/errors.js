@@ -5,7 +5,7 @@ const renderErrors = errors => Object.keys(errors).map(key => {
     return (
         <div key={errors[key].id}>
             {errors[key].itemList.map((item, index) => {
-                return <div key={index}>{item[0].message}</div>
+                return <div key={index}>{item.message}</div>
             })}   
         </div>
     )

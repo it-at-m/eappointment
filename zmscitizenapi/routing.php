@@ -1,33 +1,6 @@
 <?php
 // @codingStandardsIgnoreFile
 
-use \Psr\Http\Message\RequestInterface;
-use \Psr\Http\Message\ResponseInterface;
-use BO\Zmscitizenapi\Middleware\LanguageMiddleware;
-
-/**
- * Helper function to create routes with language prefixes
- */
-function createLanguageRoutes($app, $path, $controller, $name, $method = 'get'): void
-{
-    // Create routes with language prefixes
-    foreach (LanguageMiddleware::getSupportedLanguages() as $lang) {
-        $langPath = "/{$lang}{$path}";
-        if ($method === 'get') {
-            $app->get($langPath, $controller)->setName("{$name}_{$lang}");
-        } else {
-            $app->post($langPath, $controller)->setName("{$name}_{$lang}");
-        }
-    }
-
-    // Create default route without language prefix (for backward compatibility)
-    if ($method === 'get') {
-        $app->get($path, $controller)->setName($name);
-    } else {
-        $app->post($path, $controller)->setName($name);
-    }
-}
-
 /**
  * @swagger
  * /services/:
@@ -46,20 +19,8 @@ function createLanguageRoutes($app, $path, $controller, $name, $method = 'get'):
  *             data:
  *               $ref: "schema/citizenapi/collections/serviceList.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/services/',
-    '\BO\Zmscitizenapi\Controllers\Service\ServicesListController',
-    "ServicesListController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/services',
-    '\BO\Zmscitizenapi\Controllers\Service\ServicesListController',
-    "ServicesListController",
-    "get"
-);
+\App::$slim->get('/services/', '\BO\Zmscitizenapi\Controllers\Service\ServicesListController')->setName("ServicesListController");
+\App::$slim->get('/services', '\BO\Zmscitizenapi\Controllers\Service\ServicesListController')->setName("ServicesListController");
 
 /**
  * @swagger
@@ -79,20 +40,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/collections/thinnedScopeList.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/scopes/',
-    '\BO\Zmscitizenapi\Controllers\Scope\ScopesListController',
-    "ScopesListController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/scopes',
-    '\BO\Zmscitizenapi\Controllers\Scope\ScopesListController',
-    "ScopesListController",
-    "get"
-);
+\App::$slim->get('/scopes/', '\BO\Zmscitizenapi\Controllers\Scope\ScopesListController')->setName("ScopesListController");
+\App::$slim->get('/scopes', '\BO\Zmscitizenapi\Controllers\Scope\ScopesListController')->setName("ScopesListController");
 
 /**
  * @swagger
@@ -112,20 +61,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/collections/officeList.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/offices/',
-    '\BO\Zmscitizenapi\Controllers\Office\OfficesListController',
-    "OfficesListController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/offices',
-    '\BO\Zmscitizenapi\Controllers\Office\OfficesListController',
-    "OfficesListController",
-    "get"
-);
+\App::$slim->get('/offices/', '\BO\Zmscitizenapi\Controllers\Office\OfficesListController')->setName("OfficesListController");
+\App::$slim->get('/offices', '\BO\Zmscitizenapi\Controllers\Office\OfficesListController')->setName("OfficesListController");
 
 /**
  * @swagger
@@ -145,20 +82,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/collections/officeServiceAndRelationList.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/offices-and-services/',
-    '\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController',
-    "OfficesServicesRelationsController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/offices-and-services',
-    '\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController',
-    "OfficesServicesRelationsController",
-    "get"
-);
+\App::$slim->get('/offices-and-services/', '\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController')->setName("OfficesServicesRelationsController");
+\App::$slim->get('/offices-and-services', '\BO\Zmscitizenapi\Controllers\Office\OfficesServicesRelationsController')->setName("OfficesServicesRelationsController");
 
 /**
  * @swagger
@@ -186,20 +111,8 @@ createLanguageRoutes(
  *       404:
  *         description: Scope not found
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/scope-by-id/',
-    '\BO\Zmscitizenapi\Controllers\Scope\ScopeByIdController',
-    "ScopeByIdController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/scope-by-id',
-    '\BO\Zmscitizenapi\Controllers\Scope\ScopeByIdController',
-    "ScopeByIdController",
-    "get"
-);
+\App::$slim->get('/scope-by-id/', '\BO\Zmscitizenapi\Controllers\Scope\ScopeByIdController')->setName("ScopeByIdController");
+\App::$slim->get('/scope-by-id', '\BO\Zmscitizenapi\Controllers\Scope\ScopeByIdController')->setName("ScopeByIdController");
 
 /**
  * @swagger
@@ -225,20 +138,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/collections/serviceList.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/services-by-office/',
-    '\BO\Zmscitizenapi\Controllers\Service\ServiceListByOfficeController',
-    "ServiceListByOfficeController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/services-by-office',
-    '\BO\Zmscitizenapi\Controllers\Service\ServiceListByOfficeController',
-    "ServiceListByOfficeController",
-    "get"
-);
+\App::$slim->get('/services-by-office/', '\BO\Zmscitizenapi\Controllers\Service\ServiceListByOfficeController')->setName("ServiceListByOfficeController");
+\App::$slim->get('/services-by-office', '\BO\Zmscitizenapi\Controllers\Service\ServiceListByOfficeController')->setName("ServiceListByOfficeController");
 
 /**
  * @swagger
@@ -264,20 +165,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/collections/officeList.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/offices-by-service/',
-    '\BO\Zmscitizenapi\Controllers\Office\OfficeListByServiceController',
-    "OfficeListByServiceController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/offices-by-service',
-    '\BO\Zmscitizenapi\Controllers\Office\OfficeListByServiceController',
-    "OfficeListByServiceController",
-    "get"
-);
+\App::$slim->get('/offices-by-service/', '\BO\Zmscitizenapi\Controllers\Office\OfficeListByServiceController')->setName("OfficeListByServiceController");
+\App::$slim->get('/offices-by-service', '\BO\Zmscitizenapi\Controllers\Office\OfficeListByServiceController')->setName("OfficeListByServiceController");
 
 /**
  * @swagger
@@ -308,20 +197,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/availableDays.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/available-days/',
-    '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListController',
-    "AvailableDaysListController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/available-days',
-    '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListController',
-    "AvailableDaysListController",
-    "get"
-);
+\App::$slim->get('/available-days/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListController')->setName("AvailableDaysListController");
+\App::$slim->get('/available-days', '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListController')->setName("AvailableDaysListController");
 
 /**
  * @swagger
@@ -352,20 +229,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/availableDays.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/available-days-by-office/',
-    '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListByOfficeController',
-    "AvailableDaysListByOfficeController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/available-days-by-office',
-    '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListByOfficeController',
-    "AvailableDaysListByOfficeController",
-    "get"
-);
+\App::$slim->get('/available-days-by-office/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListByOfficeController')->setName("AvailableDaysListByOfficeController");
+\App::$slim->get('/available-days-by-office', '\BO\Zmscitizenapi\Controllers\Availability\AvailableDaysListByOfficeController')->setName("AvailableDaysListByOfficeController");
 
 /**
  * @swagger
@@ -401,20 +266,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/availableAppointments.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/available-appointments/',
-    '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListController',
-    "AvailableAppointmentsListController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/available-appointments',
-    '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListController',
-    "AvailableAppointmentsListController",
-    "get"
-);
+\App::$slim->get('/available-appointments/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListController')->setName("AvailableAppointmentsListController");
+\App::$slim->get('/available-appointments', '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListController')->setName("AvailableAppointmentsListController");
 
 /**
  * @swagger
@@ -450,20 +303,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/availableAppointments.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/available-appointments-by-office/',
-    '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListByOfficeController',
-    "AvailableAppointmentsListByOfficeController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/available-appointments-by-office',
-    '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListByOfficeController',
-    "AvailableAppointmentsListByOfficeController",
-    "get"
-);
+\App::$slim->get('/available-appointments-by-office/', '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListByOfficeController')->setName("AvailableAppointmentsListByOfficeController");
+\App::$slim->get('/available-appointments-by-office', '\BO\Zmscitizenapi\Controllers\Availability\AvailableAppointmentsListByOfficeController')->setName("AvailableAppointmentsListByOfficeController");
 
 /**
  * @swagger
@@ -514,20 +355,8 @@ createLanguageRoutes(
  *       404:
  *         description: Appointment not found
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/appointment/',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController',
-    "AppointmentByIdController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/appointment',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController',
-    "AppointmentByIdController",
-    "get"
-);
+\App::$slim->get('/appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController')->setName("AppointmentByIdController");
+\App::$slim->get('/appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController')->setName("AppointmentByIdController");
 
 /**
  * @swagger
@@ -547,20 +376,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/captcha/altchaCaptcha.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/captcha-details/',
-    '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaController',
-    "CaptchaController",
-    "get"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/captcha-details',
-    '\BO\Zmscitizenapi\Controllers\Security\CaptchaController',
-    "CaptchaController",
-    "get"
-);
+\App::$slim->get('/captcha-details/', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaController')->setName("CaptchaController");
+\App::$slim->get('/captcha-details', '\BO\Zmscitizenapi\Controllers\Security\CaptchaController')->setName("CaptchaController");
 
 /**
  * @swagger
@@ -580,13 +397,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/captcha/createChallengeResponse.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/captcha-challenge/',
-    '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaChallengeController',
-    "CaptchaChallengeController",
-    "get"
-);
+\App::$slim->get('/captcha-challenge/', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaChallengeController')->setName("CaptchaChallengeController");
+\App::$slim->get('/captcha-challenge', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaChallengeController')->setName("CaptchaChallengeController");
 
 /**
  * @swagger
@@ -613,13 +425,8 @@ createLanguageRoutes(
  *             data:
  *               $ref: "schema/citizenapi/captcha/verifySolutionResponse.json"
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/captcha-verify/',
-    '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaVerifyController',
-    "CaptchaVerifyController",
-    "post"
-);
+\App::$slim->post('/captcha-verify/', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaVerifyController')->setName("CaptchaVerifyController");
+\App::$slim->post('/captcha-verify', '\BO\Zmscitizenapi\Controllers\Captcha\CaptchaVerifyController')->setName("CaptchaVerifyController");
 
 /**
  * @swagger
@@ -666,20 +473,8 @@ createLanguageRoutes(
  *       404:
  *         description: Appointment not found
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/reserve-appointment/',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController',
-    "AppointmentReserveController",
-    "post"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/reserve-appointment',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController',
-    "AppointmentReserveController",
-    "post"
-);
+\App::$slim->post('/reserve-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController')->setName("AppointmentReserveController");
+\App::$slim->post('/reserve-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController')->setName("AppointmentReserveController");
 
 /**
  * @swagger
@@ -726,20 +521,8 @@ createLanguageRoutes(
  *       404:
  *         description: Appointment not found
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/update-appointment/',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController',
-    "AppointmentUpdateController",
-    "post"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/update-appointment',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController',
-    "AppointmentUpdateController",
-    "post"
-);
+\App::$slim->post('/update-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController')->setName("AppointmentUpdateController");
+\App::$slim->post('/update-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController')->setName("AppointmentUpdateController");
 
 /**
  * @swagger
@@ -786,20 +569,8 @@ createLanguageRoutes(
  *       404:
  *         description: Appointment not found
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/confirm-appointment/',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController',
-    "AppointmentConfirmController",
-    "post"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/confirm-appointment',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController',
-    "AppointmentConfirmController",
-    "post"
-);
+\App::$slim->post('/confirm-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController')->setName("AppointmentConfirmController");
+\App::$slim->post('/confirm-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentConfirmController')->setName("AppointmentConfirmController");
 
 /**
  * @swagger
@@ -846,20 +617,8 @@ createLanguageRoutes(
  *       404:
  *         description: Appointment not found
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/preconfirm-appointment/',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController',
-    "AppointmentPreconfirmController",
-    "post"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/preconfirm-appointment',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController',
-    "AppointmentPreconfirmController",
-    "post"
-);
+\App::$slim->post('/preconfirm-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController')->setName("AppointmentPreconfirmController");
+\App::$slim->post('/preconfirm-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController')->setName("AppointmentPreconfirmController");
 
 /**
  * @swagger
@@ -906,20 +665,8 @@ createLanguageRoutes(
  *       404:
  *         description: Appointment not found
  */
-createLanguageRoutes(
-    \App::$slim,
-    '/cancel-appointment/',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController',
-    "AppointmentCancelController",
-    "post"
-);
-createLanguageRoutes(
-    \App::$slim,
-    '/cancel-appointment',
-    '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController',
-    "AppointmentCancelController",
-    "post"
-);
+\App::$slim->post('/cancel-appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController')->setName("AppointmentCancelController");
+\App::$slim->post('/cancel-appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentCancelController')->setName("AppointmentCancelController");
 
 // Catch-all route for 404 errors
 \App::$slim->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], '/{routes:.+}', function ($request, $response) {

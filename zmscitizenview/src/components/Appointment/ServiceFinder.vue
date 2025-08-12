@@ -162,6 +162,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "next"): void;
   (e: "captchaTokenChanged", token: string | null): void;
+  (e: "invalidJumpinLink"): void;
 }>();
 
 const services = ref<Service[]>([]);
@@ -459,6 +460,28 @@ onMounted(() => {
             subServices: [],
             combinable: foundService.combinable as unknown as Combinable,
           } as ServiceImpl;
+        } else {
+          emit("invalidJumpinLink");
+        }
+      }
+
+      if (props.preselectedOfficeId) {
+        const foundOffice = offices.value.find(
+          (office) => office.id == props.preselectedOfficeId
+        );
+        if (!foundOffice) {
+          emit("invalidJumpinLink");
+        }
+      }
+
+      if (props.preselectedServiceId && props.preselectedOfficeId) {
+        const hasValidRelation = relations.value.some(
+          (relation) =>
+            relation.serviceId == props.preselectedServiceId &&
+            relation.officeId == props.preselectedOfficeId
+        );
+        if (!hasValidRelation) {
+          emit("invalidJumpinLink");
         }
       }
     });

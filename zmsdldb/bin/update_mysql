@@ -12,9 +12,9 @@ $modulInclude = __DIR__ . str_repeat(DIRECTORY_SEPARATOR . '..', 3);
 set_include_path(get_include_path() . PATH_SEPARATOR . $localInclude . PATH_SEPARATOR . $modulInclude);
 require('autoload.php');
 
-use BO\Dldb\FileAccess,
-    \BO\Dldb\MySQLAccess,
-    \BO\Dldb\Importer\MySQL AS MySQLImporter
+use BO\Zmsdldb\FileAccess,
+    \BO\Zmsdldb\MySQLAccess,
+    \BO\Zmsdldb\Importer\MySQL AS MySQLImporter
 ; 
 use Garden\Cli\Cli;
 use \Httpful\Request;
