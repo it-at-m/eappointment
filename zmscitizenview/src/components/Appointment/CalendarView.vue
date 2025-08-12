@@ -2217,9 +2217,15 @@ const getCurrentDayPartForDay = (dateString: string) => {
 
 /* Disabled toggle text styling */
 .m-toggle-switch__label.disabled {
-  opacity: 0.5;
-  color: var(--color-neutrals-grey, #666);
-  transition: opacity 0.2s ease;
+  opacity: 1;
+  color: #617586; /* Grey Light */
+  transition: color 0.2s ease;
+}
+
+/* Active toggle text styling */
+.m-toggle-switch__label:not(.disabled) {
+  color: #005A9F; /* BDE Blue */
+  transition: color 0.2s ease;
 }
 
 .view-toggle-container {
