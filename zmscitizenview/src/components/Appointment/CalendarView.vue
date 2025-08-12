@@ -2127,6 +2127,8 @@ const getCurrentDayPartForDay = (
 </script>
 
 <style lang="scss" scoped>
+@use "@/styles/breakpoints.scss" as *;
+
 .wrapper {
   display: grid;
   grid-template-columns: 6rem 1fr;
