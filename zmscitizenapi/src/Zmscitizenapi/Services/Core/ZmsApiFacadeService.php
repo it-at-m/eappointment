@@ -692,7 +692,6 @@ class ZmsApiFacadeService
                 ? $process->createTimestamp->format('Y-m-d\TH:i:sP')
                 : (string) $process->createTimestamp;
         }
-    
         if (isset($process->scope) && isset($process->scope->toProperty()->preferences->appointment->reservationDuration)) {
             $thinnedProcess->reservationDuration = (int) $process->scope->toProperty()->preferences->appointment->reservationDuration->get();
         }
