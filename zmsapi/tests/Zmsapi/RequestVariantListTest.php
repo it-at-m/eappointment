@@ -10,17 +10,8 @@ class RequestVariantListTest extends Base
 {
     protected $classname = "RequestVariantList";
 
-    private function initializeSuperUserWorkstation(): void
-    {
-        $this->setWorkstation()
-            ->getUseraccount()
-            ->setRights('superuser');
-    }
-
     public function testRenderingOk(): void
     {
-        $this->initializeSuperUserWorkstation();
-
         $response = $this->render();
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -34,8 +25,6 @@ class RequestVariantListTest extends Base
 
     public function testListIsSortedAndTyped(): void
     {
-        $this->initializeSuperUserWorkstation();
-
         $response = $this->render();
         $json = json_decode((string)$response->getBody(), true);
 
@@ -54,8 +43,6 @@ class RequestVariantListTest extends Base
 
     public function testResponseMeta(): void
     {
-        $this->initializeSuperUserWorkstation();
-
         $response = $this->render();
         $json = json_decode((string)$response->getBody(), true);
 
@@ -68,15 +55,14 @@ class RequestVariantListTest extends Base
 
     public function testResponseMatchesSchema(): void
     {
-        $this->initializeSuperUserWorkstation();
-
         $response = $this->render();
         $payload  = json_decode((string)$response->getBody());
         $this->assertNotNull($payload, 'Response ist kein valides JSON');
 
-        $schemaPath = __DIR__ . '/fixtures/requestvariant_list.schema.json';
+        $schemaPath = __DIR__ . '/fixtures/requestvariant_list.json';
+        $this->assertFileExists($schemaPath, "Schema-Datei fehlt: $schemaPath");
+        $this->assertTrue(is_readable($schemaPath), "Schema-Datei nicht lesbar: $schemaPath");
         $raw = file_get_contents($schemaPath);
-        $this->assertNotFalse($raw, "Schema-Datei nicht lesbar: $schemaPath");
 
         $decoded = json_decode($raw);
         $this->assertNotNull($decoded, "Schema-Datei ist kein valides JSON");
@@ -88,10 +74,9 @@ class RequestVariantListTest extends Base
         $result    = $validator->validate($payload, $schema);
 
         if (!$result->isValid()) {
-            $formatter = new ErrorFormatter();
-            $errors    = $formatter->format($result->error());
-            error_log("Schema validation failed:\n" . json_encode($errors, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $formatter = new ErrorFormatter();
+        $errors    = $formatter->format($result->error());
+        $this->fail("Response entspricht nicht dem RequestVariant-List-Schema:\n" . json_encode($errors, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
-        $this->assertTrue($result->isValid(), 'Response entspricht nicht dem RequestVariant-List-Schema');
     }
 }
