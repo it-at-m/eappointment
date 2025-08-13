@@ -7,6 +7,7 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsadmin\Helper\ClusterHelper;
 use BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
@@ -52,10 +53,16 @@ class QueueTable extends BaseController
         // data refinement
         $queueList = $processList->toQueueList(\App::$now);
         $queueList = $queueList->withSortedArrival();
-
         $scope = $workstation->getScope();
+        $clusterHelper = (new ClusterHelper($workstation));
+
+        $workstationGhostCount = $scope->status['queue']['ghostWorkstationCount'];
+        $workstationList = ($clusterHelper->isClusterEnabled()) ?
+            static::getWorkstationsByCluster($clusterHelper->getEntity()->getId()) :
+            static::getWorkstationsByScope($scope->getId());
+
+        $workstationCount = $workstationGhostCount > 0 ? $workstationGhostCount : count($workstationList);
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage') ?? 10;
-        $workstationCount = $scope->getCalculatedWorkstationCount();
 
         $queueListVisible = $queueList
             ->withStatus(['preconfirmed', 'confirmed', 'queued', 'reserved', 'deleted'])
@@ -110,5 +117,19 @@ class QueueTable extends BaseController
                 'allowClusterWideCall' => \App::$allowClusterWideCall
             )
         );
+    }
+
+    public static function getWorkstationsByScope($scopeId)
+    {
+        return \App::$http
+            ->readGetResult('/scope/' . $scopeId . '/workstation/', ['resolveReferences' => 1])
+            ->getCollection();
+    }
+
+    public static function getWorkstationsByCluster($clusterId)
+    {
+        return \App::$http
+            ->readGetResult('/cluster/' . $clusterId . '/workstation/', ['resolveReferences' => 1])
+            ->getCollection();
     }
 }
