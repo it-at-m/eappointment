@@ -19,11 +19,10 @@ class SourceEdit extends BaseController
      * @return String
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface  $request,
+        \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
-        array                               $args
-    )
-    {
+        array $args
+    ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         if (!$workstation->hasSuperUseraccount()) {
