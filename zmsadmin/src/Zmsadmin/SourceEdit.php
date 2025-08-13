@@ -36,19 +36,18 @@ class SourceEdit extends BaseController
         }
 
         $parents = \App::$http->readGetResult('/source/dldb/', ['resolveReferences' => 2])->getEntity();
-        $parentProviders = isset($parents->providers) ? $parents->providers : [];
-        $parentRequests = isset($parents->requests) ? $parents->requests : [];
+        $parentProviders = $parents->providers ?? [];
+        $parentRequests  = $parents->requests  ?? [];
 
-        $apiRes = \App::$http->readGetResult('/requestvariants/');
-        $payload = json_decode((string)$apiRes->getResponse()->getBody(), true);
         try {
-            $payload = json_decode((string)$apiRes->getResponse()->getBody(), true, 512, JSON_THROW_ON_ERROR);
+            $apiRes  = \App::$http->readGetResult('/requestvariants/');
+            $body    = (string) $apiRes->getResponse()->getBody();
+            $payload = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
             $requestVariants = $payload['data'] ?? [];
         } catch (\JsonException $e) {
             \BO\Log::error('requestvariants JSON decode failed', ['error' => $e->getMessage()]);
             $requestVariants = [];
         }
-
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
