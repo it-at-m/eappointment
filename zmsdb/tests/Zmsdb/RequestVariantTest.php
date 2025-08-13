@@ -16,13 +16,6 @@ class RequestVariantTest extends Base
             ['id' => 3, 'name' => 'C – Änderungsmeldung'],
         ];
 
-        $this->assertCount(count($expected), $out);
-
         $this->assertSame($expected, $out);
-
-        foreach ($out as $row) {
-            $this->assertIsInt($row['id']);
-            $this->assertIsString($row['name']);
-        }
     }
 }

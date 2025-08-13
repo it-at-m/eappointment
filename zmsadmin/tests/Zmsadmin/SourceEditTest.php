@@ -26,14 +26,12 @@ class SourceEditTest extends Base
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture('GET_source_unittest.json')
                 ],
-                // NEU: Elternquelle (dldb)
                 [
                     'function'   => 'readGetResult',
                     'url'        => '/source/dldb/',
                     'parameters' => ['resolveReferences' => 2],
                     'response'   => $this->readFixture('GET_source_unittest.json'),
                 ],
-                // NEU: Varianten – OHNE parameters!
                 [
                     'function'   => 'readGetResult',
                     'url'        => '/requestvariants/',
@@ -73,7 +71,6 @@ class SourceEditTest extends Base
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture('GET_Workstation_Resolved2.json')
                 ],
-                // NEU: gleich wie im Controller
                 [
                     'function'   => 'readGetResult',
                     'url'        => '/source/dldb/',
@@ -117,7 +114,6 @@ class SourceEditTest extends Base
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture('GET_Workstation_Resolved2.json')
                 ],
-                // NEU
                 [
                     'function'   => 'readGetResult',
                     'url'        => '/source/dldb/',
@@ -163,7 +159,6 @@ class SourceEditTest extends Base
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture('GET_Workstation_Resolved2.json')
                 ],
-                // NEU
                 [
                     'function'   => 'readGetResult',
                     'url'        => '/source/dldb/',

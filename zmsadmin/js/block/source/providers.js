@@ -171,8 +171,6 @@ class ProvidersView extends Component {
             ? null
             : this.props.parentproviders.find(p => Number(p.id) === parent_id);
 
-        console.log(parent);
-
         this.props.changeHandler(`providers[${rowIndex}][parent_id]`, parent_id);
         this.props.changeHandler(`providers[${rowIndex}][link]`, parent?.link || '');
         this.props.changeHandler(`providers[${rowIndex}][contact]`, parent?.contact ? { ...parent.contact } : { street:'', streetNumber:'', postalCode:'', city:'' });
@@ -194,13 +192,9 @@ class ProvidersView extends Component {
         });
     }
 
-    componentDidMount() {
-        console.log("mounted provider component")
-    }
+    componentDidMount() {}
 
-    componentDidUpdate() {
-        //console.log("updated provider component")
-    }
+    componentDidUpdate() {}
 
     render() {
         const onNewClick = ev => {
