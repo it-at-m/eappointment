@@ -14,7 +14,7 @@
             class="add-card-muc-button"
             icon="arrow-right"
             variant="primary"
-            >{{ t("appointmentOverview.arrangeAppointment") }}</muc-button
+            >{{ t("arrangeAppointment") }}</muc-button
           >
         </div>
       </div>

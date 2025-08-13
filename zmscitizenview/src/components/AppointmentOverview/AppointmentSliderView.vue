@@ -11,11 +11,9 @@
           </span>
           <h2>
             <span v-if="displayedOnDetailScreen">{{
-              t("appointmentOverview.myAppointments")
+              t("myAppointments")
             }}</span>
-            <span v-else>{{
-              t("appointmentOverview.myFurtherAppointments")
-            }}</span>
+            <span v-else>{{ t("myFurtherAppointments") }}</span>
 
             <span
               v-if="
@@ -28,7 +26,7 @@
         </div>
         <muc-link
           v-if="!loadingError && appointments.length > 3 && !isMobile"
-          :label="t('appointmentOverview.showAllAppointments')"
+          :label="t('showAllAppointments')"
           icon="chevron-right"
           target="_self"
           no-underline
@@ -38,8 +36,8 @@
       <error-alert
         v-if="loadingError"
         class="no-padding-top"
-        :message="t('appointmentOverview.loadingAppointmentErrorText')"
-        :header="t('appointmentOverview.loadingAppointmentErrorHeader')"
+        :message="t('loadingAppointmentErrorText')"
+        :header="t('loadingAppointmentErrorHeader')"
       />
       <skeleton-loader
         v-else-if="loading"
@@ -58,7 +56,7 @@
         <muc-link
           v-if="!loadingError && appointments.length > 3 && isMobile"
           class="mobile-link"
-          :label="t('appointmentOverview.showAllAppointments')"
+          :label="t('showAllAppointments')"
           icon="chevron-right"
           target="_self"
           no-underline

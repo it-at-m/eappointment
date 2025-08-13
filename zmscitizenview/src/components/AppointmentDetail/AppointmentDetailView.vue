@@ -27,7 +27,7 @@
               </p>
             </div>
             <p>
-              {{ t("appointmentOverview.detailTimeHint") }}
+              {{ t("detailTimeHint") }}
             </p>
           </div>
           <div class="m-content">
@@ -48,7 +48,7 @@
               {{ selectedProvider.address.city }}<br />
             </p>
             <p tabindex="0">
-              {{ t("appointmentOverview.detailLocationHint") }}
+              {{ t("detailLocationHint") }}
             </p>
           </div>
         </div>

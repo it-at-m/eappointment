@@ -1,7 +1,7 @@
 <template>
   <muc-card
     class="multiline-text"
-    :tagline="t('appointmentOverview.onSiteAppointment')"
+    :tagline="t('onSiteAppointment')"
     :title="formatTitle(appointment)"
     @click="goToAppointmentLink(appointment.processId!)"
   >
@@ -19,7 +19,7 @@
         {{ selectedProvider?.address.street }}
         {{ selectedProvider?.address.house_number }} <br />
       </div>
-      <b>{{ t("appointmentOverview.appointmentNumber") }}:</b>
+      <b>{{ t("appointmentNumber") }}:</b>
       {{ appointment.processId }}
     </template>
   </muc-card>
