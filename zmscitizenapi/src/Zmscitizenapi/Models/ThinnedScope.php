@@ -30,8 +30,10 @@ class ThinnedScope extends Entity implements JsonSerializable
     public ?string $slotsPerAppointment;
     public ?string $appointmentsPerMail;
     public ?string $whitelistedMails;
+    public ?int $reservationDuration;
+    public ?string $createTimestamp;
 
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null, ?int $reservationDuration = null, ?string $createTimestamp = null)
     {
         $this->id = $id;
         $this->provider = $provider;
@@ -51,6 +53,8 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->slotsPerAppointment = $slotsPerAppointment;
         $this->appointmentsPerMail = $appointmentsPerMail;
         $this->whitelistedMails = $whitelistedMails;
+        $this->reservationDuration = $reservationDuration;
+        $this->createTimestamp = $createTimestamp;
         $this->ensureValid();
     }
 
@@ -167,6 +171,8 @@ class ThinnedScope extends Entity implements JsonSerializable
             'slotsPerAppointment' => $this->slotsPerAppointment,
             'appointmentsPerMail' => $this->appointmentsPerMail,
             'whitelistedMails' => $this->whitelistedMails,
+            'reservationDuration' => $this->reservationDuration,
+            'createTimestamp' => $this->createTimestamp,
         ];
     }
 

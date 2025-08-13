@@ -152,6 +152,20 @@
         "null"
       ],
       "description": "Count of slots in the process"
+    },
+    "reservationDuration": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Duration of the reservation in minutes"
+    },
+    "createTimestamp": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Timestamp of the creation of the process"
     }
   },
   "required": [

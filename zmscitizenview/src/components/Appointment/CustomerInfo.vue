@@ -1,11 +1,24 @@
 <template>
+  <div v-if="sessionTimeoutError">
+    <muc-callout type="error">
+      <template #content>
+        {{ t("sessionTimeoutText") }}
+      </template>
+
+      <template #header>{{ t("sessionTimeoutHeader") }}</template>
+    </muc-callout>
+  </div>
   <h2
+    v-if="!sessionTimeoutError"
     class="m-component-form__title"
     tabindex="0"
   >
     {{ t("contactDetails") }}
   </h2>
-  <form class="m-form m-form--default">
+  <form
+    v-if="!sessionTimeoutError"
+    class="m-form m-form--default"
+  >
     <muc-input
       id="firstname"
       v-model="customerData.firstName"
@@ -81,6 +94,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
+      v-if="!sessionTimeoutError"
       :disabled="loadingStates.isUpdatingAppointment.value"
       :icon="'arrow-right'"
       @click="nextStep"
@@ -95,7 +109,12 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
+import {
+  MucButton,
+  MucCallout,
+  MucInput,
+  MucTextArea,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import {
@@ -116,6 +135,11 @@ const { customerData } = inject<CustomerDataProvider>(
 const { selectedProvider } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
+
+const sessionTimeoutError = inject<Ref<boolean>>(
+  "sessionTimeoutErrorRef",
+  ref(false)
+);
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),

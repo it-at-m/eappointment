@@ -113,6 +113,20 @@
                 "null"
             ],
             "description": "E-mail addresses that have no limitation on appointments count"
+        },
+        "reservationDuration": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Duration of the reservation in minutes"
+        },
+        "createTimestamp": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Timestamp of the creation of the process"
         }
     }
 }

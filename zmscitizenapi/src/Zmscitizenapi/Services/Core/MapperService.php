@@ -220,6 +220,16 @@ class MapperService
         } catch (\BO\Zmsentities\Exception\ScopeMissingProvider $e) {
             $thinnedProvider = null;
         }
+        $reservationDuration = null;
+        try {
+            $val = $scope->toProperty()->preferences->appointment->reservationDuration->get();
+            if ($val !== '' && $val !== null) {
+                $reservationDuration = is_numeric($val) ? (int)$val : null;
+            }
+        } catch (\Throwable $e) {
+            $reservationDuration = $scope->data['preferences']['appointment']['reservationDuration'] ?? $scope->data['reservationDuration'] ?? null;
+            $reservationDuration = is_numeric($reservationDuration) ? (int)$reservationDuration : null;
+        }
 
         return new ThinnedScope(
             id: (int) ($scope->id ?? 0),
@@ -239,7 +249,8 @@ class MapperService
             displayInfo: isset($scope->data['displayInfo']) ? (string) $scope->data['displayInfo'] : null,
             slotsPerAppointment: isset($scope->data['slotsPerAppointment']) ? ((string) $scope->data['slotsPerAppointment'] === '' ? null : (string) $scope->data['slotsPerAppointment']) : null,
             appointmentsPerMail: isset($scope->data['appointmentsPerMail']) ? ((string) $scope->data['appointmentsPerMail'] === '' ? null : (string) $scope->data['appointmentsPerMail']) : null,
-            whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null
+            whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null,
+            reservationDuration: $reservationDuration
         );
     }
 
@@ -282,6 +293,12 @@ class MapperService
                 }
             }
         }
+        $createTimestampValue = null;
+        if (isset($myProcess->createTimestamp)) {
+            $createTimestampValue = is_int($myProcess->createTimestamp)
+                ? (new \DateTimeImmutable())->setTimestamp((int)$myProcess->createTimestamp)->format(\DateTime::ATOM)
+                : (string)$myProcess->createTimestamp;
+        }
 
         return new ThinnedProcess(
             processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
@@ -301,7 +318,8 @@ class MapperService
             serviceName: isset($mainServiceName) ? $mainServiceName : null,
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
-            slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null
+            slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
+            createTimestamp: $createTimestampValue
         );
     }
 

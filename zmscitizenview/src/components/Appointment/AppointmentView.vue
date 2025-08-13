@@ -437,9 +437,16 @@ provide("loadingStates", {
   isCancelingAppointment,
 });
 
+provide("sessionTimeoutErrorRef", sessionTimeoutError);
+
 const increaseCurrentView = () => currentView.value++;
 
-const decreaseCurrentView = () => currentView.value--;
+const decreaseCurrentView = () => {
+  if (currentView.value === 2) {
+    resetSessionTimeoutState();
+  }
+  currentView.value--;
+};
 
 /**
  * Adjusts the current view to the active step in the stepper
@@ -522,6 +529,8 @@ const nextReserveAppointment = () => {
   )
     .then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
+        resetSessionTimeoutState();
+
         if (appointment.value && !isRebooking.value) {
           currentContext.value = "cancel";
           cancelAppointment(appointment.value, props.baseUrl ?? undefined);
@@ -565,12 +574,13 @@ const nextUpdateAppointment = () => {
     currentContext.value = "update";
     updateAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
+        if ((data as AppointmentDTO).processId !== undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
           handleApiResponse(data, errorStateMap.value);
         }
-        increaseCurrentView();
+
+        updateAppointmentError.value = true;
       })
       .finally(() => {
         isUpdatingAppointment.value = false;
