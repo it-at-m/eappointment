@@ -223,12 +223,14 @@ class MapperService
         $reservationDuration = null;
         try {
             $val = $scope->toProperty()->preferences->appointment->reservationDuration->get();
-            if ($val !== '' && $val !== null) {
-                $reservationDuration = is_numeric($val) ? (int)$val : null;
+            if ($val !== '' && $val !== null && is_numeric($val)) {
+                $reservationDuration = (int)$val;
             }
         } catch (\Throwable $e) {
-            $reservationDuration = $scope->data['preferences']['appointment']['reservationDuration'] ?? $scope->data['reservationDuration'] ?? null;
-            $reservationDuration = is_numeric($reservationDuration) ? (int)$reservationDuration : null;
+            $raw = $scope->data['preferences']['appointment']['reservationDuration'] ?? $scope->data['reservationDuration'] ?? null;
+            if (is_numeric($raw)) {
+                $reservationDuration = (int)$raw;
+            }
         }
 
         return new ThinnedScope(
@@ -250,7 +252,8 @@ class MapperService
             slotsPerAppointment: isset($scope->data['slotsPerAppointment']) ? ((string) $scope->data['slotsPerAppointment'] === '' ? null : (string) $scope->data['slotsPerAppointment']) : null,
             appointmentsPerMail: isset($scope->data['appointmentsPerMail']) ? ((string) $scope->data['appointmentsPerMail'] === '' ? null : (string) $scope->data['appointmentsPerMail']) : null,
             whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null,
-            reservationDuration: $reservationDuration
+            reservationDuration: $reservationDuration,
+            createTimestamp: null
         );
     }
 
@@ -299,6 +302,20 @@ class MapperService
                 ? (new \DateTimeImmutable())->setTimestamp((int)$myProcess->createTimestamp)->format(\DateTime::ATOM)
                 : (string)$myProcess->createTimestamp;
         }
+        $reservationDurationValue = null;
+            if (isset($myProcess->scope)) {
+                try {
+                    $val = $myProcess->scope->toProperty()->preferences->appointment->reservationDuration->get();
+                    if ($val !== '' && $val !== null && is_numeric($val)) {
+                        $reservationDurationValue = (int)$val;
+                    }
+                } catch (\Throwable $e) {
+                    $raw = $myProcess->scope->data['preferences']['appointment']['reservationDuration'] ?? null;
+                    if (is_numeric($raw)) {
+                        $reservationDurationValue = (int)$raw;
+                    }
+                }
+            }
 
         return new ThinnedProcess(
             processId: isset($myProcess->id) ? (int) $myProcess->id : 0,
@@ -319,6 +336,7 @@ class MapperService
             serviceCount: isset($mainServiceCount) ? $mainServiceCount : 0,
             status: (isset($myProcess->queue) && isset($myProcess->queue->status)) ? $myProcess->queue->status : null,
             slotCount: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->slotCount)) ? (int) $myProcess->appointments[0]->slotCount : null,
+            reservationDuration: $reservationDurationValue,
             createTimestamp: $createTimestampValue
         );
     }

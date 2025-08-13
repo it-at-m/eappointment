@@ -327,6 +327,8 @@ const isRebooking = ref<boolean>(false);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
 
+const sessionTimeoutError = ref(false);
+
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
   if (apiErrorAppointmentNotAvailable.value)
@@ -442,9 +444,8 @@ provide("sessionTimeoutErrorRef", sessionTimeoutError);
 const increaseCurrentView = () => currentView.value++;
 
 const decreaseCurrentView = () => {
-  if (currentView.value === 2) {
-    resetSessionTimeoutState();
-  }
+  clearContextErrors(errorStateMap.value);
+  currentContext.value = "initialization";
   currentView.value--;
 };
 
@@ -501,7 +502,7 @@ const setRebookData = () => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          handleApiResponse(data, errorStateMap.value);
+          handleApiResponse(data, errorStateMap.value, "update");
         }
         currentView.value = 3;
       }
@@ -529,8 +530,6 @@ const nextReserveAppointment = () => {
   )
     .then((data) => {
       if ((data as AppointmentDTO).processId !== undefined) {
-        resetSessionTimeoutState();
-
         if (appointment.value && !isRebooking.value) {
           currentContext.value = "cancel";
           cancelAppointment(appointment.value, props.baseUrl ?? undefined);
@@ -542,7 +541,7 @@ const nextReserveAppointment = () => {
           increaseCurrentView();
         }
       } else {
-        handleApiResponse(data, errorStateMap.value);
+        handleApiResponse(data, errorStateMap.value, "reserve");
       }
     })
     .finally(() => {
@@ -574,13 +573,22 @@ const nextUpdateAppointment = () => {
     currentContext.value = "update";
     updateAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
-        if ((data as AppointmentDTO).processId !== undefined) {
+        if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
-        } else {
-          handleApiResponse(data, errorStateMap.value);
+          increaseCurrentView();
+          return;
+        }
+        const code =
+          (data as any)?.errors?.[0]?.errorCode ??
+          (data as any)?.errorCode ??
+          "";
+
+        if (code === "appointmentNotFound") {
+          sessionTimeoutError.value = true;
+          return;
         }
 
-        updateAppointmentError.value = true;
+        handleApiResponse(data, errorStateMap.value, "update");
       })
       .finally(() => {
         isUpdatingAppointment.value = false;
@@ -600,7 +608,7 @@ const nextBookAppointment = () => {
     preconfirmAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
         if ((data as any)?.errors?.length > 0) {
-          handleApiResponse(data, errorStateMap.value);
+          handleApiResponse(data, errorStateMap.value, "preconfirm");
           return;
         }
 
@@ -634,7 +642,7 @@ const nextCancelAppointment = () => {
     cancelAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
         if ((data as any)?.errors?.length > 0) {
-          handleApiResponse(data, errorStateMap.value);
+          handleApiResponse(data, errorStateMap.value, "cancel");
           return;
         }
 
@@ -664,6 +672,15 @@ const nextCancelReschedule = () => {
   isRebooking.value = false;
   rebookOrCanelDialog.value = true;
 };
+
+/**
+ * Reset sessionTimerError when entering CustomerInfo
+ */
+watch(currentView, (newVal) => {
+  if (newVal === 2) {
+    sessionTimeoutError.value = false;
+  }
+});
 
 /**
  * Adjusts the active step in the stepper to the current view
@@ -747,7 +764,7 @@ onMounted(() => {
     clearContextErrors(errorStateMap.value);
     const appointmentData = parseAppointmentHash(props.confirmAppointmentHash);
     if (!appointmentData) {
-      handleApiError("appointmentNotFound", errorStateMap.value);
+      handleApiError("appointmentNotFound", errorStateMap.value, "confirm");
       return;
     }
 
@@ -854,7 +871,11 @@ onMounted(() => {
               currentView.value = 3;
             }
           } else {
-            handleApiError("appointmentNotFound", errorStateMap.value);
+            handleApiError(
+              "appointmentNotFound",
+              errorStateMap.value,
+              "initialization"
+            );
           }
         }
       );

@@ -686,15 +686,25 @@ class ZmsApiFacadeService
             return $errors;
         }
         $thinnedProcess = MapperService::processToThinnedProcess($process);
-
         if (isset($process->createTimestamp)) {
             $thinnedProcess->createTimestamp = $process->createTimestamp instanceof \DateTimeInterface
-                ? $process->createTimestamp->format('Y-m-d\TH:i:sP')
-                : (string) $process->createTimestamp;
+                ? $process->createTimestamp->format(\DateTime::ATOM)
+                : (string)$process->createTimestamp;
         }
-        if (isset($process->scope) && isset($process->scope->toProperty()->preferences->appointment->reservationDuration)) {
-            $thinnedProcess->reservationDuration = (int) $process->scope->toProperty()->preferences->appointment->reservationDuration->get();
+        if (isset($process->scope)) {
+            try {
+                $val = $process->scope->toProperty()->preferences->appointment->reservationDuration->get();
+                if ($val !== '' && $val !== null && is_numeric($val)) {
+                    $thinnedProcess->reservationDuration = (int)$val;
+                }
+            } catch (\Throwable $e) {
+                $raw = $process->scope->data['preferences']['appointment']['reservationDuration'] ?? null;
+                if (is_numeric($raw)) {
+                    $thinnedProcess->reservationDuration = (int)$raw;
+                }
+            }
         }
+        $resDurationForScope = $thinnedProcess->reservationDuration ?? null;
 
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $providerMap = [];
@@ -727,7 +737,10 @@ class ZmsApiFacadeService
                 displayInfo: $process->scope->getDisplayInfo() ?? null,
                 slotsPerAppointment: ((string) $process->scope->getSlotsPerAppointment() === '' ? null : (string) $process->scope->getSlotsPerAppointment()) ?? null,
                 appointmentsPerMail: ((string) $process->scope->getAppointmentsPerMail() === '' ? null : (string) $process->scope->getAppointmentsPerMail()) ?? null,
-                whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()) ?? null
+                whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()) ?? null,
+                reservationDuration: $resDurationForScope,
+                createTimestamp: null
+
             );
         }
 

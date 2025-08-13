@@ -1,11 +1,14 @@
 <template>
+  <!-- <p>
+    Verbleibende Zeit {{ countdownLabel }}.
+  </p> -->
   <div v-if="sessionTimeoutError">
     <muc-callout type="error">
       <template #content>
-        {{ t("sessionTimeoutText") }}
+        {{ t("apiErrorSessionTimeoutText") }}
       </template>
 
-      <template #header>{{ t("sessionTimeoutHeader") }}</template>
+      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
     </muc-callout>
   </div>
   <h2
@@ -115,11 +118,12 @@ import {
   MucInput,
   MucTextArea,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, onMounted, onUnmounted, watch } from "vue";
 
 import {
   CustomerDataProvider,
   SelectedTimeslotProvider,
+  SelectedAppointmentProvider
 } from "@/types/ProvideInjectTypes";
 
 const props = defineProps<{
@@ -136,10 +140,15 @@ const { selectedProvider } = inject<SelectedTimeslotProvider>(
   "selectedTimeslot"
 ) as SelectedTimeslotProvider;
 
-const sessionTimeoutError = inject<Ref<boolean>>(
-  "sessionTimeoutErrorRef",
-  ref(false)
-);
+const injectedAppointment = inject<SelectedAppointmentProvider>("appointment");
+const appointmentRef = injectedAppointment?.appointment;
+
+const sessionTimeoutErrorRef = inject<Ref<boolean>>("sessionTimeoutErrorRef", ref(false));
+const sessionTimeoutError = sessionTimeoutErrorRef;
+
+const remainingMs = ref<number | null>(null);
+const expiresAtMs = ref<number | null>(null);
+let tickTimer: number | null = null;
 
 const loadingStates = inject("loadingStates", {
   isReservingAppointment: ref(false),
@@ -152,6 +161,101 @@ const loadingStates = inject("loadingStates", {
   isBookingAppointment: Ref<boolean>;
   isCancelingAppointment: Ref<boolean>;
 };
+
+function parseCreatedMs(created: unknown): number | null {
+  if (created == null) return null;
+
+  if (typeof created === "number" || (typeof created === "string" && created.trim() !== "" && !isNaN(Number(created)))) {
+    const n = Number(created);
+    return n < 1e12 ? n * 1000 : n;
+  }
+  const parsed = Date.parse(String(created));
+  return isNaN(parsed) ? null : parsed;
+}
+
+function recomputeFromAppointment() {
+  clearTick();
+
+  const appt: any = appointmentRef?.value;
+  if (!appt) {
+    remainingMs.value = null;
+    expiresAtMs.value = null;
+    return;
+  }
+  let createdMs = parseCreatedMs(appt.createTimestamp);
+  
+  if (createdMs == null) {
+      createdMs = Date.now();
+      console.warn("[CustomerInfo] createTimestamp fehlt – Fallback auf Date.now()");
+    }
+
+    console.log("[CustomerInfo] appt snapshot", {
+      createTimestamp: appt?.createTimestamp,
+      topLevelReservationDuration: appt?.reservationDuration,
+      scopeReservationDuration: appt?.scope?.reservationDuration,
+      scope: appt?.scope
+    });
+  const durationMin = appt?.reservationDuration ?? appt?.scope?.reservationDuration ?? null;
+
+  if (durationMin == null || isNaN(Number(durationMin))) {
+    remainingMs.value = null;
+    expiresAtMs.value = null;
+    console.warn("[CustomerInfo] reservationDuration fehlt oder ist ungültig:", durationMin, appt?.scope);
+    return;
+  }
+  
+  const expires = createdMs + Number(durationMin) * 60 * 1000;
+  expiresAtMs.value = expires;
+
+  tick();
+  tickTimer = window.setInterval(tick, 1000) as unknown as number;
+}
+function tick() {
+  if (!expiresAtMs.value) {
+    remainingMs.value = null;
+    return;
+  }
+  const now = Date.now();
+  const diff = Math.max(0, expiresAtMs.value - now);
+  remainingMs.value = diff;
+
+  if (diff === 0) {
+    if (sessionTimeoutErrorRef) {
+      sessionTimeoutErrorRef.value = true;
+    }
+    clearTick();
+  }
+}
+
+function clearTick() {
+  if (tickTimer != null) {
+    clearInterval(tickTimer as unknown as number);
+    tickTimer = null;
+  }
+}
+
+const countdownLabel = computed(() => {
+  if (remainingMs.value == null) return "";
+  const total = Math.ceil(remainingMs.value / 1000);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+});
+
+watch(appointmentRef ?? ref(null), () => {
+  if (sessionTimeoutErrorRef) {
+    sessionTimeoutErrorRef.value = false;
+  }
+  recomputeFromAppointment();
+}, { immediate: true });
+
+onMounted(() => {
+  recomputeFromAppointment();
+});
+
+onUnmounted(() => {
+  clearTick();
+});
 
 const showErrorMessage = ref<boolean>(false);
 
@@ -305,7 +409,10 @@ const nextStep = () => {
     emit("next");
   }
 };
-const previousStep = () => emit("back");
+const previousStep = () => {
+  clearTick();
+  emit("back")
+};
 </script>
 
 <style scoped></style>

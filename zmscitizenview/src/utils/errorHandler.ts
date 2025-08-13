@@ -62,6 +62,7 @@ export function createErrorStateMap(): ErrorStateMap {
     "apiErrorScopeNotFound",
     "apiErrorScopesNotFound",
     "apiErrorServiceUnavailable",
+    "apiErrorSessionTimeout",
     "apiErrorSourceNotFound",
     "apiErrorTelephoneIsRequired",
     "apiErrorTooManyAppointmentsWithSameMail",
@@ -152,19 +153,26 @@ export function getApiErrorTranslation(
   };
 }
 
-export function handleApiResponse(data: any, errorStates: ErrorStateMap): void {
+export function handleApiResponse(
+  data: any,
+  errorStates: ErrorStateMap,
+  sessionTimeoutErrorRef?: Ref<boolean>
+): void {
   if (!data || typeof data !== "object" || Array.isArray(data)) {
     errorStates.apiErrorGenericFallback.value = true;
     return;
   }
 
   const firstErrorCode = data?.errors?.[0]?.errorCode ?? "";
+
   if (firstErrorCode) {
+    if (sessionTimeoutErrorRef && firstErrorCode === "sessionTimeout") {
+      sessionTimeoutErrorRef.value = true;
+    }
     handleApiError(firstErrorCode, errorStates);
   } else if (data.errors && data.errors.length > 0) {
     errorStates.apiErrorGenericFallback.value = true;
   } else if (data.errors && data.errors.length === 0) {
-    // Handle case where errors array exists but is empty
     errorStates.apiErrorGenericFallback.value = true;
   }
 }
