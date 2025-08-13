@@ -171,11 +171,11 @@ class QueueTableTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/workstation/',
+                    'url' => '/scope/169/workstation/',
                     'parameters' => [
                         'resolveReferences' => 1
                     ],
-                    'response' => $this->readFixture("GET_scope_141.json")
+                    'response' => $this->readFixture("GET_scope_169.json")
                 ]
             ]
         );
