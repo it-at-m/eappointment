@@ -5,20 +5,18 @@
         style="width: 32px; height: 32px; margin-right: 8px"
         icon="calendar"
       />
-      {{ t("appointmentOverview.upcomingAppointments") }} ({{
-        appointments.length
-      }})
+      {{ t("upcomingAppointments") }} ({{ appointments.length }})
     </h2>
     <error-alert
       v-if="loadingError"
-      :message="t('appointmentOverview.loadingAppointmentErrorText')"
-      :header="t('appointmentOverview.loadingAppointmentErrorHeader')"
+      :message="t('loadingAppointmentErrorText')"
+      :header="t('loadingAppointmentErrorHeader')"
     >
       <muc-button
         icon="arrow-right"
         @onclick="goToOverviewLink"
       >
-        {{ t("appointmentOverview.buttonBackToOverview") }}
+        {{ t("buttonBackToOverview") }}
       </muc-button>
     </error-alert>
     <div v-else>

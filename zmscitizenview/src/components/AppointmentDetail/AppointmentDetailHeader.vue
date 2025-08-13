@@ -2,12 +2,12 @@
   <muc-intro
     v-if="appointment"
     class="multiline-text"
-    :tagline="t('appointmentOverview.onSiteAppointment')"
+    :tagline="t('onSiteAppointment')"
     :title="formatTitle(appointment)"
   >
     <div class="appointment-data">
       <p>
-        <b> {{ t("appointmentOverview.appointmentNumber") }} </b>
+        <b> {{ t("appointmentNumber") }} </b>
         {{ appointment.processId }}
       </p>
       <p>

@@ -1,7 +1,7 @@
 <template>
   <muc-card-container v-if="allAppointments.length == 0">
     <add-appointment-card
-      :title="t('appointmentOverview.newAppointmentTitle')"
+      :title="t('newAppointmentTitle')"
       :new-appointment-url="newAppointmentUrl"
       :t="t"
     >
@@ -31,7 +31,7 @@
       <muc-slider-item v-if="!displayedOnDetailScreen">
         <add-appointment-card
           class="mobile-card-height"
-          :title="t('appointmentOverview.newAppointmentTitle')"
+          :title="t('newAppointmentTitle')"
           :new-appointment-url="newAppointmentUrl"
           :t="t"
         >
@@ -73,7 +73,7 @@
       />
       <add-appointment-card
         v-if="!displayedOnDetailScreen"
-        :title="t('appointmentOverview.newAppointmentTitle')"
+        :title="t('newAppointmentTitle')"
         :new-appointment-url="newAppointmentUrl"
         :t="t"
       >
