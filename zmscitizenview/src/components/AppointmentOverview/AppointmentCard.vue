@@ -6,21 +6,7 @@
     @click="goToAppointmentLink(appointment.processId!)"
   >
     <template #headerPrefix>
-      <div
-        style="padding-right: 16px; font-size: 32px"
-        class="m-teaser-vertical m-teaser-vertical-event"
-      >
-        <div class="m-teaser-vertical__date-range">
-          <time class="m-teaser-vertical__date-range__item">
-            <span class="m-teaser-vertical__date-range__item__day">{{
-              formatDay()
-            }}</span>
-            <span class="m-teaser-vertical__date-range__item__month">{{
-              formatMonth()
-            }}</span>
-          </time>
-        </div>
-      </div>
+      <calendar-icon :timestamp="appointment.timestamp" />
     </template>
     <template #content>
       <div class="text-padding">
@@ -45,6 +31,7 @@ import { onMounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
+import CalendarIcon from "@/components/Common/CalendarIcon.vue";
 import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
 import { formatTime } from "@/utils/formatTime";
 import { formatTitle } from "@/utils/formatTitle";
@@ -58,18 +45,8 @@ const props = defineProps<{
 
 const selectedProvider = ref<Office>();
 
-const formatDay = () => {
-  const date = new Date(props.appointment.timestamp * 1000);
-  return new Intl.DateTimeFormat("de-DE", { day: "numeric" }).format(date);
-};
-
-const formatMonth = () => {
-  const date = new Date(props.appointment.timestamp * 1000);
-  return new Intl.DateTimeFormat("de-DE", { month: "short" }).format(date);
-};
-
-const goToAppointmentLink = (ticketnumber: string) => {
-  location.href = `${props.appointmentDetailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${ticketnumber}`;
+const goToAppointmentLink = (appointmentNumber: string) => {
+  location.href = `${props.appointmentDetailUrl}?${QUERY_PARAM_APPOINTMENT_ID}=${appointmentNumber}`;
 };
 
 onMounted(() => {
@@ -90,14 +67,5 @@ onMounted(() => {
 
 .text-padding {
   padding-bottom: 12px;
-}
-
-.m-teaser-vertical {
-  border-bottom: 0 !important;
-}
-
-.m-teaser-vertical__date-range {
-  position: unset !important;
-  border-top: 4px solid #005a9f !important;
 }
 </style>

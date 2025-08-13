@@ -9,6 +9,7 @@
       <div v-html="customIconsSprit"></div>
       <appointment-detail-view
         :base-url="baseUrl"
+        :reschedule-appointment-url="rescheduleAppointmentUrl"
         :t="t"
       />
     </div>
@@ -24,6 +25,7 @@ import AppointmentDetailView from "@/components/AppointmentDetail/AppointmentDet
 
 defineProps<{
   baseUrl?: string;
+  rescheduleAppointmentUrl: string;
 }>();
 
 const { t } = useI18n();
