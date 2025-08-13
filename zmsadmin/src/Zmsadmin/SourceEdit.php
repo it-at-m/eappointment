@@ -19,10 +19,11 @@ class SourceEdit extends BaseController
      * @return String
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\RequestInterface  $request,
         \Psr\Http\Message\ResponseInterface $response,
-        array $args
-    ) {
+        array                               $args
+    )
+    {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         if (!$workstation->hasSuperUseraccount()) {
@@ -36,15 +37,17 @@ class SourceEdit extends BaseController
         }
 
         $parents = \App::$http->readGetResult('/source/dldb/', ['resolveReferences' => 2])->getEntity();
-        $parentProviders = $parents->providers;
-        $parentRequests = $parents->requests;
-        $apiRes  = \App::$http->readGetResult('/requestvariants/');
-        $payload = json_decode((string) $apiRes->getResponse()->getBody(), true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            \BO\Log::error('requestvariants JSON decode failed: ' . json_last_error_msg());
-            $requestVariants = [];
-        } else {
+        $parentProviders = isset($parents->providers) ? $parents->providers : [];
+        $parentRequests = isset($parents->requests) ? $parents->requests : [];
+
+        $apiRes = \App::$http->readGetResult('/requestvariants/');
+        $payload = json_decode((string)$apiRes->getResponse()->getBody(), true);
+        try {
+            $payload = json_decode((string)$apiRes->getResponse()->getBody(), true, 512, JSON_THROW_ON_ERROR);
             $requestVariants = $payload['data'] ?? [];
+        } catch (\JsonException $e) {
+            \BO\Log::error('requestvariants JSON decode failed', ['error' => $e->getMessage()]);
+            $requestVariants = [];
         }
 
 
@@ -83,7 +86,7 @@ class SourceEdit extends BaseController
         } catch (\BO\Zmsclient\Exception $exception) {
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
                 $exceptionData = [
-                  'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig'
+                    'template' => 'exception/bo/zmsentities/exception/schemavalidation.twig'
                 ];
                 $exceptionData['data'] = $exception->data;
                 return $exceptionData;

@@ -4090,19 +4090,16 @@ use \Psr\Http\Message\ResponseInterface;
  *              200:
  *                  description: "success"
  *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
+ *                       type: object
+ *                       properties:
+ *                           meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
  *                              type: array
  *                              items:
- *                                  type: object
- *                                  properties:
- *                                      id:
- *                                          type: integer
- *                                      name:
- *                                          type: string
+ *                                  $ref: "schema/requestvariant.json"
+ *              404:
+ *                  description: "no variants found"
  */
 \App::$slim->get(
     '/requestvariants/',

@@ -9,6 +9,9 @@ class RequestRelationView extends Component {
     }
 
     setSlots = (rowIndex, next) => {
+        if (!this.props.source.requestrelation?.[rowIndex]) {
+            return;
+        }
         const current = Number(this.props.source.requestrelation[rowIndex]?.slots);
         if (!Number.isFinite(next)){
             return;
@@ -173,7 +176,7 @@ class RequestRelationView extends Component {
 
                 const newIndex = (this.props.source.requestrelation || []).length;
                 this.props.addNewHandler('requestrelation', [entity]);
-                setTimeout(() => this.autofillSlots(newIndex), 0);
+                this.autofillSlots(newIndex);
             })
         }
 

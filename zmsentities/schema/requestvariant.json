@@ -13,10 +13,13 @@
     "properties": {
         "id": {
             "type": "integer",
+            "minimum": 1,
             "description": "Unique ID of the request variant"
         },
         "name": {
             "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
             "description": "Name of the request variant"
         }
     }

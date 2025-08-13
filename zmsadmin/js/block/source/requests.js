@@ -172,11 +172,9 @@ class RequestsView extends Component {
     }
 
     componentDidMount() {
-        console.log("mounted request component")
     }
 
     componentDidUpdate() {
-        //console.log("updated request component")
     }
 
     render() {
