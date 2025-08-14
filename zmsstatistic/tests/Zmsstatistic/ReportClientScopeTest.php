@@ -915,7 +915,7 @@ class ReportClientScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/clientscope/141/2025/',
+                    'url' => '/warehouse/clientscope/141/2016/',
                     'parameters' => ['groupby' => 'day'],
                     'response' => $this->readFixture("GET_clientscope_141_042016.json")
                 ]
@@ -926,14 +926,14 @@ class ReportClientScopeTest extends Base
             [
                 '__uri' => '/report/client/scope/',
                 'scopes' => ['141'],
-                'from' => '2025-03-03',
-                'to' => '2025-04-04'
+                'from' => '2016-03-03',
+                'to' => '2016-04-04'
             ],
             []
         );
         $this->assertStringContainsString('Kundenstatistik Standort', (string) $response->getBody());
         $this->assertStringContainsString(
-            'Auswertung für die ausgewählten Standorte im Zeitraum 03.03.2025 bis 04.04.2025',
+            'Auswertung für die ausgewählten Standorte im Zeitraum 03.03.2016 bis 04.04.2016',
             (string) $response->getBody()
         );
     }
