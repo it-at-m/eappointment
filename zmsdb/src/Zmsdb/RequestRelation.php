@@ -94,7 +94,7 @@ class RequestRelation extends Base
             'provider__id' => $entity->getProvider()->getId(),
             'request__id' => $entity->getRequest()->getId(),
             'slots' => $entity->getSlotCount(),
-            'public_visibility' => $entity->isPublic(),
+            'public_visibility' => $entity->isPublic() ? 1 : 0,
             'max_quantity' => $entity->getMaxQuantity()
         ]);
         $this->writeItem($query);
