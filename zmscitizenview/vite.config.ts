@@ -42,7 +42,24 @@ export default defineConfig({
     ssrManifest: true,
     manifest: true,
     minify: true,
-    assetsDir: "src"
+    assetsDir: "src",
+    rollupOptions: {
+      input: {
+        "index": "./index.html",
+        "index-appointment": "./index-appointment.html",
+        "index-appointment-detail": "./index-appointment-detail.html",
+        "index-appointment-overview": "./index-appointment-overview.html",
+        "index-appointment-slider": "./index-appointment-slider.html",
+        "zms-appointment": "./src/zms-appointment-webcomponent.ts",
+        "zms-appointment-detail": "./src/zms-appointment-detail-webcomponent.ts",
+        "zms-appointment-overview": "./src/zms-appointment-overview-webcomponent.ts",
+        "zms-appointment-slider": "./src/zms-appointment-slider-webcomponent.ts",
+      },
+      output: {
+        entryFileNames: "src/entry-[name]-[hash].js",
+        dir: "dist",
+      },
+    }
   },
   // esbuild: {
   //   drop: process.env.NODE_ENV === 'development' ? [] : ['console', 'debugger'],

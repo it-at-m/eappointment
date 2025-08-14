@@ -38,6 +38,8 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
   ["1064305", "shortNameVehicleDeregistration"],
 ]);
 
+export const QUERY_PARAM_APPOINTMENT_ID = "ap-id";
+
 export function getAPIBaseURL(baseUrl: string | undefined): string {
   if (baseUrl) {
     return baseUrl;
