@@ -3,6 +3,42 @@ import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
 import { getEntity } from '../../lib/schema'
 
+function getGcdOfTwoNumbers(a, b) {
+    if (!Number.isInteger(a) || !Number.isInteger(b)) return 0;
+    a = Math.abs(a); b = Math.abs(b);
+    if (a === 0) return b;
+    if (b === 0) return a;
+    while (b !== 0) { const t = b; b = a % b; a = t; }
+    return a;
+}
+
+function getGcdFromList(numbers) {
+    console.log("getGcdFromList");
+    const positiveIntegers = numbers.filter(n => Number.isInteger(n) && n > 0);
+    if (positiveIntegers.length === 0) return 0;
+    return positiveIntegers.reduce((acc, num) => getGcdOfTwoNumbers(acc, num));
+}
+
+function getDurationFromRequest(request) {
+    const rawData = request?.data;
+    let parsedData = rawData;
+
+    if (typeof rawData === 'string') {
+        try {
+            parsedData = JSON.parse(rawData);
+        } catch {
+            parsedData = {};
+        }
+    }
+
+    const duration = parsedData?.duration ?? request?.duration;
+    const durationAsNumber = Number(duration);
+
+    return Number.isFinite(durationAsNumber) && durationAsNumber > 0
+        ? Math.round(durationAsNumber)
+        : 0;
+}
+
 class RequestRelationView extends Component {
     constructor(props) {
         super(props)
@@ -21,53 +57,44 @@ class RequestRelationView extends Component {
         }
     }
 
-    autofillSlots = (rowIndex, changedField, changedValue) => {
-        const relation = this.props.source.requestrelation[rowIndex] || {};
+    calculateSlotsByProviderGcd = () => {
+        const { requests = [], requestrelation = [] } = this.props.source || {};
 
-        const reqLocalId = changedField?.endsWith('[request][id]')  ? changedValue : relation.request?.id;
-        const prvLocalId = changedField?.endsWith('[provider][id]') ? changedValue : relation.provider?.id;
-        if (!reqLocalId || !prvLocalId) return;
+        const durationByRequestId = new Map();
+        requests.forEach(req => {
+            durationByRequestId.set(String(req.id), extractDurationFromRequest(req));
+        });
 
-        const request = this.props.source.requests.find(r => String(r.id) === String(reqLocalId));
-        const provider = this.props.source.providers.find(p => String(p.id) === String(prvLocalId));
-        if (!request || !provider) return;
+        const relationsByProvider = new Map();
+        requestrelation.forEach((relation, index) => {
+            const providerId = String(relation?.provider?.id ?? '');
+            const requestId = String(relation?.request?.id ?? '');
 
-        if (request.parent_id == null || provider.parent_id == null) {
-            this.setSlots(rowIndex, 1);
-            return;
-        }
-
-        const externalServiceId = String(request.parent_id);
-        const services = Array.isArray(provider?.data?.services) ? provider.data.services : [];
-        const service = services.find(s => String(s.service) === externalServiceId);
-
-        if (!service) {
-            this.setSlots(rowIndex, 1);
-            return;
-        }
-
-        const duration = Number(service.duration);
-        const slotSize = Number(provider?.data?.slotTimeInMinutes);
-        if (!Number.isFinite(duration) || !Number.isFinite(slotSize) || slotSize <= 0) {
-            this.setSlots(rowIndex, 1);
-            return;
-        }
-
-        const slots = Math.max(1, Math.ceil(duration / slotSize));
-        this.setSlots(rowIndex, slots);
-    }
-
-    autofillAllRows = () => {
-        const list = this.props.source.requestrelation || [];
-        list.forEach((rel, idx) => {
-            if (rel?.__isNew === true) {
-                this.autofillSlots(idx);
+            if (!relationsByProvider.has(providerId)) {
+                relationsByProvider.set(providerId, []);
             }
+
+            const duration = durationByRequestId.get(requestId) || 0;
+            relationsByProvider.get(providerId).push({ index, duration });
+        });
+
+        relationsByProvider.forEach(relations => {
+            const gcd = getGcdFromList(relations.map(r => r.duration));
+            relations.forEach(({ index, duration }) => {
+                const slots = (gcd > 0 && duration > 0) ? Math.floor(duration / gcd) : 0;
+                this.setSlots(index, slots);
+            });
         });
     }
 
+    componentDidMount() {
+        console.log("componentDidMount")
+        this.recalcSlotsByGCD();
+    }
+
     componentDidUpdate() {
-        this.autofillAllRows();
+        console.log("componentDidUpdate")
+        this.recalcSlotsByGCD();
     }
 
     getRequestRelation(onChange, onDeleteClick) {
@@ -85,9 +112,7 @@ class RequestRelationView extends Component {
 
         const onChangeRel = (field, value) => {
             this.props.changeHandler(field, value);
-            if (field.endsWith('[request][id]') || field.endsWith('[provider][id]')) {
-                this.autofillSlots(index, field, value);
-            }
+            this.recalcSlotsByGCD();
         }
 
         return (
@@ -114,7 +139,7 @@ class RequestRelationView extends Component {
                 <td className="requestrelation-item__slots">
                     <Inputs.Text
                         name={`${formName}[slots]`}
-                        value={(item.slots) ? item.slots : 1}
+                        value={Number.isFinite(item.slots) ? item.slots : 0}
                         onChange={onChange}
                         attributes={{ "aria-label": this.props.labelsrequestrelation.slots }}
                     />
@@ -176,7 +201,7 @@ class RequestRelationView extends Component {
 
                 const newIndex = (this.props.source.requestrelation || []).length;
                 this.props.addNewHandler('requestrelation', [entity]);
-                this.autofillSlots(newIndex);
+                this.recalcSlotsByGCD();
             })
         }
 
