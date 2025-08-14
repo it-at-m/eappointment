@@ -22,13 +22,13 @@ class Oidc extends BaseController
     ) {
         try {
             $state = $request->getParam("state");
-            $authKey = \BO\Zmsclient\Auth::getKey();
+            $authKey = Auth::getKey();
             $sessionHash = hash('sha256', $authKey);
 
             \App::$log->info('OIDC Login state validation', [
                 'event' => 'oauth_login_state_validation',
                 'timestamp' => date('c'),
-                'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                'provider' => Auth::getOidcProvider(),
                 'application' => 'zmsadmin',
                 'state_match' => ($state == $authKey),
                 'hashed_session_token' => $sessionHash
@@ -43,7 +43,7 @@ class Oidc extends BaseController
                     \App::$log->info('OIDC Login workstation access', [
                         'event' => 'oauth_login_workstation_access',
                         'timestamp' => date('c'),
-                        'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                        'provider' => Auth::getOidcProvider(),
                         'application' => 'zmsadmin',
                         'username' => $username,
                         'workstation_id' => $workstation->id ?? 'unknown',
@@ -52,11 +52,10 @@ class Oidc extends BaseController
 
                     $departmentCount = $workstation->getUseraccount()->getDepartmentList()->count();
 
-                    // Log department check with username
                     \App::$log->info('OIDC Login department check', [
                         'event' => 'oauth_login_department_check',
                         'timestamp' => date('c'),
-                        'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                        'provider' => Auth::getOidcProvider(),
                         'application' => 'zmsadmin',
                         'username' => $username,
                         'department_count' => $departmentCount,
@@ -79,11 +78,10 @@ class Oidc extends BaseController
                         []
                     );
                 } catch (\Exception $e) {
-                    // Log workstation access error
                     \App::$log->error('OIDC Login workstation error', [
                         'event' => 'oauth_login_workstation_error',
                         'timestamp' => date('c'),
-                        'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                        'provider' => Auth::getOidcProvider(),
                         'application' => 'zmsadmin',
                         'error' => $e->getMessage(),
                         'code' => $e->getCode()
@@ -92,11 +90,10 @@ class Oidc extends BaseController
                 }
             }
 
-            // Log invalid state
             \App::$log->error('OIDC Login invalid state', [
                 'event' => 'oauth_login_invalid_state',
                 'timestamp' => date('c'),
-                'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                'provider' => Auth::getOidcProvider(),
                 'application' => 'zmsadmin'
             ]);
 
@@ -105,7 +102,7 @@ class Oidc extends BaseController
             \App::$log->error('OIDC Login error', [
                 'event' => 'oauth_login_error',
                 'timestamp' => date('c'),
-                'provider' => \BO\Zmsclient\Auth::getOidcProvider(),
+                'provider' => Auth::getOidcProvider(),
                 'application' => 'zmsadmin',
                 'error' => $e->getMessage(),
                 'code' => $e->getCode()

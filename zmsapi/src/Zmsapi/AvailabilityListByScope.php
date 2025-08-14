@@ -34,8 +34,8 @@ class AvailabilityListByScope extends BaseController
         $endDate = ($endDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($endDateFormatted) : null;
 
         $scope = (new \BO\Zmsdb\Scope())->readEntity($args['id'], $resolveReferences);
-        $this->testScope($scope);
-        $this->testAccessRights($request, $scope);
+        $this->validateScope($scope);
+        $this->validateAccessRights($request, $scope);
 
         $message = Response\Message::create($request);
         $message->meta->reducedData = $graphQl ? true : false;
@@ -49,25 +49,25 @@ class AvailabilityListByScope extends BaseController
     protected function getAvailabilityList($scope, $startDate, $endDate)
     {
         $availabilityList = (new Query())->readList($scope->getId(), 0, $startDate, $endDate);
-        $this->testAvailabilityList($availabilityList);
+        $this->validateAvailabilityList($availabilityList);
         return $availabilityList->withScope($scope);
     }
 
-    protected function testScope($scope)
+    protected function validateScope($scope)
     {
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
     }
 
-    protected function testAvailabilityList($availabilityList)
+    protected function validateAvailabilityList($availabilityList)
     {
         if (! $availabilityList->count()) {
             throw new Exception\Availability\AvailabilityNotFound();
         }
     }
 
-    protected function testAccessRights($request, $scope)
+    protected function validateAccessRights($request, $scope)
     {
         try {
             (new Helper\User($request, 2))->checkRights(
