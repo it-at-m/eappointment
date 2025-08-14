@@ -18,15 +18,13 @@
         "emailSendCount": {
             "oneOf": [
                 {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": -1,
+                    "maximum": 9
                 },
                 {
                     "type": "string",
-                    "pattern": "^[0-9]+$"
-                },
-                {
-                    "type": "string",
-                    "enum": ["-1"]
+                    "pattern": "^-?[0-9]+$"
                 }
             ],
             "description": "number of reminder mails send"
@@ -39,22 +37,20 @@
         "notificationsSendCount": {
             "oneOf": [
                 {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": -1,
+                    "maximum": 9
                 },
                 {
                     "type": "boolean"
                 },
                 {
                     "type": "string",
-                    "pattern": "^[01]$"
+                    "pattern": "^-?[0-9]+$"
                 },
                 {
                     "type": "string",
                     "enum": ["true", "false"]
-                },
-                {
-                    "type": "string",
-                    "enum": ["-1"]
                 }
             ],
             "description": "number of reminder sms send"
