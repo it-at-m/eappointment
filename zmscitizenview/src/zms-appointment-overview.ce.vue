@@ -25,12 +25,25 @@ import { useI18n } from "vue-i18n";
 
 import AppointmentOverviewView from "@/components/AppointmentOverview/AppointmentOverviewView.vue";
 
-defineProps<{
-  baseUrl?: string;
-  appointmentDetailUrl: string;
-  newAppointmentUrl: string;
-  overviewUrl: string;
-}>();
+defineProps({
+  baseUrl: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
+  appointmentDetailUrl: {
+    type: String,
+    required: true,
+  },
+  newAppointmentUrl: {
+    type: String,
+    required: true,
+  },
+  overviewUrl: {
+    type: String,
+    required: true,
+  },
+});
 
 const { t } = useI18n();
 </script>

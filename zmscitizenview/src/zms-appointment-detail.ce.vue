@@ -9,6 +9,7 @@
       <div v-html="customIconsSprit"></div>
       <appointment-detail-view
         :base-url="baseUrl"
+        :appointment-overview-url="appointmentOverviewUrl"
         :reschedule-appointment-url="rescheduleAppointmentUrl"
         :t="t"
       />
@@ -23,10 +24,21 @@ import { useI18n } from "vue-i18n";
 
 import AppointmentDetailView from "@/components/AppointmentDetail/AppointmentDetailView.vue";
 
-defineProps<{
-  baseUrl?: string;
-  rescheduleAppointmentUrl: string;
-}>();
+defineProps({
+  baseUrl: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
+  appointmentOverviewUrl: {
+    type: String,
+    required: true,
+  },
+  rescheduleAppointmentUrl: {
+    type: String,
+    required: true,
+  },
+});
 
 const { t } = useI18n();
 </script>

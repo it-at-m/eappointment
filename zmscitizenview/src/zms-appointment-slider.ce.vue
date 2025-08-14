@@ -26,13 +26,30 @@ import { useI18n } from "vue-i18n";
 
 import AppointmentSliderView from "@/components/AppointmentOverview/AppointmentSliderView.vue";
 
-defineProps<{
-  baseUrl?: string;
-  appointmentDetailUrl: string;
-  appointmentOverviewUrl: string;
-  newAppointmentUrl: string;
-  displayedOnDetailScreen: boolean;
-}>();
+defineProps({
+  baseUrl: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
+  appointmentDetailUrl: {
+    type: String,
+    required: true,
+  },
+  appointmentOverviewUrl: {
+    type: String,
+    required: true,
+  },
+  newAppointmentUrl: {
+    type: String,
+    required: true,
+  },
+  displayedOnDetailScreen: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+});
 
 const { t } = useI18n();
 </script>

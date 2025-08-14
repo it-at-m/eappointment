@@ -1,112 +1,131 @@
 <template>
-  <appointment-detail-header
-    :appointment="appointment"
-    :selected-provider="selectedProvider"
-    :t="t"
-    @cancel-appointment="cancelAppointment"
-    @reschedule-appointment="rescheduleAppointment"
-  />
-  <div class="m-component m-component-form">
-    <div class="container">
-      <div class="m-component__grid">
-        <div class="m-component__column">
-          <div class="m-content">
-            <h2 tabindex="0">{{ t("time") }}</h2>
-          </div>
-          <div
-            v-if="appointment"
-            class="m-content time-container-margin-bottom"
-          >
-            <div class="timeBox">
-              <calendar-icon :timestamp="appointment.timestamp" />
-              <p tabindex="0">
-                {{ formatTime(appointment.timestamp) }}
-                {{ t("timeStampSuffix") }} <br />
-                {{ t("estimatedDuration") }} {{ estimatedDuration() }}
-                {{ t("minutes") }}
+  <div v-if="loadingError">
+    <muc-intro
+      :tagline="t('appointment')"
+      :title="appointmentId ? appointmentId : ''"
+    />
+    <error-alert
+      :message="t('apiErrorLoadingAppointmentsText')"
+      :header="t('apiErrorLoadingSingleAppointmentHeader')"
+    >
+      <muc-button
+        icon="arrow-right"
+        @onclick="goToAppointmentOverviewLink"
+      >
+        {{ t("buttonBackToOverview") }}
+      </muc-button>
+    </error-alert>
+  </div>
+  <div v-else-if="!loading">
+    <appointment-detail-header
+      :appointment="appointment"
+      :selected-provider="selectedProvider"
+      :t="t"
+      @cancel-appointment="cancelAppointment"
+      @reschedule-appointment="rescheduleAppointment"
+    />
+    <div class="m-component m-component-form">
+      <div class="container">
+        <div class="m-component__grid">
+          <div class="m-component__column">
+            <div class="m-content">
+              <h2 tabindex="0">{{ t("time") }}</h2>
+            </div>
+            <div
+              v-if="appointment"
+              class="m-content time-container-margin-bottom"
+            >
+              <div class="timeBox">
+                <calendar-icon :timestamp="appointment.timestamp" />
+                <p tabindex="0">
+                  {{ formatTime(appointment.timestamp) }}
+                  {{ t("timeStampSuffix") }} <br />
+                  {{ t("estimatedDuration") }} {{ estimatedDuration() }}
+                  {{ t("minutes") }}
+                </p>
+              </div>
+              <p>
+                {{ t("detailTimeHint") }}
               </p>
             </div>
-            <p>
-              {{ t("detailTimeHint") }}
-            </p>
-          </div>
-          <div class="m-content">
-            <h2 tabindex="0">{{ t("location") }}</h2>
-          </div>
-          <div
-            v-if="selectedProvider"
-            class="m-content location-text-margin-top"
-          >
-            <p tabindex="0">{{ selectedProvider.organization }}<br /></p>
-            <p tabindex="0">
-              <strong> {{ selectedProvider.name }} </strong><br />
-            </p>
-            <p tabindex="0">
-              {{ selectedProvider.address.street }}
-              {{ selectedProvider.address.house_number }}<br />
-              {{ selectedProvider.address.postal_code }}
-              {{ selectedProvider.address.city }}<br />
-            </p>
-            <p tabindex="0">
-              {{ t("detailLocationHint") }}
-            </p>
+            <div class="m-content">
+              <h2 tabindex="0">{{ t("location") }}</h2>
+            </div>
+            <div
+              v-if="selectedProvider"
+              class="m-content location-text-margin-top"
+            >
+              <p tabindex="0">{{ selectedProvider.organization }}<br /></p>
+              <p tabindex="0">
+                <strong> {{ selectedProvider.name }} </strong><br />
+              </p>
+              <p tabindex="0">
+                {{ selectedProvider.address.street }}
+                {{ selectedProvider.address.house_number }}<br />
+                {{ selectedProvider.address.postal_code }}
+                {{ selectedProvider.address.city }}<br />
+              </p>
+              <p tabindex="0">
+                {{ t("detailLocationHint") }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div
-    v-if="appointment"
-    class="m-component m-component-linklist--boxed"
-  >
-    <div class="container">
-      <div class="m-component__grid">
-        <div class="m-component__column">
-          <h2 class="m-component__title">{{ t("services") }}</h2>
-          <div class="m-linklist">
-            <ul class="m-linklist__list">
-              <li class="m-linklist__list__item">
-                <a
-                  class="m-linklist-element m-linklist-element--external"
-                  :href="getServiceBaseURL() + appointment.serviceId"
-                  target="_blank"
-                >
-                  <div class="m-linklist-element__meta">
-                    <span class="m-linklist-element__title">{{
-                      appointment.serviceName
-                    }}</span>
-                  </div>
-                  <svg
-                    aria-hidden="true"
-                    class="icon"
+    <div
+      v-if="appointment"
+      class="m-component m-component-linklist--boxed"
+    >
+      <div class="container">
+        <div class="m-component__grid">
+          <div class="m-component__column">
+            <h2 class="m-component__title">{{ t("services") }}</h2>
+            <div class="m-linklist">
+              <ul class="m-linklist__list">
+                <li class="m-linklist__list__item">
+                  <a
+                    class="m-linklist-element m-linklist-element--external"
+                    :href="getServiceBaseURL() + appointment.serviceId"
+                    target="_blank"
                   >
-                    <use xlink:href="#icon-ext-link"></use>
-                  </svg>
-                </a>
-              </li>
-              <li
-                v-for="(subrequest, index) in appointment.subRequestCounts"
-                :key="index"
-                class="m-linklist__list__item"
-              >
-                <a
-                  class="m-linklist-element m-linklist-element"
-                  :href="getServiceBaseURL() + subrequest.id"
+                    <div class="m-linklist-element__meta">
+                      <span class="m-linklist-element__title">{{
+                        appointment.serviceName
+                      }}</span>
+                    </div>
+                    <svg
+                      aria-hidden="true"
+                      class="icon"
+                    >
+                      <use xlink:href="#icon-ext-link"></use>
+                    </svg>
+                  </a>
+                </li>
+                <li
+                  v-for="(subrequest, index) in appointment.subRequestCounts"
+                  :key="index"
+                  class="m-linklist__list__item"
                 >
-                  <div class="m-linklist-element__meta">
-                    <span class="m-linklist-element__title">{{
-                      subrequest.name
-                    }}</span>
-                  </div>
-                  <svg
-                    aria-hidden="true"
-                    class="icon"
+                  <a
+                    class="m-linklist-element m-linklist-element"
+                    :href="getServiceBaseURL() + subrequest.id"
                   >
-                    <use xlink:href="#icon-arrow-right"></use>
-                  </svg>
-                </a>
-              </li>
-            </ul>
+                    <div class="m-linklist-element__meta">
+                      <span class="m-linklist-element__title">{{
+                        subrequest.name
+                      }}</span>
+                    </div>
+                    <svg
+                      aria-hidden="true"
+                      class="icon"
+                    >
+                      <use xlink:href="#icon-arrow-right"></use>
+                    </svg>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -115,6 +134,7 @@
 </template>
 
 <script setup lang="ts">
+import { MucButton, MucIntro } from "@muenchen/muc-patternlab-vue";
 import { onMounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
@@ -125,6 +145,7 @@ import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { getAppointmentDetails } from "@/api/ZMSAppointmentUserAPI";
 import AppointmentDetailHeader from "@/components/AppointmentDetail/AppointmentDetailHeader.vue";
 import CalendarIcon from "@/components/Common/CalendarIcon.vue";
+import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
@@ -139,6 +160,7 @@ import { getProviders } from "@/utils/getProviders";
 
 const props = defineProps<{
   baseUrl?: string;
+  appointmentOverviewUrl: string;
   rescheduleAppointmentUrl: string;
   t: (key: string) => string;
 }>();
@@ -148,6 +170,7 @@ const relations = ref<Relation[]>([]);
 const offices = ref<Office[]>([]);
 
 const appointment = ref<AppointmentImpl>();
+const appointmentId = ref<string | null>();
 const selectedService = ref<ServiceImpl>();
 const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);
@@ -170,27 +193,17 @@ const rescheduleAppointment = () => {
 };
 
 const cancelAppointment = () => {
-  // cancelAppointment(appointment.value, props.baseUrl ?? undefined)
-  //   .then((data) => {
-  //     if ((data as any)?.errors?.length > 0) {
-  //       handleApiResponse(data, errorStateMap.value);
-  //       return;
-  //     }
-  //
-  //     if ((data as AppointmentDTO).processId != undefined) {
-  //       cancelAppointmentSuccess.value = true;
-  //     } else {
-  //       cancelAppointmentError.value = true;
-  //     }
-  //     increaseCurrentView();
-  //   })
-  //   .finally(() => {
-  //     isCancelingAppointment.value = false;
-  //   });
+  // TODO cancelAppointment(appointment.value, props.baseUrl ?? undefined)
+};
+
+const goToAppointmentOverviewLink = () => {
+  location.href = props.appointmentOverviewUrl;
 };
 
 onMounted(() => {
   loading.value = true;
+  const urlParams = new URLSearchParams(window.location.search);
+  appointmentId.value = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
   fetchServicesAndProviders(
     undefined,
     undefined,
@@ -200,10 +213,8 @@ onMounted(() => {
     relations.value = data.relations;
     offices.value = data.offices;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const appointmentId = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
-    if (appointmentId) {
-      getAppointmentDetails(appointmentId).then((data) => {
+    if (appointmentId.value) {
+      getAppointmentDetails(appointmentId.value).then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data;
 
