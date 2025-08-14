@@ -163,7 +163,7 @@ class ReportClientScopeTest extends Base
         );
     }
 
-    public function testWithDateRangeFabian()
+    public function testWithDateRange()
     {
         $this->setApiCalls(
             [
@@ -421,7 +421,6 @@ class ReportClientScopeTest extends Base
             ],
             []
         );
-        // Should render without data since date range is invalid
         $this->assertStringContainsString('Kundenstatistik Standort', (string) $response->getBody());
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
@@ -471,7 +470,6 @@ class ReportClientScopeTest extends Base
             ],
             []
         );
-        // Should fall back to workstation scope since all provided scopes are invalid
         $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum April 2016',
             (string) $response->getBody()
@@ -523,7 +521,6 @@ class ReportClientScopeTest extends Base
             ],
             []
         );
-        // Should use only valid scope IDs
         $this->assertStringContainsString(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum April 2016',
             (string) $response->getBody()
@@ -532,7 +529,6 @@ class ReportClientScopeTest extends Base
 
     public function testWithDownloadXLSX()
     {
-        // Start output buffering to capture any output from the test
         ob_start();
         
         $this->setApiCalls(
@@ -581,8 +577,6 @@ class ReportClientScopeTest extends Base
             [ ]
         );
         $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
-        
-        // Clean up output buffer (discard any captured output)
         ob_end_clean();
     }
 
@@ -644,7 +638,6 @@ class ReportClientScopeTest extends Base
 
     public function testWithDownloadXLSXAndDateRange()
     {
-        // Start output buffering to capture any output from the test
         ob_start();
         
         $this->setApiCalls(
@@ -694,8 +687,6 @@ class ReportClientScopeTest extends Base
             []
         );
         $this->assertStringContainsString('xlsx', $response->getHeaderLine('Content-Disposition'));
-        
-        // Clean up output buffer (discard any captured output)
         ob_end_clean();
     }
 
@@ -793,7 +784,6 @@ class ReportClientScopeTest extends Base
             ],
             []
         );
-        // Should render without data since date range is empty
         $this->assertStringContainsString('Kundenstatistik Standort', (string) $response->getBody());
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
@@ -839,7 +829,6 @@ class ReportClientScopeTest extends Base
             ],
             []
         );
-        // Should render without data since date range is incomplete
         $this->assertStringContainsString('Kundenstatistik Standort', (string) $response->getBody());
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
@@ -891,7 +880,6 @@ class ReportClientScopeTest extends Base
             ],
             []
         );
-        // Should still work with reversed dates (filtering will handle it)
         $this->assertStringContainsString('Kundenstatistik Standort', (string) $response->getBody());
     }
 
