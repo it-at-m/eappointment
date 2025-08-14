@@ -7,33 +7,25 @@ class View extends BaseView {
         super(element, options);
         this.bindEvents();
         this.initializeFilters();
-        this.setupValidation();
+        this.addErrorDisplayElements();
         console.log('Component: ReportFilter', this, options);
     }
 
     bindEvents() {
-        // Handle form submission - find the parent form
         this.$main.closest('form').on('submit', (ev) => {
             ev.preventDefault();
             this.handleFormSubmit();
         });
 
-        // Handle select all button for scopes
         this.$main.find('#select-all-scopes').on('click', () => {
             this.toggleSelectAll();
         });
 
-        // Update select all button when scope selection changes
         this.$main.find('#scope-select').on('change', () => {
             this.updateSelectAllButton();
         });
 
-        // Add date range limiting functionality
         this.setupDateRangeLimiting();
-    }
-
-    setupValidation() {
-        this.addErrorDisplayElements();
     }
 
     addErrorDisplayElements() {
@@ -43,37 +35,6 @@ class View extends BaseView {
         if (!this.$main.find('.date-error').length) {
             this.$main.find('.reportfilter-daterange').after('<div class="date-error text-danger" style="display:none; margin-top: 5px;"></div>');
         }
-    }
-
-    validateAndUpdateButton() {
-        const fromDate = this.$main.find('#calendar-date-from').val();
-        const toDate = this.$main.find('#calendar-date-until').val();
-        
-        const scopeError = this.$main.find('.scope-error');
-        const dateError = this.$main.find('.date-error');
-        
-        let hasErrors = false;
-
-        scopeError.hide();
-        dateError.hide();
-
-        if (fromDate || toDate) {
-            if (!fromDate || !toDate) {
-                dateError.text('Bitte geben Sie sowohl Start- als auch Enddatum an.').show();
-                hasErrors = true;
-            } else if (!this.isValidDateFormat(fromDate) || !this.isValidDateFormat(toDate)) {
-                dateError.text('Ungültiges Datumsformat. Erwartetes Format: JJJJ-MM-TT').show();
-                hasErrors = true;
-            } else if (moment(fromDate).isAfter(moment(toDate))) {
-                dateError.text('Das Startdatum muss vor dem Enddatum liegen.').show();
-                hasErrors = true;
-            } else if (moment(fromDate).isAfter(moment()) || moment(toDate).isAfter(moment())) {
-                dateError.text('Nur vergangene Daten sind erlaubt. Zukünftige Daten sind nicht zulässig.').show();
-                hasErrors = true;
-            }
-        }
-        
-        return !hasErrors;
     }
 
     initializeFilters() {
@@ -208,10 +169,9 @@ class View extends BaseView {
         }
         
         if (hasDateErrors) {
-            return; // Don't proceed with form submission
+            return;
         }
 
-        // All validations passed, proceed with form submission
         this.redirectWithFilters(selectedScopes, fromDate, toDate);
     }
 
