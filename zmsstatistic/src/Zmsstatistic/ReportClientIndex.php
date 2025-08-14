@@ -27,11 +27,11 @@ class ReportClientIndex extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $reportClientService = new ReportClientService();
-        
+
         $selectedScopes = $reportClientService->extractSelectedScopes(
             $validator->getParameter('scopes')->isArray()->getValue() ?? []
         );
-        
+
         $scopeId = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
 
         $clientPeriod = $reportClientService->getClientPeriod($this->workstation->scope['id']);
@@ -74,7 +74,7 @@ class ReportClientIndex extends BaseController
         if ($reportClientService === null) {
             $reportClientService = new ReportClientService();
         }
-        
+
         $args = $reportClientService->prepareDownloadArgs($args, $exchangeClient, $dateRange, $selectedScopes);
 
         $args['scope'] = $this->workstation->getScope();

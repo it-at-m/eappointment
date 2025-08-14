@@ -155,7 +155,10 @@ class ReportClientService
         foreach ($years as $year) {
             try {
                 $exchangeClient = \App::$http
-                    ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $year . '/', ['groupby' => 'day'])
+                    ->readGetResult(
+                        '/warehouse/clientscope/' . $scopeId . '/' . $year . '/',
+                        ['groupby' => 'day']
+                    )
                     ->getEntity();
 
                 // Use the first successfully fetched entity as the base
@@ -199,8 +202,12 @@ class ReportClientService
     /**
      * Create filtered exchange client with updated properties
      */
-    private function createFilteredExchangeClient($exchangeClientFull, array $filteredData, string $fromDate, string $toDate): mixed
-    {
+    private function createFilteredExchangeClient(
+        $exchangeClientFull,
+        array $filteredData,
+        string $fromDate,
+        string $toDate
+    ): mixed {
         $exchangeClient = clone $exchangeClientFull;
         $exchangeClient->data = $filteredData;
 
@@ -236,8 +243,12 @@ class ReportClientService
     /**
      * Prepare download arguments for client report
      */
-    public function prepareDownloadArgs(array $args, mixed $exchangeClient, ?array $dateRange, array $selectedScopes = []): array
-    {
+    public function prepareDownloadArgs(
+        array $args,
+        mixed $exchangeClient,
+        ?array $dateRange,
+        array $selectedScopes = []
+    ): array {
         $args['category'] = 'clientscope';
 
         if ($dateRange) {
@@ -262,4 +273,4 @@ class ReportClientService
     {
         return $this->totals;
     }
-} 
+}
