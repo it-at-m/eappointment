@@ -36,8 +36,8 @@
       <error-alert
         v-if="loadingError"
         class="no-padding-top"
-        :message="t('loadingAppointmentErrorText')"
-        :header="t('loadingAppointmentErrorHeader')"
+        :message="t('apiErrorLoadingAppointmentsText')"
+        :header="t('apiErrorLoadingAppointmentsHeader')"
       />
       <skeleton-loader
         v-else-if="loading"
@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
 import { MucIcon, MucLink } from "@muenchen/muc-patternlab-vue";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -77,6 +77,7 @@ import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
+import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
 import AppointmentCardViewer from "./AppointmentCardViewer.vue";
 
 const props = defineProps<{
@@ -94,8 +95,6 @@ const isMobile = ref(false);
 
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
-
-const appointmentNumber = ref("");
 
 const checksMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 767px)").matches;
@@ -123,12 +122,18 @@ onMounted(() => {
     .finally(() => {
       loading.value = false;
       if (props.displayedOnDetailScreen) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const appointmentId = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
         appointments.value = appointments.value.filter(
-          (appoinement: AppointmentDTO) =>
-            appoinement.processId != appointmentNumber.value
+          (appointment: AppointmentDTO) =>
+            appointment.processId != appointmentId
         );
       }
     });
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", checksMobile);
 });
 </script>
 

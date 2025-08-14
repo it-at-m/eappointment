@@ -11,5 +11,5 @@ export function formatTitle(appointment: AppointmentDTO): string {
   const subserviceTitle = appointment.subRequestCounts
     .map((subCount) => subCount.count + "x " + subCount.name)
     .join("\n");
-  return serviceTitle + "\n" + subserviceTitle;
+  return subserviceTitle ? serviceTitle + "\n" + subserviceTitle : serviceTitle;
 }

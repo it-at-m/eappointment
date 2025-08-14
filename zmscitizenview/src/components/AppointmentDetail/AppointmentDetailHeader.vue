@@ -15,10 +15,10 @@
         {{ formatTime(appointment.timestamp) }}
         {{ t("timeStampSuffix") }} <br />
       </p>
-      <p>
+      <p v-if="selectedProvider">
         <muc-icon icon="map-pin" />
-        {{ selectedProvider?.address.street }}
-        {{ selectedProvider?.address.house_number }} <br />
+        {{ selectedProvider.address.street }}
+        {{ selectedProvider.address.house_number }} <br />
       </p>
     </div>
     <div class="m-button-group">

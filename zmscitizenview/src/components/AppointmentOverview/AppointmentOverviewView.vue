@@ -9,8 +9,8 @@
     </h2>
     <error-alert
       v-if="loadingError"
-      :message="t('loadingAppointmentErrorText')"
-      :header="t('loadingAppointmentErrorHeader')"
+      :message="t('apiErrorLoadingAppointmentsText')"
+      :header="t('apiErrorLoadingAppointmentsHeader')"
     >
       <muc-button
         icon="arrow-right"
@@ -35,9 +35,9 @@
         class="checklist-card-container"
       >
         <appointment-card
-          v-for="(appoinement, index) in appointments"
+          v-for="(appointment, index) in appointments"
           :key="index"
-          :appointment="appoinement"
+          :appointment="appointment"
           :appointment-detail-url="appointmentDetailUrl"
           :offices="offices"
           :t="t"

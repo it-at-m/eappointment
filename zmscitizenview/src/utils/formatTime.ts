@@ -17,7 +17,7 @@ const formatterTime = new Intl.DateTimeFormat("de-DE", {
  * @param time Timestamp
  * @returns Formatted date with time
  */
-export function formatTime(time: any): string {
+export function formatTime(time: number): string {
   const date = new Date(time * 1000);
   return formatterDate.format(date) + ", " + formatterTime.format(date);
 }
