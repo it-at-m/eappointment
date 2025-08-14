@@ -61,7 +61,9 @@ class QueueTable extends BaseController
             static::getWorkstationsByCluster($clusterHelper->getEntity()->getId()) :
             static::getWorkstationsByScope($scope->getId());
 
-        $workstationCount = $workstationGhostCount > 0 ? $workstationGhostCount : count($workstationList);
+        $workstationCount = $workstationGhostCount > 0
+            ? $workstationGhostCount
+            : ($workstationList === null ? 1 : count($workstationList));
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage') ?? 10;
 
         $queueListVisible = $queueList
