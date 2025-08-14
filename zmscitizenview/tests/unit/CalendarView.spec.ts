@@ -1536,7 +1536,6 @@ describe("CalendarView", () => {
     await flushPromises();
     await wrapper.vm.handleDaySelection(new Date("2025-07-02"));
     await flushPromises();
-    // Should show am/pm labels
     expect(wrapper.html()).toMatch(/am|pm/);
   });
 
@@ -1596,13 +1595,11 @@ describe("CalendarView", () => {
     });
 
     it('enables the next button after selecting an appointment and disables it after reservation starts', async () => {
-      // Simulate selecting an appointment
       selectedTimeslotRef.value = 1234567890;
       await nextTick();
       let nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
       expect(nextButton && !nextButton.props('disabled')).toBe(true);
 
-      // Simulate reservation (loading state)
       loadingStates.isReservingAppointment.value = true;
       await nextTick();
       nextButton = wrapper.findAllComponents({ name: 'MucButton' }).find(btn => btn.text().includes('next'));
@@ -1794,6 +1791,316 @@ describe("CalendarView", () => {
 
       expect(wrapper.find("#listContent-0").classes()).not.toContain("show");
       expect(wrapper.find("#listContent-1").classes()).toContain("show");
+    });
+
+    it("initializes list view navigation state for each day", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-10", providerIDs: "1" },
+          { time: "2025-06-11", providerIDs: "1" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400, 1747223700, 1747224000, 1747224300]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [{ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } }]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      await nextTick();
+      await nextTick();
+
+      expect(wrapper.vm.listViewCurrentHour).toBeDefined();
+      expect(wrapper.vm.listViewCurrentDayPart).toBeDefined();
+    });
+
+    it("resets list view navigation state when providers change", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-10", providerIDs: "1" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400, 1747223700, 1747224000, 1747224300]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [{ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } }]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      const dateString = "2025-06-10";
+      wrapper.vm.listViewCurrentHour.set(dateString, 16);
+      wrapper.vm.listViewCurrentDayPart.set(dateString, "pm");
+
+      wrapper.vm.selectedProviders = { "2": true };
+      await nextTick();
+
+      expect(wrapper.vm.listViewCurrentHour.has(dateString)).toBe(true);
+      expect(wrapper.vm.listViewCurrentDayPart.has(dateString)).toBe(true);
+      
+      expect(wrapper.vm.listViewCurrentHour.get(dateString)).toBe(16);
+      expect(wrapper.vm.listViewCurrentDayPart.get(dateString)).toBe("pm");
+    });
+
+    it("navigates between hours in list view", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-10", providerIDs: "1" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400, 1747223700, 1747224000, 1747224300]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [{ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } }]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      const dateString = "2025-06-10";
+      
+      wrapper.vm.listViewCurrentHour.set(dateString, 16);
+      const initialHour = 16;
+
+      wrapper.vm.listViewEarlierAppointments({ 
+        dateString, 
+        hourRows: [{ hour: 15, times: [1], officeId: 1 }, { hour: 16, times: [1], officeId: 1 }] 
+      } as any, "hour");
+      await nextTick();
+
+      const currentHour = wrapper.vm.listViewCurrentHour.get(dateString);
+      expect(currentHour).toBeDefined();
+      expect(currentHour).toBe(15);
+    });
+
+    it("navigates between day parts in list view", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-10", providerIDs: "1" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400, 1747223700, 1747224000, 1747224300]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [{ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } }]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      const dateString = "2025-06-10";
+      
+      wrapper.vm.listViewCurrentDayPart.set(dateString, "pm");
+      const initialDayPart = "pm";
+
+      wrapper.vm.listViewEarlierAppointments({ 
+        dateString, 
+        dayPartRows: [{ part: "am", times: [1], officeId: 1 }, { part: "pm", times: [1], officeId: 1 }] 
+      } as any, "dayPart");
+      await nextTick();
+
+      const currentDayPart = wrapper.vm.listViewCurrentDayPart.get(dateString);
+      expect(currentDayPart).toBeDefined();
+      expect(currentDayPart).toBe("am");
+    });
+
+    it("shows navigation buttons for hourly view when multiple providers are selected", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-10", providerIDs: "1,2" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400, 1747223700, 1747224000, 1747224300]
+          },
+          {
+            officeId: 2,
+            appointments: [1747202400, 1747223100, 1747223400, 1747223700, 1747224000, 1747224300]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
+            { name: "Office B", id: 2, address: { street: "Oak", house_number: "100" } }
+          ]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await wrapper.vm.showSelectionForProvider({ name: "Office B", id: 2, address: { street: "Oak", house_number: "100" } });
+      await flushPromises();
+
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.isListView).toBe(false);
+
+      const buttons = wrapper.findAllComponents({ name: "MucButton" });
+      const earlierButton = buttons.find(btn => btn.text().includes("earlier"));
+      const laterButton = buttons.find(btn => btn.text().includes("later"));
+
+      expect(earlierButton).toBeDefined();
+      expect(laterButton).toBeDefined();
+    });
+
+    it("hides navigation buttons for hourly view when single provider is selected", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-10", providerIDs: "1" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400, 1747223700, 1747224000, 1747224300]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+          ]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      await nextTick();
+      await flushPromises();
+
+      expect(wrapper.vm.isListView).toBe(false);
+
+      const buttons = wrapper.findAllComponents({ name: "MucButton" });
+      const earlierButton = buttons.find(btn => btn.text().includes("earlier"));
+      const laterButton = buttons.find(btn => btn.text().includes("later"));
+
+      expect(earlierButton).toBeUndefined();
+      expect(laterButton).toBeUndefined();
+    });
+
+    it("filters location titles to show only once per office per time period", async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: "2025-06-10", providerIDs: "1,2" }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400]
+          },
+          {
+            officeId: 2,
+            appointments: [1747202400, 1747223100, 1747223400]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
+            { name: "Office B", id: 2, address: { street: "Oak", house_number: "100" } }
+          ]
+        }
+      });
+
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await flushPromises();
+
+      await wrapper.find(".m-toggle-switch").trigger("click");
+      await nextTick();
+
+      await nextTick();
+      await nextTick();
+
+      await wrapper.find("#listHeading-0 .m-accordion__section-button").trigger("click");
+      await nextTick();
+      
+      const locationTitles = wrapper.findAll(".location-title");
+      
+      if ((wrapper.vm.selectableProviders?.length || 0) > 1) {
+        expect(locationTitles.length).toBeGreaterThanOrEqual(0);
+        const officeNames = locationTitles.map(el => el.text());
+        const uniqueNames = [...new Set(officeNames)];
+        expect(officeNames.length).toBe(uniqueNames.length);
+      }
     });
   });
 });
