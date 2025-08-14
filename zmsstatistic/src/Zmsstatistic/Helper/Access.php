@@ -14,7 +14,6 @@ use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 use BO\Zmsentities\Exception\WorkstationMissingScope;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
-use BO\Zmsentities\Application;
 
 class Access extends \BO\Slim\Controller
 {
@@ -38,7 +37,7 @@ class Access extends \BO\Slim\Controller
             $this->organisation = $this->readOrganisation();
             $this->owner = $this->readOwner();
         }
-        $this->testAccessRights($request);
+        $this->validateAccessRights($request);
     }
 
     protected function readWorkstation()
@@ -74,14 +73,14 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function testAccessRights($request)
+    protected function validateAccessRights($request)
     {
         $path = $request->getUri()->getPath();
-        $this->testAccess($path);
-        //$this->testScope($path);
+        $this->validateAccess($path);
+        $this->validateScope($path);
     }
 
-    protected function testAccess($path)
+    protected function validateAccess($path)
     {
         if (
             (false !== strpos($path, 'owner') && ! $this->owner) ||
@@ -92,7 +91,7 @@ class Access extends \BO\Slim\Controller
         }
     }
 
-    protected function testScope($path)
+    protected function validateScope($path)
     {
         if (
             $this->isPathWithoutScope($path)

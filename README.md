@@ -160,7 +160,7 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
 
 - Usefule flags for `./vendor/bin/phpunit`:
   * `--display-warnings`
-  * `--display-phpunit-deprecations`
+  * `--display-deprecations`
   * `--display-notices`
   * `--display-errors`
   * `--display-failures`
