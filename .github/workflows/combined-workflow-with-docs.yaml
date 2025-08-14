@@ -2,7 +2,7 @@ name: Combined Workflow with Documentation
 
 on:
   push:
-    branches: [next]
+    branches: [feat-gh-1341-add-zmscitizenview-coverage-report-generation-to-github-actions-workflow]
 
 permissions:
   contents: read
@@ -16,6 +16,9 @@ jobs:
 
   call-php-unit-tests:
     uses: ./.github/workflows/php-unit-tests.yaml
+
+  call-zmscitizenview-coverage:
+    uses: ./.github/workflows/zmscitizenview-coverage.yaml
 
   call-owasp-security-checks:
     uses: ./.github/workflows/owasp-security-checks.yaml
