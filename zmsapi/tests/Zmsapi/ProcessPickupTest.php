@@ -15,6 +15,18 @@ class ProcessPickupTest extends Base
     const AUTHKEY = '1c56';
     const SCOPE_ID = 141;
 
+    public function setUp(): void
+    {
+        // Ensure clean database state before each test
+        \BO\Zmsdb\Connection\Select::writeRollback();
+        \BO\Zmsdb\Connection\Select::closeWriteConnection();
+        \BO\Zmsdb\Connection\Select::closeReadConnection();
+        
+        // Start fresh transaction
+        \BO\Zmsdb\Connection\Select::setTransaction();
+        \BO\Zmsdb\Connection\Select::setProfiling();
+    }
+
     public function testRendering()
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);

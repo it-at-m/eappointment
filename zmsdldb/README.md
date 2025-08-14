@@ -330,7 +330,7 @@ According to http://opengeodb.org/wiki/OpenGeoDB_Lizenz the used data is public 
 To update the list:
 
 * wget http://www.fa-technik.adfc.de/code/opengeodb/PLZ.tab
-* grep BERLIN PLZ.tab > src/Dldb/Plz/PLZ_Berlin.tab
-* bin/geoDbPlz2Json -f src/Dldb/Plz/PLZ_Berlin.tab > src/Dldb/Plz/plz_geodb.json
+* grep BERLIN PLZ.tab > src/Zmsdldb/Plz/PLZ_Berlin.tab
+* bin/geoDbPlz2Json -f src/Zmsdldb/Plz/PLZ_Berlin.tab > src/Zmsdldb/Plz/plz_geodb.json
 * rm PLZ.tab
  

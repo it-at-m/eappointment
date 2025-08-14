@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from "vitest";
 
 // @ts-expect-error: Vue SFC import for test
-import { handleApiResponse, createErrorStates } from "@/utils/errorHandler";
+import { handleApiResponse, createErrorStates, handleApiError } from "@/utils/errorHandler";
 
 describe("errorHandler", () => {
   let errorStates: ReturnType<typeof createErrorStates>;
@@ -88,7 +88,6 @@ describe("errorHandler", () => {
       
       handleApiResponse(mixedErrorResponse, errorStates);
       
-      // Should handle the first error with errorCode
       expect(errorStates.apiErrorAppointmentNotFound.value).toBe(true);
       expect(errorStates.apiErrorGenericFallback.value).toBe(false);
     });
@@ -108,6 +107,36 @@ describe("errorHandler", () => {
       handleApiResponse(responseWithoutErrors, errorStates);
       
       expect(errorStates.apiErrorGenericFallback.value).toBe(false);
+    });
+  });
+
+  describe("createErrorStates", () => {
+    it("should include apiErrorInvalidJumpinLink error state", () => {
+      expect(errorStates.apiErrorInvalidJumpinLink).toBeDefined();
+      expect(errorStates.apiErrorInvalidJumpinLink.value).toBe(false);
+    });
+
+    it("should be able to set apiErrorInvalidJumpinLink error state", () => {
+      errorStates.apiErrorInvalidJumpinLink.value = true;
+      expect(errorStates.apiErrorInvalidJumpinLink.value).toBe(true);
+    });
+  });
+
+  describe("handleApiError", () => {
+    it("should set apiErrorInvalidJumpinLink when invalidJumpinLink error is handled", () => {
+      handleApiError("invalidJumpinLink", errorStates.errorStateMap);
+      
+      expect(errorStates.apiErrorInvalidJumpinLink.value).toBe(true);
+      expect(errorStates.apiErrorGenericFallback.value).toBe(false);
+    });
+
+    it("should reset other error states when setting invalidJumpinLink", () => {
+      errorStates.apiErrorAppointmentNotFound.value = true;
+      
+      handleApiError("invalidJumpinLink", errorStates.errorStateMap);
+      
+      expect(errorStates.apiErrorInvalidJumpinLink.value).toBe(true);
+      expect(errorStates.apiErrorAppointmentNotFound.value).toBe(false);
     });
   });
 }); 
