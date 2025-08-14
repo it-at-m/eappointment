@@ -2,7 +2,7 @@ name: Combined Workflow with Documentation
 
 on:
   push:
-    branches: [feat-gh-1341-add-zmscitizenview-coverage-report-generation-to-github-actions-workflow]
+    branches: [next]
 
 permissions:
   contents: read
