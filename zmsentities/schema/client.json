@@ -23,6 +23,10 @@
                 {
                     "type": "string",
                     "pattern": "^[0-9]+$"
+                },
+                {
+                    "type": "string",
+                    "enum": ["-1"]
                 }
             ],
             "description": "number of reminder mails send"
@@ -47,6 +51,10 @@
                 {
                     "type": "string",
                     "enum": ["true", "false"]
+                },
+                {
+                    "type": "string",
+                    "enum": ["-1"]
                 }
             ],
             "description": "number of reminder sms send"

@@ -16,7 +16,8 @@
             "description": "mail address"
         },
         "emailSendCount": {
-            "type": "number",
+            "type": ["number", "string"],
+            "enum": ["-1"],
             "description": "number of reminder mails send"
         },
         "familyName": {
@@ -25,7 +26,8 @@
             "description": "name of the client"
         },
         "notificationsSendCount": {
-            "type": "number",
+            "type": ["number", "string"],
+            "enum": ["-1"],
             "description": "number of reminder sms send"
         },
         "surveyAccepted": {
