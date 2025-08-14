@@ -2,7 +2,7 @@ name: Combined Workflow
 
 on:
   push:
-    branches-ignore: [next]
+    branches-ignore: [feat-gh-1341-add-zmscitizenview-coverage-report-generation-to-github-actions-workflow]
     tags: ['*']
   workflow_call:
 

@@ -24,7 +24,7 @@ jobs:
     uses: ./.github/workflows/owasp-security-checks.yaml
 
   aggregate-reports:
-    needs: [call-php-unit-tests, call-owasp-security-checks]
+    needs: [call-php-unit-tests, call-zmscitizenview-coverage, call-owasp-security-checks]
     runs-on: ubuntu-latest
     steps:
       - name: Create directories
@@ -49,7 +49,7 @@ jobs:
       - name: Fix directory structure
         run: |
           # Fix coverage reports
-          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
+          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient zmscitizenview; do
             if [ -d "public/coverage-temp/coverage-$module" ]; then
               mkdir -p "public/coverage/coverage-$module"
               mv "public/coverage-temp/coverage-$module"/* "public/coverage/coverage-$module/"
@@ -58,7 +58,7 @@ jobs:
           rm -rf public/coverage-temp
 
           # Fix security reports
-          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient; do
+          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient zmscitizenview; do
             if [ -f "public/security-temp/security-report-$module/dependency-check-report.html" ]; then
               mkdir -p "public/security/security-report-$module"
               mv "public/security-temp/security-report-$module/dependency-check-report.html" "public/security/security-report-$module/"
