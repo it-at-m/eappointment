@@ -13,7 +13,6 @@ function getGcdOfTwoNumbers(a, b) {
 }
 
 function getGcdFromList(numbers) {
-    console.log("getGcdFromList");
     const positiveIntegers = numbers.filter(n => Number.isInteger(n) && n > 0);
     if (positiveIntegers.length === 0) return 0;
     return positiveIntegers.reduce((acc, num) => getGcdOfTwoNumbers(acc, num));
@@ -88,12 +87,10 @@ class RequestRelationView extends Component {
     }
 
     componentDidMount() {
-        console.log("componentDidMount")
         this.recalcSlotsByGCD();
     }
 
     componentDidUpdate() {
-        console.log("componentDidUpdate")
         this.recalcSlotsByGCD();
     }
 
