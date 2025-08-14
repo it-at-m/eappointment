@@ -133,14 +133,7 @@ class ClusterTest extends Base
     {
         $query = new Query();
         $input = $this->getTestEntity();
-        error_log(json_encode($input));
-        error_log(message: "------------------------------------------------");
-        error_log(json_encode($input->scopes));
         $entity = $query->writeEntity($input);
-        error_log(message: "************************************************");
-        error_log(json_encode($entity));
-        error_log(message: "------------------------------------------------");
-        error_log(json_encode($entity->scopes));
         $entity->scopes[0]['id'] = 0;
         $entity->scopes[1]['id'] = 141;
         $this->assertEquals('Bürger- und Standesamt', $entity->getName());
