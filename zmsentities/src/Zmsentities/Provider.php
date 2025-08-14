@@ -13,7 +13,8 @@ class Provider extends Schema\Entity
         return [
             'id' => 0,
             'name' => '',
-            'source' => 'dldb'
+            'source' => 'dldb',
+            'parent_id' => null
         ];
     }
 
@@ -32,6 +33,9 @@ class Provider extends Schema\Entity
         }
         if (isset($input[$refString])) {
             unset($input[$refString]);
+        }
+        if (isset($input['parent_id'])) {
+            $this['parent_id'] = $input['parent_id'];
         }
         return parent::addData($input);
     }
@@ -91,5 +95,15 @@ class Provider extends Schema\Entity
     public function getSlotTimeInMinutes()
     {
         return $this->getAdditionalData()['slotTimeInMinutes'];
+    }
+
+    public function getParentId()
+    {
+        return $this->toProperty()->parent_id->get();
+    }
+
+    public function isDeletable(): bool
+    {
+        return (bool) ($this['canDelete'] ?? false);
     }
 }
