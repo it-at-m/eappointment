@@ -165,6 +165,7 @@ class CaptchaService extends Entity implements CaptchaInterface
                 'json' => [
                     'siteKey' => $this->siteKey,
                     'siteSecret' => $this->siteSecret,
+                    'clientAddress' => ClientIpHelper::getClientIp(),
                     'payload' => $decodedPayload,
                 ]
             ]);
