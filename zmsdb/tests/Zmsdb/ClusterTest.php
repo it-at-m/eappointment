@@ -133,6 +133,8 @@ class ClusterTest extends Base
     {
         $query = new Query();
         $input = $this->getTestEntity();
+        error_log(json_encode($input));
+        error_log(json_encode($input->scopes));
         $entity = $query->writeEntity($input);
         $entity->scopes[0]['id'] = 0;
         $entity->scopes[1]['id'] = 141;
