@@ -61,7 +61,7 @@ class ExchangeClientscope extends Base
                         'missed' => 0,
                         'withappointment' => 0,
                         'missedwithappointment' => 0,
-                        'requestcount' => 0
+                        'requestscount' => 0
                     ];
                 }
 
@@ -70,7 +70,7 @@ class ExchangeClientscope extends Base
                 $aggregatedData[$date]['missed'] += $entry['missed'];
                 $aggregatedData[$date]['withappointment'] += $entry['withappointment'];
                 $aggregatedData[$date]['missedwithappointment'] += $entry['missedwithappointment'];
-                $aggregatedData[$date]['requestcount'] += $entry['requestcount'];
+                $aggregatedData[$date]['requestscount'] += $entry['requestscount'];
 
                 if (!in_array($scopeId, $aggregatedData[$date]['scopeids'])) {
                     $aggregatedData[$date]['scopeids'][] = $scopeId;
