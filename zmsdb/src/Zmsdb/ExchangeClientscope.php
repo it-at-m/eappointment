@@ -25,7 +25,7 @@ class ExchangeClientscope extends Base
         $entity = new Exchange();
         $entity['title'] = "Kundenstatistik " . (($scope && $scope->contact) ? $scope->contact->name : 'Unknown') . " " . ($scope ? $scope->shortName : 'Unknown');
         $entity->setPeriod($datestart, $dateend, $period);
-        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
+        $entity->addDictionaryEntry('scopeids', 'array', 'Array of scope IDs that contributed data');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('notificationscount', 'number', 'Amount of notifications sent');
         $entity->addDictionaryEntry('notificationscost', 'string', 'Costs of notifications');
@@ -35,23 +35,53 @@ class ExchangeClientscope extends Base
         $entity->addDictionaryEntry('missedwithappointment', 'number', 'Amount of missed clients with an appointment');
         $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');
         $subjectIdList = explode(',', $subjectid);
+        $aggregatedData = [];
 
-        foreach ($subjectIdList as $subjectid) {
-            $raw = $this
-                ->getReader()
-                ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeClientscope::QUERY_READ_REPORT"),
-                    [
-                        'scopeid' => $subjectid,
-                        'datestart' => $datestart->format('Y-m-d'),
-                        'dateend' => $dateend->format('Y-m-d'),
-                        'groupby' => $this->groupBy[$period]
-                    ]
-                );
+        foreach ($subjectIdList as $scopeId) {
+            $raw = $this->getReader()->fetchAll(
+                constant("\BO\Zmsdb\Query\ExchangeClientscope::QUERY_READ_REPORT"),
+                [
+                    'scopeid' => $scopeId,
+                    'datestart' => $datestart->format('Y-m-d'),
+                    'dateend' => $dateend->format('Y-m-d'),
+                    'groupby' => $this->groupBy[$period]
+                ]
+            );
+
             foreach ($raw as $entry) {
-                $entry['notificationscost'] = $entry['notificationscount'] * $costs;
-                $entity->addDataSet(array_values($entry));
+                $date = $entry['date'];
+
+                if (!isset($aggregatedData[$date])) {
+                    $aggregatedData[$date] = [
+                        'scopeids' => [],
+                        'date' => $date,
+                        'notificationscount' => 0,
+                        'notificationscost' => 0,
+                        'clientscount' => 0,
+                        'missed' => 0,
+                        'withappointment' => 0,
+                        'missedwithappointment' => 0,
+                        'requestcount' => 0
+                    ];
+                }
+
+                $aggregatedData[$date]['notificationscount'] += $entry['notificationscount'];
+                $aggregatedData[$date]['clientscount'] += $entry['clientscount'];
+                $aggregatedData[$date]['missed'] += $entry['missed'];
+                $aggregatedData[$date]['withappointment'] += $entry['withappointment'];
+                $aggregatedData[$date]['missedwithappointment'] += $entry['missedwithappointment'];
+                $aggregatedData[$date]['requestcount'] += $entry['requestcount'];
+
+                if (!in_array($scopeId, $aggregatedData[$date]['scopeids'])) {
+                    $aggregatedData[$date]['scopeids'][] = $scopeId;
+                }
             }
+        }
+
+        ksort($aggregatedData);
+        foreach ($aggregatedData as $entry) {
+            $entry['notificationscost'] = $entry['notificationscount'] * $costs;
+            $entity->addDataSet(array_values($entry));
         }
         return $entity;
     }
