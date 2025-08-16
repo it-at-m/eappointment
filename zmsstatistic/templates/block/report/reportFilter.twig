@@ -1,0 +1,80 @@
+{% from 'element/helper/form.twig' import formgroup, providername %}
+
+<div data-report-filter>
+    <!-- Scope Selection -->
+    {% set scopeOptions = [] %}
+    {% for department in workstation.useraccount.departments %}
+        {% set scopeOptionsGroupOptions = [] %}
+        {% for scope in department.scopes %}
+            {% if scope.contact.name %}
+                {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+            {% endif %}
+        {% endfor %}
+        {% for cluster in department.clusters %}
+            {% for scope in cluster.scopes %}
+                {% if scope.contact.name %}
+                    {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope) }]) %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% set scopeOptions = scopeOptions|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}
+    {% endfor %}
+
+    <fieldset class="scope-picker">
+        <div class="header">
+            <label for="scope-select">Standortauswahl</label>
+            <button type="button"
+                    id="select-all-scopes"
+                    class="btn-icon"
+                    aria-label="Alle auswählen"
+                    title="Alle Standorte auswählen">
+                <i class="fas fa-check-double"></i>
+            </button>
+        </div>
+
+        {{ formgroup(
+            {
+              "label": false,
+              "errors": advancedData.scope.messages,
+              "description": "Halten Sie <strong>Strg</strong> gedrückt für Mehrfachauswahl."
+            },
+            [{
+              "type": "select",
+              "parameter": {
+                "name": "scopes[]",
+                "multiple": true,
+                "size": 8,
+                "value": selectedScopeIds,
+                "accesskey": "s",
+                "options": scopeOptions,
+                "id": "scope-select",
+                "style": "width:100%;"
+              }
+            }]
+        ) }}
+    </fieldset>
+
+    <!-- Date Range Selection -->
+    <div class="reportfilter">
+        <div class="reportfilter-daterange-header header">
+            <label>Datumsauswahl</label>
+        </div>
+        <div class="reportfilter-daterange">
+            <div class="reportfilter-datefield">
+                <label for="calendar-date-from" class="form-label">Von</label>
+                <input type="date" id="calendar-date-from" name="from" class="form-control" 
+                        value="{{ dateRange.from|default("now"|date("Y-m-d")) }}">
+            </div>
+            <div class="reportfilter-datefield">
+                <label for="calendar-date-until" class="form-label">Bis</label>
+                <input type="date" id="calendar-date-until" name="to" class="form-control" 
+                        value="{{ dateRange.to|default("now"|date("Y-m-d")) }}">
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="reportfilter-actions">
+        <button type="submit" class="btn btn-primary">Übernehmen</button>
+    </div>
+</div>

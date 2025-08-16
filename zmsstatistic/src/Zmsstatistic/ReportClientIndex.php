@@ -8,20 +8,13 @@
 namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
+use BO\Zmsstatistic\Service\ReportClientService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class ReportClientIndex extends BaseController
 {
-    protected $totals = [
-        'clientscount',
-        'missed',
-        'withappointment',
-        'missedwithappointment',
-        'noappointment',
-        'missednoappointment',
-        'requestscount'
-    ];
+    protected $resolveLevel = 3;
 
     /**
      * @SuppressWarnings(Param)
@@ -33,37 +26,75 @@ class ReportClientIndex extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $scopeId = $this->workstation->scope['id'];
-        $clientPeriod = \App::$http
-          ->readGetResult('/warehouse/clientscope/' . $scopeId . '/')
-          ->getEntity();
+        $reportClientService = new ReportClientService();
 
-        $exchangeClient = null;
-        if (isset($args['period'])) {
-            try {
-                $exchangeClient = \App::$http
-                    ->readGetResult('/warehouse/clientscope/' . $scopeId . '/' . $args['period'] . '/')
-                    ->getEntity()
-                    ->withCalculatedTotals($this->totals, 'date')
-                    ->toHashed();
-            } catch (\Exception $exception) {
-                // do nothing
-            }
-        }
+        $selectedScopes = $reportClientService->extractSelectedScopes(
+            $validator->getParameter('scopes')->isArray()->getValue() ?? []
+        );
+
+        $scopeId = !empty($selectedScopes) ? implode(',', $selectedScopes) : $this->workstation->scope['id'];
+
+        $clientPeriod = $reportClientService->getClientPeriod($this->workstation->scope['id']);
+
+        $dateRange = $reportClientService->extractDateRange(
+            $validator->getParameter('from')->isString()->getValue(),
+            $validator->getParameter('to')->isString()->getValue()
+        );
+
+        $exchangeClient = $reportClientService->getExchangeClientData($scopeId, $dateRange, $args);
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
-            $args['category'] = 'clientscope';
-
-            if (count($exchangeClient->data)) {
-                $args['reports'][] = $exchangeClient;
-            }
-            $args['scope'] = $this->workstation->getScope();
-            $args['department'] = $this->department;
-            $args['organisation'] = $this->organisation;
-            return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            return $this->handleDownloadRequest(
+                $request,
+                $response,
+                $args,
+                $exchangeClient,
+                $dateRange,
+                $selectedScopes,
+                $reportClientService
+            );
         }
 
+        return $this->renderHtmlResponse($response, $args, $clientPeriod, $dateRange, $exchangeClient, $selectedScopes);
+    }
+
+    /**
+     * Handle download request and return Excel file
+     */
+    private function handleDownloadRequest(
+        $request,
+        $response,
+        $args,
+        $exchangeClient,
+        $dateRange,
+        $selectedScopes = [],
+        $reportClientService = null
+    ): ResponseInterface {
+        if ($reportClientService === null) {
+            $reportClientService = new ReportClientService();
+        }
+
+        $args = $reportClientService->prepareDownloadArgs($args, $exchangeClient, $dateRange, $selectedScopes);
+
+        $args['scope'] = $this->workstation->getScope();
+        $args['department'] = $this->department;
+        $args['organisation'] = $this->organisation;
+
+        return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+    }
+
+    /**
+     * Render HTML response for the report page
+     */
+    private function renderHtmlResponse(
+        $response,
+        $args,
+        $clientPeriod,
+        $dateRange,
+        $exchangeClient,
+        $selectedScopes = []
+    ): ResponseInterface {
         return Render::withHtml(
             $response,
             'page/reportClientIndex.twig',
@@ -76,8 +107,10 @@ class ReportClientIndex extends BaseController
                 'clientperiod' => $clientPeriod,
                 'showAll' => 1,
                 'period' => isset($args['period']) ? $args['period'] : null,
+                'dateRange' => $dateRange,
                 'exchangeClient' => $exchangeClient,
                 'source' => ['entity' => 'ClientIndex'],
+                'selectedScopeIds' => $selectedScopes,
                 'workstation' => $this->workstation->getArrayCopy()
             )
         );

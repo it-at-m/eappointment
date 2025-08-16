@@ -10,61 +10,16 @@
     <div class="counter-view" data-includeurl="{{ includeUrl() }}">
         <div class="report-index">
             {% embed "block/report/period.twig" with {"source":source, "items": clientperiod, "selected": period} %}
-            {% block breadcrumb %}
-            <nav class="breadcrumb">
-                <ol>
-                    {% set arguments = {} %}
-                    {% if period %}
-                        {% set arguments = {"period": period} %}
-                    {% endif %}
-                    <li>{{ title|trans }}</li>
-                    {% if organisation %}
-                        <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportClientOrganisation", arguments, {}) }}">{{ organisation.name }}</a></li>
-                    {% endif %}
-                    {% if department %}
-                        <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportClientDepartment", arguments, {}) }}">{{ department.name }}</a></li>
-                    {% endif %}
-                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportClientIndex", arguments, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
-                </ol>
-            </nav>
-            {% endblock %}
             {% endembed %}
+
+            <form class="form--base panel--heavy">
+            {% embed "block/report/reportFilter.twig" %}
+            {% endembed %}
+            </form>
 
             {% embed "block/report/board.twig" with {'class': 'board--spaceless', 'source':source, "selected": period} %}
                 {% block board_body %}
-                {% if selected %}
-                    <table class="table--base">
-                        <thead>
-                            <tr>
-                                <th colspan="2">{% trans %}Organisation{% endtrans %}</th>
-                                <th colspan="2">{% trans %}Behörde{% endtrans %}</th>
-                                <th colspan="2">{% trans %}Standort{% endtrans %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% if exchangeNotification.data %}
-                                {% for item in exchangeNotification.data %}
-                                    <tr>
-                                        <td colspan="2">{{ item.organisationname }}</td>
-                                        <td colspan="2">{{ item.departmentname }}</td>
-                                        {% if source.entity == "ClientOrganisation" %}
-                                            <td colspan="2">Alle</td>
-                                        {% else %}
-                                            <td colspan="2">{{ item.scopename }}</td>
-                                        {% endif %}
-                                        <td>{{ item.notificationscount }}</td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                            <tr>
-                            <!--td colspan="6">{#% trans %}Es wurden keine Daten gefunden{% endtrans %#}</td -->
-                                <td colspan="2">{{ organisation.name }}</td>
-                                <td colspan="2">{{ department.name }}</td>
-                                <td colspan="2">{{ workstation.scope.contact.name }}</td>
-                            </tr>
-                            {% endif %}
-                        </tbody>
-                        </table>
+                {% if selected or dateRange %}
                         <table class="table--base">
                         <thead>
                             <tr>
@@ -87,9 +42,13 @@
                         <tbody>
                             {% if exchangeClient.data %}
                                 <tr>
-                                    {% set totaldate = period|format_date(pattern="MMMM y") %}
-                                    {% if exchangeClient.period == "month" %}
-                                    {% set totaldate = "Kalenderjahr " ~ period %}
+                                    {% if dateRange %}
+                                        {% set totaldate = "Zeitraum " ~ dateRange.from|date("d.m.Y") ~ " - " ~ dateRange.to|date("d.m.Y") %}
+                                    {% else %}
+                                        {% set totaldate = period|format_date(pattern="MMMM y") %}
+                                        {% if exchangeClient.period == "month" %}
+                                        {% set totaldate = "Kalenderjahr " ~ period %}
+                                        {% endif %}
                                     {% endif %}
                                     <td class="report-board--summary" colspan="2">{{ totaldate }}</td>
                                     <td class="colKunden report-board--summary">{{ exchangeClient.data|last.clientscount }}</td>
@@ -133,7 +92,7 @@
                 {% endif %}
                 {% endblock %}
             {% endembed %}
-            {% if period %}
+            {% if period or dateRange %}
             {{ block('advanceInfoClient') }}
             {% endif %}
         </div>

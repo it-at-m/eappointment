@@ -10,7 +10,7 @@
     "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
     "firstDay": {
       "year": "2016",
-      "month": "04",
+      "month": "01",
       "day": "01",
       "status": "notBookable",
       "freeAppointments": {
@@ -22,8 +22,8 @@
     },
     "lastDay": {
       "year": "2016",
-      "month": "04",
-      "day": "30",
+      "month": "12",
+      "day": "31",
       "status": "notBookable",
       "freeAppointments": {
         "public": 0,
@@ -100,16 +100,16 @@
     ],
     "data": [
       [
-        ["141"],
+        ["142"],
         "2016-04-01",
-        84,
-        16,
-        84,
-        16,
-        84,
-        16,
-        61
+        92,
+        18,
+        92,
+        18,
+        92,
+        18,
+        67
       ]
     ]
   }
-}
+} 
