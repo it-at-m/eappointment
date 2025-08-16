@@ -75,6 +75,9 @@ class ReportClientService
      */
     public function getExchangeClientForDateRange(string $scopeId, array $dateRange): mixed
     {
+        if (!isset($dateRange['from']) || !isset($dateRange['to'])) {
+            return null;
+        }
         $fromDate = $dateRange['from'];
         $toDate = $dateRange['to'];
 
@@ -167,7 +170,7 @@ class ReportClientService
                 }
 
                 // Combine data from all years
-                if (isset($exchangeClient->data)) {
+                if (isset($exchangeClient->data) && is_array($exchangeClient->data)) {
                     $combinedData = array_merge($combinedData, $exchangeClient->data);
                 }
             } catch (Exception $exception) {
@@ -175,8 +178,8 @@ class ReportClientService
             }
         }
 
-        usort($combinedData, function ($a, $b) {
-            return strcmp($a[1], $b[1]);
+        usort($combinedData, static function ($a, $b) {
+            return strcmp($a[1] ?? '', $b[1] ?? '');
         });
 
         return [
