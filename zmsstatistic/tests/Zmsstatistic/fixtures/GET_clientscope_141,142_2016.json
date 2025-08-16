@@ -79,14 +79,14 @@
       {
         "position": 6,
         "variable": "noappointment",
-        "type": "string",
+        "type": "number",
         "description": "",
         "reference": ""
       },
       {
         "position": 7,
         "variable": "missednoappointment",
-        "type": "string",
+        "type": "number",
         "description": "",
         "reference": ""
       },
