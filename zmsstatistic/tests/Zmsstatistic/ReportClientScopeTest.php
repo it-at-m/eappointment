@@ -378,6 +378,15 @@ class ReportClientScopeTest extends Base
             'Auswertung für die ausgewählten Standorte im Zeitraum 01.04.2016 bis 30.04.2016',
             (string) $response->getBody()
         );
+        $this->assertStringContainsString('176', (string) $response->getBody());
+        $this->assertStringContainsString('01.04.2016', (string) $response->getBody());
+        $this->assertStringContainsString('30.04.2016', (string) $response->getBody());
+
+        // Verify that a certain date row appears only once
+        $body = (string) $response->getBody();
+        $dataRowPattern = '/<td class="colDatumTag statistik">01\.04\.2016<\/td>/';
+        preg_match_all($dataRowPattern, $body, $matches);
+        $this->assertEquals(1, count($matches[0]), "Data row for 2016-04-01 should appear exactly once");
     }
 
     public function testWithInvalidDateRange()

@@ -36,10 +36,10 @@
     "dictionary": [
       {
         "position": 0,
-        "variable": "subjectid",
-        "type": "string",
-        "description": "ID of a scope",
-        "reference": "scope.id"
+        "variable": "scopeids",
+        "type": "array",
+        "description": "Array of scope IDs that contributed data",
+        "reference": ""
       },
       {
         "position": 1,
@@ -100,26 +100,15 @@
     ],
     "data": [
       [
-        "141",
+        ["141", "142"],
         "2016-04-01",
-        "84",
-        "16",
-        "84",
-        "16",
-        "84",
-        "16",
-        "61"
-      ],
-      [
-        "142",
-        "2016-04-01",
-        "92",
-        "18",
-        "92",
-        "18",
-        "92",
-        "18",
-        "67"
+        176,
+        34,
+        176,
+        34,
+        176,
+        34,
+        128
       ]
     ]
   }
