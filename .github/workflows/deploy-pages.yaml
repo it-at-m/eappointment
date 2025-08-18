@@ -162,6 +162,7 @@ jobs:
                     <li><a href="coverage/coverage-zmsapi/html/">Zmsapi Coverage</a></li>
                     <li><a href="coverage/coverage-zmsdb/html/">Zmsdb Coverage</a></li>
                     <li><a href="coverage/coverage-zmsclient/html/">Zmsclient Coverage</a></li>
+                    <li><a href="coverage/coverage-zmscitizenview/html/">Zmscitizenview Coverage</a></li>
                   </ul>
                 </div>
 
@@ -180,6 +181,7 @@ jobs:
                     <li><a href="security/security-report-zmsapi/dependency-check-report.html">Zmsapi Security Report</a></li>
                     <li><a href="security/security-report-zmsdb/dependency-check-report.html">Zmsdb Security Report</a></li>
                     <li><a href="security/security-report-zmsclient/dependency-check-report.html">Zmsclient Security Report</a></li>
+                    <li><a href="security/security-report-zmscitizenview/dependency-check-report.html">Zmscitizenview Security Report</a></li>
                     <li><a href="security/zap/zap-scan-report.html">ZAP Scan Reports</a></li>
                   </ul>
                 </div>
