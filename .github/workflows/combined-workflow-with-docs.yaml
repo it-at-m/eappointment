@@ -48,8 +48,9 @@ jobs:
 
       - name: Fix directory structure
         run: |
+          MODULES="zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient zmscitizenview"
           # Fix coverage reports
-          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient zmscitizenview; do
+          for module in $MODULES; do
             if [ -d "public/coverage-temp/coverage-$module" ]; then
               mkdir -p "public/coverage/coverage-$module"
               mv "public/coverage-temp/coverage-$module"/* "public/coverage/coverage-$module/"
@@ -58,7 +59,7 @@ jobs:
           rm -rf public/coverage-temp
 
           # Fix security reports
-          for module in zmsadmin zmscalldisplay zmscitizenapi zmsdldb zmsentities zmsmessaging zmsslim zmsstatistic zmsticketprinter zmsapi zmsdb zmsclient zmscitizenview; do
+          for module in $MODULES; do
             if [ -f "public/security-temp/security-report-$module/dependency-check-report.html" ]; then
               mkdir -p "public/security/security-report-$module"
               mv "public/security-temp/security-report-$module/dependency-check-report.html" "public/security/security-report-$module/"
