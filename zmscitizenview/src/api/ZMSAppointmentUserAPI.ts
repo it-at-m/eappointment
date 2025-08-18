@@ -14,9 +14,10 @@ export function getAppointmentDetails(
   baseUrl?: string
 ): Promise<AppointmentDTO> {
   console.debug(getAPIBaseURL(baseUrl) + processId);
-  return new Promise((resolve) =>
-    setTimeout(() => resolve(DUMMYDATA[0]), 1000)
-  );
+  return new Promise((resolve) => {
+    const data = DUMMYDATA.find((data) => data.processId == processId);
+    setTimeout(() => resolve(data ? data : DUMMYDATA[0]), 1000);
+  });
 }
 
 const DUMMYDATA: AppointmentDTO[] = [
