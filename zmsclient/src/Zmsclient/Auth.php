@@ -90,7 +90,7 @@ class Auth
     {
         $_COOKIE[self::getOidcName()] = $provider; // for access in the same process
         if (!headers_sent()) {
-            setcookie(self::getOidcName(), $provider, 0, '/', null, true, true);
+            setcookie(self::getOidcName(), $provider, 0, '/', '', true, true);
         }
     }
 

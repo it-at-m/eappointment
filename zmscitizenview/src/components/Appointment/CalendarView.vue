@@ -90,14 +90,7 @@
   </div>
 
   <div v-else-if="!error">
-    <div
-      class="m-content"
-      style="
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-      "
-    >
+    <div class="view-toggle-container">
       <h2 tabindex="0">{{ t("time") }}</h2>
       <div
         class="m-toggle-switch"
@@ -108,9 +101,17 @@
         @keydown.enter.prevent="toggleView"
         @keydown.space.prevent="toggleView"
       >
-        <span class="m-toggle-switch__label">{{ t("calendarView") }}</span>
+        <span
+          class="m-toggle-switch__label"
+          :class="{ disabled: isListView }"
+          >{{ t("calendarView") }}</span
+        >
         <span class="m-toggle-switch__indicator"><span></span></span>
-        <span class="m-toggle-switch__label">{{ t("listView") }}</span>
+        <span
+          class="m-toggle-switch__label"
+          :class="{ disabled: !isListView }"
+          >{{ t("listView") }}</span
+        >
       </div>
     </div>
     <div
@@ -151,7 +152,7 @@
             :key="day.dateString"
           >
             <div>
-              <h3
+              <h4
                 style="
                   margin-bottom: 20px;
                   background-color: var(--color-neutrals-blue-xlight);
@@ -164,8 +165,8 @@
                   type="button"
                   data-bs-toggle="collapse"
                   :data-bs-target="'#listContent-' + index"
-                  :aria-expanded="index === 0"
-                  :aria-controls="'listContent-' + index"
+                  :aria-expanded="day.dateString === openAccordionDate"
+                  :aria-controls="'#listContent-' + index"
                   @click="onDayAccordionSelect(day)"
                 >
                   {{ day.label }}
@@ -176,25 +177,28 @@
                   >
                     <use
                       :xlink:href="
-                        index === openAccordionIndex
+                        day.dateString === openAccordionDate
                           ? '#icon-chevron-up'
                           : '#icon-chevron-down'
                       "
                     ></use>
                   </svg>
                 </button>
-              </h3>
+              </h4>
 
               <section
                 class="m-accordion__section-content collapse"
-                :class="{ show: index === openAccordionIndex }"
+                :class="{ show: day.dateString === openAccordionDate }"
                 :id="'listContent-' + index"
                 :aria-labelledby="'listHeading-' + index"
                 data-bs-parent="#listViewAccordion"
               >
                 <div class="m-textplus__content">
                   <template
-                    v-if="isLoadingAppointments && index === openAccordionIndex"
+                    v-if="
+                      isLoadingAppointments &&
+                      day.dateString === openAccordionDate
+                    "
                   >
                     <div
                       style="
@@ -220,9 +224,13 @@
                         class="ml-4 location-title"
                         v-if="
                           (selectableProviders?.length || 0) > 1 &&
+                          hourRow.hour ===
+                            getCurrentHourForDay(day.dateString) &&
+                          hourRow.times.length > 0 &&
                           (hIndex === 0 ||
                             day.hourRows[hIndex - 1].officeId !==
-                              hourRow.officeId)
+                              hourRow.officeId ||
+                            day.hourRows[hIndex - 1].hour !== hourRow.hour)
                         "
                       >
                         <svg
@@ -233,8 +241,15 @@
                         </svg>
                         {{ officeName(hourRow.officeId) }}
                       </div>
-                      <div class="wrapper">
-                        <p class="centered-text nowrap">
+                      <div
+                        class="wrapper"
+                        v-if="
+                          hourRow.hour ===
+                            getCurrentHourForDay(day.dateString) ||
+                          providersWithAppointments.length === 1
+                        "
+                      >
+                        <p class="left-text nowrap">
                           {{ hourRow.hour }}:00‑{{ hourRow.hour }}:59
                         </p>
                         <div class="grid">
@@ -262,6 +277,46 @@
                         </div>
                       </div>
                     </template>
+
+                    <div
+                      v-if="
+                        day.hourRows.length > 0 &&
+                        providersWithAppointments.length > 1
+                      "
+                      class="wrapper m-button-group"
+                    >
+                      <muc-button
+                        icon="chevron-left"
+                        icon-shown-left
+                        variant="ghost"
+                        @click="listViewEarlierAppointments(day, 'hour')"
+                        :disabled="
+                          getCurrentHourForDay(day.dateString) === undefined ||
+                          getListDayAvailableHours(day).indexOf(
+                            getCurrentHourForDay(day.dateString) ?? -1
+                          ) <= 0
+                        "
+                      >
+                        <template #default>{{ t("earlier") }}</template>
+                      </muc-button>
+
+                      <muc-button
+                        class="float-right"
+                        icon="chevron-right"
+                        icon-shown-right
+                        variant="ghost"
+                        @click="listViewLaterAppointments(day, 'hour')"
+                        :disabled="
+                          getCurrentHourForDay(day.dateString) === undefined ||
+                          getListDayAvailableHours(day).indexOf(
+                            getCurrentHourForDay(day.dateString) ?? -1
+                          ) >=
+                            getListDayAvailableHours(day).length - 1
+                        "
+                      >
+                        <template #default>{{ t("later") }}</template>
+                      </muc-button>
+                    </div>
                   </template>
 
                   <template v-else>
@@ -273,9 +328,13 @@
                         class="ml-4 location-title"
                         v-if="
                           (selectableProviders?.length || 0) > 1 &&
+                          partRow.part ===
+                            getCurrentDayPartForDay(day.dateString) &&
+                          partRow.times.length > 0 &&
                           (pIndex === 0 ||
                             day.dayPartRows[pIndex - 1].officeId !==
-                              partRow.officeId)
+                              partRow.officeId ||
+                            day.dayPartRows[pIndex - 1].part !== partRow.part)
                         "
                       >
                         <svg
@@ -286,8 +345,15 @@
                         </svg>
                         {{ officeName(partRow.officeId) }}
                       </div>
-                      <div class="wrapper">
-                        <p class="centered-text nowrap">
+                      <div
+                        class="wrapper"
+                        v-if="
+                          partRow.part ===
+                            getCurrentDayPartForDay(day.dateString) ||
+                          providersWithAppointments.length === 1
+                        "
+                      >
+                        <p class="left-text nowrap">
                           {{ t(partRow.part) }}
                         </p>
                         <div class="grid">
@@ -315,6 +381,41 @@
                         </div>
                       </div>
                     </template>
+
+                    <div
+                      v-if="
+                        day.dayPartRows.length > 0 &&
+                        providersWithAppointments.length > 1
+                      "
+                      class="wrapper m-button-group"
+                    >
+                      <muc-button
+                        icon="chevron-left"
+                        icon-shown-left
+                        variant="ghost"
+                        @click="listViewEarlierAppointments(day, 'dayPart')"
+                        :disabled="
+                          getCurrentDayPartForDay(day.dateString) === 'am' ||
+                          getListDayAvailableDayParts(day).indexOf('am') === -1
+                        "
+                      >
+                        <template #default>{{ t("earlier") }}</template>
+                      </muc-button>
+
+                      <muc-button
+                        class="float-right"
+                        icon="chevron-right"
+                        icon-shown-right
+                        variant="ghost"
+                        @click="listViewLaterAppointments(day, 'dayPart')"
+                        :disabled="
+                          getCurrentDayPartForDay(day.dateString) === 'pm' ||
+                          getListDayAvailableDayParts(day).indexOf('pm') === -1
+                        "
+                      >
+                        <template #default>{{ t("later") }}</template>
+                      </muc-button>
+                    </div>
                   </template>
                 </div>
               </section>
@@ -325,7 +426,10 @@
     </div>
 
     <muc-button
-      v-if="isListView && firstFiveAvailableDays.length < availableDays.length"
+      v-if="
+        isListView &&
+        firstFiveAvailableDays.length < (availableDays?.length || 0)
+      "
       @click="loadMoreDays"
       icon="chevron-down"
       icon-animated
@@ -409,7 +513,7 @@
               "
             >
               <div v-if="firstHour !== null && firstHour > 0">
-                <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
+                <p class="left-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
               </div>
               <div class="grid">
                 <div
@@ -543,7 +647,7 @@
               "
             >
               <div>
-                <p class="centered-text">{{ t(timeslot) }}</p>
+                <p class="left-text">{{ t(timeslot) }}</p>
               </div>
               <div class="grid">
                 <div
@@ -893,6 +997,72 @@ const earlierAppointments = (type = "hour") => {
     const idx = availableHours.indexOf(currentHour.value);
     if (idx > 0) {
       selectedHour.value = availableHours[idx - 1];
+    }
+  }
+};
+
+const getListDayAvailableHours = (day: AccordionDay) => {
+  const hourSet = new Set<number>();
+  day.hourRows.forEach((hourRow) => {
+    if (hourRow.times.length > 0) {
+      hourSet.add(hourRow.hour);
+    }
+  });
+  return Array.from(hourSet).sort((a, b) => a - b);
+};
+
+const getListDayAvailableDayParts = (day: AccordionDay) => {
+  const dayParts: ("am" | "pm")[] = [];
+  day.dayPartRows.forEach((partRow) => {
+    if (partRow.times.length > 0) {
+      dayParts.push(partRow.part);
+    }
+  });
+  return dayParts.sort((a, b) => (a === "am" ? -1 : 1));
+};
+
+const listViewEarlierAppointments = (
+  day: AccordionDay,
+  type: "hour" | "dayPart"
+) => {
+  const dateString = day.dateString;
+
+  if (type === "dayPart") {
+    const currentPart = listViewCurrentDayPart.value.get(dateString);
+    if (currentPart === "pm") {
+      listViewCurrentDayPart.value.set(dateString, "am");
+    }
+  } else {
+    const currentHour = listViewCurrentHour.value.get(dateString);
+    if (currentHour !== undefined) {
+      const availableHours = getListDayAvailableHours(day);
+      const idx = availableHours.indexOf(currentHour);
+      if (idx > 0) {
+        listViewCurrentHour.value.set(dateString, availableHours[idx - 1]);
+      }
+    }
+  }
+};
+
+const listViewLaterAppointments = (
+  day: AccordionDay,
+  type: "hour" | "dayPart"
+) => {
+  const dateString = day.dateString;
+
+  if (type === "dayPart") {
+    const currentPart = listViewCurrentDayPart.value.get(dateString);
+    if (currentPart === "am") {
+      listViewCurrentDayPart.value.set(dateString, "pm");
+    }
+  } else {
+    const currentHour = listViewCurrentHour.value.get(dateString);
+    if (currentHour !== undefined) {
+      const availableHours = getListDayAvailableHours(day);
+      const idx = availableHours.indexOf(currentHour);
+      if (idx !== -1 && idx < availableHours.length - 1) {
+        listViewCurrentHour.value.set(dateString, availableHours[idx + 1]);
+      }
     }
   }
 };
@@ -1674,6 +1844,94 @@ async function snapToNearestAvailableTimeSlot() {
   }
 }
 
+async function snapToListViewNearestAvailableTimeSlot() {
+  await nextTick();
+
+  for (const [dateString] of listViewCurrentHour.value) {
+    const currentHour = listViewCurrentHour.value.get(dateString);
+    if (currentHour !== undefined) {
+      const hasAppointmentsInHour = firstFiveAvailableDays.value.some((day) => {
+        if (day.dateString === dateString) {
+          return day.hourRows.some(
+            (hourRow) =>
+              hourRow.hour === currentHour &&
+              hourRow.times.length > 0 &&
+              selectedProviders.value[hourRow.officeId]
+          );
+        }
+        return false;
+      });
+
+      if (!hasAppointmentsInHour) {
+        const day = firstFiveAvailableDays.value.find(
+          (d) => d.dateString === dateString
+        );
+        if (day) {
+          const availableHours = getListDayAvailableHours(day);
+          if (availableHours.length > 0) {
+            let nearest = availableHours[0];
+            let minDiff = Math.abs(currentHour - nearest);
+            for (const hour of availableHours) {
+              const diff = Math.abs(currentHour - hour);
+              if (diff < minDiff || (diff === minDiff && hour < nearest)) {
+                nearest = hour;
+                minDiff = diff;
+              }
+            }
+            if (nearest !== currentHour) {
+              listViewCurrentHour.value.set(dateString, nearest);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  for (const [dateString] of listViewCurrentDayPart.value) {
+    const currentDayPart = listViewCurrentDayPart.value.get(dateString);
+    if (currentDayPart !== undefined) {
+      const hasAppointmentsInDayPart = firstFiveAvailableDays.value.some(
+        (day) => {
+          if (day.dateString === dateString) {
+            return day.dayPartRows.some(
+              (partRow) =>
+                partRow.part === currentDayPart &&
+                partRow.times.length > 0 &&
+                selectedProviders.value[partRow.officeId]
+            );
+          }
+          return false;
+        }
+      );
+
+      if (!hasAppointmentsInDayPart) {
+        const day = firstFiveAvailableDays.value.find(
+          (d) => d.dateString === dateString
+        );
+        if (day) {
+          const availableDayParts = getListDayAvailableDayParts(day);
+          if (availableDayParts.length > 0) {
+            let newDayPart = currentDayPart;
+            if (currentDayPart === "am" && availableDayParts.includes("pm")) {
+              newDayPart = "pm";
+            } else if (
+              currentDayPart === "pm" &&
+              availableDayParts.includes("am")
+            ) {
+              newDayPart = "am";
+            } else {
+              newDayPart = availableDayParts[0];
+            }
+            if (newDayPart !== currentDayPart) {
+              listViewCurrentDayPart.value.set(dateString, newDayPart);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 watch(
   selectedProviders,
   async (newVal, oldVal) => {
@@ -1682,6 +1940,10 @@ watch(
     await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
     await snapToNearestAvailableTimeSlot();
     await validateCurrentDateHasAppointments();
+
+    if (isListView.value) {
+      await snapToListViewNearestAvailableTimeSlot();
+    }
   },
   { deep: true }
 );
@@ -1709,11 +1971,15 @@ const toggleView = () => {
 
 const openAccordionIndex = ref(0);
 
+const openAccordionDate = ref<string | null>(null);
+
 const daysToShow = ref(5);
+
+const listViewCurrentHour = ref<Map<string, number>>(new Map());
+const listViewCurrentDayPart = ref<Map<string, "am" | "pm">>(new Map());
 
 const loadMoreDays = () => {
   daysToShow.value += 3;
-  openAccordionIndex.value = -1;
 };
 
 const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
@@ -1788,6 +2054,26 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
     hourRows.sort((a, b) => a.hour - b.hour);
     dayPartRows.sort((a, b) => (a.part === "am" ? -1 : 1));
 
+    if (!listViewCurrentHour.value.has(dateString)) {
+      const availableHours = getListDayAvailableHours({
+        hourRows,
+        dayPartRows,
+      } as AccordionDay);
+      if (availableHours.length > 0) {
+        listViewCurrentHour.value.set(dateString, availableHours[0]);
+      }
+    }
+
+    if (!listViewCurrentDayPart.value.has(dateString)) {
+      const availableDayParts = getListDayAvailableDayParts({
+        hourRows,
+        dayPartRows,
+      } as AccordionDay);
+      if (availableDayParts.length > 0) {
+        listViewCurrentDayPart.value.set(dateString, availableDayParts[0]);
+      }
+    }
+
     return {
       date: d,
       dateString,
@@ -1799,25 +2085,50 @@ const firstFiveAvailableDays = computed<AccordionDay[]>(() => {
   });
 });
 
+watch(firstFiveAvailableDays, (newDays) => {
+  if (newDays.length > 0 && !openAccordionDate.value) {
+    openAccordionDate.value = newDays[0].dateString;
+  }
+});
+
 const onDayAccordionSelect = (day: AccordionDay) => {
-  const idx = firstFiveAvailableDays.value.findIndex(
-    (d) => d.dateString === day.dateString
-  );
-  if (openAccordionIndex.value === idx) {
-    openAccordionIndex.value = -1; // Accordion schließen
+  if (openAccordionDate.value === day.dateString) {
+    openAccordionDate.value = null;
   } else {
-    openAccordionIndex.value = idx; // Accordion öffnen
+    openAccordionDate.value = day.dateString;
     selectedDay.value = day.date;
     handleDaySelection(day.date);
+
+    const availableHours = getListDayAvailableHours(day);
+    if (availableHours.length > 0) {
+      listViewCurrentHour.value.set(day.dateString, availableHours[0]);
+    }
+
+    const availableDayParts = getListDayAvailableDayParts(day);
+    if (availableDayParts.length > 0) {
+      listViewCurrentDayPart.value.set(day.dateString, availableDayParts[0]);
+    }
   }
 };
 
 const isSlotSelected = (officeId: number | string, time: number) =>
   selectedTimeslot.value === time &&
   selectedProvider.value?.id?.toString() === officeId.toString();
+
+const getCurrentHourForDay = (dateString: string): number | undefined => {
+  return listViewCurrentHour.value.get(dateString);
+};
+
+const getCurrentDayPartForDay = (
+  dateString: string
+): "am" | "pm" | undefined => {
+  return listViewCurrentDayPart.value.get(dateString);
+};
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "@/styles/breakpoints.scss" as *;
+
 .wrapper {
   display: grid;
   grid-template-columns: 6rem 1fr;
@@ -1865,6 +2176,22 @@ const isSlotSelected = (officeId: number | string, time: number) =>
   width: 100px;
 }
 
+.left-text {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  height: 100%;
+  width: 100px;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* Target any div containing .left-text (more specific) */
+div:has(.left-text) {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
 .m-button-group {
   margin-bottom: 20px;
   padding-bottom: 0;
@@ -1880,6 +2207,82 @@ const isSlotSelected = (officeId: number | string, time: number) =>
 .disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Disabled toggle text styling */
+.m-toggle-switch__label.disabled {
+  opacity: 1;
+  color: #617586; /* Grey Light */
+  transition: color 0.2s ease;
+}
+
+/* Active toggle text styling */
+.m-toggle-switch__label:not(.disabled) {
+  color: #005a9f; /* BDE Blue */
+  transition: color 0.2s ease;
+}
+
+.view-toggle-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Responsive layout: on larger screens, display toggle to the right of heading */
+@include xs-up {
+  .view-toggle-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+/* Mobile styles - grouped together for better organization */
+@include xs-down {
+  /* Timeslot buttons - smaller padding for mobile */
+  .timeslot.m-button,
+  .timeslot .m-button {
+    padding: 1px 8px !important; /* Even smaller padding for very small screens */
+    min-height: 2.25rem;
+  }
+
+  /* Grid layout adjustments for mobile */
+  .grid-item {
+    margin: 6px 6px;
+  }
+  .grid {
+    margin-right: 0px;
+  }
+}
+
+/* Fix for button scaling - ensure consistent width for both earlier and later buttons */
+.m-button-group .muc-button[icon-shown-left],
+.m-button-group .muc-button[icon-shown-right] {
+  min-width: 100px !important;
+}
+
+/* Target the actual rendered buttons with left or right icons */
+.m-button-group button .m-button__icon--before,
+.m-button-group button .m-button__icon--after {
+  min-width: 100px !important;
+}
+
+/* Alternative - target buttons that contain either left or right icons */
+.m-button-group button:has(.m-button__icon--before),
+.m-button-group button:has(.m-button__icon--after) {
+  min-width: 100px !important;
+}
+
+/* Remove focus effects from navigation buttons */
+.m-button-group button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.m-button-group button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }
 </style>
 
@@ -1900,5 +2303,15 @@ const isSlotSelected = (officeId: number | string, time: number) =>
 .m-callout__content ul li {
   list-style-type: disc !important;
   padding-left: 0.5rem !important;
+}
+
+.muc-calendar-view-full-size .muc-calendar-item,
+.muc-calendar-container .muc-calendar-item {
+  font-size: 1.125rem !important; /* 18px - default for desktop */
+}
+
+.muc-calendar-view-full-size,
+.muc-calendar-container {
+  font-size: 1.125rem !important; /* Desktop size */
 }
 </style>
