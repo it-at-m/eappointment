@@ -46,10 +46,10 @@ export default defineConfig({
     rollupOptions: {
       input: {
         "index": "./index.html",
-        "index-appointment": "./index-appointment.html",
-        "index-appointment-detail": "./index-appointment-detail.html",
-        "index-appointment-overview": "./index-appointment-overview.html",
-        "index-appointment-slider": "./index-appointment-slider.html",
+        "appointment-html": "./appointment.html",
+        "appointment-detail-html": "./appointment-detail.html",
+        "appointment-overview-html": "./appointment-overview.html",
+        "appointment-slider-html": "./appointment-slider.html",
         "zms-appointment": "./src/zms-appointment-webcomponent.ts",
         "zms-appointment-detail": "./src/zms-appointment-detail-webcomponent.ts",
         "zms-appointment-overview": "./src/zms-appointment-overview-webcomponent.ts",
