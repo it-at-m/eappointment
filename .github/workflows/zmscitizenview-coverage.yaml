@@ -34,7 +34,7 @@ jobs:
           cd zmscitizenview
           # Create a temporary vitest config with coverage enabled
           cat > vitest.coverage.config.ts << 'EOL'
-          import {defineConfig} from "vite";
+          import { defineConfig } from "vitest/config";
           import vue from "@vitejs/plugin-vue";
           import {fileURLToPath} from "node:url";
 
@@ -71,7 +71,6 @@ jobs:
             }
           })
           EOL
-
       - name: Run tests with coverage
         run: |
           cd zmscitizenview
