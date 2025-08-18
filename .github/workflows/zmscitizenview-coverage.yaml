@@ -15,9 +15,8 @@ jobs:
     outputs:
       result: ${{ steps.set-result.outputs.result }}
     steps:
-      - name: Checkout GitHub Action
-        uses: actions/checkout@main
-
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
