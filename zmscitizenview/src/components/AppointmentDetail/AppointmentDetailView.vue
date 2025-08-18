@@ -272,6 +272,7 @@ onMounted(() => {
       });
     }
   });
+  loading.value = false;
 });
 </script>
 
