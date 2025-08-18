@@ -162,7 +162,7 @@ jobs:
                     <li><a href="coverage/coverage-zmsapi/html/">Zmsapi Coverage</a></li>
                     <li><a href="coverage/coverage-zmsdb/html/">Zmsdb Coverage</a></li>
                     <li><a href="coverage/coverage-zmsclient/html/">Zmsclient Coverage</a></li>
-                    <li><a href="coverage/coverage-zmscitizenview/html/">Zmscitizenview Coverage</a></li>
+                    <li><a href="coverage/coverage-zmscitizenview/">Zmscitizenview Coverage</a></li>
                   </ul>
                 </div>
 
