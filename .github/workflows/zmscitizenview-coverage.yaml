@@ -84,6 +84,7 @@ jobs:
           rm vitest.coverage.config.ts
 
       - name: Verify coverage output
+        if: always()
         run: |
           cd zmscitizenview
           echo "=== Coverage directory contents ==="
@@ -98,6 +99,7 @@ jobs:
           fi
 
       - name: Upload Coverage
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-zmscitizenview
