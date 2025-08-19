@@ -1269,6 +1269,7 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
         typeof d === "object" && d !== null && "time" in d && "providerIDs" in d
     )
   ) {
+    datesWithoutAppointments.value.clear();
     availableDays.value = days as { time: string; providerIDs: string }[];
     selectedDay.value = new Date((days[0] as any).time);
     // Keep viewMonth in sync with selectedDay and force calendar to re-render
