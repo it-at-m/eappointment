@@ -2,7 +2,7 @@
   <muc-intro
     v-if="appointment"
     class="multiline-text"
-    :tagline="t('onSiteAppointment')"
+    :tagline="t('appointment')"
     :title="formatTitle(appointment)"
   >
     <div class="appointment-data">

@@ -114,6 +114,14 @@ onMounted(() => {
           data.every((item) => item.processId !== undefined)
         ) {
           appointments.value = data;
+          if (props.displayedOnDetailScreen) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const appointmentId = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
+            appointments.value = appointments.value.filter(
+              (appointment: AppointmentDTO) =>
+                appointment.processId != appointmentId
+            );
+          }
         } else {
           loadingError.value = true;
         }
@@ -121,14 +129,6 @@ onMounted(() => {
     })
     .finally(() => {
       loading.value = false;
-      if (props.displayedOnDetailScreen) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const appointmentId = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
-        appointments.value = appointments.value.filter(
-          (appointment: AppointmentDTO) =>
-            appointment.processId != appointmentId
-        );
-      }
     });
 });
 
