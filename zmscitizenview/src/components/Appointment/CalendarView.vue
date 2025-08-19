@@ -1,5 +1,5 @@
 <template>
-  <div v-if="providersWithAppointments && providersWithAppointments.length > 1">
+  <div v-if="selectableProviders && selectableProviders.length > 1">
     <div class="m-component slider-no-margin">
       <div class="m-content">
         <h2
@@ -13,7 +13,7 @@
         <MucCheckboxGroup :errorMsg="providerSelectionError">
           <template #checkboxes>
             <MucCheckbox
-              v-for="provider in providersWithAppointments"
+              v-for="provider in selectableProviders"
               :key="provider.id"
               :id="'checkbox-' + provider.id"
               :label="provider.name"
@@ -899,6 +899,8 @@ const datesWithoutAppointments = ref(new Set<string>());
 
 const isLoadingComplete = ref(false);
 
+let refetchTimer: any;
+
 watch(isLoadingAppointments, (loading) => {
   if (loading) {
     isLoadingComplete.value = false;
@@ -1233,43 +1235,57 @@ const currentDayPart = computed(() => {
     : firstDayPart.value;
 });
 
+const refetchAvailableDaysForSelection = async (): Promise<void> => {
+  const providers = selectableProviders.value || [];
+  const selectedIds = providers
+    .filter((p) => selectedProviders.value[String(p.id)])
+    .map((p) => Number(p.id));
+
+  // If nothing explicitly selected yet, fall back to all providers
+  const providerIdsToQuery =
+    selectedIds.length > 0 ? selectedIds : providers.map((p) => Number(p.id));
+
+  const data = await fetchAvailableDays(
+    providerIdsToQuery,
+    Array.from(props.selectedServiceMap.keys()),
+    Array.from(props.selectedServiceMap.values()),
+    props.baseUrl ?? undefined,
+    props.captchaToken ?? undefined
+  );
+
+  const days = (data as AvailableDaysDTO)?.availableDays;
+  if (
+    Array.isArray(days) &&
+    days.length > 0 &&
+    days.every(
+      (d) =>
+        typeof d === "object" && d !== null && "time" in d && "providerIDs" in d
+    )
+  ) {
+    availableDays.value = days as { time: string; providerIDs: string }[];
+    selectedDay.value = new Date((days[0] as any).time);
+    // Keep viewMonth in sync with selectedDay and force calendar to re-render
+    viewMonth.value = new Date(
+      selectedDay.value.getFullYear(),
+      selectedDay.value.getMonth(),
+      1
+    );
+    calendarKey.value++;
+    availableDaysFetched.value = true;
+    minDate.value = new Date((days[0] as any).time);
+    maxDate.value = new Date((days[days.length - 1] as any).time);
+    error.value = false;
+  } else {
+    handleError(data);
+  }
+};
+
 const showSelectionForProvider = (provider: OfficeImpl) => {
   selectedProvider.value = provider;
   error.value = false;
   selectedDay.value = undefined;
   selectedTimeslot.value = 0;
-  const providers = selectableProviders.value || [];
-  const providerIds = providers.map((p) => p.id);
-
-  fetchAvailableDays(
-    providerIds.map(Number),
-    Array.from(props.selectedServiceMap.keys()),
-    Array.from(props.selectedServiceMap.values()),
-    props.baseUrl ?? undefined,
-    props.captchaToken ?? undefined
-  ).then((data) => {
-    const days = (data as AvailableDaysDTO)?.availableDays;
-    if (
-      Array.isArray(days) &&
-      days.length > 0 &&
-      days.every(
-        (d) =>
-          typeof d === "object" &&
-          d !== null &&
-          "time" in d &&
-          "providerIDs" in d
-      )
-    ) {
-      availableDays.value = days as { time: string; providerIDs: string }[];
-      selectedDay.value = new Date((days[0] as any).time);
-      availableDaysFetched.value = true;
-      minDate.value = new Date((days[0] as any).time);
-      maxDate.value = new Date((days[days.length - 1] as any).time);
-      error.value = false;
-    } else {
-      handleError(data);
-    }
-  });
+  refetchAvailableDaysForSelection();
 };
 
 const handleError = (data: any): void => {
@@ -1339,6 +1355,13 @@ const getAppointmentsOfDay = (date: string) => {
 
             if (firstAvailableDay) {
               selectedDay.value = new Date(firstAvailableDay.time);
+              // Sync viewMonth and re-render calendar
+              viewMonth.value = new Date(
+                selectedDay.value.getFullYear(),
+                selectedDay.value.getMonth(),
+                1
+              );
+              calendarKey.value++;
             }
           }
         }
@@ -1367,6 +1390,13 @@ const getAppointmentsOfDay = (date: string) => {
 
             if (firstAvailableDay) {
               selectedDay.value = new Date(firstAvailableDay.time);
+              // Sync viewMonth and re-render calendar
+              viewMonth.value = new Date(
+                selectedDay.value.getFullYear(),
+                selectedDay.value.getMonth(),
+                1
+              );
+              calendarKey.value++;
             }
           }
         }
@@ -1462,12 +1492,7 @@ const hasSelectedProviderWithAppointments = computed(() => {
   );
 });
 
-watch(providersWithAppointments, (newProviders) => {
-  // If no provider with appointments is selected and we have providers with appointments, select the first one
-  if (!hasSelectedProviderWithAppointments.value && newProviders.length > 0) {
-    selectedProviders.value[newProviders[0].id] = true;
-  }
-});
+// Do not auto-select a provider when all are unchecked; allow empty selection
 
 watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
@@ -1709,6 +1734,15 @@ function updateDateRangeForSelectedProviders() {
         availableDaysForSelectedProviders.length - 1
       ].time
     );
+    // Ensure calendar updates min/max immediately
+    if (selectedDay.value) {
+      viewMonth.value = new Date(
+        selectedDay.value.getFullYear(),
+        selectedDay.value.getMonth(),
+        1
+      );
+    }
+    calendarKey.value++;
   }
   return availableDaysForSelectedProviders;
 }
@@ -1935,15 +1969,20 @@ async function snapToListViewNearestAvailableTimeSlot() {
 watch(
   selectedProviders,
   async (newVal, oldVal) => {
-    const availableDaysForSelectedProviders =
-      updateDateRangeForSelectedProviders();
-    await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
-    await snapToNearestAvailableTimeSlot();
-    await validateCurrentDateHasAppointments();
+    // Re-fetch available days whenever provider selection changes (debounced)
+    if (refetchTimer) clearTimeout(refetchTimer);
+    refetchTimer = setTimeout(async () => {
+      await refetchAvailableDaysForSelection();
+      const availableDaysForSelectedProviders =
+        updateDateRangeForSelectedProviders();
+      await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
+      await snapToNearestAvailableTimeSlot();
+      await validateCurrentDateHasAppointments();
 
-    if (isListView.value) {
-      await snapToListViewNearestAvailableTimeSlot();
-    }
+      if (isListView.value) {
+        await snapToListViewNearestAvailableTimeSlot();
+      }
+    }, 150);
   },
   { deep: true }
 );
