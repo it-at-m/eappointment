@@ -98,7 +98,7 @@
                       aria-hidden="true"
                       class="icon"
                     >
-                      <use xlink:href="#icon-ext-link"></use>
+                      <use xlink:href="#icon-arrow-right"></use>
                     </svg>
                   </a>
                 </li>

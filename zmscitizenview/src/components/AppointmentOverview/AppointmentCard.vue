@@ -1,7 +1,7 @@
 <template>
   <muc-card
     class="multiline-text"
-    :tagline="t('onSiteAppointment')"
+    :tagline="t('appointment')"
     :title="formatTitle(appointment)"
     @click="goToAppointmentLink(appointment.processId!)"
   >
