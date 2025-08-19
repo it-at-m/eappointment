@@ -1974,16 +1974,11 @@ async function snapToListViewNearestAvailableTimeSlot() {
 
 watch(
   selectedProviders,
-  async () => {
+  async (newVal, oldVal) => {
     // Re-fetch available days whenever provider selection changes (debounced)
-    const selectionSnapshot = JSON.stringify(selectedProviders.value);
     if (refetchTimer) clearTimeout(refetchTimer);
     refetchTimer = setTimeout(async () => {
       await refetchAvailableDaysForSelection();
-      // Selection changed while awaiting? Abort this cycle.
-      if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
-        return;
-      }
       const availableDaysForSelectedProviders =
         updateDateRangeForSelectedProviders();
       await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
