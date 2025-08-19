@@ -74,11 +74,10 @@
   </div>
 
   <div
-    v-if="availableDaysFetched && !hasAppointmentsForSelectedProviders()"
+    v-if="availableDaysFetched && noProviderSelected"
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
-
     <muc-callout type="warning">
       <template #header>
         <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
@@ -748,7 +747,7 @@
     </div>
   </div>
   <div
-    v-if="showError"
+    v-if="!noProviderSelected && showError"
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
@@ -1500,8 +1499,6 @@ const hasSelectedProviderWithAppointments = computed(() => {
   );
 });
 
-// Do not auto-select a provider when all are unchecked; allow empty selection
-
 watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
   if (newDate) {
@@ -2011,6 +2008,12 @@ const providerSelectionError = computed(() => {
   );
 
   return hasSelection ? "" : props.t("errorMessageProviderSelection");
+});
+
+const noProviderSelected = computed(() => {
+  const providers = selectableProviders.value || [];
+  if (!providers.length) return false;
+  return providers.every((p) => !selectedProviders.value[String(p.id)]);
 });
 
 const APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW = 18;
