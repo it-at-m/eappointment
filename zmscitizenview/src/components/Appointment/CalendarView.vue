@@ -799,7 +799,15 @@ import {
   MucCheckbox, // Todo: Use MucCheckbox once disabled boxes are available in the patternlab-vue package
   MucCheckboxGroup,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
+import {
+  computed,
+  inject,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsByOfficeDTO } from "@/api/models/AvailableTimeSlotsByOfficeDTO";
@@ -899,7 +907,7 @@ const datesWithoutAppointments = ref(new Set<string>());
 
 const isLoadingComplete = ref(false);
 
-let refetchTimer: any;
+let refetchTimer: ReturnType<typeof setTimeout> | undefined;
 
 watch(isLoadingAppointments, (loading) => {
   if (loading) {
@@ -1986,6 +1994,10 @@ watch(
   },
   { deep: true }
 );
+
+onUnmounted(() => {
+  if (refetchTimer) clearTimeout(refetchTimer);
+});
 
 const providerSelectionError = computed(() => {
   if (!availableDays?.value || availableDays.value.length === 0) {
