@@ -1974,7 +1974,7 @@ async function snapToListViewNearestAvailableTimeSlot() {
 
 watch(
   selectedProviders,
-  async (newVal, oldVal) => {
+  async () => {
     // Re-fetch available days whenever provider selection changes (debounced)
     if (refetchTimer) clearTimeout(refetchTimer);
     refetchTimer = setTimeout(async () => {
