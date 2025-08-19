@@ -955,7 +955,7 @@ describe("CalendarView", () => {
       expect(wrapper.text()).toContain('Office D');
     });
 
-    it('does not show any providers when no appointments are available', async () => {
+    it('shows multiple providers when no appointments are available', async () => {
       // Mock availableDays to be empty
       (fetchAvailableDays as Mock).mockResolvedValue({
         availableDays: []
@@ -976,9 +976,24 @@ describe("CalendarView", () => {
       await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
 
-      // With new behavior, checkboxes come from selectableProviders even if no days
       const checkboxes = wrapper.findAll('input[type="checkbox"]');
       expect(checkboxes.length).toBe(4);
+    });
+
+    it('does not show single provider when no appointments are available', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: []
+      });
+      
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } }
+        ] }
+      });
+
+      const checkboxes = wrapper.findAll('input[type="checkbox"]');
+      expect(checkboxes.length).toBe(0);
+      
     });
 
     it("shows no providers when none have appointments", async () => {
