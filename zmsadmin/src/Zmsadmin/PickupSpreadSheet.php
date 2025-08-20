@@ -47,7 +47,8 @@ class PickupSpreadSheet extends BaseController
 
         $writer = Writer::createFromString();
         $writer->setDelimiter(';');
-        $writer->addFormatter(new EscapeFormula());
+        $escapeFormula = new EscapeFormula();
+        $writer->addFormatter([$escapeFormula, 'escapeRecord']);
         $writer->insertOne(['Abholer','','','','','','','','']);
         $writer->insertOne([$department->name . ' - ' . $providerName,'','','','','','','','']);
         $writer->insertOne(['','Datum','Nr.','Name','Telefonnr.','eMail','Dienstleistung','Anmerkung']);
