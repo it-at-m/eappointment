@@ -41,7 +41,7 @@ abstract class Base
         $this->readDb = $readConnection;
     }
 
-    public static function init(\PDO $writeConnection = null, \PDO $readConnection = null)
+    public static function init(?\PDO $writeConnection = null, ?\PDO $readConnection = null)
     {
         $instance = new static($writeConnection, $readConnection);
         return $instance;
