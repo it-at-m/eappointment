@@ -74,7 +74,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         $writer->addFormatter([$escapeFormula, 'escapeRecord']);
         $writer->addFormatter(new EscapeFormula());
         $writer->insertOne($xlsHeaders);
-        $writer->setOutputBOM(Reader::BOM_UTF8);
+        $writer->setOutputBOM(\League\Csv\Bom::Utf8);
         $writer->insertAll($rows);
 
         $response->getBody()->write($writer->toString());
