@@ -276,7 +276,7 @@ class SlotTest extends Base
     {
         $availability = $this->readTestAvailability();
         $now = (new Slot())->readLastChangedTimeByAvailability($availability);
-        $status = (new Slot())->writeByAvailability($availability, $now);
+        $status = (new Slot())->writeByAvailability($availability, $now, $now);
         $this->assertFalse($status, "Availability should not rebuild slots without change");
     }
 
@@ -286,7 +286,7 @@ class SlotTest extends Base
         $availability->scope['preferences']['appointment']['endInDaysDefault'] = 63;
         $availability->scope = (new \BO\Zmsdb\Scope())->updateEntity($availability->scope->id, $availability->scope, 1);
         $now = (new Slot())->readLastChangedTimeByAvailability($availability);
-        $status = (new Slot())->writeByAvailability($availability, $now);
+        $status = (new Slot())->writeByAvailability($availability, $now, $now);
         //$this->debugOutdated($availability, $now, $now->modify('-1 hour'));
         $this->assertFalse(!$status, "Availability should rebuild slots on changed scope");
     }
@@ -315,7 +315,7 @@ class SlotTest extends Base
             $lastChange->format('Y-m-d H:i:s'),
             "readLastChangedTimeByAvailability should not return cancelled slots"
         );
-        $status = (new Slot())->writeByAvailability($availability, $now);
+        $status = (new Slot())->writeByAvailability($availability, $now, $now);
         $this->assertFalse(!$status, "Availability should rebuild slots if newer");
     }
 
@@ -323,13 +323,13 @@ class SlotTest extends Base
     {
         $availability = $this->readTestAvailability();
         $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
-        $status = (new Slot())->writeByAvailability($availability, static::$now);
+        $status = (new Slot())->writeByAvailability($availability, static::$now, static::$now);
         //$this->debugOutdated($availability, $now, $lastChange);
         $availability = $this->readTestAvailability();
         $now = (new Slot())->readLastChangedTimeByAvailability($availability);
         $lastChange = $now;
         $now = $now->modify('+1 day');
-        $status = (new Slot())->writeByAvailability($availability, $now);
+        $status = (new Slot())->writeByAvailability($availability, $now, $now);
         //$this->debugOutdated($availability, $now, $lastChange);
        
         $this->assertFalse(!$status, "Availability should rebuild slots if time allows new slots");
@@ -463,7 +463,7 @@ class SlotTest extends Base
         $this->assertEquals('cancelled', $cancelledSlots[0]['status'], "Slots should be cancelled before the cancellation time");
         
         // Verify we don't rebuild slots
-        $status = (new Slot())->writeByAvailability($availability, $now);
+        $status = (new Slot())->writeByAvailability($availability, $now, $now);
         $this->assertFalse($status, "Availability should not rebuild slots when Offen_ab=0 Offen_bis=0 and slots are cancelled");
         
         // Verify slots remain cancelled
@@ -505,7 +505,7 @@ class SlotTest extends Base
             $lastChange->format('Y-m-d H:i:s'),
             "readLastChangedTimeByAvailability should not return cancelled slots"
         );
-        $status = (new Slot())->writeByAvailability($availability, $now);
+        $status = (new Slot())->writeByAvailability($availability, $now, $now);
         $this->assertFalse($status, "Availability should not rebuild slots when cancellation is not on same day as Offen_ab=0 Offen_bis=0");
     }
 
