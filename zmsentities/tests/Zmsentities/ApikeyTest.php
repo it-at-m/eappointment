@@ -27,7 +27,7 @@ class ApikeyTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample()->withCaptchaData('base64UnitTest');
         $this->assertStringContainsString('"mime":"image\/jpeg;base64"', (string)$entity);
-        $this->assertTrue('base64UnitTest' === $entity->captcha->content);
+        $this->assertTrue('base64UnitTest' === $entity['captcha']['content']);
         $hash = $entity->getHash('a2c4e6');
         $this->assertTrue($entity->isVerifiedHash('a2c4e6', $hash));
         $this->assertFalse($entity->isVerifiedHash('dummy', $hash));
