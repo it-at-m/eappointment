@@ -62,7 +62,7 @@ abstract class Query
      * @param   null|DialectInterface   $dialect    Null to get, DialectInterface to set
      * @return  DialectInterface|$this  DialectInterface on get, $this on set.
      */
-    public function dialect(DialectInterface $dialect = null)
+    public function dialect(?DialectInterface $dialect = null)
     {
         if ($dialect === null) {
             return $this->dialect;
