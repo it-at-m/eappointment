@@ -72,7 +72,7 @@ class WorkstationProcessFinished extends BaseController
 
     protected function getFinishedResponse(
         \BO\Zmsentities\Workstation $workstation,
-        Entity $process = null
+        ?Entity $process = null
     ) {
         $process = ($process) ? $process : clone $workstation->process;
         $process->status = ('pending' != $process->status) ? 'finished' : $process->status;
