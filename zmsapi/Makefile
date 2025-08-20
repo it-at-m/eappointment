@@ -11,7 +11,7 @@ dev: # init development system
 	npm install
 
 live: # init live system, delete unnecessary libs
-	composer install --no-dev --prefer-dist
+	composer install --no-dev --prefer-dist --optimize-autoloader
 
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
