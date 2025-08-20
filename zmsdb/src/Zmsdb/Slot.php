@@ -246,7 +246,7 @@ class Slot extends Base
         $updatedList = new \BO\Zmsentities\Collection\AvailabilityList();
         foreach ($availabilityList as $availability) {
             $availability->scope = clone $scope; //dayoff is required
-            if ($this->writeByAvailability($availability, $now)) {
+            if ($this->writeByAvailability($availability, $now, $slotLastChange)) {
                 $updatedList->addEntity($availability);
             }
         }
