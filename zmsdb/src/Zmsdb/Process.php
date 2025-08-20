@@ -122,7 +122,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
     }
 
-    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0, \BO\Zmsentities\Useraccount $useraccount = null)
+    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
         $process = Entity::createFromScope($scope, $dateTime);
         $process->setStatus('pending');

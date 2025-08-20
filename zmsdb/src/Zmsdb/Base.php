@@ -264,7 +264,7 @@ abstract class Base
      * @param callable|NULL $c (function to be used for hashing)
      * @return string
      */
-    public function hashStringValue(string $value, callable $callable = null): string
+    public function hashStringValue(string $value, ?callable $callable = null): string
     {
         if ($callable === null) {
             $callable = 'sha1';
