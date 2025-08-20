@@ -67,7 +67,7 @@ class Http
      *
      * @param ClientInterface $client
      */
-    public function __construct($baseUrl, ClientInterface $client = null)
+    public function __construct($baseUrl, ?ClientInterface $client = null)
     {
         $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH) ?? '';
         $this->uri = new Psr7\Uri();

@@ -35,7 +35,7 @@ abstract class Base
      * @param \PDO $writeConnection
      * @param \PDO $readConnection
      */
-    public function __construct(\PDO $writeConnection = null, \PDO $readConnection = null)
+    public function __construct(?\PDO $writeConnection = null, ?\PDO $readConnection = null)
     {
         $this->writeDb = $writeConnection;
         $this->readDb = $readConnection;
