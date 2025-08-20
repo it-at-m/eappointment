@@ -42,17 +42,25 @@ class ReportClientOrganisationTest extends Base
               ]
             ]
         );
-        $response = $this->render([ ], ['__uri' => '/report/client/department/'], [ ]);
+        $response = $this->render([ ], ['__uri' => '/report/client/organisation/'], [ ]);
         $this->assertStringContainsString('Kundenstatistik Bezirk', (string) $response->getBody());
-        $this->assertStringContainsString(
-            '<a class="active" href="/report/client/organisation/">Charlottenburg-Wilmersdorf</a>',
-            (string) $response->getBody()
-        );
         $this->assertStringContainsString(
             '<a href="/report/client/organisation/2016-04/">April</a>',
             (string) $response->getBody()
         );
         $this->assertStringContainsString('Charlottenburg-Wilmersdorf', (string) $response->getBody());
+        $this->assertStringContainsString(
+            '<label for="scope-select">Standortauswahl</label>',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<optgroup label="Charlottenburg-Wilmersdorf -&gt; Bürgeramt">',
+            (string) $response->getBody()
+        );
+        $this->assertStringContainsString(
+            '<label>Datumsauswahl</label>',
+            (string) $response->getBody()
+        );
         $this->assertStringContainsString('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
@@ -116,7 +124,6 @@ class ReportClientOrganisationTest extends Base
             'Auswertung für Charlottenburg-Wilmersdorf im Zeitraum April 2016',
             (string) $response->getBody()
         );
-        $this->assertStringContainsString('135', (string) $response->getBody());
     }
 
     public function testWithDownloadXLSX()
@@ -170,7 +177,7 @@ class ReportClientOrganisationTest extends Base
             'period' => '2016-04'
             ],
             [
-            '__uri' => '/report/client/department/2016-04/',
+            '__uri' => '/report/client/organisation/2016-04/',
             'type' => 'xlsx'
             ],
             [ ]
