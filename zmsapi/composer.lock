@@ -180,11 +180,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-chore-zmskvr-gh-1280-upgrade-from-php-83-to-84",
+            "version": "dev-chore-zmskvr-690-gh-1280-upgrade-from-php-83-to-84",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
+                "reference": "29387eca2ce4f6f4a4e2ce05cd6db8a7a77cc729"
             },
             "require": {
                 "ext-json": ">=0",
@@ -229,7 +229,7 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-chore-zmskvr-gh-1280-upgrade-from-php-83-to-84",
+            "version": "dev-chore-zmskvr-690-gh-1280-upgrade-from-php-83-to-84",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
@@ -289,11 +289,11 @@
         },
         {
             "name": "eappointment/zmsdb",
-            "version": "dev-chore-zmskvr-gh-1280-upgrade-from-php-83-to-84",
+            "version": "dev-chore-zmskvr-690-gh-1280-upgrade-from-php-83-to-84",
             "dist": {
                 "type": "path",
                 "url": "../zmsdb",
-                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
+                "reference": "29387eca2ce4f6f4a4e2ce05cd6db8a7a77cc729"
             },
             "require": {
                 "aura/sql": "^6.0",
@@ -374,11 +374,11 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-chore-zmskvr-gh-1280-upgrade-from-php-83-to-84",
+            "version": "dev-chore-zmskvr-690-gh-1280-upgrade-from-php-83-to-84",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
+                "reference": "29387eca2ce4f6f4a4e2ce05cd6db8a7a77cc729"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -442,11 +442,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-chore-zmskvr-gh-1280-upgrade-from-php-83-to-84",
+            "version": "dev-chore-zmskvr-690-gh-1280-upgrade-from-php-83-to-84",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
+                "reference": "29387eca2ce4f6f4a4e2ce05cd6db8a7a77cc729"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -500,11 +500,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-chore-zmskvr-gh-1280-upgrade-from-php-83-to-84",
+            "version": "dev-chore-zmskvr-690-gh-1280-upgrade-from-php-83-to-84",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
+                "reference": "29387eca2ce4f6f4a4e2ce05cd6db8a7a77cc729"
             },
             "require": {
                 "eappointment/mellon": "@dev",
