@@ -88,11 +88,12 @@ class Base extends \ArrayObject
         $this->offsetSet($name, $value);
     }
 
-    public function offsetSet($index, $value): void
+    public function offsetSet($index, $value): bool
     {
         if ('data_json' == $index) {
             $value = json_decode($value, true);
             $this->exchangeArray($value);
+            return false;
         } else {
             if (stripos($index, '_json')) {
                 $value = json_decode($value, true);
@@ -100,10 +101,11 @@ class Base extends \ArrayObject
             }
             if (stripos($index, '__')) {
                 static::doubleUnterlineToArray($this, $index, $value);
-                return;
+                return true;
             }
 
             parent::offsetSet($index, $value);
+            return false;
         }
     }
 
