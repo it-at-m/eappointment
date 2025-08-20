@@ -59,8 +59,8 @@ class Availability extends Base implements Interfaces\ResolveReferences
     public function readList(
         $scopeId,
         $resolveReferences = 0,
-        \DateTimeInterface $startDate = null,
-        \DateTimeInterface $endDate = null
+        ?\DateTimeInterface $startDate = null,
+        ?\DateTimeInterface $endDate = null
     ) {
         $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
         if (1 <= $resolveReferences) {

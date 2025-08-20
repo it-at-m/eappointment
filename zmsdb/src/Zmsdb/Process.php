@@ -521,7 +521,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByMailAddress(string $mailAddress, int $scopeId = null, $resolveReferences = 0, $limit = 2000): Collection
+    public function readProcessListByMailAddress(string $mailAddress, ?int $scopeId = null, $resolveReferences = 0, $limit = 2000): Collection
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
