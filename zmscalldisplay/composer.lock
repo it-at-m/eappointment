@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "31043afdf2f4baa038905372aee9816259a734b7"
+                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
             },
             "require": {
                 "ext-json": ">=0",
@@ -175,7 +175,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "20638d761138fc8fffb335416a23743fae53e6db"
+                "reference": "0aae4726cea7a67d7b927118ce9db812f4ee04a2"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -190,7 +190,7 @@
                 "php-http/curl-client": "^2.2",
                 "psr/http-message": "^1.0",
                 "roave/security-advisories": "dev-latest",
-                "slim/psr7": "^1.5",
+                "slim/psr7": "^1.7.1",
                 "tracy/tracy": "^2.9",
                 "twig/twig": "3.*"
             },
@@ -235,7 +235,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "31043afdf2f4baa038905372aee9816259a734b7"
+                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -293,7 +293,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "31043afdf2f4baa038905372aee9816259a734b7"
+                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -303,7 +303,7 @@
                 "php": ">=8.4",
                 "roave/security-advisories": "dev-latest",
                 "slim/http-cache": "1.*",
-                "slim/psr7": "^1.5",
+                "slim/psr7": "^1.7.1",
                 "slim/slim": "4.*",
                 "slim/twig-view": "3.*",
                 "stevenmaguire/oauth2-keycloak": "^4.0",

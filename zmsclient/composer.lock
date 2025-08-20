@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4975bf8b80752b5dd66805cc4958b425",
+    "content-hash": "4d0d4bd8129a0fa0969bd6d5552270a9",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -126,7 +126,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "31043afdf2f4baa038905372aee9816259a734b7"
+                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
             },
             "require": {
                 "ext-json": ">=0",
@@ -175,7 +175,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "31043afdf2f4baa038905372aee9816259a734b7"
+                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -233,7 +233,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "31043afdf2f4baa038905372aee9816259a734b7"
+                "reference": "fa1b8fc4a083d3d53e2b17b8ece045f4ed926f0b"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -243,7 +243,7 @@
                 "php": ">=8.4",
                 "roave/security-advisories": "dev-latest",
                 "slim/http-cache": "1.*",
-                "slim/psr7": "^1.5",
+                "slim/psr7": "^1.7.1",
                 "slim/slim": "4.*",
                 "slim/twig-view": "3.*",
                 "stevenmaguire/oauth2-keycloak": "^4.0",
