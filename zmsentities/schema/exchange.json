@@ -89,7 +89,8 @@
             "enum": [
               "string",
               "number",
-              "date"
+              "date",
+              "array"
             ]
           },
           "reference": {
@@ -107,7 +108,8 @@
           "type": [
             "string",
             "number",
-            "null"
+            "null",
+            "array"
           ],
           "description": "For a description on the values, see the 'dictionary'. Non existing "
         }

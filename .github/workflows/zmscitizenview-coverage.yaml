@@ -1,0 +1,112 @@
+permissions:
+  contents: read
+name: ZMSCitizenView Coverage
+
+on:
+  workflow_call:
+    outputs:
+      zmscitizenview-test-result:
+        description: "ZMSCitizenView test result"
+        value: ${{ jobs.zmscitizenview-test.outputs.result }}
+
+jobs:
+  zmscitizenview-test:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.set-result.outputs.result }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: zmscitizenview/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd zmscitizenview
+          npm ci
+
+      - name: Configure Vitest for coverage
+        run: |
+          cd zmscitizenview
+          # Create a temporary vitest config with coverage enabled
+          cat > vitest.coverage.config.ts << 'EOL'
+          import { defineConfig } from "vitest/config";
+          import vue from "@vitejs/plugin-vue";
+          import {fileURLToPath} from "node:url";
+
+          export default defineConfig({
+            plugins: [
+              vue({
+                features: {
+                  customElement: true
+                }
+              })
+            ],
+            resolve: {
+              alias: {
+                "@": fileURLToPath(new URL("./src", import.meta.url)),
+              },
+            },
+            test: {
+              environment: "jsdom",
+              globals: true,
+              coverage: {
+                provider: 'v8',
+                reporter: ['html', 'json', 'lcov', 'text'],
+                reportsDirectory: './coverage',
+                exclude: [
+                  'node_modules/',
+                  'tests/',
+                  'processes/',
+                  '**/*.d.ts',
+                  '**/*.config.*',
+                  '**/*.test.*',
+                  '**/*.spec.*'
+                ]
+              }
+            }
+          })
+          EOL
+      - name: Run tests with coverage
+        run: |
+          cd zmscitizenview
+          mkdir -p coverage
+          echo "Running tests with coverage for zmscitizenview"
+          
+          # Run tests with coverage using the temporary config
+          npx vitest run --config vitest.coverage.config.ts --coverage
+          
+          # Clean up temporary config
+          rm vitest.coverage.config.ts
+
+      - name: Verify coverage output
+        if: always()
+        run: |
+          cd zmscitizenview
+          echo "=== Coverage directory contents ==="
+          ls -la coverage/
+          if [ -d "coverage/html" ]; then
+            echo "=== HTML coverage files ==="
+            ls -la coverage/html/
+          fi
+          if [ -f "coverage/lcov.info" ]; then
+            echo "=== LCOV file exists ==="
+            head -5 coverage/lcov.info
+          fi
+
+      - name: Upload Coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-zmscitizenview
+          path: zmscitizenview/coverage/
+          retention-days: 1
+
+      - name: Set job result
+        id: set-result
+        if: always()
+        run: echo "result=${{ job.status }}" >> $GITHUB_OUTPUT
