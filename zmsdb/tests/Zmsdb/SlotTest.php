@@ -323,13 +323,13 @@ class SlotTest extends Base
     {
         $availability = $this->readTestAvailability();
         $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
-        $status = (new Slot())->writeByAvailability($availability, static::$now, static::$now);
+        $status = (new Slot())->writeByAvailability($availability, static::$now, $lastChange);
         //$this->debugOutdated($availability, $now, $lastChange);
         $availability = $this->readTestAvailability();
         $now = (new Slot())->readLastChangedTimeByAvailability($availability);
         $lastChange = $now;
         $now = $now->modify('+1 day');
-        $status = (new Slot())->writeByAvailability($availability, $now, $now);
+        $status = (new Slot())->writeByAvailability($availability, $now, $lastChange);
         //$this->debugOutdated($availability, $now, $lastChange);
        
         $this->assertFalse(!$status, "Availability should rebuild slots if time allows new slots");
