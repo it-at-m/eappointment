@@ -172,7 +172,7 @@ class Http
      *
      * @return Result
      */
-    public function readGetResult($relativeUrl, array $getParameters = null, $xToken = null)
+    public function readGetResult($relativeUrl, ?array $getParameters = null, $xToken = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
@@ -196,7 +196,7 @@ class Http
      *
      * @return Result
      */
-    public function readPostResult($relativeUrl, $entity, array $getParameters = null)
+    public function readPostResult($relativeUrl, $entity, ?array $getParameters = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
@@ -218,7 +218,7 @@ class Http
      *
      * @return Result
      */
-    public function readDeleteResult($relativeUrl, array $getParameters = null)
+    public function readDeleteResult($relativeUrl, ?array $getParameters = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
