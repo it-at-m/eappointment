@@ -15,7 +15,7 @@
         "roave/security-advisories": "dev-latest"
     },
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-json": ">=0",
         "ext-pcre": ">=0",
         "roave/security-advisories": "dev-latest"
