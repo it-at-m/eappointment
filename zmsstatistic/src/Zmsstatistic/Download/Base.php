@@ -13,6 +13,7 @@ class Base extends \BO\Zmsstatistic\BaseController
 {
     public static $ignoreColumns = [
         'subjectid',
+        'scopeids',
         'max',
         'sum'
     ];
@@ -45,6 +46,7 @@ class Base extends \BO\Zmsstatistic\BaseController
 
     public static $headlines = [
         'subjectid' => 'ID',
+        'scopeids' => 'Standort IDs',
         'date' => 'Datum',
         'notificationscount' => 'SMS*',
         'notificationscost' => 'SMS-Kosten**',

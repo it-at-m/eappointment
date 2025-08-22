@@ -175,7 +175,10 @@ class MapperService
             }
 
             $combinable = self::mapCombinable($serviceCombinations);
-            $services[] = new Service(id: (int) $service->getId(), name: $service->getName(), maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1, combinable: $combinable ?? new Combinable());
+
+            if (!empty($servicesProviderIds[$service->getId()])) {
+                $services[] = new Service(id: (int) $service->getId(), name: $service->getName(), maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1, combinable: $combinable ?? new Combinable());
+            }
         }
 
         return new ServiceList($services);

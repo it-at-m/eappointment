@@ -14,7 +14,7 @@ services:
   test:
     depends_on:
       - mockup
-    image: ghcr.io/it-at-m/eappointment-php-base:8.3-base
+    image: ghcr.io/it-at-m/eappointment-php-base:8.3-dev
     volumes:
       - type: bind
         source: "."
@@ -31,4 +31,14 @@ services:
         target: "/mellon"
     environment:
       ZMS_API_URL: http://mockup:8083
+      XDEBUG_MODE: coverage
+      PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
     working_dir: /app
+    command: >
+      sh -c "
+        mkdir -p /tmp/php/conf.d &&
+        echo 'zend_extension=xdebug.so' > /tmp/php/conf.d/xdebug.ini &&
+        echo 'xdebug.mode=coverage' >> /tmp/php/conf.d/xdebug.ini &&
+        echo 'xdebug.start_with_request=yes' >> /tmp/php/conf.d/xdebug.ini &&
+        tail -f /dev/null
+      "
