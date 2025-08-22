@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <h2 style="display: flex; align-items: center; margin-bottom: 24px">
+    <h2
+      tabindex="0"
+      style="display: flex; align-items: center; margin-bottom: 24px"
+    >
       <muc-icon
         style="width: 32px; height: 32px; margin-right: 8px"
         icon="calendar"
@@ -41,8 +44,18 @@
           :appointment-detail-url="appointmentDetailUrl"
           :offices="offices"
           :t="t"
+          tabindex="0"
         >
         </appointment-card>
+        <add-appointment-card
+          :title="t('newAppointmentTitle')"
+          :new-appointment-url="newAppointmentUrl"
+          :t="t"
+        >
+          <template #content>
+            <add-appointment-svg />
+          </template>
+        </add-appointment-card>
       </muc-card-container>
     </div>
   </div>
@@ -60,6 +73,8 @@ import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
+import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentCard.vue";
+import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSvg.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
 import AppointmentCard from "./AppointmentCard.vue";
@@ -104,6 +119,10 @@ onMounted(() => {
 <style scoped>
 .m-button {
   margin-bottom: 0 !important;
+}
+
+.card:hover {
+  background-color: var(--color-neutrals-blue-xlight) !important;
 }
 
 .checklist-card-container {

@@ -74,6 +74,13 @@ describe("AppointmentOverviewView", () => {
             template: "<div data-test='appointment-card'></div>",
             props: ["appointment", "appointmentDetailUrl", "offices", "t"],
           },
+          'error-alert': {
+            template: "<div data-test='error-alert'></div>",
+            props: ["message", "header"],
+          },
+          'skeleton-loader': {
+            template: "<div data-test='skeleton-loader'></div>",
+          },
         },
       },
     });
@@ -86,26 +93,29 @@ describe("AppointmentOverviewView", () => {
       wrapper.vm.appointments = mockAppointments;
       await nextTick();
 
-      expect(wrapper.findAllComponents(AppointmentCard).length).toBe(2);
-      expect(wrapper.findAllComponents(SkeletonLoader).length).toBe(0);
-      expect(wrapper.findAllComponents(ErrorAlert).length).toBe(0);
+      expect(wrapper.find('[data-test="appointment-card"]').exists()).toBe(true);
+      expect(wrapper.findAll('[data-test="appointment-card"]')).toHaveLength(2);
+      expect(wrapper.find('[data-test="error-alert"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="skeleton-loader"]').exists()).toBe(false);
     });
 
     it("shows initial view with skeleton loader", async () => {
       const wrapper = createWrapper();
       await nextTick();
-      expect(wrapper.findAllComponents(SkeletonLoader).length).toBe(4);
-      expect(wrapper.findAllComponents(AppointmentCard).length).toBe(0);
-      expect(wrapper.findAllComponents(ErrorAlert).length).toBe(0);
+      expect(wrapper.find('[data-test="appointment-card"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="error-alert"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="skeleton-loader"]').exists()).toBe(true);
+      expect(wrapper.findAll('[data-test="skeleton-loader"]')).toHaveLength(4);
     });
 
     it("shows initial view with error", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loadingError = true;
       await nextTick();
-      expect(wrapper.findAllComponents(ErrorAlert).length).toBe(1);
-      expect(wrapper.findAllComponents(AppointmentCard).length).toBe(0);
-      expect(wrapper.findAllComponents(SkeletonLoader).length).toBe(0);
+      expect(wrapper.find('[data-test="appointment-card"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="error-alert"]').exists()).toBe(true);
+      expect(wrapper.findAll('[data-test="error-alert"]')).toHaveLength(1);
+      expect(wrapper.find('[data-test="skeleton-loader"]').exists()).toBe(false);
     });
   });
 
@@ -116,9 +126,10 @@ describe("AppointmentOverviewView", () => {
       wrapper.vm.appointments = [];
       await nextTick();
 
-      expect(wrapper.findAllComponents(AppointmentCard).length).toBe(0);
-      expect(wrapper.findAllComponents(SkeletonLoader).length).toBe(0);
-      expect(wrapper.findAllComponents(ErrorAlert).length).toBe(0);
+      expect(wrapper.find('[data-test="appointment-card"]').exists()).toBe(false);
+      expect(wrapper.findAll('[data-test="appointment-card"]')).toHaveLength(0);
+      expect(wrapper.find('[data-test="error-alert"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="skeleton-loader"]').exists()).toBe(false);
     });
   });
 });
