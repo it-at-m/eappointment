@@ -1,0 +1,124 @@
+/* Vuetify Breakpoint Variables and Mixins
+ * Based on Vuetify's responsive breakpoint system
+ * Modernized for Dart Sass 2.0+ compatibility
+ */
+
+// Breakpoint variables
+$breakpoint-xs: 600px;
+$breakpoint-sm: 960px;
+$breakpoint-md: 1264px;
+$breakpoint-lg: 1904px;
+$breakpoint-xl: 1904px;
+
+// CSS custom properties for use in other CSS
+:root {
+  --breakpoint-xs: #{$breakpoint-xs};
+  --breakpoint-sm: #{$breakpoint-sm};
+  --breakpoint-md: #{$breakpoint-md};
+  --breakpoint-lg: #{$breakpoint-lg};
+  --breakpoint-xl: #{$breakpoint-xl};
+}
+
+// Mixins for responsive breakpoints
+@mixin xs-down {
+  @media (max-width: #{$breakpoint-xs}) {
+    @content;
+  }
+}
+
+@mixin xs-up {
+  @media (min-width: #{$breakpoint-xs}) {
+    @content;
+  }
+}
+
+@mixin sm-down {
+  @media (max-width: #{$breakpoint-sm}) {
+    @content;
+  }
+}
+
+@mixin sm-up {
+  @media (min-width: #{$breakpoint-sm}) {
+    @content;
+  }
+}
+
+@mixin md-down {
+  @media (max-width: #{$breakpoint-md}) {
+    @content;
+  }
+}
+
+@mixin md-up {
+  @media (min-width: #{$breakpoint-md}) {
+    @content;
+  }
+}
+
+@mixin lg-down {
+  @media (max-width: #{$breakpoint-lg}) {
+    @content;
+  }
+}
+
+@mixin lg-up {
+  @media (min-width: #{$breakpoint-lg}) {
+    @content;
+  }
+}
+
+@mixin xl-up {
+  @media (min-width: #{$breakpoint-xl}) {
+    @content;
+  }
+}
+
+// Utility classes using mixins
+.hidden-xs {
+  @include xs-down {
+    display: none !important;
+  }
+}
+
+.hidden-sm-up {
+  @include sm-up {
+    display: none !important;
+  }
+}
+
+.hidden-sm {
+  @include sm-down {
+    display: none !important;
+  }
+}
+
+.hidden-md-up {
+  @include md-up {
+    display: none !important;
+  }
+}
+
+.hidden-md {
+  @include md-down {
+    display: none !important;
+  }
+}
+
+.hidden-lg-up {
+  @include lg-up {
+    display: none !important;
+  }
+}
+
+.hidden-lg {
+  @include lg-down {
+    display: none !important;
+  }
+}
+
+.hidden-xl {
+  @include xl-up {
+    display: none !important;
+  }
+}

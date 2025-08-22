@@ -1,3 +1,42 @@
+## Release Muc-29 (22.08.2025)                       
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-565'>ZMSKVR-565</a>] -         Schritt 2: Termin – Ansicht &quot;Keine Termine&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-601'>ZMSKVR-601</a>] -         Schritt 4: Übersicht – Fehlermeldung &quot;Zu viele Termine pro E-Mail&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-648'>ZMSKVR-648</a>] -         ZMS-Admin: Sachbearbeiterplatz -Layout verschoben
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-668'>ZMSKVR-668</a>] -         Bürgerfrontend2: Dropdown zur Leistungsauswahl schließen
+</li>
+</ul>
+                                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-211'>ZMSKVR-211</a>] -         Alte Image Backups automatisiert löschen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-215'>ZMSKVR-215</a>] -         Http-Request aus ZMS-Slim umziehen Mini-Refactor
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-291'>ZMSKVR-291</a>] -         Links in den E-Mails anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-488'>ZMSKVR-488</a>] -         404- Patternlab Seite für fehlerhafte Links in der neuen Bürgeransicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-494'>ZMSKVR-494</a>] -         Terminvarianten in ZMSAdmin pflegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-508'>ZMSKVR-508</a>] -         Schritt 2: Termin – Kalender-Schriftgröße erhöhen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-535'>ZMSKVR-535</a>] -         Inhalt einer ICS Datei anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-536'>ZMSKVR-536</a>] -         Öffnungszeit nicht vorbelegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-621'>ZMSKVR-621</a>] -         Statistiküberarbeitung 1: Kundenstatistik - Frontend dynamische Datenübersicht MVP
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-695'>ZMSKVR-695</a>] -         Bürgerfrontend 2:  Abwahl aller Standorte
+</li>
+</ul>                                                      
+
 ## Release Muc-28 (01.08.2025)                
 <h2>        Bug
 </h2>

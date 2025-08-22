@@ -1,0 +1,92 @@
+.reportfilter {
+    margin-bottom: 20px;
+}
+
+.scope-error,
+.date-error {
+    color: #dc3545 !important;
+}
+
+.reportfilter-daterange-header {
+    margin-bottom: .4em;
+    
+    label {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+}
+
+.reportfilter-daterange {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.reportfilter-datefield {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    min-width: 100px;
+}
+
+.reportfilter-datefield label {
+    font-size: .97em;
+    font-weight: 500;
+    margin-bottom: 2px;
+    color: #444;
+}
+
+.reportfilter-datefield input[type="date"] {
+    padding: 8px 12px;
+    border: 1.5px solid #888;
+    font-size: 1em;
+    background: #fff;
+
+    &:focus {
+        border-color: #4577ee;
+        outline: none;
+    }
+}
+
+.reportfilter-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    
+    .btn {
+        margin-bottom: 0;
+        margin-top: 1rem;
+    }
+}
+
+.scope-picker {
+  max-width: 95rem;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+
+    label {
+      margin: 0;
+      font-weight: bold;
+    }
+  }
+
+  .btn-icon {
+    background: transparent;
+    border: 1px solid #000;
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+    cursor: pointer;
+    line-height: 1;
+
+    &:hover {
+      background: rgba(0,123,255,0.1);
+    }
+  }
+}
