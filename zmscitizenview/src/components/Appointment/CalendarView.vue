@@ -1933,7 +1933,7 @@ async function snapToListViewNearestAvailableTimeSlot() {
 }
 
 watch(
-  selectedProviders,
+  [selectedProviders, availableDays],
   async (newVal, oldVal) => {
     const availableDaysForSelectedProviders =
       updateDateRangeForSelectedProviders();
