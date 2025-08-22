@@ -40,11 +40,12 @@
                 <p tabindex="0">
                   {{ formatTime(appointment.timestamp) }}
                   {{ t("timeStampSuffix") }} <br />
-                  {{ t("estimatedDuration") }} {{ estimatedDuration() }}
+                  {{ t("estimatedDuration") }} <br v-if="isMobile" />
+                  {{ estimatedDuration() }}
                   {{ t("minutes") }}
                 </p>
               </div>
-              <p>
+              <p tabindex="0">
                 {{ t("detailTimeHint") }}
               </p>
             </div>
@@ -55,18 +56,15 @@
               v-if="selectedProvider"
               class="m-content location-text-margin-top"
             >
-              <p tabindex="0">{{ selectedProvider.organization }}<br /></p>
               <p tabindex="0">
+                {{ selectedProvider.organization }}<br />
                 <strong> {{ selectedProvider.name }} </strong><br />
               </p>
               <p tabindex="0">
                 {{ selectedProvider.address.street }}
                 {{ selectedProvider.address.house_number }}<br />
                 {{ selectedProvider.address.postal_code }}
-                {{ selectedProvider.address.city }}<br />
-              </p>
-              <p tabindex="0">
-                {{ t("detailLocationHint") }}
+                {{ selectedProvider.address.city }}
               </p>
             </div>
           </div>
@@ -80,7 +78,12 @@
       <div class="container">
         <div class="m-component__grid">
           <div class="m-component__column">
-            <h2 class="m-component__title">{{ t("services") }}</h2>
+            <h2
+              class="m-component__title"
+              tabindex="0"
+            >
+              {{ t("services") }}
+            </h2>
             <div class="m-linklist">
               <ul class="m-linklist__list">
                 <li class="m-linklist__list__item">
@@ -175,6 +178,7 @@ const selectedService = ref<ServiceImpl>();
 const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);
 const loadingError = ref(false);
+const isMobile = ref(false);
 
 /**
  * This function determines the expected duration of the appointment.
@@ -200,8 +204,15 @@ const goToAppointmentOverviewLink = () => {
   location.href = props.appointmentOverviewUrl;
 };
 
+const checksMobile = () => {
+  isMobile.value = window.matchMedia("(max-width: 767px)").matches;
+};
+
 onMounted(() => {
   loading.value = true;
+  checksMobile();
+  window.addEventListener("resize", checksMobile);
+
   const urlParams = new URLSearchParams(window.location.search);
   appointmentId.value = urlParams.get(QUERY_PARAM_APPOINTMENT_ID);
   fetchServicesAndProviders(

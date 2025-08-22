@@ -6,16 +6,19 @@
     :title="formatTitle(appointment)"
   >
     <div class="appointment-data">
-      <p>
-        <b> {{ t("appointmentNumber") }} </b>
+      <p tabindex="0">
+        <b> {{ t("appointmentNumber") }}: </b>
         {{ appointment.processId }}
       </p>
-      <p>
+      <p tabindex="0">
         <muc-icon icon="calendar" />
         {{ formatTime(appointment.timestamp) }}
         {{ t("timeStampSuffix") }} <br />
       </p>
-      <p v-if="selectedProvider">
+      <p
+        v-if="selectedProvider"
+        tabindex="0"
+      >
         <muc-icon icon="map-pin" />
         {{ selectedProvider.address.street }}
         {{ selectedProvider.address.house_number }} <br />

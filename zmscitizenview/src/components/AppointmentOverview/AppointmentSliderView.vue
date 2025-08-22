@@ -9,11 +9,11 @@
           <span class="header-icon">
             <muc-icon icon="calendar" />
           </span>
-          <h2>
+          <h2 tabindex="0">
             <span v-if="displayedOnDetailScreen">{{
-              t("myAppointments")
+              t("myFurtherAppointments")
             }}</span>
-            <span v-else>{{ t("myFurtherAppointments") }}</span>
+            <span v-else>{{ t("myAppointments") }}</span>
 
             <span
               v-if="

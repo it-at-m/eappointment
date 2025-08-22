@@ -6,7 +6,10 @@
     @click="goToAppointmentLink(appointment.processId!)"
   >
     <template #headerPrefix>
-      <calendar-icon :timestamp="appointment.timestamp" />
+      <calendar-icon
+        :timestamp="appointment.timestamp"
+        aria-hidden="true"
+      />
     </template>
     <template #content>
       <div class="text-padding">
