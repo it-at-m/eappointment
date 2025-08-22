@@ -1,11 +1,23 @@
 <template>
+  <div v-if="isExpired">
+    <muc-callout type="error">
+      <template #content>
+        {{ t("apiErrorSessionTimeoutText") }}
+      </template>
+      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
+    </muc-callout>
+  </div>
   <h2
+    v-if="!isExpired"
     class="m-component-form__title"
     tabindex="0"
   >
     {{ t("contactDetails") }}
   </h2>
-  <form class="m-form m-form--default">
+  <form
+    v-if="!isExpired"
+    class="m-form m-form--default"
+  >
     <muc-input
       id="firstname"
       v-model="customerData.firstName"
@@ -81,6 +93,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
+      v-if="!isExpired"
       :disabled="loadingStates.isUpdatingAppointment.value"
       :icon="'arrow-right'"
       @click="nextStep"
@@ -93,19 +106,24 @@
 </template>
 
 <script setup lang="ts">
-import type { Ref } from "vue";
-
-import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref } from "vue";
-
-import {
-  CustomerDataProvider,
+import type {
+  SelectedAppointmentProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
+import type { Ref } from "vue";
 
-const props = defineProps<{
-  t: (key: string) => string;
-}>();
+import {
+  MucButton,
+  MucCallout,
+  MucInput,
+  MucTextArea,
+} from "@muenchen/muc-patternlab-vue";
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+
+import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
+import { useReservationTimer } from "@/utils/useReservationTimer";
+
+const props = defineProps<{ t: (key: string) => string }>();
 
 const emit = defineEmits<(e: "next" | "back") => void>();
 
@@ -128,6 +146,62 @@ const loadingStates = inject("loadingStates", {
   isBookingAppointment: Ref<boolean>;
   isCancelingAppointment: Ref<boolean>;
 };
+
+const { isExpired, timeLeftString } = useReservationTimer();
+
+// const { appointment } = inject<SelectedAppointmentProvider>("appointment")!;
+// const reservationStartMs = inject<Ref<number | null>>("reservationStartMs")!
+
+// /** Hilfsfunktion: beliebige Zeitrepräsentation -> ms seit Epoche */
+// const toMs = (ts: unknown): number | null => {
+//   if (ts == null) return null;
+//   if (typeof ts === "number") return ts < 1e12 ? ts * 1000 : ts; // Sekunden -> ms
+//   if (typeof ts === "string") {
+//     if (/^\d+$/.test(ts)) {
+//       const n = Number(ts);
+//       return Number.isFinite(n) ? (n < 1e12 ? n * 1000 : n) : null;
+//     }
+//     const d = new Date(ts).getTime(); // ISO-String
+//     return Number.isFinite(d) ? d : null;
+//   }
+//   return null;
+// };
+
+// // Minuten aus appointment.scope.reservationDuration (ohne Defaults/Minima)
+// const reservationDurationMinutes = computed<number | undefined>(() => {
+//   const raw: unknown = (appointment.value as any)?.scope?.reservationDuration;
+//   const n = typeof raw === "string" ? Number.parseInt(raw, 10) : (raw as number | undefined);
+//   return Number.isFinite(n as number) ? (n as number) : undefined;
+// });
+
+// // Deadline = Start + rd * 60_000
+// const deadlineMs = computed<number | null>(() => {
+//   if (reservationStartMs.value == null || reservationDurationMinutes.value == null) return null;
+//   return reservationStartMs.value + reservationDurationMinutes.value * 60_000;
+// });
+
+// // Sekündlicher Ticker
+// const nowMs = ref(Date.now());
+// let timer: number | undefined;
+
+// onMounted(() => { timer = window.setInterval(() => nowMs.value = Date.now(), 1000); });
+
+// onBeforeUnmount(() => { if (timer) window.clearInterval(timer); });
+
+// // Restzeit & Darstellung
+// const remainingMs = computed<number | null>(() =>
+//   deadlineMs.value == null ? null : Math.max(0, deadlineMs.value - nowMs.value)
+// );
+
+// const timeLeftString = computed<string>(() => {
+//   if (remainingMs.value == null) return "";
+//   const total = Math.floor(remainingMs.value / 1000);
+//   const m = Math.floor(total / 60);
+//   const s = total % 60;
+//   return `${m}:${s.toString().padStart(2, "0")}`;
+// });
+
+// const isExpired = computed<boolean>(() => remainingMs.value !== null && remainingMs.value <= 0);
 
 const showErrorMessage = ref<boolean>(false);
 

@@ -106,7 +106,8 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                 'displayInfo' => null,
                 'slotsPerAppointment' => null,
                 "appointmentsPerMail" => null,
-                "whitelistedMails" => null
+                "whitelistedMails" => null,
+                "reservationDuration" => null
             ],
             'subRequestCounts' => [],
             'serviceId' => 10242339,
