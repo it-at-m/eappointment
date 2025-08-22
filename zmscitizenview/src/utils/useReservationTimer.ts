@@ -59,6 +59,6 @@ export function useReservationTimer() {
     remainingMs,
     deadlineMs,
     nowMs,
-    timeLeftString
+    timeLeftString,
   };
 }
