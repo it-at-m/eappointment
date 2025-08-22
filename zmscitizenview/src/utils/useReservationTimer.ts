@@ -46,10 +46,19 @@ export function useReservationTimer() {
     () => remainingMs.value !== null && remainingMs.value <= 0
   );
 
+  const timeLeftString = computed<string>(() => {
+    if (remainingMs.value == null) return "";
+    const total = Math.floor(remainingMs.value / 1000);
+    const m = Math.floor(total / 60);
+    const s = total % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  });
+
   return {
     isExpired,
     remainingMs,
     deadlineMs,
     nowMs,
+    timeLeftString
   };
 }

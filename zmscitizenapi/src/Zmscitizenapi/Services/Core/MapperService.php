@@ -54,6 +54,13 @@ class MapperService
     public static function extractReservationDuration(
         \BO\Zmsentities\Scope|\BO\Zmscitizenapi\Models\ThinnedScope|null $scope
     ): ?int {
+        if ($scope === null) {
+            return null;
+        }
+        if ($scope instanceof \BO\Zmscitizenapi\Models\ThinnedScope) {
+            $v = $scope->getReservationDuration();
+            return $v !== null ? (int) $v : null;
+        }
         $v = $scope?->toProperty()?->preferences?->appointment?->reservationDuration?->get();
         return $v !== null ? (int) $v : null;
     }

@@ -149,60 +149,6 @@ const loadingStates = inject("loadingStates", {
 
 const { isExpired, timeLeftString } = useReservationTimer();
 
-// const { appointment } = inject<SelectedAppointmentProvider>("appointment")!;
-// const reservationStartMs = inject<Ref<number | null>>("reservationStartMs")!
-
-// /** Hilfsfunktion: beliebige Zeitrepräsentation -> ms seit Epoche */
-// const toMs = (ts: unknown): number | null => {
-//   if (ts == null) return null;
-//   if (typeof ts === "number") return ts < 1e12 ? ts * 1000 : ts; // Sekunden -> ms
-//   if (typeof ts === "string") {
-//     if (/^\d+$/.test(ts)) {
-//       const n = Number(ts);
-//       return Number.isFinite(n) ? (n < 1e12 ? n * 1000 : n) : null;
-//     }
-//     const d = new Date(ts).getTime(); // ISO-String
-//     return Number.isFinite(d) ? d : null;
-//   }
-//   return null;
-// };
-
-// // Minuten aus appointment.scope.reservationDuration (ohne Defaults/Minima)
-// const reservationDurationMinutes = computed<number | undefined>(() => {
-//   const raw: unknown = (appointment.value as any)?.scope?.reservationDuration;
-//   const n = typeof raw === "string" ? Number.parseInt(raw, 10) : (raw as number | undefined);
-//   return Number.isFinite(n as number) ? (n as number) : undefined;
-// });
-
-// // Deadline = Start + rd * 60_000
-// const deadlineMs = computed<number | null>(() => {
-//   if (reservationStartMs.value == null || reservationDurationMinutes.value == null) return null;
-//   return reservationStartMs.value + reservationDurationMinutes.value * 60_000;
-// });
-
-// // Sekündlicher Ticker
-// const nowMs = ref(Date.now());
-// let timer: number | undefined;
-
-// onMounted(() => { timer = window.setInterval(() => nowMs.value = Date.now(), 1000); });
-
-// onBeforeUnmount(() => { if (timer) window.clearInterval(timer); });
-
-// // Restzeit & Darstellung
-// const remainingMs = computed<number | null>(() =>
-//   deadlineMs.value == null ? null : Math.max(0, deadlineMs.value - nowMs.value)
-// );
-
-// const timeLeftString = computed<string>(() => {
-//   if (remainingMs.value == null) return "";
-//   const total = Math.floor(remainingMs.value / 1000);
-//   const m = Math.floor(total / 60);
-//   const s = total % 60;
-//   return `${m}:${s.toString().padStart(2, "0")}`;
-// });
-
-// const isExpired = computed<boolean>(() => remainingMs.value !== null && remainingMs.value <= 0);
-
 const showErrorMessage = ref<boolean>(false);
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
