@@ -85,7 +85,7 @@
       </template>
       <template #content>
         {{
-          selectedProvider?.scope?.infoForNoAppointments ||
+          (selectedProvider?.scope?.infoForNoAppointments || "").trim() ||
           t("apiErrorNoAppointmentForThisScopeText")
         }}
       </template>
@@ -768,8 +768,8 @@
             "apiErrorNoAppointmentForThisScopeText" ||
             apiErrorTranslation.textKey ===
               "apiErrorNoAppointmentForThisDayText") &&
-          selectedProvider?.scope?.infoForNoAppointments
-            ? selectedProvider.scope.infoForNoAppointments
+          (selectedProvider?.scope?.infoForNoAppointments || "").trim()
+            ? selectedProvider?.scope?.infoForNoAppointments
             : t(apiErrorTranslation.textKey)
         }}
       </template>
