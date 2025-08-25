@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script type="text/javascript" src="dist/zms-appointment-webcomponent/loader.js" async defer></script>
+    <script type="text/javascript" src="dist/zms-appointment-slider-webcomponent/loader.js" async defer></script>
+    <script type="text/javascript" src="dist/zms-appointment-overview-webcomponent/loader.js" async defer></script>
+    <script type="text/javascript" src="dist/zms-appointment-detail-webcomponent/loader.js" async defer></script>
+</head>
+<body>
+
+<h1>zms-appointment</h1>
+
+<zms-appointment></zms-appointment>
+
+<h1>zms-appointment-slider overview page</h1>
+
+<zms-appointment-slider
+        appointment-detail-url="appointment-detail.html"
+        appointment-overview-url="appointment-overview.html"
+        new-appointment-url="appointment.html"
+        displayed-on-detail-screen="false"
+></zms-appointment-slider>
+
+
+<h1>zms-appointment-slider detail page</h1>
+
+<zms-appointment-slider
+        appointment-detail-url="appointment-detail.html"
+        appointment-overview-url="appointment-overview.html"
+        new-appointment-url="appointment.html"
+        displayed-on-detail-screen="true"
+></zms-appointment-slider>
+
+<h1>zms-appointment-overview</h1>
+
+<zms-appointment-overview
+        appointment-detail-url="appointment-detail.html"
+        new-appointment-url="appointment.html"
+        overview-url="index.html"
+></zms-appointment-overview>
+
+<h1>zms-appointment-detail</h1>
+
+<zms-appointment-detail
+        appointment-overview-url="appointment-overview.html"
+        reschedule-appointment-url="appointment.html"
+></zms-appointment-detail>
+</body>
+</html>
+
+

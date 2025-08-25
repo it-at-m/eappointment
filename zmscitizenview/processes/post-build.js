@@ -1,4 +1,5 @@
-import { generateLoaderJs } from './lib/loaderjsGenerator.js';
+import path from "node:path";
+import {generateLoaderJs, generateSingleLoaderJs} from './lib/loaderjsGenerator.js';
 import manifest from '../dist/.vite/manifest.json' with {type: 'json'};
 
 /**
@@ -24,8 +25,22 @@ import manifest from '../dist/.vite/manifest.json' with {type: 'json'};
  * but will automatically get it's new hash-value added every time we build our code.
  */
 
-// read filename from manifest.json
-const filename = manifest['index.html'].file;
+// Required filename content to be treated as webcomponent
+const REQUIRED_PREFIX = 'src/';
+const REQUIRED_SUFFIX = 'webcomponent.ts';
 
-// generate loaderJs with the app script's filename
-generateLoaderJs(filename);
+for (const key in manifest) {
+  if (key.startsWith(REQUIRED_PREFIX) && key.endsWith(REQUIRED_SUFFIX)) {
+    // read filename from manifest
+    const entrypoint = manifest[key].file;
+
+    // get fileName and directory for generating loader file
+    const fileName = path.basename(key, path.extname(key));
+    generateLoaderJs(entrypoint, fileName);
+
+    // Can be deleted after all loader.js have been replaced
+    if (key.includes('src/zms-appointment-webcomponent.ts')){
+      generateSingleLoaderJs(`${fileName}/loader.js`)
+    }
+  }
+}

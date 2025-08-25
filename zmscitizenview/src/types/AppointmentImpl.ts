@@ -29,6 +29,8 @@ export class AppointmentImpl implements AppointmentDTO {
 
   serviceId: string;
 
+  serviceName: string;
+
   serviceCount: number;
 
   constructor(
@@ -45,6 +47,7 @@ export class AppointmentImpl implements AppointmentDTO {
     scope: Scope,
     subRequestCounts: any[],
     serviceId: string,
+    serviceName: string,
     serviceCount: number
   ) {
     this.processId = processId;
@@ -60,6 +63,7 @@ export class AppointmentImpl implements AppointmentDTO {
     this.scope = scope;
     this.subRequestCounts = subRequestCounts;
     this.serviceId = serviceId;
+    this.serviceName = serviceName;
     this.serviceCount = serviceCount;
   }
 }

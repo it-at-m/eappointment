@@ -38,6 +38,12 @@ export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
   ["1064305", "shortNameVehicleDeregistration"],
 ]);
 
+export const QUERY_PARAM_APPOINTMENT_ID = "ap-id";
+
+export const API_BASE_URL_EXTENSION = "/api/citizen";
+export const API_BASE_URL_AUTHENTICATED_EXTENSION =
+  "/authenticated/api/citizen";
+
 export function getAPIBaseURL(baseUrl: string | undefined): string {
   if (baseUrl) {
     return baseUrl;
@@ -46,5 +52,25 @@ export function getAPIBaseURL(baseUrl: string | undefined): string {
     return import.meta.env.VITE_VUE_APP_API_URL;
   } else {
     return new URL(import.meta.url).origin;
+  }
+}
+
+export function getGeneratedAPIBaseURL(
+  baseUrl: string | undefined,
+  authenticated: boolean
+): string {
+  let url = getAPIBaseURL(baseUrl);
+
+  // Can be deleted if the configurations have been adjusted on all environments.
+  if (url.endsWith("/api/citizen")) {
+    url = url.slice(0, -"/api/citizen".length);
+  } else if (url.endsWith("/api/citizen/")) {
+    url = url.slice(0, -"/api/citizen/".length);
+  }
+
+  if (authenticated) {
+    return url + API_BASE_URL_AUTHENTICATED_EXTENSION;
+  } else {
+    return url + API_BASE_URL_EXTENSION;
   }
 }
