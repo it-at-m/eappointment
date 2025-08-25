@@ -1,11 +1,23 @@
 <template>
+  <div v-if="isExpired">
+    <muc-callout type="error">
+      <template #content>
+        {{ t("apiErrorSessionTimeoutText") }}
+      </template>
+      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
+    </muc-callout>
+  </div>
   <h2
+    v-if="!isExpired"
     class="m-component-form__title"
     tabindex="0"
   >
     {{ t("contactDetails") }}
   </h2>
-  <form class="m-form m-form--default">
+  <form
+    v-if="!isExpired"
+    class="m-form m-form--default"
+  >
     <muc-input
       id="firstname"
       v-model="customerData.firstName"
@@ -81,6 +93,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
+      v-if="!isExpired"
       :disabled="loadingStates.isUpdatingAppointment.value"
       :icon="'arrow-right'"
       @click="nextStep"
@@ -93,19 +106,24 @@
 </template>
 
 <script setup lang="ts">
-import type { Ref } from "vue";
-
-import { MucButton, MucInput, MucTextArea } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, ref } from "vue";
-
-import {
-  CustomerDataProvider,
+import type {
+  SelectedAppointmentProvider,
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
+import type { Ref } from "vue";
 
-const props = defineProps<{
-  t: (key: string) => string;
-}>();
+import {
+  MucButton,
+  MucCallout,
+  MucInput,
+  MucTextArea,
+} from "@muenchen/muc-patternlab-vue";
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue";
+
+import { CustomerDataProvider } from "@/types/ProvideInjectTypes";
+import { useReservationTimer } from "@/utils/useReservationTimer";
+
+const props = defineProps<{ t: (key: string) => string }>();
 
 const emit = defineEmits<(e: "next" | "back") => void>();
 
@@ -128,6 +146,8 @@ const loadingStates = inject("loadingStates", {
   isBookingAppointment: Ref<boolean>;
   isCancelingAppointment: Ref<boolean>;
 };
+
+const { isExpired, timeLeftString } = useReservationTimer();
 
 const showErrorMessage = ref<boolean>(false);
 

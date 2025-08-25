@@ -362,6 +362,8 @@ const isCancelingAppointment = ref<boolean>(false);
 
 const preselectedLocationId = ref<string | undefined>(props.locationId);
 
+const reservationStartMs = ref<number | null>(null);
+
 const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   return getApiErrorTranslation(errorStateMap.value);
 });
@@ -429,6 +431,8 @@ provide<CustomerDataProvider>("customerData", {
 provide<SelectedAppointmentProvider>("appointment", {
   appointment,
 } as SelectedAppointmentProvider);
+
+provide("reservationStartMs", reservationStartMs);
 
 provide("loadingStates", {
   isReservingAppointment,
@@ -527,6 +531,7 @@ const nextReserveAppointment = () => {
           cancelAppointment(appointment.value, props.baseUrl ?? undefined);
         }
         appointment.value = data as AppointmentDTO;
+        reservationStartMs.value = Date.now();
         if (isRebooking.value) {
           setRebookData();
         } else {
