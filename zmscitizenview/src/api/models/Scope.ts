@@ -83,5 +83,5 @@ export interface Scope {
    * @type {string}
    * @memberof Scope
    */
-  displayInfo?: string;
+  infoForAppointment?: string;
 }
