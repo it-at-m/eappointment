@@ -12,7 +12,9 @@
         :appointment-detail-url="appointmentDetailUrl"
         :appointment-overview-url="appointmentOverviewUrl"
         :new-appointment-url="newAppointmentUrl"
-        :displayed-on-detail-screen="displayedOnDetailScreen.toLowerCase() === 'true'"
+        :displayed-on-detail-screen="
+          displayedOnDetailScreen.toLowerCase() === 'true'
+        "
         :t="t"
       />
     </div>
