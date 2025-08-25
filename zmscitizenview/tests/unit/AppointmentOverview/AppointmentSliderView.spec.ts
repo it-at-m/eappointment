@@ -4,7 +4,7 @@ import { nextTick } from "vue";
 // @ts-expect-error: Vue SFC import for test
 import de from '@/utils/de-DE.json';
 // @ts-expect-error: Vue SFC import for test
-import AppointmentOverviewView from "@/components/AppointmentOverview/AppointmentOverviewView.vue";
+import AppointmentSliderView from "@/components/AppointmentOverview/AppointmentSliderView.vue";
 
 globalThis.scrollTo = vi.fn();
 
@@ -17,6 +17,13 @@ describe("AppointmentOverviewView", () => {
         offices: [],
       }),
     }));
+    vi.stubGlobal("matchMedia", vi.fn(() => {
+      return {
+        matches: false,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+      };
+    }));
   });
 
   afterAll(() => {
@@ -25,6 +32,7 @@ describe("AppointmentOverviewView", () => {
 
   const mockBaseUrl = "https://www.muenchen.de";
   const mockAppointmentDetailUrl = "https://www.muenchen.de/appointment-detail";
+  const mockAppointmentOverviewUrl = "https://www.muenchen.de/appointment-overview";
   const mockNewAppointmentUrl = "https://www.muenchen.de/new-appointment";
   const mockOverviewUrl = "https://www.muenchen.de/overview";
 
@@ -44,12 +52,14 @@ describe("AppointmentOverviewView", () => {
   ];
 
   const createWrapper = (props = {}) => {
-    return mount(AppointmentOverviewView, {
+    return mount(AppointmentSliderView, {
       props: {
         baseUrl: mockBaseUrl,
         appointmentDetailUrl: mockAppointmentDetailUrl,
+        appointmentOverviewUrl: mockAppointmentOverviewUrl,
         newAppointmentUrl: mockNewAppointmentUrl,
         overviewUrl: mockOverviewUrl,
+        displayedOnDetailScreen: false,
         t: (key: string) => {
           const translations = de as any;
           return translations[key] || key;
@@ -59,9 +69,17 @@ describe("AppointmentOverviewView", () => {
       },
       global: {
         stubs: {
-          'appointment-card': {
-            template: "<div data-test='appointment-card'></div>",
-            props: ["appointment", "appointmentDetailUrl", "offices", "t"],
+          'appointment-card-viewer': {
+            template: "<div data-test='appointment-card-viewer'></div>",
+            props: [
+              "allAppointments",
+              "isMobile",
+              "newAppointmentUrl",
+              "appointmentDetailUrl",
+              "displayedOnDetailScreen",
+              "offices",
+              "t"
+            ],
           },
           'error-alert': {
             template: "<div data-test='error-alert'></div>",
@@ -69,6 +87,10 @@ describe("AppointmentOverviewView", () => {
           },
           'skeleton-loader': {
             template: "<div data-test='skeleton-loader'></div>",
+          },
+          'muc-link': {
+            template: "<div data-test='muc-link'></div>",
+            props: ["label", "icon", "target", "href"],
           },
         },
       },
@@ -82,8 +104,8 @@ describe("AppointmentOverviewView", () => {
       wrapper.vm.appointments = mockAppointments;
       await nextTick();
 
-      expect(wrapper.find('[data-test="appointment-card"]').exists()).toBe(true);
-      expect(wrapper.findAll('[data-test="appointment-card"]')).toHaveLength(2);
+      expect(wrapper.find('[data-test="appointment-card-viewer"]').exists()).toBe(true);
+      expect(wrapper.findAll('[data-test="appointment-card-viewer"]')).toHaveLength(1);
       expect(wrapper.find('[data-test="error-alert"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="skeleton-loader"]').exists()).toBe(false);
     });
@@ -91,34 +113,40 @@ describe("AppointmentOverviewView", () => {
     it("shows initial view with skeleton loader", async () => {
       const wrapper = createWrapper();
       await nextTick();
-      expect(wrapper.find('[data-test="appointment-card"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="appointment-card-viewer"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="error-alert"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="skeleton-loader"]').exists()).toBe(true);
-      expect(wrapper.findAll('[data-test="skeleton-loader"]')).toHaveLength(4);
+      expect(wrapper.findAll('[data-test="skeleton-loader"]')).toHaveLength(1);
     });
 
     it("shows initial view with error", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loadingError = true;
       await nextTick();
-      expect(wrapper.find('[data-test="appointment-card"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="appointment-card-viewer"]').exists()).toBe(false);
       expect(wrapper.find('[data-test="error-alert"]').exists()).toBe(true);
       expect(wrapper.findAll('[data-test="error-alert"]')).toHaveLength(1);
       expect(wrapper.find('[data-test="skeleton-loader"]').exists()).toBe(false);
     });
   });
 
-  describe("Edge Cases", () => {
-    it("shows initial view after loading with 0 appointments", async () => {
+  describe("Display screen Cases", () => {
+    it("shows initial view on overview page after loading", async () => {
       const wrapper = createWrapper();
       wrapper.vm.loading = false;
-      wrapper.vm.appointments = [];
+      wrapper.vm.appointments = mockAppointments;
       await nextTick();
 
-      expect(wrapper.find('[data-test="appointment-card"]').exists()).toBe(false);
-      expect(wrapper.findAll('[data-test="appointment-card"]')).toHaveLength(0);
-      expect(wrapper.find('[data-test="error-alert"]').exists()).toBe(false);
-      expect(wrapper.find('[data-test="skeleton-loader"]').exists()).toBe(false);
+      expect(wrapper.text()).toContain(de.myAppointments + " (" + mockAppointments.length + ")");
+    });
+
+    it("shows initial view on detail page after loading", async () => {
+      const wrapper = createWrapper({displayedOnDetailScreen: true});
+      wrapper.vm.loading = false;
+      wrapper.vm.appointments = mockAppointments;
+      await nextTick();
+
+      expect(wrapper.text()).toContain(de.myFurtherAppointments);
     });
   });
 });
