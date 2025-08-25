@@ -249,7 +249,7 @@
                           providersWithAppointments.length === 1
                         "
                       >
-                        <p class="centered-text nowrap">
+                        <p class="left-text nowrap">
                           {{ hourRow.hour }}:00‑{{ hourRow.hour }}:59
                         </p>
                         <div class="grid">
@@ -353,7 +353,7 @@
                           providersWithAppointments.length === 1
                         "
                       >
-                        <p class="centered-text nowrap">
+                        <p class="left-text nowrap">
                           {{ t(partRow.part) }}
                         </p>
                         <div class="grid">
@@ -513,7 +513,7 @@
               "
             >
               <div v-if="firstHour !== null && firstHour > 0">
-                <p class="centered-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
+                <p class="left-text">{{ timeslot }}:00-{{ timeslot }}:59</p>
               </div>
               <div class="grid">
                 <div
@@ -647,7 +647,7 @@
               "
             >
               <div>
-                <p class="centered-text">{{ t(timeslot) }}</p>
+                <p class="left-text">{{ t(timeslot) }}</p>
               </div>
               <div class="grid">
                 <div
@@ -2174,6 +2174,22 @@ const getCurrentDayPartForDay = (
   align-items: center;
   height: 100%;
   width: 100px;
+}
+
+.left-text {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  height: 100%;
+  width: 100px;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* Target any div containing .left-text (more specific) */
+div:has(.left-text) {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
 }
 
 .m-button-group {
