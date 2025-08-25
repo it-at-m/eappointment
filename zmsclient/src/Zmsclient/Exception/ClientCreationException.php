@@ -17,7 +17,7 @@ class ClientCreationException extends Exception
 
     protected $message = 'An Exception with the cURL Client creation occurred.';
 
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
+    public function __construct($message = "", $code = 0, ?Throwable $previous = null)
     {
         $code = $code === 0 ? $this->code : $code;
 

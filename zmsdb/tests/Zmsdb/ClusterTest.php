@@ -134,6 +134,7 @@ class ClusterTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $entity = $query->writeEntity($input);
+        $this->assertNotNull($entity, 'writeEntity should not return null');
         $entity->scopes[0]['id'] = 0;
         $entity->scopes[1]['id'] = 141;
         $this->assertEquals('Bürger- und Standesamt', $entity->getName());

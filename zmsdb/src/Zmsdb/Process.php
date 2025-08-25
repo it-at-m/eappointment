@@ -122,7 +122,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
     }
 
-    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0, \BO\Zmsentities\Useraccount $useraccount = null)
+    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
         $process = Entity::createFromScope($scope, $dateTime);
         $process->setStatus('pending');
@@ -375,7 +375,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readConflictListByScopeAndTime(\BO\Zmsentities\Scope $scope, \DateTimeInterface $startDate = null, \DateTimeInterface $endDate = null, \DateTimeInterface $now = null, $resolveReferences = 1)
+    public function readConflictListByScopeAndTime(\BO\Zmsentities\Scope $scope, ?\DateTimeInterface $startDate = null, ?\DateTimeInterface $endDate = null, ?\DateTimeInterface $now = null, $resolveReferences = 1)
     {
         $availabilityList = (new Availability())
             ->readAvailabilityListByScope($scope, 0, $startDate, $endDate)
@@ -521,7 +521,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByMailAddress(string $mailAddress, int $scopeId = null, $resolveReferences = 0, $limit = 2000): Collection
+    public function readProcessListByMailAddress(string $mailAddress, ?int $scopeId = null, $resolveReferences = 0, $limit = 2000): Collection
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query

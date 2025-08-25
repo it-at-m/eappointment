@@ -363,7 +363,7 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
         return 1 == count($keys) ? $values[$keys[0]] : $values;
     }
 
-    protected static function arrayAccessByDotPerpareKeys(string $key = null): array
+    protected static function arrayAccessByDotPerpareKeys(?string $key = null): array
     {
         if (null === $key) {
             return [];

@@ -70,10 +70,10 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             ];
         }
         $writer = Writer::createFromString();
-        $writer->setDelimiter(';');
-        $writer->addFormatter(new EscapeFormula());
+        $escapeFormula = new EscapeFormula();
+        $writer->addFormatter([$escapeFormula, 'escapeRecord']);
         $writer->insertOne($xlsHeaders);
-        $writer->setOutputBOM(Reader::BOM_UTF8);
+        $writer->setOutputBOM(\League\Csv\Bom::Utf8);
         $writer->insertAll($rows);
 
         $response->getBody()->write($writer->toString());

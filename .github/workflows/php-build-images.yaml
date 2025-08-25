@@ -49,16 +49,16 @@ jobs:
       matrix:
         include:
           - module: zmsadmin
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsapi
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmscalldisplay
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmscitizenapi
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsmessaging
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsstatistic
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsticketprinter
-            php_version: "8.3"
+            php_version: "8.4"

@@ -16,9 +16,9 @@ class RequestException extends \Exception
      * @param \Exception $previous
      */
     public function __construct(
-        $message = '',
-        \Psr\Http\Message\RequestInterface $request = null,
-        \Exception $previous = null
+        string $message = '',
+        ?\Psr\Http\Message\RequestInterface $request = null,
+        ?\Exception $previous = null
     ) {
         $this->request = $request;
         $code = 0;

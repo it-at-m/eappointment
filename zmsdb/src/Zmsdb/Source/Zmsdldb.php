@@ -55,7 +55,7 @@ class Zmsdldb extends \BO\Zmsdb\Base
         foreach (self::$repository->fromService()->fetchList() as $request) {
             if (isset($request['relation']) && isset($request['relation']['root_topic'])) {
                 $topic = self::$repository->fromTopic()->fetchId($request['relation']['root_topic']);
-                if ($topic && isset($topic['name'])) {
+                if ($topic !== false && isset($topic['name'])) {
                     $request['group'] = $topic['name'];
                 }
             }

@@ -35,7 +35,7 @@ abstract class Query
      *
      * @param   DialectInterface|null    $dialect
      */
-    public function __construct(DialectInterface $dialect = null)
+    public function __construct(?DialectInterface $dialect = null)
     {
         $this->dialect = ($dialect === null) ? new ANSI() : $dialect;
     }
@@ -62,7 +62,7 @@ abstract class Query
      * @param   null|DialectInterface   $dialect    Null to get, DialectInterface to set
      * @return  DialectInterface|$this  DialectInterface on get, $this on set.
      */
-    public function dialect(DialectInterface $dialect = null)
+    public function dialect(?DialectInterface $dialect = null)
     {
         if ($dialect === null) {
             return $this->dialect;
@@ -100,7 +100,7 @@ abstract class Query
      * @return  array|$this     array on get, $this on set
      * @see     Query::flag() for more info on flags.
      */
-    public function flags(array $flags = null)
+    public function flags(?array $flags = null)
     {
         if (!is_array($flags)) {
             return $this->flags;

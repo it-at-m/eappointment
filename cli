@@ -19,17 +19,17 @@ def print_info(string):
 repo_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 modules = [
   "mellon",
+  "zmsslim",
+  "zmsentities",
+  "zmsdldb",
+  "zmsdb",
+  "zmsclient",
   "zmsadmin",
   "zmsapi",
   "zmscalldisplay",
-  "zmscitizenapi",
-  "zmsclient",
-  "zmsdb",
-  "zmsdldb",
-  "zmsentities",
   "zmsmessaging",
-  "zmsslim",
   "zmsstatistic",
+  "zmscitizenapi",
   "zmsticketprinter",
 ]
 

@@ -17,7 +17,7 @@
         }
     },
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "phpmailer/phpmailer": "^6.4",
         "monolog/monolog": "^2.0",
         "eappointment/mellon": "@dev",
