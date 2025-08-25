@@ -285,7 +285,7 @@ const previousStep = () => emit("back");
 </script>
 
 <style scoped>
-  .m-button-group {
-    margin-top: 48px;
-  }
+.m-button-group {
+  margin-top: 48px;
+}
 </style>
