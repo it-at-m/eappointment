@@ -58,7 +58,8 @@
             "shortname": "default"
         },
         "authKey": "fb43",
-        "displayInfo": "Infos zum Standort.",
+        "infoForAppointment": "Infos zum Standort.",
+        "infoForNoAppointments": "Infos zum Standort.",
         "clients": [
             {
                 "familyName": "TEST_USER",

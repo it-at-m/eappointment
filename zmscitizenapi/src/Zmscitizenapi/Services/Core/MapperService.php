@@ -98,7 +98,8 @@ class MapperService
                     customTextfield2Required: isset($providerScope->customTextfield2Required) ? (bool) $providerScope->customTextfield2Required : null,
                     customTextfield2Label: isset($providerScope->customTextfield2Label) ? (string) $providerScope->customTextfield2Label : null,
                     captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? (bool) $providerScope->captchaActivatedRequired : null,
-                    displayInfo: isset($providerScope->displayInfo) ? (string) $providerScope->displayInfo : null,
+                    infoForAppointment: isset($providerScope->infoForAppointment) ? (string) $providerScope->infoForAppointment : null,
+                    infoForNoAppointments: isset($providerScope->infoForNoAppointments) ? (string) $providerScope->infoForNoAppointments : null,
                     slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null
@@ -239,7 +240,8 @@ class MapperService
             customTextfield2Required: isset($scope->data['customTextfield2Required']) ? (bool) $scope->data['customTextfield2Required'] : null,
             customTextfield2Label: isset($scope->data['customTextfield2Label']) ? (string) $scope->data['customTextfield2Label'] : null,
             captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
-            displayInfo: isset($scope->data['displayInfo']) ? (string) $scope->data['displayInfo'] : null,
+            infoForAppointment: isset($scope->data['infoForAppointment']) ? (string) $scope->data['infoForAppointment'] : null,
+            infoForNoAppointments: isset($scope->data['infoForNoAppointments']) ? (string) $scope->data['infoForNoAppointments'] : null,
             slotsPerAppointment: isset($scope->data['slotsPerAppointment']) ? ((string) $scope->data['slotsPerAppointment'] === '' ? null : (string) $scope->data['slotsPerAppointment']) : null,
             appointmentsPerMail: isset($scope->data['appointmentsPerMail']) ? ((string) $scope->data['appointmentsPerMail'] === '' ? null : (string) $scope->data['appointmentsPerMail']) : null,
             whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null

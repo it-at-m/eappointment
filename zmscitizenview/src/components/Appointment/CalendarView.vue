@@ -735,11 +735,11 @@
             </p>
           </div>
           <div
-            v-if="selectedProvider.scope && selectedProvider.scope.displayInfo"
+            v-if="selectedProvider.scope && selectedProvider.scope.infoForAppointment"
           >
             <b>{{ t("hint") }}</b>
             <br />
-            <div v-html="selectedProvider.scope.displayInfo"></div>
+            <div v-html="selectedProvider.scope.infoForAppointment"></div>
           </div>
         </template>
 
