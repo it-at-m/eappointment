@@ -1265,6 +1265,18 @@ const showSelectionForProvider = (provider: OfficeImpl) => {
       availableDaysFetched.value = true;
       minDate.value = new Date((days[0] as any).time);
       maxDate.value = new Date((days[days.length - 1] as any).time);
+
+      // Update viewMonth to show the month with the first available appointment
+      // This ensures the calendar displays the correct month instead of the current month
+      if (selectedDay.value) {
+        viewMonth.value = new Date(
+          selectedDay.value.getFullYear(),
+          selectedDay.value.getMonth(),
+          1
+        );
+        calendarKey.value++; // Force calendar re-render
+      }
+
       error.value = false;
     } else {
       handleError(data);
@@ -1632,6 +1644,18 @@ const handleDaySelection = async (day: any) => {
   selectedHour.value = null;
   selectedDayPart.value = null;
 
+  // Update viewMonth if the selected day is in a different month
+  // This ensures the calendar displays the correct month when navigating to different months
+  if (
+    day &&
+    (!viewMonth.value ||
+      day.getMonth() !== viewMonth.value.getMonth() ||
+      day.getFullYear() !== viewMonth.value.getFullYear())
+  ) {
+    viewMonth.value = new Date(day.getFullYear(), day.getMonth(), 1);
+    calendarKey.value++; // Force calendar re-render
+  }
+
   // Reset to earliest available appointment
   if (timeSlotsInHoursByOffice.value.size > 0) {
     // For hourly view
@@ -1709,6 +1733,20 @@ function updateDateRangeForSelectedProviders() {
         availableDaysForSelectedProviders.length - 1
       ].time
     );
+
+    // Update viewMonth to show the month with the first available appointment
+    // This ensures the calendar displays the correct month when provider selection changes
+    if (
+      minDate.value &&
+      (!selectedDay.value || selectedDay.value < minDate.value)
+    ) {
+      viewMonth.value = new Date(
+        minDate.value.getFullYear(),
+        minDate.value.getMonth(),
+        1
+      );
+      calendarKey.value++; // Force calendar re-render
+    }
   }
   return availableDaysForSelectedProviders;
 }

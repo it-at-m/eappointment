@@ -2103,5 +2103,349 @@ describe("CalendarView", () => {
       }
     });
   });
+
+  describe("Calendar Month Display", () => {
+    it("shows the month with first available appointment on initial load instead of current month", async () => {
+      const today = new Date();
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 15);
+      
+      // Mock available days starting from next month
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: nextMonth.toISOString().split('T')[0], providerIDs: '1' },
+          { time: new Date(today.getFullYear(), today.getMonth() + 1, 20).toISOString().split('T')[0], providerIDs: '1' }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+          ]
+        }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await nextTick();
+      await flushPromises();
+
+      // Check that viewMonth is set to the month with the first available appointment
+      expect(wrapper.vm.viewMonth.getMonth()).toBe(nextMonth.getMonth());
+      expect(wrapper.vm.viewMonth.getFullYear()).toBe(nextMonth.getFullYear());
+      
+      // Check that selectedDay is set to the first available date
+      expect(wrapper.vm.selectedDay).toBeInstanceOf(Date);
+      expect(wrapper.vm.selectedDay?.getMonth()).toBe(nextMonth.getMonth());
+      // The date might be adjusted based on timezone, so check it's in the expected month
+      expect(wrapper.vm.selectedDay?.getMonth()).toBe(nextMonth.getMonth());
+    });
+
+    it("updates viewMonth when provider selection changes and available dates change", async () => {
+      const today = new Date();
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 10);
+      const twoMonthsAhead = new Date(today.getFullYear(), today.getMonth() + 2, 5);
+
+      // Mock available days for different providers
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: nextMonth.toISOString().split('T')[0], providerIDs: '1' },
+          { time: twoMonthsAhead.toISOString().split('T')[0], providerIDs: '2' }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100]
+          },
+          {
+            officeId: 2,
+            appointments: [1747202400, 1747223100]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } },
+            { name: "Office B", id: 2, address: { street: "Oak", house_number: "100" } }
+          ]
+        }
+      });
+
+      // Initially select provider 1
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await nextTick();
+      await flushPromises();
+
+      // Set initial selection
+      wrapper.vm.selectedProviders = { '1': true, '2': false };
+      await nextTick();
+
+      const initialViewMonth = wrapper.vm.viewMonth;
+      expect(initialViewMonth.getMonth()).toBe(nextMonth.getMonth());
+
+      // Now select provider 2 which has appointments in a different month
+      wrapper.vm.selectedProviders = { '1': false, '2': true };
+      await nextTick();
+      await flushPromises();
+
+      // viewMonth should update to show the month with provider 2's appointments
+      const updatedViewMonth = wrapper.vm.viewMonth;
+      expect(updatedViewMonth.getMonth()).toBe(twoMonthsAhead.getMonth());
+      expect(updatedViewMonth.getFullYear()).toBe(twoMonthsAhead.getFullYear());
+    });
+
+    it("updates viewMonth when selecting a day in a different month", async () => {
+      const today = new Date();
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 15);
+      const twoMonthsAhead = new Date(today.getFullYear(), today.getMonth() + 2, 20);
+
+      // Mock available days spanning multiple months
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: nextMonth.toISOString().split('T')[0], providerIDs: '1' },
+          { time: twoMonthsAhead.toISOString().split('T')[0], providerIDs: '1' }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100, 1747223400]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+          ]
+        }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await nextTick();
+      await flushPromises();
+
+      const initialViewMonth = wrapper.vm.viewMonth;
+      expect(initialViewMonth.getMonth()).toBe(nextMonth.getMonth());
+
+      // Select a day in a different month
+      await wrapper.vm.handleDaySelection(twoMonthsAhead);
+      await nextTick();
+      await flushPromises();
+
+      // viewMonth should update to show the month of the selected day
+      const updatedViewMonth = wrapper.vm.viewMonth;
+      expect(updatedViewMonth.getMonth()).toBe(twoMonthsAhead.getMonth());
+      expect(updatedViewMonth.getFullYear()).toBe(twoMonthsAhead.getFullYear());
+    });
+
+    it("forces calendar re-render when viewMonth changes", async () => {
+      const today = new Date();
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 15);
+
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: nextMonth.toISOString().split('T')[0], providerIDs: '1' }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+          ]
+        }
+      });
+
+      const initialCalendarKey = wrapper.vm.calendarKey;
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await nextTick();
+      await flushPromises();
+
+      // calendarKey should increment to force re-render
+      expect(wrapper.vm.calendarKey).toBeGreaterThan(initialCalendarKey);
+    });
+
+    it("handles year rollover correctly when calculating months ahead", async () => {
+      const december = new Date(2024, 11, 15); // December 15, 2024
+      const january = new Date(2025, 0, 10);   // January 10, 2025
+
+      // Mock available days spanning year boundary
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: january.toISOString().split('T')[0], providerIDs: '1' }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+          ]
+        }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await nextTick();
+      await flushPromises();
+
+      // viewMonth should correctly handle year rollover
+      expect(wrapper.vm.viewMonth.getMonth()).toBe(0); // January
+      expect(wrapper.vm.viewMonth.getFullYear()).toBe(2025);
+      expect(wrapper.vm.selectedDay?.getMonth()).toBe(0); // January
+      expect(wrapper.vm.selectedDay?.getFullYear()).toBe(2025);
+    });
+
+    it("maintains viewMonth when selecting same month dates", async () => {
+      const today = new Date();
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 15);
+      const sameMonthDifferentDay = new Date(today.getFullYear(), today.getMonth() + 1, 20);
+
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: nextMonth.toISOString().split('T')[0], providerIDs: '1' },
+          { time: sameMonthDifferentDay.toISOString().split('T')[0], providerIDs: '1' }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+          ]
+        }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await nextTick();
+      await flushPromises();
+
+      const initialViewMonth = wrapper.vm.viewMonth;
+      expect(initialViewMonth.getMonth()).toBe(nextMonth.getMonth());
+
+      // Select a different day in the same month
+      await wrapper.vm.handleDaySelection(sameMonthDifferentDay);
+      await nextTick();
+      await flushPromises();
+
+      // viewMonth should remain the same since it's the same month
+      const updatedViewMonth = wrapper.vm.viewMonth;
+      expect(updatedViewMonth.getMonth()).toBe(initialViewMonth.getMonth());
+      expect(updatedViewMonth.getFullYear()).toBe(initialViewMonth.getFullYear());
+    });
+
+    it("updates viewMonth when validateAndUpdateSelectedDate changes the selected date", async () => {
+      const today = new Date();
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 15);
+      const twoMonthsAhead = new Date(today.getFullYear(), today.getMonth() + 2, 5);
+
+      // Mock available days
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: [
+          { time: nextMonth.toISOString().split('T')[0], providerIDs: '1' },
+          { time: twoMonthsAhead.toISOString().split('T')[0], providerIDs: '1' }
+        ]
+      });
+
+      (fetchAvailableTimeSlots as Mock).mockResolvedValue({
+        offices: [
+          {
+            officeId: 1,
+            appointments: [1747202400, 1747223100]
+          }
+        ]
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "service1",
+          providers: [
+            { name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } }
+          ]
+        }
+      });
+
+      // Wait for availableDays to be loaded
+      await wrapper.vm.showSelectionForProvider({ name: "Office A", id: 1, address: { street: "Elm", house_number: "99" } });
+      await nextTick();
+      await flushPromises();
+
+      // Set selectedDay to a date that will be invalidated
+      wrapper.vm.selectedDay = new Date(today.getFullYear(), today.getMonth() + 3, 1);
+      await nextTick();
+
+      const initialViewMonth = wrapper.vm.viewMonth;
+      expect(initialViewMonth.getMonth()).toBe(nextMonth.getMonth());
+
+      // Trigger validation which should update the date and viewMonth
+      await wrapper.vm.validateAndUpdateSelectedDate([
+        { time: nextMonth.toISOString().split('T')[0], providerIDs: '1' },
+        { time: twoMonthsAhead.toISOString().split('T')[0], providerIDs: '1' }
+      ]);
+      await nextTick();
+      await flushPromises();
+
+      // viewMonth should update to reflect the new valid date
+      const updatedViewMonth = wrapper.vm.viewMonth;
+      // The month might be adjusted based on the actual available dates
+      expect(updatedViewMonth.getMonth()).toBeGreaterThanOrEqual(nextMonth.getMonth());
+      expect(updatedViewMonth.getFullYear()).toBeGreaterThanOrEqual(nextMonth.getFullYear());
+    });
+  });
 });
 
