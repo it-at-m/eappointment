@@ -1694,6 +1694,312 @@ describe("CalendarView", () => {
     });
   });
 
+  describe("ZMSKVR-801: InfoForNoAppointments Feature", () => {
+    describe("First Warning Callout (No Appointments for Selected Providers)", () => {
+      it('should display infoForNoAppointments when available', async () => {
+        const wrapper = createWrapper({
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForNoAppointments: 'Custom no appointments message'
+            }
+          }
+        });
+
+        // Set up the condition for the first warning callout
+        await wrapper.vm.$nextTick();
+        wrapper.vm.availableDaysFetched = true;
+        wrapper.vm.hasAppointmentsForSelectedProviders = () => false;
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('Custom no appointments message');
+      });
+
+      it('should fallback to translation key when infoForNoAppointments is null', async () => {
+        const wrapper = createWrapper({
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForNoAppointments: null
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+        wrapper.vm.availableDaysFetched = true;
+        wrapper.vm.hasAppointmentsForSelectedProviders = () => false;
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+      });
+
+      it('should fallback to translation key when infoForNoAppointments is empty string', async () => {
+        const wrapper = createWrapper({
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForNoAppointments: ''
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+        wrapper.vm.availableDaysFetched = true;
+        wrapper.vm.hasAppointmentsForSelectedProviders = () => false;
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+      });
+
+      it('should fallback to translation key when infoForNoAppointments is whitespace only', async () => {
+        const wrapper = createWrapper({
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForNoAppointments: '   '
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+        wrapper.vm.hasAppointmentsForSelectedProviders = () => false;
+        wrapper.vm.availableDaysFetched = true;
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+      });
+    });
+
+    describe("Second Warning Callout (API Error Translation)", () => {
+      it('should display infoForNoAppointments for apiErrorNoAppointmentForThisScopeText', async () => {
+        const wrapper = createWrapper({
+          props: { 
+            bookingError: true,
+            bookingErrorKey: 'apiErrorNoAppointmentForThisScope'
+          },
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForNoAppointments: 'Custom scope message'
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('Custom scope message');
+      });
+
+      it('should display infoForNoAppointments for apiErrorNoAppointmentForThisDayText', async () => {
+        const wrapper = createWrapper({
+          props: { 
+            bookingError: true,
+            bookingErrorKey: 'apiErrorNoAppointmentForThisDay'
+          },
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForNoAppointments: 'Custom day message'
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('Custom day message');
+      });
+
+      it('should fallback to translation key for other error types', async () => {
+        const wrapper = createWrapper({
+          props: { 
+            bookingError: true,
+            bookingErrorKey: 'someOtherError'
+          },
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForNoAppointments: 'Custom message'
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('someOtherErrorText');
+      });
+
+      it('should fallback to translation key when infoForNoAppointments is empty for specific error types', async () => {
+        const wrapper = createWrapper({
+          props: { 
+            bookingError: true,
+            bookingErrorKey: 'apiErrorNoAppointmentForThisScope'
+          },
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForNoAppointments: ''
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+      });
+    });
+
+    describe("Edge Cases", () => {
+      it('should handle undefined scope gracefully', async () => {
+        const wrapper = createWrapper({
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: undefined
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+        wrapper.vm.availableDaysFetched = true;
+        wrapper.vm.hasAppointmentsForSelectedProviders = () => false;
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+      });
+
+      it('should handle missing selectedProvider gracefully', async () => {
+        const wrapper = createWrapper({
+          selectedProvider: null
+        });
+
+        await wrapper.vm.$nextTick();
+        wrapper.vm.availableDaysFetched = true;
+        wrapper.vm.hasAppointmentsForSelectedProviders = () => false;
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+      });
+
+      it('should handle scope without infoForNoAppointments property', async () => {
+        const wrapper = createWrapper({
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              // No infoForNoAppointments property
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+        wrapper.vm.availableDaysFetched = true;
+        wrapper.vm.hasAppointmentsForSelectedProviders = () => false;
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+      });
+    });
+
+    describe("Integration Tests", () => {
+      it('should handle complete flow with infoForNoAppointments', async () => {
+        const wrapper = createWrapper({
+          selectedService: {
+            id: "service1",
+            providers: [
+              { 
+                name: "Office A", 
+                id: 1, 
+                address: { street: "Elm", house_number: "99" },
+                scope: {
+                  infoForNoAppointments: 'Complete flow test message'
+                }
+              }
+            ]
+          }
+        });
+
+        await wrapper.vm.showSelectionForProvider({ 
+          name: "Office A", 
+          id: 1, 
+          address: { street: "Elm", house_number: "99" },
+          scope: {
+            infoForNoAppointments: 'Complete flow test message'
+          }
+        });
+        await flushPromises();
+
+        // Verify the component works correctly with the new field
+        expect(wrapper.vm.selectedProvider).toBeDefined();
+        expect(wrapper.vm.selectedProvider?.scope?.infoForNoAppointments).toBe('Complete flow test message');
+      });
+
+      it('should maintain existing functionality when infoForNoAppointments is not set', async () => {
+        const wrapper = createWrapper({
+          selectedService: {
+            id: "service1",
+            providers: [
+              { 
+                name: "Office A", 
+                id: 1, 
+                address: { street: "Elm", house_number: "99" }
+                // No scope with infoForNoAppointments
+              }
+            ]
+          }
+        });
+
+        await wrapper.vm.showSelectionForProvider({ 
+          name: "Office A", 
+          id: 1, 
+          address: { street: "Elm", house_number: "99" }
+        });
+        await flushPromises();
+
+        // Component should still work normally
+        expect(wrapper.vm.selectedProvider).toBeDefined();
+      });
+    });
+  });
+
   describe("CalendarView – Toggle & List View", () => {
 
     it("toggles from calendar view to list view and back", async () => {
