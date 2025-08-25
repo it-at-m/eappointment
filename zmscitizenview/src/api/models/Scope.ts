@@ -84,4 +84,10 @@ export interface Scope {
    * @memberof Scope
    */
   infoForAppointment?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Scope
+   */
+  infoForNoAppointments?: string;
 }
