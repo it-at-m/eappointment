@@ -83,7 +83,7 @@
             v-if="
               selectedProvider &&
               selectedProvider.scope &&
-              selectedProvider.scope.displayInfo
+              selectedProvider.scope.infoForAppointment
             "
           >
             <div class="m-content">
@@ -92,7 +92,7 @@
             <div class="m-content border-bottom">
               <div
                 tabindex="0"
-                v-html="selectedProvider.scope.displayInfo"
+                v-html="selectedProvider.scope.infoForAppointment"
               ></div>
             </div>
           </div>

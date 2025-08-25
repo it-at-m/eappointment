@@ -26,12 +26,13 @@ class ThinnedScope extends Entity implements JsonSerializable
     public ?bool $customTextfield2Required;
     public ?string $customTextfield2Label;
     public ?bool $captchaActivatedRequired;
-    public ?string $displayInfo;
+    public ?string $infoForAppointment;
+    public ?string $infoForNoAppointments;
     public ?string $slotsPerAppointment;
     public ?string $appointmentsPerMail;
     public ?string $whitelistedMails;
 
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $displayInfo = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $infoForAppointment = null, ?string $infoForNoAppointments = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null)
     {
         $this->id = $id;
         $this->provider = $provider;
@@ -47,7 +48,8 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->customTextfield2Required = $customTextfield2Required;
         $this->customTextfield2Label = $customTextfield2Label;
         $this->captchaActivatedRequired = $captchaActivatedRequired;
-        $this->displayInfo = $displayInfo;
+        $this->infoForAppointment = $infoForAppointment;
+        $this->infoForNoAppointments = $infoForNoAppointments;
         $this->slotsPerAppointment = $slotsPerAppointment;
         $this->appointmentsPerMail = $appointmentsPerMail;
         $this->whitelistedMails = $whitelistedMails;
@@ -126,9 +128,14 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->captchaActivatedRequired;
     }
 
-    public function getDisplayInfo(): ?string
+    public function getInfoForAppointment(): ?string
     {
-        return $this->displayInfo;
+        return $this->infoForAppointment;
+    }
+
+    public function getInfoForNoAppointments(): ?string
+    {
+        return $this->infoForNoAppointments;
     }
 
     public function getSlotsPerAppointment(): ?string
@@ -163,7 +170,8 @@ class ThinnedScope extends Entity implements JsonSerializable
             'customTextfield2Required' => $this->customTextfield2Required,
             'customTextfield2Label' => $this->customTextfield2Label,
             'captchaActivatedRequired' => $this->captchaActivatedRequired,
-            'displayInfo' => $this->displayInfo,
+            'infoForAppointment' => $this->infoForAppointment,
+            'infoForNoAppointments' => $this->infoForNoAppointments,
             'slotsPerAppointment' => $this->slotsPerAppointment,
             'appointmentsPerMail' => $this->appointmentsPerMail,
             'whitelistedMails' => $this->whitelistedMails,

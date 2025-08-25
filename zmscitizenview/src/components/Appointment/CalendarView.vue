@@ -84,7 +84,10 @@
         <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
-        {{ t("apiErrorNoAppointmentForThisScopeText") }}
+        {{
+          (selectedProvider?.scope?.infoForNoAppointments || "").trim() ||
+          t("apiErrorNoAppointmentForThisScopeText")
+        }}
       </template>
     </muc-callout>
   </div>
@@ -735,11 +738,14 @@
             </p>
           </div>
           <div
-            v-if="selectedProvider.scope && selectedProvider.scope.displayInfo"
+            v-if="
+              selectedProvider.scope &&
+              selectedProvider.scope.infoForAppointment
+            "
           >
             <b>{{ t("hint") }}</b>
             <br />
-            <div v-html="selectedProvider.scope.displayInfo"></div>
+            <div v-html="selectedProvider.scope.infoForAppointment"></div>
           </div>
         </template>
 
@@ -757,7 +763,15 @@
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
-        {{ t(apiErrorTranslation.textKey) }}
+        {{
+          (apiErrorTranslation.textKey ===
+            "apiErrorNoAppointmentForThisScopeText" ||
+            apiErrorTranslation.textKey ===
+              "apiErrorNoAppointmentForThisDayText") &&
+          (selectedProvider?.scope?.infoForNoAppointments || "").trim()
+            ? selectedProvider?.scope?.infoForNoAppointments
+            : t(apiErrorTranslation.textKey)
+        }}
       </template>
     </muc-callout>
   </div>
