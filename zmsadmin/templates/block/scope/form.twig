@@ -326,7 +326,7 @@
                     {% if rights.superuser %}
                         {{ formgroup(
                                 {
-                                    "legend": "Captcha (Nur für technische Administration sichtbar):",
+                                    "legend": "Captcha (<span class=\"normal-text\">Nur für technische Administration sichtbar</span>):",
                                     "groupTag": "fieldset"
                                 },
                                 [
@@ -969,7 +969,7 @@
 
 					{% if rights.superuser %}
 						{{ formgroup(
-							{"label": "Information zu Terminbuchung im Bürgerfrontend (Nur für technische Administration sichtbar):", "description": "Dieser Text erscheint im Bürgerfrontend."},
+							{"legend": "Hinweismeldungen bei verfügbaren Terminen (<span class=\"normal-text\">Nur für technische Administration sichtbar</span>):", "description": "Dieser Text erscheint im Bürgerfrontend."},
 							[{
 								"type":"textarea",
 								"parameter": {
@@ -979,47 +979,42 @@
 								}
 							}]
 						) }}
-					{% endif %}
-
-                    {% if rights.superuser %}
-                        <fieldset>
-                            <legend class="label">Bild für Aufrufanlage (Nur für technische Administration sichtbar):</legend>
-                            {{ formgroup(
-                                    {
-                                        "label": null
-                                    },
-                                    [
-                                        {
-                                            "type":"checkbox",
-                                            "parameter": {
-                                                "name": "removeImage",
-                                                "value": 1,
-                                                "label": "Kein Bild in der Aufrufanzeige anzeigen"
-                                            }
-                                        }
-                                    ]
-                                ) }}
-                            {{ formgroup(
+                        {{ formgroup(
                                 {
-                                    "label": "Bild auswählen", 
-                                    "labelClass": "aural", 
-                                    "description": "Zulässig sind nur SVG-, JPG-, PNG oder GIF-Bilder bis 48 KB Größe. Das Bild wird in einer Breite von 200 Pixel erscheinen."
+                                    "legend": "Bild für Aufrufanlage (<span class=\"normal-text\">Nur für technische Administration sichtbar</span>):",
+                                    "groupTag": "fieldset"
                                 },
                                 [
                                     {
-                                        "type":"file",
+                                        "type":"checkbox",
                                         "parameter": {
-                                            "name": "uploadCallDisplayImage",
-                                            "file": {
-                                                "type": "image",
-                                                "alt": "Bild der Aufrufanlage",
-                                                "data": callDisplayImage,
-                                            }
+                                            "name": "removeImage",
+                                            "value": 1,
+                                            "label": "Kein Bild in der Aufrufanzeige anzeigen"
                                         }
                                     }
                                 ]
                             ) }}
-                        </fieldset>
+                        {{ formgroup(
+                            {
+                                "label": "Bild auswählen", 
+                                "labelClass": "aural", 
+                                "description": "Zulässig sind nur SVG-, JPG-, PNG oder GIF-Bilder bis 48 KB Größe. Das Bild wird in einer Breite von 200 Pixel erscheinen."
+                            },
+                            [
+                                {
+                                    "type":"file",
+                                    "parameter": {
+                                        "name": "uploadCallDisplayImage",
+                                        "file": {
+                                            "type": "image",
+                                            "alt": "Bild der Aufrufanlage",
+                                            "data": callDisplayImage,
+                                        }
+                                    }
+                                }
+                            ]
+                        ) }}
                     {% endif %}
 				</div>
 			</fieldset>
