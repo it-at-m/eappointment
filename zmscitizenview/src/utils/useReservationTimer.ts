@@ -46,12 +46,12 @@ export function useReservationTimer() {
     () => remainingMs.value !== null && remainingMs.value <= 0
   );
 
+  // Nachfolgendes kann für späteres Ticket ZMSKVR-501 zur Anzeige des restlichen Timers verwendet werden
+
   const timeLeftString = computed<string>(() => {
     if (remainingMs.value == null) return "";
-    const total = Math.floor(remainingMs.value / 1000);
-    const m = Math.floor(total / 60);
-    const s = total % 60;
-    return `${m}:${s.toString().padStart(2, "0")}`;
+    const totalSeconds = Math.floor(remainingMs.value / 1000);
+    return `${totalSeconds} Sekunden`;
   });
 
   return {

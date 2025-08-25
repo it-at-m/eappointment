@@ -51,13 +51,12 @@ class MapperService
         return $matchingScope;
     }
 
-    public static function extractReservationDuration(
-        \BO\Zmsentities\Scope|\BO\Zmscitizenapi\Models\ThinnedScope|null $scope
+    public static function extractReservationDuration(Scope|ThinnedScope|null $scope
     ): ?int {
         if ($scope === null) {
             return null;
         }
-        if ($scope instanceof \BO\Zmscitizenapi\Models\ThinnedScope) {
+        if ($scope instanceof ThinnedScope) {
             $v = $scope->getReservationDuration();
             return $v !== null ? (int) $v : null;
         }
