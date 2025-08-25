@@ -74,18 +74,18 @@
             />
           </template>
         </ul>
-      </div>
-      <div
-        v-if="shouldShowMoreButton"
-        class="m-button-group m-button-group--secondary"
-      >
-        <muc-button
-          icon="chevron-down"
-          variant="secondary"
-          @click="showAllServices = true"
+        <div
+          v-if="shouldShowMoreButton"
+          class="m-button-group m-button-group--secondary"
         >
-          <template #default>{{ t("showAllServices") }}</template>
-        </muc-button>
+          <muc-button
+            icon="chevron-down"
+            variant="secondary"
+            @click="showAllServices = true"
+          >
+            <template #default>{{ t("showAllServices") }}</template>
+          </muc-button>
+        </div>
       </div>
     </div>
     <div class="m-component">
