@@ -51,7 +51,7 @@ class MapperService
         return $matchingScope;
     }
 
-    public static function extractReservationDuration(Scope|ThinnedScope|null $scope): ?int 
+    public static function extractReservationDuration(Scope|ThinnedScope|null $scope): ?int
     {
         if ($scope === null) {
             return null;
