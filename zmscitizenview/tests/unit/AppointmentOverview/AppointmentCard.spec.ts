@@ -73,7 +73,7 @@ describe("AppointmentCard", () => {
           },
           'muc-card': {
             template: `
-              <div data-test='muc-card':tagline="tagline" :title="title">
+              <div data-test='muc-card' :tagline="tagline" :title="title">
                 <slot name="headerPrefix"></slot>
                 <slot name="content"></slot>
               </div>`,
@@ -85,12 +85,11 @@ describe("AppointmentCard", () => {
   };
 
   it("renders appointment card with one service", async () => {
-    const wrapper = createWrapper({}, mockAppointment);
-    wrapper.vm.selectedProvider = mockProvider;
+    const wrapper = createWrapper({offices: [mockProvider]}, mockAppointment);
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-card"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe('Termin');
+    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.appointment);
     expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatTitle(mockAppointment));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.text()).toContain(mockProvider.address.street);
@@ -98,8 +97,7 @@ describe("AppointmentCard", () => {
   });
 
   it("renders appointment card with two services", async () => {
-    const wrapper = createWrapper({}, mockAppointmentSubServices);
-    wrapper.vm.selectedProvider = mockProvider;
+    const wrapper = createWrapper({offices: [mockProvider]}, mockAppointmentSubServices);
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-card"]').exists()).toBe(true);

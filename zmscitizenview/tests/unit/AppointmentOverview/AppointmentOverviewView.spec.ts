@@ -5,9 +5,6 @@ import { nextTick } from "vue";
 import de from '@/utils/de-DE.json';
 // @ts-expect-error: Vue SFC import for test
 import AppointmentOverviewView from "@/components/AppointmentOverview/AppointmentOverviewView.vue";
-import AppointmentCard from "../../../src/components/AppointmentOverview/AppointmentCard.vue";
-import SkeletonLoader from "../../../src/components/Common/SkeletonLoader.vue";
-import ErrorAlert from "../../../src/components/Common/ErrorAlert.vue";
 
 globalThis.scrollTo = vi.fn();
 
@@ -45,14 +42,6 @@ describe("AppointmentOverviewView", () => {
       telephone: "1234567890",
     }
   ];
-
-  vi.mock("@/api/ZMSAppointmentAPI", async () => {
-    const actual = await vi.importActual("@/api/ZMSAppointmentAPI");
-    return {
-      ...actual,
-      confirmAppointment: vi.fn(),
-    };
-  });
 
   const createWrapper = (props = {}) => {
     return mount(AppointmentOverviewView, {
