@@ -48,6 +48,39 @@ describe("AppointmentOverviewView", () => {
       familyName: "John Doe",
       email: "john@example.com",
       telephone: "1234567890",
+    },
+    {
+      timestamp: Math.floor((Date.now() + 2 * 60 * 60 * 1000) / 1000),
+      familyName: "John Doe",
+      email: "john@example.com",
+      telephone: "1234567890",
+    }
+  ];
+
+  const mockManyAppointments = [
+    {
+      timestamp: Math.floor(Date.now() / 1000),
+      familyName: "John Doe",
+      email: "john@example.com",
+      telephone: "1234567890",
+    },
+    {
+      timestamp: Math.floor((Date.now() + 24 * 60 * 60 * 1000) / 1000),
+      familyName: "John Doe",
+      email: "john@example.com",
+      telephone: "1234567890",
+    },
+    {
+      timestamp: Math.floor((Date.now() + 2 * 60 * 60 * 1000) / 1000),
+      familyName: "John Doe",
+      email: "john@example.com",
+      telephone: "1234567890",
+    },
+    {
+      timestamp: Math.floor((Date.now() + 2 * 24 * 60 * 60 * 1000) / 1000),
+      familyName: "John Doe",
+      email: "john@example.com",
+      telephone: "1234567890",
     }
   ];
 
@@ -147,6 +180,56 @@ describe("AppointmentOverviewView", () => {
       await nextTick();
 
       expect(wrapper.text()).toContain(de.myFurtherAppointments);
+      expect(wrapper.text()).not.toContain(de.myAppointments + " (" + mockAppointments.length + ")");
+    });
+  });
+
+  describe("Display link Cases", () => {
+    it("shows link in header", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.loading = false;
+      wrapper.vm.appointments = mockManyAppointments;
+
+      await nextTick();
+
+      const headerElement = wrapper.find('.header');
+      expect(headerElement.find('[data-test="muc-link"]').exists()).toBe(true);
+      expect(wrapper.findAll('[data-test="muc-link"]')).toHaveLength(1);
+    });
+
+    it("shows link after appointments", async () => {
+      const wrapper = createWrapper({displayedOnDetailScreen: true});
+      wrapper.vm.loading = false;
+      wrapper.vm.appointments = mockManyAppointments;
+      wrapper.vm.isMobile = true;
+
+      await nextTick();
+
+      const headerElement = wrapper.find('.header');
+      expect(headerElement.find('[data-test="muc-link"]').exists()).toBe(false);
+      expect(wrapper.findAll('[data-test="muc-link"]')).toHaveLength(1);
+    });
+
+    it("shows no link in header", async () => {
+      const wrapper = createWrapper({displayedOnDetailScreen: true});
+      wrapper.vm.loading = false;
+      wrapper.vm.appointments = mockAppointments;
+      wrapper.vm.isMobile = true;
+
+      await nextTick();
+
+      expect(wrapper.findAll('[data-test="muc-link"]')).toHaveLength(0);
+    });
+
+    it("shows no link after appointments", async () => {
+      const wrapper = createWrapper({displayedOnDetailScreen: true});
+      wrapper.vm.loading = false;
+      wrapper.vm.appointments = [];
+      wrapper.vm.isMobile = true;
+
+      await nextTick();
+
+      expect(wrapper.findAll('[data-test="muc-link"]')).toHaveLength(0);
     });
   });
 });
