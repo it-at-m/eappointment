@@ -763,7 +763,15 @@
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
-        {{ t(apiErrorTranslation.textKey) }}
+        {{
+          (apiErrorTranslation.textKey ===
+            "apiErrorNoAppointmentForThisScopeText" ||
+            apiErrorTranslation.textKey ===
+              "apiErrorNoAppointmentForThisDayText") &&
+          selectedProvider?.scope?.infoForNoAppointments
+            ? selectedProvider.scope.infoForNoAppointments
+            : t(apiErrorTranslation.textKey)
+        }}
       </template>
     </muc-callout>
   </div>
