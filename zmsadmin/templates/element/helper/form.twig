@@ -27,7 +27,7 @@
             <div class="label">{{ groupargs.divlabel }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
             </div>
         {% elseif groupargs.legend -%}
-            <legend class="label">{{ groupargs.legend }}
+            <legend class="label">{{ groupargs.legend|raw }}
                 {% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
             </legend>   
         {% endif -%}
