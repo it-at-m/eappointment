@@ -61,7 +61,7 @@ class RequestRelationView extends Component {
 
         const durationByRequestId = new Map();
         requests.forEach(req => {
-            durationByRequestId.set(String(req.id), extractDurationFromRequest(req));
+            durationByRequestId.set(String(req.id), getDurationFromRequest(req));
         });
 
         const relationsByProvider = new Map();
@@ -196,7 +196,6 @@ class RequestRelationView extends Component {
                 entity.source = source;
                 entity.__isNew = true;
 
-                const newIndex = (this.props.source.requestrelation || []).length;
                 this.props.addNewHandler('requestrelation', [entity]);
                 this.calculateSlotsByProviderGcd();
             })
