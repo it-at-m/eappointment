@@ -1694,7 +1694,7 @@ describe("CalendarView", () => {
     });
   });
 
-  describe("ZMSKVR-801: InfoForNoAppointments Feature", () => {
+  describe("InfoForNoAppointments Feature", () => {
     describe("First Warning Callout (No Appointments for Selected Providers)", () => {
       it('should display infoForNoAppointments when available', async () => {
         const wrapper = createWrapper({
@@ -1708,7 +1708,6 @@ describe("CalendarView", () => {
           }
         });
 
-        // Set up the condition for the first warning callout
         await wrapper.vm.$nextTick();
         wrapper.vm.availableDaysFetched = true;
         wrapper.vm.hasAppointmentsForSelectedProviders = () => false;
@@ -1967,7 +1966,6 @@ describe("CalendarView", () => {
         });
         await flushPromises();
 
-        // Verify the component works correctly with the new field
         expect(wrapper.vm.selectedProvider).toBeDefined();
         expect(wrapper.vm.selectedProvider?.scope?.infoForNoAppointments).toBe('Complete flow test message');
       });
@@ -1981,7 +1979,6 @@ describe("CalendarView", () => {
                 name: "Office A", 
                 id: 1, 
                 address: { street: "Elm", house_number: "99" }
-                // No scope with infoForNoAppointments
               }
             ]
           }
@@ -1994,7 +1991,6 @@ describe("CalendarView", () => {
         });
         await flushPromises();
 
-        // Component should still work normally
         expect(wrapper.vm.selectedProvider).toBeDefined();
       });
     });
