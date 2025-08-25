@@ -969,6 +969,17 @@
 
 					{% if rights.superuser %}
 						{{ formgroup(
+							{"legend": "Hinweismeldungen bei keinen verfügbaren Terminen (<span class=\"normal-text\">Nur für technische Administration sichtbar</span>):", "description": "Dieser Text erscheint im Bürgerfrontend."},
+							[{
+								"type":"textarea",
+								"parameter": {
+									"name": "preferences[appointment][infoForNoAppointments]",
+									"maxlength": 5000,
+									"value": scope.preferences.appointment.infoForNoAppointments|default(''),
+								}
+							}]
+						) }}
+                        {{ formgroup(
 							{"legend": "Hinweismeldungen bei verfügbaren Terminen (<span class=\"normal-text\">Nur für technische Administration sichtbar</span>):", "description": "Dieser Text erscheint im Bürgerfrontend."},
 							[{
 								"type":"textarea",

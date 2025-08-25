@@ -29,6 +29,7 @@
                                         "appointment": {
                                             "deallocationDuration": "5",
                                             "infoForAppointment": "",
+                                            "infoForNoAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "10",
@@ -127,6 +128,7 @@
                                         "appointment": {
                                             "deallocationDuration": "5",
                                             "infoForAppointment": "",
+                                            "infoForNoAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "10",
