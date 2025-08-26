@@ -86,7 +86,7 @@
       <template #content>
         <div
           v-if="(selectedProvider?.scope?.infoForNoAppointments || '').trim()"
-          v-html="selectedProvider?.scope?.infoForNoAppointments"
+          v-html="sanitizeHtml(selectedProvider?.scope?.infoForNoAppointments)"
         ></div>
         <template v-else>{{
           t("apiErrorNoAppointmentForThisScopeText")
@@ -748,7 +748,9 @@
           >
             <b>{{ t("hint") }}</b>
             <br />
-            <div v-html="selectedProvider.scope.infoForAppointment"></div>
+            <div
+              v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
+            ></div>
           </div>
         </template>
 
@@ -774,7 +776,7 @@
                 'apiErrorNoAppointmentForThisDayText') &&
             (selectedProvider?.scope?.infoForNoAppointments || '').trim()
           "
-          v-html="selectedProvider?.scope?.infoForNoAppointments"
+          v-html="sanitizeHtml(selectedProvider?.scope?.infoForNoAppointments)"
         ></div>
         <template v-else>{{ t(apiErrorTranslation.textKey) }}</template>
       </template>
@@ -838,6 +840,7 @@ import {
   getApiErrorTranslation,
   handleApiResponse,
 } from "@/utils/errorHandler";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 const props = defineProps<{
   baseUrl: string | undefined;
