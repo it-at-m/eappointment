@@ -74,7 +74,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
+import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
 import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
@@ -108,7 +108,7 @@ onMounted(() => {
   fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
     .then((data) => {
       offices.value = data.offices;
-      getAppointments("user").then((data) => {
+      getMyAppointments("user").then((data) => {
         if (
           Array.isArray(data) &&
           data.every((item) => item.processId !== undefined)

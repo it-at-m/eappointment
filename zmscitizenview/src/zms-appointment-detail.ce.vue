@@ -23,6 +23,8 @@ import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.
 import { useI18n } from "vue-i18n";
 
 import AppointmentDetailView from "@/components/AppointmentDetail/AppointmentDetailView.vue";
+import { registerAuthenticationHook } from "./utils/auth";
+import { ref } from "vue";
 
 defineProps({
   baseUrl: {
@@ -41,6 +43,15 @@ defineProps({
 });
 
 const { t } = useI18n();
+const accessToken = ref<string | null>(null);
+registerAuthenticationHook(
+  (newAccessToken) => {
+    accessToken.value = newAccessToken;
+  },
+  () => {
+    accessToken.value = null;
+  }
+);
 </script>
 
 <style>

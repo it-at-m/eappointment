@@ -15,6 +15,7 @@
         :appointment-hash="appointmentHash"
         :confirm-appointment-hash="confirmAppointmentHash"
         :t="t"
+        :access-token="accessToken"
       />
     </div>
   </main>
@@ -47,6 +48,8 @@ import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.
 import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
+import { registerAuthenticationHook } from "./utils/auth";
+import { ref } from "vue";
 
 defineProps({
   baseUrl: {
@@ -82,6 +85,15 @@ defineProps({
 });
 
 const { t } = useI18n();
+const accessToken = ref<string | null>(null);
+registerAuthenticationHook(
+  (newAccessToken) => {
+    accessToken.value = newAccessToken;
+  },
+  () => {
+    accessToken.value = null;
+  }
+);
 </script>
 
 <style>

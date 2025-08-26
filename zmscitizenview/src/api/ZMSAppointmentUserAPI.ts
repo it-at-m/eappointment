@@ -1,23 +1,38 @@
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
-import { getAPIBaseURL } from "@/utils/Constants";
+import {
+  getAPIBaseURL,
+  VUE_APP_ZMS_API_MYAPPOINTMENTS_ENDPOINT,
+} from "@/utils/Constants";
+import { request } from "./ZMSAppointmentAPI";
 
-export function getAppointments(
-  userId: string,
-  baseUrl?: string
-): Promise<AppointmentDTO[]> {
-  console.debug(getAPIBaseURL(baseUrl) + userId);
-  return new Promise((resolve) => setTimeout(() => resolve(DUMMYDATA), 1000));
+export function getMyAppointments(baseUrl?: string): Promise<AppointmentDTO[]> {
+  // return new Promise((resolve) => setTimeout(() => resolve(DUMMYDATA), 1000));
+  return request({
+    method: "GET",
+    baseUrl,
+    path: VUE_APP_ZMS_API_MYAPPOINTMENTS_ENDPOINT,
+    forceAuth: true,
+  });
 }
 
-export function getAppointmentDetails(
+export async function getAppointmentDetails(
   processId: string,
   baseUrl?: string
 ): Promise<AppointmentDTO> {
-  console.debug(getAPIBaseURL(baseUrl) + processId);
-  return new Promise((resolve) => {
-    const data = DUMMYDATA.find((data) => data.processId == processId);
-    setTimeout(() => resolve(data ? data : DUMMYDATA[0]), 1000);
+  // return new Promise((resolve) => {
+  //   const data = DUMMYDATA.find((data) => data.processId == processId);
+  //   setTimeout(() => resolve(data ? data : DUMMYDATA[0]), 1000);
+  // });
+  const responseData: AppointmentDTO[] = await request({
+    method: "GET",
+    baseUrl,
+    path: VUE_APP_ZMS_API_MYAPPOINTMENTS_ENDPOINT,
+    params: {
+      filterId: processId,
+    },
+    forceAuth: true
   });
+  return responseData[0]
 }
 
 const DUMMYDATA: AppointmentDTO[] = [
