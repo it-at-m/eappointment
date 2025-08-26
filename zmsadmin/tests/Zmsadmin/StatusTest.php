@@ -49,6 +49,6 @@ class StatusTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertStringNotContainsString('(Nur für Superuser sichtbar)', (string)$response->getBody());
+        $this->assertStringNotContainsString('(Nur für technische Administration sichtbar)', (string)$response->getBody());
     }
 }
