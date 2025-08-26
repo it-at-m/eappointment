@@ -31,7 +31,7 @@
             "appointment": {
               "deallocationDuration": "20",
               "infoForAppointment": "",
-              "infoForNoAppointments": "",
+              "infoForAllAppointments": "",
               "endInDaysDefault": "60",
               "multipleSlotsEnabled": "1",
               "reservationDuration": "20",

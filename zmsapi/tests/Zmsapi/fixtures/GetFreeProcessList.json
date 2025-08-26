@@ -17,7 +17,7 @@
               "appointment": {
                 "deallocationDuration": "10",
                 "infoForAppointment": "",
-                "infoForNoAppointments": "",
+                "infoForAllAppointments": "",
                 "endInDaysDefault": "60",
                 "multipleSlotsEnabled": "0",
                 "reservationDuration": "20",
@@ -362,7 +362,7 @@
                 "appointment": {
                   "deallocationDuration": "10",
                   "infoForAppointment": "",
-                  "infoForNoAppointments": "",
+                  "infoForAllAppointments": "",
                   "endInDaysDefault": "60",
                   "multipleSlotsEnabled": "0",
                   "reservationDuration": "20",
@@ -694,7 +694,7 @@
           "appointment": {
             "deallocationDuration": "10",
             "infoForAppointment": "",
-            "infoForNoAppointments": "",
+            "infoForAllAppointments": "",
             "endInDaysDefault": "60",
             "multipleSlotsEnabled": "0",
             "reservationDuration": "20",
@@ -1015,7 +1015,7 @@
               "appointment": {
                 "deallocationDuration": "10",
                 "infoForAppointment": "",
-                "infoForNoAppointments": "",
+                "infoForAllAppointments": "",
                 "endInDaysDefault": "60",
                 "multipleSlotsEnabled": "0",
                 "reservationDuration": "20",
@@ -1360,7 +1360,7 @@
                 "appointment": {
                   "deallocationDuration": "10",
                   "infoForAppointment": "",
-                  "infoForNoAppointments": "",
+                  "infoForAllAppointments": "",
                   "endInDaysDefault": "60",
                   "multipleSlotsEnabled": "0",
                   "reservationDuration": "20",
@@ -1692,7 +1692,7 @@
           "appointment": {
             "deallocationDuration": "10",
             "infoForAppointment": "",
-            "infoForNoAppointments": "",
+            "infoForAllAppointments": "",
             "endInDaysDefault": "60",
             "multipleSlotsEnabled": "0",
             "reservationDuration": "20",

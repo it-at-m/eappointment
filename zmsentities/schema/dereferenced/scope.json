@@ -20,7 +20,7 @@
             "appointment": {
                 "deallocationDuration": "10",
                 "infoForAppointment": "",
-                "infoForNoAppointments": "",
+                "infoForAllAppointments": "",
                 "endInDaysDefault": "60",
                 "multipleSlotsEnabled": true,
                 "notificationConfirmationEnabled": true,
@@ -337,7 +337,7 @@
                             "type": ["string", "null"],
                             "description": "Information shown when an appointment is available or has been booked"
                         },
-                        "infoForNoAppointments": {
+                        "infoForAllAppointments": {
                             "type": ["string", "null"],
                             "description": "Information shown when no appointments are available"
                         },

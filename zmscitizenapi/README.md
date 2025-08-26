@@ -119,7 +119,7 @@ class ThinnedScope {
   - string~0..1~ customTextfieldLabel
   - bool~0..1~ captchaActivatedRequired
   - string~0..1~ infoForAppointment
-  - string~0..1~ infoForNoAppointments
+  - string~0..1~ infoForAllAppointments
   + toArray(): array
 }
 

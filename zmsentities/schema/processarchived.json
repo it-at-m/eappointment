@@ -199,7 +199,7 @@
         "appointment": {
             "deallocationDuration": "10",
             "infoForAppointment": "",
-            "infoForNoAppointments": "",
+            "infoForAllAppointments": "",
             "endInDaysDefault": "60",
             "multipleSlotsEnabled": true,
             "notificationConfirmationEnabled": true,

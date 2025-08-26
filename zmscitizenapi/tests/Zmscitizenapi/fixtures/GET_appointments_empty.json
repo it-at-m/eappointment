@@ -40,7 +40,7 @@
                     "appointment": {
                         "deallocationDuration": "10",
                         "infoForAppointment": "",
-                        "infoForNoAppointments": "",
+                        "infoForAllAppointments": "",
                         "endInDaysDefault": "60",
                         "multipleSlotsEnabled": "0",
                         "reservationDuration": "20",
@@ -61,7 +61,7 @@
                         "customTextfieldLabel": "Custom Label",
                         "captchaActivatedRequired": "0",
                         "infoForAppointment": "Infos zum Standort.",
-                        "infoForNoAppointments": "Infos zum Standort."
+                        "infoForAllAppointments": "Infos zum Standort."
                     },
                     "notifications": {
                         "confirmationContent": "",

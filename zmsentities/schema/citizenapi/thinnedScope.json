@@ -91,7 +91,7 @@
             ],
             "description": "Additional display information"
         },
-        "infoForNoAppointments": {
+        "infoForAllAppointments": {
             "type": [
                 "string",
                 "null"

@@ -84,7 +84,7 @@ class OfficesListControllerTest extends ControllerTestCase
                         "customTextfield2Label" => "Second Custom Label",
                         "captchaActivatedRequired" => false,
                         "infoForAppointment" => null,
-                        "infoForNoAppointments" => null,
+                        "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
                         "whitelistedMails" => null
@@ -138,7 +138,7 @@ class OfficesListControllerTest extends ControllerTestCase
                         "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
                         "infoForAppointment" => null,
-                        "infoForNoAppointments" => null,
+                        "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
                         "whitelistedMails" => null

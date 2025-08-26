@@ -101,8 +101,8 @@ class MapperService
                     infoForAppointment: isset($providerScope->infoForAppointment)
                         ? ((string) $providerScope->infoForAppointment === '' ? null : (string) $providerScope->infoForAppointment)
                         : null,
-                    infoForNoAppointments: isset($providerScope->infoForNoAppointments)
-                        ? ((string) $providerScope->infoForNoAppointments === '' ? null : (string) $providerScope->infoForNoAppointments)
+                    infoForAllAppointments: isset($providerScope->infoForAllAppointments)
+                        ? ((string) $providerScope->infoForAllAppointments === '' ? null : (string) $providerScope->infoForAllAppointments)
                         : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null
@@ -248,10 +248,10 @@ class MapperService
                     ? null
                     : (string) $scope->data['infoForAppointment'])
                 : null,
-            infoForNoAppointments: isset($scope->data['infoForNoAppointments'])
-                ? ((string) $scope->data['infoForNoAppointments'] === ''
+            infoForAllAppointments: isset($scope->data['infoForAllAppointments'])
+                ? ((string) $scope->data['infoForAllAppointments'] === ''
                     ? null
-                    : (string) $scope->data['infoForNoAppointments'])
+                    : (string) $scope->data['infoForAllAppointments'])
                 : null,
             slotsPerAppointment: isset($scope->data['slotsPerAppointment'])
                 ? ((string) $scope->data['slotsPerAppointment'] === ''

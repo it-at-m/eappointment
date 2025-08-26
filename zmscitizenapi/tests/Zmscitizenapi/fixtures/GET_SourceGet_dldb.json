@@ -117,7 +117,7 @@
             "customTextfield2Label": "Second Custom Label",
             "captchaActivatedRequired": "0",
             "infoForAppointment": "Infos zum Standort.",
-            "infoForNoAppointments": "Infos zum Standort."
+            "infoForAllAppointments": "Infos zum Standort."
           }
         }
       },
@@ -149,7 +149,7 @@
             "customTextfield2Label": "",
             "captchaActivatedRequired": "0",
             "infoForAppointment": "Infos zum Standort.",
-            "infoForNoAppointments": "Infos zum Standort."
+            "infoForAllAppointments": "Infos zum Standort."
           }
         }
       }
