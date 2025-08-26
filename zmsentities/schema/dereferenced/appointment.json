@@ -249,6 +249,8 @@
                 "preferences": {
                     "appointment": {
                         "deallocationDuration": "10",
+                        "infoForAppointment": "",
+                        "infoForNoAppointments": "",
                         "endInDaysDefault": "60",
                         "multipleSlotsEnabled": true,
                         "notificationConfirmationEnabled": true,
@@ -386,46 +388,159 @@
                             "additionalProperties": false,
                             "properties": {
                                 "deallocationDuration": {
-                                    "type": "number",
+                                    "oneOf": [
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$"
+                                        }
+                                    ],
                                     "description": "minutes before an deleted appointment is free for booking again to prevent appointment trading",
                                     "default": 30
                                 },
+                                "infoForAppointment": {
+                                    "type": ["string", "null"],
+                                    "description": "info for the client if he got a appointment"
+                                },
+                                "infoForNoAppointments": {
+                                    "type": ["string", "null"],
+                                    "description": "info for the client if he didn't got a appointment"
+                                },
                                 "multipleSlotsEnabled": {
-                                    "type": [
-                                        "boolean",
-                                        "number"
+                                    "oneOf": [
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "boolean"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "pattern": "^[01]$"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "enum": ["true", "false"]
+                                        }
                                     ],
                                     "description": "true if more than one timeslot per appointment is allowed",
                                     "default": true
                                 },
                                 "notificationConfirmationEnabled": {
-                                    "type": [
-                                        "boolean",
-                                        "number"
+                                    "oneOf": [
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "boolean"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "pattern": "^[01]$"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "enum": ["true", "false"]
+                                        }
                                     ],
-                                    "description": "true if client should get a notification to confirm that notifications are enabled for him\/her (Convienient preferences, see department for origin)",
+                                    "description": "true if client should get a notification to confirm that notifications are enabled for him/her (Convienient preferences, see department for origin)",
                                     "default": false
                                 },
                                 "notificationHeadsUpEnabled": {
-                                    "type": [
-                                        "boolean",
-                                        "number"
+                                    "oneOf": [
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "boolean"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "pattern": "^[01]$"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "enum": ["true", "false"]
+                                        }
                                     ],
                                     "description": "true if client should get a notification as reminder (Convienient preferences, see department for origin)",
                                     "default": false
                                 },
                                 "reservationDuration": {
-                                    "type": "number",
+                                    "oneOf": [
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$"
+                                        }
+                                    ],   
                                     "description": "minutes an appointment can have the status reserved",
                                     "default": 30
                                 },
+                                "activationDuration": {
+                                    "oneOf": [
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$"
+                                        }
+                                    ],
+                                    "description": "minutes an appointment can have the status preconfirmed",
+                                    "default": 60
+                                },
                                 "startInDaysDefault": {
-                                    "type": "number",
+                                    "oneOf": [
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$"
+                                        }
+                                    ],
                                     "description": "number of days relative to today to start offering appointments",
                                     "default": 1
                                 },
                                 "endInDaysDefault": {
-                                    "type": "number",
+                                    "oneOf": [
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "number"
+                                        },
+                                        {
+                                            "type": "string",
+                                            "pattern": "^[0-9]+$"
+                                        }
+                                    ],
                                     "description": "maximum number of days in the future to offer appointments",
                                     "default": 60
                                 }
