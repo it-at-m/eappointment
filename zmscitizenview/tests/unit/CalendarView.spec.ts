@@ -1694,7 +1694,7 @@ describe("CalendarView", () => {
     });
   });
 
-  describe("InfoForNoAppointments Feature", () => {
+  describe("InfoForAllAppointments Feature", () => {
     describe("First Warning Callout (No Appointments for Selected Providers)", () => {
       it('should display infoForAllAppointments when available', async () => {
         const wrapper = createWrapper({
