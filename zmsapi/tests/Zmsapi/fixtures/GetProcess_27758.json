@@ -132,7 +132,7 @@
         "lastChange": 1566566542,
         "preferences": {
             "appointment": {
-                "deallocationDuration": 30,
+                "deallocationDuration": "30",
                 "infoForAppointment": "",
                 "infoForNoAppointments": "",
                 "endInDaysDefault": 60,
