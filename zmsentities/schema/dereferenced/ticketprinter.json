@@ -64,13 +64,13 @@
                             "source": "dldb",
                             "preferences": {
                                 "appointment": {
-                                    "deallocationDuration": 10,
-                                    "endInDaysDefault": 60,
+                                    "deallocationDuration": "10",
+                                    "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": true,
                                     "notificationConfirmationEnabled": true,
                                     "notificationHeadsUpEnabled": true,
-                                    "reservationDuration": 5,
-                                    "startInDaysDefault": 2
+                                    "reservationDuration": "5",
+                                    "startInDaysDefault": "2"
                                 },
                                 "client": {
                                     "alternateAppointmentUrl": "https:\/\/service.berlin.de",

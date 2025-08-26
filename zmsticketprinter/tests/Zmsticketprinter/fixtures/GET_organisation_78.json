@@ -49,13 +49,13 @@
                 },
                 "preferences": {
                   "appointment": {
-                    "deallocationDuration": 20,
+                    "deallocationDuration": "20",
                     "infoForAppointment": "",
                     "infoForNoAppointments": "",
-                    "endInDaysDefault": 60,
-                    "multipleSlotsEnabled": 1,
-                    "reservationDuration": 20,
-                    "startInDaysDefault": 0
+                    "endInDaysDefault": "60",
+                    "multipleSlotsEnabled": "1",
+                    "reservationDuration": "20",
+                    "startInDaysDefault": "0"
                   },
                   "client": {
                     "alternateAppointmentUrl": "https://service.berlin.de",
@@ -145,13 +145,13 @@
                 },
                 "preferences": {
                   "appointment": {
-                    "deallocationDuration": 20,
+                    "deallocationDuration": "20",
                     "infoForAppointment": "",
                     "infoForNoAppointments": "",
-                    "endInDaysDefault": 60,
-                    "multipleSlotsEnabled": 1,
-                    "reservationDuration": 20,
-                    "startInDaysDefault": 0
+                    "endInDaysDefault": "60",
+                    "multipleSlotsEnabled": "1",
+                    "reservationDuration": "20",
+                    "startInDaysDefault": "0"
                   },
                   "client": {
                     "alternateAppointmentUrl": "",
