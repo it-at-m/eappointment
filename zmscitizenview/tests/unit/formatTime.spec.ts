@@ -27,7 +27,7 @@ describe("calculateEstimatedDuration", () => {
 
   it("returns formated date string of now", () => {
     const date = new Date(2025,8,1,12,0);
-    const dateAsNumber = date.getTime() / 1000;
+    const dateAsNumber = Math.floor(date.getTime() / 1000);
     expect(formatTime(dateAsNumber)).toBe(formatterDate.format(date) + ", " + formatterTime.format(date));
   });
 });
