@@ -252,6 +252,8 @@
       "preferences": {
         "appointment": {
             "deallocationDuration": "10",
+            "infoForAppointment": "",
+            "infoForNoAppointments": "",
             "endInDaysDefault": "60",
             "multipleSlotsEnabled": true,
             "notificationConfirmationEnabled": true,
