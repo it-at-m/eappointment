@@ -18,7 +18,8 @@
     "jsdom": "^26.0.0",
     "vue": "^3.5.12",
     "vue-i18n": "10.0.8",
-    "webfontloader": "^1.0.0"
+    "webfontloader": "^1.0.0",
+    "dompurify": "^3.2.4"
   },
   "devDependencies": {
     "@babel/types": "^7.21.4",
