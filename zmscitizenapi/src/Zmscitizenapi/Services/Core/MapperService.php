@@ -243,9 +243,21 @@ class MapperService
             customTextfield2Required: isset($scope->data['customTextfield2Required']) ? (bool) $scope->data['customTextfield2Required'] : null,
             customTextfield2Label: isset($scope->data['customTextfield2Label']) ? (string) $scope->data['customTextfield2Label'] : null,
             captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
-            infoForAppointment: isset($scope->data['infoForAppointment']) ? (string) $scope->data['infoForAppointment'] : null,
-            infoForNoAppointments: isset($scope->data['infoForNoAppointments']) ? (string) $scope->data['infoForNoAppointments'] : null,
-            slotsPerAppointment: isset($scope->data['slotsPerAppointment']) ? ((string) $scope->data['slotsPerAppointment'] === '' ? null : (string) $scope->data['slotsPerAppointment']) : null,
+            infoForAppointment: isset($scope->data['infoForAppointment'])
+                ? ((string) $scope->data['infoForAppointment'] === '' 
+                    ? null 
+                    : (string) $scope->data['infoForAppointment'])
+                : null,
+            infoForNoAppointments: isset($scope->data['infoForNoAppointments'])
+                ? ((string) $scope->data['infoForNoAppointments'] === '' 
+                    ? null 
+                    : (string) $scope->data['infoForNoAppointments'])
+                : null,
+            slotsPerAppointment: isset($scope->data['slotsPerAppointment'])
+                ? ((string) $scope->data['slotsPerAppointment'] === '' 
+                    ? null 
+                    : (string) $scope->data['slotsPerAppointment'])
+                : null,
             appointmentsPerMail: isset($scope->data['appointmentsPerMail']) ? ((string) $scope->data['appointmentsPerMail'] === '' ? null : (string) $scope->data['appointmentsPerMail']) : null,
             whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null
         );
