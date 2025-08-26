@@ -85,8 +85,8 @@
       </template>
       <template #content>
         <div
-          v-if="(selectedProvider?.scope?.infoForNoAppointments || '').trim()"
-          v-html="sanitizeHtml(selectedProvider?.scope?.infoForNoAppointments)"
+          v-if="(selectedProvider?.scope?.infoForAllAppointments || '').trim()"
+          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
         ></div>
         <template v-else>{{
           t("apiErrorNoAppointmentForThisScopeText")
@@ -774,9 +774,9 @@
               'apiErrorNoAppointmentForThisScopeText' ||
               apiErrorTranslation.textKey ===
                 'apiErrorNoAppointmentForThisDayText') &&
-            (selectedProvider?.scope?.infoForNoAppointments || '').trim()
+            (selectedProvider?.scope?.infoForAllAppointments || '').trim()
           "
-          v-html="sanitizeHtml(selectedProvider?.scope?.infoForNoAppointments)"
+          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
         ></div>
         <template v-else>{{ t(apiErrorTranslation.textKey) }}</template>
       </template>

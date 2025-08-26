@@ -99,7 +99,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'customTextfield2Label' => null,
                 'captchaActivatedRequired' => null,
                 'infoForAppointment' => null,
-                'infoForNoAppointments' => null,
+                'infoForAllAppointments' => null,
                 'slotsPerAppointment' => null,
                 "appointmentsPerMail" => null,
                 "whitelistedMails" => null

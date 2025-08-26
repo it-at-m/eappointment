@@ -39,7 +39,7 @@
                                 "appointment": {
                                     "deallocationDuration": "60",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "60",
@@ -138,7 +138,7 @@
                                 "appointment": {
                                     "deallocationDuration": "10",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "20",
@@ -271,7 +271,7 @@
                                         "appointment": {
                                             "deallocationDuration": "10",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "20",
@@ -368,7 +368,7 @@
                                         "appointment": {
                                             "deallocationDuration": "10",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "20",
@@ -465,7 +465,7 @@
                                         "appointment": {
                                             "deallocationDuration": "10",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "20",
@@ -574,7 +574,7 @@
                                         "appointment": {
                                             "deallocationDuration": "30",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "21",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "20",
@@ -696,7 +696,7 @@
                                         "appointment": {
                                             "deallocationDuration": "5",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "5",
@@ -791,7 +791,7 @@
                                         "appointment": {
                                             "deallocationDuration": "5",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "5",
@@ -933,7 +933,7 @@
                                         "appointment": {
                                             "deallocationDuration": "30",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "30",
@@ -1030,7 +1030,7 @@
                                         "appointment": {
                                             "deallocationDuration": "30",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "30",
@@ -1127,7 +1127,7 @@
                                         "appointment": {
                                             "deallocationDuration": "30",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "30",
@@ -1224,7 +1224,7 @@
                                         "appointment": {
                                             "deallocationDuration": "30",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "30",
@@ -1334,7 +1334,7 @@
                                         "appointment": {
                                             "deallocationDuration": "30",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "90",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "30",
@@ -1442,7 +1442,7 @@
                                         "appointment": {
                                             "deallocationDuration": "5",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "10",
@@ -1537,7 +1537,7 @@
                                         "appointment": {
                                             "deallocationDuration": "5",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "10",
@@ -1632,7 +1632,7 @@
                                         "appointment": {
                                             "deallocationDuration": "5",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "10",
@@ -1730,7 +1730,7 @@
                                 "appointment": {
                                     "deallocationDuration": "10",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "5",
@@ -1827,7 +1827,7 @@
                                 "appointment": {
                                     "deallocationDuration": "15",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "5",
@@ -1936,7 +1936,7 @@
                                         "appointment": {
                                             "deallocationDuration": "15",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "5",
@@ -2044,7 +2044,7 @@
                                         "appointment": {
                                             "deallocationDuration": "30",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "30",
@@ -2139,7 +2139,7 @@
                                         "appointment": {
                                             "deallocationDuration": "10",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "15",
@@ -2234,7 +2234,7 @@
                                         "appointment": {
                                             "deallocationDuration": "10",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "30",
@@ -2320,7 +2320,7 @@
                                         "appointment": {
                                             "deallocationDuration": "30",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "30",
@@ -2415,7 +2415,7 @@
                                         "appointment": {
                                             "deallocationDuration": "30",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "30",
@@ -2513,7 +2513,7 @@
                                 "appointment": {
                                     "deallocationDuration": "5",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "56",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "10",
@@ -2610,7 +2610,7 @@
                                 "appointment": {
                                     "deallocationDuration": "5",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "56",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "10",
@@ -2729,7 +2729,7 @@
                                         "appointment": {
                                             "deallocationDuration": "0",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "5",
@@ -2824,7 +2824,7 @@
                                         "appointment": {
                                             "deallocationDuration": "5",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "56",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "5",
@@ -2922,7 +2922,7 @@
                                 "appointment": {
                                     "deallocationDuration": "5",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "5",
@@ -3019,7 +3019,7 @@
                                 "appointment": {
                                     "deallocationDuration": "5",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "5",
@@ -3116,7 +3116,7 @@
                                 "appointment": {
                                     "deallocationDuration": "5",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "5",
@@ -3213,7 +3213,7 @@
                                 "appointment": {
                                     "deallocationDuration": "5",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "5",
@@ -3310,7 +3310,7 @@
                                 "appointment": {
                                     "deallocationDuration": "5",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "5",
@@ -3407,7 +3407,7 @@
                                 "appointment": {
                                     "deallocationDuration": "15",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "15",
@@ -3504,7 +3504,7 @@
                                 "appointment": {
                                     "deallocationDuration": "30",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "30",
@@ -3601,7 +3601,7 @@
                                 "appointment": {
                                     "deallocationDuration": "30",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "30",
@@ -3698,7 +3698,7 @@
                                 "appointment": {
                                     "deallocationDuration": "30",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "0",
                                     "reservationDuration": "30",
@@ -3830,7 +3830,7 @@
                                 "appointment": {
                                     "deallocationDuration": "0",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "5",
@@ -3927,7 +3927,7 @@
                                 "appointment": {
                                     "deallocationDuration": "0",
                                     "infoForAppointment": "",
-                                    "infoForNoAppointments": "",
+                                    "infoForAllAppointments": "",
                                     "endInDaysDefault": "60",
                                     "multipleSlotsEnabled": "1",
                                     "reservationDuration": "5",
@@ -4042,7 +4042,7 @@
                                         "appointment": {
                                             "deallocationDuration": "0",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "5",
@@ -4137,7 +4137,7 @@
                                         "appointment": {
                                             "deallocationDuration": "0",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "5",
@@ -4349,7 +4349,7 @@
                                         "appointment": {
                                             "deallocationDuration": "10",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "10",
@@ -4435,7 +4435,7 @@
                                         "appointment": {
                                             "deallocationDuration": "10",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "30",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "10",
@@ -4530,7 +4530,7 @@
                                         "appointment": {
                                             "deallocationDuration": "10",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "10",
@@ -4625,7 +4625,7 @@
                                         "appointment": {
                                             "deallocationDuration": "10",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "0",
                                             "reservationDuration": "10",
@@ -4757,7 +4757,7 @@
                                         "appointment": {
                                             "deallocationDuration": "20",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "20",
@@ -4852,7 +4852,7 @@
                                         "appointment": {
                                             "deallocationDuration": "20",
                                             "infoForAppointment": "",
-                                            "infoForNoAppointments": "",
+                                            "infoForAllAppointments": "",
                                             "endInDaysDefault": "60",
                                             "multipleSlotsEnabled": "1",
                                             "reservationDuration": "20",
@@ -5957,7 +5957,7 @@
                     "appointment": {
                         "deallocationDuration": "10",
                         "infoForAppointment": "",
-                        "infoForNoAppointments": "",
+                        "infoForAllAppointments": "",
                         "endInDaysDefault": "60",
                         "multipleSlotsEnabled": "0",
                         "reservationDuration": "20",
@@ -6066,7 +6066,7 @@
                 "appointment": {
                     "deallocationDuration": "10",
                     "infoForAppointment": "",
-                    "infoForNoAppointments": "",
+                    "infoForAllAppointments": "",
                     "endInDaysDefault": "60",
                     "multipleSlotsEnabled": "0",
                     "reservationDuration": "20",

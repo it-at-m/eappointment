@@ -110,7 +110,7 @@ class AppointmentDeallocateByCronTest extends Base
                     "appointment"=>[
                         "deallocationDuration"=>"5",
                         "infoForAppointment"=>"",
-                        "infoForNoAppointments"=>"",
+                        "infoForAllAppointments"=>"",
                         "endInDaysDefault"=>"60",
                         "multipleSlotsEnabled"=>"1",
                         "reservationDuration"=>"5",

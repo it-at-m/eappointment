@@ -100,7 +100,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "customTextfield2Label" => "Zusätzliche Bemerkung",
                 "captchaActivatedRequired" => false,
                 "infoForAppointment" => null,
-                "infoForNoAppointments" => null,
+                "infoForAllAppointments" => null,
                 "slotsPerAppointment" => null,
                 "appointmentsPerMail" => 1,
                 "whitelistedMails" => null

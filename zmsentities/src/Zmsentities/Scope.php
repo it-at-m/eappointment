@@ -98,7 +98,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 
     public function getInfoForNoAppointments()
     {
-        return $this->getPreference('appointment', 'infoForNoAppointments', null);
+        return $this->getPreference('appointment', 'infoForAllAppointments', null);
     }
 
     public function getSlotsPerAppointment()

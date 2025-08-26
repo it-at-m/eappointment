@@ -59,7 +59,7 @@
         },
         "authKey": "fb43",
         "infoForAppointment": "Infos zum Standort.",
-        "infoForNoAppointments": "Infos zum Standort.",
+        "infoForAllAppointments": "Infos zum Standort.",
         "clients": [
             {
                 "familyName": "TEST_USER",

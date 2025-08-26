@@ -89,5 +89,5 @@ export interface Scope {
    * @type {string | null}
    * @memberof Scope
    */
-  infoForNoAppointments?: string | null;
+  infoForAllAppointments?: string | null;
 }

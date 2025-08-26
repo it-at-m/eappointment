@@ -1696,14 +1696,14 @@ describe("CalendarView", () => {
 
   describe("InfoForNoAppointments Feature", () => {
     describe("First Warning Callout (No Appointments for Selected Providers)", () => {
-      it('should display infoForNoAppointments when available', async () => {
+      it('should display infoForAllAppointments when available', async () => {
         const wrapper = createWrapper({
           selectedProvider: {
             id: 1,
             name: 'Test Office',
             address: { street: 'Test Street', house_number: '123' },
             scope: {
-              infoForNoAppointments: 'Custom no appointments message'
+              infoForAllAppointments: 'Custom no appointments message'
             }
           }
         });
@@ -1718,14 +1718,14 @@ describe("CalendarView", () => {
         expect(callout.html()).toContain('Custom no appointments message');
       });
 
-      it('should fallback to translation key when infoForNoAppointments is null', async () => {
+      it('should fallback to translation key when infoForAllAppointments is null', async () => {
         const wrapper = createWrapper({
           selectedProvider: {
             id: 1,
             name: 'Test Office',
             address: { street: 'Test Street', house_number: '123' },
             scope: {
-              infoForNoAppointments: null
+              infoForAllAppointments: null
             }
           }
         });
@@ -1740,14 +1740,14 @@ describe("CalendarView", () => {
         expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
       });
 
-      it('should fallback to translation key when infoForNoAppointments is empty string', async () => {
+      it('should fallback to translation key when infoForAllAppointments is empty string', async () => {
         const wrapper = createWrapper({
           selectedProvider: {
             id: 1,
             name: 'Test Office',
             address: { street: 'Test Street', house_number: '123' },
             scope: {
-              infoForNoAppointments: ''
+              infoForAllAppointments: ''
             }
           }
         });
@@ -1762,14 +1762,14 @@ describe("CalendarView", () => {
         expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
       });
 
-      it('should fallback to translation key when infoForNoAppointments is whitespace only', async () => {
+      it('should fallback to translation key when infoForAllAppointments is whitespace only', async () => {
         const wrapper = createWrapper({
           selectedProvider: {
             id: 1,
             name: 'Test Office',
             address: { street: 'Test Street', house_number: '123' },
             scope: {
-              infoForNoAppointments: '   '
+              infoForAllAppointments: '   '
             }
           }
         });
@@ -1786,7 +1786,7 @@ describe("CalendarView", () => {
     });
 
     describe("Second Warning Callout (API Error Translation)", () => {
-      it('should display infoForNoAppointments for apiErrorNoAppointmentForThisScopeText', async () => {
+      it('should display infoForAllAppointments for apiErrorNoAppointmentForThisScopeText', async () => {
         const wrapper = createWrapper({
           props: { 
             bookingError: true,
@@ -1797,7 +1797,7 @@ describe("CalendarView", () => {
             name: 'Test Office',
             address: { street: 'Test Street', house_number: '123' },
             scope: {
-              infoForNoAppointments: 'Custom scope message'
+              infoForAllAppointments: 'Custom scope message'
             }
           }
         });
@@ -1809,7 +1809,7 @@ describe("CalendarView", () => {
         expect(callout.html()).toContain('Custom scope message');
       });
 
-      it('should display infoForNoAppointments for apiErrorNoAppointmentForThisDayText', async () => {
+      it('should display infoForAllAppointments for apiErrorNoAppointmentForThisDayText', async () => {
         const wrapper = createWrapper({
           props: { 
             bookingError: true,
@@ -1820,7 +1820,7 @@ describe("CalendarView", () => {
             name: 'Test Office',
             address: { street: 'Test Street', house_number: '123' },
             scope: {
-              infoForNoAppointments: 'Custom day message'
+              infoForAllAppointments: 'Custom day message'
             }
           }
         });
@@ -1843,7 +1843,7 @@ describe("CalendarView", () => {
             name: 'Test Office',
             address: { street: 'Test Street', house_number: '123' },
             scope: {
-              infoForNoAppointments: 'Custom message'
+              infoForAllAppointments: 'Custom message'
             }
           }
         });
@@ -1855,7 +1855,7 @@ describe("CalendarView", () => {
         expect(callout.html()).toContain('someOtherErrorText');
       });
 
-      it('should fallback to translation key when infoForNoAppointments is empty for specific error types', async () => {
+      it('should fallback to translation key when infoForAllAppointments is empty for specific error types', async () => {
         const wrapper = createWrapper({
           props: { 
             bookingError: true,
@@ -1866,7 +1866,7 @@ describe("CalendarView", () => {
             name: 'Test Office',
             address: { street: 'Test Street', house_number: '123' },
             scope: {
-              infoForNoAppointments: ''
+              infoForAllAppointments: ''
             }
           }
         });
@@ -1915,14 +1915,14 @@ describe("CalendarView", () => {
         expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
       });
 
-      it('should handle scope without infoForNoAppointments property', async () => {
+      it('should handle scope without infoForAllAppointments property', async () => {
         const wrapper = createWrapper({
           selectedProvider: {
             id: 1,
             name: 'Test Office',
             address: { street: 'Test Street', house_number: '123' },
             scope: {
-              // No infoForNoAppointments property
+              // No infoForAllAppointments property
             }
           }
         });
@@ -1939,7 +1939,7 @@ describe("CalendarView", () => {
     });
 
     describe("Integration Tests", () => {
-      it('should handle complete flow with infoForNoAppointments', async () => {
+      it('should handle complete flow with infoForAllAppointments', async () => {
         const wrapper = createWrapper({
           selectedService: {
             id: "service1",
@@ -1949,7 +1949,7 @@ describe("CalendarView", () => {
                 id: 1, 
                 address: { street: "Elm", house_number: "99" },
                 scope: {
-                  infoForNoAppointments: 'Complete flow test message'
+                  infoForAllAppointments: 'Complete flow test message'
                 }
               }
             ]
@@ -1961,16 +1961,16 @@ describe("CalendarView", () => {
           id: 1, 
           address: { street: "Elm", house_number: "99" },
           scope: {
-            infoForNoAppointments: 'Complete flow test message'
+            infoForAllAppointments: 'Complete flow test message'
           }
         });
         await flushPromises();
 
         expect(wrapper.vm.selectedProvider).toBeDefined();
-        expect(wrapper.vm.selectedProvider?.scope?.infoForNoAppointments).toBe('Complete flow test message');
+        expect(wrapper.vm.selectedProvider?.scope?.infoForAllAppointments).toBe('Complete flow test message');
       });
 
-      it('should maintain existing functionality when infoForNoAppointments is not set', async () => {
+      it('should maintain existing functionality when infoForAllAppointments is not set', async () => {
         const wrapper = createWrapper({
           selectedService: {
             id: "service1",
