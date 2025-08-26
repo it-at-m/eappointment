@@ -221,11 +221,11 @@
                                             },
                                             "infoForAppointment": {
                                                 "type": ["string", "null"],
-                                                "description": "info for the client if he got a appointment"
+                                                "description": "Information shown when an appointment is available or has been booked"
                                             },
                                             "infoForNoAppointments": {
                                                 "type": ["string", "null"],
-                                                "description": "info for the client if he didn't got a appointment"
+                                                "description": "Information shown when no appointments are available"
                                             },
                                             "multipleSlotsEnabled": {
                                                 "oneOf": [
@@ -270,7 +270,7 @@
                                                         "enum": ["true", "false"]
                                                     }
                                                 ],
-                                                "description": "true if client should get a notification to confirm that notifications are enabled for him/her (Convienient preferences, see department for origin)",
+                                                "description": "true if client should get a notification to confirm that notifications are enabled for him/her (Convenient preferences, see department for origin)",
                                                 "default": false
                                             },
                                             "notificationHeadsUpEnabled": {
@@ -293,7 +293,7 @@
                                                         "enum": ["true", "false"]
                                                     }
                                                 ],
-                                                "description": "true if client should get a notification as reminder (Convienient preferences, see department for origin)",
+                                                "description": "true if client should get a notification as reminder (Convenient preferences, see department for origin)",
                                                 "default": false
                                             },
                                             "reservationDuration": {
