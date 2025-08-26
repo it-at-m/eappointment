@@ -1,5 +1,23 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "baseBranches": ["next", "/^release\\/.*/"]
+  "baseBranches": ["next"],
+  "ignorePaths": ["**/package-lock.json"],
+  "includePaths": [
+    "zmsadmin/package.json",
+    "zmsapi/package.json", 
+    "zmscalldisplay/package.json",
+    "zmscitizenapi/package.json",
+    "zmscitizenview/package.json",
+    "zmsentities/package.json",
+    "zmsstatistic/package.json",
+    "zmsticketprinter/package.json"
+  ],
+  "packageRules": [
+    {
+      "matchPaths": ["zmsadmin/**"],
+      "matchPackageNames": ["react", "react-dom"],
+      "groupName": "React updates"
+    }
+  ]
 }
