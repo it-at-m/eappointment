@@ -225,7 +225,8 @@
                                                 "type": "null"
                                             },
                                             {
-                                                "type": "number"
+                                                "type": "number",
+                                                "enum": [0, 1]
                                             },
                                             {
                                                 "type": "boolean"
@@ -248,7 +249,8 @@
                                                 "type": "null"
                                             },
                                             {
-                                                "type": "number"
+                                                "type": "number",
+                                                "enum": [0, 1]
                                             },
                                             {
                                                 "type": "boolean"
@@ -271,7 +273,8 @@
                                                 "type": "null"
                                             },
                                             {
-                                                "type": "number"
+                                                "type": "number",
+                                                "enum": [0, 1]
                                             },
                                             {
                                                 "type": "boolean"
