@@ -2314,4 +2314,8 @@ div:has(.left-text) {
 .muc-calendar-container {
   font-size: 1.125rem !important; /* Desktop size */
 }
+
+#listViewAccordion .m-accordion__section-button {
+  font-size: 1.125rem !important;
+}
 </style>
