@@ -196,11 +196,11 @@
                         },
                         "infoForAppointment": {
                             "type": ["string", "null"],
-                            "description": "info for the client if he got a appointment"
+                            "description": "Information shown when an appointment is available or has been booked"
                         },
                         "infoForNoAppointments": {
                             "type": ["string", "null"],
-                            "description": "info for the client if he didn't got a appointment"
+                            "description": "Information shown when no appointments are available"
                         },
                         "multipleSlotsEnabled": {
                             "oneOf": [
