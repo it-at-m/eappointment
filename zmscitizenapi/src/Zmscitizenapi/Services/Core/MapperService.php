@@ -98,9 +98,12 @@ class MapperService
                     customTextfield2Required: isset($providerScope->customTextfield2Required) ? (bool) $providerScope->customTextfield2Required : null,
                     customTextfield2Label: isset($providerScope->customTextfield2Label) ? (string) $providerScope->customTextfield2Label : null,
                     captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? (bool) $providerScope->captchaActivatedRequired : null,
-                    infoForAppointment: isset($providerScope->infoForAppointment) ? (string) $providerScope->infoForAppointment : null,
-                    infoForNoAppointments: isset($providerScope->infoForNoAppointments) ? (string) $providerScope->infoForNoAppointments : null,
-                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
+                    infoForAppointment: isset($providerScope->infoForAppointment)
+                        ? ((string) $providerScope->infoForAppointment === '' ? null : (string) $providerScope->infoForAppointment)
+                        : null,
+                    infoForNoAppointments: isset($providerScope->infoForNoAppointments)
+                        ? ((string) $providerScope->infoForNoAppointments === '' ? null : (string) $providerScope->infoForNoAppointments)
+                        : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null
                 ) : null,
