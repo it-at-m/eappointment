@@ -30,6 +30,7 @@ describe("AppointmentSummary", () => {
     },
     scope: {
       infoForAppointment: "Test Info",
+      infoForNoAppointments: "<p>Test Info</p>",
       customTextfieldLabel: "Custom Field 1",
       customTextfield2Label: "Custom Field 2",
     },
