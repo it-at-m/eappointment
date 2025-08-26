@@ -5,3 +5,12 @@ body fieldset fieldset, body fieldset fieldset fieldset {
 legend .normal-text {
   font-weight: normal;
 }
+
+.superuser-only-field legend::after,
+.superuser-only-field legend.label::after {
+  content: " (Nur für technische Administration sichtbar)";
+  font-weight: normal;
+  opacity: 0.7;
+  font-size: 0.9em;
+  color: #333;
+}

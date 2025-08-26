@@ -326,7 +326,8 @@
                     {% if rights.superuser %}
                         {{ formgroup(
                                 {
-                                    "legend": "Captcha (<span class=\"normal-text\">Nur für technische Administration sichtbar</span>):",
+                                    "legend": "Captcha:",
+                                    "class": "superuser-only-field",
                                     "groupTag": "fieldset"
                                 },
                                 [
@@ -541,10 +542,9 @@
 			</fieldset>
 
             {% if rights.superuser %}
-                <fieldset>
+                <fieldset class="superuser-only-field">
                     <legend>
-                        SMS Einstellungen 
-                        <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                        SMS Einstellungen
                     </legend>
                     <div class="panel--heavy">
                         {% if department.preferences.notifications.enabled %}
@@ -620,15 +620,14 @@
             {% endif %}
 
             {% if rights.superuser %}
-                <fieldset>
+                <fieldset class="superuser-only-field">
                     <legend>
-                        Kundenbefragung 
-                        <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                        Kundenbefragung
                     </legend>
                     <div class="panel--heavy">
                         {{ formgroup(
                             {
-                                "legend": "Kundenbefragung aktivieren:",
+                                "label": "Kundenbefragung aktivieren:",
                                 "groupTag": "fieldset"
                             },
                             [{
@@ -729,10 +728,9 @@
 			</fieldset>
 
             {% if rights.superuser %}
-                <fieldset>
+                <fieldset class="superuser-only-field">
                     <legend>
-                        Wartenummern-Kiosk 
-                        <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                        Wartenummern-Kiosk
                     </legend>
                     <div class="panel--heavy">
                         {{ formgroup(
@@ -969,7 +967,11 @@
 
 					{% if rights.superuser %}
 						{{ formgroup(
-							{"legend": "Hinweismeldungen bei keinen verfügbaren Terminen (<span class=\"normal-text\">Nur für technische Administration sichtbar</span>):", "description": "Dieser Text erscheint im Bürgerfrontend."},
+							{
+                            "legend": "Hinweismeldungen bei keinen verfügbaren Terminen:",
+                            "class": "superuser-only-field",
+                            "description": "Dieser Text erscheint im Bürgerfrontend."
+                            },
 							[{
 								"type":"textarea",
 								"parameter": {
@@ -980,19 +982,24 @@
 							}]
 						) }}
                         {{ formgroup(
-							{"legend": "Hinweismeldungen bei verfügbaren Terminen (<span class=\"normal-text\">Nur für technische Administration sichtbar</span>):", "description": "Dieser Text erscheint im Bürgerfrontend."},
-							[{
-								"type":"textarea",
-								"parameter": {
-									"name": "preferences[appointment][infoForAppointment]",
-									"maxlength": 5000,
-									"value": scope.preferences.appointment.infoForAppointment|default(''),
-								}
-							}]
-						) }}
+                            {
+                                "legend": "Hinweismeldungen bei verfügbaren Terminen:",
+                                "class": "superuser-only-field",
+                                "description": "Dieser Text erscheint im Bürgerfrontend."
+                            },
+                            [{
+                                "type":"textarea",
+                                "parameter": {
+                                    "name": "preferences[appointment][infoForAppointment]",
+                                    "maxlength": 5000,
+                                    "value": scope.preferences.appointment.infoForAppointment|default(''),
+                                }
+                            }]
+                        ) }}
                         {{ formgroup(
                                 {
-                                    "legend": "Bild für Aufrufanlage (<span class=\"normal-text\">Nur für technische Administration sichtbar</span>):",
+                                    "legend": "Bild für Aufrufanlage:",
+                                    "class": "superuser-only-field",
                                     "groupTag": "fieldset"
                                 },
                                 [
