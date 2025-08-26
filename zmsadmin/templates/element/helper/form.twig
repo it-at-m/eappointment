@@ -27,7 +27,9 @@
             <div class="label">{{ groupargs.divlabel }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
             </div>
         {% elseif groupargs.legend -%}
-            <legend class="label">{{ groupargs.legend|raw }}
+            {# Only allow raw HTML when explicitly flagged. Defaults to escaped text. #}
+            {% set legendContent = groupargs.legendIsHtml ? groupargs.legend|raw : groupargs.legend %}
+            <legend class="label">{{ legendContent }}
                 {% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}
             </legend>   
         {% endif -%}
