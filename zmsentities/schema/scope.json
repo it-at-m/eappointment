@@ -245,7 +245,7 @@
                                     "enum": ["true", "false"]
                                 }
                             ],
-                            "description": "true if client should get a notification to confirm that notifications are enabled for him/her (Convienient preferences, see department for origin)",
+                            "description": "true if client should get a notification to confirm that notifications are enabled for him/her (Convenient preferences, see department for origin)",
                             "default": false
                         },
                         "notificationHeadsUpEnabled": {
@@ -268,7 +268,7 @@
                                     "enum": ["true", "false"]
                                 }
                             ],
-                            "description": "true if client should get a notification as reminder (Convienient preferences, see department for origin)",
+                            "description": "true if client should get a notification as reminder (Convenient preferences, see department for origin)",
                             "default": false
                         },
                         "reservationDuration": {
