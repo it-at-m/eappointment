@@ -276,7 +276,6 @@ class Useraccount extends Schema\Entity
     {
         $entity = new self();
         $entity->id = $data['username'];
-        $entity->email = $data['email'];
         $department = new Department(['id' => 0]);
         $entity->addDepartment($department);
         $password = substr(str_shuffle($entity->id . $entity->email), 0, 8);
