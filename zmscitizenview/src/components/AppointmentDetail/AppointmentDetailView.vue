@@ -225,7 +225,7 @@ onMounted(() => {
     offices.value = data.offices;
 
     if (appointmentId.value) {
-      getAppointmentDetails(appointmentId.value).then((data) => {
+      getAppointmentDetails(appointmentId.value, props.baseUrl).then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data;
 

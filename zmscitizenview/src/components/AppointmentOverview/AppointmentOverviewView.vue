@@ -72,7 +72,7 @@ import { onMounted, ref } from "vue";
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
+import { getMyAppointments } from "@/api/ZMSAppointmentUserAPI";
 import AddAppointmentCard from "@/components/AppointmentOverview/AddAppointmentCard.vue";
 import AddAppointmentSvg from "@/components/AppointmentOverview/AddAppointmentSvg.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
@@ -101,7 +101,7 @@ onMounted(() => {
   fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
     .then((data) => {
       offices.value = data.offices;
-      getAppointments("user").then((data) => {
+      getMyAppointments(props.baseUrl).then((data) => {
         if (
           Array.isArray(data) &&
           data.every((item) => item.processId !== undefined)
