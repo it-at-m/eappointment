@@ -34,7 +34,7 @@
             "type": "path",
             "url": "../*",
             "options": {
-                "symlink": true
+                "symlink": false
             }
         }
     ]

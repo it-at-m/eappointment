@@ -4,15 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "694e9e767da66890769837559ff90a79",
+    "content-hash": "a54ddd525a6a5972c47928e474d68970",
     "packages": [
         {
             "name": "eappointment/mellon",
-            "version": "dev-next",
+            "version": "dev-feature-gh-1397-local-containerized-unit-testing-for-zmsapi-and-zmsdb-modules",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "6d91a96966a8778c4981bcbc9e3b07d7372d5cc0"
+                "reference": "f870038c1dc743fed5b6c26708bedce8b4bee5c9"
             },
             "require": {
                 "ext-json": ">=0",
@@ -51,7 +51,7 @@
             ],
             "description": "Validator for parameters and validation helper",
             "transport-options": {
-                "symlink": true,
+                "symlink": false,
                 "relative": true
             }
         },

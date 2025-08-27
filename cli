@@ -56,14 +56,27 @@ def cli_modules_reference_libraries(no_symlink: bool):
     with open(composer_file_path, "r") as f:
       composer_content = json.load(f)
 
-    composer_content["repositories"] = list([i for i in composer_content.get("repositories", []) if i.get("type") != "path" and i.get("url", None) != "../*"])
-    composer_content["repositories"].append({
+    # Handle repositories - convert to list if it's an object
+    repositories = composer_content.get("repositories", [])
+    if isinstance(repositories, dict):
+        # Convert object repositories to list format
+        repositories = list(repositories.values())
+    elif not isinstance(repositories, list):
+        repositories = []
+    
+    # Filter out existing path repositories
+    repositories = [i for i in repositories if i.get("type") != "path" and i.get("url", None) != "../*"]
+    
+    # Add our path repository
+    repositories.append({
       "type": "path",
       "url": "../*",
       "options": {
         "symlink": not no_symlink
       }
     })
+    
+    composer_content["repositories"] = repositories
 
     require = composer_content.get("require", [])
     for dependency_key in require:

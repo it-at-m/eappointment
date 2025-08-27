@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "720909fb34c6c3acd24a51bd0df8103a",
+    "content-hash": "95c5d7deeea52fdc9b77bed697c075ec",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -180,11 +180,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-next",
+            "version": "dev-feature-gh-1397-local-containerized-unit-testing-for-zmsapi-and-zmsdb-modules",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "6d91a96966a8778c4981bcbc9e3b07d7372d5cc0"
+                "reference": "f870038c1dc743fed5b6c26708bedce8b4bee5c9"
             },
             "require": {
                 "ext-json": ">=0",
@@ -223,17 +223,17 @@
             ],
             "description": "Validator for parameters and validation helper",
             "transport-options": {
-                "symlink": true,
+                "symlink": false,
                 "relative": true
             }
         },
         {
             "name": "eappointment/zmsapi",
-            "version": "dev-next",
+            "version": "dev-feature-gh-1397-local-containerized-unit-testing-for-zmsapi-and-zmsdb-modules",
             "dist": {
                 "type": "path",
                 "url": "../zmsapi",
-                "reference": "ad7fc87546907eba76a60a2fea8a9ae198722424"
+                "reference": "f870038c1dc743fed5b6c26708bedce8b4bee5c9"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -301,17 +301,17 @@
             ],
             "description": "This application offers a REST-like interface for ZMS functions and database access.",
             "transport-options": {
-                "symlink": true,
+                "symlink": false,
                 "relative": true
             }
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-next",
+            "version": "dev-feature-gh-1397-local-containerized-unit-testing-for-zmsapi-and-zmsdb-modules",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "ce8ad81aebbe04cac5c6d080d4cf7c522d70c939"
+                "reference": "90f507556e0e8ed79f461f284196d25bdf8a3723"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -361,17 +361,17 @@
             ],
             "description": "Use this library to fetch data from the eappointment API via HTTP.",
             "transport-options": {
-                "symlink": true,
+                "symlink": false,
                 "relative": true
             }
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-next",
+            "version": "dev-feature-gh-1397-local-containerized-unit-testing-for-zmsapi-and-zmsdb-modules",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "92075e16750bbf0e730659afd7932c41c6e5eb6a"
+                "reference": "f870038c1dc743fed5b6c26708bedce8b4bee5c9"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -429,17 +429,17 @@
             ],
             "description": "Client for DLDB",
             "transport-options": {
-                "symlink": true,
+                "symlink": false,
                 "relative": true
             }
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-next",
+            "version": "dev-feature-gh-1397-local-containerized-unit-testing-for-zmsapi-and-zmsdb-modules",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "6454eda6078f4d97ec32dd9d6c7437227202f6c9"
+                "reference": "f870038c1dc743fed5b6c26708bedce8b4bee5c9"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -487,17 +487,17 @@
             ],
             "description": "Entity definitions for eappoinment",
             "transport-options": {
-                "symlink": true,
+                "symlink": false,
                 "relative": true
             }
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-next",
+            "version": "dev-feature-gh-1397-local-containerized-unit-testing-for-zmsapi-and-zmsdb-modules",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "e228833243aecb7a5bef5781ca086547fef95c24"
+                "reference": "f870038c1dc743fed5b6c26708bedce8b4bee5c9"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -549,7 +549,7 @@
             ],
             "description": "Basic configuration for a slim framework",
             "transport-options": {
-                "symlink": true,
+                "symlink": false,
                 "relative": true
             }
         },

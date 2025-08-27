@@ -1,0 +1,73 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: zmsdb
+      MYSQL_DATABASE: zmsbo
+      MYSQL_CHARACTER_SET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pzmsdb"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  test:
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    image: ghcr.io/it-at-m/eappointment-php-base:8.3-dev
+    volumes:
+      - type: bind
+        source: "."
+        target: "/app"
+        consistency: cached
+      - type: bind
+        source: "../zmsentities"
+        target: "/zmsentities"
+      - type: bind
+        source: "../zmsslim"
+        target: "/zmsslim"
+      - type: bind
+        source: ".."
+        target: "/workspace"
+    environment:
+      MYSQL_PORT: "tcp://mariadb:3306"
+      MYSQL_DATABASE: zmsbo
+      MYSQL_ROOT_PASSWORD: zmsdb
+      ZMS_CONFIG_SECURE_TOKEN: secure-token
+      PHP_MEMORY_LIMIT: "1G"
+    working_dir: /app
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    command: >
+      bash -c "
+        set -e
+        echo 'Installing Python dependencies...'
+        apt update && apt install -y python3 python3-click python3-git
+        echo 'Installing MySQL client...'
+        apt install -y mariadb-client
+        echo 'Waiting for database to be ready...'
+        until mysql -h mariadb -u root -pzmsdb -e 'SELECT 1' >/dev/null 2>&1; do
+          echo 'Database not ready yet, waiting...'
+          sleep 2
+        done
+        echo 'Database is ready!'
+        echo 'Setting up module dependencies...'
+        cd /workspace && python3 cli modules reference-libraries --no-symlink
+        echo 'Waiting for composer operations to complete...'
+        sleep 10
+        echo 'Setting PHP memory limit...'
+        php -d memory_limit=1G -v
+        echo 'Importing test data...'
+        cd /app
+        php -d memory_limit=1G bin/importTestData --commit
+        echo 'Running tests...'
+        php -d memory_limit=1G vendor/bin/phpunit
+      "
