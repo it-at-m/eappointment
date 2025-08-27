@@ -203,33 +203,24 @@ bin/importTestData --commit
 #### Containerized Testing (Recommended - isolated environment)
 To run isolated, repeatable tests without touching your local database, use Docker Compose:
 
-**First run (builds and installs everything):**
+**Smart Testing Scripts (Recommended):**
 ```bash
 # For zmsdb
 cd zmsdb
-docker-compose down && docker-compose up --build && docker-compose logs -f test
+./zmsdb-test                    # Run all tests
+./zmsdb-test --filter="StatusTest::testBasic"  # Run specific test
 
 # For zmsapi  
 cd zmsapi
-docker-compose down && docker-compose up --build && docker-compose logs -f test
+./zmsapi-test                   # Run all tests
+./zmsapi-test --filter="StatusGetTest::testRendering"  # Run specific test
 ```
 
-**Subsequent runs (reuses containers, skips dependencies):**
-```bash
-# For zmsdb
-cd zmsdb
-docker-compose up -d mariadb && docker-compose up --no-build --no-deps test
-
-Run any test super fast while the mariadb container is up:
-docker-compose run --rm --no-deps test bash -lc 'cd /tmp/workspace/zmsdb && php -d memory_limit=1G bin/importTestData --commit && php -d memory_limit=1G vendor/bin/phpunit --filter="StatusTest::testBasic"'
-
-# For zmsapi
-cd zmsapi
-docker-compose up -d mariadb && docker-compose up --no-build --no-deps test
-
-Run any test super fast while the mariadb container is up:
-docker-compose run --rm --no-deps test bash -lc 'cd /tmp/workspace/zmsapi && rm -rf data && ln -s /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=1G /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=1G vendor/bin/phpunit --filter="StatusGetTest::testRendering"'
-```
+**How the Scripts Work:**
+- **First run**: Automatically detects and does full setup (builds containers, installs dependencies)
+- **Subsequent runs**: Reuses existing setup for fast test execution
+- **Filter support**: Accepts `--filter` argument for running specific tests
+- **Port management**: Automatically handles MariaDB startup and port conflicts
 
 ### Common Errors
 

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# zmsapi-test - Automated testing script for zmsapi module
+# Usage: ./zmsapi-test [--filter="TestClass::testMethod"]
+
+set -e
+
+# Parse filter argument
+FILTER=""
+if [[ $1 == --filter=* ]]; then
+    FILTER="${1#--filter=}"
+    echo "Running tests with filter: $FILTER"
+fi
+
+# Already in zmsapi directory
+
+# Check if mariadb is running, start if not
+if ! docker-compose ps mariadb | grep -q "Up"; then
+    echo "Starting mariadb container..."
+    docker-compose up -d mariadb
+    # Wait for mariadb to be healthy
+    echo "Waiting for mariadb to be ready..."
+    until docker-compose exec mariadb mysqladmin ping -h localhost -u root -pzmsapi >/dev/null 2>&1; do
+        sleep 2
+    done
+    echo "MariaDB is ready!"
+else
+    echo "MariaDB is already running"
+fi
+
+# Check if docker-compose services are already running
+if ! docker-compose ps | grep -q "zmsapi"; then
+    echo "Setting up test environment (first run)..."
+    docker-compose down
+    docker-compose up --build
+    docker-compose logs -f test
+else
+    echo "Test environment already set up, running tests..."
+    # Run tests with or without filter
+    if [ -n "$FILTER" ]; then
+        docker-compose run --rm --no-deps test bash -lc "cd /tmp/workspace/zmsapi && rm -rf data && ln -s /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=1G /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=1G vendor/bin/phpunit --filter=\"$FILTER\""
+    else
+        docker-compose run --rm --no-deps test bash -lc "cd /tmp/workspace/zmsapi && rm -rf data && ln -s /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=1G /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=1G vendor/bin/phpunit"
+    fi
+fi
