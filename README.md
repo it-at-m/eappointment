@@ -178,10 +178,10 @@ cd zmsclient
 docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
 ```
 
+#### Traditional DDEV Method (overwrites local DB)
 For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
 
-#### Traditional DDEV Method (overwrites local DB)
-zmsapi:
+**zmsapi:**
 ```bash
 cd zmsapi
 rm -rf data
@@ -192,7 +192,7 @@ vendor/bin/importTestData --commit
 ./vendor/bin/phpunit
 ```
 
-zmsdb:
+**zmsdb:**
 ```bash
 ddev ssh
 cd zmsdb
