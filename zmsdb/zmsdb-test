@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # zmsdb-test - Automated testing script for zmsdb module
-# Usage: ./zmsdb-test [--filter="TestClass::testMethod"]
+# Usage: ./zmsdb-test [PHPUnit arguments...]
 
 set -e
 
-# Parse filter argument
-FILTER=""
-if [[ $1 == --filter=* ]]; then
-    FILTER="${1#--filter=}"
-    echo "Running tests with filter: $FILTER"
+# Parse all PHPUnit arguments
+PHPUNIT_ARGS=""
+if [[ $# -gt 0 ]]; then
+    PHPUNIT_ARGS="$*"
+    echo "Running tests with arguments: $PHPUNIT_ARGS"
 fi
 
 # Already in zmsdb directory
@@ -37,9 +37,9 @@ if ! docker-compose ps | grep -q "zmsdb"; then
 else
     echo "Test environment already set up, running tests..."
     # Run tests with or without filter
-                    if [ -n "$FILTER" ]; then
-                    docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsdb && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit --filter=\"$FILTER\""
-                else
-                    docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsdb && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit"
-                fi
+                    if [ -n "$PHPUNIT_ARGS" ]; then
+                        docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsdb && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit $PHPUNIT_ARGS"
+                    else
+                        docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsdb && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit"
+                    fi
 fi
