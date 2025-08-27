@@ -6553,6 +6553,41 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\OverallCalendarRead'
 )->setName('OverallCalendarRead');
 
+/**
+ *  @swagger
+ *  "/process/externaluserid/{externalUserId}/":
+ *      get:
+ *          summary: Get a list of processes by external user id
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: externalUserId
+ *                  description: external user id
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: filterId
+ *                  description: "Get a certain process for a given user"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success, also if process list is empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->get(
+    '/process/externaluserid/{externalUserId}/',
+    '\BO\Zmsapi\ProcessListByExternalUserId'
+)->setName("ProcessListByExternalUserId");
+
 
 /* ---------------------------------------------------------------------------
  * maintenance

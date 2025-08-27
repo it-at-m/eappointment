@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Appointment;
 
+use BO\Zmscitizenapi\Models\AuthenticatedUser;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -11,7 +12,7 @@ use BO\Zmscitizenapi\Services\Core\MapperService;
 
 class AppointmentPreconfirmService
 {
-    public function processPreconfirm(array $body): ThinnedProcess|array
+    public function processPreconfirm(array $body, ?AuthenticatedUser $authenticatedUser): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($body);
         $errors = $this->validateClientData($clientData);
@@ -19,7 +20,7 @@ class AppointmentPreconfirmService
             return $errors;
         }
 
-        $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey);
+        $reservedProcess = AppointmentService::getThinnedProcessById($clientData->processId, $clientData->authKey, $authenticatedUser);
         if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
             return $reservedProcess;
         }
@@ -54,11 +55,6 @@ class AppointmentPreconfirmService
     private function validateClientData(object $data): array
     {
         return ValidationService::validateGetProcessById($data->processId, $data->authKey);
-    }
-
-    private function getReservedProcess(int $processId, string $authKey): ThinnedProcess|array
-    {
-        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey);
     }
 
     private function preconfirmProcess(ThinnedProcess $process): ThinnedProcess|array
