@@ -166,14 +166,19 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
   * `--display-failures`
   * `--debug` - Provides detailed test execution information including deprecation warnings and memory usage
 
-For `zmsapi` and `zmsdb` you must first import the test data (see below). 
+
+### Special Cases (zmsapi zmsdb & zmsclient)
+
+**zmsclient:**
 
 For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`). 
-- `cd zmsclient`
-- `docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit`
 
-### Special Cases (zmsapi & zmsdb)
-For the modules zmsapi and zmsdb, test data must be imported. Please note that this will overwrite your local database.
+```bash
+cd zmsclient
+docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
+```
+
+For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
 
 #### Traditional DDEV Method (overwrites local DB)
 zmsapi:
@@ -218,12 +223,6 @@ docker-compose up -d mariadb && docker-compose up --no-build --no-deps test
 # For zmsapi
 cd zmsapi
 docker-compose up -d mariadb && docker-compose up --no-build --no-deps test
-```
-
-**zmsclient:**
-```bash
-cd zmsclient
-docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
 ```
 
 ### Common Errors
