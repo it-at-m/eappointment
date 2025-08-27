@@ -32,7 +32,7 @@ fi
 if ! docker-compose ps | grep -q "zmsdb"; then
     echo "Setting up test environment (first run)..."
     docker-compose down
-    docker-compose up --build
+    docker-compose up -d --build
     docker-compose logs -f test
 else
     echo "Test environment already set up, running tests..."
