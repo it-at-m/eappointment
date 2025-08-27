@@ -226,7 +226,7 @@ onMounted(() => {
 
     if (appointmentId.value) {
       getAppointmentDetails(appointmentId.value, props.baseUrl).then((data) => {
-        if ((data as AppointmentDTO).processId != undefined) {
+        if ((data as AppointmentDTO)?.processId !== undefined) {
           appointment.value = data;
 
           selectedService.value = services.value.find(
