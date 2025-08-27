@@ -16,7 +16,9 @@ abstract class AuthenticationService
         if (empty($authHeader)) {
             return null;
         }
-        if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) throw new InvalidAuthTokenException('authKeyMismatch', 'Invalid JWT payload.');
+        if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            throw new InvalidAuthTokenException('authKeyMismatch', 'Invalid JWT payload.');
+        }
         $token = $matches[1];
         return AuthenticatedUser::fromJwtPayload($token);
     }

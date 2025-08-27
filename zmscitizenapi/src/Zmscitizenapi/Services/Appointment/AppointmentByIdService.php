@@ -50,5 +50,4 @@ class AppointmentByIdService
     {
         return ValidationService::validateGetProcessById($data->processId, $data->authKey);
     }
-
 }

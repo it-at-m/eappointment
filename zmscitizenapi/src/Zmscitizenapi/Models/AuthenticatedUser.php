@@ -28,19 +28,31 @@ class AuthenticatedUser implements JsonSerializable
 
     public static function fromJwtPayload(?string $token): ?self
     {
-        if (is_null($token)) return null;
+        if (is_null($token)) {
+            return null;
+        }
         $tokenParts = explode('.', $token);
-        if (count($tokenParts) !== 3) throw new InvalidAuthTokenException('authKeyMismatch', 'Invalid JWT payload.');
+        if (count($tokenParts) !== 3) {
+            throw new InvalidAuthTokenException('authKeyMismatch', 'Invalid JWT payload.');
+        }
         $payload = json_decode(base64_decode($tokenParts[1]), true);
 
         $instance = new self();
-        if (empty($payload['lhmExtID'])) throw new InvalidAuthTokenException('authKeyMismatch', 'Property `lhmExtID` is missing from the JWT payload.');
+        if (empty($payload['lhmExtID'])) {
+            throw new InvalidAuthTokenException('authKeyMismatch', 'Property `lhmExtID` is missing from the JWT payload.');
+        }
         $instance->setExternalUserId($payload['lhmExtID']);
-        if (empty($payload['email'])) throw new InvalidAuthTokenException('authKeyMismatch', 'Property `email` is missing from the JWT payload.');
+        if (empty($payload['email'])) {
+            throw new InvalidAuthTokenException('authKeyMismatch', 'Property `email` is missing from the JWT payload.');
+        }
         $instance->setEmail($payload['email']);
-        if (empty($payload['given_name'])) throw new InvalidAuthTokenException('authKeyMismatch', 'Property `given_name` is missing from the JWT payload.');
+        if (empty($payload['given_name'])) {
+            throw new InvalidAuthTokenException('authKeyMismatch', 'Property `given_name` is missing from the JWT payload.');
+        }
         $instance->setGivenName($payload['given_name']);
-        if (empty($payload['family_name'])) throw new InvalidAuthTokenException('authKeyMismatch', 'Property `family_name` is missing from the JWT payload.');
+        if (empty($payload['family_name'])) {
+            throw new InvalidAuthTokenException('authKeyMismatch', 'Property `family_name` is missing from the JWT payload.');
+        }
         $instance->setFamilyName($payload['family_name']);
         return $instance;
     }
