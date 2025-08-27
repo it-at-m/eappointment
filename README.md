@@ -220,9 +220,15 @@ docker-compose down && docker-compose up --build && docker-compose logs -f test
 cd zmsdb
 docker-compose up -d mariadb && docker-compose up --no-build --no-deps test
 
+Run any test super fast while the mariadb container is up:
+docker-compose run --rm --no-deps test bash -lc 'cd /tmp/workspace/zmsdb && php -d memory_limit=1G bin/importTestData --commit && php -d memory_limit=1G vendor/bin/phpunit --filter="StatusTest::testBasic"'
+
 # For zmsapi
 cd zmsapi
 docker-compose up -d mariadb && docker-compose up --no-build --no-deps test
+
+Run any test super fast while the mariadb container is up:
+docker-compose run --rm --no-deps test bash -lc 'cd /tmp/workspace/zmsapi && rm -rf data && ln -s /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=1G /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=1G vendor/bin/phpunit --filter="StatusGetTest::testRendering"'
 ```
 
 ### Common Errors
