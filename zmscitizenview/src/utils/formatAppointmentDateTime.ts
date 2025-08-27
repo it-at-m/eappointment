@@ -1,4 +1,5 @@
 const formatterDate = new Intl.DateTimeFormat("de-DE", {
+  timeZone: "Europe/Berlin",
   weekday: "long",
   year: "numeric",
   month: "numeric",
