@@ -175,6 +175,7 @@ For `zmsclient` you need the php base image which starts a local mock server. Th
 ### Special Cases (zmsapi & zmsdb)
 For the modules zmsapi and zmsdb, test data must be imported. Please note that this will overwrite your local database.
 
+#### Traditional DDEV Method (overwrites local DB)
 zmsapi:
 ```bash
 cd zmsapi
@@ -194,45 +195,40 @@ bin/importTestData --commit
 ./vendor/bin/phpunit
 ```
 
+#### Containerized Testing (Recommended - isolated environment)
+To run isolated, repeatable tests without touching your local database, use Docker Compose:
+
+**First run (builds and installs everything):**
+```bash
+# For zmsdb
+cd zmsdb
+docker-compose down && docker-compose up --build && docker-compose logs -f test
+
+# For zmsapi  
+cd zmsapi
+docker-compose down && docker-compose up --build && docker-compose logs -f test
+```
+
+**Subsequent runs (reuses containers, skips dependencies):**
+```bash
+# For zmsdb
+cd zmsdb
+docker-compose up -d mariadb && docker-compose up --no-build --no-deps test
+
+# For zmsapi
+cd zmsapi
+docker-compose up -d mariadb && docker-compose up --no-build --no-deps test
+```
+
 ### Containerized Unit Testing (Docker Compose)
-To run isolated, repeatable tests for `zmsapi` and `zmsdb` without touching your local DB, use the Docker Compose setup. The first run builds and installs everything; subsequent runs reuse containers and skip Composer/apt.
+For `zmsapi` and `zmsdb`, see the [Containerized Testing section above](#special-cases-zmsapi--zmsdb) for the recommended Docker Compose workflow.
 
-One-time setup (per module):
+For other modules that support containerized testing:
 
-- zmsdb
+**zmsclient:**
 ```bash
-cd zmsdb
-docker-compose up -d --build
-docker-compose logs -f test
-```
-
-- zmsapi
-```bash
-cd zmsapi
-docker-compose up -d --build
-docker-compose logs -f test
-```
-
-Fast re-runs (no rebuilds, no container recreation):
-
-- zmsdb
-```bash
-cd zmsdb
-docker-compose up -d --no-build --no-recreate
-docker exec zmsdb-test-1 bash -lc "php -d memory_limit=1G bin/importTestData --commit && php -d memory_limit=1G vendor/bin/phpunit"
-```
-
-- zmsapi
-```bash
-cd zmsapi
-docker-compose up -d --no-build --no-recreate
-docker exec zmsapi-test-1 bash -lc "php -d memory_limit=1G /zmsdb/bin/importTestData --commit && php -d memory_limit=1G vendor/bin/phpunit"
-```
-
-Tip: If you want to keep containers between sessions (avoid re-installing OS packages), stop/start instead of down/up:
-```bash
-docker-compose stop
-docker-compose start
+cd zmsclient
+docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
 ```
 
 ### Common Errors
