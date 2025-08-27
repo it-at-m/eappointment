@@ -25,7 +25,7 @@
     <div v-else>
       <muc-card-container
         v-if="loading"
-        class="checklist-card-container"
+        class="appointment-card-container"
       >
         <skeleton-loader
           v-for="elem in [1, 2, 3, 4]"
@@ -35,7 +35,7 @@
       </muc-card-container>
       <muc-card-container
         v-else
-        class="checklist-card-container"
+        class="appointment-card-container"
       >
         <appointment-card
           v-for="(appointment, index) in appointments"
@@ -125,12 +125,12 @@ onMounted(() => {
   background-color: var(--color-neutrals-blue-xlight) !important;
 }
 
-.checklist-card-container {
+.appointment-card-container {
   grid-template-columns: repeat(auto-fit, 100%);
 }
 
 @media (min-width: 768px) {
-  .checklist-card-container {
+  .appointment-card-container {
     grid-template-columns: repeat(auto-fit, 589px);
   }
 }
