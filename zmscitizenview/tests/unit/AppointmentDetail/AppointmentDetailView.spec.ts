@@ -156,7 +156,7 @@ describe("AppointmentDetailView", () => {
       expect(wrapper.find('.m-linklist__list__item').exists()).toBe(true);
       expect(wrapper.find('.timeBox').exists()).toBe(true);
       const timeboxElement = wrapper.find('.timeBox');
-      expect(timeboxElement.text()).toContain(wrapper.vm.formatTime(mockAppointment.timestamp));
+      expect(timeboxElement.text()).toContain(wrapper.vm.formatAppointmentDateTime(mockAppointment.timestamp));
 
       expect(wrapper.text()).toContain(de.detailTimeHint);
 

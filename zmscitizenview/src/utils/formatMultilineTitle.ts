@@ -5,7 +5,7 @@ import { AppointmentDTO } from "@/api/models/AppointmentDTO";
  * @param appointment
  * @returns Formatted multiline string
  */
-export function formatTitle(appointment: AppointmentDTO): string {
+export function formatMultilineTitle(appointment: AppointmentDTO): string {
   const serviceTitle =
     appointment.serviceCount + "x " + appointment.serviceName;
   const subserviceTitle = appointment.subRequestCounts

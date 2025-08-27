@@ -90,7 +90,7 @@ describe("AppointmentCard", () => {
 
     expect(wrapper.find('[data-test="muc-card"]').exists()).toBe(true);
     expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.appointment);
-    expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatTitle(mockAppointment));
+    expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.text()).toContain(mockProvider.address.street);
     expect(wrapper.text()).toContain(mockProvider.address.house_number);
@@ -102,7 +102,7 @@ describe("AppointmentCard", () => {
 
     expect(wrapper.find('[data-test="muc-card"]').exists()).toBe(true);
     expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe('Termin');
-    expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatTitle(mockAppointmentSubServices));
+    expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointmentSubServices));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.text()).toContain(mockProvider.address.street);
     expect(wrapper.text()).toContain(mockProvider.address.house_number);

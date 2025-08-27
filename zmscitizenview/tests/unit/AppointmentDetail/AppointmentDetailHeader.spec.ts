@@ -65,12 +65,12 @@ describe("AppointmentDetailHeader", () => {
 
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(true);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.appointment);
-    expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatTitle(mockAppointment));
+    expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(2);
     expect(wrapper.text()).toContain(mockAppointment.processId);
-    expect(wrapper.text()).toContain(wrapper.vm.formatTime(mockAppointment.timestamp));
+    expect(wrapper.text()).toContain(wrapper.vm.formatAppointmentDateTime(mockAppointment.timestamp));
     expect(wrapper.text()).toContain(mockProvider.address.street);
     expect(wrapper.text()).toContain(mockProvider.address.house_number);
   });
@@ -81,12 +81,12 @@ describe("AppointmentDetailHeader", () => {
 
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(true);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.appointment);
-    expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatTitle(mockAppointment));
+    expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(2);
     expect(wrapper.text()).toContain(mockAppointment.processId);
-    expect(wrapper.text()).toContain(wrapper.vm.formatTime(mockAppointment.timestamp));
+    expect(wrapper.text()).toContain(wrapper.vm.formatAppointmentDateTime(mockAppointment.timestamp));
     expect(wrapper.text()).not.toContain(mockProvider.address.street);
   });
 

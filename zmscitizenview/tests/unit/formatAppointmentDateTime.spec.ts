@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-// @ts-expect-error: Vue SFC import for test
-import { formatTime } from "@/utils/formatTime";
+import { formatAppointmentDateTime } from "../../src/utils/formatAppointmentDateTime";
 
 const formatterDate = new Intl.DateTimeFormat("de-DE", {
+  timeZone: "Europe/Berlin",
   weekday: "long",
   year: "numeric",
   month: "numeric",
@@ -18,16 +18,16 @@ const formatterTime = new Intl.DateTimeFormat("de-DE", {
 
 describe("calculateEstimatedDuration", () => {
   it("returns empty string if number is not a date", () => {
-    expect(formatTime(9999999999999)).toBe("");
+    expect(formatAppointmentDateTime(9999999999999)).toBe("");
   });
 
   it("returns formated date string if number is a date", () => {
-    expect(formatTime(1)).toBe("Donnerstag, 1.1.1970, 01:00");
+    expect(formatAppointmentDateTime(1)).toBe("Donnerstag, 1.1.1970, 01:00");
   });
 
   it("returns formated date string of now", () => {
-    const date = new Date(2025,8,1,12,0);
-    const dateAsNumber = Math.floor(date.getTime() / 1000);
-    expect(formatTime(dateAsNumber)).toBe(formatterDate.format(date) + ", " + formatterTime.format(date));
+    const dateAsNumber = Date.now();
+    const date = new Date(dateAsNumber * 1000);
+    expect(formatAppointmentDateTime(dateAsNumber)).toBe(formatterDate.format(date) + ", " + formatterTime.format(date));
   });
 });
