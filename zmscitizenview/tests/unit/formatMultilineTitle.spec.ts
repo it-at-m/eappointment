@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
-// @ts-expect-error: Vue SFC import for test
-import { formatTitle } from "@/utils/formatTitle";
+import { formatMultilineTitle } from "../../src/utils/formatMultilineTitle";
 
 const singleAppointment = {
   processId: "1111",
@@ -84,7 +83,7 @@ const twoSubServiceAppointment = {
 
 describe("calculateEstimatedDuration", () => {
   it("returns title of single appointment", () => {
-    expect(formatTitle(singleAppointment)).toBe(singleAppointment.serviceCount + "x " + singleAppointment.serviceName);
+    expect(formatMultilineTitle(singleAppointment)).toBe(singleAppointment.serviceCount + "x " + singleAppointment.serviceName);
   });
 
   it("returns title of appointment with one subservice", () => {
@@ -95,7 +94,7 @@ describe("calculateEstimatedDuration", () => {
       + subServiceAppointment.subRequestCounts[0].count
       + "x "
       + subServiceAppointment.subRequestCounts[0].name;
-    expect(formatTitle(subServiceAppointment)).toBe(title);
+    expect(formatMultilineTitle(subServiceAppointment)).toBe(title);
   });
 
   it("returns title of appointment with two subservice", () => {
@@ -110,6 +109,6 @@ describe("calculateEstimatedDuration", () => {
       + twoSubServiceAppointment.subRequestCounts[1].count
       + "x "
       + twoSubServiceAppointment.subRequestCounts[1].name;
-    expect(formatTitle(twoSubServiceAppointment)).toBe(title);
+    expect(formatMultilineTitle(twoSubServiceAppointment)).toBe(title);
   });
 });

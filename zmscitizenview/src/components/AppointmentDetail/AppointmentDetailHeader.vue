@@ -3,7 +3,7 @@
     v-if="appointment"
     class="multiline-text"
     :tagline="t('appointment')"
-    :title="formatTitle(appointment)"
+    :title="formatMultilineTitle(appointment)"
   >
     <div class="appointment-data">
       <p tabindex="0">
@@ -12,7 +12,7 @@
       </p>
       <p tabindex="0">
         <muc-icon icon="calendar" />
-        {{ formatTime(appointment.timestamp) }}
+        {{ formatAppointmentDateTime(appointment.timestamp) }}
         {{ t("timeStampSuffix") }} <br />
       </p>
       <p
@@ -49,8 +49,8 @@ import { MucButton, MucIcon, MucIntro } from "@muenchen/muc-patternlab-vue";
 
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
-import { formatTime } from "@/utils/formatTime";
-import { formatTitle } from "@/utils/formatTitle";
+import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
+import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
 
 defineProps<{
   appointment: AppointmentImpl | undefined;

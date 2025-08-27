@@ -38,7 +38,7 @@
               <div class="timeBox">
                 <calendar-icon :timestamp="appointment.timestamp" />
                 <p tabindex="0">
-                  {{ formatTime(appointment.timestamp) }}
+                  {{ formatAppointmentDateTime(appointment.timestamp) }}
                   {{ t("timeStampSuffix") }} <br />
                   {{ t("estimatedDuration") }} <br v-if="isMobile" />
                   {{ estimatedDuration() }}
@@ -158,7 +158,7 @@ import {
   getServiceBaseURL,
   QUERY_PARAM_APPOINTMENT_ID,
 } from "@/utils/Constants";
-import { formatTime } from "@/utils/formatTime";
+import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 
 const props = defineProps<{
