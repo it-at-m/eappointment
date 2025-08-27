@@ -20,11 +20,11 @@
 <script lang="ts" setup>
 import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-icons.svg?raw";
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentDetailView from "@/components/AppointmentDetail/AppointmentDetailView.vue";
 import { registerAuthenticationHook } from "./utils/auth";
-import { ref } from "vue";
 
 defineProps({
   baseUrl: {
