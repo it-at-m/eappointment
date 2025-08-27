@@ -322,7 +322,7 @@ class AppointmentUpdateServiceTest extends TestCase
             'authKey' => ''
         ];
 
-        $result = $this->service->processUpdate($body);
+        $result = $this->service->processUpdate($body, null);
 
         $this->assertArrayHasKey('errors', $result);
     }

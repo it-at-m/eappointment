@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Appointment;
 
+use BO\Zmscitizenapi\Models\AuthenticatedUser;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Captcha\CaptchaService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
-use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
 class AppointmentByIdService
 {
@@ -18,7 +18,7 @@ class AppointmentByIdService
         $this->captchaService = new CaptchaService();
     }
 
-    public function getAppointmentById(array $queryParams): ThinnedProcess|array
+    public function getAppointmentById(array $queryParams, ?AuthenticatedUser $authenticatedUser): ThinnedProcess|array
     {
         $clientData = $this->extractClientData($queryParams);
         $errors = $this->validateClientData($clientData);
@@ -26,7 +26,7 @@ class AppointmentByIdService
             return $errors;
         }
 
-        $appointment = $this->getAppointment($clientData->processId, $clientData->authKey);
+        $appointment = AppointmentService::getThinnedProcessById($clientData->processId, $clientData->authKey, $authenticatedUser);
 
         $token = $this->captchaService->generateToken();
         $appointment->setCaptchaToken($token);
@@ -51,8 +51,4 @@ class AppointmentByIdService
         return ValidationService::validateGetProcessById($data->processId, $data->authKey);
     }
 
-    private function getAppointment(?int $processId, ?string $authKey): ThinnedProcess|array
-    {
-        return ZmsApiFacadeService::getThinnedProcessById($processId, $authKey);
-    }
 }

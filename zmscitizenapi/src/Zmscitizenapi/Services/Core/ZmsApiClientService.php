@@ -310,6 +310,24 @@ class ZmsApiClientService
         }
     }
 
+    public static function getProcessByIdAuthenticated(int $processId): Process
+    {
+        try {
+            $resolveReferences = 2;
+            // This endpoint is normally reserved for workstation (zmsadmin) Users.
+            $result = \App::$http->readGetResult("/process/{$processId}/", [
+                'resolveReferences' => $resolveReferences
+            ]);
+            $entity = $result?->getEntity();
+            if (!$entity instanceof Process) {
+                return new Process();
+            }
+            return $entity;
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e);
+        }
+    }
+
     public static function getScopesByProviderId(string $source, string|int $providerId): ScopeList
     {
         try {
@@ -322,6 +340,26 @@ class ZmsApiClientService
                 return new ScopeList();
             }
             return $result;
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e);
+        }
+    }
+
+    public static function getProcessesByExternalUserId(string $externalUserId, ?int $filterId = null): ProcessList
+    {
+        try {
+            $params = [
+                'resolveReferences' => 2,
+            ];
+            if (!is_null($filterId)) {
+                $params['filterId'] = $filterId;
+            }
+            $result = \App::$http->readGetResult("/process/externaluserid/{$externalUserId}/", $params);
+            $collection = $result?->getCollection();
+            if (!$collection instanceof ProcessList) {
+                return new ProcessList();
+            }
+            return $collection;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
         }
