@@ -217,10 +217,10 @@ cd zmsapi
 ```
 
 **How the Scripts Work:**
-- **First run**: Automatically detects and does full setup (builds containers, installs dependencies)
-- **Subsequent runs**: Reuses existing setup for fast test execution
-- **Filter support**: Accepts `--filter` argument for running specific tests
-- **Port management**: Automatically handles MariaDB startup and port conflicts
+* **First run**: Automatically detects and does full setup (builds containers, installs dependencies)
+* **Subsequent runs**: Reuses existing setup for fast test execution
+* **Filter support**: Accepts `--filter` argument for running specific tests
+* **DB startup**: Automatically starts MariaDB; if the host port is in use, adjust the compose ports mapping.
 
 ### Common Errors
 
