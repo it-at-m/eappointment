@@ -277,13 +277,13 @@ onMounted(() => {
               });
             }
           }
+          loading.value = false;
         } else {
           loadingError.value = true;
         }
       });
     }
   });
-  loading.value = false;
 });
 </script>
 

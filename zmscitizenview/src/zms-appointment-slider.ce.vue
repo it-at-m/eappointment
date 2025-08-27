@@ -12,7 +12,9 @@
         :appointment-detail-url="appointmentDetailUrl"
         :appointment-overview-url="appointmentOverviewUrl"
         :new-appointment-url="newAppointmentUrl"
-        :displayed-on-detail-screen="displayedOnDetailScreen"
+        :displayed-on-detail-screen="
+          displayedOnDetailScreen.toLowerCase() === 'true'
+        "
         :t="t"
       />
     </div>
@@ -47,9 +49,9 @@ defineProps({
     required: true,
   },
   displayedOnDetailScreen: {
-    type: Boolean,
+    type: String,
     required: false,
-    default: false,
+    default: "false",
   },
 });
 
