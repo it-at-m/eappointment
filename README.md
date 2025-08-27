@@ -209,11 +209,13 @@ To run isolated, repeatable tests without touching your local database, use Dock
 cd zmsdb
 ./zmsdb-test                    # Run all tests
 ./zmsdb-test --filter="StatusTest::testBasic"  # Run specific test
+./zmsdb-test --reset            # Reset all containers and volumes
 
 # For zmsapi  
 cd zmsapi
 ./zmsapi-test                   # Run all tests
 ./zmsapi-test --filter="StatusGetTest::testRendering"  # Run specific test
+./zmsapi-test --reset           # Reset all containers and volumes
 ```
 
 **Available PHPUnit Flags:**
@@ -262,6 +264,12 @@ cd zmsapi
 * **Subsequent runs**: Reuses existing setup for fast test execution
 * **Filter support**: Accepts all PHPUnit arguments for flexible test execution
 * **DB startup**: Automatically starts MariaDB; if the host port is in use, adjust the compose ports mapping.
+
+**Reset Functionality:**
+* **`--reset`**: Completely removes all containers, volumes, and networks for a fresh start
+* **Use when**: You want to clear all cached dependencies and start completely fresh
+* **What it does**: Runs `docker-compose down -v` to remove everything
+* **After reset**: Next run will be treated as a "first run" with full setup
 
 ### Common Errors
 
