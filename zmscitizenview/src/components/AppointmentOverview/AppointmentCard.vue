@@ -2,7 +2,7 @@
   <muc-card
     class="multiline-text"
     :tagline="t('appointment')"
-    :title="formatTitle(appointment)"
+    :title="formatMultilineTitle(appointment)"
     @click="goToAppointmentLink(appointment.processId!)"
   >
     <template #headerPrefix>
@@ -14,7 +14,7 @@
     <template #content>
       <div class="text-padding">
         <muc-icon icon="calendar" />
-        {{ formatTime(appointment.timestamp) }}
+        {{ formatAppointmentDateTime(appointment.timestamp) }}
         {{ t("timeStampSuffix") }} <br />
       </div>
       <div class="text-padding">
@@ -36,8 +36,8 @@ import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import CalendarIcon from "@/components/Common/CalendarIcon.vue";
 import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
-import { formatTime } from "@/utils/formatTime";
-import { formatTitle } from "@/utils/formatTitle";
+import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
+import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
 
 const props = defineProps<{
   appointment: AppointmentDTO;
