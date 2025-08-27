@@ -15,13 +15,12 @@ use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 
 abstract class AppointmentService
 {
-
     public static function getThinnedProcessById(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
     {
         // AuthKey check needs to be first
         if (!is_null($authKey)) {
             $process = ZmsApiClientService::getProcessById($processId, $authKey);
-        } else if (!is_null($user)) {
+        } elseif (!is_null($user)) {
             $externalUserId = $user->getExternalUserId();
             $process = ZmsApiClientService::getProcessByIdAuthenticated($processId);
             if ($externalUserId !== $process->getExternalUserId()) {
@@ -74,5 +73,4 @@ abstract class AppointmentService
         $thinnedProcess->scope = $thinnedScope;
         return $thinnedProcess;
     }
-
 }
