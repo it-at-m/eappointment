@@ -194,6 +194,47 @@ bin/importTestData --commit
 ./vendor/bin/phpunit
 ```
 
+### Containerized Unit Testing (Docker Compose)
+To run isolated, repeatable tests for `zmsapi` and `zmsdb` without touching your local DB, use the Docker Compose setup. The first run builds and installs everything; subsequent runs reuse containers and skip Composer/apt.
+
+One-time setup (per module):
+
+- zmsdb
+```bash
+cd zmsdb
+docker-compose up -d --build
+docker-compose logs -f test
+```
+
+- zmsapi
+```bash
+cd zmsapi
+docker-compose up -d --build
+docker-compose logs -f test
+```
+
+Fast re-runs (no rebuilds, no container recreation):
+
+- zmsdb
+```bash
+cd zmsdb
+docker-compose up -d --no-build --no-recreate
+docker exec zmsdb-test-1 bash -lc "php -d memory_limit=1G bin/importTestData --commit && php -d memory_limit=1G vendor/bin/phpunit"
+```
+
+- zmsapi
+```bash
+cd zmsapi
+docker-compose up -d --no-build --no-recreate
+docker exec zmsapi-test-1 bash -lc "php -d memory_limit=1G /zmsdb/bin/importTestData --commit && php -d memory_limit=1G vendor/bin/phpunit"
+```
+
+Tip: If you want to keep containers between sessions (avoid re-installing OS packages), stop/start instead of down/up:
+```bash
+docker-compose stop
+docker-compose start
+```
+
 ### Common Errors
 
 - If you encounter `Too many levels of symbolic links`, remove the `<exclude>` rule for the vendor directory in the module's phpunit.xml.
