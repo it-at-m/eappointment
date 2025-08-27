@@ -220,11 +220,6 @@ cd zmsapi
 docker-compose up -d mariadb && docker-compose up --no-build --no-deps test
 ```
 
-### Containerized Unit Testing (Docker Compose)
-For `zmsapi` and `zmsdb`, see the [Containerized Testing section above](#special-cases-zmsapi--zmsdb) for the recommended Docker Compose workflow.
-
-For other modules that support containerized testing:
-
 **zmsclient:**
 ```bash
 cd zmsclient
