@@ -252,6 +252,7 @@ import {
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
+import { getAccessToken, getTokenData } from "@/utils/auth";
 import {
   clearContextErrors,
   createErrorStates,
@@ -273,6 +274,7 @@ const props = defineProps<{
   appointmentHash?: string;
   confirmAppointmentHash?: string;
   t: (key: string) => string;
+  accessToken: string | null;
 }>();
 
 const STEPPER_ITEMS: StepperItem[] = [
@@ -315,6 +317,22 @@ const selectedTimeslot = ref<number>(0);
 const customerData = ref<CustomerData>(
   new CustomerData("", "", "", "", "", "")
 );
+
+watch(
+  () => props.accessToken,
+  (newAccessToken) => {
+    if (!newAccessToken) return;
+    const tokenData = getTokenData(newAccessToken);
+    customerData.value.firstName =
+      customerData.value.firstName || tokenData.given_name;
+    customerData.value.lastName =
+      customerData.value.lastName || tokenData.family_name;
+    customerData.value.mailAddress =
+      customerData.value.mailAddress || tokenData.email;
+  },
+  { immediate: true }
+);
+
 const appointment = ref<AppointmentImpl>();
 const rebookedAppointment = ref<AppointmentImpl>();
 
