@@ -28,22 +28,24 @@ const MAXDATE = new Date(
 );
 
 type Request = {
-  baseUrl: string | undefined
-  path: string
-  params?: string[][] | Record<string, string>
-  forceAuth?: boolean
-}
+  baseUrl: string | undefined;
+  path: string;
+  params?: string[][] | Record<string, string>;
+  forceAuth?: boolean;
+};
 
 type GetRequest = Request & {
-  method: "GET"
-}
+  method: "GET";
+};
 
 type PostRequest = Request & {
-  method: "POST"
-  data: any
-}
+  method: "POST";
+  data: any;
+};
 
-export function request<TResponse>(request: GetRequest | PostRequest): Promise<TResponse> {
+export function request<TResponse>(
+  request: GetRequest | PostRequest
+): Promise<TResponse> {
   if (!request.baseUrl) {
     request.baseUrl = "";
   }
@@ -58,13 +60,21 @@ export function request<TResponse>(request: GetRequest | PostRequest): Promise<T
   }
   let requestInit: RequestInit = {
     method: request.method,
-  }
+  };
   if (request.method === "POST") {
-    headers["Content-Type"] = "application/json"
-    requestInit.body = JSON.stringify(request.data)
+    headers["Content-Type"] = "application/json";
+    requestInit.body = JSON.stringify(request.data);
   }
-  requestInit.headers = headers
-  return fetch(getGeneratedAPIBaseURL(request.baseUrl, authenticated || request.forceAuth || false) + request.path + suffix, requestInit).then((response) => {
+  requestInit.headers = headers;
+  return fetch(
+    getGeneratedAPIBaseURL(
+      request.baseUrl,
+      authenticated || request.forceAuth || false
+    ) +
+      request.path +
+      suffix,
+    requestInit
+  ).then((response) => {
     return response.json();
   });
 }
@@ -86,7 +96,7 @@ export function fetchServicesAndProviders(
     method: "GET",
     baseUrl,
     path: VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT,
-    params
+    params,
   });
 }
 
@@ -110,7 +120,7 @@ export function fetchAvailableDays(
     method: "GET",
     baseUrl,
     path: VUE_APP_ZMS_API_CALENDAR_ENDPOINT,
-    params
+    params,
   });
 }
 
@@ -134,7 +144,7 @@ export function fetchAvailableTimeSlots(
     method: "GET",
     baseUrl,
     path: VUE_APP_ZMS_API_AVAILABLE_TIME_SLOTS_ENDPOINT,
-    params
+    params,
   });
 }
 
@@ -165,7 +175,7 @@ export function reserveAppointment(
     method: "POST",
     baseUrl,
     path: VUE_APP_ZMS_API_RESERVE_APPOINTMENT_ENDPOINT,
-    data: requestBody
+    data: requestBody,
   });
 }
 
@@ -188,7 +198,7 @@ export function updateAppointment(
     method: "POST",
     baseUrl,
     path: VUE_APP_ZMS_API_UPDATE_APPOINTMENT_ENDPOINT,
-    data: requestBody
+    data: requestBody,
   });
 }
 
@@ -206,7 +216,7 @@ export function preconfirmAppointment(
     method: "POST",
     baseUrl,
     path: VUE_APP_ZMS_API_PRECONFIRM_APPOINTMENT_ENDPOINT,
-    data: requestBody
+    data: requestBody,
   });
 }
 
@@ -224,7 +234,7 @@ export function confirmAppointment(
     method: "POST",
     baseUrl,
     path: VUE_APP_ZMS_API_CONFIRM_APPOINTMENT_ENDPOINT,
-    data: requestBody
+    data: requestBody,
   });
 }
 
@@ -243,8 +253,8 @@ export function fetchAppointment(
   return request({
     method: "GET",
     baseUrl,
-    path: VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT, 
-    params
+    path: VUE_APP_ZMS_API_APPOINTMENT_ENDPOINT,
+    params,
   });
 }
 
@@ -262,7 +272,7 @@ export function cancelAppointment(
     method: "POST",
     baseUrl,
     path: VUE_APP_ZMS_API_CANCEL_APPOINTMENT_ENDPOINT,
-    data: requestBody
+    data: requestBody,
   });
 }
 
@@ -272,6 +282,6 @@ export function fetchCaptchaDetails(
   return request({
     method: "GET",
     baseUrl,
-    path: VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT
+    path: VUE_APP_ZMS_API_CAPTCHA_DETAILS_ENDPOINT,
   });
 }

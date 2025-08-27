@@ -30,9 +30,9 @@ export async function getAppointmentDetails(
     params: {
       filterId: processId,
     },
-    forceAuth: true
+    forceAuth: true,
   });
-  return responseData[0]
+  return responseData[0];
 }
 
 const DUMMYDATA: AppointmentDTO[] = [
