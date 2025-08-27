@@ -2,8 +2,17 @@
 
 # zmsapi-test - Automated testing script for zmsapi module
 # Usage: ./zmsapi-test [PHPUnit arguments...]
+#        ./zmsapi-test --reset (reset all containers and volumes)
 
 set -e
+
+# Check for reset command
+if [[ $1 == "--reset" ]]; then
+    echo "🧹 Resetting zmsapi test environment..."
+    docker-compose down -v
+    echo "✅ Reset complete! All containers and volumes removed."
+    exit 0
+fi
 
 # Parse all PHPUnit arguments
 PHPUNIT_ARGS=""
