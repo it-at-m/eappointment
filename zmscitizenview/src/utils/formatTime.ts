@@ -19,5 +19,6 @@ const formatterTime = new Intl.DateTimeFormat("de-DE", {
  */
 export function formatTime(time: number): string {
   const date = new Date(time * 1000);
+  if (isNaN(date.getTime())) return "";
   return formatterDate.format(date) + ", " + formatterTime.format(date);
 }
