@@ -23,15 +23,23 @@ class ZmsApiClientService
     {
         try {
             $combined = new ProviderList();
+            $seen = [];
+
             foreach (self::getSourceNames() as $name) {
                 $src = self::fetchSourceDataFor($name);
                 $list = $src?->getProviderList();
+
                 if ($list instanceof ProviderList) {
                     foreach ($list as $provider) {
-                        $combined->addEntity($provider);
+                        $key = (($provider->source ?? '') . '_' . $provider->id);
+                        if (!isset($seen[$key])) {
+                            $combined->addEntity($provider);
+                            $seen[$key] = true;
+                        }
                     }
                 }
             }
+
             return $combined;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
@@ -42,15 +50,23 @@ class ZmsApiClientService
     {
         try {
             $combined = new RequestList();
+            $seen = [];
+
             foreach (self::getSourceNames() as $name) {
                 $src = self::fetchSourceDataFor($name);
                 $list = $src?->getRequestList();
+
                 if ($list instanceof RequestList) {
                     foreach ($list as $request) {
-                        $combined->addEntity($request);
+                        $key = (($request->source ?? '') . '_' . $request->id);
+                        if (!isset($seen[$key])) {
+                            $combined->addEntity($request);
+                            $seen[$key] = true;
+                        }
                     }
                 }
             }
+
             return $combined;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
@@ -61,15 +77,26 @@ class ZmsApiClientService
     {
         try {
             $combined = new RequestRelationList();
+            $seen = [];
+
             foreach (self::getSourceNames() as $name) {
                 $src = self::fetchSourceDataFor($name);
                 $list = $src?->getRequestRelationList();
+
                 if ($list instanceof RequestRelationList) {
                     foreach ($list as $rel) {
-                        $combined->addEntity($rel);
+                        $r = $rel->request ?? null;
+                        $p = $rel->provider ?? null;
+
+                        $key = (($r->source ?? '') . '_' . $r->id) . '|' . (($p->source ?? '') . '_' . $p->id);
+                        if (!isset($seen[$key])) {
+                            $combined->addEntity($rel);
+                            $seen[$key] = true;
+                        }
                     }
                 }
             }
+
             return $combined;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
@@ -80,15 +107,24 @@ class ZmsApiClientService
     {
         try {
             $combined = new ScopeList();
+            $seen = [];
+
             foreach (self::getSourceNames() as $name) {
                 $src = self::fetchSourceDataFor($name);
                 $list = $src?->getScopeList();
+
                 if ($list instanceof ScopeList) {
                     foreach ($list as $scope) {
-                        $combined->addEntity($scope);
+                        $prov = $scope->getProvider();
+                        $key = (($prov->source ?? '') . '_' . $prov->id);
+                        if (!isset($seen[$key])) {
+                            $combined->addEntity($scope);
+                            $seen[$key] = true;
+                        }
                     }
                 }
             }
+
             return $combined;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
