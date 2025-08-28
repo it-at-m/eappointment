@@ -10,7 +10,9 @@
     "loadError": "Das Widget konnte nicht geladen werden.",
     "verified": "Erfolgreich verifiziert!",
     "verifying": "Überprüfe...",
-    "waitAlert": "Überprüfung läuft... bitte warten."
+    "waitAlert": "Überprüfung läuft... bitte warten.",
+    "ariaLabel": "Sicherheitsüberprüfung - Ich bin kein Bot",
+    "screenReaderDescription": "Diese Sicherheitsüberprüfung stellt sicher, dass Sie ein Mensch sind und kein automatisiertes Programm. Aktivieren Sie das Kontrollkästchen, um zu bestätigen, dass Sie kein Bot sind."
   },
   "am": "Vormittag",
   "apiErrorAppointmentCanNotBeCanceledHeader": "Ihr Termin kann nicht abgesagt werden.",

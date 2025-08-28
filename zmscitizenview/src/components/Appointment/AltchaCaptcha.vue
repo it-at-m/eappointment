@@ -4,7 +4,15 @@
       :challengeurl="captchaChallengeUrl"
       :verifyurl="captchaVerifyUrl"
       ref="altchaWidget"
+      :aria-label="props.t('altcha.ariaLabel')"
+      aria-describedby="captcha-description"
     />
+    <div
+      id="captcha-description"
+      class="sr-only"
+    >
+      {{ props.t("altcha.screenReaderDescription") }}
+    </div>
   </div>
   <div v-else>
     <p>{{ props.t("altcha.loadError") }}</p>
@@ -115,3 +123,82 @@ onUnmounted(() => {
   );
 });
 </script>
+
+<style scoped>
+/* Custom styling for ALTCHA widget to match UI/UX requirements */
+:deep(.altcha) {
+  background: transparent;
+  border: 1px solid #9ca8b3;
+  color: currentColor;
+  display: flex;
+  flex-direction: column;
+  max-width: 260px;
+  position: relative;
+  text-align: left;
+  padding: 5px 0;
+}
+
+:deep(.altcha-main) {
+  align-items: center;
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.7rem;
+}
+
+:deep(.altcha-checkbox) {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  width: 24px;
+}
+
+:deep(.altcha-checkbox input) {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+:deep(.altcha-label) {
+  flex-grow: 1;
+}
+
+:deep(.altcha-label label) {
+  cursor: pointer;
+  margin: 0;
+}
+
+/* Hide logo and footer */
+:deep(.altcha-logo) {
+  display: none !important;
+}
+
+:deep(.altcha-footer) {
+  display: none !important;
+}
+
+/* Hide any other ALTCHA branding elements */
+:deep([class*="altcha-"]) {
+  /* Keep only the main elements we want */
+}
+
+:deep(.altcha-error) {
+  color: #f23939;
+  display: flex;
+  font-size: 0.85rem;
+  gap: 0.3rem;
+  padding: 0 0.7rem 0.7rem;
+}
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+</style>
