@@ -19,11 +19,6 @@ use BO\Zmsentities\Collection\ScopeList;
 
 class ZmsApiClientService
 {
-    private static function fetchSourceData(): Source
-    {
-        return self::fetchSourceDataFor(\App::$source_name);
-    }
-
     public static function getOffices(): ProviderList
     {
         try {

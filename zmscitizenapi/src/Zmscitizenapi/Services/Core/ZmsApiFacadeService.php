@@ -250,6 +250,9 @@ class ZmsApiFacadeService
      *
      */
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getScopeByOfficeId(int $officeId): ThinnedScope|array
     {
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
@@ -488,6 +491,9 @@ class ZmsApiFacadeService
         return $result;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public static function getBookableFreeDays(
         array $officeIds,
         array $serviceIds,
