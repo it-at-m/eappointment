@@ -83,10 +83,15 @@ class MapperService
         }
 
         foreach ($providerList as $provider) {
+            // ✅ Source normalisieren: leerer String -> Fallback auf App::$source_name
+            $providerSource = isset($provider->source) && $provider->source !== ''
+                ? (string)$provider->source
+                : (string)\App::$source_name;
+
             $providerScope = self::mapScopeForProvider(
                 (int) $provider->id,
                 $scopes,
-                (string) ($provider->source ?? \App::$source_name)
+                $providerSource
             );
 
             if (!$showUnpublished && isset($provider->data['public']) && !(bool) $provider->data['public']) {
