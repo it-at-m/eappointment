@@ -16,6 +16,7 @@ const config: Config = {
     "focusable",
     "xlink:href",
   ],
+  FORBID_TAGS: ["img"],
 };
 
 export function sanitizeHtml(dirtyHtml: string | null | undefined): string {

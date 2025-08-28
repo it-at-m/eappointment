@@ -61,20 +61,19 @@ describe("sanitizeHtml", () => {
     expect(clean).not.toMatch(/<iframe/i);
   });
 
-  it("sanitizes img tags: keeps http(s) src, strips events and javascript:", () => {
+  it("removes img tags completely when they are forbidden", () => {
     const dirty = `
       <img src="javascript:alert('x')" onerror="alert('x')" alt="x" />
       <img src="http://example.com/a.png" alt="ok" />
       <img src="https://example.com/b.png" alt="ok2" />
     `;
     const clean = sanitizeHtml(dirty);
-    // No javascript: URL
-    expect(clean).not.toMatch(/src=\"javascript:/i);
-    // Event handlers removed
-    expect(clean).not.toMatch(/onerror=/i);
-    // http/https preserved
-    expect(clean).toMatch(/<img[^>]*src=\"http:\/\/example.com\/a.png\"[^>]*alt=\"ok\"/);
-    expect(clean).toMatch(/<img[^>]*src=\"https:\/\/example.com\/b.png\"[^>]*alt=\"ok2\"/);
+    // All img tags should be completely removed
+    expect(clean).not.toMatch(/<img/i);
+    expect(clean).not.toMatch(/src=/i);
+    expect(clean).not.toMatch(/alt=/i);
+    // Should only contain whitespace
+    expect(clean.trim()).toBe("");
   });
 });
 
