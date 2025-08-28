@@ -2291,6 +2291,11 @@ div:has(.left-text) {
   margin: 0 !important;
 }
 
+.slider-no-margin .m-checkbox-group__heading:empty {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .float-right .m-button__icon {
   margin-left: 12px !important;
 }
