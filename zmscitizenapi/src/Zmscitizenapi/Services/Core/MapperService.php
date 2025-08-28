@@ -144,6 +144,7 @@ class MapperService
      * @param RequestList $requestList
      * @param RequestRelationList $relationList
      * @return ServiceList
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public static function mapServicesWithCombinations(
         RequestList $requestList,
