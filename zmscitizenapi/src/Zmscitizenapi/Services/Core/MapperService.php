@@ -50,6 +50,19 @@ class MapperService
 
         return $matchingScope;
     }
+    
+    public static function extractActivationDuration(Scope|ThinnedScope|null $scope): ?int
+    {
+        if ($scope === null) {
+            return null;
+        }
+        if ($scope instanceof ThinnedScope) {
+            $v = $scope->getActivationDuration();
+            return $v !== null ? (int) $v : null;
+        }
+        $v = $scope?->toProperty()?->preferences?->appointment?->activationDuration?->get();
+        return $v !== null ? (int) $v : null;
+    }
 
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -70,6 +83,8 @@ class MapperService
             if (!$showUnpublished && isset($provider->data['public']) && !(bool) $provider->data['public']) {
                 continue;
             }
+
+            $ad = self::extractActivationDuration($providerScope);
 
             $offices[] = new Office(
                 id: isset($provider->id) ? (int) $provider->id : 0,
@@ -101,7 +116,8 @@ class MapperService
                     displayInfo: isset($providerScope->displayInfo) ? (string) $providerScope->displayInfo : null,
                     slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
-                    whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null
+                    whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null,
+                    activationDuration: $ad
                 ) : null,
                 maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null
             );
@@ -242,7 +258,8 @@ class MapperService
             displayInfo: isset($scope->data['displayInfo']) ? (string) $scope->data['displayInfo'] : null,
             slotsPerAppointment: isset($scope->data['slotsPerAppointment']) ? ((string) $scope->data['slotsPerAppointment'] === '' ? null : (string) $scope->data['slotsPerAppointment']) : null,
             appointmentsPerMail: isset($scope->data['appointmentsPerMail']) ? ((string) $scope->data['appointmentsPerMail'] === '' ? null : (string) $scope->data['appointmentsPerMail']) : null,
-            whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null
+            whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null,
+            activationDuration: MapperService::extractActivationDuration($scope)
         );
     }
 
