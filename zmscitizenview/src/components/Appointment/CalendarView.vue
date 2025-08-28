@@ -83,7 +83,13 @@
         <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
-        {{ t("apiErrorNoAppointmentForThisScopeText") }}
+        <div
+          v-if="(selectedProvider?.scope?.infoForAllAppointments || '').trim()"
+          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
+        ></div>
+        <template v-else>{{
+          t("apiErrorNoAppointmentForThisScopeText")
+        }}</template>
       </template>
     </muc-callout>
   </div>
@@ -734,11 +740,16 @@
             </p>
           </div>
           <div
-            v-if="selectedProvider.scope && selectedProvider.scope.displayInfo"
+            v-if="
+              selectedProvider.scope &&
+              selectedProvider.scope.infoForAppointment
+            "
           >
             <b>{{ t("hint") }}</b>
             <br />
-            <div v-html="selectedProvider.scope.displayInfo"></div>
+            <div
+              v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
+            ></div>
           </div>
         </template>
 
@@ -756,7 +767,17 @@
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
-        {{ t(apiErrorTranslation.textKey) }}
+        <div
+          v-if="
+            (apiErrorTranslation.textKey ===
+              'apiErrorNoAppointmentForThisScopeText' ||
+              apiErrorTranslation.textKey ===
+                'apiErrorNoAppointmentForThisDayText') &&
+            (selectedProvider?.scope?.infoForAllAppointments || '').trim()
+          "
+          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
+        ></div>
+        <template v-else>{{ t(apiErrorTranslation.textKey) }}</template>
       </template>
     </muc-callout>
   </div>
@@ -826,6 +847,7 @@ import {
   getApiErrorTranslation,
   handleApiResponse,
 } from "@/utils/errorHandler";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 const props = defineProps<{
   baseUrl: string | undefined;

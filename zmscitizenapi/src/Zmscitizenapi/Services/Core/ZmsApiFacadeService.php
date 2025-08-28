@@ -116,7 +116,8 @@ class ZmsApiFacadeService
                     customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
                     customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
-                    displayInfo: $matchingScope->getDisplayInfo(),
+                    infoForAppointment: $matchingScope->getInfoForAppointment(),
+                    infoForAllAppointments: $matchingScope->getInfoForAllAppointments(),
                     slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
                     appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails())
@@ -171,7 +172,8 @@ class ZmsApiFacadeService
                     customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required(),
                     customTextfield2Label: $matchingScope->getCustomTextfield2Label(),
                     captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired(),
-                    displayInfo: $matchingScope->getDisplayInfo(),
+                    infoForAppointment: $matchingScope->getInfoForAppointment(),
+                    infoForAllAppointments: $matchingScope->getInfoForAllAppointments(),
                     slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
                     appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails())
@@ -284,7 +286,8 @@ class ZmsApiFacadeService
             'customTextfield2Required' => (bool) $matchingScope->getCustomTextfield2Required() ?? null,
             'customTextfield2Label' => $matchingScope->getCustomTextfield2Label() ?? null,
             'captchaActivatedRequired' => (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
-            'displayInfo' => $matchingScope->getDisplayInfo() ?? null,
+            'infoForAppointment' => $matchingScope->getInfoForAppointment() ?? null,
+            'infoForAllAppointments' => $matchingScope->getInfoForAllAppointments() ?? null,
             'slotsPerAppointment' => ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
             'appointmentsPerMail' => ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
             'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null
@@ -304,7 +307,8 @@ class ZmsApiFacadeService
             customTextfield2Required: $result['customTextfield2Required'],
             customTextfield2Label: $result['customTextfield2Label'],
             captchaActivatedRequired: $result['captchaActivatedRequired'],
-            displayInfo: $result['displayInfo'],
+            infoForAppointment: $result['infoForAppointment'],
+            infoForAllAppointments: $result['infoForAllAppointments'],
             slotsPerAppointment: $result['slotsPerAppointment'],
             appointmentsPerMail: $result['appointmentsPerMail'],
             whitelistedMails: $result['whitelistedMails']
@@ -434,7 +438,8 @@ class ZmsApiFacadeService
             customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required() ?? null,
             customTextfield2Label: $matchingScope->getCustomTextfield2Label() ?? null,
             captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
-            displayInfo: $matchingScope->getDisplayInfo() ?? null,
+            infoForAppointment: $matchingScope->getInfoForAppointment() ?? null,
+            infoForAllAppointments: $matchingScope->getInfoForAllAppointments() ?? null,
             slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
             appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
             whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null
@@ -715,7 +720,8 @@ class ZmsApiFacadeService
                 customTextfield2Required: (bool) $process->scope->getCustomTextfield2Required() ?? false,
                 customTextfield2Label: $process->scope->getCustomTextfield2Label() ?? null,
                 captchaActivatedRequired: (bool) $process->scope->getCaptchaActivatedRequired() ?? false,
-                displayInfo: $process->scope->getDisplayInfo() ?? null,
+                infoForAppointment: $process->scope->getInfoForAppointment() ?? null,
+                infoForAllAppointments: $process->scope->getInfoForAllAppointments() ?? null,
                 slotsPerAppointment: ((string) $process->scope->getSlotsPerAppointment() === '' ? null : (string) $process->scope->getSlotsPerAppointment()) ?? null,
                 appointmentsPerMail: ((string) $process->scope->getAppointmentsPerMail() === '' ? null : (string) $process->scope->getAppointmentsPerMail()) ?? null,
                 whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()) ?? null

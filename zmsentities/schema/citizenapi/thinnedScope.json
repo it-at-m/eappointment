@@ -84,12 +84,19 @@
             "type": "boolean",
             "description": "Whether captcha is activated and required"
         },
-        "displayInfo": {
+        "infoForAppointment": {
             "type": [
                 "string",
                 "null"
             ],
             "description": "Additional display information"
+        },
+        "infoForAllAppointments": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Additional display information for no appointments"
         },
         "slotsPerAppointment": {
             "type": [
