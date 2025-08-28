@@ -113,6 +113,13 @@
                 "null"
             ],
             "description": "E-mail addresses that have no limitation on appointments count"
+        },
+        "activationDuration": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Duration of the activationtime in minutes"
         }
     }
 }
