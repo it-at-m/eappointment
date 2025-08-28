@@ -50,6 +50,7 @@ export default defineConfig({
         "appointment-detail-html": "./appointment-detail.html",
         "appointment-overview-html": "./appointment-overview.html",
         "appointment-slider-html": "./appointment-slider.html",
+        "webcomponents-html": "./webcomponents.html",
         "zms-appointment": "./src/zms-appointment-webcomponent.ts",
         "zms-appointment-detail": "./src/zms-appointment-detail-webcomponent.ts",
         "zms-appointment-overview": "./src/zms-appointment-overview-webcomponent.ts",
