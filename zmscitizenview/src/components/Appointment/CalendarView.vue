@@ -2351,6 +2351,11 @@ div:has(.left-text) {
   margin: 0 !important;
 }
 
+.slider-no-margin .m-checkbox-group__heading:empty {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .float-right .m-button__icon {
   margin-left: 12px !important;
 }
@@ -2373,5 +2378,9 @@ div:has(.left-text) {
 .muc-calendar-view-full-size,
 .muc-calendar-container {
   font-size: 1.125rem !important; /* Desktop size */
+}
+
+#listViewAccordion .m-accordion__section-button {
+  font-size: 1.125rem !important;
 }
 </style>
