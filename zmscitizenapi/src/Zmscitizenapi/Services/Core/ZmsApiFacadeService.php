@@ -252,62 +252,62 @@ class ZmsApiFacadeService
 
     public static function getScopeByOfficeId(int $officeId): ThinnedScope|array
     {
-        $matchingScope = ZmsApiClientService::getScopesByProviderId(\App::$source_name, $officeId)->getIterator()->current();
+        $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
+        $provider = null;
+        foreach ($providerList as $p) {
+            if ((int) $p->id === (int) $officeId) {
+                $provider = $p;
+                break;
+            }
+        }
+        if (!$provider) {
+            return ['errors' => [self::getError('officeNotFound')]];
+        }
+
+        $scopeSource = (string) ($provider->source ?? '');
+        if ($scopeSource === '') {
+            return ['errors' => [self::getError('scopeNotFound')]];
+        }
+
+        $matchingScope = ZmsApiClientService::getScopesByProviderId($scopeSource, (int) $officeId)
+            ->getIterator()
+            ->current();
+
         if (!$matchingScope instanceof Scope) {
             return ['errors' => [self::getError('scopeNotFound')]];
         }
 
-        $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
         $providerMap = [];
-        foreach ($providerList as $provider) {
-            $key = $provider->source . '_' . $provider->id;
-            $providerMap[$key] = $provider;
+        foreach ($providerList as $prov) {
+            $key = ($prov->source ?? '') . '_' . $prov->id;
+            $providerMap[$key] = $prov;
         }
 
         $scopeProvider = $matchingScope->getProvider();
-        $providerKey = $scopeProvider ? ($scopeProvider->source . '_' . $scopeProvider->id) : null;
-        $finalProvider = $providerKey && isset($providerMap[$providerKey])
+        $providerKey = $scopeProvider ? (($scopeProvider->source ?? '') . '_' . $scopeProvider->id) : null;
+        $finalProvider = ($providerKey && isset($providerMap[$providerKey]))
             ? $providerMap[$providerKey]
             : $scopeProvider;
-        $result = [
-            'id' => $matchingScope->id,
-            'provider' => MapperService::providerToThinnedProvider($finalProvider) ?? null,
-            'shortName' => (string) $matchingScope->getShortName() ?? null,
-            'emailFrom' => (string) $matchingScope->getEmailFrom() ?? null,
-            'emailRequired' => (bool) $matchingScope->getEmailRequired() ?? null,
-            'telephoneActivated' => (bool) $matchingScope->getTelephoneActivated() ?? null,
-            'telephoneRequired' => (bool) $matchingScope->getTelephoneRequired() ?? null,
-            'customTextfieldActivated' => (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
-            'customTextfieldRequired' => (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
-            'customTextfieldLabel' => $matchingScope->getCustomTextfieldLabel() ?? null,
-            'customTextfield2Activated' => (bool) $matchingScope->getCustomTextfield2Activated() ?? null,
-            'customTextfield2Required' => (bool) $matchingScope->getCustomTextfield2Required() ?? null,
-            'customTextfield2Label' => $matchingScope->getCustomTextfield2Label() ?? null,
-            'captchaActivatedRequired' => (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
-            'displayInfo' => $matchingScope->getDisplayInfo() ?? null,
-            'slotsPerAppointment' => ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
-            'appointmentsPerMail' => ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
-            'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null
-        ];
+
         return new ThinnedScope(
-            id: (int) $result['id'],
-            provider: $result['provider'],
-            shortName: $result['shortName'],
-            emailFrom: $result['emailFrom'],
-            emailRequired: $result['emailRequired'],
-            telephoneActivated: $result['telephoneActivated'],
-            telephoneRequired: $result['telephoneRequired'],
-            customTextfieldActivated: $result['customTextfieldActivated'],
-            customTextfieldRequired: $result['customTextfieldRequired'],
-            customTextfieldLabel: $result['customTextfieldLabel'],
-            customTextfield2Activated: $result['customTextfield2Activated'],
-            customTextfield2Required: $result['customTextfield2Required'],
-            customTextfield2Label: $result['customTextfield2Label'],
-            captchaActivatedRequired: $result['captchaActivatedRequired'],
-            displayInfo: $result['displayInfo'],
-            slotsPerAppointment: $result['slotsPerAppointment'],
-            appointmentsPerMail: $result['appointmentsPerMail'],
-            whitelistedMails: $result['whitelistedMails']
+            id: (int) $matchingScope->id,
+            provider: MapperService::providerToThinnedProvider($finalProvider) ?? null,
+            shortName: (string) $matchingScope->getShortName() ?? null,
+            emailFrom: (string) $matchingScope->getEmailFrom() ?? null,
+            emailRequired: (bool) $matchingScope->getEmailRequired() ?? null,
+            telephoneActivated: (bool) $matchingScope->getTelephoneActivated() ?? null,
+            telephoneRequired: (bool) $matchingScope->getTelephoneRequired() ?? null,
+            customTextfieldActivated: (bool) $matchingScope->getCustomTextfieldActivated() ?? null,
+            customTextfieldRequired: (bool) $matchingScope->getCustomTextfieldRequired() ?? null,
+            customTextfieldLabel: $matchingScope->getCustomTextfieldLabel() ?? null,
+            customTextfield2Activated: (bool) $matchingScope->getCustomTextfield2Activated() ?? null,
+            customTextfield2Required: (bool) $matchingScope->getCustomTextfield2Required() ?? null,
+            customTextfield2Label: $matchingScope->getCustomTextfield2Label() ?? null,
+            captchaActivatedRequired: (bool) $matchingScope->getCaptchaActivatedRequired() ?? null,
+            displayInfo: $matchingScope->getDisplayInfo() ?? null,
+            slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
+            appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
+            whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null
         );
     }
 
@@ -497,29 +497,57 @@ class ZmsApiFacadeService
         ?bool $groupByOffice = false
     ): AvailableDays|AvailableDaysByOffice|array {
         $firstDay = DateTimeFormatHelper::getInternalDateFromISO($startDate);
-        $lastDay = DateTimeFormatHelper::getInternalDateFromISO($endDate);
+        $lastDay  = DateTimeFormatHelper::getInternalDateFromISO($endDate);
+
+        $providerList = ZmsApiClientService::getOffices()  ?? new ProviderList();
+        $requestList  = ZmsApiClientService::getServices() ?? new RequestList();
+
+        $providerSource = [];
+        foreach ($providerList as $p) {
+            $providerSource[(string)$p->id] = (string)($p->source ?? '');
+        }
+
+        $requestSource = [];
+        foreach ($requestList as $r) {
+            $requestSource[(string)$r->id] = (string)($r->source ?? '');
+        }
+
         $services = [];
-        $providers = [];
-        $serviceNumber = 0;
-        foreach ($serviceIds as $serviceId) {
+        foreach ($serviceIds as $i => $serviceId) {
+            $sid = (string)$serviceId;
+            $src = $requestSource[$sid] ?? null;
+            if (!$src) {
+                return ['errors' => [['message' => 'Unknown service source for ID '.$sid]]];
+            }
             $services[] = [
-                'id' => $serviceId,
-                'source' => \App::$source_name,
-                'slotCount' => $serviceCounts[$serviceNumber],
+                'id'        => $serviceId,
+                'source'    => $src,
+                'slotCount' => (int)($serviceCounts[$i] ?? 1),
             ];
-            $serviceNumber++;
         }
 
+        $providers = [];
         foreach ($officeIds as $officeId) {
+            $oid = (string)$officeId;
+            $src = $providerSource[$oid] ?? null;
+            if (!$src) {
+                return ['errors' => [['message' => 'Unknown provider source for ID '.$oid]]];
+            }
             $providers[] = [
-                'id' => $officeId,
-                'source' => \App::$source_name,
+                'id'     => $officeId,
+                'source' => $src,
             ];
         }
 
-        $freeDays = ZmsApiClientService::getFreeDays(new ProviderList($providers), new RequestList($services), $firstDay, $lastDay) ?? new Calendar();
-        $daysCollection = $freeDays->days;
-        $formattedDays = [];
+        $freeDays = ZmsApiClientService::getFreeDays(
+            new ProviderList($providers),
+            new RequestList($services),
+            $firstDay,
+            $lastDay
+        ) ?? new Calendar();
+
+        $daysCollection  = $freeDays->days;
+        $formattedDays   = [];
         $scopeToProvider = [];
 
         foreach ($freeDays->scopes as $scope) {
@@ -527,13 +555,12 @@ class ZmsApiFacadeService
         }
 
         foreach ($daysCollection as $day) {
-            $day = [
-                'time' => sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day),
-                'providerIDs' => isset($day->scopeIDs) ? implode(',', array_map(function ($scopeId) use ($scopeToProvider) {
-                    return $scopeToProvider[$scopeId];
-                }, explode(',', $day->scopeIDs))) : ''
+            $formattedDays[] = [
+                'time'        => sprintf('%04d-%02d-%02d', $day->year, $day->month, $day->day),
+                'providerIDs' => isset($day->scopeIDs)
+                    ? implode(',', array_map(fn($scopeId) => $scopeToProvider[$scopeId], explode(',', $day->scopeIDs)))
+                    : ''
             ];
-            $formattedDays[] = $day;
         }
 
         $errors = ValidationService::validateAppointmentDaysNotFound($formattedDays);
@@ -541,30 +568,44 @@ class ZmsApiFacadeService
             return $errors;
         }
 
-        if ($groupByOffice) {
-            return new AvailableDaysByOffice($formattedDays);
-        }
-
-        return new AvailableDays(array_column($formattedDays, 'time'));
+        return $groupByOffice
+            ? new AvailableDaysByOffice($formattedDays)
+            : new AvailableDays(array_column($formattedDays, 'time'));
     }
 
     public static function getFreeAppointments(int $officeId, array $serviceIds, array $serviceCounts, array $date): ProcessList|array
     {
-        $office = [
-            'id' => $officeId,
-            'source' => \App::$source_name
-        ];
+        $providerList = ZmsApiClientService::getOffices()  ?? new ProviderList();
+        $requestList  = ZmsApiClientService::getServices() ?? new RequestList();
+
+        $providerSource = [];
+        foreach ($providerList as $p) { $providerSource[(string)$p->id] = (string)($p->source ?? ''); }
+        $requestSource  = [];
+        foreach ($requestList as $r) { $requestSource[(string)$r->id] = (string)($r->source ?? ''); }
+
+        $oid = (string)$officeId;
+        $provSrc = $providerSource[$oid] ?? null;
+        if (!$provSrc) return ['errors' => [['message' => 'Unknown provider source for ID '.$oid]]];
+
+        $office = ['id' => $officeId, 'source' => $provSrc];
+
         $requests = [];
-        foreach ($serviceIds as $index => $serviceId) {
-            $service = [
-                'id' => $serviceId,
-                'source' => \App::$source_name,
-                'slotCount' => $serviceCounts[$index]
-            ];
-            $requests = array_merge($requests, array_fill(0, $service['slotCount'], $service));
+        foreach ($serviceIds as $i => $serviceId) {
+            $sid   = (string)$serviceId;
+            $reqSrc= $requestSource[$sid] ?? null;
+            if (!$reqSrc) return ['errors' => [['message' => 'Unknown service source for ID '.$sid]]];
+            $count = (int)($serviceCounts[$i] ?? 1);
+            for ($k = 0; $k < $count; $k++) {
+                $requests[] = ['id' => $serviceId, 'source' => $reqSrc];
+            }
         }
 
-        return ZmsApiClientService::getFreeTimeslots(new ProviderList([$office]), new RequestList($requests), $date, $date);
+        return ZmsApiClientService::getFreeTimeslots(
+            new ProviderList([$office]),
+            new RequestList($requests),
+            $date,
+            $date
+        );
     }
 
     /**
@@ -635,36 +676,46 @@ class ZmsApiFacadeService
         array $serviceCounts,
         ?bool $groupByOffice = false
     ): AvailableAppointments|AvailableAppointmentsByOffice|array {
+        $providerList = ZmsApiClientService::getOffices()  ?? new ProviderList();
+        $requestList  = ZmsApiClientService::getServices() ?? new RequestList();
+
+        $providerSource = [];
+        foreach ($providerList as $p) { $providerSource[(string)$p->id] = (string)($p->source ?? ''); }
+        $requestSource  = [];
+        foreach ($requestList as $r) { $requestSource[(string)$r->id] = (string)($r->source ?? ''); }
+
         $requests = [];
-        $providers = [];
-        foreach ($serviceIds as $index => $serviceId) {
-            $slotCount = isset($serviceCounts[$index]) ? intval($serviceCounts[$index]) : 1;
-            for ($i = 0; $i < $slotCount; $i++) {
-                $requests[] = [
-                    'id' => $serviceId,
-                    'source' => \App::$source_name
-                ];
+        foreach ($serviceIds as $i => $serviceId) {
+            $sid = (string)$serviceId;
+            $src = $requestSource[$sid] ?? null;
+            if (!$src) return ['errors' => [['message' => 'Unknown service source for ID '.$sid]]];
+            $count = (int)($serviceCounts[$i] ?? 1);
+            for ($k = 0; $k < $count; $k++) {
+                $requests[] = ['id' => $serviceId, 'source' => $src];
             }
         }
 
+        $providers = [];
         foreach ($officeIds as $officeId) {
-            $providers[] = [
-                'id' => $officeId,
-                'source' => \App::$source_name
-            ];
+            $oid = (string)$officeId;
+            $src = $providerSource[$oid] ?? null;
+            if (!$src) return ['errors' => [['message' => 'Unknown provider source for ID '.$oid]]];
+            $providers[] = ['id' => $officeId, 'source' => $src];
         }
 
-        $freeSlots = ZmsApiClientService::getFreeTimeslots(new ProviderList($providers), new RequestList($requests), DateTimeFormatHelper::getInternalDateFromISO($date), DateTimeFormatHelper::getInternalDateFromISO($date)) ?? new ProcessList();
+        $freeSlots = ZmsApiClientService::getFreeTimeslots(
+            new ProviderList($providers),
+            new RequestList($requests),
+            DateTimeFormatHelper::getInternalDateFromISO($date),
+            DateTimeFormatHelper::getInternalDateFromISO($date)
+        ) ?? new ProcessList();
+
         $result = self::processFreeSlots($freeSlots, $groupByOffice);
-        if (isset($result['errors']) && !empty($result['errors'])) {
-            return $result;
-        }
+        if (isset($result['errors']) && !empty($result['errors'])) return $result;
 
-        if ($groupByOffice) {
-            return new AvailableAppointmentsByOffice($result);
-        }
-
-        return new AvailableAppointments($result);
+        return $groupByOffice
+            ? new AvailableAppointmentsByOffice($result)
+            : new AvailableAppointments($result);
     }
 
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): ThinnedProcess|array
