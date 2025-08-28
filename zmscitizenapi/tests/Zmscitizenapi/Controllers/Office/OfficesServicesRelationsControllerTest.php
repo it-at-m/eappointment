@@ -86,7 +86,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "displayInfo" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "activationDuration" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ],
@@ -139,7 +140,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "displayInfo" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "activationDuration" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ]
@@ -248,7 +250,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "displayInfo" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "activationDuration" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ],
@@ -301,7 +304,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "displayInfo" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "activationDuration" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ]

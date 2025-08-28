@@ -102,7 +102,8 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "displayInfo" => null,
                 "slotsPerAppointment" => null,
                 "appointmentsPerMail" => 1,
-                "whitelistedMails" => null
+                "whitelistedMails" => null,
+                "activationDuration" => 15
             ],
             "subRequestCounts" => [],
             "serviceId" => 1063424,
