@@ -34,27 +34,45 @@ use BO\Zmsentities\Collection\RequestRelationList;
  */
 class MapperService
 {
-    public static function mapScopeForProvider(int $providerId, ?ThinnedScopeList $scopes): ThinnedScope
-    {
-        if (!$scopes) {
-            return new ThinnedScope();
-        }
+    private static function mapScopeForProvider(
+        int $providerId,
+        ThinnedScopeList $scopes,
+        ?string $providerSource = null
+    ): ?ThinnedScope {
+        foreach ($scopes as $scope) {
+            if (!$scope instanceof ThinnedScope) {
+                continue;
+            }
 
-        $matchingScope = new ThinnedScope();
-        foreach ($scopes->getScopes() as $scope) {
-            if ($scope->provider && $scope->provider->id === $providerId) {
-                $matchingScope = $scope;
-                break;
+            $prov = $scope->provider ?? null;
+            if (!$prov) {
+                continue;
+            }
+
+            $provId  = is_object($prov) ? ($prov->id   ?? null) : ($prov['id']    ?? null);
+            $provSrc = is_object($prov) ? ($prov->source ?? null) : ($prov['source'] ?? null);
+
+            if ((string)$provId !== (string)$providerId) {
+                continue;
+            }
+
+            if ($providerSource === null || $providerSource === '') {
+                return $scope;
+            }
+
+            if ((string)$provSrc === (string)$providerSource) {
+                return $scope;
             }
         }
 
-        return $matchingScope;
+        return null;
     }
 
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @TODO: Extract mapping logic into specialized mapper classes for each entity type
+     *
      */
     public static function mapOfficesWithScope(ProviderList $providerList, bool $showUnpublished = false): OfficeList
     {
@@ -65,7 +83,11 @@ class MapperService
         }
 
         foreach ($providerList as $provider) {
-            $providerScope = self::mapScopeForProvider((int) $provider->id, $scopes);
+            $providerScope = self::mapScopeForProvider(
+                (int) $provider->id,
+                $scopes,
+                (string) ($provider->source ?? \App::$source_name)
+            );
 
             if (!$showUnpublished && isset($provider->data['public']) && !(bool) $provider->data['public']) {
                 continue;
@@ -103,7 +125,8 @@ class MapperService
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null
                 ) : null,
-                maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null
+                maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
+                parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null
             );
         }
 
@@ -166,8 +189,12 @@ class MapperService
 
             $combinable = self::mapCombinable($serviceCombinations);
 
+            $extra = $service->getAdditionalData() ?? [];
+            $parentId  = isset($service->parent_id)  ? (int)$service->parent_id  : (isset($extra['parent_id'])  ? (int)$extra['parent_id']  : null);
+            $variantId = isset($service->variant_id) ? (int)$service->variant_id : (isset($extra['variant_id']) ? (int)$extra['variant_id'] : null);
+
             if (!empty($servicesProviderIds[$service->getId()])) {
-                $services[] = new Service(id: (int) $service->getId(), name: $service->getName(), maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1, combinable: $combinable ?? new Combinable());
+                $services[] = new Service(id: (int) $service->getId(), name: $service->getName(), maxQuantity: $service->getAdditionalData()['maxQuantity'] ?? 1, combinable: $combinable ?? new Combinable(), parentId: $parentId, variantId: $variantId);
             }
         }
 
