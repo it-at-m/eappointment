@@ -330,7 +330,7 @@ const captchaError = ref<boolean>(false);
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
   if (apiErrorAppointmentNotAvailable.value)
-    return "apiErrorNoAppointmentForThisScope";
+    return "apiErrorAppointmentNotAvailable";
   if (errorStateMap.value.apiErrorCaptchaExpired.value)
     return "apiErrorCaptchaExpired";
   if (errorStateMap.value.apiErrorCaptchaMissing.value)
