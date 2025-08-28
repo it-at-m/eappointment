@@ -34,12 +34,12 @@ use BO\Zmsentities\Collection\RequestRelationList;
  */
 class MapperService
 {
-    private static function mapScopeForProvider(
+    public static function mapScopeForProvider(
         int $providerId,
         ThinnedScopeList $scopes,
         ?string $providerSource = null
     ): ?ThinnedScope {
-        foreach ($scopes as $scope) {
+        foreach ($scopes->getScopes() as $scope) {
             if (!$scope instanceof ThinnedScope) {
                 continue;
             }

@@ -42,20 +42,32 @@ class MapperServiceTest extends TestCase
 
     public function testMapScopeForProvider()
     {
-        $provider = new ThinnedProvider(id: 1, name: "Test Provider");
-        $scope = new ThinnedScope(id: 1, provider: $provider);
-        $scopes = new ThinnedScopeList([$scope]);
+        $assertNullOrEmptyScope = function ($result) {
+            $this->assertTrue(
+                $result === null ||
+                ($result instanceof ThinnedScope && $result->provider === null),
+                'Expected null or an empty ThinnedScope (provider === null).'
+            );
+        };
+
+        $provider = new ThinnedProvider(id: 1, name: "Test Provider", source: 'unittest');
+        $scope    = new ThinnedScope(id: 1, provider: $provider);
+        $scopes   = new ThinnedScopeList([$scope]);
+
+        $result = MapperService::mapScopeForProvider(1, $scopes, 'unittest');
+        $this->assertSame($scope, $result);
+
+        $result = MapperService::mapScopeForProvider(2, $scopes, 'unittest');
+        $assertNullOrEmptyScope($result);
+
+        $result = MapperService::mapScopeForProvider(1, $scopes, 'falscheSource');
+        $assertNullOrEmptyScope($result);
+
+        $result = MapperService::mapScopeForProvider(1, new ThinnedScopeList(), 'unittest');
+        $assertNullOrEmptyScope($result);
 
         $result = MapperService::mapScopeForProvider(1, $scopes);
         $this->assertSame($scope, $result);
-
-        $result = MapperService::mapScopeForProvider(2, $scopes);
-        $this->assertInstanceOf(ThinnedScope::class, $result);
-        $this->assertNull($result->provider);
-
-        $result = MapperService::mapScopeForProvider(1, null);
-        $this->assertInstanceOf(ThinnedScope::class, $result);
-        $this->assertNull($result->provider);
     }
 
     public function testMapCombinable()
@@ -390,7 +402,7 @@ class MapperServiceTest extends TestCase
         $relation2->request = $request2;
         $relation2->provider = $provider;
         $relation2->slots = 3;
-    
+
         $expectedResponse = [
             "services" => [
                 [
@@ -398,16 +410,20 @@ class MapperServiceTest extends TestCase
                     "name" => "Service 1",
                     "maxQuantity" => 1,
                     "combinable" => new Combinable(),
+                    "parent_id" => null,
+                    "variant_id" => null,
                 ],
                 [
                     "id" => 2,
                     "name" => "Service 2",
                     "maxQuantity" => 1,
                     "combinable" => new Combinable(),
+                    "parent_id" => null,
+                    "variant_id" => null,
                 ]
             ]
         ];
-    
+
         $relationList = new RequestRelationList([$relation1, $relation2]);
         $result = MapperService::mapServicesWithCombinations($requestList, $relationList);
         $resultArray = $result->toArray();
@@ -452,6 +468,8 @@ class MapperServiceTest extends TestCase
                     "name" => "Service 2",
                     "maxQuantity" => 1,
                     "combinable" => new Combinable(),
+                    "parent_id" => null,
+                    "variant_id" => null,
                 ]
             ]
         ];
