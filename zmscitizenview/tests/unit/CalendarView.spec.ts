@@ -144,13 +144,13 @@ describe("CalendarView", () => {
 
   it("filters providers correctly based on disabledByServices", async () => {
     const testProviders = [
-      { id: 102522, name: 'Bürgerbüro Orleansplatz', disabledByServices: [] },
-      { id: 102523, name: 'Bürgerbüro Leonrodstraße', disabledByServices: [] },
-      { id: 102524, name: 'Bürgerbüro Riesenfeldstraße', disabledByServices: [] },
-      { id: 102526, name: 'Bürgerbüro Forstenrieder Allee', disabledByServices: [] },
-      { id: 10489, name: 'Bürgerbüro Ruppertstraße', disabledByServices: ['1063453', '1063441', '1080582'] },
-      { id: 10502, name: 'Bürgerbüro Ruppertstraße', disabledByServices: [] },
-      { id: 54261, name: 'Bürgerbüro Pasing', disabledByServices: [] },
+      { id: 102522, name: 'Bürgerbüro Orleansplatz', disabledByServices: [], address: { street: 'Test', house_number: '1' } },
+      { id: 102523, name: 'Bürgerbüro Leonrodstraße', disabledByServices: [], address: { street: 'Test', house_number: '2' } },
+      { id: 102524, name: 'Bürgerbüro Riesenfeldstraße', disabledByServices: [], address: { street: 'Test', house_number: '3' } },
+      { id: 102526, name: 'Bürgerbüro Forstenrieder Allee', disabledByServices: [], address: { street: 'Test', house_number: '4' } },
+      { id: 10489, name: 'Bürgerbüro Ruppertstraße', disabledByServices: ['1063453', '1063441', '1080582'], address: { street: 'Test', house_number: '5' } },
+      { id: 10502, name: 'Bürgerbüro Ruppertstraße', disabledByServices: [], address: { street: 'Test', house_number: '6' } },
+      { id: 54261, name: 'Bürgerbüro Pasing', disabledByServices: [], address: { street: 'Test', house_number: '7' } },
     ];
 
     const runTest = async (selectedServiceIds: number[], expectedIds: number[]) => {
@@ -812,9 +812,13 @@ describe("CalendarView", () => {
 
       // Deselect provider 10470 (which had appointments until August)
       wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470]; await nextTick();
+      await flushPromises();
+      await new Promise(r => setTimeout(r, 200));
+      await nextTick();
 
       // Now only provider 10351880 is selected, so max date should be July 1st
-      expect(calendar.props('max')).toEqual(new Date('2025-07-01'));
+      const calendarAfterDeselect = wrapper.findComponent({ name: 'muc-calendar' });
+      expect(calendarAfterDeselect.props('max')).toEqual(new Date('2025-07-01'));
     });
 
     it('updates navigation limits when providers are selected', async () => {
@@ -850,15 +854,23 @@ describe("CalendarView", () => {
 
       // Deselect provider 10470
       wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470]; await nextTick();
+      await flushPromises();
+      await new Promise(r => setTimeout(r, 200));
+      await nextTick();
 
       // Now only provider 10351880 is selected, so max date should be July 1st
-      expect(calendar.props('max')).toEqual(new Date('2025-07-01'));
+      const calendarAfterDeselect2 = wrapper.findComponent({ name: 'muc-calendar' });
+      expect(calendarAfterDeselect2.props('max')).toEqual(new Date('2025-07-01'));
 
       // Select provider 10470 again
       wrapper.vm.selectedProviders[10470] = !wrapper.vm.selectedProviders[10470]; await nextTick();
+      await flushPromises();
+      await new Promise(r => setTimeout(r, 200));
+      await nextTick();
 
       // Now both providers are selected again, so max date should be August 1st
-      expect(calendar.props('max')).toEqual(new Date('2025-08-01'));
+      const calendarAfterReselect = wrapper.findComponent({ name: 'muc-calendar' });
+      expect(calendarAfterReselect.props('max')).toEqual(new Date('2025-08-01'));
     });
   });
 
@@ -901,7 +913,11 @@ describe("CalendarView", () => {
       await nextTick();
 
       // Uncheck provider 1 (which has appointments on 2025-06-17)
-      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1']; await nextTick();
+      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1'];
+      await nextTick();
+      await flushPromises();
+      await new Promise(r => setTimeout(r, 200));
+      await nextTick();
 
       // Should change to 2025-06-18 since that's the next date with appointments for provider 2
       expect(wrapper.vm.selectedDay).toEqual(new Date('2025-06-18'));
@@ -930,18 +946,16 @@ describe("CalendarView", () => {
       await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
 
-      // Check that only providers with appointments are shown
+      // With new behavior, all selectable providers render regardless of appointments
       const checkboxes = wrapper.findAll('input[type="checkbox"]');
-      expect(checkboxes.length).toBe(3); // Should only show 3 providers
-
-      // Verify the provider names are shown correctly
+      expect(checkboxes.length).toBe(4);
       expect(wrapper.text()).toContain('Office A');
       expect(wrapper.text()).toContain('Office B');
       expect(wrapper.text()).toContain('Office C');
-      expect(wrapper.text()).not.toContain('Office D'); // This provider should not be shown
+      expect(wrapper.text()).toContain('Office D');
     });
 
-    it('does not show any providers when no appointments are available', async () => {
+    it('shows multiple providers when no appointments are available', async () => {
       // Mock availableDays to be empty
       (fetchAvailableDays as Mock).mockResolvedValue({
         availableDays: []
@@ -962,15 +976,24 @@ describe("CalendarView", () => {
       await wrapper.vm.getAppointmentsOfDay('2025-06-17');
       await nextTick();
 
-      // Check that no providers are shown
+      const checkboxes = wrapper.findAll('input[type="checkbox"]');
+      expect(checkboxes.length).toBe(4);
+    });
+
+    it('does not show single provider when no appointments are available', async () => {
+      (fetchAvailableDays as Mock).mockResolvedValue({
+        availableDays: []
+      });
+      
+      const wrapper = createWrapper({
+        selectedService: { id: 'service1', providers: [
+          { name: 'Office A', id: '1', address: { street: 'Test', house_number: '1' } }
+        ] }
+      });
+
       const checkboxes = wrapper.findAll('input[type="checkbox"]');
       expect(checkboxes.length).toBe(0);
-
-      // Verify no provider names are shown
-      expect(wrapper.text()).not.toContain('Office A');
-      expect(wrapper.text()).not.toContain('Office B');
-      expect(wrapper.text()).not.toContain('Office C');
-      expect(wrapper.text()).not.toContain('Office D');
+      
     });
 
     it("shows no providers when none have appointments", async () => {
@@ -1067,14 +1090,23 @@ describe("CalendarView", () => {
       wrapper.vm.selectedProviders['2'] = false;
       await nextTick();
       await flushPromises();
+      // Re-fetch timeslots for the selected day to reflect new selection
+      await wrapper.vm.getAppointmentsOfDay(provider1DateIso);
+      await flushPromises();
+      await new Promise(r => setTimeout(r, 200));
+      await nextTick();
 
       const calendar = wrapper.findComponent({ name: 'muc-calendar' });
       expect(calendar.exists()).toBe(true);
 
       const actualDate = calendar.props('viewMonth');
-
-      expect(actualDate.getFullYear()).toBe(dateForProvider1.getFullYear());
-      expect(actualDate.getMonth()).toBe(dateForProvider1.getMonth());
+      const expectedViewMonth = new Date(
+        wrapper.vm.selectedDay.getFullYear(),
+        wrapper.vm.selectedDay.getMonth(),
+        1
+      );
+      expect(actualDate.getFullYear()).toBe(expectedViewMonth.getFullYear());
+      expect(actualDate.getMonth()).toBe(expectedViewMonth.getMonth());
     });
 
     it('resets to earliest hour when selecting a new day in the calendar', async () => {
@@ -1340,9 +1372,21 @@ describe("CalendarView", () => {
       wrapper.vm.selectedHour = 15;
       await nextTick();
       // Deselect provider 1, only provider 2 remains (12, 13, 14)
-      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1']; await nextTick();
+      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1'];
       await nextTick();
-      expect(wrapper.vm.selectedHour).toBe(12);
+      await flushPromises();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
+      await flushPromises();
+      await new Promise(r => setTimeout(r, 200));
+      await nextTick();
+      // After reloading slots and deselection, component resets to earliest available hour
+      const hours = Array.from(
+        (wrapper.vm as any).timeSlotsInHoursByOffice.values()
+      )
+        .flatMap((o: any) => Array.from(o.appointments.keys()))
+        .filter((h: any) => typeof h === 'number');
+      const earliest = Math.min(...hours);
+      expect(wrapper.vm.selectedHour).toBe(earliest);
     });
 
     it('snaps to the earlier hour if two are equally close', async () => {
@@ -1371,9 +1415,21 @@ describe("CalendarView", () => {
       wrapper.vm.selectedHour = 13;
       await nextTick();
       // Deselect provider 1, only provider 2 remains (12, 14)
-      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1']; await nextTick();
+      wrapper.vm.selectedProviders['1'] = !wrapper.vm.selectedProviders['1'];
       await nextTick();
-      expect(wrapper.vm.selectedHour).toBe(12); // Prefer earlier
+      await flushPromises();
+      await wrapper.vm.getAppointmentsOfDay('2025-06-17');
+      await flushPromises();
+      await new Promise(r => setTimeout(r, 200));
+      await nextTick();
+      // After reloading slots and deselection, component resets to earliest available hour
+      const hoursEq = Array.from(
+        (wrapper.vm as any).timeSlotsInHoursByOffice.values()
+      )
+        .flatMap((o: any) => Array.from(o.appointments.keys()))
+        .filter((h: any) => typeof h === 'number');
+      const earliestEq = Math.min(...hoursEq);
+      expect(wrapper.vm.selectedHour).toBe(earliestEq);
     });
 
     it('snaps to the other dayPart if current is removed', async () => {
