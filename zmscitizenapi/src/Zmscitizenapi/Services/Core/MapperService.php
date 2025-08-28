@@ -50,7 +50,7 @@ class MapperService
 
         return $matchingScope;
     }
-    
+
     public static function extractActivationDuration(Scope|ThinnedScope|null $scope): ?int
     {
         if ($scope === null) {
