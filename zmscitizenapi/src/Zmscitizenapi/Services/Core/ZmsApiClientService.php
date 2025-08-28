@@ -21,54 +21,23 @@ class ZmsApiClientService
 {
     private static function fetchSourceData(): Source
     {
-        $cacheKey = 'source_' . \App::$source_name;
-        if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
-            return $data;
-        }
-
-        $result = \App::$http->readGetResult('/source/' . \App::$source_name . '/', [
-            'resolveReferences' => 2,
-        ]);
-        $entity = $result?->getEntity();
-        if (!$entity instanceof Source) {
-            return new Source();
-        }
-
-        if (\App::$cache) {
-            \App::$cache->set($cacheKey, $entity, \App::$SOURCE_CACHE_TTL);
-            LoggerService::logInfo('Cache set', [
-                'key' => $cacheKey,
-                'ttl' => \App::$SOURCE_CACHE_TTL,
-                'entity_type' => get_class($entity)
-            ]);
-        }
-
-        return $entity;
+        return self::fetchSourceDataFor(\App::$source_name);
     }
 
     public static function getOffices(): ProviderList
     {
         try {
-            $sources = self::fetchSourceData();
-            $list = $sources?->getProviderList();
-            if (!$list instanceof ProviderList) {
-                return new ProviderList();
+            $combined = new ProviderList();
+            foreach (self::getSourceNames() as $name) {
+                $src = self::fetchSourceDataFor($name);
+                $list = $src?->getProviderList();
+                if ($list instanceof ProviderList) {
+                    foreach ($list as $provider) {
+                        $combined->addEntity($provider);
+                    }
+                }
             }
-            return $list;
-        } catch (\Exception $e) {
-            ExceptionService::handleException($e);
-        }
-    }
-
-    public static function getScopes(): ScopeList
-    {
-        try {
-            $sources = self::fetchSourceData();
-            $list = $sources?->getScopeList();
-            if (!$list instanceof ScopeList) {
-                return new ScopeList();
-            }
-            return $list;
+            return $combined;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
         }
@@ -77,12 +46,17 @@ class ZmsApiClientService
     public static function getServices(): RequestList
     {
         try {
-            $sources = self::fetchSourceData();
-            $list = $sources?->getRequestList();
-            if (!$list instanceof RequestList) {
-                return new RequestList();
+            $combined = new RequestList();
+            foreach (self::getSourceNames() as $name) {
+                $src = self::fetchSourceDataFor($name);
+                $list = $src?->getRequestList();
+                if ($list instanceof RequestList) {
+                    foreach ($list as $request) {
+                        $combined->addEntity($request);
+                    }
+                }
             }
-            return $list;
+            return $combined;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
         }
@@ -91,12 +65,36 @@ class ZmsApiClientService
     public static function getRequestRelationList(): RequestRelationList
     {
         try {
-            $sources = self::fetchSourceData();
-            $list = $sources?->getRequestRelationList();
-            if (!$list instanceof RequestRelationList) {
-                return new RequestRelationList();
+            $combined = new RequestRelationList();
+            foreach (self::getSourceNames() as $name) {
+                $src = self::fetchSourceDataFor($name);
+                $list = $src?->getRequestRelationList();
+                if ($list instanceof RequestRelationList) {
+                    foreach ($list as $rel) {
+                        $combined->addEntity($rel);
+                    }
+                }
             }
-            return $list;
+            return $combined;
+        } catch (\Exception $e) {
+            ExceptionService::handleException($e);
+        }
+    }
+
+    public static function getScopes(): ScopeList
+    {
+        try {
+            $combined = new ScopeList();
+            foreach (self::getSourceNames() as $name) {
+                $src = self::fetchSourceDataFor($name);
+                $list = $src?->getScopeList();
+                if ($list instanceof ScopeList) {
+                    foreach ($list as $scope) {
+                        $combined->addEntity($scope);
+                    }
+                }
+            }
+            return $combined;
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
         }
@@ -153,25 +151,33 @@ class ZmsApiClientService
     public static function reserveTimeslot(Process $appointmentProcess, array $serviceIds, array $serviceCounts): Process
     {
         try {
+            $requestList  = self::getServices() ?? new RequestList();
+            $requestSource = [];
+            foreach ($requestList as $r) {
+                $requestSource[(string)$r->id] = (string)($r->source ?? '');
+            }
+
             $requests = [];
             foreach ($serviceIds as $index => $serviceId) {
-                $count = intval($serviceCounts[$index]);
+                $sid   = (string)$serviceId;
+                $src   = $requestSource[$sid] ?? null;
+                if (!$src) {
+                    return new Process();
+                }
+                $count = (int)($serviceCounts[$index] ?? 1);
                 for ($i = 0; $i < $count; $i++) {
-                    $requests[] = [
-                        'id' => $serviceId,
-                        'source' => \App::$source_name
-                    ];
+                    $requests[] = ['id' => $serviceId, 'source' => $src];
                 }
             }
 
             $processEntity = new Process();
-            $processEntity->appointments = $appointmentProcess->appointments ?? [];
-            $processEntity->authKey = $appointmentProcess->authKey ?? null;
-            $processEntity->clients = $appointmentProcess->clients ?? [];
-            $processEntity->scope = $appointmentProcess->scope ?? null;
-            $processEntity->requests = $requests;
-            $processEntity->lastChange = $appointmentProcess->lastChange ?? time();
-            $processEntity->createIP = ClientIpHelper::getClientIp();
+            $processEntity->appointments  = $appointmentProcess->appointments ?? [];
+            $processEntity->authKey       = $appointmentProcess->authKey ?? null;
+            $processEntity->clients       = $appointmentProcess->clients ?? [];
+            $processEntity->scope         = $appointmentProcess->scope ?? null;
+            $processEntity->requests      = $requests;
+            $processEntity->lastChange    = $appointmentProcess->lastChange ?? time();
+            $processEntity->createIP      = ClientIpHelper::getClientIp();
             $processEntity->createTimestamp = time();
             if (isset($appointmentProcess->queue)) {
                 $processEntity->queue = $appointmentProcess->queue;
@@ -179,10 +185,7 @@ class ZmsApiClientService
 
             $result = \App::$http->readPostResult('/process/status/reserved/', $processEntity);
             $entity = $result?->getEntity();
-            if (!$entity instanceof Process) {
-                return new Process();
-            }
-            return $entity;
+            return $entity instanceof Process ? $entity : new Process();
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
         }
@@ -325,5 +328,59 @@ class ZmsApiClientService
         } catch (\Exception $e) {
             ExceptionService::handleException($e);
         }
+    }
+
+    private static function fetchSourceDataFor(string $sourceName): Source
+    {
+        $cacheKey = 'source_' . $sourceName;
+        if (\App::$cache && ($data = \App::$cache->get($cacheKey))) {
+            return $data;
+        }
+
+        $result = \App::$http->readGetResult('/source/' . $sourceName . '/', [
+            'resolveReferences' => 2,
+        ]);
+        $entity = $result?->getEntity();
+        if (!$entity instanceof Source) {
+            return new Source();
+        }
+
+        if (\App::$cache) {
+            \App::$cache->set($cacheKey, $entity, \App::$SOURCE_CACHE_TTL);
+            LoggerService::logInfo('Cache set', [
+                'key' => $cacheKey,
+                'ttl' => \App::$SOURCE_CACHE_TTL,
+                'entity_type' => get_class($entity)
+            ]);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * Akzeptiert sowohl:
+     * - String: "dldb", "dldb,zms", "dldb; zms", "dldb zms", "dldb|zms"
+     * - Array:  ["dldb","zms"]
+     */
+    private static function getSourceNames(): array
+    {
+        $raw = \App::$source_name ?? 'dldb';
+
+        if (is_array($raw)) {
+            $names = array_values(array_filter(array_map('strval', $raw)));
+        } else {
+            $s = (string)$raw;
+            $names = preg_split('/[,\;\|\s]+/', $s, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        }
+
+        $out = [];
+        foreach ($names as $n) {
+            $n = trim($n);
+            if ($n !== '' && !in_array($n, $out, true)) {
+                $out[] = $n;
+            }
+        }
+
+        return $out ?: ['dldb'];
     }
 }
