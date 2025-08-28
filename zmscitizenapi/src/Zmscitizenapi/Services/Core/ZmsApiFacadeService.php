@@ -517,7 +517,7 @@ class ZmsApiFacadeService
             $sid = (string)$serviceId;
             $src = $requestSource[$sid] ?? null;
             if (!$src) {
-                return ['errors' => [['message' => 'Unknown service source for ID '.$sid]]];
+                return ['errors' => [['message' => 'Unknown service source for ID ' . $sid]]];
             }
             $services[] = [
                 'id'        => $serviceId,
@@ -531,7 +531,7 @@ class ZmsApiFacadeService
             $oid = (string)$officeId;
             $src = $providerSource[$oid] ?? null;
             if (!$src) {
-                return ['errors' => [['message' => 'Unknown provider source for ID '.$oid]]];
+                return ['errors' => [['message' => 'Unknown provider source for ID ' . $oid]]];
             }
             $providers[] = [
                 'id'     => $officeId,
@@ -579,21 +579,29 @@ class ZmsApiFacadeService
         $requestList  = ZmsApiClientService::getServices() ?? new RequestList();
 
         $providerSource = [];
-        foreach ($providerList as $p) { $providerSource[(string)$p->id] = (string)($p->source ?? ''); }
+        foreach ($providerList as $p) {
+            $providerSource[(string)$p->id] = (string)($p->source ?? '');
+        }
         $requestSource  = [];
-        foreach ($requestList as $r) { $requestSource[(string)$r->id] = (string)($r->source ?? ''); }
+        foreach ($requestList as $r) {
+            $requestSource[(string)$r->id] = (string)($r->source ?? '');
+        }
 
         $oid = (string)$officeId;
         $provSrc = $providerSource[$oid] ?? null;
-        if (!$provSrc) return ['errors' => [['message' => 'Unknown provider source for ID '.$oid]]];
+        if (!$provSrc) {
+            return ['errors' => [['message' => 'Unknown provider source for ID ' . $oid]]];
+        }
 
         $office = ['id' => $officeId, 'source' => $provSrc];
 
         $requests = [];
         foreach ($serviceIds as $i => $serviceId) {
             $sid   = (string)$serviceId;
-            $reqSrc= $requestSource[$sid] ?? null;
-            if (!$reqSrc) return ['errors' => [['message' => 'Unknown service source for ID '.$sid]]];
+            $reqSrc = $requestSource[$sid] ?? null;
+            if (!$reqSrc) {
+                return ['errors' => [['message' => 'Unknown service source for ID ' . $sid]]];
+            }
             $count = (int)($serviceCounts[$i] ?? 1);
             for ($k = 0; $k < $count; $k++) {
                 $requests[] = ['id' => $serviceId, 'source' => $reqSrc];
@@ -680,15 +688,21 @@ class ZmsApiFacadeService
         $requestList  = ZmsApiClientService::getServices() ?? new RequestList();
 
         $providerSource = [];
-        foreach ($providerList as $p) { $providerSource[(string)$p->id] = (string)($p->source ?? ''); }
+        foreach ($providerList as $p) {
+            $providerSource[(string)$p->id] = (string)($p->source ?? '');
+        }
         $requestSource  = [];
-        foreach ($requestList as $r) { $requestSource[(string)$r->id] = (string)($r->source ?? ''); }
+        foreach ($requestList as $r) {
+            $requestSource[(string)$r->id] = (string)($r->source ?? '');
+        }
 
         $requests = [];
         foreach ($serviceIds as $i => $serviceId) {
             $sid = (string)$serviceId;
             $src = $requestSource[$sid] ?? null;
-            if (!$src) return ['errors' => [['message' => 'Unknown service source for ID '.$sid]]];
+            if (!$src) {
+                return ['errors' => [['message' => 'Unknown service source for ID ' . $sid]]];
+            }
             $count = (int)($serviceCounts[$i] ?? 1);
             for ($k = 0; $k < $count; $k++) {
                 $requests[] = ['id' => $serviceId, 'source' => $src];
@@ -699,7 +713,9 @@ class ZmsApiFacadeService
         foreach ($officeIds as $officeId) {
             $oid = (string)$officeId;
             $src = $providerSource[$oid] ?? null;
-            if (!$src) return ['errors' => [['message' => 'Unknown provider source for ID '.$oid]]];
+            if (!$src) {
+                return ['errors' => [['message' => 'Unknown provider source for ID ' . $oid]]];
+            }
             $providers[] = ['id' => $officeId, 'source' => $src];
         }
 
@@ -711,7 +727,9 @@ class ZmsApiFacadeService
         ) ?? new ProcessList();
 
         $result = self::processFreeSlots($freeSlots, $groupByOffice);
-        if (isset($result['errors']) && !empty($result['errors'])) return $result;
+        if (isset($result['errors']) && !empty($result['errors'])) {
+            return $result;
+        }
 
         return $groupByOffice
             ? new AvailableAppointmentsByOffice($result)
