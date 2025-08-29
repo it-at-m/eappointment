@@ -166,16 +166,22 @@ To run unit tests locally refer to the [Github Workflows](https://github.com/it-
   * `--display-failures`
   * `--debug` - Provides detailed test execution information including deprecation warnings and memory usage
 
-For `zmsapi` and `zmsdb` you must first import the test data (see below). 
+
+### Special Cases (zmsapi zmsdb & zmsclient)
+
+**zmsclient:**
 
 For `zmsclient` you need the php base image which starts a local mock server. This json in the mocks must match the signature the entity returned in the requests (usually this is the issue whenever tests fail in `zmsclient`). 
-- `cd zmsclient`
-- `docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit`
 
-### Special Cases (zmsapi & zmsdb)
-For the modules zmsapi and zmsdb, test data must be imported. Please note that this will overwrite your local database.
+```bash
+cd zmsclient
+docker-compose down && docker-compose up -d && docker exec zmsclient-test-1 ./vendor/bin/phpunit
+```
 
-zmsapi:
+#### Traditional DDEV Method (overwrites local DB)
+For the modules **zmsapi** and **zmsdb**, test data must be imported. Please note that this will overwrite your local database.
+
+**zmsapi:**
 ```bash
 cd zmsapi
 rm -rf data
@@ -186,13 +192,84 @@ vendor/bin/importTestData --commit
 ./vendor/bin/phpunit
 ```
 
-zmsdb:
+**zmsdb:**
 ```bash
 ddev ssh
 cd zmsdb
 bin/importTestData --commit
 ./vendor/bin/phpunit
 ```
+
+#### Containerized Testing (Recommended - isolated environment)
+To run isolated, repeatable tests without touching your local database, use Docker Compose:
+
+**Smart Testing Scripts (Recommended):**
+```bash
+# For zmsdb
+cd zmsdb
+./zmsdb-test                    # Run all tests
+./zmsdb-test --filter="StatusTest::testBasic"  # Run specific test
+./zmsdb-test --reset            # Reset all containers and volumes
+
+# For zmsapi  
+cd zmsapi
+./zmsapi-test                   # Run all tests
+./zmsapi-test --filter="StatusGetTest::testRendering"  # Run specific test
+./zmsapi-test --reset           # Reset all containers and volumes
+```
+
+**Available PHPUnit Flags:**
+```bash
+# Test Selection
+--filter="TestClass::testMethod"    # Run specific test method
+--filter="TestClass"                # Run all tests in a class
+--filter="testMethod"               # Run all tests with matching method name
+--filter="pattern"                  # Run tests matching regex pattern
+
+# Output & Verbosity
+--verbose                           # More detailed output
+--debug                            # Debug information
+--stop-on-failure                  # Stop on first failure
+--stop-on-error                    # Stop on first error
+--stop-on-warning                  # Stop on first warning
+
+# Coverage & Reports
+--coverage-text                    # Text coverage report
+--coverage-html=dir               # HTML coverage report
+--coverage-clover=file.xml        # XML coverage report
+
+# Test Execution
+--group="groupName"                # Run tests in specific group
+--exclude-group="groupName"        # Exclude tests in group
+--testsuite="suiteName"            # Run specific test suite
+```
+
+**Examples:**
+```bash
+# Run specific test with verbose output
+./zmsdb-test --filter="StatusTest::testBasic" --verbose
+
+# Run all tests in a class and stop on first failure
+./zmsapi-test --filter="StatusGetTest" --stop-on-failure
+
+# Run tests with coverage report
+./zmsdb-test --coverage-text
+
+# Run tests excluding a specific group
+./zmsapi-test --exclude-group="slow"
+```
+
+**How the Scripts Work:**
+* **First run**: Automatically detects and does full setup (builds containers, installs dependencies)
+* **Subsequent runs**: Reuses existing setup for fast test execution
+* **Filter support**: Accepts all PHPUnit arguments for flexible test execution
+* **DB startup**: Automatically starts MariaDB; if the host port is in use, adjust the compose ports mapping.
+
+**Reset Functionality:**
+* **`--reset`**: Completely removes all containers, volumes, and networks for a fresh start
+* **Use when**: You want to clear all cached dependencies and start completely fresh
+* **What it does**: Runs `docker-compose down -v` to remove everything
+* **After reset**: Next run will be treated as a "first run" with full setup
 
 ### Common Errors
 

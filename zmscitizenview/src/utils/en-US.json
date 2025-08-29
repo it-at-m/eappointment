@@ -10,7 +10,9 @@
     "loadError": "The widget could not be loaded.",
     "verified": "Verified",
     "verifying": "Verifying...",
-    "waitAlert": "Verifying... please wait."
+    "waitAlert": "Verifying... please wait.",
+    "ariaLabel": "Security check - I'm not a robot",
+    "screenReaderDescription": "This security check ensures that you are a human and not an automated program. Check the box to confirm that you are not a bot."
   },
   "am": "Morning",
   "apiErrorAppointmentCanNotBeCanceledHeader": "Your appointment cannot be cancelled.",
