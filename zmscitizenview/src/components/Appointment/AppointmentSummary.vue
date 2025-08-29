@@ -1,5 +1,16 @@
 <template>
-  <div class="m-component">
+  <div v-if="isExpired">
+    <muc-callout type="error">
+      <template #content>
+        {{ t("apiErrorSessionTimeoutText") }}
+      </template>
+      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
+    </muc-callout>
+  </div>
+  <div
+    v-if="!isExpired"
+    class="m-component"
+  >
     <div class="m-contact">
       <div class="m-contact__body">
         <div class="m-contact__section">
@@ -196,7 +207,7 @@
     </div>
   </div>
   <div
-    v-if="rebookOrCancelDialog"
+    v-if="!isExpired && rebookOrCancelDialog"
     class="m-button-group"
   >
     <muc-button
@@ -217,7 +228,7 @@
     </muc-button>
   </div>
   <div
-    v-if="isRebooking"
+    v-if="!isExpired && isRebooking"
     class="m-button-group"
   >
     <muc-button
@@ -250,6 +261,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
+      v-if="!isExpired"
       :disabled="!validForm || loadingStates.isBookingAppointment.value"
       :icon="'check'"
       @click="bookAppointment"
@@ -264,7 +276,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { MucButton } from "@muenchen/muc-patternlab-vue";
+import { MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import { OfficeImpl } from "@/types/OfficeImpl";
@@ -277,6 +289,7 @@ import { SubService } from "@/types/SubService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import { getServiceBaseURL } from "@/utils/Constants";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import { useReservationTimer } from "@/utils/useReservationTimer";
 
 defineProps<{
   isRebooking: boolean;
@@ -319,6 +332,8 @@ const loadingStates = inject("loadingStates", {
   isBookingAppointment: Ref<boolean>;
   isCancelingAppointment: Ref<boolean>;
 };
+
+const { isExpired, timeLeftString } = useReservationTimer();
 
 const privacyPolicy = ref<boolean>(false);
 const electronicCommunication = ref<boolean>(false);
