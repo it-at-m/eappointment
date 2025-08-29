@@ -94,7 +94,7 @@
             v-if="
               selectedProvider &&
               selectedProvider.scope &&
-              selectedProvider.scope.displayInfo
+              selectedProvider.scope.infoForAppointment
             "
           >
             <div class="m-content">
@@ -103,7 +103,7 @@
             <div class="m-content border-bottom">
               <div
                 tabindex="0"
-                v-html="selectedProvider.scope.displayInfo"
+                v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
               ></div>
             </div>
           </div>
@@ -172,7 +172,7 @@
                   <label
                     class="m-label m-checkboxes__label"
                     for="checkbox-privacy-policy"
-                    v-html="t('privacyCheckboxText')"
+                    v-html="sanitizeHtml(t('privacyCheckboxText'))"
                   />
                 </div>
               </div>
@@ -196,7 +196,7 @@
                   <label
                     class="m-label m-checkboxes__label"
                     for="checkbox-electronic-communication"
-                    v-html="t('communicationCheckboxText')"
+                    v-html="sanitizeHtml(t('communicationCheckboxText'))"
                   />
                 </div>
               </div>
@@ -289,6 +289,7 @@ import { SubService } from "@/types/SubService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import { getServiceBaseURL } from "@/utils/Constants";
 import { useReservationTimer } from "@/utils/useReservationTimer";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 defineProps<{
   isRebooking: boolean;

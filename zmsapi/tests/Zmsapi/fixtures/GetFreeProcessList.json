@@ -15,12 +15,13 @@
             },
             "preferences": {
               "appointment": {
-                "deallocationDuration": 10,
+                "deallocationDuration": "10",
                 "infoForAppointment": "",
-                "endInDaysDefault": 60,
-                "multipleSlotsEnabled": 0,
-                "reservationDuration": 20,
-                "startInDaysDefault": 0
+                "infoForAllAppointments": "",
+                "endInDaysDefault": "60",
+                "multipleSlotsEnabled": "0",
+                "reservationDuration": "20",
+                "startInDaysDefault": "0"
               },
               "client": {
                 "alternateAppointmentUrl": "",
@@ -359,12 +360,13 @@
               },
               "preferences": {
                 "appointment": {
-                  "deallocationDuration": 10,
+                  "deallocationDuration": "10",
                   "infoForAppointment": "",
-                  "endInDaysDefault": 60,
-                  "multipleSlotsEnabled": 0,
-                  "reservationDuration": 20,
-                  "startInDaysDefault": 0
+                  "infoForAllAppointments": "",
+                  "endInDaysDefault": "60",
+                  "multipleSlotsEnabled": "0",
+                  "reservationDuration": "20",
+                  "startInDaysDefault": "0"
                 },
                 "client": {
                   "alternateAppointmentUrl": "",
@@ -690,12 +692,13 @@
         },
         "preferences": {
           "appointment": {
-            "deallocationDuration": 10,
+            "deallocationDuration": "10",
             "infoForAppointment": "",
-            "endInDaysDefault": 60,
-            "multipleSlotsEnabled": 0,
-            "reservationDuration": 20,
-            "startInDaysDefault": 0
+            "infoForAllAppointments": "",
+            "endInDaysDefault": "60",
+            "multipleSlotsEnabled": "0",
+            "reservationDuration": "20",
+            "startInDaysDefault": "0"
           },
           "client": {
             "alternateAppointmentUrl": "",
@@ -1010,12 +1013,13 @@
             },
             "preferences": {
               "appointment": {
-                "deallocationDuration": 10,
+                "deallocationDuration": "10",
                 "infoForAppointment": "",
-                "endInDaysDefault": 60,
-                "multipleSlotsEnabled": 0,
-                "reservationDuration": 20,
-                "startInDaysDefault": 0
+                "infoForAllAppointments": "",
+                "endInDaysDefault": "60",
+                "multipleSlotsEnabled": "0",
+                "reservationDuration": "20",
+                "startInDaysDefault": "0"
               },
               "client": {
                 "alternateAppointmentUrl": "",
@@ -1354,12 +1358,13 @@
               },
               "preferences": {
                 "appointment": {
-                  "deallocationDuration": 10,
+                  "deallocationDuration": "10",
                   "infoForAppointment": "",
-                  "endInDaysDefault": 60,
-                  "multipleSlotsEnabled": 0,
-                  "reservationDuration": 20,
-                  "startInDaysDefault": 0
+                  "infoForAllAppointments": "",
+                  "endInDaysDefault": "60",
+                  "multipleSlotsEnabled": "0",
+                  "reservationDuration": "20",
+                  "startInDaysDefault": "0"
                 },
                 "client": {
                   "alternateAppointmentUrl": "",
@@ -1685,12 +1690,13 @@
         },
         "preferences": {
           "appointment": {
-            "deallocationDuration": 10,
+            "deallocationDuration": "10",
             "infoForAppointment": "",
-            "endInDaysDefault": 60,
-            "multipleSlotsEnabled": 0,
-            "reservationDuration": 20,
-            "startInDaysDefault": 0
+            "infoForAllAppointments": "",
+            "endInDaysDefault": "60",
+            "multipleSlotsEnabled": "0",
+            "reservationDuration": "20",
+            "startInDaysDefault": "0"
           },
           "client": {
             "alternateAppointmentUrl": "",
