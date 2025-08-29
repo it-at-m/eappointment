@@ -67,12 +67,16 @@
             <br />
           </div>
           <div
-          v-if="selectedProvider && selectedProvider.scope && selectedProvider.scope.hint"
-          class="m-content border-bottom"
+            v-if="
+              selectedProvider &&
+              selectedProvider.scope &&
+              selectedProvider.scope.hint
+            "
+            class="m-content border-bottom"
           >
-          <p tabindex="0">
-            {{ selectedProvider.scope.hint }}
-          </p>
+            <p tabindex="0">
+              {{ selectedProvider.scope.hint }}
+            </p>
           </div>
           <div class="m-content">
             <h3 tabindex="0">{{ t("time") }}</h3>

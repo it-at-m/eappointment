@@ -1,5 +1,5 @@
-import { Scope } from './Scope';
 import { Provider } from "@/api/models/Provider";
+import { Scope } from "./Scope";
 
 /**
  *
@@ -92,7 +92,7 @@ export interface Scope {
    */
   infoForAllAppointments?: string | null;
   /**
-   * 
+   *
    * @type {string | null}
    * @memberof Scope
    */
