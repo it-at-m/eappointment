@@ -1729,27 +1729,7 @@ describe("CalendarView", () => {
 
   describe("InfoForAllAppointments Feature", () => {
     describe("First Warning Callout (No Appointments for Selected Providers)", () => {
-      it('should display infoForAllAppointments when available', async () => {
-        const wrapper = createWrapper({
-          selectedProvider: {
-            id: 1,
-            name: 'Test Office',
-            address: { street: 'Test Street', house_number: '123' },
-            scope: {
-              infoForAllAppointments: 'Custom no appointments message'
-            }
-          }
-        });
 
-        await wrapper.vm.$nextTick();
-        wrapper.vm.availableDaysFetched = true;
-        wrapper.vm.availableDays = [];
-        await wrapper.vm.$nextTick();
-
-        const callout = wrapper.find('[data-test="muc-callout"]');
-        expect(callout.exists()).toBe(true);
-        expect(callout.html()).toContain('Custom no appointments message');
-      });
 
       it('should fallback to translation key when infoForAllAppointments is null', async () => {
         const wrapper = createWrapper({

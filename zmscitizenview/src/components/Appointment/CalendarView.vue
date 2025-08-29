@@ -89,7 +89,10 @@
       </template>
       <template #content>
         <div
-          v-if="(selectedProvider?.scope?.infoForAllAppointments || '').trim()"
+          v-if="
+            shouldShowLocationSpecificInfo &&
+            (selectedProvider?.scope?.infoForAllAppointments || '').trim()
+          "
           v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
         ></div>
         <template v-else>{{
@@ -1328,10 +1331,12 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
     );
     calendarKey.value++;
     availableDaysFetched.value = true;
-    minDate.value = new Date((days[0] as any).time);
-    maxDate.value = new Date((days[days.length - 1] as any).time);
+    // Don't set minDate/maxDate here - let updateDateRangeForSelectedProviders handle it
     error.value = false;
     isSwitchingProvider.value = false;
+
+    // Update date range based on selected providers
+    updateDateRangeForSelectedProviders();
   } else {
     handleError(data);
     isSwitchingProvider.value = false;
@@ -1559,6 +1564,15 @@ const hasSelectedProviderWithAppointments = computed(() => {
       isSelected &&
       providersWithAppointments.value.some((p) => p.id.toString() === id)
   );
+});
+
+// Add computed property to determine when to show location-specific info
+const shouldShowLocationSpecificInfo = computed(() => {
+  // Only show location-specific info when exactly one provider is selected
+  const selectedCount = Object.values(selectedProviders.value).filter(
+    Boolean
+  ).length;
+  return selectedCount === 1;
 });
 
 watch(selectedDay, (newDate) => {
