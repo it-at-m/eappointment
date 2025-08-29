@@ -1664,6 +1664,7 @@ describe("CalendarView", () => {
         props: {
           bookingError: true,
           bookingErrorKey: "apiErrorCaptchaInvalid",
+          errorType: "warning"
         }
       });
 
@@ -1677,11 +1678,12 @@ describe("CalendarView", () => {
       expect(callout.html()).toContain("apiErrorCaptchaInvalidText");
     });
 
-    it('shows no appointment error warning callout when no appointment error is set', async () => {
+    it('shows no appointment error info callout when no appointment error is set', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
           bookingErrorKey: "apiErrorNoAppointmentForThisScope",
+          errorType: "info"
         }
       });
 
@@ -1690,16 +1692,16 @@ describe("CalendarView", () => {
       const callout = wrapper.find('[data-test="muc-callout"]');
 
       expect(callout.exists()).toBe(true);
-      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.attributes('data-type')).toBe("info");
       expect(callout.html()).toContain("apiErrorNoAppointmentForThisScopeHeader");
       expect(callout.html()).toContain("apiErrorNoAppointmentForThisScopeText");
     });
 
-    it('shows appointment not available error warning callout when appointment not available error is set', async () => {
+    it('shows appointment not available error callout when appointment not available error is set (defaults to error type)', async () => {
       const wrapper = createWrapper({
         props: {
           bookingError: true,
-          bookingErrorKey: "apiErrorAppointmentNotAvailable",
+          bookingErrorKey: "apiErrorAppointmentNotAvailable"
         }
       });
 
@@ -1708,7 +1710,7 @@ describe("CalendarView", () => {
       const callout = wrapper.find('[data-test="muc-callout"]');
 
       expect(callout.exists()).toBe(true);
-      expect(callout.attributes('data-type')).toBe("warning");
+      expect(callout.attributes('data-type')).toBe("error");
       expect(callout.html()).toContain("apiErrorAppointmentNotAvailableHeader");
       expect(callout.html()).toContain("apiErrorAppointmentNotAvailableText");
     });

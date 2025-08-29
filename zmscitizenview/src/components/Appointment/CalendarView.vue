@@ -833,7 +833,7 @@
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
-    <muc-callout type="warning">
+    <muc-callout :type="getCalloutType(apiErrorTranslation.errorType)">
       <template #header>
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
@@ -897,6 +897,7 @@
 
 <script setup lang="ts">
 import type { AccordionDay } from "@/types/AccordionDay";
+import type { ApiErrorTranslation } from "@/utils/errorHandler";
 import type { Ref } from "vue";
 
 import {
@@ -946,6 +947,7 @@ const props = defineProps<{
   captchaToken: string | null;
   bookingError: boolean;
   bookingErrorKey: string;
+  errorType?: string;
   t: (key: string) => string;
 }>();
 
@@ -983,16 +985,18 @@ const appointmentTimestamps = ref<number[]>([]);
 
 const errorStates = createErrorStates();
 const errorStateMap = computed(() => errorStates.errorStateMap);
+const currentErrorData = computed(() => errorStates.currentErrorData);
 
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
 
-const apiErrorTranslation = computed(() => {
+const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   // If we have a booking error from props, use that instead of our own error states
   if (props.bookingError && props.bookingErrorKey) {
     return {
       headerKey: `${props.bookingErrorKey}Header`,
       textKey: `${props.bookingErrorKey}Text`,
+      errorType: props.errorType || "error", // Use prop if provided, otherwise default to "error"
     };
   }
   // If we're switching providers, don't show any error messages
@@ -1000,11 +1004,29 @@ const apiErrorTranslation = computed(() => {
     return {
       headerKey: "",
       textKey: "",
+      errorType: "error", // Default
     };
   }
   // Otherwise, use our own error states
-  return getApiErrorTranslation(errorStateMap.value);
+  return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
 });
+
+// Helper function to map API error types to valid callout types
+const getCalloutType = (
+  errorType?: string
+): "error" | "warning" | "success" | "info" => {
+  switch (errorType) {
+    case "warning":
+      return "warning";
+    case "info":
+      return "info";
+    case "success":
+      return "success";
+    case "error":
+    default:
+      return "error";
+  }
+};
 
 const selectedDay = ref<Date>();
 const minDate = ref<Date>();
@@ -1432,7 +1454,7 @@ const showSelectionForProvider = async (provider: OfficeImpl) => {
 
 const handleError = (data: any): void => {
   error.value = true;
-  handleApiResponse(data, errorStateMap.value);
+  handleApiResponse(data, errorStateMap.value, currentErrorData.value);
 };
 
 const getAppointmentsOfDay = (date: string) => {
