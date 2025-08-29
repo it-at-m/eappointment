@@ -80,15 +80,14 @@ describe("AppointmentView", () => {
         locationId: mockLocationId,
         exclusiveLocation: mockExclusiveLocation,
         appointmentHash: mockAppointmentHash,
-        t: (key: string, params?: Record<string, any>) => {
+        t: (key: string, params?: Record<string, unknown>) => {
           // load translation or get key
           let s = (de as any)[key] ?? key;
   
           // replace placeholder
-          if (params) {
-            for (const [k, v] of Object.entries(params)) {
-              s = s.replace(new RegExp(`\\{${k}\\}`, "g"), String(v ?? ""));
-            }
+          if (!params) return s;
+          for (const [k, v] of Object.entries(params)) {
+              s = s.split(`{${k}}`).join(String(v ?? ""));
           }
           return s;
         },
