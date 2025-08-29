@@ -29,7 +29,8 @@ describe("AppointmentSummary", () => {
       city: "Test City",
     },
     scope: {
-      displayInfo: "Test Info",
+      infoForAppointment: "Test Info",
+      infoForAllAppointments: "<p>Test Info</p>",
       customTextfieldLabel: "Custom Field 1",
       customTextfield2Label: "Custom Field 2",
     },
