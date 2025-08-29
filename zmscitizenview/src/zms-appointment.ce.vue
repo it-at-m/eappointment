@@ -49,8 +49,8 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
-import { registerAuthenticationHook } from "./utils/auth";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import { registerAuthenticationHook } from "./utils/auth";
 
 defineProps({
   baseUrl: {
