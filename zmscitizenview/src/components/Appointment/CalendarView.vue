@@ -1541,7 +1541,6 @@ const hasAppointmentsForSelectedProviders = () => {
   );
 };
 
-// Add new computed property to filter providers with appointments
 const providersWithAppointments = computed(() => {
   // Always return all selectable providers to maintain UI state
   // The filtering for calendar display happens in updateDateRangeForSelectedProviders
@@ -1552,9 +1551,7 @@ const providersWithAppointments = computed(() => {
   });
 });
 
-// Add new computed property to track if any provider with appointments is selected
 const hasSelectedProviderWithAppointments = computed(() => {
-  // If no available days or empty available days, return false
   if (!availableDays?.value || availableDays.value.length === 0) {
     return false;
   }
@@ -1573,6 +1570,34 @@ const shouldShowLocationSpecificInfo = computed(() => {
   ).length;
   return selectedCount === 1;
 });
+
+// Watch for changes in selectedProviders and update selectedProvider accordingly
+watch(
+  selectedProviders,
+  (newSelection) => {
+    const selectedCount = Object.values(newSelection).filter(Boolean).length;
+
+    if (selectedCount === 1) {
+      // Exactly one provider selected, update selectedProvider to that one
+      const selectedProviderId = Object.keys(newSelection).find(
+        (id) => newSelection[id]
+      );
+
+      if (selectedProviderId && selectableProviders.value) {
+        const provider = selectableProviders.value.find(
+          (p) => p.id.toString() === selectedProviderId
+        );
+        if (provider) {
+          selectedProvider.value = provider;
+        }
+      }
+    } else {
+      // Multiple or no providers selected, clear selectedProvider
+      selectedProvider.value = undefined;
+    }
+  },
+  { deep: true }
+);
 
 watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
