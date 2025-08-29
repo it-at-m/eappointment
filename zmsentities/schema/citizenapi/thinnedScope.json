@@ -119,7 +119,7 @@
             "integer",
             "null"
           ],
-          "description": "Duration of the activationtime in minutes"
+          "description": "Duration of the activation time in minutes"
         }
     }
 }
