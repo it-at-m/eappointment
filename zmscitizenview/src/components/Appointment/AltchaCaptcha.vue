@@ -128,8 +128,8 @@ onUnmounted(() => {
 /* Custom styling for ALTCHA widget to match UI/UX requirements */
 :deep(.altcha) {
   background: transparent;
-  border: 1px solid #9ca8b3;
-  color: currentColor;
+  border: 1px solid #BDD4EA;
+  color: #3A5368;
   display: flex;
   flex-direction: column;
   max-width: 260px;
@@ -165,6 +165,7 @@ onUnmounted(() => {
 :deep(.altcha-label label) {
   cursor: pointer;
   margin: 0;
+  color: #3A5368;
 }
 
 /* Hide logo and footer */
@@ -182,7 +183,7 @@ onUnmounted(() => {
 }
 
 :deep(.altcha-error) {
-  color: #f23939;
+  color: #984447;
   display: flex;
   font-size: 0.85rem;
   gap: 0.3rem;
