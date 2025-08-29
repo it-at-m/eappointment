@@ -5,8 +5,8 @@
   />
   <main>
     <div>
-      <div v-html="mucIconsSprite"></div>
-      <div v-html="customIconsSprit"></div>
+      <div v-html="sanitizeHtml(mucIconsSprite)"></div>
+      <div v-html="sanitizeHtml(customIconsSprit)"></div>
       <appointment-view
         :base-url="baseUrl"
         :service-id="serviceId"
@@ -50,6 +50,7 @@ import { useI18n } from "vue-i18n";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import { registerAuthenticationHook } from "./utils/auth";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 defineProps({
   baseUrl: {
