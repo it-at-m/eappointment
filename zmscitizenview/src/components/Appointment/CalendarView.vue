@@ -1297,11 +1297,22 @@ const currentDayPart = computed(() => {
 });
 
 const refetchAvailableDaysForSelection = async (): Promise<void> => {
-  const providers = selectableProviders.value || [];
+  // Only fetch available days for currently selected providers
+  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
+    (id) => selectedProviders.value[id]
+  );
 
-  // Always fetch available days for all selectable providers.
-  // Selection-specific filtering is handled later by updateDateRangeForSelectedProviders.
-  const providerIdsToQuery = providers.map((p) => Number(p.id));
+  if (selectedProviderIds.length === 0) {
+    // No providers selected, clear available days but keep providers visible
+    availableDays.value = [];
+    availableDaysFetched.value = true;
+    error.value = false;
+    isSwitchingProvider.value = false;
+    updateDateRangeForSelectedProviders();
+    return;
+  }
+
+  const providerIdsToQuery = selectedProviderIds.map(Number);
 
   const data = await fetchAvailableDays(
     providerIdsToQuery,
@@ -1530,30 +1541,17 @@ const hasAppointmentsForSelectedProviders = () => {
   );
 };
 
-// Add new computed property to filter providers with appointments
 const providersWithAppointments = computed(() => {
-  // If no available days or empty available days, return empty array
-  if (!availableDays?.value || availableDays.value.length === 0) {
-    return [];
-  }
-
-  // Filter providers that have appointments and maintain their original order
-  return (selectableProviders.value || [])
-    .filter((provider) => {
-      return (availableDays.value ?? []).some((day) =>
-        day.providerIDs.split(",").includes(provider.id.toString())
-      );
-    })
-    .sort((a, b) => {
-      const aPriority = a.priority ?? -Infinity;
-      const bPriority = b.priority ?? -Infinity;
-      return bPriority - aPriority;
-    });
+  // Always return all selectable providers to maintain UI state
+  // The filtering for calendar display happens in updateDateRangeForSelectedProviders
+  return (selectableProviders.value || []).sort((a, b) => {
+    const aPriority = a.priority ?? -Infinity;
+    const bPriority = b.priority ?? -Infinity;
+    return bPriority - aPriority;
+  });
 });
 
-// Add new computed property to track if any provider with appointments is selected
 const hasSelectedProviderWithAppointments = computed(() => {
-  // If no available days or empty available days, return false
   if (!availableDays?.value || availableDays.value.length === 0) {
     return false;
   }
@@ -1572,6 +1570,34 @@ const shouldShowLocationSpecificInfo = computed(() => {
   ).length;
   return selectedCount === 1;
 });
+
+// Watch for changes in selectedProviders and update selectedProvider accordingly
+watch(
+  selectedProviders,
+  (newSelection) => {
+    const selectedCount = Object.values(newSelection).filter(Boolean).length;
+
+    if (selectedCount === 1) {
+      // Exactly one provider selected, update selectedProvider to that one
+      const selectedProviderId = Object.keys(newSelection).find(
+        (id) => newSelection[id]
+      );
+
+      if (selectedProviderId && selectableProviders.value) {
+        const provider = selectableProviders.value.find(
+          (p) => p.id.toString() === selectedProviderId
+        );
+        if (provider) {
+          selectedProvider.value = provider;
+        }
+      }
+    } else {
+      // Multiple or no providers selected, clear selectedProvider
+      selectedProvider.value = undefined;
+    }
+  },
+  { deep: true }
+);
 
 watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
@@ -2076,6 +2102,20 @@ onUnmounted(() => {
 });
 
 const providerSelectionError = computed(() => {
+  // Check if any providers are selected
+  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
+    (id) => selectedProviders.value[id]
+  );
+
+  // If no providers are selected at all, show error
+  if (
+    selectedProviderIds.length === 0 &&
+    providersWithAppointments.value.length > 0
+  ) {
+    return props.t("errorMessageProviderSelection");
+  }
+
+  // If available days is empty (no data fetched), don't show error yet
   if (!availableDays?.value || availableDays.value.length === 0) {
     return "";
   }
@@ -2090,9 +2130,12 @@ const providerSelectionError = computed(() => {
 });
 
 const noProviderSelected = computed(() => {
-  const providers = providersWithAppointments.value || [];
-  if (!providers.length) return false;
-  return providers.every((p) => !selectedProviders.value[String(p.id)]);
+  // Check if any providers are selected
+  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
+    (id) => selectedProviders.value[id]
+  );
+
+  return selectedProviderIds.length === 0;
 });
 
 const APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW = 18;
