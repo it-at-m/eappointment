@@ -1,3 +1,4 @@
+import { Scope } from './Scope';
 import { Provider } from "@/api/models/Provider";
 
 /**
@@ -90,4 +91,10 @@ export interface Scope {
    * @memberof Scope
    */
   infoForAllAppointments?: string | null;
+  /**
+   * 
+   * @type {string | null}
+   * @memberof Scope
+   */
+  hint?: string | null;
 }
