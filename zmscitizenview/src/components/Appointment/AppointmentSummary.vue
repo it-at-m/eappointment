@@ -288,8 +288,8 @@ import {
 import { SubService } from "@/types/SubService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import { getServiceBaseURL } from "@/utils/Constants";
-import { useReservationTimer } from "@/utils/useReservationTimer";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import { useReservationTimer } from "@/utils/useReservationTimer";
 
 defineProps<{
   isRebooking: boolean;
