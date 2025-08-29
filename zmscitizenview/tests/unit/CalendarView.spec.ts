@@ -1729,7 +1729,7 @@ describe("CalendarView", () => {
 
   describe("InfoForAllAppointments Feature", () => {
     describe("First Warning Callout (No Appointments for Selected Providers)", () => {
-      it('should display infoForAllAppointments when available', async () => {
+      it('shows info trigger and displays info in modal when available', async () => {
         const wrapper = createWrapper({
           selectedProvider: {
             id: 1,
@@ -1748,7 +1748,15 @@ describe("CalendarView", () => {
 
         const callout = wrapper.find('[data-test="muc-callout"]');
         expect(callout.exists()).toBe(true);
-        expect(callout.html()).toContain('Custom no appointments message');
+        // Info text now shown in modal, callout has trigger
+        expect(callout.html()).toContain('newAppointmentsInfoLink');
+        const trigger = callout.find('.m-button.m-button--ghost');
+        expect(trigger.exists()).toBe(true);
+        await trigger.trigger('click');
+        await nextTick();
+        const modalBody = wrapper.find('.modal-body');
+        expect(modalBody.exists()).toBe(true);
+        expect(modalBody.html()).toContain('Custom no appointments message');
       });
 
       it('should fallback to translation key when infoForAllAppointments is null', async () => {
@@ -1771,6 +1779,8 @@ describe("CalendarView", () => {
         const callout = wrapper.find('[data-test="muc-callout"]');
         expect(callout.exists()).toBe(true);
         expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+        // No info trigger if no content
+        expect(callout.find('.m-button.m-button--ghost').exists()).toBe(false);
       });
 
       it('should fallback to translation key when infoForAllAppointments is empty string', async () => {
@@ -1793,6 +1803,8 @@ describe("CalendarView", () => {
         const callout = wrapper.find('[data-test="muc-callout"]');
         expect(callout.exists()).toBe(true);
         expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+        // No info trigger if no content
+        expect(callout.find('.m-button.m-button--ghost').exists()).toBe(false);
       });
 
       it('should fallback to translation key when infoForAllAppointments is whitespace only', async () => {
@@ -1815,10 +1827,10 @@ describe("CalendarView", () => {
         const callout = wrapper.find('[data-test="muc-callout"]');
         expect(callout.exists()).toBe(true);
         expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+        // No info trigger if no content
+        expect(callout.find('.m-button.m-button--ghost').exists()).toBe(false);
       });
     });
-
-
 
     describe("Edge Cases", () => {
       it('should handle undefined scope gracefully', async () => {
@@ -1896,6 +1908,38 @@ describe("CalendarView", () => {
 
         expect(wrapper.vm.selectedProvider).toBeDefined();
         expect(wrapper.vm.selectedProvider?.scope?.infoForAllAppointments).toBe('Complete flow test message');
+      });
+
+      it('closes the modal when clicking outside', async () => {
+        const wrapper = createWrapper({
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForAllAppointments: 'Outside click close test'
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+        wrapper.vm.availableDaysFetched = true;
+        wrapper.vm.availableDays = [];
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        const trigger = callout.find('.m-button.m-button--ghost');
+        expect(trigger.exists()).toBe(true);
+        await trigger.trigger('click');
+        await nextTick();
+        // Modal open
+        expect(wrapper.find('.modal-body').exists()).toBe(true);
+        // Click on modal container (self) to close
+        const modalContainer = wrapper.find('.modal.fade.show');
+        expect(modalContainer.exists()).toBe(true);
+        await modalContainer.trigger('click');
+        await nextTick();
+        expect(wrapper.find('.modal-body').exists()).toBe(false);
       });
 
       it('should maintain existing functionality when infoForAllAppointments is not set', async () => {

@@ -88,13 +88,24 @@
         <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
+        <div class="m-content">
+          {{ t("apiErrorNoAppointmentForThisScopeText") }}
+        </div>
         <div
+          class="m-content"
+          style="margin-top: 8px"
           v-if="(selectedProvider?.scope?.infoForAllAppointments || '').trim()"
-          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
-        ></div>
-        <template v-else>{{
-          t("apiErrorNoAppointmentForThisScopeText")
-        }}</template>
+        >
+          <muc-button
+            variant="ghost"
+            icon="information"
+            icon-shown-left
+            class="no-bottom-margin"
+            @click="openAvailabilityInfoModal"
+          >
+            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+          </muc-button>
+        </div>
       </template>
     </muc-callout>
   </div>
@@ -145,7 +156,26 @@
       v-if="isListView"
       class="m-content"
     >
-      <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+      <h3
+        class="no-top-margin"
+        tabindex="0"
+      >
+        {{ t("availableTimes") }}
+      </h3>
+      <div
+        class="m-content"
+        style="margin-top: 8px"
+      >
+        <muc-button
+          variant="ghost"
+          icon="information"
+          icon-shown-left
+          class="no-bottom-margin"
+          @click="openAvailabilityInfoModal"
+        >
+          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+        </muc-button>
+      </div>
     </div>
 
     <div
@@ -463,7 +493,25 @@
       class="m-component"
     >
       <div class="m-content">
-        <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+        <h3
+          class="no-top-margin"
+          tabindex="0"
+        >
+          {{ t("availableTimes") }}
+        </h3>
+      </div>
+      <div
+        class="m-content"
+        style="margin: 8px 0 0 0"
+      >
+        <muc-button
+          variant="ghost"
+          icon="information"
+          icon-shown-left
+          @click="openAvailabilityInfoModal"
+        >
+          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+        </muc-button>
       </div>
       <div
         style="
@@ -599,7 +647,25 @@
       class="m-component"
     >
       <div class="m-content">
-        <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+        <h3
+          class="no-top-margin"
+          tabindex="0"
+        >
+          {{ t("availableTimes") }}
+        </h3>
+      </div>
+      <div
+        class="m-content"
+        style="margin: 8px 0 0 0"
+      >
+        <muc-button
+          variant="ghost"
+          icon="information"
+          icon-shown-left
+          @click="openAvailabilityInfoModal"
+        >
+          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+        </muc-button>
       </div>
       <div
         style="
@@ -772,7 +838,10 @@
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
+        <div class="m-content">{{ t(apiErrorTranslation.textKey) }}</div>
         <div
+          class="m-content"
+          style="margin-top: 8px"
           v-if="
             (apiErrorTranslation.textKey ===
               'apiErrorNoAppointmentForThisScopeText' ||
@@ -780,9 +849,17 @@
                 'apiErrorNoAppointmentForThisDayText') &&
             (selectedProvider?.scope?.infoForAllAppointments || '').trim()
           "
-          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
-        ></div>
-        <template v-else>{{ t(apiErrorTranslation.textKey) }}</template>
+        >
+          <muc-button
+            variant="ghost"
+            icon="information"
+            icon-shown-left
+            class="no-bottom-margin"
+            @click="openAvailabilityInfoModal"
+          >
+            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+          </muc-button>
+        </div>
       </template>
     </muc-callout>
   </div>
@@ -811,6 +888,11 @@
       </template>
     </muc-button>
   </div>
+  <AvailabilityInfoModal
+    :show="showAvailabilityInfoModal"
+    :html="availabilityInfoHtml"
+    @close="closeAvailabilityInfoModal"
+  />
 </template>
 
 <script setup lang="ts">
@@ -853,6 +935,7 @@ import {
   handleApiResponse,
 } from "@/utils/errorHandler";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import AvailabilityInfoModal from "./AvailabilityInfoModal.vue";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -2090,6 +2173,21 @@ const toggleView = () => {
   isListView.value = !isListView.value;
 };
 
+// Modal state and handlers
+const showAvailabilityInfoModal = ref(false);
+const openAvailabilityInfoModal = () => {
+  showAvailabilityInfoModal.value = true;
+};
+const closeAvailabilityInfoModal = () => {
+  showAvailabilityInfoModal.value = false;
+};
+
+const availabilityInfoHtml = computed(() => {
+  const raw = (selectedProvider?.value?.scope?.infoForAllAppointments ||
+    "") as string;
+  return (raw || "").trim() ? sanitizeHtml(raw) : "";
+});
+
 const openAccordionIndex = ref(0);
 
 const openAccordionDate = ref<string | null>(null);
@@ -2249,6 +2347,17 @@ const getCurrentDayPartForDay = (
 
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
+
+.no-bottom-margin,
+.no-bottom-margin.m-button,
+.no-bottom-margin .m-button {
+  margin-bottom: 0 !important;
+}
+
+.no-top-margin,
+.no-top-margin h3 {
+  margin-top: 0 !important;
+}
 
 .wrapper {
   display: grid;
