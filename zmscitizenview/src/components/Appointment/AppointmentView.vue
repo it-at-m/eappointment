@@ -330,7 +330,7 @@ const captchaError = ref<boolean>(false);
 const bookingErrorKey = computed(() => {
   if (captchaError.value) return "altcha.invalidCaptcha";
   if (apiErrorAppointmentNotAvailable.value)
-    return "apiErrorNoAppointmentForThisScope";
+    return "apiErrorAppointmentNotAvailable";
   if (errorStateMap.value.apiErrorCaptchaExpired.value)
     return "apiErrorCaptchaExpired";
   if (errorStateMap.value.apiErrorCaptchaMissing.value)
@@ -361,6 +361,8 @@ const isBookingAppointment = ref<boolean>(false);
 const isCancelingAppointment = ref<boolean>(false);
 
 const preselectedLocationId = ref<string | undefined>(props.locationId);
+
+const reservationStartMs = ref<number | null>(null);
 
 const activationMinutes = computed<number | undefined>(() => {
   const fromAppt = (appointment.value as any)?.scope?.activationDuration;
@@ -442,6 +444,8 @@ provide<CustomerDataProvider>("customerData", {
 provide<SelectedAppointmentProvider>("appointment", {
   appointment,
 } as SelectedAppointmentProvider);
+
+provide("reservationStartMs", reservationStartMs);
 
 provide("loadingStates", {
   isReservingAppointment,
@@ -540,6 +544,7 @@ const nextReserveAppointment = () => {
           cancelAppointment(appointment.value, props.baseUrl ?? undefined);
         }
         appointment.value = data as AppointmentDTO;
+        reservationStartMs.value = Date.now();
         if (isRebooking.value) {
           setRebookData();
         } else {

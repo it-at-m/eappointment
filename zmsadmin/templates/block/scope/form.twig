@@ -326,7 +326,8 @@
                     {% if rights.superuser %}
                         {{ formgroup(
                                 {
-                                    "legend": "Captcha (Nur für technische Administration sichtbar):",
+                                    "legend": "Captcha:",
+                                    "class": "superuser-only-field",
                                     "groupTag": "fieldset"
                                 },
                                 [
@@ -541,10 +542,9 @@
 			</fieldset>
 
             {% if rights.superuser %}
-                <fieldset>
+                <fieldset class="superuser-only-field">
                     <legend>
-                        SMS Einstellungen 
-                        <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                        SMS Einstellungen
                     </legend>
                     <div class="panel--heavy">
                         {% if department.preferences.notifications.enabled %}
@@ -620,15 +620,14 @@
             {% endif %}
 
             {% if rights.superuser %}
-                <fieldset>
+                <fieldset class="superuser-only-field">
                     <legend>
-                        Kundenbefragung 
-                        <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                        Kundenbefragung
                     </legend>
                     <div class="panel--heavy">
                         {{ formgroup(
                             {
-                                "legend": "Kundenbefragung aktivieren:",
+                                "label": "Kundenbefragung aktivieren:",
                                 "groupTag": "fieldset"
                             },
                             [{
@@ -729,10 +728,9 @@
 			</fieldset>
 
             {% if rights.superuser %}
-                <fieldset>
+                <fieldset class="superuser-only-field">
                     <legend>
-                        Wartenummern-Kiosk 
-                        <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                        Wartenummern-Kiosk
                     </legend>
                     <div class="panel--heavy">
                         {{ formgroup(
@@ -969,57 +967,73 @@
 
 					{% if rights.superuser %}
 						{{ formgroup(
-							{"label": "Information zu Terminbuchung im Bürgerfrontend (Nur für technische Administration sichtbar):", "description": "Dieser Text erscheint im Bürgerfrontend."},
+							{
+                            "legend": "Hinweismeldungen bei keinen verfügbaren Terminen:",
+                            "class": "superuser-only-field",
+                            "description": "Dieser Text erscheint im Bürgerfrontend."
+                            },
 							[{
 								"type":"textarea",
 								"parameter": {
-									"name": "preferences[appointment][infoForAppointment]",
+									"name": "preferences[appointment][infoForAllAppointments]",
 									"maxlength": 5000,
-									"value": scope.preferences.appointment.infoForAppointment|default(''),
+									"value": scope.preferences.appointment.infoForAllAppointments|default(''),
 								}
 							}]
 						) }}
-					{% endif %}
-
-                    {% if rights.superuser %}
-                        <fieldset>
-                            <legend class="label">Bild für Aufrufanlage (Nur für technische Administration sichtbar):</legend>
-                            {{ formgroup(
-                                    {
-                                        "label": null
-                                    },
-                                    [
-                                        {
-                                            "type":"checkbox",
-                                            "parameter": {
-                                                "name": "removeImage",
-                                                "value": 1,
-                                                "label": "Kein Bild in der Aufrufanzeige anzeigen"
-                                            }
-                                        }
-                                    ]
-                                ) }}
-                            {{ formgroup(
+                        {{ formgroup(
+                            {
+                                "legend": "Hinweismeldungen bei verfügbaren Terminen:",
+                                "class": "superuser-only-field",
+                                "description": "Dieser Text erscheint im Bürgerfrontend."
+                            },
+                            [{
+                                "type":"textarea",
+                                "parameter": {
+                                    "name": "preferences[appointment][infoForAppointment]",
+                                    "maxlength": 5000,
+                                    "value": scope.preferences.appointment.infoForAppointment|default(''),
+                                }
+                            }]
+                        ) }}
+                        {{ formgroup(
                                 {
-                                    "label": "Bild auswählen", 
-                                    "labelClass": "aural", 
-                                    "description": "Zulässig sind nur SVG-, JPG-, PNG oder GIF-Bilder bis 48 KB Größe. Das Bild wird in einer Breite von 200 Pixel erscheinen."
+                                    "legend": "Bild für Aufrufanlage:",
+                                    "class": "superuser-only-field",
+                                    "groupTag": "fieldset"
                                 },
                                 [
                                     {
-                                        "type":"file",
+                                        "type":"checkbox",
                                         "parameter": {
-                                            "name": "uploadCallDisplayImage",
-                                            "file": {
-                                                "type": "image",
-                                                "alt": "Bild der Aufrufanlage",
-                                                "data": callDisplayImage,
-                                            }
+                                            "name": "removeImage",
+                                            "value": 1,
+                                            "label": "Kein Bild in der Aufrufanzeige anzeigen"
                                         }
                                     }
                                 ]
                             ) }}
-                        </fieldset>
+                        {{ formgroup(
+                            {
+                                "label": "Bild auswählen", 
+                                "labelClass": "aural", 
+                                "description": "Zulässig sind nur SVG-, JPG-, PNG oder GIF-Bilder bis 48 KB Größe. Das Bild wird in einer Breite von 200 Pixel erscheinen."
+                            },
+                            [
+                                {
+                                    "type":"file",
+                                    "parameter": {
+                                        "name": "uploadCallDisplayImage",
+                                        "accept": "image/svg+xml,image/png,image/jpeg,image/gif",
+                                        "file": {
+                                            "type": "image",
+                                            "alt": "Bild der Aufrufanlage",
+                                            "data": callDisplayImage,
+                                        }
+                                    }
+                                }
+                            ]
+                        ) }}
                     {% endif %}
 				</div>
 			</fieldset>
