@@ -127,6 +127,8 @@
   "apiErrorScopesNotFoundText": "Die angefragten Standorte konnten nicht gefunden werden.",
   "apiErrorServiceUnavailableHeader": "Dienstleistung nicht verfügbar",
   "apiErrorServiceUnavailableText": "Die angefragte Dienstleistung ist derzeit nicht verfügbar. Bitte versuchen Sie es später noch einmal.",
+  "apiErrorSessionTimeoutHeader": "Ihre Sitzung ist abgelaufen.",
+  "apiErrorSessionTimeoutText": "Seit dem Start Ihrer Terminbuchung ist zu viel Zeit vergangen. Bitte wählen Sie einen neuen Termin, um mit der Buchung fortzufahren.",
   "apiErrorSourceNotFoundHeader": "Quelle nicht gefunden",
   "apiErrorSourceNotFoundText": "Die angefragte Quelle konnte nicht gefunden werden.",
   "apiErrorTelephoneIsRequiredHeader": "Telefonnummer ist erforderlich",

@@ -87,7 +87,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "reservationDuration" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ],
@@ -141,7 +142,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "reservationDuration" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ]
@@ -251,7 +253,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "reservationDuration" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ],
@@ -305,7 +308,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "reservationDuration" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ]
