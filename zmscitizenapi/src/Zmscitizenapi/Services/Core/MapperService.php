@@ -56,12 +56,20 @@ class MapperService
         if ($scope === null) {
             return null;
         }
+
         if ($scope instanceof ThinnedScope) {
             $v = $scope->getActivationDuration();
-            return $v !== null ? (int) $v : null;
+            if ($v === null || $v === '') {
+                return null;
+            }
+            return (int) $v;
         }
+
         $v = $scope?->toProperty()?->preferences?->appointment?->activationDuration?->get();
-        return $v !== null ? (int) $v : null;
+        if ($v === null || $v === '') {
+            return null;
+        }
+        return (int) $v;
     }
 
     /**

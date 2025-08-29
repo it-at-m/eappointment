@@ -80,9 +80,17 @@ describe("AppointmentView", () => {
         locationId: mockLocationId,
         exclusiveLocation: mockExclusiveLocation,
         appointmentHash: mockAppointmentHash,
-        t: (key: string) => {
-          const translations = de as any;
-          return translations[key] || key;
+        t: (key: string, params?: Record<string, any>) => {
+          // load translation or get key
+          let s = (de as any)[key] ?? key;
+  
+          // replace placeholder
+          if (params) {
+            for (const [k, v] of Object.entries(params)) {
+              s = s.replace(new RegExp(`\\{${k}\\}`, "g"), String(v ?? ""));
+            }
+          }
+          return s;
         },
 
         ...props,
@@ -138,7 +146,7 @@ describe("AppointmentView", () => {
             emits: ["changeStep"],
           },
           'muc-callout': {
-            props: ["type"],
+            props: ["type", "variant"],
             template: `
             <div data-test='muc-callout' :data-type="variant || type">
               <slot name="header"></slot>
@@ -410,6 +418,41 @@ describe("AppointmentView", () => {
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
+    });
+  });
+
+  describe("Confirm callout shows activationDuration in booking step 4", () => {
+    it("render activationDuration from selectedProvider.scope", async () => {
+      const wrapper = createWrapper();
+
+      (wrapper.vm as any).selectedProvider = {
+        id: "789",
+        name: "Test Provider",
+        address: {
+          street: "Test Street",
+          house_number: "123",
+          postal_code: "12345",
+          city: "Test City",
+        },
+        scope: { activationDuration: 60 },
+      };
+  
+      (wrapper.vm as any).currentView = 4;
+  
+      await nextTick();
+  
+      const callout = wrapper.find("[data-test='muc-callout']");
+      expect(callout.exists()).toBe(true);
+  
+      // Build expected text about the translation message with placeholder
+      // createWrapper() has mocked t() so that {activationMinutes} is replaced
+      const expected = (de as any).confirmAppointmentText
+        .replace("{activationMinutes}", "60");
+  
+      // Callout renders header + content; we check that the resolved content part is included
+      expect(callout.text()).toContain(expected);
+
+      expect(callout.text()).toContain((de as any).confirmAppointmentHeader);
     });
   });
 
