@@ -13,7 +13,7 @@
         <MucCheckboxGroup :errorMsg="providerSelectionError">
           <template #checkboxes>
             <MucCheckbox
-              v-for="provider in providersWithAppointments"
+              v-for="provider in selectableProviders"
               :key="provider.id"
               :id="'checkbox-' + provider.id"
               :label="provider.name"
@@ -74,22 +74,32 @@
   </div>
 
   <div
-    v-if="availableDaysFetched && !hasAppointmentsForSelectedProviders()"
+    v-if="
+      availableDaysFetched &&
+      (noProviderSelected ||
+        (selectedProvider && !providersWithAppointments.length)) &&
+      !isSwitchingProvider
+    "
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
-
     <muc-callout type="warning">
       <template #header>
         <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
-        {{ t("apiErrorNoAppointmentForThisScopeText") }}
+        <div
+          v-if="(selectedProvider?.scope?.infoForAllAppointments || '').trim()"
+          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
+        ></div>
+        <template v-else>{{
+          t("apiErrorNoAppointmentForThisScopeText")
+        }}</template>
       </template>
     </muc-callout>
   </div>
 
-  <div v-else-if="!error">
+  <div v-else-if="!error && hasSelectedProviderWithAppointments">
     <div class="view-toggle-container">
       <h2 tabindex="0">{{ t("time") }}</h2>
       <div
@@ -735,11 +745,16 @@
             </p>
           </div>
           <div
-            v-if="selectedProvider.scope && selectedProvider.scope.displayInfo"
+            v-if="
+              selectedProvider.scope &&
+              selectedProvider.scope.infoForAppointment
+            "
           >
             <b>{{ t("hint") }}</b>
             <br />
-            <div v-html="selectedProvider.scope.displayInfo"></div>
+            <div
+              v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
+            ></div>
           </div>
         </template>
 
@@ -748,7 +763,7 @@
     </div>
   </div>
   <div
-    v-if="showError"
+    v-if="!noProviderSelected && showError && !isSwitchingProvider"
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
@@ -757,7 +772,17 @@
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
-        {{ t(apiErrorTranslation.textKey) }}
+        <div
+          v-if="
+            (apiErrorTranslation.textKey ===
+              'apiErrorNoAppointmentForThisScopeText' ||
+              apiErrorTranslation.textKey ===
+                'apiErrorNoAppointmentForThisDayText') &&
+            (selectedProvider?.scope?.infoForAllAppointments || '').trim()
+          "
+          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
+        ></div>
+        <template v-else>{{ t(apiErrorTranslation.textKey) }}</template>
       </template>
     </muc-callout>
   </div>
@@ -799,7 +824,15 @@ import {
   MucCheckbox, // Todo: Use MucCheckbox once disabled boxes are available in the patternlab-vue package
   MucCheckboxGroup,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
+import {
+  computed,
+  inject,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
 
 import { AvailableDaysDTO } from "@/api/models/AvailableDaysDTO";
 import { AvailableTimeSlotsByOfficeDTO } from "@/api/models/AvailableTimeSlotsByOfficeDTO";
@@ -819,6 +852,7 @@ import {
   getApiErrorTranslation,
   handleApiResponse,
 } from "@/utils/errorHandler";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -878,6 +912,13 @@ const apiErrorTranslation = computed(() => {
       textKey: `${props.bookingErrorKey}Text`,
     };
   }
+  // If we're switching providers, don't show any error messages
+  if (isSwitchingProvider.value) {
+    return {
+      headerKey: "",
+      textKey: "",
+    };
+  }
   // Otherwise, use our own error states
   return getApiErrorTranslation(errorStateMap.value);
 });
@@ -894,10 +935,13 @@ const selectedProviders = ref<{ [id: string]: boolean }>({});
 let initialized = false;
 const availableDaysFetched = ref(false);
 const isLoadingAppointments = ref(false);
+const isSwitchingProvider = ref(false);
 
 const datesWithoutAppointments = ref(new Set<string>());
 
 const isLoadingComplete = ref(false);
+
+let refetchTimer: ReturnType<typeof setTimeout> | undefined;
 
 watch(isLoadingAppointments, (loading) => {
   if (loading) {
@@ -917,6 +961,22 @@ watch(selectableProviders, (newVal) => {
     initialized = true;
   }
 });
+
+watch(
+  selectedProviders,
+  () => {
+    // Set flag when provider selection changes to prevent error callout flash
+    isSwitchingProvider.value = true;
+    // Immediately clear any existing error states
+    error.value = false;
+    Object.values(errorStateMap.value).forEach((errorState) => {
+      errorState.value = false;
+    });
+    // Note: isSwitchingProvider flag is now reset when the API request completes
+    // in refetchAvailableDaysForSelection, so no timeout needed here
+  },
+  { deep: true }
+);
 
 /**
  * Reference to the appointment summary.
@@ -1233,43 +1293,58 @@ const currentDayPart = computed(() => {
     : firstDayPart.value;
 });
 
-const showSelectionForProvider = (provider: OfficeImpl) => {
-  selectedProvider.value = provider;
-  error.value = false;
-  selectedDay.value = undefined;
-  selectedTimeslot.value = 0;
+const refetchAvailableDaysForSelection = async (): Promise<void> => {
   const providers = selectableProviders.value || [];
-  const providerIds = providers.map((p) => p.id);
 
-  fetchAvailableDays(
-    providerIds.map(Number),
+  // Always fetch available days for all selectable providers.
+  // Selection-specific filtering is handled later by updateDateRangeForSelectedProviders.
+  const providerIdsToQuery = providers.map((p) => Number(p.id));
+
+  const data = await fetchAvailableDays(
+    providerIdsToQuery,
     Array.from(props.selectedServiceMap.keys()),
     Array.from(props.selectedServiceMap.values()),
     props.baseUrl ?? undefined,
     props.captchaToken ?? undefined
-  ).then((data) => {
-    const days = (data as AvailableDaysDTO)?.availableDays;
-    if (
-      Array.isArray(days) &&
-      days.length > 0 &&
-      days.every(
-        (d) =>
-          typeof d === "object" &&
-          d !== null &&
-          "time" in d &&
-          "providerIDs" in d
-      )
-    ) {
-      availableDays.value = days as { time: string; providerIDs: string }[];
-      selectedDay.value = new Date((days[0] as any).time);
-      availableDaysFetched.value = true;
-      minDate.value = new Date((days[0] as any).time);
-      maxDate.value = new Date((days[days.length - 1] as any).time);
-      error.value = false;
-    } else {
-      handleError(data);
-    }
-  });
+  );
+
+  const days = (data as AvailableDaysDTO)?.availableDays;
+  if (
+    Array.isArray(days) &&
+    days.length > 0 &&
+    days.every(
+      (d) =>
+        typeof d === "object" && d !== null && "time" in d && "providerIDs" in d
+    )
+  ) {
+    datesWithoutAppointments.value.clear();
+    availableDays.value = days as { time: string; providerIDs: string }[];
+    selectedDay.value = new Date((days[0] as any).time);
+    // Keep viewMonth in sync with selectedDay and force calendar to re-render
+    viewMonth.value = new Date(
+      selectedDay.value.getFullYear(),
+      selectedDay.value.getMonth(),
+      1
+    );
+    calendarKey.value++;
+    availableDaysFetched.value = true;
+    minDate.value = new Date((days[0] as any).time);
+    maxDate.value = new Date((days[days.length - 1] as any).time);
+    error.value = false;
+    isSwitchingProvider.value = false;
+  } else {
+    handleError(data);
+    isSwitchingProvider.value = false;
+  }
+};
+
+const showSelectionForProvider = async (provider: OfficeImpl) => {
+  isSwitchingProvider.value = true;
+  selectedProvider.value = provider;
+  error.value = false;
+  selectedDay.value = undefined;
+  selectedTimeslot.value = 0;
+  await refetchAvailableDaysForSelection();
 };
 
 const handleError = (data: any): void => {
@@ -1281,8 +1356,18 @@ const getAppointmentsOfDay = (date: string) => {
   isLoadingAppointments.value = true;
   appointmentTimestamps.value = [];
   appointmentTimestampsByOffice.value = [];
-  const providers = selectableProviders.value || [];
-  const providerIds = providers.map((p) => p.id);
+
+  // Only fetch appointments for selected providers
+  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
+    (id) => selectedProviders.value[id]
+  );
+  if (selectedProviderIds.length === 0) {
+    // No providers selected, clear appointments
+    isLoadingAppointments.value = false;
+    return;
+  }
+
+  const providerIds = selectedProviderIds.map(Number);
 
   fetchAvailableTimeSlots(
     date,
@@ -1339,6 +1424,13 @@ const getAppointmentsOfDay = (date: string) => {
 
             if (firstAvailableDay) {
               selectedDay.value = new Date(firstAvailableDay.time);
+              // Sync viewMonth and re-render calendar
+              viewMonth.value = new Date(
+                selectedDay.value.getFullYear(),
+                selectedDay.value.getMonth(),
+                1
+              );
+              calendarKey.value++;
             }
           }
         }
@@ -1367,6 +1459,13 @@ const getAppointmentsOfDay = (date: string) => {
 
             if (firstAvailableDay) {
               selectedDay.value = new Date(firstAvailableDay.time);
+              // Sync viewMonth and re-render calendar
+              viewMonth.value = new Date(
+                selectedDay.value.getFullYear(),
+                selectedDay.value.getMonth(),
+                1
+              );
+              calendarKey.value++;
             }
           }
         }
@@ -1460,13 +1559,6 @@ const hasSelectedProviderWithAppointments = computed(() => {
       isSelected &&
       providersWithAppointments.value.some((p) => p.id.toString() === id)
   );
-});
-
-watch(providersWithAppointments, (newProviders) => {
-  // If no provider with appointments is selected and we have providers with appointments, select the first one
-  if (!hasSelectedProviderWithAppointments.value && newProviders.length > 0) {
-    selectedProviders.value[newProviders[0].id] = true;
-  }
 });
 
 watch(selectedDay, (newDate) => {
@@ -1709,6 +1801,15 @@ function updateDateRangeForSelectedProviders() {
         availableDaysForSelectedProviders.length - 1
       ].time
     );
+    // Ensure calendar updates min/max immediately
+    if (selectedDay.value) {
+      viewMonth.value = new Date(
+        selectedDay.value.getFullYear(),
+        selectedDay.value.getMonth(),
+        1
+      );
+    }
+    calendarKey.value++;
   }
   return availableDaysForSelectedProviders;
 }
@@ -1934,19 +2035,33 @@ async function snapToListViewNearestAvailableTimeSlot() {
 
 watch(
   selectedProviders,
-  async (newVal, oldVal) => {
-    const availableDaysForSelectedProviders =
-      updateDateRangeForSelectedProviders();
-    await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
-    await snapToNearestAvailableTimeSlot();
-    await validateCurrentDateHasAppointments();
+  async () => {
+    // Re-fetch available days whenever provider selection changes (debounced)
+    const selectionSnapshot = JSON.stringify(selectedProviders.value);
+    if (refetchTimer) clearTimeout(refetchTimer);
+    refetchTimer = setTimeout(async () => {
+      await refetchAvailableDaysForSelection();
+      // Selection changed while awaiting? Abort this cycle.
+      if (selectionSnapshot !== JSON.stringify(selectedProviders.value)) {
+        return;
+      }
+      const availableDaysForSelectedProviders =
+        updateDateRangeForSelectedProviders();
+      await validateAndUpdateSelectedDate(availableDaysForSelectedProviders);
+      await snapToNearestAvailableTimeSlot();
+      await validateCurrentDateHasAppointments();
 
-    if (isListView.value) {
-      await snapToListViewNearestAvailableTimeSlot();
-    }
+      if (isListView.value) {
+        await snapToListViewNearestAvailableTimeSlot();
+      }
+    }, 150);
   },
   { deep: true }
 );
+
+onUnmounted(() => {
+  if (refetchTimer) clearTimeout(refetchTimer);
+});
 
 const providerSelectionError = computed(() => {
   if (!availableDays?.value || availableDays.value.length === 0) {
@@ -1960,6 +2075,12 @@ const providerSelectionError = computed(() => {
   );
 
   return hasSelection ? "" : props.t("errorMessageProviderSelection");
+});
+
+const noProviderSelected = computed(() => {
+  const providers = providersWithAppointments.value || [];
+  if (!providers.length) return false;
+  return providers.every((p) => !selectedProviders.value[String(p.id)]);
 });
 
 const APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW = 18;
@@ -2291,6 +2412,11 @@ div:has(.left-text) {
   margin: 0 !important;
 }
 
+.slider-no-margin .m-checkbox-group__heading:empty {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .float-right .m-button__icon {
   margin-left: 12px !important;
 }
@@ -2313,5 +2439,9 @@ div:has(.left-text) {
 .muc-calendar-view-full-size,
 .muc-calendar-container {
   font-size: 1.125rem !important; /* Desktop size */
+}
+
+#listViewAccordion .m-accordion__section-button {
+  font-size: 1.125rem !important;
 }
 </style>

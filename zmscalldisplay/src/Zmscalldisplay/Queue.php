@@ -45,16 +45,16 @@ class Queue extends BaseController
             $queueList = $queueList->chunk(10)[1] ?? new \BO\Zmsentities\Collection\QueueList();
         }
 
-        $displayInfo = null;
+        $callDisplayText = null;
         $callDisplayInfo = $calldisplay->getEntity(true);
 
         if ($callDisplayInfo->getClusterList()->count() > 0 && $callDisplayInfo->getClusterList()->getFirst()->callDisplayText) {
-            $displayInfo = $callDisplayInfo->getClusterList()->getFirst()->callDisplayText;
+            $callDisplayText = $callDisplayInfo->getClusterList()->getFirst()->callDisplayText;
         } elseif (
             $callDisplayInfo->getScopeList()->count() > 0
             && $callDisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText']
         ) {
-            $displayInfo = $callDisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText'];
+            $callDisplayText = $callDisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText'];
         }
 
         return Render::withHtml(
@@ -66,7 +66,7 @@ class Queue extends BaseController
                 'calldisplay' => $calldisplay->getEntity(false),
                 'scope' => $calldisplay->getSingleScope(),
                 'queueList' => $queueList,
-                'displayInfo' => $displayInfo
+                'callDisplayText' => $callDisplayText
             )
         );
     }
