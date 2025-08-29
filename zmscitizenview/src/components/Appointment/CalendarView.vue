@@ -1331,7 +1331,6 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
     );
     calendarKey.value++;
     availableDaysFetched.value = true;
-    // Don't set minDate/maxDate here - let updateDateRangeForSelectedProviders handle it
     error.value = false;
     isSwitchingProvider.value = false;
 
@@ -1566,7 +1565,6 @@ const hasSelectedProviderWithAppointments = computed(() => {
   );
 });
 
-// Add computed property to determine when to show location-specific info
 const shouldShowLocationSpecificInfo = computed(() => {
   // Only show location-specific info when exactly one provider is selected
   const selectedCount = Object.values(selectedProviders.value).filter(
