@@ -29,7 +29,8 @@ describe("AppointmentSummary", () => {
         city: "Test City",
       },
       scope: {
-        displayInfo: "Test Info",
+        infoForAppointment: "Test Info",
+        infoForAllAppointments: "<p>Test Info</p>",
         customTextfieldLabel: "Custom Field 1",
         customTextfield2Label: "Custom Field 2",
       },
@@ -43,24 +44,7 @@ describe("AppointmentSummary", () => {
       telephone: "1234567890",
       customTextfield: "Custom Value 1",
       customTextfield2: "Custom Value 2",
-
-    const mockSelectedProvider = ref({
-      id: "789",
-      name: "Test Provider",
-      address: {
-        street: "Test Street",
-        house_number: "123",
-        postal_code: "12345",
-        city: "Test City",
-      },
-      scope: {
-        infoForAppointment: "Test Info",
-        infoForAllAppointments: "<p>Test Info</p>",
-        customTextfieldLabel: "Custom Field 1",
-        customTextfield2Label: "Custom Field 2",
-      },
     });
-
 
     mockReservationStartMs = ref<number | null>(Date.now());
   });
