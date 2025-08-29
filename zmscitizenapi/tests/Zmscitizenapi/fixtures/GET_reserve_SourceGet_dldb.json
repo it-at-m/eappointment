@@ -57,7 +57,8 @@
         "hint": "",
         "lastChange": 1724192287,
         "shortName": "Gewerbemeldungen",
-        "displayInfo": "Infos zum Standort.",
+        "infoForAppointment": "Infos zum Standort.",
+        "infoForAllAppointments": "Infos zum Standort.",
         "preferences": {
           "client": {
             "emailFrom": "no-reply@muenchen.de",

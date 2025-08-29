@@ -8,80 +8,86 @@ import { Provider } from "@/api/models/Provider";
 export interface Scope {
   /**
    *
-   * @type {string}
+   * @type {string | null}
    * @memberof Scope
    */
-  id: string;
+  id: string | null;
   /**
    *
-   * @type {Provider}
+   * @type {Provider | null}
    * @memberof Scope
    */
-  provider: Provider;
+  provider: Provider | null;
   /**
    *
-   * @type {string}
+   * @type {string | null}
    * @memberof Scope
    */
-  shortName: string;
+  shortName: string | null;
   /**
    *
-   * @type {boolean}
+   * @type {boolean | null}
    * @memberof Scope
    */
-  telephoneActivated?: boolean;
+  telephoneActivated?: boolean | null;
   /**
    *
-   * @type {boolean}
+   * @type {boolean | null}
    * @memberof Scope
    */
-  telephoneRequired?: boolean;
+  telephoneRequired?: boolean | null;
   /**
    *
-   * @type {boolean}
+   * @type {boolean | null}
    * @memberof Scope
    */
-  customTextfieldActivated?: boolean;
+  customTextfieldActivated?: boolean | null;
   /**
    *
-   * @type {boolean}
+   * @type {boolean | null}
    * @memberof Scope
    */
-  customTextfieldRequired?: boolean;
+  customTextfieldRequired?: boolean | null;
   /**
    *
-   * @type {string}
+   * @type {string | null}
    * @memberof Scope
    */
-  customTextfieldLabel?: string;
+  customTextfieldLabel?: string | null;
   /**
    *
-   * @type {boolean}
+   * @type {boolean | null}
    * @memberof Scope
    */
-  customTextfield2Activated?: boolean;
+  customTextfield2Activated?: boolean | null;
   /**
    *
-   * @type {boolean}
+   * @type {boolean | null}
    * @memberof Scope
    */
-  customTextfield2Required?: boolean;
+  customTextfield2Required?: boolean | null;
   /**
    *
-   * @type {string}
+   * @type {string | null}
    * @memberof Scope
    */
-  customTextfield2Label?: string;
+  customTextfield2Label?: string | null;
   /**
    *
-   * @type {boolean}
+   * @type {boolean | null}
    * @memberof Scope
    */
-  captchaActivatedRequired?: boolean;
+  captchaActivatedRequired?: boolean | null;
   /**
    *
-   * @type {string}
+   * @type {string | null}
    * @memberof Scope
    */
-  displayInfo?: string;
+  infoForAppointment?: string | null;
+  /**
+   *
+   * @type {string | null}
+   * @memberof Scope
+   */
+  infoForAllAppointments?: string | null;
 }

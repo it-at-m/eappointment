@@ -1,5 +1,5 @@
 <template>
-  <div v-if="selectableProviders && selectableProviders.length > 1">
+  <div v-if="providersWithAppointments && providersWithAppointments.length > 1">
     <div class="m-component slider-no-margin">
       <div class="m-content">
         <h2
@@ -74,7 +74,12 @@
   </div>
 
   <div
-    v-if="availableDaysFetched && noProviderSelected"
+    v-if="
+      availableDaysFetched &&
+      (noProviderSelected ||
+        (selectedProvider && !providersWithAppointments.length)) &&
+      !isSwitchingProvider
+    "
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
@@ -83,12 +88,18 @@
         <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
-        {{ t("apiErrorNoAppointmentForThisScopeText") }}
+        <div
+          v-if="(selectedProvider?.scope?.infoForAllAppointments || '').trim()"
+          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
+        ></div>
+        <template v-else>{{
+          t("apiErrorNoAppointmentForThisScopeText")
+        }}</template>
       </template>
     </muc-callout>
   </div>
 
-  <div v-else-if="!error">
+  <div v-else-if="!error && hasSelectedProviderWithAppointments">
     <div class="view-toggle-container">
       <h2 tabindex="0">{{ t("time") }}</h2>
       <div
@@ -734,11 +745,16 @@
             </p>
           </div>
           <div
-            v-if="selectedProvider.scope && selectedProvider.scope.displayInfo"
+            v-if="
+              selectedProvider.scope &&
+              selectedProvider.scope.infoForAppointment
+            "
           >
             <b>{{ t("hint") }}</b>
             <br />
-            <div v-html="selectedProvider.scope.displayInfo"></div>
+            <div
+              v-html="sanitizeHtml(selectedProvider.scope.infoForAppointment)"
+            ></div>
           </div>
         </template>
 
@@ -747,7 +763,7 @@
     </div>
   </div>
   <div
-    v-if="!noProviderSelected && showError"
+    v-if="!noProviderSelected && showError && !isSwitchingProvider"
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
@@ -756,7 +772,17 @@
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
-        {{ t(apiErrorTranslation.textKey) }}
+        <div
+          v-if="
+            (apiErrorTranslation.textKey ===
+              'apiErrorNoAppointmentForThisScopeText' ||
+              apiErrorTranslation.textKey ===
+                'apiErrorNoAppointmentForThisDayText') &&
+            (selectedProvider?.scope?.infoForAllAppointments || '').trim()
+          "
+          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
+        ></div>
+        <template v-else>{{ t(apiErrorTranslation.textKey) }}</template>
       </template>
     </muc-callout>
   </div>
@@ -826,6 +852,7 @@ import {
   getApiErrorTranslation,
   handleApiResponse,
 } from "@/utils/errorHandler";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -885,6 +912,13 @@ const apiErrorTranslation = computed(() => {
       textKey: `${props.bookingErrorKey}Text`,
     };
   }
+  // If we're switching providers, don't show any error messages
+  if (isSwitchingProvider.value) {
+    return {
+      headerKey: "",
+      textKey: "",
+    };
+  }
   // Otherwise, use our own error states
   return getApiErrorTranslation(errorStateMap.value);
 });
@@ -901,6 +935,7 @@ const selectedProviders = ref<{ [id: string]: boolean }>({});
 let initialized = false;
 const availableDaysFetched = ref(false);
 const isLoadingAppointments = ref(false);
+const isSwitchingProvider = ref(false);
 
 const datesWithoutAppointments = ref(new Set<string>());
 
@@ -926,6 +961,22 @@ watch(selectableProviders, (newVal) => {
     initialized = true;
   }
 });
+
+watch(
+  selectedProviders,
+  () => {
+    // Set flag when provider selection changes to prevent error callout flash
+    isSwitchingProvider.value = true;
+    // Immediately clear any existing error states
+    error.value = false;
+    Object.values(errorStateMap.value).forEach((errorState) => {
+      errorState.value = false;
+    });
+    // Note: isSwitchingProvider flag is now reset when the API request completes
+    // in refetchAvailableDaysForSelection, so no timeout needed here
+  },
+  { deep: true }
+);
 
 /**
  * Reference to the appointment summary.
@@ -1244,13 +1295,10 @@ const currentDayPart = computed(() => {
 
 const refetchAvailableDaysForSelection = async (): Promise<void> => {
   const providers = selectableProviders.value || [];
-  const selectedIds = providers
-    .filter((p) => selectedProviders.value[String(p.id)])
-    .map((p) => Number(p.id));
 
-  // If nothing explicitly selected yet, fall back to all providers
-  const providerIdsToQuery =
-    selectedIds.length > 0 ? selectedIds : providers.map((p) => Number(p.id));
+  // Always fetch available days for all selectable providers.
+  // Selection-specific filtering is handled later by updateDateRangeForSelectedProviders.
+  const providerIdsToQuery = providers.map((p) => Number(p.id));
 
   const data = await fetchAvailableDays(
     providerIdsToQuery,
@@ -1283,17 +1331,20 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
     minDate.value = new Date((days[0] as any).time);
     maxDate.value = new Date((days[days.length - 1] as any).time);
     error.value = false;
+    isSwitchingProvider.value = false;
   } else {
     handleError(data);
+    isSwitchingProvider.value = false;
   }
 };
 
-const showSelectionForProvider = (provider: OfficeImpl) => {
+const showSelectionForProvider = async (provider: OfficeImpl) => {
+  isSwitchingProvider.value = true;
   selectedProvider.value = provider;
   error.value = false;
   selectedDay.value = undefined;
   selectedTimeslot.value = 0;
-  refetchAvailableDaysForSelection();
+  await refetchAvailableDaysForSelection();
 };
 
 const handleError = (data: any): void => {
@@ -1305,8 +1356,18 @@ const getAppointmentsOfDay = (date: string) => {
   isLoadingAppointments.value = true;
   appointmentTimestamps.value = [];
   appointmentTimestampsByOffice.value = [];
-  const providers = selectableProviders.value || [];
-  const providerIds = providers.map((p) => p.id);
+
+  // Only fetch appointments for selected providers
+  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
+    (id) => selectedProviders.value[id]
+  );
+  if (selectedProviderIds.length === 0) {
+    // No providers selected, clear appointments
+    isLoadingAppointments.value = false;
+    return;
+  }
+
+  const providerIds = selectedProviderIds.map(Number);
 
   fetchAvailableTimeSlots(
     date,
@@ -2017,7 +2078,7 @@ const providerSelectionError = computed(() => {
 });
 
 const noProviderSelected = computed(() => {
-  const providers = selectableProviders.value || [];
+  const providers = providersWithAppointments.value || [];
   if (!providers.length) return false;
   return providers.every((p) => !selectedProviders.value[String(p.id)]);
 });
