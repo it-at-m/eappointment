@@ -120,7 +120,8 @@ class ZmsApiFacadeService
                     infoForAllAppointments: $matchingScope->getInfoForAllAppointments(),
                     slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
                     appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
-                    whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails())
+                    whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
+                    hint: $matchingScope ? (string) $matchingScope->getScopeHint() : null
                 ) : null,
                 maxSlotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
             );
@@ -176,7 +177,8 @@ class ZmsApiFacadeService
                     infoForAllAppointments: $matchingScope->getInfoForAllAppointments(),
                     slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
                     appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
-                    whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails())
+                    whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
+                    hint: $matchingScope ? (string) $matchingScope->getScopeHint() : null
                 );
             }
         }
@@ -290,7 +292,9 @@ class ZmsApiFacadeService
             'infoForAllAppointments' => $matchingScope->getInfoForAllAppointments() ?? null,
             'slotsPerAppointment' => ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
             'appointmentsPerMail' => ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
-            'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null
+            'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
+            'hint' => $matchingScope->getScopeHint() ?? null,
+            
         ];
         return new ThinnedScope(
             id: (int) $result['id'],
@@ -311,7 +315,9 @@ class ZmsApiFacadeService
             infoForAllAppointments: $result['infoForAllAppointments'],
             slotsPerAppointment: $result['slotsPerAppointment'],
             appointmentsPerMail: $result['appointmentsPerMail'],
-            whitelistedMails: $result['whitelistedMails']
+            whitelistedMails: $result['whitelistedMails'],
+            hint: $result['hint']
+            
         );
     }
 
@@ -442,7 +448,9 @@ class ZmsApiFacadeService
             infoForAllAppointments: $matchingScope->getInfoForAllAppointments() ?? null,
             slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
             appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
-            whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null
+            whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
+            hint: $matchingScope->getScopeHint() ?? null
+            
         );
     }
 
@@ -724,7 +732,8 @@ class ZmsApiFacadeService
                 infoForAllAppointments: $process->scope->getInfoForAllAppointments() ?? null,
                 slotsPerAppointment: ((string) $process->scope->getSlotsPerAppointment() === '' ? null : (string) $process->scope->getSlotsPerAppointment()) ?? null,
                 appointmentsPerMail: ((string) $process->scope->getAppointmentsPerMail() === '' ? null : (string) $process->scope->getAppointmentsPerMail()) ?? null,
-                whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()) ?? null
+                whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()) ?? null,
+                hint: $process->scope->getScopeHint() ?? null
             );
         }
 

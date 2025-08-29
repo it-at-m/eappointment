@@ -120,6 +120,13 @@
                 "null"
             ],
             "description": "E-mail addresses that have no limitation on appointments count"
+        },
+        "hint": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Additional hint information for the scope"
         }
     }
 }

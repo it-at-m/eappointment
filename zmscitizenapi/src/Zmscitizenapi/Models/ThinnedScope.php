@@ -31,8 +31,9 @@ class ThinnedScope extends Entity implements JsonSerializable
     public ?string $slotsPerAppointment;
     public ?string $appointmentsPerMail;
     public ?string $whitelistedMails;
+    public ?string $hint;
 
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $infoForAppointment = null, ?string $infoForAllAppointments = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $infoForAppointment = null, ?string $infoForAllAppointments = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null, ?string $hint = null)
     {
         $this->id = $id;
         $this->provider = $provider;
@@ -53,6 +54,7 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->slotsPerAppointment = $slotsPerAppointment;
         $this->appointmentsPerMail = $appointmentsPerMail;
         $this->whitelistedMails = $whitelistedMails;
+        $this->hint = $hint;
         $this->ensureValid();
     }
 
@@ -152,6 +154,10 @@ class ThinnedScope extends Entity implements JsonSerializable
     {
         return $this->whitelistedMails;
     }
+    public function getHint(): ? string
+    {
+        return $this->hint;
+    }
 
     public function toArray(): array
     {
@@ -175,6 +181,7 @@ class ThinnedScope extends Entity implements JsonSerializable
             'slotsPerAppointment' => $this->slotsPerAppointment,
             'appointmentsPerMail' => $this->appointmentsPerMail,
             'whitelistedMails' => $this->whitelistedMails,
+            'hint' => $this->hint,
         ];
     }
 
