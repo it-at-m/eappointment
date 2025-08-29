@@ -52,10 +52,9 @@
                 </fieldset>
 
                 {% if rights.superuser %}
-                    <fieldset>
+                    <fieldset class="superuser-only-field">
                         <legend>
-                            Bild für Aufrufanlage 
-                            <span class="normal-text">(Nur für technische Administration sichtbar)</span>
+                            Bild für Aufrufanlage
                         </legend>
                         <div class="panel--heavy">
                         {{ formgroup(
@@ -83,6 +82,7 @@
                                     "type":"file",
                                     "parameter": {
                                         "name": "uploadCallDisplayImage",
+                                        "accept": "image/svg+xml,image/png,image/jpeg,image/gif",
                                         "id": "imageFieldId",
                                         "file": {
                                             "type": "image",

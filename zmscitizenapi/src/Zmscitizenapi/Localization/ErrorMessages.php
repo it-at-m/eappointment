@@ -144,12 +144,12 @@ class ErrorMessages
         ],
         'appointmentNotAvailable' => [
             'errorCode' => 'appointmentNotAvailable',
-            'statusCode' => self::HTTP_OK,
+            'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'The selected appointment is unfortunately no longer available.'
         ],
         'noAppointmentForThisDay' => [
             'errorCode' => 'noAppointmentForThisDay',
-            'statusCode' => self::HTTP_OK,
+            'statusCode' => self::HTTP_NOT_FOUND,
             'errorMessage' => 'No available days found for the given criteria.'
         ],
         'captchaVerificationError' => [
@@ -282,7 +282,7 @@ class ErrorMessages
         'noAppointmentForThisScope' => [
             'errorCode' => 'noAppointmentForThisScope',
             'errorMessage' => 'Please try again at a later time.',
-            'statusCode' => self::HTTP_OK
+            'statusCode' => self::HTTP_NOT_FOUND
         ],
         'tooManyAppointmentsWithSameMail' => [
             'errorCode' => 'tooManyAppointmentsWithSameMail',
