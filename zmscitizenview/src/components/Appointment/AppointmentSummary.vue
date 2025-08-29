@@ -64,6 +64,15 @@
               {{ selectedProvider.address.postal_code }}
               {{ selectedProvider.address.city }}<br />
             </p>
+            <br />
+          </div>
+          <div
+          v-if="selectedProvider && selectedProvider.scope && selectedProvider.scope.hint"
+          class="m-content border-bottom"
+          >
+          <p tabindex="0">
+            {{ selectedProvider.scope.hint }}
+          </p>
           </div>
           <div class="m-content">
             <h3 tabindex="0">{{ t("time") }}</h3>
