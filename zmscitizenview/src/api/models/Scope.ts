@@ -1,5 +1,5 @@
 import { Provider } from "@/api/models/Provider";
-import { Scope } from "./Scope";
+
 
 /**
  *
