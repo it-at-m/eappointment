@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
+// @ts-expect-error: Vue SFC import for test
 import AvailabilityInfoModal from '@/components/Appointment/AvailabilityInfoModal.vue';
 
 describe('AvailabilityInfoModal', () => {
@@ -83,7 +84,7 @@ describe('AvailabilityInfoModal', () => {
 
     it('has modal-backdrop', () => {
       expect(wrapper.find('.modal-backdrop').exists()).toBe(true);
-      expect(wrapper.find('.modal-backdrop').classes()).toContain('fade', 'show');
+      expect(wrapper.find('.modal-backdrop').classes()).toEqual(expect.arrayContaining(['fade', 'show']));
     });
   });
 
