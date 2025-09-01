@@ -92,7 +92,7 @@ export interface ApiErrorTranslation {
 
 export interface ApiErrorData {
   errorCode: string;
-  errorType: string;
+  errorType: CalloutType;
   errorMessage: string;
   statusCode: number;
 }
@@ -145,7 +145,7 @@ export function handleApiError(
     if (currentErrorData) {
       currentErrorData.value = {
         errorCode: errorCode,
-        errorType: errorType || "error",
+        errorType: toCalloutType(errorType),
         errorMessage: "",
         statusCode: 400,
       };
