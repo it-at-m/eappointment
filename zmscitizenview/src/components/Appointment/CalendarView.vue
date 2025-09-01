@@ -938,6 +938,7 @@ import {
   getApiErrorTranslation,
   handleApiResponse,
 } from "@/utils/errorHandler";
+import { generateAvailabilityInfoHtml } from "@/utils/infoForAllAppointments";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import AvailabilityInfoModal from "./AvailabilityInfoModal.vue";
 
@@ -2260,124 +2261,13 @@ const closeAvailabilityInfoModal = () => {
   showAvailabilityInfoModal.value = false;
 };
 
-// Function to optimize provider names by removing common prefixes
-const optimizeProviderNames = (providerNames: string[]): string => {
-  if (providerNames.length <= 1) {
-    return cleanProviderName(providerNames[0] || "");
-  }
-
-  // Clean all provider names first
-  const cleanedNames = providerNames.map(cleanProviderName);
-
-  // Find the longest common prefix
-  const first = cleanedNames[0];
-  let commonPrefix = "";
-
-  for (let i = 0; i < first.length; i++) {
-    const char = first[i];
-    if (cleanedNames.every((name) => name[i] === char)) {
-      commonPrefix += char;
-    } else {
-      break;
-    }
-  }
-
-  // If we found a meaningful common prefix (at least 3 characters and ends with a space)
-  if (commonPrefix.length >= 3 && commonPrefix.endsWith(" ")) {
-    const prefix = commonPrefix.trim();
-    const suffixes = cleanedNames.map((name) =>
-      name.substring(commonPrefix.length)
-    );
-    return `${prefix} ${suffixes.join(", ")}`;
-  }
-
-  // If no meaningful common prefix, return as is
-  return cleanedNames.join(", ");
-};
-
-// Function to clean provider names by removing dashes, commas, numbers, and extra whitespace
-const cleanProviderName = (name: string): string => {
-  return name
-    .replace(/[-–—]/g, " ") // Replace various types of dashes with spaces
-    .replace(/[,;]/g, " ") // Replace commas and semicolons with spaces
-    .replace(/\d+/g, " ") // Replace numbers with spaces
-    .replace(/\s+/g, " ") // Replace multiple spaces with single space
-    .trim(); // Remove leading/trailing whitespace
-};
-
 const availabilityInfoHtml = computed(() => {
-  // Get all selected providers
-  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
-    (id) => selectedProviders.value[id]
+  return generateAvailabilityInfoHtml(
+    selectedProviders.value,
+    selectableProviders.value,
+    selectedProvider.value,
+    sanitizeHtml
   );
-
-  // If no providers are selected but we have a selectedProvider, use that
-  if (selectedProviderIds.length === 0 && selectedProvider.value) {
-    const info = selectedProvider.value.scope?.infoForAllAppointments || "";
-    return info.trim() ? sanitizeHtml(info.trim()) : "";
-  }
-
-  if (selectedProviderIds.length === 0) {
-    return "";
-  }
-
-  // Get all selected providers with their info
-  const selectedProvidersWithInfo = selectedProviderIds
-    .map((id) => {
-      const provider = selectableProviders.value?.find(
-        (p) => p.id.toString() === id
-      );
-      return {
-        id: provider?.id,
-        name: provider?.name,
-        info: provider?.scope?.infoForAllAppointments || "",
-      };
-    })
-    .filter((provider) => provider.info.trim() !== "");
-
-  if (selectedProvidersWithInfo.length === 0) {
-    return "";
-  }
-
-  // If all providers have the same info, show it without location names
-  const uniqueInfos = [
-    ...new Set(selectedProvidersWithInfo.map((p) => p.info.trim())),
-  ];
-  if (uniqueInfos.length === 1) {
-    return sanitizeHtml(uniqueInfos[0]);
-  }
-
-  // If providers have different info, group them by info and show with provider names
-  const infoGroups: { [info: string]: string[] } = {};
-
-  selectedProvidersWithInfo.forEach((provider) => {
-    const info = provider.info.trim();
-    if (!infoGroups[info]) {
-      infoGroups[info] = [];
-    }
-    if (provider.name) {
-      infoGroups[info].push(provider.name);
-    }
-  });
-
-  // Build HTML with provider names grouped by info
-  let html = "";
-  let isFirst = true;
-  Object.entries(infoGroups).forEach(([info, providerNames]) => {
-    if (providerNames.length === 1) {
-      // Single provider with this info - clean the name
-      const cleanedName = cleanProviderName(providerNames[0]);
-      html += `<h3 class="${isFirst ? "first-provider" : ""}">${cleanedName}</h3>`;
-    } else {
-      // Multiple providers with the same info - optimize common prefixes
-      const optimizedNames = optimizeProviderNames(providerNames);
-      html += `<h3 class="${isFirst ? "first-provider" : ""}">${optimizedNames}</h3>`;
-    }
-    html += `<div>${sanitizeHtml(info)}</div>`;
-    isFirst = false;
-  });
-
-  return html;
 });
 
 const openAccordionIndex = ref(0);
