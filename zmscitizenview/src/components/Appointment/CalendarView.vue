@@ -1660,7 +1660,6 @@ const shouldShowLocationSpecificInfo = computed(() => {
   const selectedCount = Object.values(selectedProviders.value).filter(
     Boolean
   ).length;
-  // Also show if we have a selectedProvider (for backward compatibility with tests)
   return selectedCount > 0 || !!selectedProvider.value;
 });
 

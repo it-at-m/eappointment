@@ -123,7 +123,8 @@ export const clearContextErrors = (errorStateMap: ErrorStateMap) => {
 export function handleApiError(
   errorCode: string,
   errorStates: ErrorStateMap,
-  currentErrorData?: Ref<ApiErrorData | null>
+  currentErrorData?: Ref<ApiErrorData | null>,
+  errorType?: string
 ): void {
   // Reset all error states first
   Object.values(errorStates).forEach((errorState) => {
@@ -136,27 +137,13 @@ export function handleApiError(
   if (errorStates[errorStateKey]) {
     errorStates[errorStateKey].value = true;
 
-    // Set the current error data with the appropriate error type
+    // Set the current error data with the error type from the API
     if (currentErrorData) {
-      // Map error codes to their expected error types based on backend configuration
-      const errorTypeMap: Record<string, string> = {
-        noAppointmentForThisScope: "info",
-        noAppointmentForThisDay: "info",
-        appointmentNotFound: "error",
-        preconfirmationExpired: "error",
-        processNotPreconfirmedAnymore: "error",
-        processNotReservedAnymore: "error",
-        tooManyAppointmentsWithSameMail: "error",
-        appointmentNotAvailable: "error",
-        invalidJumpinLink: "error",
-        // Add more mappings as needed
-      };
-
       currentErrorData.value = {
         errorCode: errorCode,
-        errorType: errorTypeMap[errorCode] || "error", // Default to 'error' if not mapped
-        errorMessage: "", // We don't have the message from the API in this case
-        statusCode: 400, // Default status code
+        errorType: errorType || "error",
+        errorMessage: "",
+        statusCode: 400,
       };
     }
   } else {
@@ -223,7 +210,12 @@ export function handleApiResponse(
 
   const firstError = data?.errors?.[0];
   if (firstError && firstError.errorCode) {
-    handleApiError(firstError.errorCode, errorStates);
+    handleApiError(
+      firstError.errorCode,
+      errorStates,
+      currentErrorData,
+      firstError.errorType
+    );
     // Store the error data for type information
     if (currentErrorData) {
       currentErrorData.value = {
