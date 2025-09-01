@@ -51,6 +51,7 @@ class Process extends Schema\Entity
             'requests' => new Collection\RequestList(),
             'scope' => new Scope(),
             'status' => 'free',
+            'dbstatus' => 'free',
             'lastChange' => time(),
             'wasMissed' => false,
             'priority' => null,
