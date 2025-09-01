@@ -15,7 +15,7 @@
             type="button"
             class="modal-button-close"
             @click="$emit('close')"
-            aria-label="Dialog schliessen"
+            :aria-label="closeAriaLabel || 'Dialog schliessen'"
           >
             <svg
               aria-hidden="true"
@@ -42,6 +42,7 @@
 defineProps<{
   show: boolean;
   html: string;
+  closeAriaLabel?: string;
 }>();
 defineEmits<{
   (e: "close"): void;

@@ -894,6 +894,7 @@
   <AvailabilityInfoModal
     :show="showAvailabilityInfoModal"
     :html="availabilityInfoHtml"
+    :closeAriaLabel="t('closeDialog')"
     @close="closeAvailabilityInfoModal"
   />
 </template>
