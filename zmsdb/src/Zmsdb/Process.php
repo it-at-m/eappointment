@@ -122,7 +122,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $processEntity = $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
         $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
 
-        Log::writeProcessLog("CREATE (Process::updateEntityWithSlots) $process ", Log::ACTION_EDITED, $newProcess, $userAccount);
+        Log::writeProcessLog("CREATE (Process::updateEntityWithSlots) $process ", Log::ACTION_EDITED, $process, $userAccount);
         return $processEntity;
     }
 

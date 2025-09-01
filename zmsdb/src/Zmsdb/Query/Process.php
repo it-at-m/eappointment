@@ -2,8 +2,6 @@
 
 namespace BO\Zmsdb\Query;
 
-use BO\Zmsdb\Helper\ProcessStatus;
-
 /**
  * @SuppressWarnings(Methods)
  * @SuppressWarnings(Complexity)
