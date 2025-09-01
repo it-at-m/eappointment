@@ -75,7 +75,8 @@ abstract class AppointmentService
             customTextfield2Required: (bool) $scope->getCustomTextfield2Required() ?? false,
             customTextfield2Label: $scope->getCustomTextfield2Label() ?? null,
             captchaActivatedRequired: (bool) $scope->getCaptchaActivatedRequired() ?? false,
-            displayInfo: $scope->getDisplayInfo() ?? null,
+            infoForAppointment: $scope->getInfoForAppointment() ?? null,
+            infoForAllAppointments: $scope->getInfoForAllAppointments() ?? null,
             slotsPerAppointment: ((string) $scope->getSlotsPerAppointment() === '' ? null : (string) $scope->getSlotsPerAppointment()) ?? null,
             appointmentsPerMail: ((string) $scope->getAppointmentsPerMail() === '' ? null : (string) $scope->getAppointmentsPerMail()) ?? null,
             whitelistedMails: ((string) $scope->getWhitelistedMails() === '' ? null : (string) $scope->getWhitelistedMails()) ?? null
