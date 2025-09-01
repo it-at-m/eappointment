@@ -1,4 +1,8 @@
+import type { CalloutType } from "@/utils/callout";
+
 import { Ref, ref } from "vue";
+
+import { toCalloutType } from "@/utils/callout";
 
 export type ErrorStateMap = Record<string, Ref<boolean>>;
 
@@ -83,7 +87,7 @@ export function createErrorStateMap(): ErrorStateMap {
 export interface ApiErrorTranslation {
   headerKey: string;
   textKey: string;
-  errorType?: string;
+  errorType?: CalloutType;
 }
 
 export interface ApiErrorData {
@@ -180,7 +184,8 @@ export function getApiErrorTranslation(
   const [errorStateName] = activeErrorState;
 
   // Use the stored error type if available, otherwise default to "error"
-  const errorType = currentErrorData?.value?.errorType || "error";
+  const errorType =
+    currentErrorData?.value?.errorType || ("error" as CalloutType);
 
   // Dynamic translation key generation
   return {
@@ -214,13 +219,13 @@ export function handleApiResponse(
       firstError.errorCode,
       errorStates,
       currentErrorData,
-      firstError.errorType
+      toCalloutType(firstError.errorType)
     );
     // Store the error data for type information
     if (currentErrorData) {
       currentErrorData.value = {
         errorCode: firstError.errorCode,
-        errorType: firstError.errorType || "error",
+        errorType: toCalloutType(firstError.errorType),
         errorMessage: firstError.errorMessage || "",
         statusCode: firstError.statusCode || 400,
       };
