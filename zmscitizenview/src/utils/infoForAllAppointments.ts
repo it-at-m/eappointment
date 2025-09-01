@@ -58,7 +58,7 @@ export interface ProviderInfo {
   id?: string | number;
   name?: string;
   scope?: {
-    infoForAllAppointments?: string;
+    infoForAllAppointments?: string | null;
   };
 }
 
@@ -79,7 +79,7 @@ export const generateAvailabilityInfoHtml = (
   // If no providers are selected but we have a selectedProvider, use that
   if (selectedProviderIds.length === 0 && selectedProvider) {
     const info = selectedProvider.scope?.infoForAllAppointments || "";
-    return info.trim() ? sanitizeHtml(info.trim()) : "";
+    return info && info.trim() ? sanitizeHtml(info.trim()) : "";
   }
 
   if (selectedProviderIds.length === 0) {
