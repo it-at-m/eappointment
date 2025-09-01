@@ -1965,10 +1965,6 @@ describe("CalendarView", () => {
     describe("First Warning Callout (No Appointments for Selected Providers)", () => {
       it('shows info trigger and displays info in modal when available', async () => {
         const wrapper = createWrapper({
-          selectedService: {
-            id: "service1",
-            providers: [] // Empty providers array to make providersWithAppointments.length === 0
-          },
           selectedProvider: {
             id: 1,
             name: 'Test Office',
@@ -1982,24 +1978,7 @@ describe("CalendarView", () => {
         await wrapper.vm.$nextTick();
         wrapper.vm.availableDaysFetched = true;
         wrapper.vm.availableDays = [];
-        // Set exactly one provider as selected to make shouldShowLocationSpecificInfo true
-        wrapper.vm.selectedProviders = { '1': true };
         await wrapper.vm.$nextTick();
-        
-        // Force set selectedProvider to match the test setup
-        wrapper.vm.selectedProvider = {
-          id: 1,
-          name: 'Test Office',
-          address: { street: 'Test Street', house_number: '123' },
-          scope: {
-            infoForAllAppointments: 'Custom no appointments message'
-          }
-        };
-        
-        // Force set this after all other changes
-        wrapper.vm.isSwitchingProvider = false;
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick(); // Extra tick to ensure all watchers have processed
 
         const callout = wrapper.find('[data-test="muc-callout"]');
         expect(callout.exists()).toBe(true);
@@ -2167,10 +2146,6 @@ describe("CalendarView", () => {
 
       it('closes the modal when clicking outside', async () => {
         const wrapper = createWrapper({
-          selectedService: {
-            id: "service1",
-            providers: [] // Empty providers array to make providersWithAppointments.length === 0
-          },
           selectedProvider: {
             id: 1,
             name: 'Test Office',
@@ -2184,24 +2159,7 @@ describe("CalendarView", () => {
         await wrapper.vm.$nextTick();
         wrapper.vm.availableDaysFetched = true;
         wrapper.vm.availableDays = [];
-        // Set exactly one provider as selected to make shouldShowLocationSpecificInfo true
-        wrapper.vm.selectedProviders = { '1': true };
         await wrapper.vm.$nextTick();
-        
-        // Force set selectedProvider to match the test setup
-        wrapper.vm.selectedProvider = {
-          id: 1,
-          name: 'Test Office',
-          address: { street: 'Test Street', house_number: '123' },
-          scope: {
-            infoForAllAppointments: 'Outside click close test'
-          }
-        };
-        
-        // Force set this after all other changes
-        wrapper.vm.isSwitchingProvider = false;
-        await wrapper.vm.$nextTick();
-        await wrapper.vm.$nextTick(); // Extra tick to ensure all watchers have processed
 
         const callout = wrapper.find('[data-test="muc-callout"]');
         const trigger = callout.find('.m-button.m-button--ghost');

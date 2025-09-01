@@ -52,4 +52,44 @@ defineEmits<{
 .modal-body {
   padding-bottom: 24px;
 }
+
+.modal-header {
+  position: relative;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.modal-button-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+</style>
+
+<style>
+.modal-body h3 {
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.5rem !important;
+  color: var(--color-neutrals-blue-dark);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.modal-body h3.first-provider {
+  margin-top: 0 !important;
+}
+
+.modal-body div {
+  margin-bottom: 1rem;
+}
+
+.modal-body div:last-child {
+  margin-bottom: 0;
+}
 </style>
