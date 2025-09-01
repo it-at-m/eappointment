@@ -128,7 +128,7 @@ export function handleApiError(
   errorCode: string,
   errorStates: ErrorStateMap,
   currentErrorData?: Ref<ApiErrorData | null>,
-  errorType?: string
+  errorType?: CalloutType
 ): void {
   // Reset all error states first
   Object.values(errorStates).forEach((errorState) => {

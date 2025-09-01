@@ -217,6 +217,7 @@
 </template>
 
 <script setup lang="ts">
+import type { CalloutType } from "@/utils/callout";
 import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
 
 import {
@@ -374,9 +375,7 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
 });
 
 // Helper function to map API error types to valid callout types
-const getCalloutType = (
-  errorType?: string
-): "error" | "warning" | "success" | "info" => {
+const getCalloutType = (errorType?: CalloutType): CalloutType => {
   switch (errorType) {
     case "warning":
       return "warning";
