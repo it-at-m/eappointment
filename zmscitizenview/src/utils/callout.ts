@@ -9,10 +9,10 @@ export type CalloutType = "error" | "warning" | "success" | "info";
  */
 export const toCalloutType = (errorType?: string): CalloutType => {
   switch (errorType) {
-    case "warning":
-      return "warning";
     case "info":
       return "info";
+    case "warning":
+      return "warning";
     case "success":
       return "success";
     case "error":
