@@ -11,6 +11,11 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
+          <h2 class="standard-headline">
+            {{
+              t ? t("newAppointmentsInfoLink") : "Wann gibt es neue Termine?"
+            }}
+          </h2>
           <button
             type="button"
             class="modal-button-close"
@@ -48,6 +53,7 @@ const props = defineProps<{
   html: string;
   closeAriaLabel?: string;
   dialogAriaLabel?: string;
+  t?: (key: string) => string;
 }>();
 
 const sanitizedHtml = computed(() => sanitizeHtml(props.html ?? ""));
@@ -57,41 +63,27 @@ defineEmits<{
 }>();
 </script>
 
-<style scoped>
-.modal-body {
-  padding-bottom: 24px;
-}
-
-.modal-header {
-  position: relative;
-  padding: 0;
-  border: none;
-  background: none;
-}
-
-.modal-button-close {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 10;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
-</style>
-
 <style>
+.modal-header {
+  padding: 1rem 1.5rem 0 1.5rem !important;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.modal-header h2 {
+  font-size: 1.75rem !important;
+}
+
+.modal-body {
+  padding: 0 1.5rem 1.5rem 1.5rem !important;
+}
+
 .modal-body h3 {
   margin-top: 1.5rem !important;
   margin-bottom: 0.5rem !important;
   color: var(--color-neutrals-blue-dark);
-  font-size: 1.125rem;
   font-weight: 600;
-}
-
-.modal-body h3.first-provider {
-  margin-top: 0 !important;
 }
 
 .modal-body div {
@@ -100,5 +92,25 @@ defineEmits<{
 
 .modal-body div:last-child {
   margin-bottom: 0;
+}
+
+.modal-header .standard-headline {
+  margin: 0 0 1.5rem 0 !important;
+  color: var(--color-neutrals-blue-dark);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  flex: 1;
+}
+
+.modal-button-close {
+  font-size: 1.75rem !important;
+  margin: 0 0 0 0 !important;
+  z-index: 10;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 1rem;
 }
 </style>

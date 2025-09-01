@@ -11,6 +11,7 @@ describe('AvailabilityInfoModal', () => {
       props: {
         show: false,
         html: '',
+        t: (key: string) => key,
         ...props,
       },
     });
@@ -37,7 +38,7 @@ describe('AvailabilityInfoModal', () => {
 
     it('handles empty html content', () => {
       wrapper = createWrapper({ show: true, html: '' });
-      expect(wrapper.find('.modal-body').text()).toBe('');
+      expect(wrapper.find('.modal-header .standard-headline').text()).toBe('newAppointmentsInfoLink');
     });
 
     it('handles HTML with special characters', () => {
@@ -76,6 +77,13 @@ describe('AvailabilityInfoModal', () => {
       const body = wrapper.find('.modal-body');
       expect(body.exists()).toBe(true);
       expect(body.text()).toBe('Test content');
+    });
+
+    it('has standard headline H2 header', () => {
+      const header = wrapper.find('.modal-header .standard-headline');
+      expect(header.exists()).toBe(true);
+      expect(header.text()).toBe('newAppointmentsInfoLink');
+      expect(header.element.tagName).toBe('H2');
     });
 
     it('does not have modal-footer', () => {
