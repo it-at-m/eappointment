@@ -272,7 +272,6 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
         (new Slot())->writeSlotProcessMappingFor($process->id);
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
-        $process = $this->readEntity($process['id'], $process['authKey']);
 
         Log::writeProcessLog("CREATE (Process::writeNewProcess) $process $checksum ", Log::ACTION_NEW, $process, $userAccount);
         return $process;
