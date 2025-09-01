@@ -130,16 +130,14 @@ export const generateAvailabilityInfoHtml = (
   let isFirst = true;
   Object.entries(infoGroups).forEach(([info, providerNames]) => {
     if (providerNames.length === 1) {
-      // Single provider with this info - clean the name
       const cleanedName = cleanProviderName(providerNames[0]);
-      html += `<h3${isFirst ? ' class="first-provider"' : ""}>${cleanedName}</h3>`;
+      html += `<h3${isFirst ? ' class="first-provider"' : ""}>${sanitizeHtml(cleanedName)}</h3>`;
     } else {
-      // Multiple providers with the same info - optimize common prefixes
       const optimizedNames = optimizeProviderNames(providerNames);
-      html += `<h3${isFirst ? ' class="first-provider"' : ""}>${optimizedNames}</h3>`;
+      html += `<h3${isFirst ? ' class="first-provider"' : ""}>${sanitizeHtml(optimizedNames)}</h3>`;
     }
     html += `<div>${sanitizeHtml(info)}</div>`;
     isFirst = false;
   });
-  return html;
+  return sanitizeHtml(html);
 };
