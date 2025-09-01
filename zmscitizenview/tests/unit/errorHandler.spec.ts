@@ -13,31 +13,31 @@ describe("errorHandler", () => {
 
   describe("handleApiResponse", () => {
     it("should set apiErrorGenericFallback when data is null", () => {
-      handleApiResponse(null, errorStates);
+      handleApiResponse(null, errorStates.errorStateMap);
       
       expect(errorStates.apiErrorGenericFallback.value).toBe(true);
     });
 
     it("should set apiErrorGenericFallback when data is undefined", () => {
-      handleApiResponse(undefined, errorStates);
+      handleApiResponse(undefined, errorStates.errorStateMap);
       
       expect(errorStates.apiErrorGenericFallback.value).toBe(true);
     });
 
     it("should set apiErrorGenericFallback when data is not an object", () => {
-      handleApiResponse("string data", errorStates);
+      handleApiResponse("string data", errorStates.errorStateMap);
       
       expect(errorStates.apiErrorGenericFallback.value).toBe(true);
     });
 
     it("should set apiErrorGenericFallback when data is a number", () => {
-      handleApiResponse(123, errorStates);
+      handleApiResponse(123, errorStates.errorStateMap);
       
       expect(errorStates.apiErrorGenericFallback.value).toBe(true);
     });
 
     it("should set apiErrorGenericFallback when data is an array", () => {
-      handleApiResponse([1, 2, 3], errorStates);
+      handleApiResponse([1, 2, 3], errorStates.errorStateMap);
       
       expect(errorStates.apiErrorGenericFallback.value).toBe(true);
     });
@@ -50,7 +50,7 @@ describe("errorHandler", () => {
         ]
       };
       
-      handleApiResponse(invalidResponse, errorStates);
+      handleApiResponse(invalidResponse, errorStates.errorStateMap);
       
       expect(errorStates.apiErrorGenericFallback.value).toBe(true);
     });
@@ -60,7 +60,7 @@ describe("errorHandler", () => {
         errors: []
       };
       
-      handleApiResponse(responseWithEmptyErrors, errorStates);
+      handleApiResponse(responseWithEmptyErrors, errorStates.errorStateMap);
       
       expect(errorStates.apiErrorGenericFallback.value).toBe(true);
     });
@@ -72,7 +72,7 @@ describe("errorHandler", () => {
         ]
       };
       
-      handleApiResponse(validErrorResponse, errorStates);
+      handleApiResponse(validErrorResponse, errorStates.errorStateMap);
       
       expect(errorStates.apiErrorTooManyAppointmentsWithSameMail.value).toBe(true);
       expect(errorStates.apiErrorGenericFallback.value).toBe(false);
@@ -91,7 +91,7 @@ describe("errorHandler", () => {
         ]
       };
       
-      handleApiResponse(responseWithErrorType, errorStates, currentErrorData);
+      handleApiResponse(responseWithErrorType, errorStates.errorStateMap, currentErrorData);
       
       expect(errorStates.apiErrorNoAppointmentForThisScope.value).toBe(true);
       expect(currentErrorData.value).toEqual({
@@ -115,7 +115,7 @@ describe("errorHandler", () => {
         ]
       };
       
-      handleApiResponse(responseWithWarningType, errorStates, currentErrorData);
+      handleApiResponse(responseWithWarningType, errorStates.errorStateMap, currentErrorData);
       
       expect(currentErrorData.value?.errorType).toBe("warning");
       expect(currentErrorData.value?.errorCode).toBe("invalidEmail");
@@ -134,7 +134,7 @@ describe("errorHandler", () => {
         ]
       };
       
-      handleApiResponse(responseWithErrorType, errorStates, currentErrorData);
+      handleApiResponse(responseWithErrorType, errorStates.errorStateMap, currentErrorData);
       
       expect(currentErrorData.value?.errorType).toBe("error");
       expect(currentErrorData.value?.errorCode).toBe("appointmentNotFound");
@@ -152,7 +152,7 @@ describe("errorHandler", () => {
         ]
       };
       
-      handleApiResponse(responseWithoutErrorType, errorStates, currentErrorData);
+      handleApiResponse(responseWithoutErrorType, errorStates.errorStateMap, currentErrorData);
       
       expect(currentErrorData.value?.errorType).toBe("error");
       expect(currentErrorData.value?.errorCode).toBe("someUnknownError");
@@ -167,14 +167,14 @@ describe("errorHandler", () => {
         ]
       };
       
-      handleApiResponse(mixedErrorResponse, errorStates);
+      handleApiResponse(mixedErrorResponse, errorStates.errorStateMap);
       
       expect(errorStates.apiErrorAppointmentNotFound.value).toBe(true);
       expect(errorStates.apiErrorGenericFallback.value).toBe(false);
     });
 
     it("should handle empty object response", () => {
-      handleApiResponse({}, errorStates);
+      handleApiResponse({}, errorStates.errorStateMap);
       
       expect(errorStates.apiErrorGenericFallback.value).toBe(false);
     });
@@ -185,7 +185,7 @@ describe("errorHandler", () => {
         meta: { status: "success" }
       };
       
-      handleApiResponse(responseWithoutErrors, errorStates);
+      handleApiResponse(responseWithoutErrors, errorStates.errorStateMap);
       
       expect(errorStates.apiErrorGenericFallback.value).toBe(false);
     });
