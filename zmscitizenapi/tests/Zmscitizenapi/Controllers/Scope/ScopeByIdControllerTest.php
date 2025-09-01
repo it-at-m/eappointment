@@ -71,7 +71,8 @@ class ScopeByIdControllerTest extends ControllerTestCase
             "infoForAllAppointments" => null,
             "slotsPerAppointment" => null,
             "appointmentsPerMail" => null,
-            "whitelistedMails" => null
+            "whitelistedMails" => null,
+            "reservationDuration" => null
         ];               
         $responseBody = json_decode((string)$response->getBody(), true);
         $this->assertEquals(200, $response->getStatusCode());

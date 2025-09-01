@@ -62,6 +62,7 @@ export function createErrorStateMap(): ErrorStateMap {
     "apiErrorScopeNotFound",
     "apiErrorScopesNotFound",
     "apiErrorServiceUnavailable",
+    "apiErrorSessionTimeout",
     "apiErrorSourceNotFound",
     "apiErrorTelephoneIsRequired",
     "apiErrorTooManyAppointmentsWithSameMail",
