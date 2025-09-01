@@ -5,7 +5,7 @@
     style="display: block"
     role="dialog"
     aria-modal="true"
-    :aria-labelledby="undefined"
+    :aria-label="dialogAriaLabel"
     @click.self="$emit('close')"
   >
     <div class="modal-dialog modal-dialog-centered">
@@ -47,6 +47,7 @@ const props = defineProps<{
   show: boolean;
   html: string;
   closeAriaLabel?: string;
+  dialogAriaLabel?: string;
 }>();
 
 const sanitizedHtml = computed(() => sanitizeHtml(props.html ?? ""));
