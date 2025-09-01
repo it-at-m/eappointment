@@ -26,7 +26,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <div v-html="html"></div>
+          <div v-html="sanitizedHtml"></div>
         </div>
       </div>
     </div>
@@ -39,11 +39,18 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { computed } from "vue";
+
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
+
+const props = defineProps<{
   show: boolean;
   html: string;
   closeAriaLabel?: string;
 }>();
+
+const sanitizedHtml = computed(() => sanitizeHtml(props.html ?? ""));
+
 defineEmits<{
   (e: "close"): void;
 }>();
