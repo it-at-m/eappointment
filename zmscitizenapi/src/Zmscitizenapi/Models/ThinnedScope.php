@@ -162,7 +162,7 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->reservationDuration;
     }
 
-    public function getHint(): ? string
+    public function getHint(): ?string
     {
         return $this->hint;
     }
