@@ -836,7 +836,7 @@
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
-    <muc-callout :type="getCalloutType(apiErrorTranslation.errorType)">
+    <muc-callout :type="toCalloutType(apiErrorTranslation.errorType)">
       <template #header>
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
@@ -901,6 +901,7 @@
 
 <script setup lang="ts">
 import type { AccordionDay } from "@/types/AccordionDay";
+import type { CalloutType } from "@/utils/callout";
 import type { ApiErrorTranslation } from "@/utils/errorHandler";
 import type { Ref } from "vue";
 
@@ -934,6 +935,7 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import { toCalloutType } from "@/utils/callout";
 import {
   createErrorStates,
   getApiErrorTranslation,
@@ -952,7 +954,7 @@ const props = defineProps<{
   captchaToken: string | null;
   bookingError: boolean;
   bookingErrorKey: string;
-  errorType?: string;
+  errorType?: CalloutType;
   t: (key: string) => string;
 }>();
 
@@ -1015,23 +1017,6 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   // Otherwise, use our own error states
   return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
 });
-
-// Helper function to map API error types to valid callout types
-const getCalloutType = (
-  errorType?: string
-): "error" | "warning" | "success" | "info" => {
-  switch (errorType) {
-    case "warning":
-      return "warning";
-    case "info":
-      return "info";
-    case "success":
-      return "success";
-    case "error":
-    default:
-      return "error";
-  }
-};
 
 const selectedDay = ref<Date>();
 const minDate = ref<Date>();
