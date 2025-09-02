@@ -154,6 +154,7 @@
   "cancelAppointment": "Termin absagen",
   "cancelReschedule": "Verschieben abbrechen",
   "clock": "Uhr",
+  "closeDialog": "Dialog schließen",
   "combinableServices": "Kombinierbare Leistungen",
   "communicationCheckboxLabel": "Elektronische Kommunikation",
   "communicationCheckboxText": "Ich habe die <a href=\"https://stadt.muenchen.de/infos/elektronische-kommunikation.html\" target='_blank'>Hinweise zur elektronischen Kommunikation</a> zur Kenntnis genommen und stimme zu, über E-Mail zu meinem Termin benachrichtigt zu werden.",
@@ -222,5 +223,6 @@
   "timeStampSuffix": "Uhr",
   "updateAppointmentErrorHeader": "Terminupdate fehlgeschlagen",
   "updateAppointmentErrorText": "Terminupdate fehlgeschlagen.",
+  "newAppointmentsInfoLink": "Wann gibt es neue Termine?",
   "your": "Ihr"
 }
