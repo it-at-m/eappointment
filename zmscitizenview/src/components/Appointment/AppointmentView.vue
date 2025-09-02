@@ -114,7 +114,7 @@
             type="warning"
           >
             <template #content>
-              {{ t("confirmAppointmentText") }}
+              {{ confirmText }}
             </template>
 
             <template #header>{{ t("confirmAppointmentHeader") }}</template>
@@ -370,6 +370,19 @@ const isCancelingAppointment = ref<boolean>(false);
 const preselectedLocationId = ref<string | undefined>(props.locationId);
 
 const reservationStartMs = ref<number | null>(null);
+
+const activationMinutes = computed<number | undefined>(() => {
+  const fromAppt = (appointment.value as any)?.scope?.activationDuration;
+  const fromProv = (selectedProvider.value as any)?.scope?.activationDuration;
+  const raw = fromAppt ?? fromProv;
+  const n = typeof raw === "string" ? Number.parseInt(raw, 10) : raw;
+  return Number.isFinite(n as number) ? (n as number) : undefined;
+});
+
+const confirmText = computed<string>(() => {
+  const minutes = activationMinutes.value ?? "30";
+  return props.t("confirmAppointmentText", { activationMinutes: minutes });
+});
 
 const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
