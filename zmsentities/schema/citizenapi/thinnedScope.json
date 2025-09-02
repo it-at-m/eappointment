@@ -134,6 +134,14 @@
             "null"
           ],
           "description": "Duration of the activation time in minutes"
+
+        },
+        "hint": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Additional hint information for the scope"
         }
     }
 }
