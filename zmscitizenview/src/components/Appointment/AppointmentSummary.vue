@@ -75,7 +75,14 @@
               {{ selectedProvider.address.postal_code }}
               {{ selectedProvider.address.city }}<br />
               <br />
-              {{ selectedProvider.scope.hint }}
+              <span
+                v-if="
+                  selectedProvider &&
+                  selectedProvider.scope &&
+                  selectedProvider.scope.hint
+                "
+                v-html="sanitizeHtml(selectedProvider.scope.hint)"
+              ></span>
             </p>
           </div>
 
