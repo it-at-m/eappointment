@@ -35,6 +35,29 @@ class Closure extends Base
         return $this->fetchOne($query, new \BO\Zmsentities\Closure());
     }
 
+    public function readByScopesInRange(
+        array $scopeIds,
+        \DateTimeInterface $from,
+        \DateTimeInterface $until
+    ): array {
+        $q = (new \BO\Zmsdb\Query\Closure(\BO\Zmsdb\Query\Base::SELECT))
+            ->addEntityMapping()
+            ->addSelectVirtualDate()
+            ->addConditionScopeIds($scopeIds)
+            ->addConditionDateRange($from, $until);
+
+        $entities = $this->fetchList($q, new Entity());
+
+        $out = [];
+        foreach ($entities as $e) {
+            $out[] = [
+                'scopeId' => (int)($e['scopeId'] ?? 0),
+                'date'    => (string)($e['date'] ?? $e->getDateTime()->format('Y-m-d')),
+            ];
+        }
+        return $out;
+    }
+
     public function deleteEntity($itemId)
     {
         $query = new Query\Closure(Query\Base::DELETE);
