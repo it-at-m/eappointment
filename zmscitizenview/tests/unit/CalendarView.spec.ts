@@ -2006,7 +2006,7 @@ describe("CalendarView", () => {
     });
 
     describe("Callout when all provider locations are unselected (No appointments available)", () => {
-      it('opens modal with uniform info when all providers share same info and none selected', async () => {
+      it('opens modal with grouped info when providers have differing info and none selected', async () => {
         const wrapper = createWrapper({
           selectedService: {
             id: 'service1',
@@ -2017,10 +2017,10 @@ describe("CalendarView", () => {
           }
         });
 
-        // Provide selectable providers all with the same info text
+        // Provide selectable providers with differing info texts
         wrapper.vm.selectableProviders = [
-          { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' }, scope: { infoForAllAppointments: 'Uniform info text' } },
-          { id: 2, name: 'Office B', address: { street: 'Oak', house_number: '100' }, scope: { infoForAllAppointments: 'Uniform info text' } }
+          { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' }, scope: { infoForAllAppointments: 'Info A' } },
+          { id: 2, name: 'Office B', address: { street: 'Oak', house_number: '100' }, scope: { infoForAllAppointments: 'Info B' } }
         ];
 
         // Ensure no selection state stabilizes
@@ -2037,15 +2037,16 @@ describe("CalendarView", () => {
         wrapper.vm.isSwitchingProvider = false;
         await nextTick();
 
-        // Programmatically set modal HTML and open
-        (wrapper.vm as any).availabilityInfoHtmlOverride = 'Uniform info text';
+        // Programmatically set modal HTML and open (use computed grouped html)
+        (wrapper.vm as any).availabilityInfoHtmlOverride = (wrapper.vm as any).noneSelectedAvailabilityInfoHtml;
         (wrapper.vm as any).showAvailabilityInfoModal = true;
         await nextTick();
 
-        // Modal should open with the uniform info text
+        // Modal should open and show the grouped info
         const modalBody = wrapper.find('.modal-body');
         expect(modalBody.exists()).toBe(true);
-        expect(modalBody.html()).toContain('Uniform info text');
+        expect(modalBody.html()).toContain('Info A');
+        expect(modalBody.html()).toContain('Info B');
       });
       it('does not show info trigger or modal in this callout', async () => {
         const wrapper = createWrapper({

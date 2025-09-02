@@ -94,14 +94,14 @@
         <div
           class="m-content"
           style="margin-top: 8px"
-          v-if="uniformAvailabilityInfoHtmlWhenNoneSelected"
+          v-if="noneSelectedAvailabilityInfoHtml"
         >
           <muc-button
             variant="ghost"
             icon="information"
             icon-shown-left
             class="no-bottom-margin"
-            @click="openUniformInfoModal"
+            @click="openNoneSelectedInfoModal"
           >
             <template #default>{{ t("newAppointmentsInfoLink") }}</template>
           </muc-button>
@@ -2258,25 +2258,33 @@ const availabilityInfoHtml = computed(() => {
   );
 });
 
-// When no providers are selected, show info trigger only if ALL selectable providers share the same info
-const uniformAvailabilityInfoHtmlWhenNoneSelected = computed(() => {
+// When no providers are selected, show info trigger if any availability info exists across providers.
+// If all providers share the same info, show that; otherwise, group by provider names using the shared generator.
+const noneSelectedAvailabilityInfoHtml = computed(() => {
   if (!noProviderSelected.value) return "";
   const providers = selectableProviders.value || [];
   if (providers.length === 0) return "";
-  const infos = providers
-    .map((p: any) => (p.scope?.infoForAllAppointments ?? "").toString().trim())
-    .filter((s: string) => s.length > 0);
-  if (infos.length === 0) return "";
-  const unique = Array.from(new Set(infos));
-  return unique.length === 1 ? sanitizeHtml(unique[0]) : "";
+
+  // Build a synthetic selection that includes all selectable providers
+  const allSelectedMap: Record<string, boolean> = {};
+  providers.forEach((p: any) => {
+    if (p?.id != null) allSelectedMap[String(p.id)] = true;
+  });
+
+  return generateAvailabilityInfoHtml(
+    allSelectedMap,
+    selectableProviders.value,
+    undefined,
+    sanitizeHtml
+  );
 });
 
 const availabilityInfoHtmlForModal = computed(() => {
   return availabilityInfoHtmlOverride.value || availabilityInfoHtml.value;
 });
 
-const openUniformInfoModal = () => {
-  const html = uniformAvailabilityInfoHtmlWhenNoneSelected.value;
+const openNoneSelectedInfoModal = () => {
+  const html = noneSelectedAvailabilityInfoHtml.value;
   if (html) {
     availabilityInfoHtmlOverride.value = html;
     showAvailabilityInfoModal.value = true;
