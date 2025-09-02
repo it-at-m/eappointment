@@ -375,9 +375,6 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
 });
 
-// Helper function to map API error types to valid callout types
-// REMOVED: getCalloutType local implementation in favor of shared util
-
 // Track the current context based on API calls and props
 const currentContext = ref<string>("update");
 
