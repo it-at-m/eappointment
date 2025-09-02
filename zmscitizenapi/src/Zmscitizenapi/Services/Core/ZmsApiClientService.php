@@ -388,13 +388,30 @@ class ZmsApiClientService
         return $entity;
     }
 
+    /**
+     * Akzeptiert sowohl:
+     * - String: "dldb", "dldb,zms", "dldb; zms", "dldb zms", "dldb|zms"
+     * - Array:  ["dldb","zms"]
+     */
     private static function getSourceNames(): array
     {
-        return array_values(
-            array_filter(
-                array_map('strval', \App::$source_name),
-                fn($n) => trim($n) !== ''
-            )
-        );
+        $raw = \App::$source_name ?? 'dldb';
+
+        if (is_array($raw)) {
+            $names = array_values(array_filter(array_map('strval', $raw)));
+        } else {
+            $s = (string)$raw;
+            $names = preg_split('/[,\;\|\s]+/', $s, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        }
+
+        $out = [];
+        foreach ($names as $n) {
+            $n = trim($n);
+            if ($n !== '' && !in_array($n, $out, true)) {
+                $out[] = $n;
+            }
+        }
+
+        return $out ?: ['dldb'];
     }
 }
