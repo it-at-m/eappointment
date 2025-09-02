@@ -57,11 +57,11 @@ class MapperService
             return null;
         }
         if ($scope instanceof ThinnedScope) {
-            $v = $scope->getReservationDuration();
-            return $v !== null ? (int) $v : null;
+            $reservationDuration = $scope->getReservationDuration();
+            return $reservationDuration !== null ? (int) $reservationDuration : null;
         }
-        $v = $scope?->toProperty()?->preferences?->appointment?->reservationDuration?->get();
-        return $v !== null ? (int) $v : null;
+        $reservationDuration = $scope?->toProperty()?->preferences?->appointment?->reservationDuration?->get();
+        return $reservationDuration !== null ? (int) $reservationDuration : null;
     }
 
     public static function extractActivationDuration(Scope|ThinnedScope|null $scope): ?int
@@ -71,18 +71,18 @@ class MapperService
         }
 
         if ($scope instanceof ThinnedScope) {
-            $v = $scope->getActivationDuration();
-            if ($v === null || $v === '') {
+            $activationDuration = $scope->getActivationDuration();
+            if ($activationDuration === null || $activationDuration === '') {
                 return null;
             }
-            return (int) $v;
+            return (int) $activationDuration;
         }
 
-        $v = $scope?->toProperty()?->preferences?->appointment?->activationDuration?->get();
-        if ($v === null || $v === '') {
+        $activationDuration = $scope?->toProperty()?->preferences?->appointment?->activationDuration?->get();
+        if ($activationDuration === null || $activationDuration === '') {
             return null;
         }
-        return (int) $v;
+        return (int) $activationDuration;
     }
 
     /**
