@@ -83,28 +83,13 @@
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
-    <muc-callout type="warning">
+    <muc-callout type="info">
       <template #header>
         <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
         <div class="m-content">
           {{ t("apiErrorNoAppointmentForThisScopeText") }}
-        </div>
-        <div
-          class="m-content"
-          style="margin-top: 8px"
-          v-if="shouldShowLocationSpecificInfo && availabilityInfoHtml"
-        >
-          <muc-button
-            variant="ghost"
-            icon="information"
-            icon-shown-left
-            class="no-bottom-margin"
-            @click="openAvailabilityInfoModal"
-          >
-            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
-          </muc-button>
         </div>
       </template>
     </muc-callout>
