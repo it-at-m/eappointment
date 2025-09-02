@@ -2633,16 +2633,6 @@ div:has(.left-text) {
   margin-left: 12px !important;
 }
 
-.m-callout__content ul {
-  list-style-type: disc !important;
-  padding-left: 1.5rem !important;
-}
-
-.m-callout__content ul li {
-  list-style-type: disc !important;
-  padding-left: 0.5rem !important;
-}
-
 .muc-calendar-view-full-size .muc-calendar-item,
 .muc-calendar-container .muc-calendar-item {
   font-size: 1.125rem !important; /* 18px - default for desktop */
