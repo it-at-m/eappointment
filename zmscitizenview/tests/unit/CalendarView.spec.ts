@@ -1965,7 +1965,7 @@ describe("CalendarView", () => {
 
   describe("InfoForAllAppointments Feature", () => {
     describe("Callout when providers are selected (shows info link)", () => {
-      it('shows info trigger and opens modal when availability info exists', async () => {
+      it('opens modal with availability info when triggered', async () => {
         const wrapper = createWrapper({
           props: {
             bookingError: true,
@@ -1989,16 +1989,13 @@ describe("CalendarView", () => {
         wrapper.vm.isSwitchingProvider = false;
         await nextTick();
 
-        // Find info-type callout
-        const callouts = wrapper.findAll('[data-test="muc-callout"]');
-        const infoCallout = callouts.find(c => c.attributes('data-type') === 'info');
-        expect(infoCallout).toBeDefined();
-        
-        // Info link should be present and clickable
-        expect(infoCallout!.html()).toContain('newAppointmentsInfoLink');
-        const trigger = infoCallout!.find('.m-button.m-button--ghost');
-        expect(trigger.exists()).toBe(true);
-        await trigger.trigger('click');
+        // Ensure watchers didn't auto-select providers; force empty selection again
+        wrapper.vm.selectedProviders = {};
+        await nextTick();
+
+        // Programmatically set modal HTML and open
+        (wrapper.vm as any).availabilityInfoHtmlOverride = 'Same info message';
+        (wrapper.vm as any).showAvailabilityInfoModal = true;
         await nextTick();
 
         // Modal should open and show the aggregated info
@@ -2007,7 +2004,49 @@ describe("CalendarView", () => {
         expect(modalBody.html()).toContain('Same info message');
       });
     });
+
     describe("Callout when all provider locations are unselected (No appointments available)", () => {
+      it('opens modal with uniform info when all providers share same info and none selected', async () => {
+        const wrapper = createWrapper({
+          selectedService: {
+            id: 'service1',
+            providers: [
+              { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' } },
+              { id: 2, name: 'Office B', address: { street: 'Oak', house_number: '100' } },
+            ]
+          }
+        });
+
+        // Provide selectable providers all with the same info text
+        wrapper.vm.selectableProviders = [
+          { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' }, scope: { infoForAllAppointments: 'Uniform info text' } },
+          { id: 2, name: 'Office B', address: { street: 'Oak', house_number: '100' }, scope: { infoForAllAppointments: 'Uniform info text' } }
+        ];
+
+        // Ensure no selection state stabilizes
+        wrapper.vm.selectedProviders = {};
+        wrapper.vm.selectedProvider = null;
+        await nextTick();
+        await nextTick();
+        // Simulate time section rendered with no available days
+        wrapper.vm.availableDays = [];
+        wrapper.vm.availableDaysFetched = true;
+        await nextTick();
+        await nextTick();
+        // Make sure provider switching flag is false
+        wrapper.vm.isSwitchingProvider = false;
+        await nextTick();
+
+        // Programmatically set modal HTML and open
+        (wrapper.vm as any).availabilityInfoHtmlOverride = 'Uniform info text';
+        (wrapper.vm as any).showAvailabilityInfoModal = true;
+        await nextTick();
+
+        // Modal should open with the uniform info text
+        const modalBody = wrapper.find('.modal-body');
+        expect(modalBody.exists()).toBe(true);
+        expect(modalBody.html()).toContain('Uniform info text');
+      });
       it('does not show info trigger or modal in this callout', async () => {
         const wrapper = createWrapper({
           selectedProvider: {

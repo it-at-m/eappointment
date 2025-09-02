@@ -91,6 +91,21 @@
         <div class="m-content">
           {{ t("apiErrorNoAppointmentForThisScopeText") }}
         </div>
+        <div
+          class="m-content"
+          style="margin-top: 8px"
+          v-if="uniformAvailabilityInfoHtmlWhenNoneSelected"
+        >
+          <muc-button
+            variant="ghost"
+            icon="information"
+            icon-shown-left
+            class="no-bottom-margin"
+            @click="openUniformInfoModal"
+          >
+            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+          </muc-button>
+        </div>
       </template>
     </muc-callout>
   </div>
@@ -878,7 +893,7 @@
   </div>
   <AvailabilityInfoModal
     :show="showAvailabilityInfoModal"
-    :html="availabilityInfoHtml"
+    :html="availabilityInfoHtmlForModal"
     :closeAriaLabel="t('closeDialog')"
     @close="closeAvailabilityInfoModal"
   />
@@ -2224,11 +2239,14 @@ const toggleView = () => {
 
 // Modal state and handlers
 const showAvailabilityInfoModal = ref(false);
+const availabilityInfoHtmlOverride = ref("");
 const openAvailabilityInfoModal = () => {
+  availabilityInfoHtmlOverride.value = "";
   showAvailabilityInfoModal.value = true;
 };
 const closeAvailabilityInfoModal = () => {
   showAvailabilityInfoModal.value = false;
+  availabilityInfoHtmlOverride.value = "";
 };
 
 const availabilityInfoHtml = computed(() => {
@@ -2239,6 +2257,31 @@ const availabilityInfoHtml = computed(() => {
     sanitizeHtml
   );
 });
+
+// When no providers are selected, show info trigger only if ALL selectable providers share the same info
+const uniformAvailabilityInfoHtmlWhenNoneSelected = computed(() => {
+  if (!noProviderSelected.value) return "";
+  const providers = selectableProviders.value || [];
+  if (providers.length === 0) return "";
+  const infos = providers
+    .map((p: any) => (p.scope?.infoForAllAppointments ?? "").toString().trim())
+    .filter((s: string) => s.length > 0);
+  if (infos.length === 0) return "";
+  const unique = Array.from(new Set(infos));
+  return unique.length === 1 ? sanitizeHtml(unique[0]) : "";
+});
+
+const availabilityInfoHtmlForModal = computed(() => {
+  return availabilityInfoHtmlOverride.value || availabilityInfoHtml.value;
+});
+
+const openUniformInfoModal = () => {
+  const html = uniformAvailabilityInfoHtmlWhenNoneSelected.value;
+  if (html) {
+    availabilityInfoHtmlOverride.value = html;
+    showAvailabilityInfoModal.value = true;
+  }
+};
 
 const openAccordionIndex = ref(0);
 
