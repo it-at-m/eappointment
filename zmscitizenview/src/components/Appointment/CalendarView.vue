@@ -83,21 +83,29 @@
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
-    <muc-callout type="warning">
+    <muc-callout type="info">
       <template #header>
         <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
+        <div class="m-content">
+          {{ t("apiErrorNoAppointmentForThisScopeText") }}
+        </div>
         <div
-          v-if="
-            shouldShowLocationSpecificInfo &&
-            (selectedProvider?.scope?.infoForAllAppointments || '').trim()
-          "
-          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
-        ></div>
-        <template v-else>{{
-          t("apiErrorNoAppointmentForThisScopeText")
-        }}</template>
+          class="m-content"
+          style="margin-top: 8px"
+          v-if="noneSelectedAvailabilityInfoHtml"
+        >
+          <muc-button
+            variant="ghost"
+            icon="information"
+            icon-shown-left
+            class="no-bottom-margin"
+            @click="openNoneSelectedInfoModal"
+          >
+            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+          </muc-button>
+        </div>
       </template>
     </muc-callout>
   </div>
@@ -148,7 +156,27 @@
       v-if="isListView"
       class="m-content"
     >
-      <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+      <h3
+        class="no-top-margin"
+        tabindex="0"
+      >
+        {{ t("availableTimes") }}
+      </h3>
+      <div
+        class="m-content"
+        style="margin-top: 8px"
+        v-if="availabilityInfoHtml"
+      >
+        <muc-button
+          variant="ghost"
+          icon="information"
+          icon-shown-left
+          class="no-bottom-margin"
+          @click="openAvailabilityInfoModal"
+        >
+          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+        </muc-button>
+      </div>
     </div>
 
     <div
@@ -466,7 +494,26 @@
       class="m-component"
     >
       <div class="m-content">
-        <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+        <h3
+          class="no-top-margin"
+          tabindex="0"
+        >
+          {{ t("availableTimes") }}
+        </h3>
+      </div>
+      <div
+        class="m-content"
+        style="margin: 8px 0 0 0"
+        v-if="availabilityInfoHtml"
+      >
+        <muc-button
+          variant="ghost"
+          icon="information"
+          icon-shown-left
+          @click="openAvailabilityInfoModal"
+        >
+          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+        </muc-button>
       </div>
       <div
         style="
@@ -602,7 +649,26 @@
       class="m-component"
     >
       <div class="m-content">
-        <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+        <h3
+          class="no-top-margin"
+          tabindex="0"
+        >
+          {{ t("availableTimes") }}
+        </h3>
+      </div>
+      <div
+        class="m-content"
+        style="margin: 8px 0 0 0"
+        v-if="availabilityInfoHtml"
+      >
+        <muc-button
+          variant="ghost"
+          icon="information"
+          icon-shown-left
+          @click="openAvailabilityInfoModal"
+        >
+          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+        </muc-button>
       </div>
       <div
         style="
@@ -770,22 +836,33 @@
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
-    <muc-callout type="warning">
+    <muc-callout :type="toCalloutType(apiErrorTranslation.errorType)">
       <template #header>
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
+        <div class="m-content">{{ t(apiErrorTranslation.textKey) }}</div>
         <div
+          class="m-content"
+          style="margin-top: 8px"
           v-if="
             (apiErrorTranslation.textKey ===
               'apiErrorNoAppointmentForThisScopeText' ||
               apiErrorTranslation.textKey ===
                 'apiErrorNoAppointmentForThisDayText') &&
-            (selectedProvider?.scope?.infoForAllAppointments || '').trim()
+            availabilityInfoHtml
           "
-          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
-        ></div>
-        <template v-else>{{ t(apiErrorTranslation.textKey) }}</template>
+        >
+          <muc-button
+            variant="ghost"
+            icon="information"
+            icon-shown-left
+            class="no-bottom-margin"
+            @click="openAvailabilityInfoModal"
+          >
+            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+          </muc-button>
+        </div>
       </template>
     </muc-callout>
   </div>
@@ -814,10 +891,18 @@
       </template>
     </muc-button>
   </div>
+  <AvailabilityInfoModal
+    :show="showAvailabilityInfoModal"
+    :html="availabilityInfoHtmlForModal"
+    :closeAriaLabel="t('closeDialog')"
+    @close="closeAvailabilityInfoModal"
+  />
 </template>
 
 <script setup lang="ts">
 import type { AccordionDay } from "@/types/AccordionDay";
+import type { CalloutType } from "@/utils/callout";
+import type { ApiErrorTranslation } from "@/utils/errorHandler";
 import type { Ref } from "vue";
 
 import {
@@ -850,12 +935,15 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import { toCalloutType } from "@/utils/callout";
 import {
   createErrorStates,
   getApiErrorTranslation,
   handleApiResponse,
 } from "@/utils/errorHandler";
+import { generateAvailabilityInfoHtml } from "@/utils/infoForAllAppointments";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import AvailabilityInfoModal from "./AvailabilityInfoModal.vue";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -866,6 +954,7 @@ const props = defineProps<{
   captchaToken: string | null;
   bookingError: boolean;
   bookingErrorKey: string;
+  errorType?: CalloutType;
   t: (key: string) => string;
 }>();
 
@@ -903,16 +992,18 @@ const appointmentTimestamps = ref<number[]>([]);
 
 const errorStates = createErrorStates();
 const errorStateMap = computed(() => errorStates.errorStateMap);
+const currentErrorData = computed(() => errorStates.currentErrorData);
 
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
 
-const apiErrorTranslation = computed(() => {
+const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   // If we have a booking error from props, use that instead of our own error states
   if (props.bookingError && props.bookingErrorKey) {
     return {
       headerKey: `${props.bookingErrorKey}Header`,
       textKey: `${props.bookingErrorKey}Text`,
+      errorType: props.errorType || "error", // Use prop if provided, otherwise default to "error"
     };
   }
   // If we're switching providers, don't show any error messages
@@ -920,10 +1011,11 @@ const apiErrorTranslation = computed(() => {
     return {
       headerKey: "",
       textKey: "",
+      errorType: "error", // Default
     };
   }
   // Otherwise, use our own error states
-  return getApiErrorTranslation(errorStateMap.value);
+  return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
 });
 
 const selectedDay = ref<Date>();
@@ -1364,7 +1456,7 @@ const showSelectionForProvider = async (provider: OfficeImpl) => {
 
 const handleError = (data: any): void => {
   error.value = true;
-  handleApiResponse(data, errorStateMap.value);
+  handleApiResponse(data, errorStateMap.value, currentErrorData.value);
 };
 
 const getAppointmentsOfDay = (date: string) => {
@@ -1564,11 +1656,11 @@ const hasSelectedProviderWithAppointments = computed(() => {
 });
 
 const shouldShowLocationSpecificInfo = computed(() => {
-  // Only show location-specific info when exactly one provider is selected
+  // Show location-specific info when at least one provider is selected
   const selectedCount = Object.values(selectedProviders.value).filter(
     Boolean
   ).length;
-  return selectedCount === 1;
+  return selectedCount > 0 || !!selectedProvider.value;
 });
 
 // Watch for changes in selectedProviders and update selectedProvider accordingly
@@ -2145,6 +2237,60 @@ const toggleView = () => {
   isListView.value = !isListView.value;
 };
 
+// Modal state and handlers
+const showAvailabilityInfoModal = ref(false);
+const availabilityInfoHtmlOverride = ref("");
+const openAvailabilityInfoModal = () => {
+  availabilityInfoHtmlOverride.value = "";
+  showAvailabilityInfoModal.value = true;
+};
+const closeAvailabilityInfoModal = () => {
+  showAvailabilityInfoModal.value = false;
+  availabilityInfoHtmlOverride.value = "";
+};
+
+const availabilityInfoHtml = computed(() => {
+  return generateAvailabilityInfoHtml(
+    selectedProviders.value,
+    selectableProviders.value,
+    selectedProvider.value,
+    sanitizeHtml
+  );
+});
+
+// When no providers are selected, show info trigger if any availability info exists across providers.
+// If all providers share the same info, show that; otherwise, group by provider names using the shared generator.
+const noneSelectedAvailabilityInfoHtml = computed(() => {
+  if (!noProviderSelected.value) return "";
+  const providers = selectableProviders.value || [];
+  if (providers.length === 0) return "";
+
+  // Build a synthetic selection that includes all selectable providers
+  const allSelectedMap: Record<string, boolean> = {};
+  providers.forEach((p: any) => {
+    if (p?.id != null) allSelectedMap[String(p.id)] = true;
+  });
+
+  return generateAvailabilityInfoHtml(
+    allSelectedMap,
+    selectableProviders.value,
+    undefined,
+    sanitizeHtml
+  );
+});
+
+const availabilityInfoHtmlForModal = computed(() => {
+  return availabilityInfoHtmlOverride.value || availabilityInfoHtml.value;
+});
+
+const openNoneSelectedInfoModal = () => {
+  const html = noneSelectedAvailabilityInfoHtml.value;
+  if (html) {
+    availabilityInfoHtmlOverride.value = html;
+    showAvailabilityInfoModal.value = true;
+  }
+};
+
 const openAccordionIndex = ref(0);
 
 const openAccordionDate = ref<string | null>(null);
@@ -2304,6 +2450,17 @@ const getCurrentDayPartForDay = (
 
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
+
+.no-bottom-margin,
+.no-bottom-margin.m-button,
+.no-bottom-margin .m-button {
+  margin-bottom: 0 !important;
+}
+
+.no-top-margin,
+.no-top-margin h3 {
+  margin-top: 0 !important;
+}
 
 .wrapper {
   display: grid;

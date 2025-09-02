@@ -128,6 +128,14 @@
           ],
           "description": "Duration of the reservation in minutes"
         },
+        "activationDuration": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Duration of the activation time in minutes"
+
+        },
         "hint": {
             "type": [
                 "string",
