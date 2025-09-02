@@ -73,7 +73,9 @@
                 @reschedule-appointment="nextRescheduleAppointment"
               />
               <div v-if="hasUpdateAppointmentError">
-                <muc-callout type="error">
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
                   <template #content>
                     {{ t(apiErrorTranslation.textKey) }}
                   </template>
@@ -84,7 +86,9 @@
                 </muc-callout>
               </div>
               <div v-if="hasPreconfirmAppointmentError">
-                <muc-callout type="error">
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
                   <template #content>
                     {{ t(apiErrorTranslation.textKey) }}
                   </template>
@@ -110,7 +114,7 @@
             type="warning"
           >
             <template #content>
-              {{ t("confirmAppointmentText") }}
+              {{ confirmText }}
             </template>
 
             <template #header>{{ t("confirmAppointmentHeader") }}</template>
@@ -129,7 +133,7 @@
           </muc-callout>
           <muc-callout
             v-if="hasCancelAppointmentError"
-            type="error"
+            :type="toCalloutType(apiErrorTranslation.errorType)"
           >
             <template #content>
               {{ t(apiErrorTranslation.textKey) }}
@@ -158,7 +162,7 @@
           </muc-callout>
           <muc-callout
             v-if="hasConfirmAppointmentError"
-            type="error"
+            :type="toCalloutType(apiErrorTranslation.errorType)"
           >
             <template #content>
               {{ t(apiErrorTranslation.textKey) }}
@@ -171,7 +175,7 @@
 
           <muc-callout
             v-if="hasInitializationError"
-            type="error"
+            :type="toCalloutType(apiErrorTranslation.errorType)"
           >
             <template #content>
               {{ t(apiErrorTranslation.textKey) }}
@@ -213,6 +217,7 @@
 </template>
 
 <script setup lang="ts">
+import type { CalloutType } from "@/utils/callout";
 import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
 
 import {
@@ -252,6 +257,7 @@ import {
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
+import { toCalloutType } from "@/utils/callout";
 import {
   clearContextErrors,
   createErrorStates,
@@ -347,6 +353,7 @@ const cancelAppointmentError = ref<boolean>(false);
 // Create centralized error states
 const errorStates = createErrorStates();
 const errorStateMap = computed<ErrorStateMap>(() => errorStates.errorStateMap);
+const currentErrorData = computed(() => errorStates.currentErrorData);
 
 // Access individual error refs from the error state map
 const apiErrorAppointmentNotAvailable =
@@ -364,8 +371,21 @@ const preselectedLocationId = ref<string | undefined>(props.locationId);
 
 const reservationStartMs = ref<number | null>(null);
 
+const activationMinutes = computed<number | undefined>(() => {
+  const fromAppt = (appointment.value as any)?.scope?.activationDuration;
+  const fromProv = (selectedProvider.value as any)?.scope?.activationDuration;
+  const raw = fromAppt ?? fromProv;
+  const n = typeof raw === "string" ? Number.parseInt(raw, 10) : raw;
+  return Number.isFinite(n as number) ? (n as number) : undefined;
+});
+
+const confirmText = computed<string>(() => {
+  const minutes = activationMinutes.value ?? "30";
+  return props.t("confirmAppointmentText", { activationMinutes: minutes });
+});
+
 const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
-  return getApiErrorTranslation(errorStateMap.value);
+  return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
 });
 
 // Track the current context based on API calls and props
@@ -498,7 +518,7 @@ const setRebookData = () => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          handleApiResponse(data, errorStateMap.value);
+          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
         }
         currentView.value = 3;
       }
@@ -538,7 +558,7 @@ const nextReserveAppointment = () => {
           increaseCurrentView();
         }
       } else {
-        handleApiResponse(data, errorStateMap.value);
+        handleApiResponse(data, errorStateMap.value, currentErrorData.value);
       }
     })
     .finally(() => {
@@ -573,7 +593,7 @@ const nextUpdateAppointment = () => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          handleApiResponse(data, errorStateMap.value);
+          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
         }
         increaseCurrentView();
       })
@@ -595,7 +615,7 @@ const nextBookAppointment = () => {
     preconfirmAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
         if ((data as any)?.errors?.length > 0) {
-          handleApiResponse(data, errorStateMap.value);
+          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
           return;
         }
 
@@ -629,7 +649,7 @@ const nextCancelAppointment = () => {
     cancelAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
         if ((data as any)?.errors?.length > 0) {
-          handleApiResponse(data, errorStateMap.value);
+          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
           return;
         }
 
@@ -727,7 +747,11 @@ const parseAppointmentHash = (hash: string): AppointmentHash | null => {
 };
 
 const handleInvalidJumpinLink = () => {
-  handleApiError("invalidJumpinLink", errorStateMap.value);
+  handleApiError(
+    "invalidJumpinLink",
+    errorStateMap.value,
+    currentErrorData.value
+  );
 };
 
 const redirectToAppointmentStart = () => {
@@ -742,7 +766,11 @@ onMounted(() => {
     clearContextErrors(errorStateMap.value);
     const appointmentData = parseAppointmentHash(props.confirmAppointmentHash);
     if (!appointmentData) {
-      handleApiError("appointmentNotFound", errorStateMap.value);
+      handleApiError(
+        "appointmentNotFound",
+        errorStateMap.value,
+        currentErrorData.value
+      );
       return;
     }
 
@@ -757,9 +785,17 @@ onMounted(() => {
             firstErrorCode === "processNotPreconfirmedAnymore" ||
             firstErrorCode === "appointmentNotFound"
           ) {
-            handleApiError("preconfirmationExpired", errorStateMap.value);
+            handleApiError(
+              "preconfirmationExpired",
+              errorStateMap.value,
+              currentErrorData.value
+            );
           } else {
-            handleApiResponse(data, errorStateMap.value);
+            handleApiResponse(
+              data,
+              errorStateMap.value,
+              currentErrorData.value
+            );
           }
         }
       }
@@ -780,7 +816,11 @@ onMounted(() => {
 
       const appointmentData = parseAppointmentHash(props.appointmentHash ?? "");
       if (!appointmentData) {
-        handleApiError("appointmentNotFound", errorStateMap.value);
+        handleApiError(
+          "appointmentNotFound",
+          errorStateMap.value,
+          currentErrorData.value
+        );
         return;
       }
 
@@ -849,7 +889,11 @@ onMounted(() => {
               currentView.value = 3;
             }
           } else {
-            handleApiError("appointmentNotFound", errorStateMap.value);
+            handleApiError(
+              "appointmentNotFound",
+              errorStateMap.value,
+              currentErrorData.value
+            );
           }
         }
       );

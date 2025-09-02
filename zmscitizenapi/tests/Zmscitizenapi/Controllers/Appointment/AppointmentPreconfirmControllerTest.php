@@ -104,6 +104,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 "appointmentsPerMail" => null,
                 "whitelistedMails" => null,
                 "reservationDuration" => null,
+                "activationDuration" => null,
                 "hint" => null
             ],
             'subRequestCounts' => [],
