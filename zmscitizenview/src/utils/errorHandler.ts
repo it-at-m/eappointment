@@ -1,4 +1,8 @@
+import type { CalloutType } from "@/utils/callout";
+
 import { Ref, ref } from "vue";
+
+import { toCalloutType } from "@/utils/callout";
 
 export type ErrorStateMap = Record<string, Ref<boolean>>;
 
@@ -83,6 +87,14 @@ export function createErrorStateMap(): ErrorStateMap {
 export interface ApiErrorTranslation {
   headerKey: string;
   textKey: string;
+  errorType?: CalloutType;
+}
+
+export interface ApiErrorData {
+  errorCode: string;
+  errorType: CalloutType;
+  errorMessage: string;
+  statusCode: number;
 }
 
 // Centralized error state management
@@ -95,6 +107,8 @@ export function createErrorStates() {
     ...errorStateMap,
     // Error state map for centralized operations
     errorStateMap,
+    // Current error data for type information
+    currentErrorData: ref<ApiErrorData | null>(null),
   };
 }
 
@@ -112,7 +126,9 @@ export const clearContextErrors = (errorStateMap: ErrorStateMap) => {
  */
 export function handleApiError(
   errorCode: string,
-  errorStates: ErrorStateMap
+  errorStates: ErrorStateMap,
+  currentErrorData?: Ref<ApiErrorData | null>,
+  errorType?: CalloutType
 ): void {
   // Reset all error states first
   Object.values(errorStates).forEach((errorState) => {
@@ -124,13 +140,33 @@ export function handleApiError(
 
   if (errorStates[errorStateKey]) {
     errorStates[errorStateKey].value = true;
+
+    // Set the current error data with the error type from the API
+    if (currentErrorData) {
+      currentErrorData.value = {
+        errorCode: errorCode,
+        errorType: toCalloutType(errorType),
+        errorMessage: "",
+        statusCode: 400,
+      };
+    }
   } else {
     errorStates.apiErrorGenericFallback.value = true;
+
+    if (currentErrorData) {
+      currentErrorData.value = {
+        errorCode: "genericFallback",
+        errorType: "error",
+        errorMessage: "An unknown error occurred.",
+        statusCode: 520,
+      };
+    }
   }
 }
 
 export function getApiErrorTranslation(
-  errorStates: ErrorStateMap
+  errorStates: ErrorStateMap,
+  currentErrorData?: Ref<ApiErrorData | null>
 ): ApiErrorTranslation {
   // Find the first active error state
   const activeErrorState = Object.entries(errorStates).find(
@@ -141,32 +177,80 @@ export function getApiErrorTranslation(
     return {
       headerKey: "apiErrorGenericFallbackHeader",
       textKey: "apiErrorGenericFallbackText",
+      errorType: "error",
     };
   }
 
   const [errorStateName] = activeErrorState;
 
+  // Use the stored error type if available, otherwise default to "error"
+  const errorType =
+    currentErrorData?.value?.errorType || ("error" as CalloutType);
+
   // Dynamic translation key generation
   return {
     headerKey: `${errorStateName}Header`,
     textKey: `${errorStateName}Text`,
+    errorType,
   };
 }
 
-export function handleApiResponse(data: any, errorStates: ErrorStateMap): void {
+export function handleApiResponse(
+  data: any,
+  errorStates: ErrorStateMap,
+  currentErrorData?: Ref<ApiErrorData | null>
+): void {
   if (!data || typeof data !== "object" || Array.isArray(data)) {
     errorStates.apiErrorGenericFallback.value = true;
+    if (currentErrorData) {
+      currentErrorData.value = {
+        errorCode: "genericFallback",
+        errorType: "error",
+        errorMessage: "An unknown error occurred.",
+        statusCode: 520,
+      };
+    }
     return;
   }
 
-  const firstErrorCode = data?.errors?.[0]?.errorCode ?? "";
-  if (firstErrorCode) {
-    handleApiError(firstErrorCode, errorStates);
+  const firstError = data?.errors?.[0];
+  if (firstError && firstError.errorCode) {
+    handleApiError(
+      firstError.errorCode,
+      errorStates,
+      currentErrorData,
+      toCalloutType(firstError.errorType)
+    );
+    // Store the error data for type information
+    if (currentErrorData) {
+      currentErrorData.value = {
+        errorCode: firstError.errorCode,
+        errorType: toCalloutType(firstError.errorType),
+        errorMessage: firstError.errorMessage || "",
+        statusCode: firstError.statusCode || 400,
+      };
+    }
   } else if (data.errors && data.errors.length > 0) {
     errorStates.apiErrorGenericFallback.value = true;
+    if (currentErrorData) {
+      currentErrorData.value = {
+        errorCode: "genericFallback",
+        errorType: "error",
+        errorMessage: "An unknown error occurred.",
+        statusCode: 520,
+      };
+    }
   } else if (data.errors && data.errors.length === 0) {
     // Handle case where errors array exists but is empty
     errorStates.apiErrorGenericFallback.value = true;
+    if (currentErrorData) {
+      currentErrorData.value = {
+        errorCode: "genericFallback",
+        errorType: "error",
+        errorMessage: "An unknown error occurred.",
+        statusCode: 520,
+      };
+    }
   }
 }
 
