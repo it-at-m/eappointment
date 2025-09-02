@@ -115,6 +115,25 @@
 
             <template #header>{{ t("confirmAppointmentHeader") }}</template>
           </muc-callout>
+          <!-- Nachfolgendes wieder löschen. Nur hier, um es lokal zu testen -->
+          <div
+                class="m-button-group"
+                style="margin-top: 1rem"
+              >
+                <muc-button
+                  icon="download"
+                  @click="downloadIcsAppointment"
+                >
+                  {{ t("downloadAppointment") }}
+                </muc-button>
+                <muc-button
+                  @click="redirectToAppointmentStart"
+                  variant="secondary"
+                >
+                  {{ t("bookAnotherAppointment") }}
+                </muc-button>
+          </div>
+          <!-- bis hier löschen -->
           <muc-callout
             v-if="cancelAppointmentSuccess"
             type="success"
@@ -156,6 +175,24 @@
               t("appointmentSuccessfullyBookedHeader")
             }}</template>
           </muc-callout>
+          <div
+                v-if="confirmAppointmentSuccess"
+                class="m-button-group"
+                style="margin-top: 1rem"
+              >
+                <muc-button
+                  icon="download"
+                  @click="downloadIcsAppointment"
+                >
+                  {{ t("downloadAppointment") }}
+                </muc-button>
+                <muc-button
+                  @click="redirectToAppointmentStart"
+                  variant="secondary"
+                >
+                  {{ t("bookAnotherAppointment") }}
+                </muc-button>
+          </div>
           <muc-callout
             v-if="hasConfirmAppointmentError"
             type="error"
@@ -264,6 +301,13 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+
+// import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+
+import {
+  VUE_APP_ZMS_API_APPOINTMENT_ICS_ENDPOINT,
+  getAPIBaseURL,
+} from "@/utils/Constants";
 
 const props = defineProps<{
   baseUrl?: string;
@@ -856,4 +900,211 @@ onMounted(() => {
     });
   }
 });
+
+// const ICS_TZ = "Europe/Berlin";
+
+// function partsInTz(d: Date, tz = ICS_TZ) {
+//   const p = new Intl.DateTimeFormat("de-DE", {
+//     timeZone: tz,
+//     year: "numeric",
+//     month: "2-digit",
+//     day: "2-digit",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//     second: "2-digit",
+//     hour12: false,
+//   }).formatToParts(d).reduce((acc: Record<string,string>, cur) => {
+//     if (cur.type !== "literal") acc[cur.type] = cur.value;
+//     return acc;
+//   }, {});
+//   // p.year, p.month, p.day, p.hour, p.minute, p.second
+//   return p as {year:string; month:string; day:string; hour:string; minute:string; second:string};
+// }
+
+// function toICSLocal(d: Date) {
+//   const p = partsInTz(d);
+//   return `${p.year}${p.month}${p.day}T${p.hour}${p.minute}${p.second}`;
+// }
+
+// // RFC5545 escaping: Kommas, Semikolons, Backslashes, CRLF
+// function icsEscape(s: string | null | undefined) {
+//   return (s ?? "")
+//     .replace(/\\/g, "\\\\")
+//     .replace(/;/g, "\\;")
+//     .replace(/,/g, "\\,")
+//     .replace(/\r?\n/g, "\\n");
+// }
+
+// // Dauer (Minuten) so, wie du sie bereits in der Summary verwendest
+// const estimatedDurationMinutes = computed<number>(() => {
+//   try {
+//     // identisch zur Summary-Logik
+//     // Fallbacks: Provider-Slottime oder 15 Minuten
+//     const est = calculateEstimatedDuration(
+//       (selectedService.value as any) ?? null,
+//       (selectedProvider.value as any) ?? null
+//     );
+//     if (Number.isFinite(est)) return est as number;
+//     const slot = (selectedProvider.value as any)?.slotTimeInMinutes;
+//     return Number.isFinite(slot) ? Number(slot) : 15;
+//   } catch {
+//     return 15;
+//   }
+// });
+
+// function downloadIcsAppointment() {
+//   const appt = appointment.value as any;
+//   const prov = selectedProvider.value as any;
+
+//   if (!appt?.timestamp) {
+//     console.warn("[ICS] missing appointment timestamp");
+//     return;
+//   }
+
+//   const start = new Date(Number(appt.timestamp) * 1000);
+//   const end = new Date(start.getTime() + estimatedDurationMinutes.value * 60_000);
+//   const now = new Date();
+
+//   // Felder aus Scope/Provider
+//   const processId = appt.processId ?? appt.id ?? "0";
+//   const organizerCN =
+//     prov?.name ??
+//     prov?.scope?.provider?.displayName ??
+//     "Landeshauptstadt München";
+//   const organizerEmail =
+//     appt?.scope?.emailFrom ??
+//     prov?.scope?.emailFrom ??
+//     "no-reply@muenchen.de";
+
+//   // Adresse aus deinem Provider-Modell (AppointmentView nutzt address.*)
+//   const addr = prov?.address ?? {};
+//   const locationLine = [
+//     organizerCN,
+//     addr.street,
+//     addr.house_number,
+//     addr.postal_code,
+//     addr.city,
+//   ]
+//     .filter(Boolean)
+//     .join(" ")
+//     // in twig ist ein Komma zwischen Straße/Hausnr und PLZ/Ort
+//     .replace(`${addr.house_number} ${addr.postal_code}`, `${addr.house_number}\\, ${addr.postal_code}`);
+
+//   const uid = `${partsInTz(start).year}${partsInTz(start).month}${partsInTz(start).day}-${processId}`;
+//   const dtStartLocal = toICSLocal(start);
+//   const dtEndLocal = toICSLocal(end);
+//   const dtStampUtc = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+//     .toISOString()
+//     .replace(/[-:]/g, "")
+//     .replace(/\.\d{3}Z$/, "Z"); // YYYYMMDDTHHMMSSZ
+
+//   const summary = `München-Termin: ${processId}`;
+//   const description = "Online gebuchter Termin"; // optional: erweitern
+
+//   // Der ICS-Inhalt spiegelt die twig möglichst eng
+//   const ics = [
+//     "BEGIN:VCALENDAR",
+//     "X-LOTUS-CHARSET:UTF-8",
+//     "CALSCALE:GREGORIAN",
+//     "VERSION:2.0",
+//     "PRODID:ZMS-München",
+//     "METHOD:REQUEST",
+//     "X-WR-TIMEZONE:Europe/Berlin",
+//     "BEGIN:VTIMEZONE",
+//     "TZID:Europe/Berlin",
+//     "X-LIC-LOCATION:Europe/Berlin",
+//     "BEGIN:DAYLIGHT",
+//     "TZOFFSETFROM:+0100",
+//     "TZOFFSETTO:+0200",
+//     "TZNAME:CEST",
+//     "DTSTART:19700329T020000",
+//     "RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3",
+//     "END:DAYLIGHT",
+//     "BEGIN:STANDARD",
+//     "TZOFFSETFROM:+0200",
+//     "TZOFFSETTO:+0100",
+//     "TZNAME:CET",
+//     "DTSTART:19701025T030000",
+//     "RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10",
+//     "END:STANDARD",
+//     "END:VTIMEZONE",
+//     "BEGIN:VEVENT",
+//     `UID:${uid}`,
+//     `ORGANIZER;CN="${icsEscape(organizerCN)}":MAILTO:${icsEscape(organizerEmail)}`,
+//     "SEQUENCE:0",
+//     `LOCATION:${icsEscape(locationLine)}`,
+//     "GEO:48.85299;2.36885", // wie in twig (ggf. anpassen/entfernen)
+//     `SUMMARY:${icsEscape(summary)}`,
+//     `DESCRIPTION:${icsEscape(description)}`,
+//     "CLASS:PUBLIC",
+//     `DTSTART;TZID=Europe/Berlin:${dtStartLocal}`,
+//     `DTEND;TZID=Europe/Berlin:${dtEndLocal}`,
+//     `DTSTAMP:${dtStampUtc.replace("Z", "")}`, // twig nutzt lokal ohne Z; hier UTC ohne Z optional
+//     "BEGIN:VALARM",
+//     "ACTION:DISPLAY",
+//     `DESCRIPTION:${icsEscape(summary)}`,
+//     "TRIGGER:-P1D",
+//     "END:VALARM",
+//     "STATUS:CONFIRMED",
+//     "END:VEVENT",
+//     "END:VCALENDAR",
+//     "",
+//   ].join("\r\n");
+
+//   const blob = new Blob([ics], {
+//     type: "text/calendar;charset=utf-8",
+//   });
+//   const url = URL.createObjectURL(blob);
+
+//   const a = document.createElement("a");
+//   a.href = url;
+//   a.download = `appointment-${processId}.ics`;
+//   document.body.appendChild(a);
+//   a.click();
+//   document.body.removeChild(a);
+//   URL.revokeObjectURL(url);
+// }
+
+function downloadIcsAppointment() {
+  const appt: any = appointment.value;
+  if (!appt?.processId || !appt?.authKey) {
+    console.warn("[ICS] processId/authKey fehlen – kein Download möglich");
+    return;
+  }
+  const base = getAPIBaseURL(props.baseUrl);
+  const url = new URL(VUE_APP_ZMS_API_APPOINTMENT_ICS_ENDPOINT, base);
+  url.searchParams.set("processId", String(appt.processId));
+  url.searchParams.set("authKey", String(appt.authKey));
+
+  // Direktdownload durch Navigation auf den Endpunkt
+  window.location.href = url.toString();
+}
+
 </script>
+<style scoped>
+@use "@/styles/breakpoints.scss" as *;
+
+.m-button-group {
+  display: flex;
+  flex-direction: row;
+}
+
+.button-item {
+  margin-bottom: 0;
+  margin-right: 1rem;
+}
+
+@include xs-down {
+  .m-button-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .button-item {
+    margin-right: 0;
+    margin-bottom: 1rem;
+    width: auto;
+    flex: none;
+  }
+}
+</style>
