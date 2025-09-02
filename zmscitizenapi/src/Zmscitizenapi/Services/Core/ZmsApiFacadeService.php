@@ -183,7 +183,6 @@ class ZmsApiFacadeService
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
                     reservationDuration: $rd,
                     hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '') ? (string) $matchingScope->getScopeHint() : null
-   
                 );
             }
         }
