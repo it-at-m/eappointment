@@ -64,7 +64,6 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $resolveReferences = 0, $previousStatus = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
-        $processEntity = $process;
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
