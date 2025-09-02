@@ -186,3 +186,20 @@ body.no-page-scroll {
   margin-bottom: 0;
   margin-top: 1rem;
 }
+
+/* zarte Schraffur für geschlossene Tage/Spalten */
+.overall-calendar-closed {
+  border: 0 !important;
+  background: repeating-linear-gradient(
+                  135deg,
+                  rgba(220, 53, 69, .08),
+                  rgba(220, 53, 69, .08) 6px,
+                  rgba(220, 53, 69, .14) 6px 12px
+  );
+}
+
+/* Header-Highlight wenn der Scope an dem Tag geschlossen ist */
+.overall-calendar-scope-header.is-closed {
+  background: #fdecef !important;
+  border-color: #f3c1c8 !important;
+}
