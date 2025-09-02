@@ -103,7 +103,8 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'slotsPerAppointment' => null,
                 "appointmentsPerMail" => null,
                 "whitelistedMails" => null,
-                "reservationDuration" => null
+                "reservationDuration" => null,
+                "activationDuration" => null
             ],
             'subRequestCounts' => [],
             'serviceId' => 10242339,
