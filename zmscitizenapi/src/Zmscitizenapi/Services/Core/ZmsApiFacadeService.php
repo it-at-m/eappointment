@@ -256,18 +256,18 @@ class ZmsApiFacadeService
     public static function getScopeByOfficeId(int $officeId): ThinnedScope|array
     {
         $providerList = ZmsApiClientService::getOffices() ?? new ProviderList();
-        $provider = null;
-        foreach ($providerList as $p) {
-            if ((int) $p->id === (int) $officeId) {
-                $provider = $p;
+        $selectedProvider = null;
+        foreach ($providerList as $provider) {
+            if ((int) $provider->id === (int) $officeId) {
+                $selectedProvider = $provider;
                 break;
             }
         }
-        if (!$provider) {
+        if (!$selectedProvider) {
             return ['errors' => [self::getError('officeNotFound')]];
         }
 
-        $scopeSource = (string) ($provider->source ?? '');
+        $scopeSource = (string) ($selectedProvider->source ?? '');
         if ($scopeSource === '') {
             return ['errors' => [self::getError('scopeNotFound')]];
         }
@@ -602,13 +602,13 @@ class ZmsApiFacadeService
         $office = ['id' => $officeId, 'source' => $provSrc];
 
         $requests = [];
-        foreach ($serviceIds as $i => $serviceId) {
+        foreach ($serviceIds as $id => $serviceId) {
             $sid   = (string)$serviceId;
             $reqSrc = $requestSource[$sid] ?? null;
             if (!$reqSrc) {
                 return ['errors' => [['message' => 'Unknown service source for ID ' . $sid]]];
             }
-            $count = (int)($serviceCounts[$i] ?? 1);
+            $count = (int)($serviceCounts[$id] ?? 1);
             for ($k = 0; $k < $count; $k++) {
                 $requests[] = ['id' => $serviceId, 'source' => $reqSrc];
             }
@@ -703,13 +703,13 @@ class ZmsApiFacadeService
         }
 
         $requests = [];
-        foreach ($serviceIds as $i => $serviceId) {
+        foreach ($serviceIds as $id => $serviceId) {
             $sid = (string)$serviceId;
             $src = $requestSource[$sid] ?? null;
             if (!$src) {
                 return ['errors' => [['message' => 'Unknown service source for ID ' . $sid]]];
             }
-            $count = (int)($serviceCounts[$i] ?? 1);
+            $count = (int)($serviceCounts[$id] ?? 1);
             for ($k = 0; $k < $count; $k++) {
                 $requests[] = ['id' => $serviceId, 'source' => $src];
             }
