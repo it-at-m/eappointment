@@ -3,6 +3,7 @@
     v-if="show"
     class="modal fade show"
     style="display: block"
+    tabindex="-1"
     role="dialog"
     aria-modal="true"
     :aria-label="dialogAriaLabel"
