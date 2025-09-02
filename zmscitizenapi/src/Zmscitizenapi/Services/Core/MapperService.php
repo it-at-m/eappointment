@@ -105,8 +105,6 @@ class MapperService
                 continue;
             }
 
-            $rd = self::extractReservationDuration($providerScope);
-
             $offices[] = new Office(
                 id: isset($provider->id) ? (int) $provider->id : 0,
                 name: isset($provider->displayName) ? $provider->displayName : (isset($provider->name) ? $provider->name : null),
@@ -142,8 +140,9 @@ class MapperService
                         : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null,
-                    reservationDuration: $rd,
-                    activationDuration: self::extractActivationDuration($providerScope)
+                    reservationDuration: (int) self::extractReservationDuration($providerScope),
+                    activationDuration: self::extractActivationDuration($providerScope),
+                    hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null
                 ) : null,
                 maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null
             );
@@ -299,7 +298,8 @@ class MapperService
             appointmentsPerMail: isset($scope->data['appointmentsPerMail']) ? ((string) $scope->data['appointmentsPerMail'] === '' ? null : (string) $scope->data['appointmentsPerMail']) : null,
             whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null,
             reservationDuration: MapperService::extractReservationDuration($scope),
-            activationDuration: MapperService::extractActivationDuration($scope)
+            activationDuration: MapperService::extractActivationDuration($scope),
+            hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint()
         );
     }
 

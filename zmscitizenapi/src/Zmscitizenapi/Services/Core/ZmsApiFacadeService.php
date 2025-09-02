@@ -91,7 +91,6 @@ class ZmsApiFacadeService
             }
 
             $matchingScope = $scopeMap[$provider->source . '_' . $provider->id] ?? null;
-            $rd = MapperService::extractReservationDuration($matchingScope);
             $offices[] = new Office(
                 id: (int) $provider->id,
                 name: $provider->displayName ?? $provider->name,
@@ -122,8 +121,9 @@ class ZmsApiFacadeService
                     slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
                     appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
-                    reservationDuration: $rd,
-                    activationDuration: MapperService::extractActivationDuration($matchingScope)
+                    activationDuration: MapperService::extractActivationDuration($matchingScope),
+                    reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null
                 ) : null,
                 maxSlotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
             );
@@ -160,7 +160,6 @@ class ZmsApiFacadeService
             $key = $provider->source . '_' . $provider->id;
             if (isset($scopeMap[$key])) {
                 $matchingScope = $scopeMap[$key];
-                $rd = MapperService::extractReservationDuration($matchingScope);
                 $scopesProjectionList[] = new ThinnedScope(
                     id: (int) $matchingScope->id,
                     provider: MapperService::providerToThinnedProvider($provider),
@@ -181,8 +180,9 @@ class ZmsApiFacadeService
                     slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
                     appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
-                    reservationDuration: $rd,
-                    activationDuration: MapperService::extractActivationDuration($matchingScope)
+                    reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
+                    activationDuration: MapperService::extractActivationDuration($matchingScope),
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '') ? (string) $matchingScope->getScopeHint() : null
                 );
             }
         }
@@ -277,7 +277,6 @@ class ZmsApiFacadeService
         $finalProvider = $providerKey && isset($providerMap[$providerKey])
             ? $providerMap[$providerKey]
             : $scopeProvider;
-        $rd = MapperService::extractReservationDuration($matchingScope);
         $result = [
             'id' => $matchingScope->id,
             'provider' => MapperService::providerToThinnedProvider($finalProvider) ?? null,
@@ -298,8 +297,9 @@ class ZmsApiFacadeService
             'slotsPerAppointment' => ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
             'appointmentsPerMail' => ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
             'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
-            'reservationDuration' => $rd,
-            'activationDuration' => MapperService::extractActivationDuration($matchingScope)
+            'reservationDuration' => (int) MapperService::extractReservationDuration($matchingScope),
+            'activationDuration' => MapperService::extractActivationDuration($matchingScope),
+            'hint' => (trim((string) ($matchingScope->getScopeHint() ?? '')) === '') ? null : (string) $matchingScope->getScopeHint(),
         ];
         return new ThinnedScope(
             id: (int) $result['id'],
@@ -322,7 +322,8 @@ class ZmsApiFacadeService
             appointmentsPerMail: $result['appointmentsPerMail'],
             whitelistedMails: $result['whitelistedMails'],
             reservationDuration: $result['reservationDuration'],
-            activationDuration: $result['activationDuration']
+            activationDuration: $result['activationDuration'],
+            hint: $result['hint']
         );
     }
 
@@ -434,7 +435,6 @@ class ZmsApiFacadeService
         $matchingProv = ($providerKey && isset($providerMap[$providerKey]))
             ? $providerMap[$providerKey]
             : $scopeProvider;
-        $rd = MapperService::extractReservationDuration($matchingScope);
         return new ThinnedScope(
             id: (int) $matchingScope->id,
             provider: MapperService::providerToThinnedProvider($matchingProv),
@@ -455,8 +455,9 @@ class ZmsApiFacadeService
             slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
             appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
             whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
-            reservationDuration: $rd,
-            activationDuration: MapperService::extractActivationDuration($matchingScope)
+            reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
+            activationDuration: MapperService::extractActivationDuration($matchingScope),
+            hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint()) ?? null
         );
     }
 
@@ -719,7 +720,6 @@ class ZmsApiFacadeService
             $providerKey = $scopeProvider ? ($scopeProvider->getSource() . '_' . $scopeProvider->id) : null;
             $matchingProvider = $providerKey && isset($providerMap[$providerKey]) ? $providerMap[$providerKey] : $scopeProvider;
             $thinnedProvider = MapperService::providerToThinnedProvider($matchingProvider);
-            $rd = MapperService::extractReservationDuration($process->scope);
             $thinnedScope = new ThinnedScope(
                 id: (int) $process->scope->id,
                 provider: $thinnedProvider,
@@ -740,8 +740,9 @@ class ZmsApiFacadeService
                 slotsPerAppointment: ((string) $process->scope->getSlotsPerAppointment() === '' ? null : (string) $process->scope->getSlotsPerAppointment()) ?? null,
                 appointmentsPerMail: ((string) $process->scope->getAppointmentsPerMail() === '' ? null : (string) $process->scope->getAppointmentsPerMail()) ?? null,
                 whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()) ?? null,
-                reservationDuration: $rd,
-                activationDuration: MapperService::extractActivationDuration($process->scope)
+                reservationDuration: (int) MapperService::extractReservationDuration($process->scope),
+                activationDuration: MapperService::extractActivationDuration($process->scope),
+                hint: ((string) $process->scope->getScopeHint() === '' ? null : (string) $process->scope->getScopeHint()) ?? null
             );
         }
 
