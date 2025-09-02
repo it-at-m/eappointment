@@ -57,11 +57,11 @@ class MapperService
             return null;
         }
         if ($scope instanceof ThinnedScope) {
-            $v = $scope->getReservationDuration();
-            return $v !== null ? (int) $v : null;
+            $reservationDuration = $scope->getReservationDuration();
+            return $reservationDuration !== null ? (int) $reservationDuration : null;
         }
-        $v = $scope?->toProperty()?->preferences?->appointment?->reservationDuration?->get();
-        return $v !== null ? (int) $v : null;
+        $reservationDuration = $scope?->toProperty()?->preferences?->appointment?->reservationDuration?->get();
+        return $reservationDuration !== null ? (int) $reservationDuration : null;
     }
 
     /**
@@ -83,8 +83,6 @@ class MapperService
             if (!$showUnpublished && isset($provider->data['public']) && !(bool) $provider->data['public']) {
                 continue;
             }
-
-            $rd = self::extractReservationDuration($providerScope);
 
             $offices[] = new Office(
                 id: isset($provider->id) ? (int) $provider->id : 0,
@@ -121,7 +119,7 @@ class MapperService
                         : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null,
-                    reservationDuration: $rd,
+                    reservationDuration: (int) self::extractReservationDuration($providerScope),
                     hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null,
                 ) : null,
                 maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null
