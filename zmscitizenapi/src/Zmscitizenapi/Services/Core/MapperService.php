@@ -62,7 +62,6 @@ class MapperService
         }
         $reservationDuration = $scope?->toProperty()?->preferences?->appointment?->reservationDuration?->get();
         return $reservationDuration !== null ? (int) $reservationDuration : null;
-
     }
 
     public static function extractActivationDuration(Scope|ThinnedScope|null $scope): ?int
