@@ -438,11 +438,9 @@
 										{% else %}
 											Spontankunde
 										{% endif %}
-										{% if 1 < item.appointments|first.slotCount %}
-											{% set duration = item.appointments|first.availability.slotTimeInMinutes * item.appointments|first.slotCount %}
-											({{ duration }}
-											min)
-										{% endif %}
+										{% set duration = item.appointments|first.availability.slotTimeInMinutes * item.appointments|first.slotCount %}
+										({{ duration }}
+										min)
 										{% if (item.queue.waitingTimeEstimate != item.queue.waitingTimeOptimistic) and isToday %}
 											<p class="queue-table-amendment-time">+{{ item.queue.waitingTimeOptimistic }}&#8209;{{ item.queue.waitingTimeEstimate }}&nbsp;Min.</p>
 										{% endif %}
