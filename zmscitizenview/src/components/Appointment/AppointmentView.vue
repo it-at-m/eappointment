@@ -74,7 +74,7 @@
               />
               <div v-if="hasUpdateAppointmentError">
                 <muc-callout
-                  :type="getCalloutType(apiErrorTranslation.errorType)"
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
                 >
                   <template #content>
                     {{ t(apiErrorTranslation.textKey) }}
@@ -87,7 +87,7 @@
               </div>
               <div v-if="hasPreconfirmAppointmentError">
                 <muc-callout
-                  :type="getCalloutType(apiErrorTranslation.errorType)"
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
                 >
                   <template #content>
                     {{ t(apiErrorTranslation.textKey) }}
@@ -133,7 +133,7 @@
           </muc-callout>
           <muc-callout
             v-if="hasCancelAppointmentError"
-            :type="getCalloutType(apiErrorTranslation.errorType)"
+            :type="toCalloutType(apiErrorTranslation.errorType)"
           >
             <template #content>
               {{ t(apiErrorTranslation.textKey) }}
@@ -162,7 +162,7 @@
           </muc-callout>
           <muc-callout
             v-if="hasConfirmAppointmentError"
-            :type="getCalloutType(apiErrorTranslation.errorType)"
+            :type="toCalloutType(apiErrorTranslation.errorType)"
           >
             <template #content>
               {{ t(apiErrorTranslation.textKey) }}
@@ -175,7 +175,7 @@
 
           <muc-callout
             v-if="hasInitializationError"
-            :type="getCalloutType(apiErrorTranslation.errorType)"
+            :type="toCalloutType(apiErrorTranslation.errorType)"
           >
             <template #content>
               {{ t(apiErrorTranslation.textKey) }}
@@ -257,6 +257,7 @@ import {
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
+import { toCalloutType } from "@/utils/callout";
 import {
   clearContextErrors,
   createErrorStates,
@@ -375,19 +376,7 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
 });
 
 // Helper function to map API error types to valid callout types
-const getCalloutType = (errorType?: CalloutType): CalloutType => {
-  switch (errorType) {
-    case "warning":
-      return "warning";
-    case "info":
-      return "info";
-    case "success":
-      return "success";
-    case "error":
-    default:
-      return "error";
-  }
-};
+// REMOVED: getCalloutType local implementation in favor of shared util
 
 // Track the current context based on API calls and props
 const currentContext = ref<string>("update");
