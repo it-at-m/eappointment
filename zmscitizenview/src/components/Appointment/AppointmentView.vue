@@ -163,7 +163,6 @@
           <div
             v-if="confirmAppointmentSuccess"
             class="m-button-group"
-            style="margin-top: 1rem"
           >
             <!-- Nachfolgender Button kommt mit Ticket ZMSKVR-97. Styling sollte bereits passen.
                 <muc-button
@@ -921,12 +920,13 @@ onMounted(() => {
   }
 });
 </script>
-<style scoped>
+<style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
 
 .m-button-group {
   display: flex;
   flex-direction: row;
+  margin-top: 1rem;
 }
 
 .button-item {
