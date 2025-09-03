@@ -83,18 +83,29 @@
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
-    <muc-callout type="warning">
+    <muc-callout type="info">
       <template #header>
         <h3>{{ t("apiErrorNoAppointmentForThisScopeHeader") }}</h3>
       </template>
       <template #content>
+        <div class="m-content">
+          {{ t("apiErrorNoAppointmentForThisScopeText") }}
+        </div>
         <div
-          v-if="(selectedProvider?.scope?.infoForAllAppointments || '').trim()"
-          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
-        ></div>
-        <template v-else>{{
-          t("apiErrorNoAppointmentForThisScopeText")
-        }}</template>
+          class="m-content"
+          style="margin-top: 8px"
+          v-if="noneSelectedAvailabilityInfoHtml"
+        >
+          <muc-button
+            variant="ghost"
+            icon="information"
+            icon-shown-left
+            class="no-bottom-margin"
+            @click="openNoneSelectedInfoModal"
+          >
+            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+          </muc-button>
+        </div>
       </template>
     </muc-callout>
   </div>
@@ -145,7 +156,27 @@
       v-if="isListView"
       class="m-content"
     >
-      <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+      <h3
+        class="no-top-margin"
+        tabindex="0"
+      >
+        {{ t("availableTimes") }}
+      </h3>
+      <div
+        class="m-content"
+        style="margin-top: 8px"
+        v-if="availabilityInfoHtml"
+      >
+        <muc-button
+          variant="ghost"
+          icon="information"
+          icon-shown-left
+          class="no-bottom-margin"
+          @click="openAvailabilityInfoModal"
+        >
+          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+        </muc-button>
+      </div>
     </div>
 
     <div
@@ -463,7 +494,26 @@
       class="m-component"
     >
       <div class="m-content">
-        <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+        <h3
+          class="no-top-margin"
+          tabindex="0"
+        >
+          {{ t("availableTimes") }}
+        </h3>
+      </div>
+      <div
+        class="m-content"
+        style="margin: 8px 0 0 0"
+        v-if="availabilityInfoHtml"
+      >
+        <muc-button
+          variant="ghost"
+          icon="information"
+          icon-shown-left
+          @click="openAvailabilityInfoModal"
+        >
+          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+        </muc-button>
       </div>
       <div
         style="
@@ -599,7 +649,26 @@
       class="m-component"
     >
       <div class="m-content">
-        <h3 tabindex="0">{{ t("availableTimes") }}</h3>
+        <h3
+          class="no-top-margin"
+          tabindex="0"
+        >
+          {{ t("availableTimes") }}
+        </h3>
+      </div>
+      <div
+        class="m-content"
+        style="margin: 8px 0 0 0"
+        v-if="availabilityInfoHtml"
+      >
+        <muc-button
+          variant="ghost"
+          icon="information"
+          icon-shown-left
+          @click="openAvailabilityInfoModal"
+        >
+          <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+        </muc-button>
       </div>
       <div
         style="
@@ -767,22 +836,33 @@
     class="m-component"
   >
     <h2 tabindex="0">{{ t("time") }}</h2>
-    <muc-callout type="warning">
+    <muc-callout :type="toCalloutType(apiErrorTranslation.errorType)">
       <template #header>
         <h3>{{ t(apiErrorTranslation.headerKey) }}</h3>
       </template>
       <template #content>
+        <div class="m-content">{{ t(apiErrorTranslation.textKey) }}</div>
         <div
+          class="m-content"
+          style="margin-top: 8px"
           v-if="
             (apiErrorTranslation.textKey ===
               'apiErrorNoAppointmentForThisScopeText' ||
               apiErrorTranslation.textKey ===
                 'apiErrorNoAppointmentForThisDayText') &&
-            (selectedProvider?.scope?.infoForAllAppointments || '').trim()
+            availabilityInfoHtml
           "
-          v-html="sanitizeHtml(selectedProvider?.scope?.infoForAllAppointments)"
-        ></div>
-        <template v-else>{{ t(apiErrorTranslation.textKey) }}</template>
+        >
+          <muc-button
+            variant="ghost"
+            icon="information"
+            icon-shown-left
+            class="no-bottom-margin"
+            @click="openAvailabilityInfoModal"
+          >
+            <template #default>{{ t("newAppointmentsInfoLink") }}</template>
+          </muc-button>
+        </div>
       </template>
     </muc-callout>
   </div>
@@ -811,10 +891,18 @@
       </template>
     </muc-button>
   </div>
+  <AvailabilityInfoModal
+    :show="showAvailabilityInfoModal"
+    :html="availabilityInfoHtmlForModal"
+    :closeAriaLabel="t('closeDialog')"
+    @close="closeAvailabilityInfoModal"
+  />
 </template>
 
 <script setup lang="ts">
 import type { AccordionDay } from "@/types/AccordionDay";
+import type { CalloutType } from "@/utils/callout";
+import type { ApiErrorTranslation } from "@/utils/errorHandler";
 import type { Ref } from "vue";
 
 import {
@@ -847,12 +935,15 @@ import {
   SelectedTimeslotProvider,
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
+import { toCalloutType } from "@/utils/callout";
 import {
   createErrorStates,
   getApiErrorTranslation,
   handleApiResponse,
 } from "@/utils/errorHandler";
+import { generateAvailabilityInfoHtml } from "@/utils/infoForAllAppointments";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import AvailabilityInfoModal from "./AvailabilityInfoModal.vue";
 
 const props = defineProps<{
   baseUrl: string | undefined;
@@ -863,6 +954,7 @@ const props = defineProps<{
   captchaToken: string | null;
   bookingError: boolean;
   bookingErrorKey: string;
+  errorType?: CalloutType;
   t: (key: string) => string;
 }>();
 
@@ -900,16 +992,18 @@ const appointmentTimestamps = ref<number[]>([]);
 
 const errorStates = createErrorStates();
 const errorStateMap = computed(() => errorStates.errorStateMap);
+const currentErrorData = computed(() => errorStates.currentErrorData);
 
 const error = ref<boolean>(false);
 const showError = computed(() => error.value || props.bookingError);
 
-const apiErrorTranslation = computed(() => {
+const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   // If we have a booking error from props, use that instead of our own error states
   if (props.bookingError && props.bookingErrorKey) {
     return {
       headerKey: `${props.bookingErrorKey}Header`,
       textKey: `${props.bookingErrorKey}Text`,
+      errorType: props.errorType || "error", // Use prop if provided, otherwise default to "error"
     };
   }
   // If we're switching providers, don't show any error messages
@@ -917,10 +1011,11 @@ const apiErrorTranslation = computed(() => {
     return {
       headerKey: "",
       textKey: "",
+      errorType: "error", // Default
     };
   }
   // Otherwise, use our own error states
-  return getApiErrorTranslation(errorStateMap.value);
+  return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
 });
 
 const selectedDay = ref<Date>();
@@ -1294,11 +1389,22 @@ const currentDayPart = computed(() => {
 });
 
 const refetchAvailableDaysForSelection = async (): Promise<void> => {
-  const providers = selectableProviders.value || [];
+  // Only fetch available days for currently selected providers
+  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
+    (id) => selectedProviders.value[id]
+  );
 
-  // Always fetch available days for all selectable providers.
-  // Selection-specific filtering is handled later by updateDateRangeForSelectedProviders.
-  const providerIdsToQuery = providers.map((p) => Number(p.id));
+  if (selectedProviderIds.length === 0) {
+    // No providers selected, clear available days but keep providers visible
+    availableDays.value = [];
+    availableDaysFetched.value = true;
+    error.value = false;
+    isSwitchingProvider.value = false;
+    updateDateRangeForSelectedProviders();
+    return;
+  }
+
+  const providerIdsToQuery = selectedProviderIds.map(Number);
 
   const data = await fetchAvailableDays(
     providerIdsToQuery,
@@ -1328,10 +1434,11 @@ const refetchAvailableDaysForSelection = async (): Promise<void> => {
     );
     calendarKey.value++;
     availableDaysFetched.value = true;
-    minDate.value = new Date((days[0] as any).time);
-    maxDate.value = new Date((days[days.length - 1] as any).time);
     error.value = false;
     isSwitchingProvider.value = false;
+
+    // Update date range based on selected providers
+    updateDateRangeForSelectedProviders();
   } else {
     handleError(data);
     isSwitchingProvider.value = false;
@@ -1349,7 +1456,7 @@ const showSelectionForProvider = async (provider: OfficeImpl) => {
 
 const handleError = (data: any): void => {
   error.value = true;
-  handleApiResponse(data, errorStateMap.value);
+  handleApiResponse(data, errorStateMap.value, currentErrorData.value);
 };
 
 const getAppointmentsOfDay = (date: string) => {
@@ -1526,30 +1633,17 @@ const hasAppointmentsForSelectedProviders = () => {
   );
 };
 
-// Add new computed property to filter providers with appointments
 const providersWithAppointments = computed(() => {
-  // If no available days or empty available days, return empty array
-  if (!availableDays?.value || availableDays.value.length === 0) {
-    return [];
-  }
-
-  // Filter providers that have appointments and maintain their original order
-  return (selectableProviders.value || [])
-    .filter((provider) => {
-      return (availableDays.value ?? []).some((day) =>
-        day.providerIDs.split(",").includes(provider.id.toString())
-      );
-    })
-    .sort((a, b) => {
-      const aPriority = a.priority ?? -Infinity;
-      const bPriority = b.priority ?? -Infinity;
-      return bPriority - aPriority;
-    });
+  // Always return all selectable providers to maintain UI state
+  // The filtering for calendar display happens in updateDateRangeForSelectedProviders
+  return (selectableProviders.value || []).sort((a, b) => {
+    const aPriority = a.priority ?? -Infinity;
+    const bPriority = b.priority ?? -Infinity;
+    return bPriority - aPriority;
+  });
 });
 
-// Add new computed property to track if any provider with appointments is selected
 const hasSelectedProviderWithAppointments = computed(() => {
-  // If no available days or empty available days, return false
   if (!availableDays?.value || availableDays.value.length === 0) {
     return false;
   }
@@ -1560,6 +1654,42 @@ const hasSelectedProviderWithAppointments = computed(() => {
       providersWithAppointments.value.some((p) => p.id.toString() === id)
   );
 });
+
+const shouldShowLocationSpecificInfo = computed(() => {
+  // Show location-specific info when at least one provider is selected
+  const selectedCount = Object.values(selectedProviders.value).filter(
+    Boolean
+  ).length;
+  return selectedCount > 0 || !!selectedProvider.value;
+});
+
+// Watch for changes in selectedProviders and update selectedProvider accordingly
+watch(
+  selectedProviders,
+  (newSelection) => {
+    const selectedCount = Object.values(newSelection).filter(Boolean).length;
+
+    if (selectedCount === 1) {
+      // Exactly one provider selected, update selectedProvider to that one
+      const selectedProviderId = Object.keys(newSelection).find(
+        (id) => newSelection[id]
+      );
+
+      if (selectedProviderId && selectableProviders.value) {
+        const provider = selectableProviders.value.find(
+          (p) => p.id.toString() === selectedProviderId
+        );
+        if (provider) {
+          selectedProvider.value = provider;
+        }
+      }
+    } else {
+      // Multiple or no providers selected, clear selectedProvider
+      selectedProvider.value = undefined;
+    }
+  },
+  { deep: true }
+);
 
 watch(selectedDay, (newDate) => {
   selectedTimeslot.value = 0;
@@ -2064,6 +2194,20 @@ onUnmounted(() => {
 });
 
 const providerSelectionError = computed(() => {
+  // Check if any providers are selected
+  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
+    (id) => selectedProviders.value[id]
+  );
+
+  // If no providers are selected at all, show error
+  if (
+    selectedProviderIds.length === 0 &&
+    providersWithAppointments.value.length > 0
+  ) {
+    return props.t("errorMessageProviderSelection");
+  }
+
+  // If available days is empty (no data fetched), don't show error yet
   if (!availableDays?.value || availableDays.value.length === 0) {
     return "";
   }
@@ -2078,9 +2222,12 @@ const providerSelectionError = computed(() => {
 });
 
 const noProviderSelected = computed(() => {
-  const providers = providersWithAppointments.value || [];
-  if (!providers.length) return false;
-  return providers.every((p) => !selectedProviders.value[String(p.id)]);
+  // Check if any providers are selected
+  const selectedProviderIds = Object.keys(selectedProviders.value).filter(
+    (id) => selectedProviders.value[id]
+  );
+
+  return selectedProviderIds.length === 0;
 });
 
 const APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW = 18;
@@ -2088,6 +2235,60 @@ const APPOINTMENTS_THRESHOLD_FOR_HOURLY_VIEW = 18;
 const isListView = ref(false);
 const toggleView = () => {
   isListView.value = !isListView.value;
+};
+
+// Modal state and handlers
+const showAvailabilityInfoModal = ref(false);
+const availabilityInfoHtmlOverride = ref("");
+const openAvailabilityInfoModal = () => {
+  availabilityInfoHtmlOverride.value = "";
+  showAvailabilityInfoModal.value = true;
+};
+const closeAvailabilityInfoModal = () => {
+  showAvailabilityInfoModal.value = false;
+  availabilityInfoHtmlOverride.value = "";
+};
+
+const availabilityInfoHtml = computed(() => {
+  return generateAvailabilityInfoHtml(
+    selectedProviders.value,
+    selectableProviders.value,
+    selectedProvider.value,
+    sanitizeHtml
+  );
+});
+
+// When no providers are selected, show info trigger if any availability info exists across providers.
+// If all providers share the same info, show that; otherwise, group by provider names using the shared generator.
+const noneSelectedAvailabilityInfoHtml = computed(() => {
+  if (!noProviderSelected.value) return "";
+  const providers = selectableProviders.value || [];
+  if (providers.length === 0) return "";
+
+  // Build a synthetic selection that includes all selectable providers
+  const allSelectedMap: Record<string, boolean> = {};
+  providers.forEach((p: any) => {
+    if (p?.id != null) allSelectedMap[String(p.id)] = true;
+  });
+
+  return generateAvailabilityInfoHtml(
+    allSelectedMap,
+    selectableProviders.value,
+    undefined,
+    sanitizeHtml
+  );
+});
+
+const availabilityInfoHtmlForModal = computed(() => {
+  return availabilityInfoHtmlOverride.value || availabilityInfoHtml.value;
+});
+
+const openNoneSelectedInfoModal = () => {
+  const html = noneSelectedAvailabilityInfoHtml.value;
+  if (html) {
+    availabilityInfoHtmlOverride.value = html;
+    showAvailabilityInfoModal.value = true;
+  }
 };
 
 const openAccordionIndex = ref(0);
@@ -2249,6 +2450,17 @@ const getCurrentDayPartForDay = (
 
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
+
+.no-bottom-margin,
+.no-bottom-margin.m-button,
+.no-bottom-margin .m-button {
+  margin-bottom: 0 !important;
+}
+
+.no-top-margin,
+.no-top-margin h3 {
+  margin-top: 0 !important;
+}
 
 .wrapper {
   display: grid;
@@ -2419,16 +2631,6 @@ div:has(.left-text) {
 
 .float-right .m-button__icon {
   margin-left: 12px !important;
-}
-
-.m-callout__content ul {
-  list-style-type: disc !important;
-  padding-left: 1.5rem !important;
-}
-
-.m-callout__content ul li {
-  list-style-type: disc !important;
-  padding-left: 0.5rem !important;
 }
 
 .muc-calendar-view-full-size .muc-calendar-item,
