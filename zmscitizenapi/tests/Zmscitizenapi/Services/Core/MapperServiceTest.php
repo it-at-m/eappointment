@@ -217,7 +217,8 @@ class MapperServiceTest extends TestCase
                 'customTextfield2Required' => null,
                 'customTextfield2Label' => null,
                 'captchaActivatedRequired' => null,
-                'displayInfo' => null,
+                'infoForAppointment' => null,
+                'infoForAllAppointments' => null,
                 'slotsPerAppointment' => null
             ],
             'subRequestCounts' => [],
@@ -255,7 +256,8 @@ class MapperServiceTest extends TestCase
         $this->assertEquals($scope['customTextfield2Required'], $result->scope->customTextfield2Required);
         $this->assertEquals($scope['customTextfield2Label'], $result->scope->customTextfield2Label);
         $this->assertEquals($scope['captchaActivatedRequired'], $result->scope->captchaActivatedRequired);
-        $this->assertEquals($scope['displayInfo'], $result->scope->displayInfo);
+        $this->assertEquals($scope['infoForAppointment'], $result->scope->infoForAppointment);
+        $this->assertEquals($scope['infoForAllAppointments'], $result->scope->infoForAllAppointments);
         $this->assertEquals($scope['slotsPerAppointment'], $result->scope->slotsPerAppointment);
         $this->assertEquals($expectedResponse['subRequestCounts'], $result->subRequestCounts);
         $this->assertEquals($expectedResponse['serviceId'], $result->serviceId);
@@ -661,7 +663,8 @@ class MapperServiceTest extends TestCase
         $this->assertNull($result->customTextfield2Required);
         $this->assertNull($result->customTextfield2Label);
         $this->assertNull($result->captchaActivatedRequired);
-        $this->assertNull($result->displayInfo);
+        $this->assertNull($result->infoForAppointment);
+        $this->assertNull($result->infoForAllAppointments);
         $this->assertNull($result->slotsPerAppointment);
     }
 

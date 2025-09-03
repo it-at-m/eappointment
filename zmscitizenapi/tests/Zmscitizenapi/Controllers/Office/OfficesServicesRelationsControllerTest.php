@@ -83,10 +83,14 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => false,
                         "customTextfield2Label" => "Second Custom Label",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null,
+                        "infoForAppointment" => null,
+                        "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "reservationDuration" => null,
+                        "activationDuration" => null,
+                        "hint" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ],
@@ -136,10 +140,14 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => true,
                         "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null,
+                        "infoForAppointment" => null,
+                        "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "reservationDuration" => null,
+                        "activationDuration" => null,
+                        "hint" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ]
@@ -245,10 +253,14 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => false,
                         "customTextfield2Label" => "Second Custom Label",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null,
+                        "infoForAppointment" => null,
+                        "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "reservationDuration" => null,
+                        "activationDuration" => null,
+                        "hint" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ],
@@ -298,10 +310,14 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => true,
                         "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
-                        "displayInfo" => null,
+                        "infoForAppointment" => null,
+                        "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
                         "appointmentsPerMail" => null,
-                        "whitelistedMails" => null
+                        "whitelistedMails" => null,
+                        "reservationDuration" => null,
+                        "activationDuration" => null,
+                        "hint" => null
                     ],
                     "maxSlotsPerAppointment" => null
                 ]
