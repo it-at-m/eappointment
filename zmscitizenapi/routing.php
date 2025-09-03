@@ -358,9 +358,6 @@
 \App::$slim->get('/appointment/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController')->setName("AppointmentByIdController");
 \App::$slim->get('/appointment', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController')->setName("AppointmentByIdController");
 
-\App::$slim->get('/appointment-ics/', '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentIcsController')->setName("AppointmentIcsController");
-\App::$slim->get('/appointment-ics',  '\BO\Zmscitizenapi\Controllers\Appointment\AppointmentIcsController')->setName("AppointmentIcsController");
-
 /**
  * @swagger
  * /captcha-details/:
