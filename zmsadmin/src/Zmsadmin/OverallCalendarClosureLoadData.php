@@ -12,9 +12,12 @@ class OverallCalendarClosureLoadData extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $scopeIds  = $_GET['scopeIds']  ?? null;
-        $dateFrom  = $_GET['dateFrom']  ?? null;
-        $dateUntil = $_GET['dateUntil'] ?? null;
+        $query = [];
+        parse_str($request->getUri()->getQuery(), $query);
+
+        $scopeIds  = $query['scopeIds']  ?? null;
+        $dateFrom  = $query['dateFrom']  ?? null;
+        $dateUntil = $query['dateUntil'] ?? null;
 
         if (!$scopeIds || !$dateFrom || !$dateUntil) {
             $error = [
@@ -22,7 +25,9 @@ class OverallCalendarClosureLoadData extends BaseController
                 'message' => 'Missing required parameters: scopeIds, dateFrom, dateUntil',
             ];
             $response->getBody()->write(json_encode($error));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
         }
 
         $params = [
@@ -35,13 +40,24 @@ class OverallCalendarClosureLoadData extends BaseController
         $apiResp   = $apiResult->getResponse();
 
         $lastMod = $apiResp->getHeaderLine('Last-Modified');
-        if ($lastMod) {
+        if ($lastMod !== '') {
             $response = $response->withHeader('Last-Modified', $lastMod);
         }
+        $contentType = $apiResp->getHeaderLine('Content-Type');
+        if ($contentType !== '') {
+            $response = $response->withHeader('Content-Type', $contentType);
+        } else {
+            $response = $response->withHeader('Content-Type', 'application/json');
+        }
 
-        $rawBody = (string)$apiResp->getBody();
+        $bodyStream = $apiResp->getBody();
+        if ($bodyStream->isSeekable()) {
+            $bodyStream->rewind();
+        }
+        $rawBody = (string)$bodyStream;
+
         $response->getBody()->write($rawBody);
 
-        return $response->withHeader('Content-Type', 'application/json');
+        return $response->withStatus($apiResp->getStatusCode());
     }
 }
