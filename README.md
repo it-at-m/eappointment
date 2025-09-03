@@ -129,8 +129,7 @@ We use PHPCS (following PSR-12 standards) and PHPMD to maintain code quality and
 To run Checks locally in your local docker container:
 
 0. Run all at once:
-- `ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'"`
-- `ddev exec "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src/'"`
+- `ddev exec "./cli modules loop 'vendor/bin/phpcs --standard=psr12 src/'" && ddev exec "./cli modules loop 'vendor/bin/phpcbf --standard=psr12 src'"`
 1. Enter the container (if using DDEV or Docker):
 - `ddev ssh`
 2. Go to the desired module directory:
