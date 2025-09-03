@@ -120,7 +120,10 @@ class ZmsApiFacadeService
                     infoForAllAppointments: $matchingScope->getInfoForAllAppointments(),
                     slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
                     appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
-                    whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails())
+                    whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
+                    activationDuration: MapperService::extractActivationDuration($matchingScope),
+                    reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null
                 ) : null,
                 maxSlotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
             );
@@ -176,7 +179,10 @@ class ZmsApiFacadeService
                     infoForAllAppointments: $matchingScope->getInfoForAllAppointments(),
                     slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()),
                     appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()),
-                    whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails())
+                    whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
+                    reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
+                    activationDuration: MapperService::extractActivationDuration($matchingScope),
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '') ? (string) $matchingScope->getScopeHint() : null
                 );
             }
         }
@@ -290,7 +296,10 @@ class ZmsApiFacadeService
             'infoForAllAppointments' => $matchingScope->getInfoForAllAppointments() ?? null,
             'slotsPerAppointment' => ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
             'appointmentsPerMail' => ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
-            'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null
+            'whitelistedMails' => ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
+            'reservationDuration' => (int) MapperService::extractReservationDuration($matchingScope),
+            'activationDuration' => MapperService::extractActivationDuration($matchingScope),
+            'hint' => (trim((string) ($matchingScope->getScopeHint() ?? '')) === '') ? null : (string) $matchingScope->getScopeHint(),
         ];
         return new ThinnedScope(
             id: (int) $result['id'],
@@ -311,7 +320,10 @@ class ZmsApiFacadeService
             infoForAllAppointments: $result['infoForAllAppointments'],
             slotsPerAppointment: $result['slotsPerAppointment'],
             appointmentsPerMail: $result['appointmentsPerMail'],
-            whitelistedMails: $result['whitelistedMails']
+            whitelistedMails: $result['whitelistedMails'],
+            reservationDuration: $result['reservationDuration'],
+            activationDuration: $result['activationDuration'],
+            hint: $result['hint']
         );
     }
 
@@ -442,7 +454,10 @@ class ZmsApiFacadeService
             infoForAllAppointments: $matchingScope->getInfoForAllAppointments() ?? null,
             slotsPerAppointment: ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) ?? null,
             appointmentsPerMail: ((string) $matchingScope->getAppointmentsPerMail() === '' ? null : (string) $matchingScope->getAppointmentsPerMail()) ?? null,
-            whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null
+            whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()) ?? null,
+            reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
+            activationDuration: MapperService::extractActivationDuration($matchingScope),
+            hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint()) ?? null
         );
     }
 
@@ -724,7 +739,10 @@ class ZmsApiFacadeService
                 infoForAllAppointments: $process->scope->getInfoForAllAppointments() ?? null,
                 slotsPerAppointment: ((string) $process->scope->getSlotsPerAppointment() === '' ? null : (string) $process->scope->getSlotsPerAppointment()) ?? null,
                 appointmentsPerMail: ((string) $process->scope->getAppointmentsPerMail() === '' ? null : (string) $process->scope->getAppointmentsPerMail()) ?? null,
-                whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()) ?? null
+                whitelistedMails: ((string) $process->scope->getWhitelistedMails() === '' ? null : (string) $process->scope->getWhitelistedMails()) ?? null,
+                reservationDuration: (int) MapperService::extractReservationDuration($process->scope),
+                activationDuration: MapperService::extractActivationDuration($process->scope),
+                hint: ((string) $process->scope->getScopeHint() === '' ? null : (string) $process->scope->getScopeHint()) ?? null
             );
         }
 
