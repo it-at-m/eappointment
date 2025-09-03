@@ -90,4 +90,10 @@ export interface Scope {
    * @memberof Scope
    */
   infoForAllAppointments?: string | null;
+  /**
+   *
+   * @type {string | null}
+   * @memberof Scope
+   */
+  hint?: string | null;
 }
