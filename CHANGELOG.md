@@ -1,3 +1,47 @@
+## Release Muc-30 (03.09.2025)              
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-615'>ZMSKVR-615</a>] -         Fehler bei Ablauf der Blocker-Zeit und doppelter Buchung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-668'>ZMSKVR-668</a>] -         Bürgerfrontend2: Dropdown zur Leistungsauswahl schließen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-730'>ZMSKVR-730</a>] -         Jump Link führt unter bestimmten Bedingungen zu falschem Tag im Kalender
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-767'>ZMSKVR-767</a>] -          Interne Dienstleistungen in der neuen Bürgeransicht angezeigt und verursachen Fehlermeldung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-770'>ZMSKVR-770</a>] -         Falsche Anzeige von buchbaren Tagen in der neuen Bürgeransicht /Vorlauf
+</li>
+</ul>
+                                                                                                                                                                                                                
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-470'>ZMSKVR-470</a>] -         Captcha Design
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-516'>ZMSKVR-516</a>] -         Schritt 3: Kontakt – Abstand zwischen Inputs und Buttons erhöhen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-525'>ZMSKVR-525</a>] -         Schritt 5: Bestätigung – Texte Callouts anpassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-611'>ZMSKVR-611</a>] -         Schritt 1: Leistung – Abstand bei &quot;Kombinierbaren Leistungen&quot;
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-768'>ZMSKVR-768</a>] -         Bürgerfrontend 2: Sprache sollte Deutsch sein für Barrierefreiheit
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-772'>ZMSKVR-772</a>] -         BF2: Kalenderansicht: Kalender nicht barrierefrei
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-775'>ZMSKVR-775</a>] -         Schritt 2: Termin – Abstand vor Ort-Checkboxen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-776'>ZMSKVR-776</a>] -         Schritt 2: Termin – Formatierung Akkordeon-Headlines Listenansicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-801'>ZMSKVR-801</a>] -         Standortspezifische Meldungen bei nicht verfügbaren Terminen pflegen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-812'>ZMSKVR-812</a>] -         Hinweismeldungen zu Terminverfügbarkeiten per Pop-up anzeigen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-813'>ZMSKVR-813</a>] -         Kundenhinweis im Bürgerfrontend nach Adressblock anzeigen
+</li>
+</ul>
+                                                        
+
 ## Release Muc-29 (22.08.2025)                       
 <h2>        Bug
 </h2>
