@@ -742,6 +742,7 @@ class ProcessTest extends Base
                     "appointment"=>[
                         "deallocationDuration"=>"5",
                         "infoForAppointment"=>"",
+                        "infoForAllAppointments"=>"",
                         "endInDaysDefault"=>"60",
                         "multipleSlotsEnabled"=>"1",
                         "reservationDuration"=>"5",
