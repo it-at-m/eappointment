@@ -18,15 +18,22 @@ class AvailabilityClosureRead extends BaseController
 
         $scopeIdCsv = Validator::param('scopeIds')
             ->isString()->isMatchOf('/^\d+(,\d+)*$/')->assertValid()->getValue();
-        $scopeIds   = array_map('intval', explode(',', $scopeIdCsv));
+        $scopeIds = array_values(array_unique(array_map('intval', explode(',', $scopeIdCsv))));
 
-        $dateFrom   = Validator::param('dateFrom')->isDate('Y-m-d')->assertValid()->getValue();
-        $dateUntil  = Validator::param('dateUntil')->isDate('Y-m-d')->assertValid()->getValue();
+        $dateFrom  = Validator::param('dateFrom')->isDate('Y-m-d')->assertValid()->getValue();
+        $dateUntil = Validator::param('dateUntil')->isDate('Y-m-d')->assertValid()->getValue();
+
+        $dtFrom  = new DateTimeImmutable($dateFrom);
+        $dtUntil = new DateTimeImmutable($dateUntil);
+        if ($dtFrom > $dtUntil) {
+            $payload = ['error' => true, 'message' => 'dateFrom must be before or equal to dateUntil'];
+            return Render::withJson($response->withStatus(400), $payload, 400);
+        }
 
         $items = (new ClosureQuery())->readByScopesInRange(
             $scopeIds,
-            new DateTimeImmutable($dateFrom),
-            new DateTimeImmutable($dateUntil)
+            $dtFrom,
+            $dtUntil
         );
 
         $msg       = Response\Message::create($request);
@@ -34,6 +41,7 @@ class AvailabilityClosureRead extends BaseController
 
         $lastModified = (new DateTimeImmutable())->getTimestamp();
         $response = Render::withLastModified($response, $lastModified, '0');
+
         return Render::withJson($response, $msg->setUpdatedMetaData(), $msg->getStatuscode());
     }
 }
