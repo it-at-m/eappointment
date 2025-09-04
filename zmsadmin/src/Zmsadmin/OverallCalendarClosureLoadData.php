@@ -13,11 +13,19 @@ class OverallCalendarClosureLoadData extends BaseController
         array $args
     ) {
         $query = [];
-        parse_str($request->getUri()->getQuery(), $query);
+        $uriQuery = $request->getUri()->getQuery();
+        if ($uriQuery !== '') {
+            parse_str($uriQuery, $query);
+        }
 
-        $scopeIds  = $query['scopeIds']  ?? null;
-        $dateFrom  = $query['dateFrom']  ?? null;
-        $dateUntil = $query['dateUntil'] ?? null;
+        $scopeIds  = $query['scopeIds']  ?? ($_GET['scopeIds']  ?? null);
+        $dateFrom  = $query['dateFrom']  ?? ($_GET['dateFrom']  ?? null);
+        $dateUntil = $query['dateUntil'] ?? ($_GET['dateUntil'] ?? null);
+
+        if ($scopeIds === null && $dateFrom === null && $dateUntil === null) {
+            $response->getBody()->write(json_encode([]));
+            return $response->withHeader('Content-Type', 'application/json');
+        }
 
         if (!$scopeIds || !$dateFrom || !$dateUntil) {
             $error = [
@@ -44,17 +52,16 @@ class OverallCalendarClosureLoadData extends BaseController
             $response = $response->withHeader('Last-Modified', $lastMod);
         }
         $contentType = $apiResp->getHeaderLine('Content-Type');
-        if ($contentType !== '') {
-            $response = $response->withHeader('Content-Type', $contentType);
-        } else {
-            $response = $response->withHeader('Content-Type', 'application/json');
-        }
+        $response = $response->withHeader(
+            'Content-Type',
+            $contentType !== '' ? $contentType : 'application/json'
+        );
 
         $bodyStream = $apiResp->getBody();
         if ($bodyStream->isSeekable()) {
             $bodyStream->rewind();
         }
-        $rawBody = (string)$bodyStream;
+        $rawBody = (string) $bodyStream;
 
         $response->getBody()->write($rawBody);
 
