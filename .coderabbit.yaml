@@ -1,3 +1,5 @@
+chat:
+  auto_reply: false
 reviews:
   review_status: true
   auto_review:
