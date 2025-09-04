@@ -20,11 +20,11 @@ class MaintenanceMiddleware implements MiddlewareInterface
             $error = ErrorMessages::get(self::ERROR_UNAVAILABLE);
             // Override the statusCode in the error object to match the HTTP response
             $error['statusCode'] = self::HTTP_BAD_REQUEST;
-            
+
             $response = \App::$slim->getResponseFactory()->createResponse();
             $response = $response->withStatus(self::HTTP_BAD_REQUEST)
                 ->withHeader('Content-Type', 'application/json');
-            
+
             // Write JSON response
             $responseBody = json_encode([
                 'errors' => [$error]
