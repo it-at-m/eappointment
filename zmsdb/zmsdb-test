@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # zmsdb-test - Automated testing script for zmsdb module
 # Usage: ./zmsdb-test [PHPUnit arguments...]
