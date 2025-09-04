@@ -46,9 +46,39 @@ export function fetchServicesAndProviders(
     apiUrl += "?" + params.toString();
   }
 
-  return fetch(apiUrl).then((response) => {
-    return response.json();
-  });
+  return fetch(apiUrl)
+    .then((response) => {
+      // Check if the response status indicates an error (400-599)
+      if (response.status >= 400 && response.status < 600) {
+        // For 400/500 errors, we'll let the services handle it
+        // by returning a response that indicates an error
+        return response.json().then((data) => {
+          // Ensure the response has an errors array for error detection
+          if (!data.errors) {
+            data.errors = [{
+              errorCode: response.status >= 500 ? "serverError" : "internalError",
+              errorMessage: `HTTP ${response.status}`,
+              statusCode: response.status
+            }];
+          }
+          return data;
+        });
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      // Network errors, timeouts, connection refused, etc. should be handled by system failure service
+      console.warn("fetchServicesAndProviders failed:", error);
+      // Return a response that will trigger system failure mode
+      // Use statusCode: 0 to indicate network failure (no HTTP status)
+      return {
+        errors: [{
+          errorCode: "networkError",
+          errorMessage: "Network error or service unavailable",
+          statusCode: 0
+        }]
+      };
+    });
 }
 
 export function fetchAvailableDays(

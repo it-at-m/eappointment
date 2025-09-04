@@ -1,7 +1,41 @@
 <template>
   <div class="m-component m-component-form">
+    <!-- Maintenance Page -->
+    <maintenance-page
+      v-if="isInMaintenanceModeComputed"
+      :t="t"
+    />
+    
+    <!-- System Failure Page -->
+    <system-failure-page
+      v-if="isInSystemFailureModeComputed"
+      :t="t"
+    />
+    
+    <!-- Error Alert (for rate limit, etc.) -->
+    <div v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && errorStates.errorStateMap.apiErrorRateLimitExceeded.value">
+      <error-alert
+        :message="t(apiErrorTranslation.textKey)"
+        :header="t(apiErrorTranslation.headerKey)"
+      />
+    </div>
+    
+    <!-- ServiceFinder Rate Limit Error Alert -->
+    <div v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && !errorStates.errorStateMap.apiErrorRateLimitExceeded.value && serviceFinderRateLimitError">
+      <error-alert
+        :message="t('apiErrorRateLimitExceededText')"
+        :header="t('apiErrorRateLimitExceededHeader')"
+      />
+    </div>
+    
+    
+    <!-- Normal Application Content -->
     <div
       v-if="
+        !isInMaintenanceModeComputed &&
+        !isInSystemFailureModeComputed &&
+        !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
+        !serviceFinderRateLimitError &&
         !confirmAppointmentHash &&
         !apiErrorAppointmentNotFound &&
         !apiErrorInvalidJumpinLink &&
@@ -27,6 +61,7 @@
                 @next="setServices"
                 @captchaTokenChanged="captchaToken = $event ?? undefined"
                 @invalidJumpinLink="handleInvalidJumpinLink"
+                @rateLimitError="handleServiceFinderRateLimitError"
               />
             </div>
 
@@ -103,7 +138,10 @@
         </div>
       </div>
     </div>
-    <div class="m-component__grid">
+    <div 
+      v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && !errorStates.errorStateMap.apiErrorRateLimitExceeded.value && !serviceFinderRateLimitError"
+      class="m-component__grid"
+    >
       <div class="m-component__column">
         <div
           v-if="currentView === 4"
@@ -243,7 +281,10 @@ import {
 import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue";
 import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
+import ErrorAlert from "@/components/Common/ErrorAlert.vue";
+import MaintenancePage from "@/components/Common/MaintenancePage.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
+import SystemFailurePage from "@/components/Common/SystemFailurePage.vue";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { CustomerData } from "@/types/CustomerData";
@@ -263,13 +304,19 @@ import {
   createErrorStates,
   getApiErrorTranslation,
   handleApiError,
-  handleApiResponse,
+  handleApiResponse as handleErrorApiResponse,
   hasCancelContextError,
   hasConfirmContextError,
   hasInitializationContextError,
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import {
+  getApiStatusState,
+  handleApiResponse,
+  isInMaintenanceMode,
+  isInSystemFailureMode,
+} from "@/utils/apiStatusService";
 
 const props = defineProps<{
   baseUrl?: string;
@@ -349,11 +396,17 @@ const bookingErrorKey = computed(() => {
 const confirmAppointmentSuccess = ref<boolean>(false);
 const cancelAppointmentSuccess = ref<boolean>(false);
 const cancelAppointmentError = ref<boolean>(false);
+const serviceFinderRateLimitError = ref<boolean>(false);
 
 // Create centralized error states
 const errorStates = createErrorStates();
 const errorStateMap = computed<ErrorStateMap>(() => errorStates.errorStateMap);
 const currentErrorData = computed(() => errorStates.currentErrorData);
+
+// API status state
+const apiStatusState = getApiStatusState();
+const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
+const isInSystemFailureModeComputed = computed(() => isInSystemFailureMode());
 
 // Access individual error refs from the error state map
 const apiErrorAppointmentNotAvailable =
@@ -381,11 +434,11 @@ const activationMinutes = computed<number | undefined>(() => {
 
 const confirmText = computed<string>(() => {
   const minutes = activationMinutes.value ?? "30";
-  return props.t("confirmAppointmentText", { activationMinutes: minutes });
+  return props.t("confirmAppointmentText").replace("{activationMinutes}", String(minutes));
 });
 
 const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
-  return getApiErrorTranslation(errorStateMap.value, currentErrorData.value);
+  return getApiErrorTranslation(errorStates.errorStateMap, currentErrorData.value);
 });
 
 // Track the current context based on API calls and props
@@ -518,7 +571,7 @@ const setRebookData = () => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
+          handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
         }
         currentView.value = 3;
       }
@@ -558,7 +611,7 @@ const nextReserveAppointment = () => {
           increaseCurrentView();
         }
       } else {
-        handleApiResponse(data, errorStateMap.value, currentErrorData.value);
+        handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
       }
     })
     .finally(() => {
@@ -593,7 +646,7 @@ const nextUpdateAppointment = () => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
+          handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
         }
         increaseCurrentView();
       })
@@ -615,7 +668,7 @@ const nextBookAppointment = () => {
     preconfirmAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
         if ((data as any)?.errors?.length > 0) {
-          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
+          handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
           return;
         }
 
@@ -649,7 +702,7 @@ const nextCancelAppointment = () => {
     cancelAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
         if ((data as any)?.errors?.length > 0) {
-          handleApiResponse(data, errorStateMap.value, currentErrorData.value);
+          handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
           return;
         }
 
@@ -754,12 +807,17 @@ const handleInvalidJumpinLink = () => {
   );
 };
 
+const handleServiceFinderRateLimitError = () => {
+  serviceFinderRateLimitError.value = true;
+};
+
 const redirectToAppointmentStart = () => {
   // Clear jump-in link parameters and reset to clean start state
   // This keeps users within our application instead of redirecting to external site
   const baseUrl = window.location.origin + window.location.pathname;
   window.location.href = baseUrl;
 };
+
 
 onMounted(() => {
   if (props.confirmAppointmentHash) {
@@ -791,9 +849,9 @@ onMounted(() => {
               currentErrorData.value
             );
           } else {
-            handleApiResponse(
+            handleErrorApiResponse(
               data,
-              errorStateMap.value,
+              errorStates.errorStateMap,
               currentErrorData.value
             );
           }
@@ -810,6 +868,14 @@ onMounted(() => {
       props.locationId ?? undefined,
       props.baseUrl ?? undefined
     ).then((data) => {
+      // Handle normal errors (like rate limit) first
+      handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
+      
+      // Check if any error state should be activated (maintenance/system failure)
+      if (handleApiResponse(data, props.baseUrl)) {
+        return; // Error state was activated, stop processing
+      }
+      
       services.value = data.services;
       relations.value = data.relations;
       offices.value = data.offices;

@@ -1,6 +1,27 @@
 <template>
+  <!-- Maintenance Page -->
+  <maintenance-page
+    v-if="isInMaintenanceModeComputed"
+    :t="t"
+  />
+  
+  <!-- System Failure Page -->
+  <system-failure-page
+    v-if="isInSystemFailureModeComputed"
+    :t="t"
+  />
+  
+  <!-- Error Alert (for rate limit, etc.) -->
+  <div v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && errorStates.errorStateMap.apiErrorRateLimitExceeded.value" class="container">
+    <error-alert
+      :message="t(apiErrorTranslation.textKey)"
+      :header="t(apiErrorTranslation.headerKey)"
+    />
+  </div>
+  
+  <!-- Normal Content -->
   <div
-    v-if="appointments.length > 0 || !displayedOnDetailScreen"
+    v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && !errorStates.errorStateMap.apiErrorRateLimitExceeded.value && (appointments.length > 0 || !displayedOnDetailScreen)"
     :class="displayedOnDetailScreen ? 'details-background' : 'overview-padding'"
   >
     <div class="container">
@@ -69,15 +90,28 @@
 
 <script setup lang="ts">
 import { MucIcon, MucLink } from "@muenchen/muc-patternlab-vue";
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { getAppointments } from "@/api/ZMSAppointmentUserAPI";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
+import MaintenancePage from "@/components/Common/MaintenancePage.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
+import SystemFailurePage from "@/components/Common/SystemFailurePage.vue";
 import { QUERY_PARAM_APPOINTMENT_ID } from "@/utils/Constants";
+import {
+  getApiStatusState,
+  handleApiResponse,
+  isInMaintenanceMode,
+  isInSystemFailureMode,
+} from "@/utils/apiStatusService";
+import {
+  createErrorStates,
+  handleApiResponse as handleErrorApiResponse,
+  getApiErrorTranslation,
+} from "@/utils/errorHandler";
 import AppointmentCardViewer from "./AppointmentCardViewer.vue";
 
 const props = defineProps<{
@@ -96,9 +130,20 @@ const isMobile = ref(false);
 const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
 
+// API status state
+const apiStatusState = getApiStatusState();
+const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
+const isInSystemFailureModeComputed = computed(() => isInSystemFailureMode());
+
+// Error handling state
+const errorStates = createErrorStates();
+const currentErrorData = computed(() => errorStates.currentErrorData);
+const apiErrorTranslation = computed(() => getApiErrorTranslation(errorStates.errorStateMap, currentErrorData.value));
+
 const checksMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 767px)").matches;
 };
+
 
 onMounted(() => {
   loading.value = true;
@@ -107,6 +152,14 @@ onMounted(() => {
 
   fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
     .then((data) => {
+      // Check if any error state should be activated
+      if (handleApiResponse(data, props.baseUrl)) {
+        return; // Error state was activated, stop processing
+      }
+      
+      // Handle normal errors (like rate limit)
+      handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
+      
       offices.value = data.offices;
       getAppointments("user").then((data) => {
         if (

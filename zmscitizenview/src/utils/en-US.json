@@ -225,5 +225,9 @@
   "updateAppointmentErrorHeader": "Appointment update failed.",
   "updateAppointmentErrorText": "Appointment update failed.",
   "newAppointmentsInfoLink": "When are new appointments available?",
-  "your": "Ihr"
+  "your": "Ihr",
+  "maintenancePageHeader": "We are updating our system for you.",
+  "maintenancePageText": "Our system is currently under maintenance. Please try again later.",
+  "systemFailurePageHeader": "The function is currently not available.",
+  "systemFailurePageText": "There is currently a technical problem with this function. Please try again later."
 }

@@ -1,5 +1,26 @@
 <template>
-  <div v-if="loadingError">
+  <!-- Maintenance Page -->
+  <maintenance-page
+    v-if="isInMaintenanceModeComputed"
+    :t="t"
+  />
+  
+  <!-- System Failure Page -->
+  <system-failure-page
+    v-if="isInSystemFailureModeComputed"
+    :t="t"
+  />
+  
+  <!-- Error Alert (for rate limit, etc.) -->
+  <div v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && errorStates.errorStateMap.apiErrorRateLimitExceeded.value" class="container">
+    <error-alert
+      :message="t(apiErrorTranslation.textKey)"
+      :header="t(apiErrorTranslation.headerKey)"
+    />
+  </div>
+  
+  <!-- Normal Content -->
+  <div v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && !errorStates.errorStateMap.apiErrorRateLimitExceeded.value && loadingError">
     <muc-intro
       :tagline="t('appointment')"
       :title="appointmentId ? appointmentId : ''"
@@ -16,7 +37,7 @@
       </muc-button>
     </error-alert>
   </div>
-  <div v-else-if="!loading">
+  <div v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && !errorStates.errorStateMap.apiErrorRateLimitExceeded.value && !loading">
     <appointment-detail-header
       :appointment="appointment"
       :selected-provider="selectedProvider"
@@ -138,7 +159,7 @@
 
 <script setup lang="ts">
 import { MucButton, MucIntro } from "@muenchen/muc-patternlab-vue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
 import { Office } from "@/api/models/Office";
@@ -149,6 +170,8 @@ import { getAppointmentDetails } from "@/api/ZMSAppointmentUserAPI";
 import AppointmentDetailHeader from "@/components/AppointmentDetail/AppointmentDetailHeader.vue";
 import CalendarIcon from "@/components/Common/CalendarIcon.vue";
 import ErrorAlert from "@/components/Common/ErrorAlert.vue";
+import MaintenancePage from "@/components/Common/MaintenancePage.vue";
+import SystemFailurePage from "@/components/Common/SystemFailurePage.vue";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
@@ -160,6 +183,17 @@ import {
 } from "@/utils/Constants";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
+import {
+  getApiStatusState,
+  handleApiResponse,
+  isInMaintenanceMode,
+  isInSystemFailureMode,
+} from "@/utils/apiStatusService";
+import {
+  createErrorStates,
+  handleApiResponse as handleErrorApiResponse,
+  getApiErrorTranslation,
+} from "@/utils/errorHandler";
 
 const props = defineProps<{
   baseUrl?: string;
@@ -179,6 +213,16 @@ const selectedProvider = ref<OfficeImpl>();
 const loading = ref(true);
 const loadingError = ref(false);
 const isMobile = ref(false);
+
+// API status state
+const apiStatusState = getApiStatusState();
+const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
+const isInSystemFailureModeComputed = computed(() => isInSystemFailureMode());
+
+// Error handling state
+const errorStates = createErrorStates();
+const currentErrorData = computed(() => errorStates.currentErrorData);
+const apiErrorTranslation = computed(() => getApiErrorTranslation(errorStates.errorStateMap, currentErrorData.value));
 
 /**
  * This function determines the expected duration of the appointment.
@@ -204,6 +248,7 @@ const goToAppointmentOverviewLink = () => {
   location.href = props.appointmentOverviewUrl;
 };
 
+
 const checksMobile = () => {
   isMobile.value = window.matchMedia("(max-width: 767px)").matches;
 };
@@ -220,6 +265,14 @@ onMounted(() => {
     undefined,
     props.baseUrl ?? undefined
   ).then((data) => {
+          // Check if any error state should be activated
+      if (handleApiResponse(data, props.baseUrl)) {
+        return; // Error state was activated, stop processing
+      }
+      
+      // Handle normal errors (like rate limit)
+      handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
+    
     services.value = data.services;
     relations.value = data.relations;
     offices.value = data.offices;
