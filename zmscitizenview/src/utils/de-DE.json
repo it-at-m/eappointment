@@ -240,6 +240,6 @@
   "your": "Ihr",
   "maintenancePageHeader": "Wir aktualisieren unser System für Sie.",
   "maintenancePageText": "Zur Zeit befindet sich unser System in der Wartung. Bitte versuchen Sie es später noch einmal.",
-  "systemFailurePageHeader": "Die Funktion ist zur Zeit nicht verfügbar.",
+  "systemFailurePageHeader": "Diese Funktion ist zur Zeit nicht verfügbar.",
   "systemFailurePageText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal."
 }

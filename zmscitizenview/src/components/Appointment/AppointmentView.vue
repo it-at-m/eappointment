@@ -1,34 +1,50 @@
 <template>
   <div class="m-component m-component-form">
     <!-- Maintenance Page -->
-    <maintenance-page
+    <error-alert
       v-if="isInMaintenanceModeComputed"
-      :t="t"
+      :message="t('maintenancePageText')"
+      :header="t('maintenancePageHeader')"
+      type="warning"
     />
-    
+
     <!-- System Failure Page -->
-    <system-failure-page
+    <error-alert
       v-if="isInSystemFailureModeComputed"
-      :t="t"
+      :message="t('systemFailurePageText')"
+      :header="t('systemFailurePageHeader')"
+      type="error"
     />
-    
+
     <!-- Error Alert (for rate limit, etc.) -->
-    <div v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && errorStates.errorStateMap.apiErrorRateLimitExceeded.value">
+    <div
+      v-if="
+        !isInMaintenanceModeComputed &&
+        !isInSystemFailureModeComputed &&
+        errorStates.errorStateMap.apiErrorRateLimitExceeded.value
+      "
+    >
       <error-alert
         :message="t(apiErrorTranslation.textKey)"
         :header="t(apiErrorTranslation.headerKey)"
       />
     </div>
-    
+
     <!-- ServiceFinder Rate Limit Error Alert -->
-    <div v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && !errorStates.errorStateMap.apiErrorRateLimitExceeded.value && serviceFinderRateLimitError">
+    <div
+      v-if="
+        !isInMaintenanceModeComputed &&
+        !isInSystemFailureModeComputed &&
+        !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
+        serviceFinderRateLimitError
+      "
+    >
       <error-alert
         :message="t('apiErrorRateLimitExceededText')"
         :header="t('apiErrorRateLimitExceededHeader')"
       />
     </div>
-    
-    
+
     <!-- Normal Application Content -->
     <div
       v-if="
@@ -138,8 +154,13 @@
         </div>
       </div>
     </div>
-    <div 
-      v-if="!isInMaintenanceModeComputed && !isInSystemFailureModeComputed && !errorStates.errorStateMap.apiErrorRateLimitExceeded.value && !serviceFinderRateLimitError"
+    <div
+      v-if="
+        !isInMaintenanceModeComputed &&
+        !isInSystemFailureModeComputed &&
+        !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
+        !serviceFinderRateLimitError
+      "
       class="m-component__grid"
     >
       <div class="m-component__column">
@@ -281,10 +302,8 @@ import {
 import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue";
 import CalendarView from "@/components/Appointment/CalendarView.vue";
 import CustomerInfo from "@/components/Appointment/CustomerInfo.vue";
-import ErrorAlert from "@/components/Common/ErrorAlert.vue";
-import MaintenancePage from "@/components/Common/MaintenancePage.vue";
 import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
-import SystemFailurePage from "@/components/Common/SystemFailurePage.vue";
+import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import { AppointmentHash } from "@/types/AppointmentHashTypes";
 import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { CustomerData } from "@/types/CustomerData";
@@ -298,6 +317,12 @@ import {
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
+import {
+  getApiStatusState,
+  handleApiResponse,
+  isInMaintenanceMode,
+  isInSystemFailureMode,
+} from "@/utils/apiStatusService";
 import { toCalloutType } from "@/utils/callout";
 import {
   clearContextErrors,
@@ -311,12 +336,6 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
-import {
-  getApiStatusState,
-  handleApiResponse,
-  isInMaintenanceMode,
-  isInSystemFailureMode,
-} from "@/utils/apiStatusService";
 
 const props = defineProps<{
   baseUrl?: string;
@@ -434,11 +453,16 @@ const activationMinutes = computed<number | undefined>(() => {
 
 const confirmText = computed<string>(() => {
   const minutes = activationMinutes.value ?? "30";
-  return props.t("confirmAppointmentText").replace("{activationMinutes}", String(minutes));
+  return props
+    .t("confirmAppointmentText")
+    .replace("{activationMinutes}", String(minutes));
 });
 
 const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
-  return getApiErrorTranslation(errorStates.errorStateMap, currentErrorData.value);
+  return getApiErrorTranslation(
+    errorStates.errorStateMap,
+    currentErrorData.value
+  );
 });
 
 // Track the current context based on API calls and props
@@ -571,7 +595,11 @@ const setRebookData = () => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
         }
         currentView.value = 3;
       }
@@ -611,7 +639,11 @@ const nextReserveAppointment = () => {
           increaseCurrentView();
         }
       } else {
-        handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
+        handleErrorApiResponse(
+          data,
+          errorStates.errorStateMap,
+          currentErrorData.value
+        );
       }
     })
     .finally(() => {
@@ -646,7 +678,11 @@ const nextUpdateAppointment = () => {
         if ((data as AppointmentDTO).processId != undefined) {
           appointment.value = data as AppointmentDTO;
         } else {
-          handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
         }
         increaseCurrentView();
       })
@@ -668,7 +704,11 @@ const nextBookAppointment = () => {
     preconfirmAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
         if ((data as any)?.errors?.length > 0) {
-          handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
           return;
         }
 
@@ -702,7 +742,11 @@ const nextCancelAppointment = () => {
     cancelAppointment(appointment.value, props.baseUrl ?? undefined)
       .then((data) => {
         if ((data as any)?.errors?.length > 0) {
-          handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
           return;
         }
 
@@ -818,7 +862,6 @@ const redirectToAppointmentStart = () => {
   window.location.href = baseUrl;
 };
 
-
 onMounted(() => {
   if (props.confirmAppointmentHash) {
     clearContextErrors(errorStateMap.value);
@@ -869,13 +912,17 @@ onMounted(() => {
       props.baseUrl ?? undefined
     ).then((data) => {
       // Handle normal errors (like rate limit) first
-      handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
-      
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
+
       // Check if any error state should be activated (maintenance/system failure)
       if (handleApiResponse(data, props.baseUrl)) {
         return; // Error state was activated, stop processing
       }
-      
+
       services.value = data.services;
       relations.value = data.relations;
       offices.value = data.offices;

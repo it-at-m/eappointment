@@ -2,9 +2,11 @@
   <div class="m-content">
     <h2 tabindex="0">{{ t("service") }}</h2>
   </div>
-  
+
   <div
-    v-if="!service && !errorStates.errorStateMap.apiErrorRateLimitExceeded.value"
+    v-if="
+      !service && !errorStates.errorStateMap.apiErrorRateLimitExceeded.value
+    "
     :hidden="!!preselectedServiceId"
     class="m-component"
     style="background-color: var(--color-neutrals-blue-xlight)"
@@ -137,24 +139,24 @@ import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
-import { handleApiResponse } from "@/utils/apiStatusService";
-import {
-  createErrorStates,
-  handleApiResponse as handleErrorApiResponse,
-  getApiErrorTranslation,
-} from "@/utils/errorHandler";
 import AltchaCaptcha from "@/components/Appointment/AltchaCaptcha.vue";
 import ClockSvg from "@/components/Appointment/ClockSvg.vue";
 import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
+import { handleApiResponse } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
   MAX_SLOTS,
   OFTEN_SEARCHED_SERVICES,
 } from "@/utils/Constants";
+import {
+  createErrorStates,
+  getApiErrorTranslation,
+  handleApiResponse as handleErrorApiResponse,
+} from "@/utils/errorHandler";
 
 const isCaptchaValid = ref<boolean>(false);
 
@@ -176,14 +178,19 @@ const emit = defineEmits<{
 // Error handling state
 const errorStates = createErrorStates();
 const currentErrorData = computed(() => errorStates.currentErrorData);
-const apiErrorTranslation = computed(() => getApiErrorTranslation(errorStates.errorStateMap, currentErrorData.value));
+const apiErrorTranslation = computed(() =>
+  getApiErrorTranslation(errorStates.errorStateMap, currentErrorData.value)
+);
 
 // Watch for rate limit errors and emit event
-watch(() => errorStates.errorStateMap.apiErrorRateLimitExceeded.value, (isRateLimitError) => {
-  if (isRateLimitError) {
-    emit("rateLimitError");
+watch(
+  () => errorStates.errorStateMap.apiErrorRateLimitExceeded.value,
+  (isRateLimitError) => {
+    if (isRateLimitError) {
+      emit("rateLimitError");
+    }
   }
-});
+);
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
@@ -465,13 +472,17 @@ onMounted(() => {
       props.baseUrl ?? undefined
     ).then((data) => {
       // Handle normal errors (like rate limit) first
-      handleErrorApiResponse(data, errorStates.errorStateMap, currentErrorData.value);
-      
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
+
       // Check if any error state should be activated (maintenance/system failure)
       if (handleApiResponse(data, props.baseUrl)) {
         return; // Error state was activated, stop processing
       }
-      
+
       services.value = data.services;
       relations.value = data.relations;
       offices.value = data.offices;

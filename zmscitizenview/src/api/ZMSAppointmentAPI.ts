@@ -55,11 +55,14 @@ export function fetchServicesAndProviders(
         return response.json().then((data) => {
           // Ensure the response has an errors array for error detection
           if (!data.errors) {
-            data.errors = [{
-              errorCode: response.status >= 500 ? "serverError" : "internalError",
-              errorMessage: `HTTP ${response.status}`,
-              statusCode: response.status
-            }];
+            data.errors = [
+              {
+                errorCode:
+                  response.status >= 500 ? "serverError" : "internalError",
+                errorMessage: `HTTP ${response.status}`,
+                statusCode: response.status,
+              },
+            ];
           }
           return data;
         });
@@ -72,11 +75,13 @@ export function fetchServicesAndProviders(
       // Return a response that will trigger system failure mode
       // Use statusCode: 0 to indicate network failure (no HTTP status)
       return {
-        errors: [{
-          errorCode: "networkError",
-          errorMessage: "Network error or service unavailable",
-          statusCode: 0
-        }]
+        errors: [
+          {
+            errorCode: "networkError",
+            errorMessage: "Network error or service unavailable",
+            statusCode: 0,
+          },
+        ],
       };
     });
 }
