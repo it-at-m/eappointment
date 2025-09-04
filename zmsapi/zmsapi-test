@@ -47,8 +47,8 @@ else
     echo "Test environment already set up, running tests..."
     # Run tests with or without filter
                     if [ -n "$PHPUNIT_ARGS" ]; then
-                    docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit $PHPUNIT_ARGS"
+                    docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit $PHPUNIT_ARGS"
                 else
-                    docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} vendor/bin/phpunit"
+                    docker-compose run --rm --no-deps test bash -lc "apt update && apt install -y rsync && rsync -a --delete /host/ /tmp/workspace/ && cd /tmp/workspace/zmsapi && rm -rf data && ln -sfn /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit && php -d memory_limit=\${PHP_MEMORY_LIMIT:-1G} -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit"
                 fi
 fi

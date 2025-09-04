@@ -75,9 +75,9 @@ services:
         cd /tmp/workspace/zmsapi
         rm -rf data
         ln -s /tmp/workspace/zmsdb/tests/Zmsdb/fixtures data
-        php -d memory_limit=1G /tmp/workspace/zmsdb/bin/importTestData --commit
+        php -d memory_limit=1G -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php /tmp/workspace/zmsdb/bin/importTestData --commit
         echo 'Running tests...'
-        php -d memory_limit=1G vendor/bin/phpunit
+        php -d memory_limit=1G -d auto_prepend_file=/tmp/workspace/zmsapi/vendor/autoload.php vendor/bin/phpunit
       "
 volumes:
   zmsapi-workspace:
