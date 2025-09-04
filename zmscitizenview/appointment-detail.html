@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <link href="/favicon.ico" rel="icon">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Terminvereinbarung Detail Webcomponent</title>
+
+    <!-- Muenchen.de-Styles -->
+    <link
+            rel="stylesheet"
+            href="https://assets.muenchen.de/mde/1.0.10/css/fonts.css"
+    />
+    <link
+            rel="stylesheet"
+            href="https://assets.muenchen.de/mde/1.0.10/css/style.css"
+    />
+
+    <!-- built files will be auto injected -->
+    <script src="src/zms-appointment-detail-webcomponent.ts" type="module"></script>
+
+</head>
+<body>
+
+<noscript>
+    <strong>Damit das Widget korrekt funktioniert, muss Javascript aktiviert werden.</strong>
+</noscript>
+<zms-appointment-detail-i18n-host>
+    <zms-appointment-detail-wrapped
+            appointment-overview-url="appointment-overview.html"
+            reschedule-appointment-url="appointment.html"
+    ></zms-appointment-detail-wrapped>
+</zms-appointment-detail-i18n-host>
+</body>
+
+</html>
