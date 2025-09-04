@@ -1,15 +1,13 @@
 <template>
-  <div class="container">
-    <muc-callout :type="props.type">
-      <template #header>
-        {{ header }}
-      </template>
-      <template #content>
-        <p v-html="message" />
-        <slot />
-      </template>
-    </muc-callout>
-  </div>
+  <muc-callout :type="props.type">
+    <template #header>
+      {{ header }}
+    </template>
+    <template #content>
+      <p v-html="message" />
+      <slot />
+    </template>
+  </muc-callout>
 </template>
 
 <script lang="ts" setup>
@@ -34,9 +32,3 @@ defineSlots<{
 }>();
 </script>
 
-<style scoped>
-.container {
-  padding-top: 32px;
-  padding-bottom: 32px;
-}
-</style>

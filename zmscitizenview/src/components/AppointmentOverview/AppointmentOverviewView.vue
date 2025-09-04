@@ -1,19 +1,29 @@
 <template>
   <!-- Maintenance Page -->
-  <error-alert
-    v-if="isInMaintenanceModeComputed"
-    :message="t('maintenancePageText')"
-    :header="t('maintenancePageHeader')"
-    type="warning"
-  />
+  <div v-if="isInMaintenanceModeComputed" class="container">
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t('maintenancePageText')"
+          :header="t('maintenancePageHeader')"
+          type="warning"
+        />
+      </div>
+    </div>
+  </div>
 
   <!-- System Failure Page -->
-  <error-alert
-    v-if="isInSystemFailureModeComputed"
-    :message="t('systemFailurePageText')"
-    :header="t('systemFailurePageHeader')"
-    type="error"
-  />
+  <div v-if="isInSystemFailureModeComputed" class="container">
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t('systemFailurePageText')"
+          :header="t('systemFailurePageHeader')"
+          type="error"
+        />
+      </div>
+    </div>
+  </div>
 
   <!-- Error Alert (for rate limit, etc.) -->
   <div
@@ -24,10 +34,14 @@
     "
     class="container"
   >
-    <error-alert
-      :message="t(apiErrorTranslation.textKey)"
-      :header="t(apiErrorTranslation.headerKey)"
-    />
+    <div class="m-component__grid">
+      <div class="m-component__column">
+        <error-alert
+          :message="t(apiErrorTranslation.textKey)"
+          :header="t(apiErrorTranslation.headerKey)"
+        />
+      </div>
+    </div>
   </div>
 
   <!-- Normal Content -->

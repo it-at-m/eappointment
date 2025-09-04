@@ -1,20 +1,30 @@
 <template>
   <div class="m-component m-component-form">
     <!-- Maintenance Page -->
-    <error-alert
-      v-if="isInMaintenanceModeComputed"
-      :message="t('maintenancePageText')"
-      :header="t('maintenancePageHeader')"
-      type="warning"
-    />
+    <div v-if="isInMaintenanceModeComputed" class="container">
+      <div class="m-component__grid">
+        <div class="m-component__column">
+          <error-alert
+            :message="t('maintenancePageText')"
+            :header="t('maintenancePageHeader')"
+            type="warning"
+          />
+        </div>
+      </div>
+    </div>
 
     <!-- System Failure Page -->
-    <error-alert
-      v-if="isInSystemFailureModeComputed"
-      :message="t('systemFailurePageText')"
-      :header="t('systemFailurePageHeader')"
-      type="error"
-    />
+    <div v-if="isInSystemFailureModeComputed" class="container">
+      <div class="m-component__grid">
+        <div class="m-component__column">
+          <error-alert
+            :message="t('systemFailurePageText')"
+            :header="t('systemFailurePageHeader')"
+            type="error"
+          />
+        </div>
+      </div>
+    </div>
 
     <!-- Error Alert (for rate limit, etc.) -->
     <div
@@ -23,11 +33,16 @@
         !isInSystemFailureModeComputed &&
         errorStates.errorStateMap.apiErrorRateLimitExceeded.value
       "
+      class="container"
     >
-      <error-alert
-        :message="t(apiErrorTranslation.textKey)"
-        :header="t(apiErrorTranslation.headerKey)"
-      />
+      <div class="m-component__grid">
+        <div class="m-component__column">
+          <error-alert
+            :message="t(apiErrorTranslation.textKey)"
+            :header="t(apiErrorTranslation.headerKey)"
+          />
+        </div>
+      </div>
     </div>
 
     <!-- ServiceFinder Rate Limit Error Alert -->
@@ -38,11 +53,16 @@
         !errorStates.errorStateMap.apiErrorRateLimitExceeded.value &&
         serviceFinderRateLimitError
       "
+      class="container"
     >
-      <error-alert
-        :message="t('apiErrorRateLimitExceededText')"
-        :header="t('apiErrorRateLimitExceededHeader')"
-      />
+      <div class="m-component__grid">
+        <div class="m-component__column">
+          <error-alert
+            :message="t('apiErrorRateLimitExceededText')"
+            :header="t('apiErrorRateLimitExceededHeader')"
+          />
+        </div>
+      </div>
     </div>
 
     <!-- Normal Application Content -->
