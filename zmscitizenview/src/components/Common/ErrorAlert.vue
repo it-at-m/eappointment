@@ -31,4 +31,3 @@ defineSlots<{
   default(): unknown;
 }>();
 </script>
-

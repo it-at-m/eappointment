@@ -1,7 +1,10 @@
 <template>
   <div class="m-component m-component-form">
     <!-- Maintenance Page -->
-    <div v-if="isInMaintenanceModeComputed" class="container">
+    <div
+      v-if="isInMaintenanceModeComputed"
+      class="container"
+    >
       <div class="m-component__grid">
         <div class="m-component__column">
           <error-alert
@@ -14,7 +17,10 @@
     </div>
 
     <!-- System Failure Page -->
-    <div v-if="isInSystemFailureModeComputed" class="container">
+    <div
+      v-if="isInSystemFailureModeComputed"
+      class="container"
+    >
       <div class="m-component__grid">
         <div class="m-component__column">
           <error-alert
