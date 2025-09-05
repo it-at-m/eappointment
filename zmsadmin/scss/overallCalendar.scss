@@ -187,7 +187,6 @@ body.no-page-scroll {
   margin-top: 1rem;
 }
 
-/* zarte Schraffur für geschlossene Tage/Spalten */
 .overall-calendar-closed {
   border: 0 !important;
   background: repeating-linear-gradient(
@@ -198,7 +197,6 @@ body.no-page-scroll {
   );
 }
 
-/* Header-Highlight wenn der Scope an dem Tag geschlossen ist */
 .overall-calendar-scope-header.is-closed {
   background: #fdecef !important;
   border-color: #f3c1c8 !important;
