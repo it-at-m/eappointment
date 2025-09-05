@@ -40,22 +40,22 @@ class Closure extends Base
         \DateTimeInterface $from,
         \DateTimeInterface $until
     ): array {
-        $q = (new \BO\Zmsdb\Query\Closure(\BO\Zmsdb\Query\Base::SELECT))
+        $query = (new \BO\Zmsdb\Query\Closure(\BO\Zmsdb\Query\Base::SELECT))
             ->addEntityMapping()
             ->addSelectVirtualDate()
             ->addConditionScopeIds($scopeIds)
             ->addConditionDateRange($from, $until);
 
-        $entities = $this->fetchList($q, new Entity());
+        $entities = $this->fetchList($query, new Entity());
 
-        $out = [];
-        foreach ($entities as $e) {
-            $out[] = [
-                'scopeId' => (int)($e['scopeId'] ?? 0),
-                'date'    => (string)($e['date'] ?? $e->getDateTime()->format('Y-m-d')),
+        $result  = [];
+        foreach ($entities as $entity) {
+            $result [] = [
+                'scopeId' => (int)($entity['scopeId'] ?? 0),
+                'date'    => (string)($entity['date'] ?? $entity->getDateTime()->format('Y-m-d')),
             ];
         }
-        return $out;
+        return $result ;
     }
 
     public function deleteEntity($itemId)

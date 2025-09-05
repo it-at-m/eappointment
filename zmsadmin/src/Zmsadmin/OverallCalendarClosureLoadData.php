@@ -12,15 +12,9 @@ class OverallCalendarClosureLoadData extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $query = [];
-        $uriQuery = $request->getUri()->getQuery();
-        if ($uriQuery !== '') {
-            parse_str($uriQuery, $query);
-        }
-
-        $scopeIds  = $query['scopeIds']  ?? ($_GET['scopeIds']  ?? null);
-        $dateFrom  = $query['dateFrom']  ?? ($_GET['dateFrom']  ?? null);
-        $dateUntil = $query['dateUntil'] ?? ($_GET['dateUntil'] ?? null);
+        $scopeIds  = $_GET['scopeIds']  ?? null;
+        $dateFrom  = $_GET['dateFrom']  ?? null;
+        $dateUntil = $_GET['dateUntil'] ?? null;
 
         if ($scopeIds === null && $dateFrom === null && $dateUntil === null) {
             $response->getBody()->write(json_encode([]));
@@ -51,6 +45,7 @@ class OverallCalendarClosureLoadData extends BaseController
         if ($lastMod !== '') {
             $response = $response->withHeader('Last-Modified', $lastMod);
         }
+
         $contentType = $apiResp->getHeaderLine('Content-Type');
         $response = $response->withHeader(
             'Content-Type',
