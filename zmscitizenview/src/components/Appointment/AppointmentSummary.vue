@@ -74,8 +74,18 @@
               {{ selectedProvider.address.house_number }}<br />
               {{ selectedProvider.address.postal_code }}
               {{ selectedProvider.address.city }}<br />
+              <br />
+              <span
+                v-if="
+                  selectedProvider &&
+                  selectedProvider.scope &&
+                  selectedProvider.scope.hint
+                "
+                v-html="sanitizeHtml(selectedProvider.scope.hint)"
+              ></span>
             </p>
           </div>
+
           <div class="m-content">
             <h3 tabindex="0">{{ t("time") }}</h3>
           </div>

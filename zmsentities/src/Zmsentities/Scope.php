@@ -227,6 +227,11 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return ($emails) ? $emails : '';
     }
 
+    public function getReservationDuration()
+    {
+        return $this->toProperty()->preferences->appointment->reservationDuration->get();
+    }
+
     public function getWaitingTimeFromQueueList(Collection\QueueList $queueList, \DateTimeInterface $dateTime)
     {
         return $queueList->getEstimatedWaitingTime(
