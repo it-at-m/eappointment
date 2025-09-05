@@ -68,6 +68,40 @@ class MapperService
         return null;
     }
 
+    public static function extractReservationDuration(Scope|ThinnedScope|null $scope): ?int
+    {
+        if ($scope === null) {
+            return null;
+        }
+        if ($scope instanceof ThinnedScope) {
+            $reservationDuration = $scope->getReservationDuration();
+            return $reservationDuration !== null ? (int) $reservationDuration : null;
+        }
+        $reservationDuration = $scope?->toProperty()?->preferences?->appointment?->reservationDuration?->get();
+        return $reservationDuration !== null ? (int) $reservationDuration : null;
+    }
+
+    public static function extractActivationDuration(Scope|ThinnedScope|null $scope): ?int
+    {
+        if ($scope === null) {
+            return null;
+        }
+
+        if ($scope instanceof ThinnedScope) {
+            $activationDuration = $scope->getActivationDuration();
+            if ($activationDuration === null || $activationDuration === '') {
+                return null;
+            }
+            return (int) $activationDuration;
+        }
+
+        $activationDuration = $scope?->toProperty()?->preferences?->appointment?->activationDuration?->get();
+        if ($activationDuration === null || $activationDuration === '') {
+            return null;
+        }
+        return (int) $activationDuration;
+    }
+
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -125,10 +159,17 @@ class MapperService
                     customTextfield2Required: isset($providerScope->customTextfield2Required) ? (bool) $providerScope->customTextfield2Required : null,
                     customTextfield2Label: isset($providerScope->customTextfield2Label) ? (string) $providerScope->customTextfield2Label : null,
                     captchaActivatedRequired: isset($providerScope->captchaActivatedRequired) ? (bool) $providerScope->captchaActivatedRequired : null,
-                    displayInfo: isset($providerScope->displayInfo) ? (string) $providerScope->displayInfo : null,
-                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
+                    infoForAppointment: isset($providerScope->infoForAppointment)
+                        ? ((string) $providerScope->infoForAppointment === '' ? null : (string) $providerScope->infoForAppointment)
+                        : null,
+                    infoForAllAppointments: isset($providerScope->infoForAllAppointments)
+                        ? ((string) $providerScope->infoForAllAppointments === '' ? null : (string) $providerScope->infoForAllAppointments)
+                        : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ((string) $providerScope->appointmentsPerMail === '' ? null : (string) $providerScope->appointmentsPerMail) : null,
-                    whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null
+                    whitelistedMails: isset($providerScope->whitelistedMails) ? ((string) $providerScope->whitelistedMails === '' ? null : (string) $providerScope->whitelistedMails) : null,
+                    reservationDuration: (int) self::extractReservationDuration($providerScope),
+                    activationDuration: self::extractActivationDuration($providerScope),
+                    hint: isset($providerScope->hint) ? (trim((string) $providerScope->hint) === '' ? null : (string) $providerScope->hint) : null
                 ) : null,
                 maxSlotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ((string) $providerScope->slotsPerAppointment === '' ? null : (string) $providerScope->slotsPerAppointment) : null,
                 parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null
@@ -272,10 +313,26 @@ class MapperService
             customTextfield2Required: isset($scope->data['customTextfield2Required']) ? (bool) $scope->data['customTextfield2Required'] : null,
             customTextfield2Label: isset($scope->data['customTextfield2Label']) ? (string) $scope->data['customTextfield2Label'] : null,
             captchaActivatedRequired: isset($scope->data['captchaActivatedRequired']) ? (bool) $scope->data['captchaActivatedRequired'] : null,
-            displayInfo: isset($scope->data['displayInfo']) ? (string) $scope->data['displayInfo'] : null,
-            slotsPerAppointment: isset($scope->data['slotsPerAppointment']) ? ((string) $scope->data['slotsPerAppointment'] === '' ? null : (string) $scope->data['slotsPerAppointment']) : null,
+            infoForAppointment: isset($scope->data['infoForAppointment'])
+                ? ((string) $scope->data['infoForAppointment'] === ''
+                    ? null
+                    : (string) $scope->data['infoForAppointment'])
+                : null,
+            infoForAllAppointments: isset($scope->data['infoForAllAppointments'])
+                ? ((string) $scope->data['infoForAllAppointments'] === ''
+                    ? null
+                    : (string) $scope->data['infoForAllAppointments'])
+                : null,
+            slotsPerAppointment: isset($scope->data['slotsPerAppointment'])
+                ? ((string) $scope->data['slotsPerAppointment'] === ''
+                    ? null
+                    : (string) $scope->data['slotsPerAppointment'])
+                : null,
             appointmentsPerMail: isset($scope->data['appointmentsPerMail']) ? ((string) $scope->data['appointmentsPerMail'] === '' ? null : (string) $scope->data['appointmentsPerMail']) : null,
-            whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null
+            whitelistedMails: isset($scope->data['whitelistedMails']) ? ((string) $scope->data['whitelistedMails'] === '' ? null : (string) $scope->data['whitelistedMails']) : null,
+            reservationDuration: MapperService::extractReservationDuration($scope),
+            activationDuration: MapperService::extractActivationDuration($scope),
+            hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint()
         );
     }
 

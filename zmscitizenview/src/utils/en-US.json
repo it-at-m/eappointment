@@ -10,7 +10,9 @@
     "loadError": "The widget could not be loaded.",
     "verified": "Verified",
     "verifying": "Verifying...",
-    "waitAlert": "Verifying... please wait."
+    "waitAlert": "Verifying... please wait.",
+    "ariaLabel": "Security check - I'm not a robot",
+    "screenReaderDescription": "This security check ensures that you are a human and not an automated program. Check the box to confirm that you are not a bot."
   },
   "am": "Morning",
   "apiErrorAppointmentCanNotBeCanceledHeader": "Your appointment cannot be cancelled.",
@@ -125,6 +127,8 @@
   "apiErrorScopesNotFoundText": "The requested locations could not be found.",
   "apiErrorServiceUnavailableHeader": "Service unavailable.",
   "apiErrorServiceUnavailableText": "The requested service is currently unavailable. Please try again later.",
+  "apiErrorSessionTimeoutHeader": "Your session has expired.",
+  "apiErrorSessionTimeoutText": "Too much time has passed since you started booking your appointment. Please select a new date to continue with the booking.",
   "apiErrorSourceNotFoundHeader": "Source not found.",
   "apiErrorSourceNotFoundText": "The requested source could not be found.",
   "apiErrorTelephoneIsRequiredHeader": "Telephone number is required.",
@@ -150,11 +154,12 @@
   "cancelAppointment": "Cancel appointment",
   "cancelReschedule": "Cancel reschedule",
   "clock": "Clock",
+  "closeDialog": "Close dialog",
   "combinableServices": "Combinable services",
   "communicationCheckboxLabel": "Electronic communication",
   "communicationCheckboxText": "I have taken note of the <a href=\"https://stadt.muenchen.de/infos/elektronische-kommunikation.html\" target='_blank'>information on electronic communication</a> and agree to be notified of my appointment by e-mail.",
   "confirmAppointmentHeader": "Confirm your appointment.",
-  "confirmAppointmentText": "In the next minutes you will receive an e-mail with an activation link. Click on the link to finalise the booking. If you do not activate the appointment within one hour, your booking will expire.",
+  "confirmAppointmentText": "In the next minutes you will receive an e-mail with an activation link. Click on the link to finalise the booking. If you do not activate the appointment within {activationMinutes} minutes, your reservation will expire.",
   "contact": "Contact us",
   "contactDetails": "Contact details",
   "earlier": "Earlier",
@@ -200,6 +205,7 @@
   "rescheduleAppointment": "Reschedule appointment",
   "selectedAppointment": "Selected Appointment",
   "service": "Service",
+  "services": "Services",
   "serviceSearch": "Search for citizen services",
   "serviceSelectionPlaceholder": "Enter search term",
   "shortNameDrivingLicenseCollection": "Driving license collection",
@@ -218,5 +224,6 @@
   "timeStampSuffix": "o´clock",
   "updateAppointmentErrorHeader": "Appointment update failed.",
   "updateAppointmentErrorText": "Appointment update failed.",
+  "newAppointmentsInfoLink": "When are new appointments available?",
   "your": "Ihr"
 }

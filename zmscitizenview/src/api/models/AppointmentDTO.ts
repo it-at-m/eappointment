@@ -81,6 +81,12 @@ export interface AppointmentDTO {
   serviceId: string;
   /**
    *
+   * @type {string}
+   * @memberof AppointmentDTO
+   */
+  serviceName: string;
+  /**
+   *
    * @type {number}
    * @memberof AppointmentDTO
    */
