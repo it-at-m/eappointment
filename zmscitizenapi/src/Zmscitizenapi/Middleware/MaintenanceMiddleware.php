@@ -12,20 +12,17 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class MaintenanceMiddleware implements MiddlewareInterface
 {
-    private const HTTP_BAD_REQUEST = 400;
+    private const HTTP_UNAVAILABLE = 503;
     private const ERROR_UNAVAILABLE = 'serviceUnavailable';
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (\App::MAINTENANCE_MODE_ENABLED) {
             $error = ErrorMessages::get(self::ERROR_UNAVAILABLE);
-            // Override the statusCode in the error object to match the HTTP response
-            $error['statusCode'] = self::HTTP_BAD_REQUEST;
 
             $response = \App::$slim->getResponseFactory()->createResponse();
-            $response = $response->withStatus(self::HTTP_BAD_REQUEST)
-                ->withHeader('Content-Type', 'application/json');
+            $response = $response->withStatus(self::HTTP_UNAVAILABLE)
+                ->withHeader('Content-Type', 'application/json; charset=utf-8');
 
-            // Write JSON response
             $responseBody = json_encode([
                 'errors' => [$error]
             ]);
