@@ -1,0 +1,98 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: zmsdb
+      MYSQL_DATABASE: zmsbo
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pzmsdb"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  test:
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    image: ghcr.io/it-at-m/eappointment-php-base:8.3-dev
+    volumes:
+      - type: bind
+        source: ".."
+        target: "/host"
+        read_only: true
+      - type: volume
+        source: zmsdb-workspace
+        target: /tmp/workspace
+    environment:
+      MYSQL_PORT: "tcp://mariadb:3306"
+      MYSQL_DATABASE: zmsbo
+      MYSQL_ROOT_PASSWORD: zmsdb
+      ZMS_CONFIG_SECURE_TOKEN: secure-token
+      PHP_MEMORY_LIMIT: "1G"
+    working_dir: /tmp/workspace/zmsdb
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    command: >
+      bash -c "
+        set -e
+        echo 'Installing base dependencies (idempotent)...'
+        if [ ! -f /tmp/workspace/.deps_installed ]; then \
+          apt update && apt install -y python3 python3-click python3-git mariadb-client rsync && \
+          touch /tmp/workspace/.deps_installed; \
+        else \
+          echo 'Base dependencies already installed. Skipping.'; \
+        fi
+
+        echo 'Preparing isolated workspace...'
+        mkdir -p /tmp/workspace
+        rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' /host/ /tmp/workspace/
+
+        echo 'Waiting for database to be ready...'
+        until mysql -h mariadb -u root -pzmsdb -e 'SELECT 1' >/dev/null 2>&1; do
+          echo 'Database not ready yet, waiting...'
+          sleep 2
+        done
+        echo 'Database is ready!'
+
+        cd /tmp/workspace
+
+        if [ ! -d /tmp/workspace/zmsdb/vendor ]; then \
+          echo 'Setting up module dependencies (symlinks) in isolated workspace...'; \
+          python3 cli modules reference-libraries; \
+          echo 'Installing composer dependencies (first run)...'; \
+          cd /tmp/workspace/zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader; \
+        else \
+          echo 'Vendor already present. Skipping full composer install.'; \
+        fi
+
+        # Sanity-Check: kennt der Autoloader BO\\Zmsdldb\\FileAccess?
+        cd /tmp/workspace/zmsdb
+        php -r 'require "vendor/autoload.php"; exit(class_exists("BO\\\\Zmsdldb\\\\FileAccess")?0:42);' || \
+        (echo 'Composer autoload missing BO\\Zmsdldb\\FileAccess -> running targeted update...' && \
+         composer update eappointment/zmsdldb -W --no-progress --prefer-dist && \
+         composer dump-autoload -o)
+
+        echo 'Setting PHP memory limit...'
+        php -d memory_limit=1G -v
+
+        echo 'Importing test data...'
+        php -d memory_limit=1G \
+            -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php \
+            bin/importTestData --commit
+
+        echo 'Running tests...'
+        php -d memory_limit=1G \
+            -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php \
+            vendor/bin/phpunit
+      "
+volumes:
+  zmsdb-workspace:
