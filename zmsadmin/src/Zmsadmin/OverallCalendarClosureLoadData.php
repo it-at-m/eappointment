@@ -39,20 +39,20 @@ class OverallCalendarClosureLoadData extends BaseController
         ];
 
         $apiResult = \App::$http->readGetResult('/closure/', $params);
-        $apiResp   = $apiResult->getResponse();
+        $apiResponse   = $apiResult->getResponse();
 
-        $lastMod = $apiResp->getHeaderLine('Last-Modified');
+        $lastMod = $apiResponse->getHeaderLine('Last-Modified');
         if ($lastMod !== '') {
             $response = $response->withHeader('Last-Modified', $lastMod);
         }
 
-        $contentType = $apiResp->getHeaderLine('Content-Type');
+        $contentType = $apiResponse->getHeaderLine('Content-Type');
         $response = $response->withHeader(
             'Content-Type',
             $contentType !== '' ? $contentType : 'application/json'
         );
 
-        $bodyStream = $apiResp->getBody();
+        $bodyStream = $apiResponse->getBody();
         if ($bodyStream->isSeekable()) {
             $bodyStream->rewind();
         }
@@ -60,6 +60,6 @@ class OverallCalendarClosureLoadData extends BaseController
 
         $response->getBody()->write($rawBody);
 
-        return $response->withStatus($apiResp->getStatusCode());
+        return $response->withStatus($apiResponse->getStatusCode());
     }
 }

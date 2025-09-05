@@ -8,7 +8,7 @@ class OverallCalendarClosureLoadDataTest extends Base
     protected $parameters = [];
     protected $classname  = "OverallCalendarClosureLoadData";
 
-    public function testRendering()
+    public function testRenderingWithoutParameters()
     {
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer validtoken';
         $_GET = [];
@@ -43,7 +43,7 @@ class OverallCalendarClosureLoadDataTest extends Base
     }
 
 
-    public function testValidRequest()
+    public function testRendering()
     {
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer validtoken';
         $_GET = [
