@@ -16,12 +16,17 @@ class AvailabilityClosureRead extends BaseController
     ) {
         (new Helper\User($request))->checkRights('useraccount');
 
-        $scopeIdCsv = Validator::param('scopeIds')
-            ->isString()->isMatchOf('/^\d+(,\d+)*$/')->assertValid()->getValue();
-        $scopeIds = array_values(array_unique(array_map('intval', explode(',', $scopeIdCsv))));
+        try {
+            $scopeIdCsv = Validator::param('scopeIds')
+                ->isString()->isMatchOf('/^\d+(,\d+)*$/')->assertValid()->getValue();
+            $scopeIds = array_values(array_unique(array_map('intval', explode(',', $scopeIdCsv))));
 
-        $dateFrom  = Validator::param('dateFrom')->isDate('Y-m-d')->assertValid()->getValue();
-        $dateUntil = Validator::param('dateUntil')->isDate('Y-m-d')->assertValid()->getValue();
+            $dateFrom  = Validator::param('dateFrom')->isDate('Y-m-d')->assertValid()->getValue();
+            $dateUntil = Validator::param('dateUntil')->isDate('Y-m-d')->assertValid()->getValue();
+        } catch (\BO\Mellon\Failure\Exception $e) {
+            $payload = ['error' => true, 'message' => $e->getMessage()];
+            return Render::withJson($response->withStatus(400), $payload, 400);
+        }
 
         $dtFrom  = new DateTimeImmutable($dateFrom);
         $dtUntil = new DateTimeImmutable($dateUntil);
