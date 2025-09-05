@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   checkApiStatus,
   getApiStatusState,
-  handleApiResponseForMaintenance,
+  handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
   setApiStatus,
@@ -97,15 +97,15 @@ describe("apiStatusService", () => {
     });
   });
 
-  describe("handleApiResponseForMaintenance", () => {
+  describe("handleApiResponseForDownTime", () => {
     it("does not change status on normal response", () => {
-      const changed = handleApiResponseForMaintenance({ services: [] });
+      const changed = handleApiResponseForDownTime({ services: [] });
       expect(changed).toBe(false);
       expect(getApiStatusState().status.value).toBe("normal");
     });
 
     it("ignores rateLimitExceeded for global status", () => {
-      const changed = handleApiResponseForMaintenance({
+      const changed = handleApiResponseForDownTime({
         errors: [{ errorCode: "rateLimitExceeded", statusCode: 429 }],
       });
       expect(changed).toBe(false);
@@ -113,13 +113,13 @@ describe("apiStatusService", () => {
     });
 
     it("sets maintenance on 503", () => {
-      const changed = handleApiResponseForMaintenance({ errors: [{ statusCode: 503 }] });
+      const changed = handleApiResponseForDownTime({ errors: [{ statusCode: 503 }] });
       expect(changed).toBe(true);
       expect(isInMaintenanceMode()).toBe(true);
     });
 
     it("sets maintenance on serviceUnavailable", () => {
-      const changed = handleApiResponseForMaintenance({
+      const changed = handleApiResponseForDownTime({
         errors: [{ errorCode: "serviceUnavailable", statusCode: 400 }],
       });
       expect(changed).toBe(true);
@@ -127,18 +127,18 @@ describe("apiStatusService", () => {
     });
 
     it("sets systemFailure on 500+ and statusCode 0", () => {
-      let changed = handleApiResponseForMaintenance({ errors: [{ statusCode: 500 }] });
+      let changed = handleApiResponseForDownTime({ errors: [{ statusCode: 500 }] });
       expect(changed).toBe(true);
       expect(isInSystemFailureMode()).toBe(true);
 
       setApiStatus("normal", baseUrl);
-      changed = handleApiResponseForMaintenance({ errors: [{ statusCode: 0 }] });
+      changed = handleApiResponseForDownTime({ errors: [{ statusCode: 0 }] });
       expect(changed).toBe(true);
       expect(isInSystemFailureMode()).toBe(true);
     });
 
     it("sets maintenance on generic 4xx", () => {
-      const changed = handleApiResponseForMaintenance({ errors: [{ statusCode: 404 }] });
+      const changed = handleApiResponseForDownTime({ errors: [{ statusCode: 404 }] });
       expect(changed).toBe(true);
       expect(isInMaintenanceMode()).toBe(true);
     });

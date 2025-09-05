@@ -345,7 +345,7 @@ import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
 import {
   getApiStatusState,
-  handleApiResponseForMaintenance,
+  handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
@@ -945,7 +945,7 @@ onMounted(() => {
       );
 
       // Check if any error state should be activated (maintenance/system failure)
-      if (handleApiResponseForMaintenance(data, props.baseUrl)) {
+      if (handleApiResponseForDownTime(data, props.baseUrl)) {
         return; // Error state was activated, stop processing
       }
 

@@ -136,7 +136,7 @@ import ErrorAlert from "@/components/Common/ErrorAlert.vue";
 import SkeletonLoader from "@/components/Common/SkeletonLoader.vue";
 import {
   getApiStatusState,
-  handleApiResponseForMaintenance,
+  handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
@@ -165,7 +165,6 @@ const appointments = ref<AppointmentDTO[]>([]);
 const offices = ref<Office[]>([]);
 
 // API status state
-const apiStatusState = getApiStatusState();
 const isInMaintenanceModeComputed = computed(() => isInMaintenanceMode());
 const isInSystemFailureModeComputed = computed(() => isInSystemFailureMode());
 
@@ -188,7 +187,7 @@ onMounted(() => {
   fetchServicesAndProviders(undefined, undefined, props.baseUrl ?? undefined)
     .then((data) => {
       // Check if any error state should be activated
-      if (handleApiResponseForMaintenance(data, props.baseUrl)) {
+      if (handleApiResponseForDownTime(data, props.baseUrl)) {
         return; // Error state was activated, stop processing
       }
 

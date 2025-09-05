@@ -131,7 +131,7 @@ export function isInSystemFailureMode(): boolean {
  * @param baseUrl - Optional base URL for the API
  * @returns boolean - true if status was changed from normal
  */
-export function handleApiResponseForMaintenance(
+export function handleApiResponseForDownTime(
   response: any,
   baseUrl?: string
 ): boolean {

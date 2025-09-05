@@ -221,7 +221,7 @@ import { ServiceImpl } from "@/types/ServiceImpl";
 import { SubService } from "@/types/SubService";
 import {
   getApiStatusState,
-  handleApiResponseForMaintenance,
+  handleApiResponseForDownTime,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
@@ -310,7 +310,7 @@ onMounted(() => {
     props.baseUrl ?? undefined
   ).then((data) => {
     // Check if any error state should be activated
-    if (handleApiResponseForMaintenance(data, props.baseUrl)) {
+    if (handleApiResponseForDownTime(data, props.baseUrl)) {
       return; // Error state was activated, stop processing
     }
 

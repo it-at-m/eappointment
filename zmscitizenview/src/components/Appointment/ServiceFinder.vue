@@ -145,7 +145,7 @@ import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue"
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { handleApiResponseForMaintenance } from "@/utils/apiStatusService";
+import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
@@ -479,7 +479,7 @@ onMounted(() => {
       );
 
       // Check if any error state should be activated (maintenance/system failure)
-      if (handleApiResponseForMaintenance(data, props.baseUrl)) {
+      if (handleApiResponseForDownTime(data, props.baseUrl)) {
         return; // Error state was activated, stop processing
       }
 
