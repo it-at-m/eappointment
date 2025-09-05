@@ -50,9 +50,10 @@ class Closure extends Base
 
         $result  = [];
         foreach ($entities as $entity) {
+            $date = $entity->date ?? $entity->getDateTime()->format('Y-m-d');
             $result [] = [
-                'scopeId' => (int)($entity['scopeId'] ?? 0),
-                'date'    => (string)($entity['date'] ?? $entity->getDateTime()->format('Y-m-d')),
+                'scopeId' => (int) $entity->scopeId,
+                'date'    => (string) $date,
             ];
         }
         return $result ;
