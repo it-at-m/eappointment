@@ -48,24 +48,23 @@ export function fetchServicesAndProviders(
 
   return fetch(apiUrl)
     .then((response) => {
-      // Check if the response status indicates an error (400-599)
       if (response.status >= 400 && response.status < 600) {
-        // For 400/500 errors, we'll let the services handle it
-        // by returning a response that indicates an error
-        return response.json().then((data) => {
-          // Ensure the response has an errors array for error detection
-          if (!data.errors) {
-            data.errors = [
-              {
-                errorCode:
-                  response.status >= 500 ? "serverError" : "internalError",
-                errorMessage: `HTTP ${response.status}`,
-                statusCode: response.status,
-              },
-            ];
-          }
-          return data;
-        });
+        return response
+          .json()
+          .catch(() => ({}))
+          .then((data: any) => {
+            if (!data.errors) {
+              data.errors = [
+                {
+                  errorCode:
+                    response.status >= 500 ? "serverError" : "internalError",
+                  errorMessage: `HTTP ${response.status}`,
+                  statusCode: response.status,
+                },
+              ];
+            }
+            return data;
+          });
       }
       return response.json();
     })

@@ -22,7 +22,6 @@ const mockedApi = await import("@/api/ZMSAppointmentAPI");
 describe("apiStatusService", () => {
   const baseUrl = "https://www.muenchen.de";
   beforeEach(() => {
-    // Reset global state and mocks between tests
     vi.useRealTimers();
     vi.clearAllTimers();
     vi.resetAllMocks();
@@ -95,6 +94,28 @@ describe("apiStatusService", () => {
       const status = await checkApiStatus();
       expect(status).toBe("systemFailure");
     });
+
+    it("returns maintenance on 404 with non-JSON response (proxy HTML page)", async () => {
+      (mockedApi.fetchServicesAndProviders as any).mockResolvedValueOnce({
+        errors: [{ statusCode: 404, errorCode: "internalError", errorMessage: "HTTP 404" }]
+      });
+      
+      const status = await checkApiStatus();
+      expect(status).toBe("maintenance");
+    });
+
+    it("handles non-JSON response preserving status code", async () => {
+      (mockedApi.fetchServicesAndProviders as any).mockResolvedValueOnce({
+        errors: [{ 
+          statusCode: 404, 
+          errorCode: "internalError", 
+          errorMessage: "HTTP 404" 
+        }]
+      });
+      
+      const status = await checkApiStatus();
+      expect(status).toBe("maintenance");
+    });
   });
 
   describe("handleApiResponseForDownTime", () => {
@@ -140,6 +161,25 @@ describe("apiStatusService", () => {
     it("sets maintenance on generic 4xx", () => {
       const changed = handleApiResponseForDownTime({ errors: [{ statusCode: 404 }] });
       expect(changed).toBe(true);
+      expect(isInMaintenanceMode()).toBe(true);
+    });
+
+    it("handles non-JSON response body and preserves status code", () => {
+      const response = {
+        status: 404,
+        json: () => Promise.reject(new Error("Unexpected token < in JSON")),
+      };
+      
+      (mockedApi.fetchServicesAndProviders as any).mockResolvedValueOnce({
+      });
+      
+      const changed = handleApiResponseForDownTime({});
+      expect(changed).toBe(false);
+      
+      const changedWithError = handleApiResponseForDownTime({
+        errors: [{ statusCode: 404, errorCode: "internalError", errorMessage: "HTTP 404" }]
+      });
+      expect(changedWithError).toBe(true);
       expect(isInMaintenanceMode()).toBe(true);
     });
   });
