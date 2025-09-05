@@ -102,7 +102,8 @@ class ScopeByIdServiceTest extends TestCase
             customTextfieldRequired: false,
             customTextfieldLabel: null,
             captchaActivatedRequired: false,
-            displayInfo: null,
+            infoForAppointment: null,
+            infoForAllAppointments: null,
             slotsPerAppointment: null
         );
     }

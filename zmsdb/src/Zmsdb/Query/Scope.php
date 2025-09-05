@@ -143,6 +143,7 @@ class Scope extends Base implements MappingInterface
             'lastChange' => 'scope.updateTimestamp',
             'preferences__appointment__deallocationDuration' => 'scope.loeschdauer',
             'preferences__appointment__infoForAppointment' => 'scope.info_for_appointment',
+            'preferences__appointment__infoForAllAppointments' => 'scope.info_for_all_appointments',
             'preferences__appointment__endInDaysDefault' => 'scope.Termine_bis',
             'preferences__appointment__multipleSlotsEnabled' => 'scope.mehrfachtermine',
             'preferences__appointment__reservationDuration' => 'scope.reservierungsdauer',
@@ -294,6 +295,7 @@ class Scope extends Base implements MappingInterface
         $data['Adresse'] = (isset($entity->contact['street'])) ? $entity->contact['street'] : '';
         $data['loeschdauer'] = $entity->getPreference('appointment', 'deallocationDuration');
         $data['info_for_appointment'] = $entity->getPreference('appointment', 'infoForAppointment');
+        $data['info_for_all_appointments'] = $entity->getPreference('appointment', 'infoForAllAppointments');
         $data['Termine_bis'] = $entity->getPreference('appointment', 'endInDaysDefault');
         $data['Termine_ab'] = $entity->getPreference('appointment', 'startInDaysDefault');
         $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled', true);

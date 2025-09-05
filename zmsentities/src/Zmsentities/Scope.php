@@ -91,9 +91,14 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->getPreference('client', 'captchaActivatedRequired', null);
     }
 
-    public function getDisplayInfo()
+    public function getInfoForAppointment()
     {
         return $this->getPreference('appointment', 'infoForAppointment', null);
+    }
+
+    public function getInfoForAllAppointments()
+    {
+        return $this->getPreference('appointment', 'infoForAllAppointments', null);
     }
 
     public function getSlotsPerAppointment()
@@ -220,6 +225,11 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         $emails = $this->toProperty()->preferences->client->whitelistedMails->get();
 
         return ($emails) ? $emails : '';
+    }
+
+    public function getReservationDuration()
+    {
+        return $this->toProperty()->preferences->appointment->reservationDuration->get();
     }
 
     public function getWaitingTimeFromQueueList(Collection\QueueList $queueList, \DateTimeInterface $dateTime)
