@@ -6,8 +6,8 @@ while ($dir != '/'
     && !file_exists("$dir/config/zmsdb.php")
 ) {
     $dir = dirname($dir);
-    if (file_exists("$dir/autoload.php")) {
-        require_once("$dir/autoload.php");
+    if (file_exists("$dir/vendor/autoload.php")) {
+        require_once("$dir/vendor/autoload.php");
     }
 }
 if (file_exists("$dir/bootstrap.php")) {

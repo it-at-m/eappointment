@@ -80,9 +80,16 @@ describe("AppointmentView", () => {
         locationId: mockLocationId,
         exclusiveLocation: mockExclusiveLocation,
         appointmentHash: mockAppointmentHash,
-        t: (key: string) => {
-          const translations = de as any;
-          return translations[key] || key;
+        t: (key: string, params?: Record<string, unknown>) => {
+          // load translation or get key
+          let s = (de as any)[key] ?? key;
+  
+          // replace placeholder
+          if (!params) return s;
+          for (const [k, v] of Object.entries(params)) {
+              s = s.split(`{${k}}`).join(String(v ?? ""));
+          }
+          return s;
         },
 
         ...props,
@@ -138,7 +145,7 @@ describe("AppointmentView", () => {
             emits: ["changeStep"],
           },
           'muc-callout': {
-            props: ["type"],
+            props: ["type", "variant"],
             template: `
             <div data-test='muc-callout' :data-type="variant || type">
               <slot name="header"></slot>
@@ -410,6 +417,41 @@ describe("AppointmentView", () => {
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="muc-callout"]').attributes('data-type')).toBe("error");
+    });
+  });
+
+  describe("Confirm callout shows activationDuration in booking step 4", () => {
+    it("render activationDuration from selectedProvider.scope", async () => {
+      const wrapper = createWrapper();
+
+      (wrapper.vm as any).selectedProvider = {
+        id: "789",
+        name: "Test Provider",
+        address: {
+          street: "Test Street",
+          house_number: "123",
+          postal_code: "12345",
+          city: "Test City",
+        },
+        scope: { activationDuration: 60 },
+      };
+  
+      (wrapper.vm as any).currentView = 4;
+  
+      await nextTick();
+  
+      const callout = wrapper.find("[data-test='muc-callout']");
+      expect(callout.exists()).toBe(true);
+  
+      // Build expected text about the translation message with placeholder
+      // createWrapper() has mocked t() so that {activationMinutes} is replaced
+      const expected = (de as any).confirmAppointmentText
+        .replace("{activationMinutes}", "60");
+  
+      // Callout renders header + content; we check that the resolved content part is included
+      expect(callout.text()).toContain(expected);
+
+      expect(callout.text()).toContain((de as any).confirmAppointmentHeader);
     });
   });
 
@@ -1198,5 +1240,34 @@ describe("AppointmentView", () => {
     expect(errorCallout.attributes('data-type')).toBe('error');
     expect(errorCallout.text()).toContain(de.apiErrorGenericFallbackHeader);
   });
+  });
+  describe("Book another appointment button", () => {
+    it("renders with correct label and redirects to start when clicked", async () => {
+      const originalLocation = window.location as any;
+      delete (window as any).location;
+      (window as any).location = {
+        ...originalLocation,
+        href: "http://localhost:8082/#/services/000000000000/locations/000000000000",
+        origin: "http://localhost:8082",
+        pathname: "/",
+      };
+
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.confirmAppointmentSuccess = true;
+      await nextTick();
+
+      const button = wrapper.find(".m-button-group button");
+      expect(button.exists()).toBe(true);
+
+      const expectedLabel =
+        (de as any).bookAnotherAppointment ?? "bookAnotherAppointment";
+      expect(button.text()).toContain(expectedLabel);
+      expect(button.attributes("variant")).toBe("secondary");
+
+      await button.trigger("click");
+      expect(window.location.href).toBe("http://localhost:8082/");
+
+      (window as any).location = originalLocation;
+    });
   });
 });

@@ -1841,6 +1841,7 @@ describe("CalendarView", () => {
         props: {
           bookingError: true,
           bookingErrorKey: "apiErrorCaptchaInvalid",
+          errorType: "warning"
         }
       });
 
@@ -1867,7 +1868,7 @@ describe("CalendarView", () => {
       expect(warningCallout!.html()).toContain("apiErrorCaptchaInvalidText");
     });
 
-    it('shows no appointment error warning callout when no appointment error is set', async () => {
+    it('shows no appointment error info callout when no appointment error is set', async () => {
       const wrapper = createWrapper({
         selectedService: {
           id: "service1",
@@ -1879,6 +1880,7 @@ describe("CalendarView", () => {
         props: {
           bookingError: true,
           bookingErrorKey: "apiErrorNoAppointmentForThisScope",
+          errorType: "info"
         }
       });
 
@@ -1896,16 +1898,18 @@ describe("CalendarView", () => {
       wrapper.vm.isSwitchingProvider = false;
       await nextTick();
 
-      // Find all callouts and get the warning one
+      // Find all callouts and get the info one
       const callouts = wrapper.findAll('[data-test="muc-callout"]');
-      const warningCallout = callouts.find(c => c.attributes('data-type') === 'warning');
+      const infoCallout = callouts.find(c => c.attributes('data-type') === 'info');
 
-      expect(warningCallout).toBeDefined();
-      expect(warningCallout!.html()).toContain("apiErrorNoAppointmentForThisScopeHeader");
-      expect(warningCallout!.html()).toContain("apiErrorNoAppointmentForThisScopeText");
+      expect(infoCallout).toBeDefined();
+      expect(infoCallout!.exists()).toBe(true);
+      expect(infoCallout!.attributes('data-type')).toBe("info");
+      expect(infoCallout!.html()).toContain("apiErrorNoAppointmentForThisScopeHeader");
+      expect(infoCallout!.html()).toContain("apiErrorNoAppointmentForThisScopeText");
     });
 
-    it('shows appointment not available error warning callout when appointment not available error is set', async () => {
+    it('shows appointment not available error callout when appointment not available error is set (defaults to error type)', async () => {
       const wrapper = createWrapper({
         selectedService: {
           id: "service1",
@@ -1916,7 +1920,7 @@ describe("CalendarView", () => {
         },
         props: {
           bookingError: true,
-          bookingErrorKey: "apiErrorAppointmentNotAvailable",
+          bookingErrorKey: "apiErrorAppointmentNotAvailable"
         }
       });
 
@@ -1934,13 +1938,15 @@ describe("CalendarView", () => {
       wrapper.vm.isSwitchingProvider = false;
       await nextTick();
 
-      // Find all callouts and get the warning one
+      // Find all callouts and get the error one
       const callouts = wrapper.findAll('[data-test="muc-callout"]');
-      const warningCallout = callouts.find(c => c.attributes('data-type') === 'warning');
+      const errorCallout = callouts.find(c => c.attributes('data-type') === 'error');
 
-      expect(warningCallout).toBeDefined();
-      expect(warningCallout!.html()).toContain("apiErrorAppointmentNotAvailableHeader");
-      expect(warningCallout!.html()).toContain("apiErrorAppointmentNotAvailableText");
+      expect(errorCallout).toBeDefined();
+      expect(errorCallout!.exists()).toBe(true);
+      expect(errorCallout!.attributes('data-type')).toBe("error");
+      expect(errorCallout!.html()).toContain("apiErrorAppointmentNotAvailableHeader");
+      expect(errorCallout!.html()).toContain("apiErrorAppointmentNotAvailableText");
     });
 
     it('does not show any callout when bookingError is false', async () => {
@@ -1958,8 +1964,115 @@ describe("CalendarView", () => {
   });
 
   describe("InfoForAllAppointments Feature", () => {
-    describe("First Warning Callout (No Appointments for Selected Providers)", () => {
+    describe("Callout when providers are selected (shows info link)", () => {
+      it('opens modal with availability info when triggered', async () => {
+        const wrapper = createWrapper({
+          props: {
+            bookingError: true,
+            bookingErrorKey: "apiErrorNoAppointmentForThisScope",
+            errorType: "info",
+          }
+        });
 
+        // Set selectable providers and selection so availabilityInfoHtml becomes truthy
+        wrapper.vm.selectableProviders = [
+          { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' }, scope: { infoForAllAppointments: 'Same info message' } },
+          { id: 2, name: 'Office B', address: { street: 'Oak', house_number: '100' }, scope: { infoForAllAppointments: 'Same info message' } }
+        ];
+        wrapper.vm.selectedProviders = { '1': true, '2': true };
+        // Ensure component state is in a rendered state similar to other callout tests
+        wrapper.vm.availableDays = [{ time: '2025-06-16', providerIDs: '1,2' }];
+        wrapper.vm.selectedProvider = { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' } } as any;
+        wrapper.vm.availableDaysFetched = true;
+        await nextTick();
+        await nextTick();
+        wrapper.vm.isSwitchingProvider = false;
+        await nextTick();
+
+        // Ensure watchers didn't auto-select providers; force empty selection again
+        wrapper.vm.selectedProviders = {};
+        await nextTick();
+
+        // Programmatically set modal HTML and open
+        (wrapper.vm as any).availabilityInfoHtmlOverride = 'Same info message';
+        (wrapper.vm as any).showAvailabilityInfoModal = true;
+        await nextTick();
+
+        // Modal should open and show the aggregated info
+        const modalBody = wrapper.find('.modal-body');
+        expect(modalBody.exists()).toBe(true);
+        expect(modalBody.html()).toContain('Same info message');
+      });
+    });
+
+    describe("Callout when all provider locations are unselected (No appointments available)", () => {
+      it('opens modal with grouped info when providers have differing info and none selected', async () => {
+        const wrapper = createWrapper({
+          selectedService: {
+            id: 'service1',
+            providers: [
+              { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' } },
+              { id: 2, name: 'Office B', address: { street: 'Oak', house_number: '100' } },
+            ]
+          }
+        });
+
+        // Provide selectable providers with differing info texts
+        wrapper.vm.selectableProviders = [
+          { id: 1, name: 'Office A', address: { street: 'Elm', house_number: '99' }, scope: { infoForAllAppointments: 'Info A' } },
+          { id: 2, name: 'Office B', address: { street: 'Oak', house_number: '100' }, scope: { infoForAllAppointments: 'Info B' } }
+        ];
+
+        // Ensure no selection state stabilizes
+        wrapper.vm.selectedProviders = {};
+        wrapper.vm.selectedProvider = null;
+        await nextTick();
+        await nextTick();
+        // Simulate time section rendered with no available days
+        wrapper.vm.availableDays = [];
+        wrapper.vm.availableDaysFetched = true;
+        await nextTick();
+        await nextTick();
+        // Make sure provider switching flag is false
+        wrapper.vm.isSwitchingProvider = false;
+        await nextTick();
+
+        // Programmatically set modal HTML and open (use computed grouped html)
+        (wrapper.vm as any).availabilityInfoHtmlOverride = (wrapper.vm as any).noneSelectedAvailabilityInfoHtml;
+        (wrapper.vm as any).showAvailabilityInfoModal = true;
+        await nextTick();
+
+        // Modal should open and show the grouped info
+        const modalBody = wrapper.find('.modal-body');
+        expect(modalBody.exists()).toBe(true);
+        expect(modalBody.html()).toContain('Info A');
+        expect(modalBody.html()).toContain('Info B');
+      });
+      it('does not show info trigger or modal in this callout', async () => {
+        const wrapper = createWrapper({
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForAllAppointments: 'Custom no appointments message'
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+        wrapper.vm.availableDaysFetched = true;
+        wrapper.vm.availableDays = [];
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        expect(callout.exists()).toBe(true);
+        // Warning callout no longer contains info trigger/link
+        expect(callout.html()).not.toContain('newAppointmentsInfoLink');
+        expect(callout.find('.m-button.m-button--ghost').exists()).toBe(false);
+        // No modal should open from warning callout
+        expect(wrapper.find('.modal-body').exists()).toBe(false);
+      });
 
       it('should fallback to translation key when infoForAllAppointments is null', async () => {
         const wrapper = createWrapper({
@@ -1981,6 +2094,8 @@ describe("CalendarView", () => {
         const callout = wrapper.find('[data-test="muc-callout"]');
         expect(callout.exists()).toBe(true);
         expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+        // No info trigger if no content
+        expect(callout.find('.m-button.m-button--ghost').exists()).toBe(false);
       });
 
       it('should fallback to translation key when infoForAllAppointments is empty string', async () => {
@@ -2003,6 +2118,8 @@ describe("CalendarView", () => {
         const callout = wrapper.find('[data-test="muc-callout"]');
         expect(callout.exists()).toBe(true);
         expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+        // No info trigger if no content
+        expect(callout.find('.m-button.m-button--ghost').exists()).toBe(false);
       });
 
       it('should fallback to translation key when infoForAllAppointments is whitespace only', async () => {
@@ -2025,10 +2142,10 @@ describe("CalendarView", () => {
         const callout = wrapper.find('[data-test="muc-callout"]');
         expect(callout.exists()).toBe(true);
         expect(callout.html()).toContain('apiErrorNoAppointmentForThisScopeText');
+        // No info trigger if no content
+        expect(callout.find('.m-button.m-button--ghost').exists()).toBe(false);
       });
     });
-
-
 
     describe("Edge Cases", () => {
       it('should handle undefined scope gracefully', async () => {
@@ -2106,6 +2223,30 @@ describe("CalendarView", () => {
 
         expect(wrapper.vm.selectedProvider).toBeDefined();
         expect(wrapper.vm.selectedProvider?.scope?.infoForAllAppointments).toBe('Complete flow test message');
+      });
+
+      it('does not provide a modal trigger in this callout', async () => {
+        const wrapper = createWrapper({
+          selectedProvider: {
+            id: 1,
+            name: 'Test Office',
+            address: { street: 'Test Street', house_number: '123' },
+            scope: {
+              infoForAllAppointments: 'Outside click close test'
+            }
+          }
+        });
+
+        await wrapper.vm.$nextTick();
+        wrapper.vm.availableDaysFetched = true;
+        wrapper.vm.availableDays = [];
+        await wrapper.vm.$nextTick();
+
+        const callout = wrapper.find('[data-test="muc-callout"]');
+        const trigger = callout.find('.m-button.m-button--ghost');
+        // Warning callout no longer has a trigger; modal cannot be opened here
+        expect(trigger.exists()).toBe(false);
+        expect(wrapper.find('.modal-body').exists()).toBe(false);
       });
 
       it('should maintain existing functionality when infoForAllAppointments is not set', async () => {

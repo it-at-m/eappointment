@@ -107,7 +107,9 @@ class AppointmentReserveControllerTest extends ControllerTestCase
                 "slotsPerAppointment" => null,
                 "appointmentsPerMail" => null,
                 "whitelistedMails" => null,
-                "reservationDuration" => null
+                "reservationDuration" => null,
+                "activationDuration" => null,
+                "hint" => null
             ],
             "subRequestCounts" => [],
             "serviceId" => 0,

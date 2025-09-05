@@ -1,0 +1,15 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2025-09-02T13:57:45+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "items": [
+            { "scopeId": 59, "date": "2025-09-04" },
+            { "scopeId": 58, "date": "2025-09-03" }
+        ]
+    }
+}
