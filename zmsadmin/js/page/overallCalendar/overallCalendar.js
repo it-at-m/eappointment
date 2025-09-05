@@ -33,7 +33,6 @@ function isSameRequest(a, b) {
 }
 
 async function fetchClosures({scopeIds, dateFrom, dateUntil, fullReload = true}) {
-    console.log("fetchClosures")
     const res = await fetch(`closureData/?${new URLSearchParams({
         scopeIds: scopeIds.join(','),
         dateFrom,
@@ -264,7 +263,6 @@ function renderMultiDayCalendar(days) {
         return;
     }
 
-    // kleine Helper-Funktion: lokales YYYY-MM-DD aus Unix (Sekunden)
     const ymdLocalFromUnix = (ts) => new Date(ts * 1000).toLocaleDateString('sv-SE');
 
     SCOPE_COLORS = buildScopeColorMap(days);
