@@ -48,13 +48,13 @@
     <div class="m-component">
       <muc-counter
         v-model="countOfService"
-        :label="service.name"
-        :link="getServiceBaseURL() + service.id"
+        :label="service?.name || ''"
+        :link="getServiceBaseURL() + (service?.id || '')"
         :max="maxValueOfService"
         :min="1"
       />
     </div>
-    <div v-if="service.subServices && service.subServices.length > 0">
+    <div v-if="service?.subServices && service.subServices.length > 0">
       <h3 tabindex="0">{{ t("combinableServices") }}</h3>
       <p
         class="visually-hidden"
@@ -145,7 +145,7 @@ import SubserviceListItem from "@/components/Appointment/SubserviceListItem.vue"
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { handleApiResponse } from "@/utils/apiStatusService";
+import { handleApiResponseForMaintenance } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
@@ -479,13 +479,13 @@ onMounted(() => {
       );
 
       // Check if any error state should be activated (maintenance/system failure)
-      if (handleApiResponse(data, props.baseUrl)) {
+      if (handleApiResponseForMaintenance(data, props.baseUrl)) {
         return; // Error state was activated, stop processing
       }
 
-      services.value = data.services;
-      relations.value = data.relations;
-      offices.value = data.offices;
+      services.value = (data as any).services;
+      relations.value = (data as any).relations;
+      offices.value = (data as any).offices;
 
       if (props.preselectedServiceId) {
         const foundService = services.value.find(

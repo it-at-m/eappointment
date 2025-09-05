@@ -345,7 +345,7 @@ import { StepperItem } from "@/types/StepperTypes";
 import { SubService } from "@/types/SubService";
 import {
   getApiStatusState,
-  handleApiResponse,
+  handleApiResponseForMaintenance,
   isInMaintenanceMode,
   isInSystemFailureMode,
 } from "@/utils/apiStatusService";
@@ -945,13 +945,13 @@ onMounted(() => {
       );
 
       // Check if any error state should be activated (maintenance/system failure)
-      if (handleApiResponse(data, props.baseUrl)) {
+      if (handleApiResponseForMaintenance(data, props.baseUrl)) {
         return; // Error state was activated, stop processing
       }
 
-      services.value = data.services;
-      relations.value = data.relations;
-      offices.value = data.offices;
+      services.value = (data as any).services;
+      relations.value = (data as any).relations;
+      offices.value = (data as any).offices;
 
       const appointmentData = parseAppointmentHash(props.appointmentHash ?? "");
       if (!appointmentData) {

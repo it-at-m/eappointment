@@ -131,7 +131,10 @@ export function isInSystemFailureMode(): boolean {
  * @param baseUrl - Optional base URL for the API
  * @returns boolean - true if status was changed from normal
  */
-export function handleApiResponse(response: any, baseUrl?: string): boolean {
+export function handleApiResponseForMaintenance(
+  response: any,
+  baseUrl?: string
+): boolean {
   // If response is null/undefined or not an object, activate system failure
   if (!response || typeof response !== "object" || Array.isArray(response)) {
     setApiStatus("systemFailure", baseUrl);
