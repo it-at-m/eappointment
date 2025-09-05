@@ -30,7 +30,7 @@ export function fetchServicesAndProviders(
   serviceId?: string,
   locationId?: string,
   baseUrl?: string
-): Promise<OfficesAndServicesDTO> {
+): Promise<OfficesAndServicesDTO | ErrorDTO> {
   let apiUrl =
     getGeneratedAPIBaseURL(baseUrl, false) +
     VUE_APP_ZMS_API_PROVIDERS_AND_SERVICES_ENDPOINT;
@@ -69,16 +69,13 @@ export function fetchServicesAndProviders(
       }
       return response.json();
     })
-    .catch((error) => {
-      // Network errors, timeouts, connection refused, etc. should be handled by system failure service
-      console.warn("fetchServicesAndProviders failed:", error);
-      // Return a response that will trigger system failure mode
-      // Use statusCode: 0 to indicate network failure (no HTTP status)
+    .catch(() => {
       return {
         errors: [
           {
             errorCode: "networkError",
             errorMessage: "Network error or service unavailable",
+            errorType: "error",
             statusCode: 0,
           },
         ],

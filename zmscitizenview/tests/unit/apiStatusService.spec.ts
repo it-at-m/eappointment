@@ -20,12 +20,13 @@ vi.mock("@/api/ZMSAppointmentAPI", () => {
 const mockedApi = await import("@/api/ZMSAppointmentAPI");
 
 describe("apiStatusService", () => {
+  const baseUrl = "https://www.muenchen.de";
   beforeEach(() => {
     // Reset global state and mocks between tests
     vi.useRealTimers();
     vi.clearAllTimers();
     vi.resetAllMocks();
-    setApiStatus("normal");
+    setApiStatus("normal", baseUrl);
   });
 
   describe("checkApiStatus", () => {
@@ -130,7 +131,7 @@ describe("apiStatusService", () => {
       expect(changed).toBe(true);
       expect(isInSystemFailureMode()).toBe(true);
 
-      setApiStatus("normal");
+      setApiStatus("normal", baseUrl);
       changed = handleApiResponse({ errors: [{ statusCode: 0 }] });
       expect(changed).toBe(true);
       expect(isInSystemFailureMode()).toBe(true);
@@ -145,15 +146,15 @@ describe("apiStatusService", () => {
 
   describe("setApiStatus + getters", () => {
     it("updates state and getters reflect modes", () => {
-      setApiStatus("maintenance");
+      setApiStatus("maintenance", baseUrl);
       expect(isInMaintenanceMode()).toBe(true);
       expect(isInSystemFailureMode()).toBe(false);
 
-      setApiStatus("systemFailure");
+      setApiStatus("systemFailure", baseUrl);
       expect(isInSystemFailureMode()).toBe(true);
       expect(isInMaintenanceMode()).toBe(false);
 
-      setApiStatus("normal");
+      setApiStatus("normal", baseUrl);
       expect(isInMaintenanceMode()).toBe(false);
       expect(isInSystemFailureMode()).toBe(false);
     });

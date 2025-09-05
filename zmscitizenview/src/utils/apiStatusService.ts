@@ -67,8 +67,6 @@ export async function checkApiStatus(baseUrl?: string): Promise<ApiStatusType> {
 
     return "normal";
   } catch (error) {
-    // Network errors, timeouts, etc. indicate system failure
-    console.warn("API status check failed:", error);
     return "systemFailure";
   }
 }
@@ -94,7 +92,7 @@ export function setApiStatus(status: ApiStatusType, baseUrl?: string): void {
     apiStatusState.checkInterval.value = setInterval(async () => {
       const currentStatus = await checkApiStatus(baseUrl);
       if (currentStatus === "normal") {
-        setApiStatus("normal");
+        setApiStatus("normal", baseUrl);
       } else if (currentStatus !== status) {
         // Status changed (e.g., from maintenance to system failure)
         setApiStatus(currentStatus, baseUrl);
