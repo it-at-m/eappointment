@@ -135,8 +135,12 @@ export function handleApiResponseForDownTime(
   baseUrl?: string
 ): boolean {
   if (!response || typeof response !== "object" || Array.isArray(response)) {
-    setApiStatus("systemFailure", baseUrl);
-    return true;
+    const prev = apiStatusState.status.value;
+    if (prev !== "systemFailure") {
+      setApiStatus("systemFailure", baseUrl);
+      return true;
+    }
+    return false;
   }
 
   if (
@@ -151,8 +155,12 @@ export function handleApiResponseForDownTime(
       return false;
     }
 
-    setApiStatus(status, baseUrl);
-    return true;
+    const prev = apiStatusState.status.value;
+    if (prev !== status) {
+      setApiStatus(status, baseUrl);
+      return true;
+    }
+    return false;
   }
 
   return false;

@@ -182,6 +182,29 @@ describe("apiStatusService", () => {
       expect(changedWithError).toBe(true);
       expect(isInMaintenanceMode()).toBe(true);
     });
+
+    it("only returns true when status actually changes", () => {
+      const response = {
+        errors: [{ statusCode: 503 }],
+      };
+
+      const changed1 = handleApiResponseForDownTime(response, baseUrl);
+      expect(changed1).toBe(true);
+      expect(isInMaintenanceMode()).toBe(true);
+
+      const changed2 = handleApiResponseForDownTime(response, baseUrl);
+      expect(changed2).toBe(false);
+      expect(isInMaintenanceMode()).toBe(true);
+
+      const differentResponse = {
+        errors: [{ statusCode: 500 }],
+      };
+
+      const changed3 = handleApiResponseForDownTime(differentResponse, baseUrl);
+      expect(changed3).toBe(true);
+      expect(isInSystemFailureMode()).toBe(true);
+      expect(isInMaintenanceMode()).toBe(false);
+    });
   });
 
   describe("setApiStatus + getters", () => {
