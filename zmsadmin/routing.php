@@ -54,6 +54,12 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/overallcalendar/overallcalendarData/', \BO\Zmsadmin\OverallCalendarLoadData::class)
     ->setName("overallCalendarLoadData");
 
+\App::$slim->get(
+    '/overallcalendar/closureData/',
+    \BO\Zmsadmin\OverallCalendarClosureLoadData::class
+)->setName('overallCalendarClosureLoadData');
+
+
  /*
   * ---------------------------------------------------------------------------
   * Config
