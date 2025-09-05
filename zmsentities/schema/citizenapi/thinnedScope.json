@@ -84,12 +84,19 @@
             "type": "boolean",
             "description": "Whether captcha is activated and required"
         },
-        "displayInfo": {
+        "infoForAppointment": {
             "type": [
                 "string",
                 "null"
             ],
             "description": "Additional display information"
+        },
+        "infoForAllAppointments": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Additional display information for no appointments"
         },
         "slotsPerAppointment": {
             "type": [
@@ -113,6 +120,28 @@
                 "null"
             ],
             "description": "E-mail addresses that have no limitation on appointments count"
+        },
+        "reservationDuration": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Duration of the reservation in minutes"
+        },
+        "activationDuration": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Duration of the activation time in minutes"
+
+        },
+        "hint": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Additional hint information for the scope"
         }
     }
 }

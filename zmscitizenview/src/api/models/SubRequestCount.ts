@@ -12,6 +12,12 @@ export interface SubRequestCount {
   id: string;
   /**
    *
+   * @type {string}
+   * @memberof SubRequestCount
+   */
+  name: string;
+  /**
+   *
    * @type {number}
    * @memberof SubRequestCount
    */
