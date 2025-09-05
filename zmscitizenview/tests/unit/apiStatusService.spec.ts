@@ -4,7 +4,6 @@ import {
   checkApiStatus,
   getApiStatusState,
   handleApiResponse,
-  handleFetchError,
   isInMaintenanceMode,
   isInSystemFailureMode,
   setApiStatus,
@@ -141,14 +140,6 @@ describe("apiStatusService", () => {
       const changed = handleApiResponse({ errors: [{ statusCode: 404 }] });
       expect(changed).toBe(true);
       expect(isInMaintenanceMode()).toBe(true);
-    });
-  });
-
-  describe("handleFetchError", () => {
-    it("forces system failure state", () => {
-      const changed = handleFetchError(new Error("boom"));
-      expect(changed).toBe(true);
-      expect(isInSystemFailureMode()).toBe(true);
     });
   });
 

@@ -128,14 +128,6 @@ export function isInSystemFailureMode(): boolean {
 }
 
 /**
- * Checks if the application is in any error state (maintenance or system failure)
- * @returns boolean - true if in any error state
- */
-export function isInErrorState(): boolean {
-  return apiStatusState.status.value !== "normal";
-}
-
-/**
  * Handles API response and determines the appropriate status
  * @param response - The API response
  * @param baseUrl - Optional base URL for the API
@@ -187,44 +179,3 @@ export function handleApiResponse(response: any, baseUrl?: string): boolean {
   // No errors, API is working normally
   return false;
 }
-
-/**
- * Handles fetch errors and determines the appropriate status
- * @param error - The fetch error
- * @param baseUrl - Optional base URL for the API
- * @returns boolean - true if status was changed from normal
- */
-export function handleFetchError(error: any, baseUrl?: string): boolean {
-  // Any fetch error (network, timeout, etc.) should activate system failure mode
-  setApiStatus("systemFailure", baseUrl);
-  return true;
-}
-
-// Legacy compatibility functions for existing code
-export const getMaintenanceState = () => ({
-  isInMaintenance: apiStatusState.status,
-  lastCheckTime: apiStatusState.lastCheckTime,
-  checkInterval: apiStatusState.checkInterval,
-});
-
-export const getSystemFailureState = () => ({
-  isInSystemFailure: ref(apiStatusState.status.value === "systemFailure"),
-  lastCheckTime: apiStatusState.lastCheckTime,
-  checkInterval: apiStatusState.checkInterval,
-});
-
-export const handleApiResponseForMaintenance = (
-  response: any,
-  baseUrl?: string
-) => {
-  const wasChanged = handleApiResponse(response, baseUrl);
-  return wasChanged && isInMaintenanceMode();
-};
-
-export const handleApiResponseForSystemFailure = (
-  response: any,
-  baseUrl?: string
-) => {
-  const wasChanged = handleApiResponse(response, baseUrl);
-  return wasChanged && isInSystemFailureMode();
-};
