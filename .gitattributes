@@ -1,0 +1,10 @@
+# Ensure Unix line endings for executable scripts (fixes Windows CRLF issues)
+*.sh text eol=lf
+*.bash text eol=lf
+
+# All bin scripts across modules should be LF
+**/bin/* text eol=lf
+
+# Ensure these bash entrypoints are LF
+zmsapi/zmsapi-test text eol=lf
+zmsdb/zmsdb-test text eol=lf

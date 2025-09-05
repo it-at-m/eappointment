@@ -51,31 +51,48 @@ services:
         else \
           echo 'Base dependencies already installed. Skipping.'; \
         fi
+
         echo 'Preparing isolated workspace...'
         mkdir -p /tmp/workspace
         rsync -a --delete --exclude='zmsdb/vendor/' --exclude='zmsapi/vendor/' /host/ /tmp/workspace/
+
         echo 'Waiting for database to be ready...'
         until mysql -h mariadb -u root -pzmsdb -e 'SELECT 1' >/dev/null 2>&1; do
           echo 'Database not ready yet, waiting...'
           sleep 2
         done
         echo 'Database is ready!'
+
         cd /tmp/workspace
+
         if [ ! -d /tmp/workspace/zmsdb/vendor ]; then \
           echo 'Setting up module dependencies (symlinks) in isolated workspace...'; \
           python3 cli modules reference-libraries; \
           echo 'Installing composer dependencies (first run)...'; \
-          cd /tmp/workspace/zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader && composer dump-autoload -o; \
+          cd /tmp/workspace/zmsdb && composer install --no-progress --prefer-dist --optimize-autoloader; \
         else \
-          echo 'Vendor already present. Skipping cli+composer.'; \
+          echo 'Vendor already present. Skipping full composer install.'; \
         fi
+
+        # Sanity-Check: kennt der Autoloader BO\\Zmsdldb\\FileAccess?
+        cd /tmp/workspace/zmsdb
+        php -r 'require "vendor/autoload.php"; exit(class_exists("BO\\\\Zmsdldb\\\\FileAccess")?0:42);' || \
+        (echo 'Composer autoload missing BO\\Zmsdldb\\FileAccess -> running targeted update...' && \
+         composer update eappointment/zmsdldb -W --no-progress --prefer-dist && \
+         composer dump-autoload -o)
+
         echo 'Setting PHP memory limit...'
         php -d memory_limit=1G -v
+
         echo 'Importing test data...'
-        cd /tmp/workspace/zmsdb
-        php -d memory_limit=1G bin/importTestData --commit
+        php -d memory_limit=1G \
+            -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php \
+            bin/importTestData --commit
+
         echo 'Running tests...'
-        php -d memory_limit=1G vendor/bin/phpunit
+        php -d memory_limit=1G \
+            -d auto_prepend_file=/tmp/workspace/zmsdb/vendor/autoload.php \
+            vendor/bin/phpunit
       "
 volumes:
   zmsdb-workspace:

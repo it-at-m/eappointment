@@ -73,8 +73,9 @@ class ScopesListControllerTest extends ControllerTestCase
                     "slotsPerAppointment" => null,
                     "appointmentsPerMail" => null,
                     "whitelistedMails" => null,
+                    "activationDuration" => null,
                     "reservationDuration" => null,
-                    "activationDuration" => null
+                    "hint" => null
                 ],
                 [
                     "id" => 2,
@@ -113,7 +114,8 @@ class ScopesListControllerTest extends ControllerTestCase
                     "appointmentsPerMail" => null,
                     "whitelistedMails" => null,
                     "reservationDuration" => null,
-                    "activationDuration" => null
+                    "activationDuration" => null,
+                    "hint" => null
                     ]
             ]
         ];
